@@ -5,7 +5,7 @@
  */
 
 import { buildToolCatalog } from '@/lib/tools/catalog';
-import canonicalGuideByTopic from '@/lib/tools/generated/records-guide.json';
+import canonicalGuide from '@/lib/tools/generated/records-guide.json';
 import { lookup } from '@/lib/tools/registry';
 import type { ToolContext } from '@/lib/tools/types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -58,7 +58,7 @@ beforeEach(() => {
 describe('registered records schema null defaults', () => {
   it('returns every generated server guide verbatim without opening the record store', async () => {
     const handler = registeredRecords();
-    for (const [topic, guide] of Object.entries(canonicalGuideByTopic)) {
+    for (const [topic, guide] of Object.entries(canonicalGuide.topics)) {
       const parsed = handler.argsSchema.parse({ action: 'guide', topic }) as Record<
         string,
         unknown
@@ -69,17 +69,17 @@ describe('registered records schema null defaults', () => {
         ...guide,
       });
     }
-    expect(canonicalGuideByTopic.form_propose.how).toContain('A PUBLIC FORM, whole, in ONE call.');
-    expect(canonicalGuideByTopic.portal_propose.how).toContain(
+    expect(canonicalGuide.topics.form_propose.how).toContain('A PUBLIC FORM, whole, in ONE call.');
+    expect(canonicalGuide.topics.portal_propose.how).toContain(
       'A PORTAL FOR CLIENTS, whole, in ONE call.',
     );
-    expect(canonicalGuideByTopic.form_propose.how).toContain(
+    expect(canonicalGuide.topics.form_propose.how).toContain(
       'never a table plus a plan to build a form later',
     );
-    expect(canonicalGuideByTopic.form_propose.how).toContain(
+    expect(canonicalGuide.topics.form_propose.how).toContain(
       '{"action": "form_propose", "title": "New patient intake"',
     );
-    expect(canonicalGuideByTopic.document_propose.how).toContain(
+    expect(canonicalGuide.topics.document_propose.how).toContain(
       'NEVER WRITE THE LETTERHEAD YOURSELF',
     );
     expect(openRecordStore).not.toHaveBeenCalled();
@@ -95,8 +95,8 @@ describe('registered records schema null defaults', () => {
     await expect(handler.run(parsed, context())).resolves.toMatchObject({
       ok: true,
       action: 'guide',
-      topic: null,
-      actions: Object.keys(canonicalGuideByTopic),
+      ...canonicalGuide.unknown,
+      note: '\'form_propse\' is not an action of this tool. Call {"action": "guide", "topic": "<action>"} with one of these.',
     });
     expect(openRecordStore).not.toHaveBeenCalled();
   });

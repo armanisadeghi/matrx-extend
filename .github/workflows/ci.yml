@@ -10,9 +10,8 @@
 #   lint      — biome check (error-level rules block; warn promotion tracked
 #               as audit item P2-3)
 #   test      — vitest unit suite
-#   build     — production wxt build from a clean checkout (also proves the
-#               vendored types/python-generated fallback keeps the repo
-#               self-sufficient without the aidream sibling)
+#   build     — production wxt build from a clean checkout. The guide parity
+#               test supplies its separately pinned, read-only server source.
 #
 # The DB drift check is NOT here — CI has no Supabase creds, and the
 # non-strict script would just skip. Releases run the strict variant via
@@ -40,6 +39,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # The complete records guide comes only from aidream's guide_for. This
+      # public, read-only checkout is pinned deliberately: CI must measure one
+      # declared server revision, never whichever sibling happens to exist.
+      - uses: actions/checkout@v4
+        with:
+          repository: AI-Matrix-Engine/aidream
+          ref: ea1db98d9acceed438cd3e476b3de3f8585f90e9
+          path: .canonical/aidream
+          persist-credentials: false
+
       - uses: pnpm/action-setup@v4
         # Version comes from package.json's "packageManager" field.
 
@@ -47,6 +56,8 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+
+      - uses: astral-sh/setup-uv@v5
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -112,7 +123,6 @@ jobs:
       # CI carries no SUPABASE_SECRET_KEY, so this step SCANS and prints and
       # says UNMEASURED-for-report — loudly, never silently. The release script
       # and the scheduled remediation task are what submit.
-      - uses: astral-sh/setup-uv@v5
       - name: Mandate references (non-blocking; scan only in CI)
         continue-on-error: true
         run: uvx --from matrx-mandate-scan==0.2.2 matrx-mandate-scan check
@@ -121,6 +131,8 @@ jobs:
         run: pnpm lint
 
       - name: Unit tests
+        env:
+          RECORDS_GUIDE_SOURCE: ${{ github.workspace }}/.canonical/aidream
         run: pnpm test
 
       - name: Production build

@@ -24,7 +24,7 @@
  */
 
 import { openRecordStore } from '@/lib/records/store';
-import canonicalGuideByTopic from '@/lib/tools/generated/records-guide.json';
+import canonicalGuide from '@/lib/tools/generated/records-guide.json';
 import type { ToolHandler, ToolTier } from '@/lib/tools/types';
 import { z } from 'zod';
 
@@ -196,7 +196,15 @@ const RecordsArgs = z.object({
 
 type RecordsToolArgs = z.infer<typeof RecordsArgs>;
 
-const GUIDE_ACTIONS = Object.keys(canonicalGuideByTopic);
+function pythonStringRepr(value: string): string {
+  const quote = value.includes("'") && !value.includes('"') ? '"' : "'";
+  return `${quote}${value
+    .replaceAll('\\', '\\\\')
+    .replaceAll(quote, `\\${quote}`)
+    .replaceAll('\n', '\\n')
+    .replaceAll('\r', '\\r')
+    .replaceAll('\t', '\\t')}${quote}`;
+}
 
 /**
  * A refusal the store made, handed on verbatim. The store's own words are the
@@ -221,14 +229,21 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
   run: async (args) => {
     if (args.action === 'guide') {
       const topic = args.topic?.trim() ?? '';
-      const guide = canonicalGuideByTopic[topic as keyof typeof canonicalGuideByTopic];
+      const guide = canonicalGuide.topics[topic as keyof typeof canonicalGuide.topics];
       if (!guide) {
+        const fallback = topic
+          ? {
+              ...canonicalGuide.unknown,
+              note: canonicalGuide.unknown.note.replace(
+                canonicalGuide.unknown_topic_quoted,
+                pythonStringRepr(topic),
+              ),
+            }
+          : canonicalGuide.empty;
         return {
           ok: true,
           action: 'guide',
-          topic: null,
-          note: `${topic ? `${JSON.stringify(topic)} is not an action of this tool. ` : ''}Call {"action": "guide", "topic": "<action>"} with one of these.`,
-          actions: GUIDE_ACTIONS,
+          ...fallback,
         };
       }
       return { ok: true, action: 'guide', ...guide };

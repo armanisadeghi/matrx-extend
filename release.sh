@@ -52,7 +52,7 @@ OUTPUT_DIR="$REPO_ROOT/.output"
 REMOTE="origin"
 BRANCH="main"
 WEBSTORE_UPLOAD_URL="https://chrome.google.com/webstore/devconsole"
-GENERATED_PATHS=(types/python-generated types/tool-catalog.json types/tool-catalog.md docs/TOOLS.generated.md)
+GENERATED_PATHS=(types/python-generated types/tool-catalog.json types/tool-catalog.md docs/TOOLS.generated.md src/lib/tools/generated/records-guide.json)
 SHIP_PUSH_ATTEMPTS=5
 SHIP_START=$SECONDS
 GIT_ABS_DIR="$(git rev-parse --absolute-git-dir 2>/dev/null)"
@@ -269,7 +269,7 @@ regen_artifacts() {
     export_snapshot "$BASE_TREE" "$BASE" prepare && snap="$SNAP_DIR" || hard_stop "could not export the release tree to regenerate artifacts"
     local jd; jd="$(dirname "$snap")/jobs"; mkdir -p "$jd"
     $SKIP_TYPES   || { ( cd "$snap" && bounded 180 pnpm -s update-api-types --skip-typecheck ) > "$jd/api-types.out" 2>&1; echo $? > "$jd/api-types.rc"; }
-    $SKIP_CATALOG || { ( cd "$snap" && bounded 180 pnpm -s catalog:tools:md ) > "$jd/catalog.out" 2>&1; echo $? > "$jd/catalog.rc"; }
+    $SKIP_CATALOG || { ( cd "$snap" && RECORDS_GUIDE_SOURCE="$(dirname "$snap")/aidream" bounded 180 pnpm -s catalog:tools:md ) > "$jd/catalog.out" 2>&1; echo $? > "$jd/catalog.rc"; }
     { ( cd "$snap" && bounded 120 pnpm -s docs:tools ) > "$jd/docs.out" 2>&1; echo $? > "$jd/docs.rc"; }
     for name in api-types catalog docs; do
         [[ -f "$jd/$name.rc" ]] || continue
