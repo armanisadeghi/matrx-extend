@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "lane": "current saved Network replay stall; source-only diagnosis",
+  "status": "VALID_NATIVE_SYMPTOM_CAUSE_NOT_YET_LOCALIZED",
+  "canonical_case_id": "EXT-F-1012-T57 (docs/stabilization/inventory.json:16642)",
+  "native_run_receipt": "docs/stabilization/runs/showcase-network-current-001.json (committed 764a47d8)",
+  "immutable_source_sha": "d4bbe70e",
+  "installed_version": "0.2.114",
+  "observed_by_native_lane": "On https://hn.algolia.com/?q=OpenAI, signed in as admin and acting as admin's Workspace, one owned saved Network recipe Run click at approximately 2026-09-28T05:58:27Z left Run disabled and the recipe never-run for more than 113 seconds. No progress, approval, result, or visible error appeared; the resource watchdog stayed healthy and terminated resourceInvalid=false. Debug search for replay showed zero matches. This report did not run or inspect the browser itself; an unset-organization hold is ruled out by the native receipt.",
+  "source_comparison": "The saved UI-to-preparation-to-approval files at current HEAD match d4bbe70e. The concurrent uncommitted run-interactive.ts change only alters JSON key-path parsing and does not touch runSavedPattern's transport branch; no current product change was made by this lane.",
+  "confirmed_silent_gap": [
+    "PatternsTab.handleRun sets runningId before awaiting runSavedPattern and clears it only in finally; runNote begins null. It offers no Cancel while running (src/features/showcase/tabs/PatternsTab.tsx:129-175, 404-434).",
+    "The Network branch dynamically imports document-network-transport and waits on openSavedPatternOperation; that Port emits no initial progress or operation deadline (src/lib/data-pattern/run-interactive.ts:536-560; src/lib/data-pattern/document-network-transport.ts:140-174).",
+    "The Port host lazy-imports dispatch and calls runLocalSavedPattern. That function awaits prepareOperation without emitting a progress stage (src/lib/data-pattern/document-network-transport.ts:114-137; src/lib/tools/dispatch.ts:1754-1780).",
+    "Preparation awaits assigned-tab lookup, fetchPatternsForDomain, chrome.scripting.executeScript document identity, SHA-256 digest, and a CDP handler import. It then awaits policy checks before requestConfirmation persists and broadcasts the privileged approval (src/lib/tools/handlers/data-patterns.ts:113-158; src/lib/tools/dispatch.ts:1672-1752, 1173-1258).",
+    "At 113 seconds, the confirmation timer's five-minute expiry would not yet have fired. No approval card alone cannot distinguish preapproval suspension from a card delivery failure."
+  ],
+  "ranked_falsifiable_hypotheses": [
+    {
+      "rank": 1,
+      "candidate": "The service-worker's saved-pattern preparation is pending at its own pattern read, despite the sidepanel having read the list earlier in a separate realm. The native run's active organization rules out an unset-organization picker hold but not a stalled pattern read.",
+      "prediction": "A service-worker Network inspection shows the wbx_pattern read pending or absent after Port receipt; no pending local confirmation record and no TOOL_CONFIRM_REQUEST broadcast exist. Forcing the read to settle in a connected test advances to document probe or an explicit error.",
+      "limit": "The native observation did not capture service-worker request timing."
+    },
+    {
+      "rank": 2,
+      "candidate": "The document-identity chrome.scripting.executeScript or a subsequent policy await is pending after a successful pattern read.",
+      "prediction": "The wbx_pattern read finishes, but no local confirmation record or broadcast appears. Parking/releasing each Chrome or policy dependency one at a time in the connected seam reproduces then advances the stage.",
+      "limit": "No Chrome callback or policy receipt was captured in the native run."
+    },
+    {
+      "rank": 3,
+      "candidate": "Preparation completed and requestConfirmation reached persistence/broadcast, but the approval host did not show the local card.",
+      "prediction": "A pending local data_patterns confirmation or a TOOL_CONFIRM_REQUEST broadcast exists while no AgentApprovalCard is visible. If persistence failed, Debug should show persistPendingConfirm failed even though broadcast continues.",
+      "limit": "The native Debug search did not establish a complete confirmation-record or broadcast census."
+    },
+    {
+      "rank": 4,
+      "candidate": "The Port host's lazy dispatch import or run message never advanced to runLocalSavedPattern.",
+      "prediction": "No worker-side pattern read, document probe, confirmation record, or broadcast occurs. A rejected import or disconnected Port should normally return an error, so a sustained open Port would narrow this to a never-settling import/message path.",
+      "limit": "There is no Port receipt or disconnect event in the existing Debug UI."
+    }
+  ],
+  "narrow_next_diagnostic": "During one healthy guarded installed retry, keep the existing Debug log on and check for TOOL_CONFIRM_REQUEST and persistPendingConfirm failed without exporting request payloads. If no broadcast appears, inspect only the service-worker Network timing/status for the wbx_pattern read and whether the Chrome document probe callback completes; do not capture raw URLs, bodies, tokens, or pattern config. A local confirmation record would place the stall after preparation; its absence is not conclusive if storage failed, so correlate with the Debug warning. Current user-visible diagnostics cannot distinguish every preapproval await without phase progress.",
+  "causal_regression_to_write_before_fix": "Use the actual PatternsTab -> runSavedPattern -> saved-operation Port host -> runLocalSavedPattern -> prepareOperation -> requestConfirmation chain. Stub only Chrome/Supabase external calls. Park the worker's fetchPatternsForDomain with a controlled promise: on baseline, the real Run row disables without a stage or Cancel, an assertion failure naming the observed defect. After a narrow repair, the row must show the preparation stage and allow Cancel; releasing the parked read after Cancel must produce no approval card, CDP attach, rows, or pattern-health write. A second connected case parks chrome.scripting.executeScript, and a settled preparation case requires the real approval card. The test must fail if Port signal forwarding, host abort, or confirmation broadcast is severed; do not revive the pending candidate's mocked-UI proof as-is.",
+  "verification": "Source inspection only. No browser, build, install, test, credential, or raw request-data access; no product source edits and no heavy resource permit.",
+  "open_action": "The current native operator should collect one bounded phase receipt as above. Then implement the smallest class fix at the first proven boundary and run the connected red-to-green guard before another installed replay."
+}
