@@ -106,7 +106,7 @@ it('copies each extraction source with ordinary query identity while masking cre
       source={{ url: 'https://electronic.vegas/calendar?date=2026-09-28&token=PRIVATE-ONE' }}
     />,
   );
-  await userEvent.click(screen.getByRole('button', { name: 'Copy for AI' }));
+  await userEvent.click(screen.getByRole('button', { name: /^Copy for AI/ }));
   expect(copied.text).toContain('Source URL: https://electronic.vegas/calendar?date=2026-09-28&token=[credential]');
   expect(copied.text).not.toContain('PRIVATE-ONE');
   expect(copied.text).toContain('Friday night concert');
@@ -117,7 +117,7 @@ it('copies each extraction source with ordinary query identity while masking cre
       source={{ url: 'https://electronic.vegas/calendar?date=2026-09-29&token=PRIVATE-TWO' }}
     />,
   );
-  await userEvent.click(screen.getByRole('button', { name: 'Copy for AI' }));
+  await userEvent.click(screen.getByRole('button', { name: /^Copy for AI/ }));
   expect(copied.text).toContain('Source URL: https://electronic.vegas/calendar?date=2026-09-29&token=[credential]');
   expect(copied.text).not.toContain('PRIVATE-TWO');
   expect(copied.text).toContain('Saturday night concert');
@@ -131,7 +131,7 @@ it('keeps hash-routed page identity and masks credentials inside the fragment', 
       source={{ url: 'https://electronic.vegas/app#/calendar?date=2026-09-28&token=PRIVATE-HASH' }}
     />,
   );
-  await userEvent.click(screen.getByRole('button', { name: 'Copy for AI' }));
+  await userEvent.click(screen.getByRole('button', { name: /^Copy for AI/ }));
   expect(copied.text).toContain('Source URL: https://electronic.vegas/app#/calendar?date=2026-09-28&token=[credential]');
   expect(copied.text).not.toContain('PRIVATE-HASH');
 
@@ -141,7 +141,7 @@ it('keeps hash-routed page identity and masks credentials inside the fragment', 
       source={{ url: 'https://electronic.vegas/app#/calendar?date=2026-09-29&token=PRIVATE-HASH-NEXT' }}
     />,
   );
-  await userEvent.click(screen.getByRole('button', { name: 'Copy for AI' }));
+  await userEvent.click(screen.getByRole('button', { name: /^Copy for AI/ }));
   expect(copied.text).toContain('Source URL: https://electronic.vegas/app#/calendar?date=2026-09-29&token=[credential]');
   expect(copied.text).toContain('Tuesday event');
   expect(copied.text).not.toContain('PRIVATE-HASH-NEXT');
@@ -150,7 +150,7 @@ it('keeps hash-routed page identity and masks credentials inside the fragment', 
 it('states when an extraction has no source URL', async () => {
   render(<ResultPreview rows={[{ title: 'Friday night concert' }]} />);
   expect(screen.getByText(/source URL unavailable/i)).toBeTruthy();
-  await userEvent.click(screen.getByRole('button', { name: 'Copy for AI' }));
+  await userEvent.click(screen.getByRole('button', { name: /^Copy for AI/ }));
   expect(copied.text).not.toContain('Source URL:');
 });
 
@@ -177,7 +177,7 @@ it('copies the actual saved replay page and its rows through the real preview an
 
   await userEvent.click(screen.getByTitle('Run pattern'));
   await screen.findByText('Monday event');
-  await userEvent.click(screen.getByRole('button', { name: 'Copy for AI' }));
+  await userEvent.click(screen.getByRole('button', { name: /^Copy for AI/ }));
   await waitFor(() => expect(copied.text).toContain('Monday event'));
   expect(copied.text).toContain('Source URL: https://electronic.vegas/calendar?date=2026-09-28&token=[credential]');
   expect(copied.text).toContain('Source kind: web page');
@@ -188,7 +188,7 @@ it('copies the actual saved replay page and its rows through the real preview an
   await screen.findByText('Concert calendar');
   await userEvent.click(screen.getByTitle('Run pattern'));
   await screen.findByText('Tuesday event');
-  await userEvent.click(screen.getByRole('button', { name: 'Copy for AI' }));
+  await userEvent.click(screen.getByRole('button', { name: /^Copy for AI/ }));
   await waitFor(() => expect(copied.text).toContain('Tuesday event'));
   expect(copied.text).toContain('Source URL: https://electronic.vegas/calendar?date=2026-09-29&token=[credential]');
   expect(copied.text).not.toContain('Monday event');
@@ -202,7 +202,7 @@ it('copies the selected network response URL rather than the edited replay filte
     target: { value: 'https://api.electronic.vegas/other?day=2026-10-01' },
   });
 
-  await userEvent.click(screen.getByRole('button', { name: 'Copy for AI' }));
+  await userEvent.click(screen.getByRole('button', { name: /^Copy for AI/ }));
   await waitFor(() => expect(copied.text).toContain('Monday event'));
   expect(copied.text).toContain('Source URL: https://api.electronic.vegas/events?day=2026-09-28&proof=[credential]');
   expect(copied.text).toContain('Source kind: network response');

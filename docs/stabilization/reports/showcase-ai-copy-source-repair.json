@@ -31,9 +31,9 @@
   ],
   "verification": {
     "git_diff_check": "passed",
-    "unit_tests": "NOT RUN: runtime permit and source peer review pending",
+    "unit_tests": "Root-owned first focused run reached 27 passing tests; five new copy tests stopped at an exact accessible-name query before their clipboard assertions. ResultPreview's real menu button name includes its description. This source-only correction matches the Copy for AI label prefix; no rerun has been performed in this lane.",
     "typecheck": "NOT RUN: runtime permit and source peer review pending",
     "native_ui": "NOT RUN after this source change; original reproduction was on the installed extension"
   },
-  "next": "Obtain fresh source review of this round, then run the focused tests, typecheck, and installed-extension Copy for AI check under the root lane's resource permit. Preserve the existing Gutenberg pattern 60b0c5bb-b4d4-4642-857a-2924b56445d5 for that native check."
+  "next": "Root lane reruns the focused tests so the clipboard assertions execute, then typechecks and checks installed-extension Copy for AI. Preserve the existing Gutenberg pattern 60b0c5bb-b4d4-4642-857a-2924b56445d5 for that native check."
 }
