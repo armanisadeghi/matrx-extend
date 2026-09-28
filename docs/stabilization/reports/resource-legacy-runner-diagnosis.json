@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "task": "resource legacy runner refusal source audit",
+  "scope": "Source and retained reports only; no guard, test, build, or process snapshot launched in this lane.",
+  "terminal_truth": {
+    "confirmed": "The current legacy-runner predicate can classify a non-runner process as a live Node guard because it searches the entire ps command string for two independent substrings.",
+    "not_proven": "The historical RESOURCE_LEGACY_RUNNER_BUSY refusals cannot be attributed to that false-positive class or to a real concurrent runner: their journals contain no matched PID, process start time, executable, or command snapshot.",
+    "current_attribution": "The coordinator's separate current ps observation found only its own search shell line and no actual guard. That later snapshot cannot identify a process present at an earlier refusal."
+  },
+  "source_evidence": [
+    {
+      "path": "scripts/stabilization-resource.mjs",
+      "lines": "433-449",
+      "fact": "assertNoLegacyWork reads ps -axo pid=,command=, excludes only its own PID, then independently tests /(?:^|\\/)node(?:\\s|$)/ and /(?:^|\\/)stabilization-resource\\.mjs(?:\\s|$)/ anywhere in the command field. It does not examine executable identity, argument position, process state, parentage, or start time."
+    },
+    {
+      "path": "scripts/stabilization-resource.mjs",
+      "lines": "543-587",
+      "fact": "The new guard reserves the canonical heavy lease before this legacy scan, so the refusal happens before admission and before launching the requested child. A still-running previous guard is legitimately excluded by the canonical lease at acquisition; the legacy scan is intended for older runners with a different TMPDIR."
+    },
+    {
+      "path": "scripts/stabilization-resource.mjs",
+      "lines": "741-768",
+      "fact": "The catch writes the bare error code and error message; RESOURCE_LEGACY_RUNNER_BUSY carries no matching process identity. The journal therefore preserves the refusal decision but cannot adjudicate its cause later."
+    }
+  ],
+  "static_causal_reproduction": {
+    "input_ps_record": "4242 /bin/zsh -lc '/opt/homebrew/bin/node scripts/stabilization-resource.mjs run --run-id previous -- pnpm compile'",
+    "expected_current_predicate": "true: /node followed by a space and /stabilization-resource.mjs followed by a space both occur inside the shell's -lc argument; 4242 differs from the current guard PID.",
+    "actual_process_class": "The ps record represents a zsh process. The embedded Node invocation is shell command text, not evidence that PID 4242 is executing the guard. The shell can remain briefly alive after its child has exited, so a following launch can be refused even when the guard has terminated.",
+    "second_input_ps_record": "4243 /opt/homebrew/bin/node -e 'const note = \"scripts/stabilization-resource.mjs run\"'",
+    "second_expected_current_predicate": "true: an unrelated Node process mentioning the guard script in a string also satisfies both independent regexes.",
+    "limit": "These are source-level counterexamples to the predicate, not captured process records from any historical refusal. No executable reproduction was run in this source-only lane."
+  },
+  "retained_refusals": [
+    {
+      "run_id": "d53d54-dev-build-20260928-01",
+      "at": "2026-09-28T13:02:42.222Z",
+      "journal": "docs/stabilization/resource-journals/d53d54-dev-build-20260928-01.jsonl"
+    },
+    {
+      "run_id": "d55-ai-copy-runtime-compile-20260928a",
+      "at": "2026-09-28T13:53:23.964Z",
+      "journal": "docs/stabilization/resource-journals/d55-ai-copy-runtime-compile-20260928a.jsonl"
+    },
+    {
+      "run_id": "check-f36c822b-53a3-4a90-8614-ab8f874f7914",
+      "at": "2026-09-28T13:53:31.431Z",
+      "journal": "docs/stabilization/resource-journals/check-f36c822b-53a3-4a90-8614-ab8f874f7914.jsonl"
+    }
+  ],
+  "minimal_repair_recommendation": {
+    "classification": "Classify an actual process executable as Node and the actual script operand as stabilization-resource.mjs, rather than searching the whole ps command string. Keep the canonical lease and old lease checks, and fail closed on ambiguous process records. For the documented direct launch form, an anchored executable-plus-first-script-operand check is a small improvement; an argv-aware macOS process query is the stronger boundary if Node options and paths containing spaces must be supported.",
+    "evidence": "On refusal, journal a bounded array of matched PID, PPID, process start time, executable basename, match reason, and overflow count. Do not persist whole command lines or ps eww output because arguments and environment can contain credentials. Recheck PID plus start time immediately before refusal to avoid attributing a reused PID; if identity cannot be confirmed, retain a fail-closed ambiguity code with those safe fields.",
+    "verification": "At a pure classifier seam, use the two static counterexamples as red cases and a real node script invocation as a positive case. Then exercise the admission path with a genuinely concurrent old-TMPDIR guard and show that it still refuses; show that a shell containing a completed invocation no longer refuses. This lane did not run those checks."
+  }
+}

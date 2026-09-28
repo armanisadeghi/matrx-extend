@@ -1,0 +1,38 @@
+{
+  "id": "EXT-D-0056",
+  "feature_id": "EXT-F-0002",
+  "case_ids": [
+    "EXT-F-0002-T01"
+  ],
+  "surface": "Resource guard legacy-runner detection",
+  "auth_mode": "all",
+  "reproduction": [
+    "Inspect assertNoLegacyWork process predicate in scripts/stabilization-resource.mjs.",
+    "Supply a ps row whose executable is zsh and whose -lc argument contains /opt/homebrew/bin/node scripts/stabilization-resource.mjs run ... .",
+    "Predicate matches node and script anywhere in fullcommand, classifying shelltext as a reallegacyrunner."
+  ],
+  "expected": "Only an actual relevant runner process blocks launch; ambiguous identity remains fail-closed with bounded diagnostic evidence.",
+  "actual": "Independentregex matches against fullcommand conflate executable/scriptoperands with shellstrings or node-e text. Refusalrecords omitdetectedPID so historicalrefusals cannotbeattributed.",
+  "severity": "S2: falsebusy detection blocks necessary tests/builds and loses diagnosticcause.",
+  "priority": "P1: restore trustworthy guarded admission withoutweakeningcap.",
+  "state": "triaged",
+  "evidence": [
+    "docs/stabilization/reports/resource-legacy-runner-diagnosis.json",
+    "docs/stabilization/reports/showcase-ai-copy-runtime-retry.json"
+  ],
+  "verification_status": "Source-proven predicate falsepositive; no controlled runtime reproductionyet. Historicalrefusalsunattributed, notclaimedfalsepositives.",
+  "transition_history": [
+    {
+      "at": "2026-09-28T13:58:11.686359+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Repeatedbusyrefusals afterjobterminal ledsourceaudit."
+    },
+    {
+      "at": "2026-09-28T13:58:11.686359+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source matcher demonstrably ignores actualexecutable/scriptoperand; rootinspected samecode. Repair requires properclassification and boundedPIDevidence, thresholds/leases unchanged."
+    }
+  ]
+}

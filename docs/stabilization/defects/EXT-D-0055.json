@@ -17,7 +17,9 @@
   "priority": "P1: sharedresultprovenance correctness.",
   "state": "in-fix",
   "evidence": [
-    "docs/stabilization/reports/data-picker-long-native.json"
+    "docs/stabilization/reports/data-picker-long-native.json",
+    "docs/stabilization/reports/showcase-ai-copy-source-peer.json",
+    "docs/stabilization/reports/showcase-ai-copy-runtime-retry.json"
   ],
   "transition_history": [
     {
@@ -38,5 +40,6 @@
       "to": "in-fix",
       "reason": "Sol ai_copy_source_repair assigned diagnosis andsource-bound repair."
     }
-  ]
+  ],
+  "verification_status": "Sourcecorrections8ae31220/43ebf322 plusselector7719d739;32guardedtests pass. Compilepreflightrefusedlegacyrunnerbusy, no newbuild/native. D56guardmatcherdefectsourceconfirmed, pastrefusalcauseunknown."
 }
