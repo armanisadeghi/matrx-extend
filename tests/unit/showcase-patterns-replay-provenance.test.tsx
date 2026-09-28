@@ -70,6 +70,7 @@ const pattern = {
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
+  mocks.bumpRun.mockReset();
   mocks.page.id = 37;
   mocks.page.url = 'https://electronic.vegas/search/';
 });
@@ -110,6 +111,18 @@ describe('Showcase saved pattern replay provenance', () => {
     expect(await screen.findByText(/Friday night concert/)).toBeTruthy();
     expect(await screen.findByText(/saved run history could not be updated: Database unavailable/i)).toBeTruthy();
     expect(screen.getByText(/last run 9 minutes ago/i)).toBeTruthy();
+  });
+
+  it('keeps the extraction failure visible when recording that failure also fails', async () => {
+    mocks.page.url = 'https://electronic.vegas/vegas-edm-event-calendar/';
+    mocks.fetchPatterns.mockResolvedValue([pattern]);
+    mocks.runSaved.mockRejectedValue(new Error('Selector could not execute'));
+    mocks.bumpRun.mockResolvedValue('Database unavailable');
+    render(<PatternsTab />);
+    await screen.findByText('Calendar events');
+
+    await userEvent.click(screen.getByTitle('Run pattern'));
+    expect(await screen.findByText(/Selector could not execute.*saved run history could not be updated: Database unavailable/i)).toBeTruthy();
   });
 
   it('guides on route mismatch without blocking Run and calls zero rows no match', async () => {

@@ -48,6 +48,7 @@ afterEach(() => {
   mocks.page.id = 37;
   vi.useRealTimers();
   vi.clearAllMocks();
+  mocks.bumpRun.mockReset();
   useAuthStore.setState({ user: null, status: 'unknown', error: null, isAdmin: false });
   useAutoExtractStore.setState({ records: new Map() });
 });
@@ -91,6 +92,25 @@ it('still promotes a matched nonempty auto-extraction to ok', async () => {
   });
 
   expect(mocks.bumpRun).toHaveBeenCalledWith(pattern.id, 'ok', 1);
+});
+
+it('keeps auto-extracted rows and records a visible history warning when the metadata write fails', async () => {
+  vi.useFakeTimers();
+  mocks.fetchPatterns.mockResolvedValue([pattern]);
+  mocks.runPattern.mockResolvedValue([{ title: 'Friday night concert' }]);
+  mocks.bumpRun.mockResolvedValue('Database unavailable');
+  useAuthStore.setState({ user: { id: 'user-1', email: null }, status: 'signed-in' });
+  renderHook(() => useAutoExtract());
+  await act(async () => {
+    await vi.advanceTimersByTimeAsync(1_000);
+  });
+
+  const record = useAutoExtractStore.getState().records.get(`37|${pattern.id}|https://electronic.vegas/calendar/`);
+  expect(record).toMatchObject({
+    status: 'ok',
+    rows: [{ title: 'Friday night concert' }],
+    note: expect.stringMatching(/saved run history could not be updated: Database unavailable/i),
+  });
 });
 
 it('extracts independently when two tabs share the same URL', async () => {

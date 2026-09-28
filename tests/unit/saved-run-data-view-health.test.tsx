@@ -84,6 +84,7 @@ afterEach(() => {
   mocks.page = { id: 37, url: 'https://electronic.vegas/calendar/', title: 'Vegas events' };
   mocks.copied = '';
   vi.clearAllMocks();
+  mocks.bumpRun.mockReset();
   useAutoExtractStore.setState({ records: new Map() });
 });
 
@@ -120,6 +121,40 @@ it('keeps extracted rows and reports saved history failure in DataView', async (
 
   expect(await screen.findByText(/Friday night concert/)).toBeTruthy();
   expect(await screen.findByText(/saved run history could not be updated: Database unavailable/i)).toBeTruthy();
+});
+
+it('shows the extraction failure and the separate history failure together', async () => {
+  mocks.fetchPatterns.mockResolvedValue([pattern]);
+  mocks.runSaved.mockRejectedValue(new Error('Selector could not execute'));
+  mocks.bumpRun.mockResolvedValue('Database unavailable');
+  render(<DataView />);
+  await screen.findAllByText('Calendar events');
+  await userEvent.click(screen.getByRole('button', { name: 'Extract' }));
+
+  expect(await screen.findByText(/Selector could not execute.*saved run history could not be updated: Database unavailable/i)).toBeTruthy();
+});
+
+it('shows the auto-extract history warning alongside its extracted rows', async () => {
+  mocks.fetchPatterns.mockResolvedValue([pattern]);
+  render(<DataView />);
+  await screen.findAllByText('Calendar events');
+  await act(async () => {
+    useAutoExtractStore.getState().setRecord(
+      `37|${pattern.id}|https://electronic.vegas/calendar/`,
+      {
+        pattern,
+        url: 'https://electronic.vegas/calendar/',
+        tabId: 37,
+        rows: [{ title: 'Friday night concert' }],
+        status: 'ok',
+        note: 'Saved run history could not be updated: Database unavailable',
+        lastRunAt: Date.now(),
+      },
+    );
+  });
+
+  expect(await screen.findByText(/saved run history could not be updated: Database unavailable/i)).toBeTruthy();
+  expect(screen.getByText(/Friday night concert/)).toBeTruthy();
 });
 
 // The host contract is persistence and current-page presentation; extraction is the external runner.

@@ -1426,7 +1426,9 @@ Every entry follows this shape:
   health mark. Old-page runs and pattern lists never replace the new page.
   After a matched run, the saved card's last-run time and row count update
   before Run becomes available again. If run-history saving fails, extracted
-  rows remain visible with a warning that the saved history did not update.
+  rows remain visible with a warning that the saved history did not update,
+  including when those rows came from automatic extraction. If both extraction
+  and run-history saving fail, both reasons remain visible.
 
 ### Showcase — preview configuration survives later edits
 - **What it does:** Saving a preview keeps the exact settings that produced

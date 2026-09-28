@@ -2,7 +2,7 @@
   "schema": 1,
   "defect": "EXT-D-0050",
   "feature": "EXT-F-1012",
-  "status": "source_repaired_pending_peer_and_native_verification",
+  "status": "round_two_source_repaired_pending_resource_permit_peer_and_native_verification",
   "observation": "A native saved Network replay returned 10 rows, while its card still showed last run 9 minutes ago.",
   "source_cause": "PatternsTab started bumpPatternRun without awaiting it, then immediately fetched the card. The fetch could finish before the write. bumpPatternRun also discarded Supabase write errors.",
   "sibling_census": [
@@ -11,12 +11,15 @@
     "useAutoExtract success and failure paths",
     "data_patterns tool success and failure paths"
   ],
-  "repair": "The shared health write reports PostgREST errors and zero updated rows. PatternsTab refreshes only after the write settles. All callers preserve extracted rows and expose a distinct saved-history warning when the write fails.",
+  "repair": "The shared health write reports PostgREST errors and zero updated rows. PatternsTab refreshes only after the write settles. All callers preserve extracted rows and expose a distinct saved-history warning when the write fails. Round two renders auto-extract history warnings in DataView, preserves both extraction and history errors, and resets test mock implementations between cases.",
   "verification": {
     "focused_tests": "showcase-d50-timestamp-unit-001: admitted, exit 0, 3 files and 15 tests passed before two additional sibling assertions were added; those assertions remain unrun per root instruction",
     "compile": "showcase-d50-timestamp-compile-001: admitted, exit 0 before the additional test assertions",
     "catalog": "showcase-d50-timestamp-catalog-001: admitted, exit 0",
     "tool_docs": "showcase-d50-timestamp-docstools-001: admitted, exit 0",
+    "round_one_peer": "showcase-d50-peer-focused-20260928: admitted, exit 1; 4 files, 21 tests, 20 passed, 1 failed due to leaked mock implementation; independent report showcase-run-timestamp-peer.json",
+    "round_two_guard": "showcase-d50-round2-focused-001: preflight refused before Vitest launched, exit 2, RESOURCE_CPU_HIGH_LOAD_BUSY; no retry attempted",
+    "round_two_tests_and_compile": "Not run after resource preflight refusal; new assertions await the next healthy permit",
     "red_before_fix": "Not executed; shared checkout was not mutated to restore the old implementation",
     "native_after_fix": "Pending independent peer and native retest"
   }

@@ -64,6 +64,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.clearAllMocks();
+  mocks.bumpRun.mockReset();
   mocks.tab.url = 'https://electronic.vegas/calendar/';
 });
 

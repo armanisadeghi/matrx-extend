@@ -164,11 +164,12 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
         // reload. Guidance only; don't mark the pattern broken.
         setRunError(err.message);
       } else {
-        setRunError(`"${p.name}" failed: ${err instanceof Error ? err.message : String(err)}`);
+        const failureMessage = `"${p.name}" failed: ${err instanceof Error ? err.message : String(err)}`;
+        setRunError(failureMessage);
         if (onSavedRoute) {
           const updateError = await bumpPatternRun(p.id, 'broken', 0);
           if (isCurrent() && updateError) {
-            setRunError(`"${p.name}" failed, and its saved run history could not be updated: ${updateError}`);
+            setRunError(`${failureMessage} Saved run history could not be updated: ${updateError}`);
           }
         }
       }

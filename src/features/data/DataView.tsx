@@ -246,13 +246,12 @@ export function DataView() {
       if (err instanceof NetworkNoMatchError) {
         setRunError(err.message);
       } else {
-        setRunError(
-          `"${pattern.name}" failed: ${err instanceof Error ? err.message : String(err)}`,
-        );
+        const failureMessage = `"${pattern.name}" failed: ${err instanceof Error ? err.message : String(err)}`;
+        setRunError(failureMessage);
         if (urlMatchesPattern(source.url ?? '', pattern)) {
           const updateError = await bumpPatternRun(pattern.id, 'broken', 0);
           if (isCurrent() && updateError) {
-            setRunError(`"${pattern.name}" failed, and its saved run history could not be updated: ${updateError}`);
+            setRunError(`${failureMessage} Saved run history could not be updated: ${updateError}`);
           }
         }
       }
@@ -360,9 +359,11 @@ export function DataView() {
                     </span>
                   )}
                 </div>
-                <div className="text-emerald-700/70 dark:text-emerald-300/70">
+                <div className={autoForMatched?.status === 'ok' && autoForMatched.note
+                  ? 'text-amber-700 dark:text-amber-400'
+                  : 'text-emerald-700/70 dark:text-emerald-300/70'}>
                   {autoForMatched?.status === 'ok'
-                    ? 'Auto-extracted on page load — no click needed.'
+                    ? (autoForMatched.note ?? 'Auto-extracted on page load — no click needed.')
                     : autoForMatched?.status === 'no_match'
                       ? (autoForMatched.note ?? 'No matching data was found on this page.')
                       : autoForMatched?.status === 'error'
