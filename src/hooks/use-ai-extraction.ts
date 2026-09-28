@@ -2,6 +2,7 @@ import { useActiveTab } from '@/hooks/use-active-tab';
 import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
 import { type AgentStartRequest, agentExecutePath, mandateExecutePath } from '@/lib/api/routes/ai';
 import { aiExtractCapturePage } from '@/lib/data-pattern/modes/ai-extract';
+import { pageCaptureOfferedValues } from '@/lib/data-pattern/page-capture-offer';
 import { parseAgentResponse } from '@/lib/data-pattern/run-interactive';
 import type { ExtractedRow } from '@/lib/data-pattern/types';
 import { newId } from '@/lib/id';
@@ -175,6 +176,15 @@ export function useAiExtraction() {
           page_text: captured.page_text,
           page_metadata: captured.page_metadata,
           output_schema: input.outputSchema,
+          // extend.page_capture offered values — Mandate door only (see
+          // page-capture-offer.ts): a picked agent may already use these names.
+          ...(input.mandateKey
+            ? pageCaptureOfferedValues({
+                pageMetadata: captured.page_metadata,
+                extractionDescription: input.description,
+                tabId: tab.id,
+              })
+            : {}),
         },
         context: { page_title: captured.title },
         stream: true,
