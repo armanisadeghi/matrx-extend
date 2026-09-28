@@ -2,23 +2,28 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { JsonTree } from '@/components/ui/json-tree';
+import { formatJsonKeyPath } from '@/lib/data-pattern/json-key-path';
 import { rowsFromBody } from '@/lib/data-pattern/run-interactive';
-import { runMode } from '@/lib/data-pattern/run-pattern';
-import { appendJsonKeyPath, parseJsonKeyPath } from '@/lib/data-pattern/json-key-path';
+import { runMode, runPattern } from '@/lib/data-pattern/run-pattern';
 
+// A publisher extracts articles from API responses and embedded framework state.
 const payload = {
   'feeds.news': [{ title: 'Literal edition' }],
   feeds: { news: [{ title: 'Nested edition' }] },
+  '["literal"]': [{ title: 'Bracket-key edition' }],
+  literal: [{ title: 'Other edition' }],
+  groups: [{ 'a.b': [{ title: 'Indexed edition' }] }],
+  '': [{ title: 'Empty-key edition' }],
 };
 
-async function pickTreePath(label: string): Promise<string> {
-  let selected = '';
-  render(<JsonTree data={payload} defaultDepth={3} onSelectPath={(path) => { selected = path; }} />);
-  const labelNode = screen.getByText(label);
-  const button = labelNode.closest('button');
+async function pickTreePath(label: string): Promise<string[]> {
+  let selected: string[] | undefined;
+  render(<JsonTree data={payload} defaultDepth={4} onSelectPath={(path) => { selected = path; }} />);
+  const button = screen.getByText(label).closest('button');
   if (!button) throw new Error(`Missing selectable JSON node ${label}`);
   await userEvent.setup().click(button);
   cleanup();
+  if (!selected) throw new Error(`JSON node ${label} did not select a path`);
   return selected;
 }
 
@@ -29,20 +34,24 @@ afterEach(() => {
 });
 
 describe('Showcase JSON key paths', () => {
-  it('keeps a literal dotted key distinct from nested keys through JsonTree and Network extraction', async () => {
-    const literal = await pickTreePath('["feeds.news"]');
-    const nested = await pickTreePath('feeds.news');
-    expect(literal).toBe('["feeds.news"]');
-    expect(nested).toBe('feeds.news');
-
-    // A saved recipe is JSON data; reopening must retain the same path string.
-    const reopenedLiteral = JSON.parse(JSON.stringify({ key_path: literal })).key_path as string;
-    const reopenedNested = JSON.parse(JSON.stringify({ key_path: nested })).key_path as string;
-    expect(rowsFromBody(JSON.stringify(payload), reopenedLiteral)).toEqual([{ title: 'Literal edition' }]);
-    expect(rowsFromBody(JSON.stringify(payload), reopenedNested)).toEqual([{ title: 'Nested edition' }]);
+  it('keeps exact segments distinct through tree selection, save/reopen, and Network extraction', async () => {
+    const selections = [
+      { label: '["feeds.news"]', path: ['feeds.news'], title: 'Literal edition' },
+      { label: 'feeds.news', path: ['feeds', 'news'], title: 'Nested edition' },
+      { label: '["[\\"literal\\"]"]', path: ['["literal"]'], title: 'Bracket-key edition' },
+      { label: 'groups.0["a.b"]', path: ['groups', '0', 'a.b'], title: 'Indexed edition' },
+      { label: '[""]', path: [''], title: 'Empty-key edition' },
+    ];
+    for (const { label, path, title } of selections) {
+      const selected = await pickTreePath(label);
+      expect(selected).toEqual(path);
+      expect(formatJsonKeyPath(selected)).toBe(label);
+      const reopened = JSON.parse(JSON.stringify({ key_path: selected })).key_path as string[];
+      expect(rowsFromBody(JSON.stringify(payload), reopened)).toEqual([{ title }]);
+    }
   });
 
-  it('keeps a literal dotted key distinct from nested keys through JsonTree and Framework extraction', async () => {
+  it('uses the saved exact path in Framework preview and saved-pattern replay', async () => {
     const literal = await pickTreePath('["feeds.news"]');
     const nested = await pickTreePath('feeds.news');
     const script = document.createElement('script');
@@ -58,21 +67,17 @@ describe('Showcase JSON key paths', () => {
       },
     });
 
-    await expect(runMode('next_data', 37, JSON.parse(JSON.stringify({ source: '__NEXT_DATA__', key_path: literal })))).resolves.toEqual([{ title: 'Literal edition' }]);
-    await expect(runMode('next_data', 37, JSON.parse(JSON.stringify({ source: '__NEXT_DATA__', key_path: nested })))).resolves.toEqual([{ title: 'Nested edition' }]);
+    const config = JSON.parse(JSON.stringify({ source: '__NEXT_DATA__', key_path: literal }));
+    await expect(runMode('next_data', 37, config)).resolves.toEqual([{ title: 'Literal edition' }]);
+    await expect(runMode('next_data', 37, { source: '__NEXT_DATA__', key_path: nested })).resolves.toEqual([{ title: 'Nested edition' }]);
+    await expect(runPattern({ kind: 'next_data', config } as Parameters<typeof runPattern>[0], 37)).resolves.toEqual([{ title: 'Literal edition' }]);
   });
 
-  it('preserves ordinary dotted paths and quotes keys containing punctuation', () => {
-    expect(parseJsonKeyPath('feeds.news.0')).toEqual(['feeds', 'news', '0']);
-    expect(appendJsonKeyPath('', 'feeds.news')).toBe('["feeds.news"]');
-    expect(appendJsonKeyPath('feeds', 'news.today')).toBe('feeds["news.today"]');
-    expect(parseJsonKeyPath('feeds["news.today"]')).toEqual(['feeds', 'news.today']);
-  });
-
-  it('documents the historical bracket collision instead of treating it as a safe migration', () => {
-    // An old unescaped key literally named '["feeds.news"]' has this same
-    // stored string. Such recipes need an explicit format marker to migrate
-    // without ambiguity; this codec only preserves ordinary dotted paths.
-    expect(parseJsonKeyPath('["feeds.news"]')).toEqual(['feeds.news']);
+  it('preserves the meaning of old dotted strings and bracket-looking literal keys', () => {
+    const body = JSON.stringify(payload);
+    expect(rowsFromBody(body, 'feeds.news')).toEqual([{ title: 'Nested edition' }]);
+    expect(rowsFromBody(body, '["literal"]')).toEqual([{ title: 'Bracket-key edition' }]);
+    expect(rowsFromBody(body, ['literal'])).toEqual([{ title: 'Other edition' }]);
+    expect(rowsFromBody(body, '')).toEqual([payload]);
   });
 });

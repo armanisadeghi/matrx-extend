@@ -1,0 +1,28 @@
+{
+  "defect_id": "EXT-D-0046",
+  "status": "SOURCE_ONLY_CANDIDATE_READY_FOR_INTEGRATION",
+  "ownership": "D46 source review only; root owns applying, red/green tests, browser verification, integration, and push",
+  "root_cause": "JsonTree concatenates object keys into dotted text; Network rowsFromBody and Framework next_data split that text on dots. A literal key containing a dot becomes indistinguishable from two nested keys.",
+  "persisted_contract_found": {
+    "current": "Saved pattern config stores key_path as a JSON string. The Framework and Network schemas accept strings, both live runners consume strings, and existing recipes use dotted strings. SaveAsPattern passes config to savePattern without rewriting the key path.",
+    "compatibility_constraint": "A valid old key_path such as [\"literal\"] can name an actual literal key. Interpreting bracket syntax inside every old string would redirect it to the different key literal. A versioned string without an independent format marker still collides with possible existing string values."
+  },
+  "candidate": {
+    "patch": "docs/stabilization/pending/EXT-D-0046/product.patch",
+    "test": "docs/stabilization/pending/EXT-D-0046/showcase-json-key-path.test.pending",
+    "representation": "key_path is string | string[]. Existing strings retain the exact dotted split behavior. New JsonTree selections are arrays of literal object-key segments, serialized directly in the same JSON config field. The array type is the unambiguous structural discriminator; no parser or duplicate source of truth is introduced.",
+    "scope": "JsonTree emits segments; Network preview and saved replay traverse them; Framework preview and saved replay traverse them inside the injected runner; the Zod mode schemas accept both persisted shapes. Formatting is only for display and is never parsed for extraction.",
+    "reason_against_versioned_string": "Any reserved string prefix can already be a saved dotted path or literal object key, so the prefix alone cannot preserve all existing valid recipes. A separate version marker would be a second persisted field that must stay synchronized. JSON array versus string gives the discriminator in the path value itself."
+  },
+  "source_evidence": {
+    "census": "JsonTree has two production callers: NetworkTab and FrameworkTab. The only extraction consumers of key_path are rowsFromBody, runNetworkCapturePattern, and next_data.runInPage; the latter runs through both runMode and runPattern. Existing recipe literals remain strings.",
+    "static_check": "git apply --check docs/stabilization/pending/EXT-D-0046/product.patch passed against the shared checkout",
+    "tests": "Not run: this lane has no runtime permit; pending guard must be moved and proven red/green by root after the overlapping build snapshot.",
+    "browser": "Not run: localhost UI tests are forbidden in this lane."
+  },
+  "integration_notes": [
+    "Apply the pending patch after D47 releases source ownership, then move the pending test into tests/unit as TSX.",
+    "Prove red against pre-fix source and green after apply; typecheck and check saved pattern schema handling.",
+    "Verify Network and Framework select/save/reopen/replay on a real public page with literal dotted and nested keys."
+  ]
+}
