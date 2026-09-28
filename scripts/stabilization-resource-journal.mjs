@@ -28,6 +28,7 @@ const JOURNAL_FIELDS = new Set([
   'reason',
   'signal',
   'resourceInvalid',
+  'admitted',
   'exitCode',
   'decision',
   'instruction',

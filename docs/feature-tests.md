@@ -1849,6 +1849,11 @@ Every entry follows this shape:
   - Start picking Data fields in document A, navigate to document B at the same
     URL, then let A's injection fail after starting B's picker. B still accepts
     its own field result; a failure of B itself shows a retry message.
+  - In Data, choose **Save pattern**, then replace document A with B at the same
+    URL while organization selection is pending. A's fields are not saved and
+    Data explains that the page changed. If A's write was already in flight,
+    B can start its own save; A's late result must not clear B's fields or
+    finish B's Save button.
   - chrome:// / Web Store pages: overlay injection fails gracefully (button
     no-ops, no crash).
   - Side panel closed while capturing: the paint stays but the row isn't saved
