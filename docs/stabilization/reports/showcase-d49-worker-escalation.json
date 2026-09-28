@@ -1,0 +1,252 @@
+{
+  "schema_version": 1,
+  "lane": "EXT-D-0049 worker import legality escalation, Astra medium",
+  "status": "ENGINEERING_FIX_READY_PENDING_INDEPENDENT_NATIVE",
+  "prior_native_evidence": "docs/stabilization/reports/showcase-d49-final-acceptance.json",
+  "references": [
+    {
+      "url": "https://developer.chrome.com/docs/extensions/develop/concepts/service-workers/basics",
+      "finding": "Chrome extension service workers do not support dynamic import(). Static imports require module worker type; importScripts is also supported."
+    },
+    {
+      "path": "node_modules/wxt/dist/types.d.mts:666",
+      "finding": "Background type module opts into shared ESM chunks. Omitting type bundles background separately as an IIFE."
+    },
+    {
+      "path": "node_modules/wxt/dist/core/utils/building/group-entrypoints.mjs",
+      "finding": "Only module background joins the ESM group with HTML pages. Default background is individual."
+    },
+    {
+      "path": "node_modules/wxt/dist/core/builders/vite/index.mjs:75",
+      "finding": "Individual background uses Vite library mode IIFE; the actual green emitted bundle must prove no dynamic imports remain."
+    },
+    {
+      "path": "node_modules/.pnpm/vite@8.3.1_@types+node@22.20.4_esbuild@0.28.2_jiti@2.7.0_tsx@4.23.15_yaml@2.9.1/node_modules/vite/dist/node/chunks/node.js:26805",
+      "finding": "Vite catches baseModule rejection using handlePreloadError, which calls window.dispatchEvent before rethrowing original error. In a worker that ReferenceError masks the unsupported dynamic import rejection."
+    }
+  ],
+  "diagnosis": {
+    "confirmed": "The emitted module worker contains unsupported dynamic import expressions. modulePreload:false does not remove them. data_patterns.prepare awaits a dynamic CDP handler import before approval. Both worker bootstrap and sibling handlers can hit the same unsupported boundary.",
+    "limit": "The previous native UI error does not itself expose the original rejection stack. Chrome documentation plus emitted code establish the illegal operation and its masking mechanism; fresh native acceptance is still required. No circular import cause is claimed.",
+    "red_guard": {
+      "run_id": "d49-worker-import-guard-red-20260928",
+      "admitted_utc": "2026-09-28T07:08:48.277Z",
+      "terminal_utc": "2026-09-28T07:08:50.706Z",
+      "exit_code": 1,
+      "observed": "Real unchanged module-worker build failed new AST guard: MV3 service workers do not support dynamic import(): background.js."
+    }
+  },
+  "fix": [
+    "Use the supported WXT standalone background IIFE build, isolating worker dependencies from page ESM chunks.",
+    "Restore default page module preload behavior so lazy page imports retain their CSS handling.",
+    "Reject every emitted dynamic import in the worker reachable graph, including template literals and nonliteral targets; page-only chunks are outside that graph.",
+    "Remove the preexisting blanket unhandledrejection suppression for document/window ReferenceErrors.",
+    "Keep dispatcher injection, sender validation, persisted recipe preparation, per-run approval, cancellation and cleanup untouched."
+  ],
+  "siblings_source_search": [
+    "background/bootstrap.ts",
+    "auth/flow.ts",
+    "supabase/db-failure.ts",
+    "tools/handlers/data-patterns.ts",
+    "tools/handlers/cdp.ts",
+    "tools/handlers/read.ts",
+    "tools/handlers/extract.ts",
+    "tools/handlers/privileged.ts",
+    "tools/handlers/demos.ts",
+    "guidance/storage.ts",
+    "guidance/cloud-sync.ts",
+    "demos/storage.ts",
+    "demos/cloud-sync.ts"
+  ],
+  "census_limit": "Initial independent AST scan saw 21 statically reachable chunks and 20 import expressions, but incorrectly excluded no-substitution template literals from traversal. This is not used as complete census proof. Final standalone background and its source map provide the complete bundled worker census.",
+  "native_verification": "Not performed by this author. Root owns fresh independent native verification after explicit reload of the final artifact.",
+  "open_actions": [
+    "Root to reconcile pending remote dependency lock update; if adopted, install/build and issue a fresh exact-artifact receipt before native proof.",
+    "Fresh independent native explicit reload, worker startup, approval, denial/cancel, allow, automatic fresh-page capture, correct rows/public values, cleanup, and styled lazy Showcase. Keep EXT-D-0049 open until this passes."
+  ],
+  "artifact": {
+    "full_tree_sha256": "43acbb71271961732f39f053fe277fe7f8664839044a834bad34ed9a9f27b7a9",
+    "lock_sha256": "09d68f1bf3045ac99ffa2ec593ffab1a11ddfbe703ebc4b2b99a42af995b1237",
+    "background": {
+      "service_worker": "background.js"
+    },
+    "worker_bytes": 1949719,
+    "dynamic_import_expressions": 0,
+    "static_import_export_declarations": 0,
+    "vite_preload_error_helper": false,
+    "source_modules": 334,
+    "worker_source_dynamic_imports": [
+      {
+        "source": "../../src/lib/auth/flow.ts",
+        "imports": [
+          "'@/lib/supabase/client'",
+          "'@/lib/supabase/client'"
+        ]
+      },
+      {
+        "source": "../../src/lib/supabase/db-failure.ts",
+        "imports": [
+          "'@/lib/org/active-org'"
+        ]
+      },
+      {
+        "source": "../../src/lib/tools/handlers/read.ts",
+        "imports": [
+          "'@/lib/screenshot/full-page'",
+          "'@/lib/screenshot/persist'",
+          "'@/lib/screenshot/persist'"
+        ]
+      },
+      {
+        "source": "../../src/lib/tools/handlers/cdp.ts",
+        "imports": [
+          "'@/lib/screenshot/persist'",
+          "'@/lib/screenshot/persist'"
+        ]
+      },
+      {
+        "source": "../../src/lib/tools/handlers/privileged.ts",
+        "imports": [
+          "'@/lib/desktop/bridge'"
+        ]
+      },
+      {
+        "source": "../../src/lib/data-pattern/run-interactive.ts",
+        "imports": [
+          "'@/lib/stream/offscreen-proxy'",
+          "'@/lib/stream/offscreen-proxy'",
+          "'./document-network-transport'"
+        ]
+      },
+      {
+        "source": "../../src/lib/tools/handlers/data-patterns.ts",
+        "imports": [
+          "'./cdp'"
+        ]
+      },
+      {
+        "source": "../../src/lib/demos/storage.ts",
+        "imports": [
+          "'@/lib/demos/cloud-sync'",
+          "'@/lib/demos/cloud-sync'"
+        ]
+      },
+      {
+        "source": "../../src/lib/demos/cloud-sync.ts",
+        "imports": [
+          "'@/lib/supabase/queries'",
+          "'@/lib/supabase/queries'",
+          "'@/lib/supabase/queries'",
+          "'@/lib/demos/storage'",
+          "'@/lib/demos/storage'",
+          "'@/lib/supabase/queries'"
+        ]
+      },
+      {
+        "source": "../../src/lib/guidance/cloud-sync.ts",
+        "imports": [
+          "'@/lib/supabase/queries'",
+          "'@/lib/supabase/queries'",
+          "'@/lib/supabase/queries'",
+          "'@/lib/guidance/storage'"
+        ]
+      },
+      {
+        "source": "../../src/lib/guidance/storage.ts",
+        "imports": [
+          "'@/lib/guidance/cloud-sync'",
+          "'@/lib/guidance/cloud-sync'"
+        ]
+      },
+      {
+        "source": "../../src/lib/tools/handlers/demos.ts",
+        "imports": [
+          "'@/lib/guidance/storage'"
+        ]
+      },
+      {
+        "source": "../../src/lib/tools/handlers/extract.ts",
+        "imports": [
+          "'@/lib/screenshot/persist'",
+          "'@/lib/screenshot/persist'"
+        ]
+      },
+      {
+        "source": "../../src/lib/background/bootstrap.ts",
+        "imports": [
+          "'@/lib/auth/crypto'"
+        ]
+      }
+    ],
+    "directory": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "version": "0.2.114",
+    "expected_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "final_full_tree_sha256": "43acbb71271961732f39f053fe277fe7f8664839044a834bad34ed9a9f27b7a9",
+    "final_lock_sha256": "09d68f1bf3045ac99ffa2ec593ffab1a11ddfbe703ebc4b2b99a42af995b1237",
+    "runtime_source_sha256": {
+      "src/entrypoints/background.ts": "6b175385607fda6e6191324461bf0e6dfe931470aeeef5f172547151cac7523a",
+      "wxt.config.ts": "6132c34e5423355917dd6c8e92bc4373e0369532ef610146bc9f99b11cfccd23"
+    }
+  },
+  "green_guard": {
+    "run_id": "d49-worker-standalone-build-20260928",
+    "admitted_utc": "2026-09-28T07:10:46.193Z",
+    "terminal_utc": "2026-09-28T07:10:50.237Z",
+    "exit_code": 0
+  },
+  "page_build": {
+    "dynamic_import_expressions": 178,
+    "showcase_lazy_imports": [
+      {
+        "chunk": "sidepanel-QOz6P9RY.js",
+        "target": "`./ShowcaseView-bmq2tfos.js`"
+      }
+    ],
+    "css_assets": [
+      "AnnotationEditor-BITxfmBU.css",
+      "globals-Y9oPaUyT.css"
+    ],
+    "limit": "Asset structure only; styled native Showcase acceptance remains required."
+  },
+  "compile": {
+    "run_id": "d49-worker-compile-20260928",
+    "admitted_utc": "2026-09-28T07:12:40.563Z",
+    "terminal_utc": "2026-09-28T07:12:42.311Z",
+    "exit_code": 0
+  },
+  "regressions": {
+    "run_id": "d49-worker-regressions-20260928",
+    "admitted_utc": "2026-09-28T07:14:16.293Z",
+    "terminal_utc": "2026-09-28T07:14:19.897Z",
+    "exit_code": 0,
+    "files": 6,
+    "tests": 35,
+    "scope": "Background startup and observable rejections; replay dispatch, authorization, Port lifetime, recovery and saved UI.",
+    "warning": "Happy DOM printed an AbortError during teardown; Vitest reported 6 files / 35 tests passed and exited 0. No native outcome inferred."
+  },
+  "catalog": {
+    "run_id": "d49-worker-catalog-source-20260928",
+    "admitted_utc": "2026-09-28T07:17:27.055Z",
+    "terminal_utc": "2026-09-28T07:17:37.607Z",
+    "exit_code": 0,
+    "source": "/Volumes/Samsung2TB/code/aidream",
+    "changes": "Only generated timestamps changed in types/tool-catalog.json and .md; 169 tools. Canonical records-guide artifact unchanged.",
+    "prior_attempt": "d49-worker-catalog-20260928 exited 1 because RECORDS_GUIDE_SOURCE was unset; retried with existing canonical source path."
+  },
+  "mutation_checks": [
+    {
+      "run_id": "d49-worker-noop-mutant-20260928",
+      "terminal_utc": "2026-09-28T07:19:01.025Z",
+      "result": "RED: removing bootstrap caused expected call count 1 versus actual 0. plant.py restored byte-identical source (6b175385607f)."
+    },
+    {
+      "run_id": "d49-worker-hidden-error-mutant-20260928",
+      "terminal_utc": "2026-09-28T07:20:42.530Z",
+      "result": "RED: restoring DOM-global unhandledrejection suppression caused dispatchEvent false versus expected true. plant.py restored byte-identical source (6b175385607f)."
+    }
+  ],
+  "serialized_page_import_census": "AST walk of all /src/ source-map modules found no import expressions inside executeScript call arguments. The final standalone bundle contains zero import expressions anywhere; no serialized page import exemption was needed.",
+  "source_commit": "afb7486692dbdd46d611021c46022a91b22ab227",
+  "resource_terminal": "All build, compile, catalog, test and mutation subprocesses exited. Final process census found no node scripts/stabilization-resource.mjs process. Source restored after both mutations. No native UI actions or foreign process termination by this lane.",
+  "risk": "Standalone background eagerly initializes the bundled worker dependency graph and duplicates some page-shared code. The complete background is 1,949,719 bytes. Source/type/build/unit checks do not prove native startup or approval/capture behavior; that is the next required gate."
+}
