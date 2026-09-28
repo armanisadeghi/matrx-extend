@@ -14870,6 +14870,11 @@
           "id": "EXT-F-1012-C48",
           "label": "Network credential-bearing URL save handling",
           "action": "Prevent credential-bearing request URLs from being persisted in a saved matcher or pattern name; offer a safe remedy without writing credential values."
+        },
+        {
+          "id": "EXT-F-1012-C49",
+          "label": "Network Capture page load",
+          "action": "Explicitly approve initial-document discovery before reload, select intended response, preserve exact saved matching, stop or cancel and release capture resources."
         }
       ],
       "source_anchors": [
@@ -15975,7 +15980,8 @@
             "member"
           ],
           "control_ids": [
-            "EXT-F-1012-C38"
+            "EXT-F-1012-C38",
+            "EXT-F-1012-C49"
           ],
           "preconditions": [
             "Use a genuine session matching the excluded source-registry audience."
@@ -16740,6 +16746,48 @@
                 "docs/stabilization/runs/showcase-installed-d48-network-001.json"
               ],
               "detail": "Using only synthetic credential-shaped query values in the editable matcher, recognized api_key displayed as [credential] with checked disabled recognized-key control. An unfamiliar teamtoken key exposed a user-checkable Treat as credential option and displayed [credential] after selection. Matcher was restored to the observed public noncredential URL before saving; no credential-bearing pattern was persisted or reopened. Partial visible UI control evidence only; safe save/name persistence, rotation and ambiguity remain unverified."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-1012-T59",
+          "title": "Page-load discovery approval, exact save and repeat replay",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1012-C49",
+            "EXT-F-1012-C39",
+            "EXT-F-1012-C36",
+            "EXT-F-1012-C45"
+          ],
+          "defect_ids": [
+            "EXT-D-0049"
+          ],
+          "preconditions": [
+            "Fresh direct development build with source/diff/lock/artifact receipt; explicitly reload unpacked primary Chrome extension and real HN Search OpenAI page. No localhost. Guest/member restricted access is covered by T38."
+          ],
+          "steps": [
+            "Capture page load; deny the truthful discovery approval and verify no debugger or reload starts.",
+            "Capture again, allow, select the settled initial request and compare preview with visible public rows. Save with exact body matching, leave/reopen Patterns, then replay twice and compare rows.",
+            "Exercise Stop/cancel, navigation/document change, tab switch and panel unmount; verify assigned-tab isolation, honest terminal state and capture lease cleanup."
+          ],
+          "expected": [
+            "Approval describes discovery rather than an existing saved recipe; privileged authorization remains per run.",
+            "Initial-document responses reach the existing selection/save flow; semantically different request bodies remain distinct.",
+            "Both saved replays return intended public rows; cleanup leaves no debugger or capture residue."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation",
+            "service-error"
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "evidence": [],
+              "detail": "Implementation in progress; no native acceptance yet."
             }
           }
         }
