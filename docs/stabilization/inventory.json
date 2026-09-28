@@ -16732,9 +16732,10 @@
                 "docs/stabilization/reports/showcase-d49-final-acceptance.json",
                 "docs/stabilization/reports/showcase-d49-standalone-peer.json",
                 "docs/stabilization/reports/showcase-request-identity.json",
-                "docs/stabilization/reports/showcase-discovery-native-acceptance.json"
+                "docs/stabilization/reports/showcase-discovery-native-acceptance.json",
+                "docs/stabilization/reports/showcase-d47-current-evidence-peer.json"
               ],
-              "detail": "Current artifact8b0f8adc now natively captures settled initial HN request and replays selected hits with10 matching rows after save/reopen; prior import/body mismatch failure no longer current on this correctly selected recipe. D47 delayed prior-document/current-document isolation remains unverified, so wholecase unverified. Second-repeat terminal and surrounding controls tracked in T59; do not infer wholefeaturehealth."
+              "detail": "Independent e7a67bcd evidenceaudit: initialrequest capture and actualsaved10row replay are natively proven on8b0f8adc/9ea6687b; controlled documentidentity regression has meaningful downstreammutationproof. Native delayedmatchingoldresponse after navigation (higheroldsequence) remains missing, so T57unverified and D47notclosed. General navigationcancel and repeatedHNsuccess cannot replace this adversarialprovenance case."
             }
           }
         },

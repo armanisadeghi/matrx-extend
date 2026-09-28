@@ -1,7 +1,9 @@
 {
   "id": "EXT-D-0047",
   "feature_id": "EXT-F-1012",
-  "case_ids": ["EXT-F-1012-T57"],
+  "case_ids": [
+    "EXT-F-1012-T57"
+  ],
   "surface": "Showcase Network replay capture timing and document provenance",
   "auth_mode": "admin",
   "reproduction": [
@@ -20,7 +22,7 @@
   "priority": "P1: saved Network replay must identify the intended request and source document.",
   "state": "in-fix",
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
-  "verification_status": "Engineering repair through 30310ae4 passed guarded final full suite (219 files, 1650 tests passed, 4 skipped), compile and lint. Fresh source peer 63076042 accepted rejected-detach cleanup correction. Actual saved-UI failure proved red then green. Remote dependency integration and installed Chrome retest are pending; do not claim installed D47 health.",
+  "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer.",
   "source_report": "docs/stabilization/reports/showcase-network-final-peer.json",
   "transition_history": [
     {
@@ -42,5 +44,6 @@
       "reason": "Reconciled tracking: source checkpoints 3cb72bd0 and 10640dbe implement repair; peer-triggered cleanup correction is active. This timestamp records state reconciliation, not an invented historical implementation time."
     }
   ],
-  "closure_requirement": "Add regression coverage for an initial request racing tap installation and a delayed old-document response arriving after navigation loading; prove current-document attribution and honest retrigger guidance. Then verify saved request replay on a real public website using an installed build."
+  "closure_requirement": "Add regression coverage for an initial request racing tap installation and a delayed old-document response arriving after navigation loading; prove current-document attribution and honest retrigger guidance. Then verify saved request replay on a real public website using an installed build.",
+  "current_evidence_review": "docs/stabilization/reports/showcase-d47-current-evidence-peer.json"
 }
