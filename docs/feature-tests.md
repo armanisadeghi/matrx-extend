@@ -1834,6 +1834,15 @@ Every entry follows this shape:
      outline), click an element. It paints an outline; a row appears.
   4. Reload the page, **Highlight this page** again → existing highlights
      re-paint (text via text-quote, elements via selector).
+     While the first start is loading saved highlights, reload the same URL:
+     the panel must not show **Stop highlighting** for the old document.
+     Repeat while injection is pending; the old document must not regain a
+     represented overlay after the new document appears.
+  4a. Start highlighting in tab A, switch to tab B: the panel says the
+     highlighter is active on another page and **Stop there** ends A's overlay.
+     Start on A again, then start on B: A's toolbar disappears, and B's mode
+     and stop controls affect only B. A delayed capture, clear request, or
+     state message from A must not change B or save a new highlight.
   5. Click the link icon on a row (or **Attach all to chat**), open **Chat** —
      an amber "N highlights attached" chip shows above the composer. Send a
      message; the agent receives a `highlights` context key.
