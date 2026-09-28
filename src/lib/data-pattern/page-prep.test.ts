@@ -4,9 +4,13 @@ import { preparePage } from './page-prep';
 afterEach(() => vi.unstubAllGlobals());
 
 describe('preparePage injection result', () => {
-  it.each([[], [{ result: undefined }], [{ result: null }]])(
+  it.each([
+    { injectionResult: [] },
+    { injectionResult: [{ result: undefined }] },
+    { injectionResult: [{ result: null }] },
+  ])(
     'refuses a missing page report instead of showing false success: %j',
-    async (injectionResult) => {
+    async ({ injectionResult }) => {
       const executeScript = vi.fn().mockResolvedValue(injectionResult);
       vi.stubGlobal('chrome', { scripting: { executeScript } });
 
