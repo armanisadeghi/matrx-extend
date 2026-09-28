@@ -1,0 +1,12 @@
+{
+  "reviewer": "independent source-only peer",
+  "commit": "c17eb2c7aa3092b824e9785a518ad44d7c2a1e4e",
+  "input_report": "docs/stabilization/reports/list-picker-document-correction.json (28/29; D43 fixture remains pending)",
+  "A_install_start_cancel": "PASS — all injections target the captured documentId; install/start are serialized per tab and live identity is rechecked between phases; cancel targets the same old document and session.",
+  "B_stale_events_and_workflow": "PASS by source — UI admission requires tab, session, document, and current page identity; relay replaces payload tab/document fields using Chrome sender identity and drops sender-less events; cancel only matches active session.",
+  "failure_visibility": "PASS for current-page injection/start failures (friendly error displayed). A navigation transition closes the picker as expected; its explanatory message may be cleared by the pageKey effect during that same transition. This is a low-severity optional UX issue, not a concealed current-page failure.",
+  "workflow_review": "PASS by source — picker detections stage provisional config, cancel discards it, Done merges/appends field paths, and existing Extract/save controls consume committed config.",
+  "findings": ["Low severity, optional UX: after navigation, the picker closes and pageKey effect clears errors; therefore the navigation watcher’s explanation can disappear. Current-page injection failures remain surfaced through the catch path."],
+  "limits": "No source changes or tests/build/compile/runtime/UI performed. D43 failure remains unverified until fixture provides a document identity transition; do not treat test result as source proof.",
+  "source_hashes_match_input_report": true
+}
