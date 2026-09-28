@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "report_id": "showcase-export-guarded-runtime",
+  "task_id": "EXT-D-0053/0054 guarded runtime; EXT-D-0052 causal guard",
+  "lane": "independent guarded runtime",
+  "status": "DONE",
+  "source_head_at_final_build": "dea83f71fd897b77643195ee669999a8a733dafa",
+  "dirty_source_diff_sha256_at_final_build": "24edaa8e9b0f9f095932cf704b99a8c43605105d7773536357584b7472c9b37f",
+  "lockfile_sha256": "ffcab03bab71819d1fee1c1f4a2a1fb1857c11abe0e2541be9be76aa39b58042",
+  "changed_files": [
+    "tests/unit/showcase-nuxt-data.test.ts",
+    "docs/stabilization/reports/showcase-export-guarded-runtime.json",
+    "docs/stabilization/resource-journals/d53d54-focused-20260928-01.jsonl",
+    "docs/stabilization/resource-journals/d53d54-compile-20260928-01.jsonl",
+    "docs/stabilization/resource-journals/d53d54-former-red-20260928-01.jsonl",
+    "docs/stabilization/resource-journals/d52-raw-nuxt-red-20260928-01.jsonl",
+    "docs/stabilization/resource-journals/d53d54-restored-green-20260928-01.jsonl",
+    "docs/stabilization/resource-journals/d53d54-final-compile-20260928-01.jsonl",
+    "docs/stabilization/resource-journals/d53d54-dev-build-20260928-01.jsonl",
+    "docs/stabilization/resource-journals/d53d54-dev-build-20260928-02.jsonl"
+  ],
+  "verification": [
+    {
+      "run_id": "d53d54-focused-20260928-01",
+      "command": "pnpm exec vitest run --maxWorkers=1 tests/unit/clipboard-export.test.ts tests/unit/copy-menu-feedback.test.tsx tests/unit/showcase-nuxt-data.test.ts",
+      "verdict": "12 tests passed across 3 files; guarded final decision valid, exit 0"
+    },
+    {
+      "run_id": "d53d54-compile-20260928-01",
+      "command": "pnpm compile",
+      "verdict": "typecheck passed; guarded final decision valid, exit 0"
+    },
+    {
+      "run_id": "d53d54-former-red-20260928-01",
+      "command": "pnpm exec vitest run --maxWorkers=1 tests/unit/clipboard-export.test.ts tests/unit/copy-menu-feedback.test.tsx",
+      "verdict": "6 assertion failures against the exact pre-repair copy.ts and CopyMenu.tsx from Git commit 0b66b853^; resourceInvalid false, child exit 1; both source files restored byte-for-byte",
+      "named_failures": [
+        "preserves long, distinct extracted values in JSON and AI copy: former 50,000-character truncation changed the parsed rows",
+        "refuses cyclic or unsupported JSON instead of returning a success-looking substitute: former fallback did not throw",
+        "keeps spreadsheet TSV headers and cells distinct when they contain tabs, newlines, or quotes: former header and cell separator replacement differed from the worked literal",
+        "shows a failed copy instead of a green check when JSON cannot be prepared: former UI had no failure alert",
+        "shows a failed copy for a rejected clipboard write in the multi-option menu: former UI had no failure alert",
+        "shows the success check only after the clipboard write succeeds: former UI lacked the accessible Copied icon"
+      ],
+      "restored_sha256": {
+        "src/lib/clipboard/copy.ts": "9f1905a7cd404c0f8efddef4fec7e4e3456266dba213eaece6d6cb487c8efcdb",
+        "src/components/CopyMenu.tsx": "dd06f28916e7482fbeedf82425ee8c13309c17b9f0d2157da41e97c37ec35d4b"
+      }
+    },
+    {
+      "run_id": "d52-raw-nuxt-red-20260928-01",
+      "command": "pnpm exec vitest run --maxWorkers=1 tests/unit/showcase-nuxt-data.test.ts",
+      "verdict": "3 failed, 3 passed against temporary return of raw Nuxt serialized slots; resourceInvalid false, child exit 1; source restored byte-for-byte",
+      "named_failure": "resolves captured Nuxt references in the tree, preview, and saved replay: expected the decoded state.$sstats object, received the raw slot array",
+      "restored_sha256": {
+        "src/lib/data-pattern/framework-sources.ts": "a0d2d01203b309f46be0d599b2d1448d671d303409bf1386ff2da4fe1cf97af6"
+      }
+    },
+    {
+      "run_id": "d53d54-restored-green-20260928-01",
+      "command": "pnpm exec vitest run --maxWorkers=1 tests/unit/clipboard-export.test.ts tests/unit/copy-menu-feedback.test.tsx tests/unit/showcase-nuxt-data.test.ts",
+      "verdict": "12 tests passed across 3 files after restoration and the Nuxt assertion improvement; guarded final decision valid, exit 0"
+    },
+    {
+      "run_id": "d53d54-final-compile-20260928-01",
+      "command": "pnpm compile",
+      "verdict": "typecheck passed after the Nuxt test edit; guarded final decision valid, exit 0"
+    },
+    {
+      "run_id": "d53d54-dev-build-20260928-01",
+      "command": "pnpm exec wxt build --mode development",
+      "verdict": "refused before admission: RESOURCE_LEGACY_RUNNER_BUSY; no build started; completed refusal journal retained"
+    },
+    {
+      "run_id": "d53d54-dev-build-20260928-02",
+      "command": "pnpm exec wxt build --mode development",
+      "verdict": "WXT 0.21.4 chrome-mv3 development build passed; guarded final decision valid, exit 0",
+      "output_directory": ".output/chrome-mv3-dev",
+      "output_tree_sha256_via_hashReleaseTree": "b081b8748a562dc7575e435bdd3411bc08cff404520671282066ba48dc7ff6fc"
+    }
+  ],
+  "resource_refusal_adjudication": "After the first build refusal, read-only inspection found no registered legacy heavy/unsafe-hold lease, no canonical heavy lease, and no live stabilization-resource.mjs process. The fresh-ID build attempt followed that changed condition; no lease or foreign process was removed.",
+  "d52_native_provenance": "The prior native Nuxt pass is recorded separately in docs/stabilization/reports/showcase-nuxt-admitted-native.json. This report adds only a guarded causal test proof; it does not claim another native run.",
+  "limitations": [
+    "D53/D54 clipboard bytes, spreadsheet paste, and CopyMenu visibility in an installed extension remain for native acceptance.",
+    "The CopyMenu unit test replaces popover presentation and does not prove a real open popover retains the failure message."
+  ],
+  "next_action": "Run D53/D54 installed-extension native acceptance using the exact development artifact receipt and real saved results; do not treat the guarded unit/build proof as UI acceptance."
+}

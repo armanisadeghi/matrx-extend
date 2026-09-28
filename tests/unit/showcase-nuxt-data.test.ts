@@ -48,8 +48,9 @@ describe('Nuxt Framework source decoding', () => {
     const root = sources.find((source) => source.source === '__NUXT_DATA__')?.data as {
       state: { $sstats: { repo: string; description: string } };
     };
-    expect(root.state.$sstats.repo).toBe('nuxt/nuxt');
-    expect(root.state.$sstats.description).toBe('The full-stack Vue framework.');
+    expect(root).toMatchObject({
+      state: { $sstats: { repo: 'nuxt/nuxt', description: 'The full-stack Vue framework.' } },
+    });
 
     const config = { source: '__NUXT_DATA__', key_path: ['state', '$sstats', 'repo'] };
     await expect(runMode('next_data', 37, config)).resolves.toEqual([{ value: 'nuxt/nuxt' }]);
