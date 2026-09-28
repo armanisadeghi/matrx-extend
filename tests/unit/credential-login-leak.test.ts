@@ -100,6 +100,21 @@ vi.mock('@/lib/debug/log', () => {
   };
 });
 
+// The fill routes are device-signed (access ladder T-30); the signature itself
+// is proven in vault-fill-device.test.ts. Here: a fixed signed header set, so
+// this suite keeps proving what it owns — plaintext never leaves the handler.
+vi.mock('@/lib/vault/fill-device', () => ({
+  signFillRequest: async () => ({
+    ok: true,
+    deviceId: 'device-1',
+    headers: {
+      'X-Matrx-Fill-Device': 'device-1',
+      'X-Matrx-Fill-Timestamp': '1',
+      'X-Matrx-Fill-Signature': 'sig',
+    },
+  }),
+}));
+
 vi.mock('@/lib/api/client', () => ({
   STATUS_INVALID_BODY: -1,
   apiPost: (path: string, body: unknown) => {
