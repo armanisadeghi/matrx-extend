@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "report_id": "showcase-export-correction-peer",
+  "scope": "Independent source-only review of EXT-D-0053/0054 export repairs and truthful copy feedback",
+  "reviewed_commits": [
+    "0b66b85379e4f091d5d4697dcbe8f9c3232a8327",
+    "33f7a921063e04b1bddac6deb84132d1726caeea",
+    "1b8e9c06505bbdf380c5b833b37df72fc41a8bab",
+    "68d834ed33d7ffa61ef4eebf9cc2cf8a60de5f49"
+  ],
+  "source_head_inspected": "aff7189424ed0fa0533b8704bb5bc566b29de60d",
+  "verification": "Source and test inspection only. No tests, build, browser, clipboard read, spreadsheet paste, mutation plant, or native UI verification was run by this peer.",
+  "A_outcome": {
+    "verdict": "Accept the four commits as a source-level repair of the reported long-string JSON loss, TSV separator/header loss, and false green success feedback in CopyMenu. Native acceptance remains open.",
+    "evidence": [
+      "src/lib/clipboard/copy.ts:115-130 retains complete JSON-compatible strings and throws for JSON.stringify failures instead of copying a success-looking fallback.",
+      "src/lib/clipboard/copy.ts:169-186 quotes TSV headers and cells containing tab, CR, LF, or quote, doubles quotes, and preserves ordinary cells.",
+      "src/features/showcase/components/ResultPreview.tsx:62-86 sends the unsliced rows to JSON, TSV, and AI copy; src/features/showcase/tabs/PatternsTab.tsx:129-152,261-267 and src/features/data/DataView.tsx:228-236,493-527 feed the shared formatter paths from saved runs and manual reruns.",
+      "src/components/CopyMenu.tsx:117-133 records success only after copyToClipboard returns true; preparation errors and false writes record failure. Lines 158-166 and 188-203 render red failure feedback in single- and multi-option modes; the green check is restricted to success."
+    ],
+    "remaining_scope_limit": "JSON-compatible saved rows are the supported losslessness claim. Standard JSON.stringify still omits undefined object fields, converts non-finite numbers to null, and honors toJSON. This peer did not establish a universal row-value contract.",
+    "actionable_findings": []
+  },
+  "B_quality": {
+    "verdict": "The focused tests target observable formatter output and the real CopyMenu state/action path, but their red/green and native behavior are unexecuted.",
+    "evidence": [
+      "tests/unit/clipboard-export.test.ts:5-28 parses JSON and fenced AI JSON for two distinct long values and expects cycles and BigInt to be refused; reintroducing the former truncation changes the asserted values.",
+      "tests/unit/clipboard-export.test.ts:30-59 compares TSV with a worked literal and independently reads escaped fields, including a tab-containing header and distinct tab-versus-space values.",
+      "tests/unit/copy-menu-feedback.test.tsx:27-69 imports the real CopyMenu, exercises preparation failure, false clipboard return, and true clipboard return, and checks failure text/icon versus success icon. The clipboard function and popover presentation are the mocked external edges.",
+      "The popover mock always renders its content, so the test does not prove that a real open popover keeps the failure message visible. Source does not call setOpen(false) on failure; native UI must settle that behavior."
+    ],
+    "focused_verification_required_next": [
+      "Run tests/unit/clipboard-export.test.ts and tests/unit/copy-menu-feedback.test.tsx plus the TypeScript check in the guarded native worker.",
+      "Prove a red assertion against the pre-repair formatter and prior truthy-feedback behavior in an isolated scratch context, and perform the required constant-return/gut-check mutations without editing the shared working tree.",
+      "In the installed extension, run a saved replay with more than 200 rows and a value longer than 50,000 characters; read exact JSON and AI clipboard bytes, including the last row. Repeat JSON from Data manual rerun.",
+      "Copy TSV from both Showcase and Data, paste into a spreadsheet, and compare tab/newline/quote-containing headers and cells with the extracted source.",
+      "Exercise successful, denied-write, and preparation-failure copy in real single- and multi-option controls; verify the menu and visible/accessible feedback reflect actual clipboard contents."
+    ]
+  }
+}
