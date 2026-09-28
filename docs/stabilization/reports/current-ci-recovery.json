@@ -29,9 +29,7 @@
   },
   "safe_remediation": "Provision a dedicated GitHub credential limited to contents:read on AI-Matrix-Engine/aidream, approved for this CI purpose, then set it as AIDREAM_REPO_TOKEN on armanisadeghi/matrx-extend Actions with repository access confirmed. Rerun the exact failed workflow at a new commit/ref and inspect its first failing step. Do not replace it with the broad operator token, suppress the preflight, or treat this run as a code-test verdict.",
   "runtime_verification": "No test, build, install, or browser command was run; no stabilization resource permit was acquired.",
-  "changed_paths": [
-    "docs/stabilization/reports/current-ci-recovery.json"
-  ],
+  "changed_paths": ["docs/stabilization/reports/current-ci-recovery.json"],
   "open_actions": [
     "An authorized owner must identify or provision an approved, aidream-scoped contents:read CI credential and configure the repository secret; the generic Vault PATs cannot be assumed to have that scope or purpose.",
     "Rerun CI to expose any later gate failure; all later steps in run 36379571405 are currently unmeasured."
