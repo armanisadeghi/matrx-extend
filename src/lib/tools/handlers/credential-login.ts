@@ -1019,6 +1019,13 @@ function failureResult(failure: VaultCallFailure, op: string): CredentialLoginRe
         'The vault refused this request. The item may not be shared with you, or browser fill may be disabled on it.',
     });
   }
+  if (failure.kind === 'fill_setup_required') {
+    return safeResult('unknown', {
+      reason: 'fill_setup_required',
+      message:
+        'Filling saved passwords is not turned on in this browser. Ask the person to open the Vault tab in the AI Matrx side panel and confirm their password, then try again.',
+    });
+  }
   return safeResult('unknown', { reason: `vault_${op}_failed_${failure.status}` });
 }
 

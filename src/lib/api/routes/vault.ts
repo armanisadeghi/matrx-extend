@@ -61,7 +61,13 @@ import { getAccessToken, getCurrentUser } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { platformDb } from '@/lib/supabase/schemas';
-import { type FillSurface, signFillRequest } from '@/lib/vault/fill-device';
+import {
+  FILL_SETUP_REQUIRED_MESSAGE,
+  type FillSurface,
+  markFillDeviceUnregistered,
+  refusalOf,
+  signFillRequest,
+} from '@/lib/vault/fill-device';
 
 const BASE = '/api/vault/browser-login';
 const ITEMS = '/api/vault/items';
@@ -158,6 +164,8 @@ export type BrowserLoginResultStatus =
 export type VaultCallFailure =
   | { kind: 'sign_in_required' }
   | { kind: 'forbidden' }
+  /** T-30: filling is not turned on in this browser (Vault tab, confirm password). */
+  | { kind: 'fill_setup_required'; message: string }
   | { kind: 'server_error'; status: number };
 
 /** Uniform envelope for every vault call. Never throws; never partially succeeds. */
@@ -168,6 +176,7 @@ export function describeVaultFailure(failure: VaultCallFailure): string {
   if (failure.kind === 'sign_in_required') return 'Sign in to Matrx to use the Vault.';
   if (failure.kind === 'forbidden')
     return 'The Vault refused this request. You may not have access to this item.';
+  if (failure.kind === 'fill_setup_required') return FILL_SETUP_REQUIRED_MESSAGE;
   return `The Vault is unavailable right now (${failure.status}).`;
 }
 
@@ -230,10 +239,11 @@ async function vaultPost<T>(
 
 /**
  * POST to a fill route with this browser's device signature (access ladder
- * T-30). The server answers the fill routes only for a request signed by a
- * registered device key over the extension's own OAuth session. On a 403 the
- * key is re-registered once (the person may have signed in again, which starts
- * a new session) and the request is re-signed; a revoked device stays refused.
+ * T-30). The server answers the fill routes only for a request signed by this
+ * browser's registered key over the extension's own live sign-in. When the
+ * server says the device is not (or no longer) set up, the local registration
+ * is cleared and the caller gets `fill_setup_required`: the person turns filling
+ * back on from the Vault tab with their password — never silently.
  */
 async function vaultFillPost<T>(
   surface: FillSurface,
@@ -241,23 +251,37 @@ async function vaultFillPost<T>(
   path: string,
   body: Record<string, unknown>,
   options?: VaultRequestOptions,
-): Promise<ApiResult<T>> {
+): Promise<ApiResult<T> | { ok: false; setup: true; status: 403; error: string }> {
   if (!(await hasRealUserToken())) return SIGN_IN_REQUIRED;
-  let last: ApiResult<T> | null = null;
-  for (const forceRegister of [false, true]) {
-    const signed = await signFillRequest({ surface, itemId, body, forceRegister });
-    if (!signed.ok) {
-      if (signed.failure.kind === 'sign_in_required') return SIGN_IN_REQUIRED;
-      return { ok: false, status: 403, error: signed.failure.message };
-    }
-    const transport = transportOptions(options, true);
-    last = await apiPost<T>(path, body, undefined, {
-      ...transport,
-      headers: { ...(transport.headers ?? {}), ...signed.headers },
-    });
-    if (last.ok || last.status !== 403) return last;
+  const signed = await signFillRequest({ surface, itemId, body });
+  if (!signed.ok) {
+    if (signed.failure.kind === 'sign_in_required') return SIGN_IN_REQUIRED;
+    return { ok: false, setup: true, status: 403, error: signed.failure.message };
   }
-  return last as ApiResult<T>;
+  const transport = transportOptions(options, true);
+  const r = await apiPost<T>(path, body, undefined, {
+    ...transport,
+    headers: { ...(transport.headers ?? {}), ...signed.headers },
+  });
+  if (!r.ok && r.status === 403 && refusalOf(r).code === 'fill_device_required') {
+    await markFillDeviceUnregistered();
+    return {
+      ok: false,
+      setup: true,
+      status: 403,
+      error: refusalOf(r).message ?? FILL_SETUP_REQUIRED_MESSAGE,
+    };
+  }
+  return r;
+}
+
+function fillFailure(r: {
+  ok: false;
+  status: number;
+  error: string;
+  setup?: true;
+}): VaultCallFailure {
+  return r.setup ? { kind: 'fill_setup_required', message: r.error } : classifyFailure(r.status);
 }
 
 async function vaultPatch<T>(path: string, body: unknown): Promise<ApiResult<T>> {
@@ -369,7 +393,7 @@ export async function materializeBrowserLogin(
     },
     request,
   );
-  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
+  if (!r.ok) return { ok: false, failure: fillFailure(r) };
   const data = r.data;
   const hasLegacyPassword = typeof data?.password === 'string';
   const hasFieldMap =
@@ -413,7 +437,7 @@ export async function materializeBrowserAuthenticator(
     },
     // TOTP body: vaultFillPost is always silent — never quoted into debug logs.
   );
-  if (!r.ok) return { ok: false, failure: classifyFailure(r.status) };
+  if (!r.ok) return { ok: false, failure: fillFailure(r) };
   const data = r.data;
   if (
     !data ||

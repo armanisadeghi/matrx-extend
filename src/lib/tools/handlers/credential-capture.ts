@@ -203,6 +203,9 @@ function failureResult(failure: VaultCallFailure): CaptureCredentialResult {
   if (failure.kind === 'forbidden') {
     return { status: 'vault_error', reason: 'vault_access_denied' };
   }
+  if (failure.kind === 'fill_setup_required') {
+    return { status: 'vault_error', reason: 'fill_setup_required' };
+  }
   return { status: 'vault_error', reason: `vault_error_${failure.status}` };
 }
 

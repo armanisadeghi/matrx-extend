@@ -81,6 +81,7 @@ import {
   X,
 } from 'lucide-react';
 import { useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { FillDeviceSetupCard } from './FillDeviceSetupCard';
 import { PasswordGenerator } from './PasswordGenerator';
 import { PendingCaptureCard } from './PendingCaptureCard';
 import { type PanelActionAdmission, usePanelAdmission } from './usePanelAdmission';
@@ -206,6 +207,7 @@ function VaultSession({
       </div>
 
       <div className="flex-1 overflow-y-auto">
+        <FillDeviceSetupCard />
         <PendingCaptureCard tabId={tab.id} onSaved={() => void vault.reload()} />
         <SiteSection
           key={tab.id ?? 'no-tab'}

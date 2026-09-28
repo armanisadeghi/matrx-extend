@@ -1,9 +1,10 @@
 /**
  * The extension-bound fill credential (access ladder T-30), with REAL WebCrypto
- * and a real (in-memory) IndexedDB. Proves: the private key can never be read
- * out; only the public JWK is registered; the signature is exactly the wire
- * contract aidream verifies (fill_devices.canonical_fill_message) and covers the
- * body; a revoked device drops its key.
+ * and a real (in-memory) IndexedDB. Proves: nothing signs until the person turns
+ * filling on with their password; only the public JWK (plus that password, once)
+ * is sent; the private key can never be read out; every signature is the exact
+ * v2 wire contract aidream verifies, with a fresh nonce, and covers the body; a
+ * revoked key is replaced.
  */
 import 'fake-indexeddb/auto';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -53,34 +54,54 @@ describe('vault fill device (T-30)', () => {
     registerImpl = () => ({ ok: true, data: { id: 'dev-1', revoked_at: null } });
   });
 
-  it('registers only the public half and signs the exact server wire message', async () => {
-    const { signFillRequest } = await fresh();
+  it('refuses to sign until filling is turned on with the password', async () => {
+    const { signFillRequest, fillDeviceStatus } = await fresh();
+    expect(await fillDeviceStatus()).toBe('off');
+    const r = await signFillRequest({
+      surface: 'browser_login_materialize',
+      itemId: 'a',
+      body: {},
+    });
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.failure.kind).toBe('setup_required');
+    expect(posts).toHaveLength(0); // never auto-registers
+  });
+
+  it('registers the public half with the password once, then signs the exact v2 wire', async () => {
+    const { signFillRequest, turnOnFillingHere, fillDeviceStatus } = await fresh();
+    expect(await turnOnFillingHere('pw-typed-by-the-person')).toEqual({ ok: true });
+    expect(await fillDeviceStatus()).toBe('on');
+    const reg = posts[0]?.body as { public_key_jwk: Record<string, string>; password: string };
+    expect(posts[0]?.path).toBe('/api/vault/fill-devices');
+    expect(reg.password).toBe('pw-typed-by-the-person');
+    expect(Object.keys(reg.public_key_jwk).sort()).toEqual(['crv', 'kty', 'x', 'y']);
+
     const body = {
       page_url: 'https://example.com/login',
       tool_invocation_id: 't1',
       client_build: 'x',
     };
-    const signed = await signFillRequest({
+    const one = await signFillRequest({
       surface: 'browser_login_materialize',
       itemId: 'item-1',
       body,
     });
-    expect(signed.ok).toBe(true);
-    if (!signed.ok) return;
-
-    expect(posts).toHaveLength(1);
-    const reg = posts[0]?.body as { public_key_jwk: Record<string, string> };
-    expect(posts[0]?.path).toBe('/api/vault/fill-devices');
-    expect(Object.keys(reg.public_key_jwk).sort()).toEqual(['crv', 'kty', 'x', 'y']);
-    expect(reg.public_key_jwk).not.toHaveProperty('d');
-
-    const h = signed.headers;
-    expect(h['X-Matrx-Fill-Device']).toBe('dev-1');
+    const two = await signFillRequest({
+      surface: 'browser_login_materialize',
+      itemId: 'item-1',
+      body,
+    });
+    expect(one.ok && two.ok).toBe(true);
+    if (!one.ok || !two.ok) return;
+    const h = one.headers;
+    expect(h['X-Matrx-Fill-Nonce']).toMatch(/^[A-Za-z0-9_-]{16,64}$/);
+    expect(h['X-Matrx-Fill-Nonce']).not.toBe(two.headers['X-Matrx-Fill-Nonce']);
     const message = [
-      'matrx-vault-fill/v1',
+      'matrx-vault-fill/v2',
       'browser_login_materialize',
       'item-1',
       h['X-Matrx-Fill-Timestamp'],
+      h['X-Matrx-Fill-Nonce'],
       'dev-1',
       USER,
       await sha256Hex(JSON.stringify(body)),
@@ -93,7 +114,6 @@ describe('vault fill device (T-30)', () => {
       ['verify'],
     );
     const sig = b64urlToBytes(h['X-Matrx-Fill-Signature'] as string);
-    expect(sig.byteLength).toBe(64);
     const verify = (m: string) =>
       crypto.subtle.verify(
         { name: 'ECDSA', hash: 'SHA-256' },
@@ -102,15 +122,12 @@ describe('vault fill device (T-30)', () => {
         new TextEncoder().encode(m),
       );
     expect(await verify(message)).toBe(true);
-    // the body is covered: a different page URL does not verify
     expect(await verify(message.replace(/[0-9a-f]{64}$/, await sha256Hex('{}')))).toBe(false);
   });
 
-  it('keeps a non-extractable private key and registers once', async () => {
-    const { signFillRequest } = await fresh();
-    await signFillRequest({ surface: 'browser_login_materialize', itemId: 'a', body: {} });
-    await signFillRequest({ surface: 'browser_login_materialize', itemId: 'b', body: {} });
-    expect(posts).toHaveLength(1);
+  it('keeps a non-extractable private key', async () => {
+    const { turnOnFillingHere } = await fresh();
+    await turnOnFillingHere('pw');
     const stored = await new Promise<{ privateKey: CryptoKey }>((resolve, reject) => {
       const open = indexedDB.open('matrx-vault-fill-device', 1);
       open.onsuccess = () => {
@@ -126,44 +143,40 @@ describe('vault fill device (T-30)', () => {
     await expect(crypto.subtle.exportKey('pkcs8', stored.privateKey)).rejects.toThrow();
   });
 
-  it('forceRegister re-registers the same key (a new sign-in session)', async () => {
-    const { signFillRequest } = await fresh();
-    await signFillRequest({ surface: 'browser_login_materialize', itemId: 'a', body: {} });
-    await signFillRequest({
-      surface: 'browser_login_materialize',
-      itemId: 'a',
-      body: {},
-      forceRegister: true,
-    });
-    expect(posts).toHaveLength(2);
-    expect((posts[0]?.body as { public_key_jwk: unknown }).public_key_jwk).toEqual(
-      (posts[1]?.body as { public_key_jwk: unknown }).public_key_jwk,
-    );
-  });
-
-  it('a revoked device is refused in plain words and its key is dropped', async () => {
-    const { signFillRequest } = await fresh();
+  it('a wrong password is refused in the server’s words and nothing is registered', async () => {
+    const { turnOnFillingHere, fillDeviceStatus } = await fresh();
     registerImpl = () => ({
       ok: false,
       status: 403,
-      error: 'Filling from this browser was turned off.',
+      error: JSON.stringify({
+        error: 'step_up_failed',
+        user_message: 'That password did not match.',
+      }),
     });
-    const first = await signFillRequest({
-      surface: 'browser_login_materialize',
-      itemId: 'a',
-      body: {},
+    const r = await turnOnFillingHere('wrong');
+    expect(r).toEqual({
+      ok: false,
+      failure: { kind: 'refused', message: 'That password did not match.' },
     });
-    expect(first.ok).toBe(false);
-    if (first.ok) return;
-    expect(first.failure).toEqual({
-      kind: 'device_revoked',
-      message: 'Filling from this browser was turned off.',
-    });
-    registerImpl = () => ({ ok: true, data: { id: 'dev-2', revoked_at: null } });
-    await signFillRequest({ surface: 'browser_login_materialize', itemId: 'a', body: {} });
+    expect(await fillDeviceStatus()).toBe('off');
+  });
+
+  it('a revoked key is replaced by a new key on the next turn-on', async () => {
+    const { turnOnFillingHere } = await fresh();
+    let calls = 0;
+    registerImpl = () =>
+      ++calls === 1
+        ? {
+            ok: false,
+            status: 403,
+            error: JSON.stringify({ error: 'key_revoked', user_message: 'off' }),
+          }
+        : { ok: true, data: { id: 'dev-2', revoked_at: null } };
+    expect(await turnOnFillingHere('pw')).toEqual({ ok: true });
     const keys = posts.map((p) =>
       JSON.stringify((p.body as { public_key_jwk: unknown }).public_key_jwk),
     );
+    expect(keys).toHaveLength(2);
     expect(keys[0]).not.toEqual(keys[1]);
   });
 });

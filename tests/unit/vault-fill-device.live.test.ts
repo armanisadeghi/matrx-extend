@@ -5,7 +5,7 @@
  *
  *   T30_LIVE_API=http://localhost:8017 T30_LIVE_TOKEN_FILE=/path/ext-token.json \
  *   T30_LIVE_ORG=<org id> T30_LIVE_ITEM=<website_login id> T30_LIVE_PAGE=<its login url> \
- *   pnpm vitest run tests/unit/vault-fill-device.live.test.ts
+ *   pnpm vitest run tests/unit/vault-fill-device.live.test.ts  (T30_LIVE_PASSWORD_FILE: file holding the account password, never printed)
  *
  * Only the transport (chrome.storage-backed API client, auth store) is replaced
  * by plain fetch; signing, registration, retry and the wire are the shipped code.
@@ -84,6 +84,9 @@ vi.mock('@/lib/api/client', () => {
 
 describe.skipIf(!live)('LIVE: extension fill through its device key (T-30)', () => {
   it('registers this install and materializes over the extension session', async () => {
+    const { turnOnFillingHere } = await import('@/lib/vault/fill-device');
+    const password = readFileSync(process.env.T30_LIVE_PASSWORD_FILE as string, 'utf8').trim();
+    expect(await turnOnFillingHere(password)).toEqual({ ok: true });
     const { materializeBrowserLogin } = await import('@/lib/api/routes/vault');
     const r = await materializeBrowserLogin(process.env.T30_LIVE_ITEM as string, {
       pageUrl: process.env.T30_LIVE_PAGE as string,
