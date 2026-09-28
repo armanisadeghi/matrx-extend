@@ -1,0 +1,12 @@
+{
+  "review": "independent source and recorded-runtime review of b3421dd2 against e4b2f39e",
+  "A_scoped_acceptance": "ACCEPT: admission-first ordering yields refused when !admitted even if resourceInvalid=true; admitted resource-invalid yields invalid; admitted finished nonzero child yields child_failed; admitted exit 0 yields valid. Original d59-compile-2 records admitted=true/resourceInvalid=false/exit=1 but old refused; d60 red/green journal records confirm child_failed and valid respectively.",
+  "source": "b3421dd2 changes only classifier precedence and adds the !admitted && resourceInvalid test case; reviewed caller retains journalBroken/resourceInvalid handling and emits the original error event.",
+  "preserved": "Resource policy SHA-256 is identical across commits; no resource-policy threshold, watchdog, wrapper exit-code, or allowed-command change appears in the commit diff.",
+  "B_quality_and_limits": "The classifier guard covers pre-admission invalid state, but no wrapper-level journal-write fault was injected. The files named d60-pre-admission-red/green are actually admitted child exit 1/0 runs; they prove child_failed/valid, not pre-admission refusal. The synthetic test is the direct evidence for the precedence correction.",
+  "journal_sha256": {
+    "d59-compile-2.jsonl": "historical journal inspected from repository",
+    "d60-pre-admission-red-20260928-1.jsonl": "8f22224958b8c8997dbc1009e8afcbf39f5bd36e27aa7b4833c5520080c6bed5",
+    "d60-pre-admission-green-20260928-1.jsonl": "8aad341fdf4805ab2241b82e342eed6425e66bb22b098a1ab7b0a017457ff7de"
+  }
+}
