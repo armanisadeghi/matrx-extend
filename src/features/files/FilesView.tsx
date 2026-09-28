@@ -273,6 +273,8 @@ export function FilesView() {
         <TabsContent value="library" className="mt-0 min-h-0 flex-1 overflow-y-auto">
           {state === 'loading' ? (
             <Loading />
+          ) : state === 'error' ? (
+            <InventoryLoadError onRetry={() => void reload()} />
           ) : visibleFiles.length === 0 ? (
             <Empty
               icon={<File className="size-5" />}
@@ -305,6 +307,8 @@ export function FilesView() {
         <TabsContent value="captures" className="mt-0 min-h-0 flex-1 overflow-y-auto">
           {state === 'loading' ? (
             <Loading />
+          ) : state === 'error' ? (
+            <InventoryLoadError onRetry={() => void reload()} />
           ) : visibleCaptures.length === 0 ? (
             <Empty
               icon={<FileImage className="size-5" />}
@@ -945,6 +949,17 @@ function Loading() {
   return (
     <div className="flex h-full items-center justify-center text-muted-foreground">
       <Loader2 className="size-4 animate-spin" />
+    </div>
+  );
+}
+
+function InventoryLoadError({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-2 px-6 text-center">
+      <AlertTriangle className="size-5 text-destructive" />
+      <p className="text-sm font-medium">Files could not be loaded</p>
+      <p className="text-xs text-muted-foreground">Retry to check your library and screenshots.</p>
+      <Button size="sm" variant="secondary" onClick={onRetry}>Retry files</Button>
     </div>
   );
 }
