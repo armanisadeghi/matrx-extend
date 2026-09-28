@@ -33,6 +33,14 @@ interface DraftState {
   folderName: string;
 }
 
+function sameDraft(a: DraftState | null, b: DraftState | null): boolean {
+  return !!a && !!b && a.label === b.label && a.content === b.content && a.folderName === b.folderName;
+}
+
+// Keep unsaved edits available when switching notes while a write fails. This
+// lives only in the sidepanel process; successful persistence removes the draft.
+const unsavedDrafts = new Map<string, DraftState>();
+
 export function NoteEditor({ noteId }: { noteId: string }) {
   const queryClient = useQueryClient();
   const setSelectedNoteId = useNotesUiStore((s) => s.setSelectedNoteId);
@@ -48,12 +56,21 @@ export function NoteEditor({ noteId }: { noteId: string }) {
   const note = detailQuery.data ?? null;
 
   const [draft, setDraft] = useState<DraftState | null>(null);
-  const [savingState, setSavingState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [savingState, setSavingState] = useState<'idle' | 'saving' | 'saved' | 'error' | 'unsaved'>('idle');
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const draftRef = useRef<DraftState | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const inflightRef = useRef(false);
+  const inflightRef = useRef<Promise<void> | null>(null);
+  const queuedRef = useRef<DraftState | null>(null);
+  const savedRef = useRef<DraftState | null>(null);
+  const failedRef = useRef(false);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
 
   // Reset draft when noteId changes (user opened a different note).
   // Must be declared BEFORE the seed-from-note effect: on mount, both effects
@@ -63,6 +80,8 @@ export function NoteEditor({ noteId }: { noteId: string }) {
   // immediately clobber it — leaving the editor stuck on the skeleton.
   useEffect(() => {
     draftRef.current = null;
+    savedRef.current = null;
+    queuedRef.current = null;
     setDraft(null);
     setSavingState('idle');
     setLastSavedAt(null);
@@ -83,34 +102,78 @@ export function NoteEditor({ noteId }: { noteId: string }) {
         content: note.content ?? '',
         folderName: note.folder_name ?? '',
       };
-      setDraft(seed);
-      draftRef.current = seed;
+      savedRef.current = seed;
+      const recovered = unsavedDrafts.get(noteId);
+      const initial = recovered ?? seed;
+      setDraft(initial);
+      draftRef.current = initial;
+      if (recovered && !sameDraft(recovered, seed)) setSavingState('unsaved');
+      else unsavedDrafts.delete(noteId);
       setLastSavedAt(note.updated_at);
     }
-  }, [note]);
+  }, [note, noteId]);
 
   const allNotes = queryClient.getQueryData<NoteListItem[]>(['notes', 'list']) ?? [];
   const folderSuggestions = useMemo(() => uniqueFolderNames(allNotes), [allNotes]);
 
   const persist = useCallback(
     async (snapshot: DraftState) => {
-      if (inflightRef.current) return;
-      inflightRef.current = true;
-      setSavingState('saving');
-      const updated = await updateNote(noteId, {
-        label: snapshot.label.trim() || 'Untitled',
-        content: snapshot.content,
-        folder_name: snapshot.folderName.trim() ? snapshot.folderName.trim() : null,
+      queuedRef.current = snapshot;
+      failedRef.current = false;
+      if (inflightRef.current) return inflightRef.current;
+      const drain = async () => {
+        while (queuedRef.current) {
+          const writing = queuedRef.current;
+          queuedRef.current = null;
+          if (sameDraft(writing, savedRef.current)) {
+            if (sameDraft(draftRef.current, writing)) unsavedDrafts.delete(noteId);
+            continue;
+          }
+          if (mountedRef.current) setSavingState('saving');
+          let updated: Awaited<ReturnType<typeof updateNote>> = null;
+          try {
+            updated = await updateNote(noteId, {
+              label: writing.label.trim() || 'Untitled',
+              content: writing.content,
+              folder_name: writing.folderName.trim() ? writing.folderName.trim() : null,
+            });
+          } catch (error) {
+            console.warn('[notes] autosave failed', error);
+          }
+          const latest = queuedRef.current ?? draftRef.current ?? writing;
+          if (!updated) {
+            unsavedDrafts.set(noteId, latest);
+            if (!sameDraft(latest, writing)) {
+              queuedRef.current = latest;
+              continue;
+            }
+            queuedRef.current = latest;
+            failedRef.current = true;
+            if (mountedRef.current) setSavingState('error');
+            return;
+          }
+          savedRef.current = writing;
+          queryClient.setQueryData(['notes', 'detail', noteId], updated);
+          void queryClient.invalidateQueries({ queryKey: ['notes', 'list'] }).catch((error) => {
+            console.warn('[notes] list refresh after autosave failed', error);
+          });
+          if (!sameDraft(latest, writing)) {
+            queuedRef.current = latest;
+            continue;
+          }
+          unsavedDrafts.delete(noteId);
+          if (mountedRef.current) {
+            setLastSavedAt(updated.updated_at);
+            setSavingState('saved');
+          }
+        }
+      };
+      const running = drain().finally(() => {
+        inflightRef.current = null;
+        if (queuedRef.current && !failedRef.current) void persist(queuedRef.current);
       });
-      inflightRef.current = false;
-      if (updated) {
-        setSavingState('saved');
-        setLastSavedAt(updated.updated_at);
-        queryClient.setQueryData(['notes', 'detail', noteId], updated);
-        await queryClient.invalidateQueries({ queryKey: ['notes', 'list'] });
-      } else {
-        setSavingState('error');
-      }
+      inflightRef.current = running;
+      return running;
     },
     [noteId, queryClient],
   );
@@ -132,9 +195,11 @@ export function NoteEditor({ noteId }: { noteId: string }) {
       const next = { ...draftRef.current, ...patch };
       draftRef.current = next;
       setDraft(next);
+      unsavedDrafts.set(noteId, next);
+      setSavingState('saving');
       scheduleSave(next);
     },
-    [scheduleSave],
+    [noteId, scheduleSave],
   );
 
   // Flush pending edits on unmount so a quick switch-and-back doesn't lose typing.
@@ -160,9 +225,11 @@ export function NoteEditor({ noteId }: { noteId: string }) {
       const updatedDraft = { ...draftRef.current, content: next };
       draftRef.current = updatedDraft;
       setDraft(updatedDraft);
+      unsavedDrafts.set(noteId, updatedDraft);
+      setSavingState('saving');
       await persist(updatedDraft);
     },
-    [persist],
+    [noteId, persist],
   );
 
   const performDelete = async () => {
@@ -280,7 +347,9 @@ export function NoteEditor({ noteId }: { noteId: string }) {
               <option key={f} value={f} />
             ))}
           </datalist>
-          <SaveStatus state={savingState} lastSavedAt={lastSavedAt} />
+          <SaveStatus state={savingState} lastSavedAt={lastSavedAt} onRetry={() => {
+            if (draftRef.current) void persist(draftRef.current);
+          }} />
         </div>
       </div>
 
@@ -309,15 +378,17 @@ export function NoteEditor({ noteId }: { noteId: string }) {
 function SaveStatus({
   state,
   lastSavedAt,
+  onRetry,
 }: {
-  state: 'idle' | 'saving' | 'saved' | 'error';
+  state: 'idle' | 'saving' | 'saved' | 'error' | 'unsaved';
   lastSavedAt: string | null;
+  onRetry: () => void;
 }) {
   if (state === 'saving') {
     return <span className="text-[10px] text-muted-foreground">Saving…</span>;
   }
-  if (state === 'error') {
-    return <span className="text-[10px] text-destructive">Save failed</span>;
+  if (state === 'error' || state === 'unsaved') {
+    return <span className="text-[10px] text-destructive">{state === 'error' ? 'Save failed' : 'Unsaved changes'} <button type="button" onClick={onRetry} className="underline">Retry save</button></span>;
   }
   if (lastSavedAt) {
     return (
