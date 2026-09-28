@@ -1,0 +1,60 @@
+{
+  "id": "EXT-D-0059",
+  "role": "independent source audit — Highlight overlay/session identity",
+  "feature_id": "EXT-F-1010",
+  "scope": "Live overlay start/stop/mode and message admission across same-URL reload and active-tab changes. Historical saved highlight lookup and already-corrected Data/Scrape handoffs excluded.",
+  "method": "Source trace of HighlightView, use-highlight-bridge, highlight control, content overlay, active-tab identity hook, inventory-local and D59 reports. No tests/build/UI/runtime run per assignment; claims below are source-supported, not observed runtime outcomes.",
+  "findings": [
+    {
+      "id": "H1",
+      "severity": "S2",
+      "title": "Overlay session is represented by tab ID alone and can outlive the page selection",
+      "source": ["src/features/highlights/HighlightView.tsx:95-112", "src/state/highlights.ts:13-27,63-68", "src/hooks/use-highlight-bridge.ts:145-174", "src/lib/highlights/control.ts:32-74"],
+      "trace": "Start injects by tabId, then records {active, tabId}; stop and set-mode also message by tabId. The bridge cleanup watches only the currently recorded overlayTabId and reacts to tab loading/removal, not active-tab changes. Starting an overlay on another tab replaces the recorded ID; these paths do not stop the previous document's overlay.",
+      "repro_from_source": "Start overlay on tab A; switch to tab B and start there; return to A. The store represents only B, so the side-panel control on A cannot address A's still-mounted overlay, while B's mode/stop operations address B.",
+      "user_effect": "An overlay may remain active in a background tab without matching side-panel state; controls can appear to start or stop a different page's session.",
+      "smallest_boundary": "Give each live overlay a session identity containing tabId and documentId/pageKey; bind control and state to that session, and explicitly retire/clear prior sessions on the chosen active-tab policy. Keep URL/domain queries for saved history unchanged.",
+      "runtime_status": "Not exercised; content-script lifetime on navigation and the actual visible symptom need native Chrome reproduction."
+    },
+    {
+      "id": "H2",
+      "severity": "S2",
+      "title": "Start can publish active state after reload has already passed the cleanup watcher",
+      "source": ["src/features/highlights/HighlightView.tsx:95-112", "src/hooks/use-highlight-bridge.ts:145-174", "src/lib/highlights/control.ts:32-63", "src/entrypoints/highlighter.content.ts:1-23"],
+      "trace": "The tab-update watcher is subscribed only while overlayTabId is non-null. handleToggle awaits listHighlightsForUrl and startHighlighter before setting overlayTabId/active. If the same tab reloads in that interval, the loading event has no overlay watcher; after the await, the old start continuation can set active state for a content-script document that reload discarded. startHighlighter targets tabId, not the pageKey/documentId captured at click.",
+      "repro_from_source": "Click Highlight this page, reload that same tab while the saved-highlight lookup or injection is pending, then let the start promise resolve. Inspect whether the panel reports Stop highlighting although the document no longer has the injected overlay.",
+      "user_effect": "Potential stale Stop highlighting state and a first stop click that sends to a tab with no overlay listener.",
+      "smallest_boundary": "Capture a ready active-tab identity before starting; observe lifecycle before awaiting; after every await require the same pageKey/documentId before publishing active state, and scope injection/control to that document where Chrome permits.",
+      "runtime_status": "Race and symptom are inferred from ordering; timing/content-script teardown not reproduced."
+    },
+    {
+      "id": "H3",
+      "severity": "S2",
+      "title": "Overlay messages are admitted without matching the live session identity",
+      "source": ["src/hooks/use-highlight-bridge.ts:60-69,120-128", "src/lib/highlights/highlighter.ts:421-463", "src/state/highlights.ts:13-27"],
+      "trace": "Capture handler ignores MessageSender and persists the payload as supplied. Overlay-state handler stores sender.tab.id and trusts payload mounted/mode/count/url, but does not compare sender.documentId or URL to a currently admitted session. Content overlay sends page URL in payload only. Therefore the bridge has no source-level rule that a late or second-tab message belongs to the overlay represented in the store.",
+      "repro_from_source": "With overlays started on two tabs or an in-flight capture during same-URL reload, deliver each overlay's state/capture message and inspect which session the single store represents and which draft the bridge writes.",
+      "user_effect": "A stale or other-tab overlay can overwrite displayed session state or submit a capture after the represented page/session changed; actual occurrence is unverified.",
+      "smallest_boundary": "Admit state/capture/clear replies against the stored session's sender tab plus documentId/session token; reject stale state updates. Preserve user-initiated historical captures only if explicitly labeled with their captured source.",
+      "runtime_status": "Source-only; no claim that a browser currently delivers a late message after teardown."
+    }
+  ],
+  "existing_protections": [
+    "useActiveTab sequences active-tab reads and exposes documentId/pageKey plus unresolved status; its navigation listeners withhold identity during top-frame navigation.",
+    "Data handoff has document-targeted verification and current-page admission; its fix is excluded here.",
+    "use-highlight-bridge clears stored overlay state on loading/removal once it is watching the recorded overlay tab.",
+    "paintExisting deduplicates saved paints by ID; saved highlights are intentionally retrieved/filtered by URL/domain as historical records."
+  ],
+  "historical_and_fixed_paths_excluded": [
+    "Saved highlight list/page/site/all filtering is URL/domain historical lookup, not a live-document result.",
+    "Highlight-to-Data document identity checks and Data/Scrape handoff corrections are owned/fixed in the parallel lane; not repeated as findings.",
+    "Highlight-to-Scrape passes stored text plus each saved source URL as an explicit historical region; this audit does not relabel that behavior as active-page capture."
+  ],
+  "test_gaps": [
+    "EXT-F-1010 T01/T02 cover warm/reload dimensions but do not assert session document identity, start-vs-reload race, or cross-tab overlay retirement.",
+    "No source-admission test was found for stale sender.documentId, a second tab's overlay-state message, or stale capture response against the current session.",
+    "Native verification should distinguish same-URL reload and active-tab switch: assert visible panel state, actual overlay host/listeners, and stop/mode target on each page."
+  ],
+  "scope_recommendation": "Shared overlay session boundary only: define the active overlay session with tabId+documentId/pageKey and use it consistently for start completion, state admission, capture/clear admission, mode, stop, reload invalidation, and active-tab transitions. Keep persisted URL/domain history and already-fixed Data/Scrape handoffs outside this change.",
+  "verification": {"source_audit": "complete for cited Highlight paths", "tests_build_ui_browser": "not run by assignment", "runtime_claim": "none"}
+}
