@@ -101,7 +101,7 @@ describe('Prepare current-attempt lifecycle', () => {
       await act(async () => {
         await hook.result.current.run();
       });
-      expect(mocks.preparePage).toHaveBeenLastCalledWith(23, {});
+      expect(mocks.preparePage).toHaveBeenLastCalledWith(23, {}, 'document-b');
       expect(hook.result.current.report).toEqual(report(45, 'B banner'));
       expect(hook.result.current.error).toBeNull();
     },
