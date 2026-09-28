@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "review": "final-source-only-regression-reverification",
+  "candidate_commits": {
+    "notes_exact_revert": "783eef4d",
+    "files_and_saved_capture": "2da0ef91"
+  },
+  "A_D63_source_outcome": {
+    "finding_D63_PEER_01": "Addressed in current source for both requested orderings.",
+    "zero_write_exact_revert": {
+      "source_path": "persist drain sees writing equal savedRef.current, removes the matching unsavedDrafts entry, and only sets Saved when the current visible draft still matches and no newer queued snapshot exists.",
+      "evidence": ["src/features/notes/NoteEditor.tsx:124-134"],
+      "result": "No updateNote call is required for the reverted draft; the settled status can return to Saved based on the existing successful timestamp."
+    },
+    "revert_while_older_write_active": {
+      "source_path": "The revert remains queued behind the old write. After the old write succeeds, latest differs from the writing snapshot, so the drain continues without setting Saved. It then persists the reverted value and reports Saved only after that write succeeds.",
+      "evidence": ["src/features/notes/NoteEditor.tsx:146-171"],
+      "result": "The older successful snapshot cannot falsely mark the queued revert as saved."
+    },
+    "other_latest_draft_path": "A newer queued draft likewise differs from the old writing snapshot and continues through the drain before settled status; the existing overlap test asserts no Saved between the first and latest write.",
+    "remaining_source_issue_found": false
+  },
+  "B_regression_guard_quality": {
+    "new_case": "The added exact-revert test covers no write before debounce settles and a revert queued while an older write is pending. It checks no mutation for the no-op, no intermediate Saved after the older write, a second write for the revert, final persisted value, and final Saved state.",
+    "harness_quality": "The test renders NotesView/NoteEditor, holds updateNote responses, advances the actual 600 ms debounce with fake timers, and checks persisted mock records. It reaches the component queue and status logic rather than asserting a helper in isolation.",
+    "remaining_gap": "No additional source-level gap found in the requested newer-queued-snapshot false-Saved condition; existing overlap coverage also verifies intermediate status.",
+    "execution": "Not executed by this reviewer. The combined guarded result belongs to the separate execution lane; source inspection alone does not certify it."
+  },
+  "C_D64_D65_source_outcome": {
+    "D64": {
+      "result": "Addressed in both Library and Screenshots panels.",
+      "evidence": ["src/features/files/FilesView.tsx:273-312"],
+      "detail": "Each panel renders loading, then error with InventoryLoadError/retry, then successful empty state. Error therefore precedes the empty claim.",
+      "test_quality": "The regression test activates the Radix tab with mouseDown, asserts data-state=active, verifies the error and absence of empty copy, retries, and checks recovery for both read sources.",
+      "test_evidence": ["src/features/files/FilesView.test.tsx:33-53"]
+    },
+    "D65": {
+      "result": "Addressed in current source.",
+      "evidence": ["src/features/saved-captures/SavedCapturesView.tsx:113-130"],
+      "detail": "openGeneration ignores stale success, stale error, and stale finally completions; the focused tests exercise success and error response ordering.",
+      "test_evidence": ["src/features/saved-captures/SavedCapturesView.test.tsx:130-181"]
+    }
+  },
+  "limits": [
+    "Source and test code were inspected; no tests, builds, browser sessions, or native runtime were run by this reviewer.",
+    "The final combined guarded run remains the verification source for execution results; no prior run is reinterpreted here."
+  ]
+}
