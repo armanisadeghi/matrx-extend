@@ -21,13 +21,14 @@
     "docs/stabilization/reports/showcase-d49-source-peer.json",
     "docs/stabilization/runs/showcase-d49-native-retest-001.json",
     "docs/stabilization/reports/showcase-d49-worker-build-peer.json",
-    "docs/stabilization/reports/showcase-d49-final-acceptance.json"
+    "docs/stabilization/reports/showcase-d49-final-acceptance.json",
+    "docs/stabilization/reports/showcase-d49-worker-escalation.json"
   ],
   "severity": "S1: the observed saved Network extraction cannot run and gives no recovery feedback.",
   "priority": "P1: blocks Showcase saved replay acceptance and D47 retest.",
-  "state": "in-fix",
+  "state": "fixed",
   "reproduction_status": "Native diagnostic localized first stalled boundary to worker lazy dispatcher import; Port and run message acceptance and worker log delivery verified. Worker DevTools closed.",
-  "verification_status": "Two native failures after source repairs: document is not defined, then window is not defined. Latest exact artifact1df62d6e, guard admitted07:02:57Z and stopped07:04:25Z valid. Fresh Astra escalation active; no closure or full replay pass.",
+  "verification_status": "Escalation found unsupported dynamic import() in extension worker; Vite error handling masked rejection with window error. Standalone worker guard/build and35 regressions pass. Two earlier native rounds failed; new independent integrated build/native acceptance in progress after remote dependency merge8048b81e. No closure claim.",
   "transition_history": [
     {
       "at": "2026-09-28T06:06:00Z",
@@ -82,12 +83,19 @@
       "from": "retest-fail",
       "to": "in-fix",
       "reason": "Two failed implementation/native rounds reached published escalation threshold. Fresh Astra medium lane showcase_d49_worker_escalation owns a bounded30-minute worker import diagnosis/class repair."
+    },
+    {
+      "at": "2026-09-28T07:23:45Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Escalation repair afb74866 uses WXT standalone worker with all runtime imports bundled inline; emitted guard red on original module build, green on standalone;35 regressions, compile/catalog and two test mutations verified. Fresh integrated native acceptance remains open."
     }
   ],
   "closure_requirement": "Prove the failing execution stage, correct the actual saved UI path, then independently repeat this native reproduction and demonstrate approval, fresh automatic reload capture, saved result, and surrounding cancellation/error recovery under a valid watchdog.",
-  "fix_commit": "dd6f12a2",
+  "fix_commit": "afb7486692dbdd46d611021c46022a91b22ab227",
   "fix_commits": [
     "227d3540f19b24d21b9038586e99770058c70480",
-    "dd6f12a2"
+    "dd6f12a2",
+    "afb7486692dbdd46d611021c46022a91b22ab227"
   ]
 }
