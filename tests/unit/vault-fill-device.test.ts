@@ -18,12 +18,15 @@ vi.mock('@/lib/auth/flow', () => ({
 vi.mock('@/lib/debug/log', () => ({
   log: { info: () => {}, warn: () => {}, error: () => {}, success: () => {} },
 }));
+let methodsImpl: () => unknown = () => ({ ok: true, data: { password: true, passkey: false } });
 vi.mock('@/lib/api/client', () => ({
   apiPost: async (path: string, body: unknown) => {
     posts.push({ path, body });
     return registerImpl();
   },
+  apiGet: async () => methodsImpl(),
 }));
+vi.mock('@/config/env', () => ({ ENV: { FRONTEND_URL: 'https://aimatrx.com/' } }));
 
 const USER = '11111111-1111-4111-8111-111111111111';
 
@@ -178,5 +181,63 @@ describe('vault fill device (T-30)', () => {
     );
     expect(keys).toHaveLength(2);
     expect(keys[0]).not.toEqual(keys[1]);
+  });
+
+  // ── passkey approval (T-30c) ──────────────────────────────────────────
+
+  it('the key thumbprint is byte-for-byte the server’s RFC 7638 thumbprint', async () => {
+    const { publicKeyThumbprint, shortFingerprint } = await fresh();
+    // Vector from aidream fill_devices.jwk_thumbprint on the same JWK.
+    const t = await publicKeyThumbprint({
+      kty: 'EC',
+      crv: 'P-256',
+      x: 'Ju_OvQ7p40pmkYfhizqRIrL3M5RbZJzJ-fkh6fna2BI',
+      y: 'kCOL3pzHuzMNFQxncE3SWucFUgV0S28xv0BwdFhy0OY',
+    });
+    expect(t).toBe('989777bd268731e0a425d6e28e7ed9be4a00d3798e7c21d49799ace5ccf9c29b');
+    expect(shortFingerprint(t)).toBe('9897 77BD 2687 31E0');
+  });
+
+  it('the approval link carries only this browser’s public thumbprint, and registration without a password claims it', async () => {
+    const { passkeyApprovalLink, turnOnFillingHere, fillDeviceStatus, publicKeyThumbprint } =
+      await fresh();
+    const link = await passkeyApprovalLink();
+    expect(link.url).toMatch(/^https:\/\/aimatrx\.com\/vault\/approve-browser\?key=[0-9a-f]{64}&label=/);
+    expect(posts).toHaveLength(0); // opening the link registers nothing
+    expect(await turnOnFillingHere()).toEqual({ ok: true });
+    const reg = posts[0]?.body as { public_key_jwk: { kty: 'EC'; crv: 'P-256'; x: string; y: string } };
+    expect('password' in (reg as object)).toBe(false);
+    const key = new URL(link.url as string).searchParams.get('key');
+    expect(key).toBe(await publicKeyThumbprint(reg.public_key_jwk));
+    expect(await fillDeviceStatus()).toBe('on');
+  });
+
+  it('without an approval the server’s step-up refusal comes back as step_up_required', async () => {
+    const { turnOnFillingHere, fillDeviceStatus } = await fresh();
+    registerImpl = () => ({
+      ok: false,
+      status: 403,
+      error: JSON.stringify({
+        detail: { error: 'no_step_up_method', user_message: 'Your account has no password or passkey yet.' },
+      }),
+    });
+    const r = await turnOnFillingHere();
+    expect(r.ok).toBe(false);
+    if (!r.ok) {
+      expect(r.failure).toEqual({
+        kind: 'step_up_required',
+        message: 'Your account has no password or passkey yet.',
+        noMethod: true,
+      });
+    }
+    expect(await fillDeviceStatus()).toBe('off');
+  });
+
+  it('reads how the person can confirm (password, passkey, or neither)', async () => {
+    const { fillStepUpMethods } = await fresh();
+    methodsImpl = () => ({ ok: true, data: { password: false, passkey: false } });
+    expect(await fillStepUpMethods()).toEqual({ password: false, passkey: false });
+    methodsImpl = () => ({ ok: false, status: 404, error: 'x' });
+    expect(await fillStepUpMethods()).toBeNull();
   });
 });

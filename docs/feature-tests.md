@@ -215,6 +215,20 @@ component, so all four must show identical rows in identical order.
 - **Compatibility:** The extension requires Chrome 116 or later. The chooser refuses to query or fill when top-document identity or `documentIds` targeting is unavailable; it never falls back to tab-wide injection.
 - **Privacy disclosure:** Focus-time matching sends only the current page origin/path and a generated field selector to the extension service worker. No field value is read, captured, or materialized until an account is explicitly selected.
 
+### Vault — turn on filling in this browser (password or passkey)
+
+- **What it does:** before this browser can fill a saved password, the Vault tab's "Turn on filling in
+  this browser" card asks the person to confirm it is them: type their AI Matrx password, or choose
+  "Approve with a passkey" (opens `/vault/approve-browser` on the web app with this browser's short
+  code). An account with neither sees "no password or passkey yet" and "Add a passkey on the web".
+- **Where:** side panel → Vault tab (signed in, filling not yet on).
+- **Steps:** 1) Click "Approve with a passkey" — a web tab opens showing the same four-group code as
+  the card's "Approve code …" line. 2) On the web page (aimatrx.com) click "Approve with passkey" and
+  complete the passkey prompt. 3) Back in the panel click "I approved it" (or just return to it).
+- **Expected:** the card disappears (filling on); web Vault → Browsers lists this browser. Clicking
+  "I approved it" before approving says the browser has not been approved yet. Off aimatrx.com the web
+  page says passkeys work only on aimatrx.com and links there.
+
 ### Vault Fill admission refusal
 - **Steps:** Open the Vault on a login page, then make its active-tab identity unavailable before clicking **Fill**.
 - **Expected:** The panel says “Could not start filling. Focus the login field, then try Fill again.” and sends no fill request.

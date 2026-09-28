@@ -11,12 +11,16 @@
  * can sign but can never be read out or copied off this browser profile; IndexedDB
  * stores the CryptoKey object itself. One key per signed-in person on this profile.
  *
- * Turning filling on here needs the person's AI Matrx password (owner ruling
- * 2026-09-28, the 1Password/Bitwarden "unlock each new browser" bar): the side
- * panel's Vault tab asks for it once and sends it with the public key to
- * `POST /api/vault/fill-devices`; nothing here stores it. Turning a browser off in
- * the web Vault ("Browsers") ends this extension's sign-in; after signing in again
- * the person confirms their password again.
+ * Turning filling on here needs a step-up (owner ruling 2026-09-28, the
+ * 1Password/Bitwarden "unlock each new browser" bar), one of two equal ways:
+ * - the person's AI Matrx password, typed once in the side panel's Vault tab and
+ *   sent with the public key to `POST /api/vault/fill-devices` (never stored); or
+ * - passkey approval (T-30c): the card opens `/vault/approve-browser?key=<this
+ *   key's RFC 7638 thumbprint>` on the web app, the person approves with their
+ *   account passkey, and the next registration WITHOUT a password claims that
+ *   single-use approval. This is the only way for a Google-only account.
+ * Turning a browser off in the web Vault ("Browsers") ends this extension's
+ * sign-in; after signing in again the person confirms again.
  *
  * Wire contract (must match aidream `fill_devices.canonical_fill_message`, v2):
  *   "matrx-vault-fill/v2\n{surface}\n{itemId}\n{timestampMs}\n{nonce}\n{deviceId}\n{userId}\n{sha256hex(body)}"
@@ -25,9 +29,10 @@
  * Nothing here ever holds a vault value.
  */
 
-import { type ApiResult, apiPost } from '@/lib/api/client';
+import { type ApiResult, apiGet, apiPost } from '@/lib/api/client';
 import { getCurrentUser } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
+import { ENV } from '@/config/env';
 
 export type FillSurface = 'browser_login_materialize' | 'browser_authenticator_materialize';
 
@@ -35,10 +40,12 @@ const DB_NAME = 'matrx-vault-fill-device';
 const DB_VERSION = 1;
 const STORE = 'keys';
 const REGISTER_PATH = '/api/vault/fill-devices';
+const STEP_UP_METHODS_PATH = '/api/vault/fill-devices/step-up-methods';
+const APPROVE_PAGE_PATH = '/vault/approve-browser';
 const MESSAGE_PREFIX = 'matrx-vault-fill/v2';
 
 export const FILL_SETUP_REQUIRED_MESSAGE =
-  'Filling saved passwords is not turned on in this browser yet. Open the Vault tab in the AI Matrx side panel and confirm your password to turn it on.';
+  'Filling saved passwords is not turned on in this browser yet. Open the Vault tab in the AI Matrx side panel and confirm with your password or passkey to turn it on.';
 
 interface StoredDeviceKey {
   userId: string;
@@ -55,6 +62,7 @@ interface FillDeviceOut {
 
 export type FillDeviceFailure =
   | { kind: 'sign_in_required' }
+  | { kind: 'step_up_required'; message: string; noMethod: boolean }
   | { kind: 'setup_required'; message: string }
   | { kind: 'refused'; message: string }
   | { kind: 'unavailable'; message: string };
@@ -208,12 +216,49 @@ export async function markFillDeviceUnregistered(): Promise<void> {
   }
 }
 
+/** RFC 7638 thumbprint (SHA-256 hex) — must match aidream `jwk_thumbprint`. */
+export async function publicKeyThumbprint(jwk: StoredDeviceKey['publicJwk']): Promise<string> {
+  return sha256Hex(JSON.stringify({ crv: jwk.crv, kty: jwk.kty, x: jwk.x, y: jwk.y }));
+}
+
+/** The short code the approval page shows: first 16 hex in groups of four. */
+export function shortFingerprint(thumbprint: string): string {
+  return (thumbprint.slice(0, 16).match(/.{1,4}/g) ?? []).join(' ').toUpperCase();
+}
+
+/**
+ * The web page where the person approves THIS browser's key with their passkey.
+ * Creates the key if this browser has none yet (the key never leaves here; only
+ * its public thumbprint goes in the link).
+ */
+export async function passkeyApprovalLink(): Promise<
+  { url: string; code: string } | { url: null; code: null }
+> {
+  const user = await getCurrentUser();
+  if (!user?.id) return { url: null, code: null };
+  let record = await readKey(user.id).catch(() => undefined);
+  if (!record) record = await createKey(user.id);
+  const thumbprint = await publicKeyThumbprint(record.publicJwk);
+  const base = ENV.FRONTEND_URL.replace(/\/+$/, '');
+  const query = new URLSearchParams({ key: thumbprint, label: browserLabel() });
+  return { url: `${base}${APPROVE_PAGE_PATH}?${query}`, code: shortFingerprint(thumbprint) };
+}
+
+/** How the signed-in person can confirm it is them: password, passkey, or neither. */
+export async function fillStepUpMethods(): Promise<{ password: boolean; passkey: boolean } | null> {
+  const r = await apiGet<{ password: boolean; passkey: boolean }>(STEP_UP_METHODS_PATH, undefined, {
+    silent: true,
+  });
+  return r.ok && r.data ? { password: !!r.data.password, passkey: !!r.data.passkey } : null;
+}
+
 /**
  * Turn filling on in this browser: register (or re-bind) this browser's key with
- * the person's password as the step-up. The password is sent once and never kept.
+ * a step-up — the person's password (sent once, never kept) or, when `password`
+ * is omitted, the passkey approval the person gave this key on the web.
  */
 export async function turnOnFillingHere(
-  password: string,
+  password?: string,
 ): Promise<{ ok: true } | { ok: false; failure: FillDeviceFailure }> {
   const user = await getCurrentUser();
   if (!user?.id) return { ok: false, failure: { kind: 'sign_in_required' } };
@@ -226,7 +271,7 @@ export async function turnOnFillingHere(
         public_key_jwk: record.publicJwk,
         label: browserLabel(),
         extension_origin: typeof location !== 'undefined' ? location.origin : null,
-        password,
+        ...(password ? { password } : {}),
       },
       undefined,
       { silent: true },
@@ -243,6 +288,20 @@ export async function turnOnFillingHere(
       // This browser's old key was turned off: start over with a new key.
       await deleteKey(user.id);
       continue;
+    }
+    if (
+      !r.ok &&
+      r.status === 403 &&
+      (refusal.code === 'step_up_required' || refusal.code === 'no_step_up_method')
+    ) {
+      return {
+        ok: false,
+        failure: {
+          kind: 'step_up_required',
+          message,
+          noMethod: refusal.code === 'no_step_up_method',
+        },
+      };
     }
     if (!r.ok && r.status === 403) return { ok: false, failure: { kind: 'refused', message } };
     return { ok: false, failure: { kind: 'unavailable', message } };
