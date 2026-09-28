@@ -16787,17 +16787,19 @@
           ],
           "results": {
             "admin": {
-              "status": "fail",
+              "status": "pass",
               "evidence": [
                 "docs/stabilization/reports/showcase-initial-discovery-source-peer.json",
                 "docs/stabilization/reports/showcase-initial-discovery-revised-peer.json",
                 "docs/stabilization/reports/showcase-discovery-native-acceptance.json",
                 "docs/stabilization/reports/showcase-discovery-repeat-cleanup.json",
                 "docs/stabilization/reports/showcase-discovery-active-lifecycle.json",
-                "docs/stabilization/reports/showcase-discovery-empty-recovery.json"
+                "docs/stabilization/reports/showcase-discovery-empty-recovery.json",
+                "docs/stabilization/reports/showcase-run-timestamp-runtime.json",
+                "docs/stabilization/reports/showcase-run-timestamp-native.json"
               ],
-              "detail": "D49 original silent replay defect CLOSED: receipt-bound8b0f8adc native denial, initial capture, exact save/reopen, two independently observed10row replays, attached Stop/unmount/document replacement/tab-switch cleanup, empty-response remedy and subsequent useful recovery PASS. D50 observed stale saved-card run age after fresh completion and source-confirmed unawaited persistence/refresh race remains in-fix, so saved replay case FAIL pending that repair. Guest/member coverage remains linked T38; no wholefeature health claim.",
-              "run_id": "showcase-discovery-empty-recovery-20260928"
+              "detail": "Bounded admin T59 PASS: D49 initial exact capture/save/reopen/two10rowreplays, approval-denial, attached Stop/unmount/navigation/tab-switch cleanup and empty-response recovery passed on8b0f8adc. D50 nativeea12133a on explicitly reloaded9ea6687b repeats10rows with fresh1sage and remounted1mage; source/runtime error handling28tests and mutation proofs pass. D49/D50closed. Native forced metadata failure/exact DBtimestamp unmeasured; broader T57 old-document provenance, other methods and modes remain unverified, no wholefeaturehealth claim.",
+              "run_id": "showcase-d50-native-20260928"
             }
           }
         }
@@ -16828,7 +16830,8 @@
             "EXT-D-0046",
             "EXT-D-0047",
             "EXT-D-0049",
-            "EXT-D-0048"
+            "EXT-D-0048",
+            "EXT-D-0050"
           ],
           "run_ids": [
             "showcase-live-discovery-001",
@@ -16838,7 +16841,8 @@
             "showcase-installed-d48-network-001",
             "showcase-network-current-001",
             "showcase-d49-native-retest-001",
-            "showcase-d49-final-acceptance-20260928"
+            "showcase-d49-final-acceptance-20260928",
+            "showcase-d50-native-20260928"
           ],
           "retest_status": "fail"
         }
