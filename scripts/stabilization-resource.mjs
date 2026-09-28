@@ -32,6 +32,7 @@ import {
   reserveHeavyDirectory,
   resourceLeaseRoot,
 } from './stabilization-resource-lease.mjs';
+import { openResourceJournal } from './stabilization-resource-journal.mjs';
 
 const run = promisify(execFile);
 const repo = resolve(import.meta.dirname, '..');
@@ -43,6 +44,10 @@ const lock = join(root, 'heavy');
 const reclaimLock = join(root, 'reclaim');
 const holdPath = join(root, 'unsafe-hold.json');
 const [mode, ...raw] = process.argv.slice(2);
+let journal;
+let activeRunId;
+let resourceInvalid = false;
+let journalBroken = false;
 const flags = new Map();
 let command = [];
 for (let i = 0; i < raw.length; i++) {
@@ -53,8 +58,21 @@ for (let i = 0; i < raw.length; i++) {
   if (!raw[i].startsWith('--') || i + 1 >= raw.length) throw new Error('RESOURCE_ARGUMENT_INVALID');
   flags.set(raw[i], raw[++i]);
 }
-const emit = (code, extra = {}) =>
-  console.log(JSON.stringify({ schema: 1, at: new Date().toISOString(), ...extra, code }));
+const emit = (code, extra = {}) => {
+  const event = { schema: 1, at: new Date().toISOString(), ...extra, code };
+  if (journal) {
+    try {
+      journal.write(event);
+    } catch (error) {
+      journalBroken = true;
+      process.stderr.write(
+        `RESOURCE_JOURNAL_WRITE_FAILED runId=${activeRunId} Stop manual browser work; the permit is retained.\n`,
+      );
+      throw error;
+    }
+  }
+  console.log(JSON.stringify(event));
+};
 const fail = (code, extra = {}) => {
   emit(code, extra);
   process.exitCode = 2;
@@ -508,6 +526,13 @@ async function recoverOwnerless() {
 }
 
 async function main() {
+  // Establish durable evidence before any policy or command refusal. A reused ID
+  // cannot replace a prior run's history or obtain a resource permit.
+  if (['check', 'run', 'browser'].includes(mode)) {
+    activeRunId = flags.get('--run-id') ?? (mode === 'check' ? `check-${randomUUID()}` : undefined);
+    journal = openResourceJournal(repo, activeRunId);
+    emit('RESOURCE_JOURNAL_OPENED', { runId: activeRunId, path: journal.path });
+  }
   if (
     !['check', 'run', 'browser', 'recover-ownerless', 'recover-browser'].includes(mode) ||
     (mode === 'run' && !command.length) ||
@@ -518,7 +543,7 @@ async function main() {
   validateCommand();
   if (mode === 'recover-ownerless') return recoverOwnerless();
   if (mode === 'recover-browser') return recoverBrowser();
-  const runId = flags.get('--run-id');
+  const runId = activeRunId;
   const profileDir = resolve(flags.get('--profile-dir') ?? repo);
   if (mode !== 'check' && (!runId || !/^[A-Za-z0-9_.-]+$/.test(runId)))
     throw new Error('RESOURCE_RUN_ID_INVALID');
@@ -549,7 +574,6 @@ async function main() {
   let healthy = 0;
   let previous;
   let swapWindowAt = 0;
-  let resourceInvalid = false;
   const stopSignal = (signal) => {
     stop = true;
     emit('RESOURCE_STOP_REQUESTED', { runId, signal });
@@ -708,14 +732,36 @@ async function main() {
     } else if (groupId && !(await groupGone(groupId))) {
       emit('RESOURCE_GROUP_STILL_RUNNING', { runId, groupId });
       process.exitCode = 3;
-    } else await release(owner);
+    } else if (!journalBroken) await release(owner);
   }
 }
 
 try {
   await main();
 } catch (error) {
-  fail(error.message.startsWith('RESOURCE_') ? error.message : 'RESOURCE_MEASUREMENT_FAILED', {
-    detail: error.message,
-  });
+  const code = error.message.startsWith('RESOURCE_')
+    ? error.message
+    : 'RESOURCE_MEASUREMENT_FAILED';
+  try {
+    fail(code, { runId: activeRunId, detail: error.message });
+  } catch {
+    process.stderr.write(`RESOURCE_JOURNAL_WRITE_FAILED runId=${activeRunId ?? 'unavailable'}\n`);
+    process.exitCode = 3;
+  }
+} finally {
+  if (journal) {
+    try {
+      const exitCode = process.exitCode ?? 0;
+      emit('RESOURCE_FINAL_DECISION', {
+        runId: activeRunId,
+        resourceInvalid,
+        exitCode,
+        decision: exitCode === 0 && !resourceInvalid ? 'valid' : 'refused',
+      });
+      journal.close();
+    } catch {
+      process.stderr.write(`RESOURCE_JOURNAL_FINALIZE_FAILED runId=${activeRunId}\n`);
+      process.exitCode = 3;
+    }
+  }
 }

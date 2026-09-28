@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "report_id": "native-guard-journal",
+  "defect_id": "EXT-D-0051",
+  "scope": "Guard-owned resource evidence for check/run/browser invocations; no extension behavior or product test verdict changed",
+  "root_cause": "The resource guard emitted admission, watch, unsafe, stop and refusal events only to terminal stdout. Browser UI work could outlive or lose terminal capture, so a useful native observation had no durable resource verdict. The existing evidence recorder reads an already captured guard log and cannot recover missing terminal output.",
+  "change": "The guard opens a private, exclusive repo-local JSONL journal before policy and command admission; synchronously writes only bounded guard fields on every emit; refuses run-ID reuse; and writes a final resourceInvalid/exitCode/decision event after cleanup. Child stdout is never journaled. If journaling fails while a permit is held, stderr requires browser work to stop, the wrapper exits nonzero, and the lease remains held for the existing recovery procedure.",
+  "verification": {
+    "lightweight_test": "node --test scripts/test-stabilization-resource-journal.mjs: 2/2 pass, run outside guard because it invokes only a denied pre-permit command and writer operations; no heavy child ran",
+    "syntax": "node --check scripts/stabilization-resource.mjs and scripts/stabilization-resource-journal.mjs: pass",
+    "live_guard_probe": {
+      "run_id": "native-guard-journal-signal-20260928",
+      "journal_path": "docs/stabilization/resource-journals/native-guard-journal-signal-20260928.jsonl",
+      "journal_sha256": "0f2db397b12ed0d89a48ab20147c7ac167bc7b5a8e4f6ffad43013402ba4266b",
+      "profile_dir": "/Volumes/Samsung2TB/code/.stabilization-scratch",
+      "events": ["RESOURCE_JOURNAL_OPENED", "RESOURCE_ADMITTED", "RESOURCE_STOP_REQUESTED", "RESOURCE_BROWSER_STOP_CONFIRMED", "RESOURCE_FINAL_DECISION"],
+      "signal": "SIGINT immediately after admission",
+      "resource_invalid": false,
+      "wrapper_exit_code": 0,
+      "ui_actions": 0
+    }
+  },
+  "limits": "The live probe stopped immediately after admission and therefore did not reach a 15-second watch event. The writer test covers watch-event persistence, but a live watch and mid-run disk I/O failure were not induced. This change cannot reconstruct the lost guard evidence from showcase-structured-native-20260928 or convert that run to verified. No product tests, browser UI actions or extension rebuild were performed."
+}
