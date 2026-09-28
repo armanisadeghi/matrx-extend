@@ -16,12 +16,14 @@
   "actual": "Shared stringifyJson replacer truncates every string beyond50000characters, including CopyJSON/CopyforAI and Data rerun.",
   "severity": "S2: copied extraction data loses original content.",
   "priority": "P1: shared export correctness.",
-  "state": "in-fix",
+  "state": "fixed",
   "evidence": [
     "docs/stabilization/reports/showcase-export-source-audit.json",
-    "src/lib/clipboard/copy.ts:115"
+    "src/lib/clipboard/copy.ts:115",
+    "docs/stabilization/reports/showcase-export-correction-peer.json",
+    "docs/stabilization/reports/showcase-export-guarded-runtime.json"
   ],
-  "verification_status": "Source-proven formatter behavior; no nativeclipboard proof. Source-only fix assigned while resourceguard refusesruntime.",
+  "verification_status": "Fixed with guarded regression/compile/build proof, not nativeaccepted. Test installedJSON/AI fullbytes andTSVspreadsheet specialcells in Showcase andData; truthfulcopy UI remains pending.",
   "transition_history": [
     {
       "at": "2026-09-28T12:38:00.604065+00:00",
@@ -40,6 +42,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol source-only repair assigned; guarded regression and native acceptance remain mandatory."
+    },
+    {
+      "at": "2026-09-28T13:07:12.263693+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source peer428a7d97 accepts repairs; independent guardedb9de78ba originalformatter/feedbackRED thenrestoredGREEN12tests, compile anddirectdevbuild. Nativeclipboard retest pending."
     }
   ],
   "related_feature_ids": [

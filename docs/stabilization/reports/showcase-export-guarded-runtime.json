@@ -80,7 +80,7 @@
     }
   ],
   "resource_refusal_adjudication": "After the first build refusal, read-only inspection found no registered legacy heavy/unsafe-hold lease, no canonical heavy lease, and no live stabilization-resource.mjs process. The fresh-ID build attempt followed that changed condition; no lease or foreign process was removed.",
-  "d52_native_provenance": "The prior native Nuxt pass is recorded separately in docs/stabilization/reports/showcase-nuxt-admitted-native.json. This report adds only a guarded causal test proof; it does not claim another native run.",
+  "d52_native_provenance": "The accepted native Nuxt pass is docs/stabilization/reports/showcase-nuxt-admitted-native-retry.json (ad520e5b). The non-retry report is a preflight refusal, not a pass. This report adds guarded causal test proof only.",
   "limitations": [
     "D53/D54 clipboard bytes, spreadsheet paste, and CopyMenu visibility in an installed extension remain for native acceptance.",
     "The CopyMenu unit test replaces popover presentation and does not prove a real open popover retains the failure message."
