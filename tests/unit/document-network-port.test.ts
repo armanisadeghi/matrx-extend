@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 const operation = vi.hoisted(() => ({ run: vi.fn() }));
-vi.mock('@/lib/tools/dispatch', () => ({ runLocalSavedPattern: operation.run }));
 import { registerDocumentNetworkCaptureHost } from '@/lib/data-pattern/document-network-transport';
 let connect: (port: chrome.runtime.Port) => void;
 function port(sender: object = { id: 'extension' }) {
@@ -37,7 +36,7 @@ beforeEach(() => {
       },
     },
   });
-  registerDocumentNetworkCaptureHost();
+  registerDocumentNetworkCaptureHost(operation.run);
 });
 afterEach(() => vi.resetAllMocks());
 it('rejects foreign/content senders and the obsolete raw-start endpoint', async () => {

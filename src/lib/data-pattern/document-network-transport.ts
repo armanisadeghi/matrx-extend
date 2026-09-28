@@ -19,6 +19,12 @@ interface Options extends Request {
 interface Capture {
   close: () => Promise<void>;
 }
+type SavedPatternRunner = (
+  patternId: string,
+  tabId: number,
+  signal: AbortSignal,
+  progress: (note: string) => void,
+) => Promise<unknown>;
 const active = new Map<number, AbortController>();
 
 async function startOwned(options: Options): Promise<Capture> {
@@ -95,7 +101,7 @@ export function openDocumentNetworkCapture(options: Options): Promise<Capture> {
   return startOwned(options);
 }
 
-export function registerDocumentNetworkCaptureHost(): void {
+export function registerDocumentNetworkCaptureHost(runLocalSavedPattern: SavedPatternRunner): void {
   chrome.runtime.onConnect.addListener((port) => {
     if (port.name !== PORT || port.sender?.id !== chrome.runtime.id || port.sender.tab) return;
     let started = false;
@@ -120,8 +126,10 @@ export function registerDocumentNetworkCaptureHost(): void {
         return;
       }
       // Only saved identity crosses the port. Never trust client approval/context/config.
-      void import('@/lib/tools/dispatch')
-        .then(({ runLocalSavedPattern }) =>
+      // The SW bootstrap supplies its already-loaded dispatcher; lazy-importing it here
+      // creates a queue -> registry -> queue chunk cycle that can leave this Port pending.
+      void Promise.resolve()
+        .then(() =>
           runLocalSavedPattern(message.patternId!, message.tabId!, controller.signal, (note) =>
             reply({ kind: 'progress', note }),
           ),

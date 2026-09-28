@@ -80,7 +80,12 @@ import {
 } from '@/lib/stream/offscreen-proxy';
 import { setSupabaseSession } from '@/lib/supabase/client';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
-import { handleWebmcpCall, recordAssignedTab, startToolDispatcher } from '@/lib/tools/dispatch';
+import {
+  handleWebmcpCall,
+  recordAssignedTab,
+  runLocalSavedPattern,
+  startToolDispatcher,
+} from '@/lib/tools/dispatch';
 import type {
   VideoErrorEvent,
   VideoRequestPayload,
@@ -535,7 +540,7 @@ function registerHandlers(): void {
   });
 
   registerListPickerRelays();
-  registerDocumentNetworkCaptureHost();
+  registerDocumentNetworkCaptureHost(runLocalSavedPattern);
 
   // Demo recording: in-page event-capture function calls
   // chrome.runtime.sendMessage with a DEMO_EVENT envelope. We forward to

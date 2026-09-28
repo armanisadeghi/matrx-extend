@@ -92,7 +92,7 @@ import { SavedReplayApprovalHost } from '@/features/showcase/SavedReplayApproval
 import { PatternsTab } from '@/features/showcase/tabs/PatternsTab';
 import { registerDocumentNetworkCaptureHost } from '@/lib/data-pattern/document-network-transport';
 import { bumpPatternRun } from '@/lib/supabase/queries';
-import { startToolDispatcher } from '@/lib/tools/dispatch';
+import { runLocalSavedPattern, startToolDispatcher } from '@/lib/tools/dispatch';
 // Browser APIs and DB/auth are boundary doubles. Actual PatternsTab, saved runner,
 // port host, dispatcher, preparation, CDP client, capture core and row parser run.
 afterEach(async () => {
@@ -266,7 +266,7 @@ it.each([
       },
     });
     startToolDispatcher({ defaultPermissionMode: () => 'act' });
-    registerDocumentNetworkCaptureHost();
+    registerDocumentNetworkCaptureHost(runLocalSavedPattern);
     const drain = async () => {
       for (let i = 0; i < 100; i++) await Promise.resolve();
     };
