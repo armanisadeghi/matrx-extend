@@ -1,10 +1,11 @@
 import { usePagePrep } from '@/hooks/use-page-prep';
+import { refreshActiveTabIdentity } from '@/hooks/use-active-tab';
 import { Button } from '@ai-matrx/design-system';
 import { CheckCircle2, Loader2, Wand2 } from 'lucide-react';
 import { useState } from 'react';
 
 export function PrepareTab() {
-  const { report, running, error, run } = usePagePrep();
+  const { tab, report, running, error, run } = usePagePrep();
   const [dismissBanners, setDismissBanners] = useState(true);
   const [expandLoadMore, setExpandLoadMore] = useState(true);
   const [scrollToBottom, setScrollToBottom] = useState(true);
@@ -47,10 +48,12 @@ export function PrepareTab() {
           />
         </div>
 
-        <Button onClick={handleRun} disabled={running} className="w-full rounded-full">
+        <Button onClick={handleRun} disabled={running || !tab.pageKey} className="w-full rounded-full">
           {running ? <Loader2 className="animate-spin" /> : <Wand2 />}
           {running ? 'Preparing…' : 'Prepare page'}
         </Button>
+
+        {!tab.pageKey && <div className="rounded-xl bg-secondary/40 p-3 text-xs">{tab.identityError ?? 'Checking this page…'} <button type="button" className="underline" onClick={() => void refreshActiveTabIdentity()}>Retry</button></div>}
 
         {error && (
           <div className="rounded-xl bg-destructive/10 px-3 py-2 text-xs text-destructive">

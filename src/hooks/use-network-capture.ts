@@ -1,4 +1,4 @@
-import { useActiveTab } from '@/hooks/use-active-tab';
+import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
 import { openNetworkPageLoadDiscovery } from '@/lib/data-pattern/document-network-transport';
 import {
@@ -40,6 +40,7 @@ export function useNetworkCapture() {
   const [dropped, setDropped] = useState(0);
   const capturingRef = useRef(false);
   const tabIdRef = useRef<number | null>(null);
+  const capturePageKeyRef = useRef<string | null>(null);
   const droppedRef = useRef(0);
   const discoveryAbort = useRef<AbortController | null>(null);
 
@@ -60,7 +61,7 @@ export function useNetworkCapture() {
       // started on — patches persist on previously-tapped tabs for their
       // page lifetime, and without this check their traffic pollutes the
       // current capture (audit I1). The SW stamps tab_id on every event.
-      if (!capturingRef.current) return { ack: true };
+      if (!capturingRef.current || !isCurrentPageIdentity(capturePageKeyRef.current)) return { ack: true };
       if (event.tab_id == null || event.tab_id !== tabIdRef.current) return { ack: true };
       appendEvent(event);
       return { ack: true };
@@ -68,7 +69,7 @@ export function useNetworkCapture() {
   }, [appendEvent]);
 
   const start = useCallback(async () => {
-    if (!tab.id) return;
+    if (!tab.id || !tab.pageKey) return;
     discoveryAbort.current?.abort();
     setError(null);
     setEvents([]);
@@ -76,19 +77,22 @@ export function useNetworkCapture() {
     droppedRef.current = 0;
     setDropped(0);
     tabIdRef.current = tab.id;
+    capturePageKeyRef.current = tab.pageKey;
     try {
       // Relay first so the earliest tapped response has somewhere to go.
       await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
+        target: { tabId: tab.id, documentIds: [tab.documentId!] },
         func: networkRelayIsolated,
       });
+      if (!isCurrentPageIdentity(capturePageKeyRef.current)) return;
       capturingRef.current = true;
       await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
+        target: { tabId: tab.id, documentIds: [tab.documentId!] },
         world: 'MAIN',
         func: networkTapMain,
         args: [1_000_000],
       });
+      if (!isCurrentPageIdentity(capturePageKeyRef.current)) return;
       setInstalled(true);
       capturingRef.current = true;
       setCapturing(true);
@@ -97,7 +101,7 @@ export function useNetworkCapture() {
       setCapturing(false);
       setError(err instanceof Error ? err.message : String(err));
     }
-  }, [tab.id, tab.url]);
+  }, [tab.id, tab.url, tab.documentId, tab.pageKey]);
 
   const capturePageLoad = useCallback(async () => {
     if (!tab.id || discoveryAbort.current) return;
@@ -152,6 +156,20 @@ export function useNetworkCapture() {
   }, [tab.id]);
 
   const clear = useCallback(() => setEvents([]), []);
+
+  // Ordinary capture belongs to one document. Page-load discovery has its
+  // own approved reload/document contract and is left to that controller.
+  useEffect(() => {
+    capturePageKeyRef.current = null;
+    capturingRef.current = false;
+    setCapturing(false);
+    setInstalled(false);
+    if (!discoveryAbort.current) {
+      setEvents([]);
+      setSource(null);
+      setDropped(0);
+    }
+  }, [tab.pageKey]);
 
   useEffect(() => () => discoveryAbort.current?.abort(), [tab.id]);
 

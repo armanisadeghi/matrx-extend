@@ -52,7 +52,7 @@ const KIND_LABELS: Record<CandidateField['kind'], string> = {
 
 export function ListPatternTab() {
   const tab = useActiveTab();
-  const pageKey = `${tab.id ?? ''}:${tab.url ?? ''}`;
+  const pageKey = tab.pageKey ?? '';
   const latestPageKeyRef = useRef(pageKey);
   latestPageKeyRef.current = pageKey;
   const lastPageKeyRef = useRef(pageKey);
