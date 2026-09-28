@@ -64,7 +64,17 @@
     "mapping": "Generated markdown explains that role-level feature pass requires every applicable case to explicitly pass and every inventoried control to map to a case; absent results are unverified; closed/fixed defect is not native behavior proof. Script computes status from case.results and feature applicability/modes; stale feature.cells do not contribute status (they only contribute defect links).",
     "coverage": "Rendered tracker shows guest/member/admin separately and enumerates unmapped controls per feature; source audit count remains 426 controls without a case mapping.",
     "grouping": "Rendered overview groups by feature surface. Registered executor tools are explicitly separated from the visible Tools tab; this preserves actual tab/surface grouping rather than treating all tool APIs as one tab.",
-    "blocker": "At review time scripts/generate-stabilization-tracker.py has a SyntaxError at line 123 (invalid concatenation). Generated outputs are readable, but regeneration and exact source/output parity remain unverified until the script is repaired and rerun.",
-    "scope": "Static source/output inspection only; no browser or runtime verification."
+    "blocker": "Resolved on 2026-09-28: generator compiles and ran successfully, regenerating STATUS.md and STATUS.html. The earlier syntax error is no longer present.",
+    "scope": "Static source/output inspection only; no browser or runtime verification.",
+    "final_validation": {
+      "python_compile": "passed",
+      "generation": "passed",
+      "inventory_counts": "205 features, 724 cases, 1,309 controls; 426 control IDs unmapped",
+      "role_coverage": "guest/member/admin columns and per-case results rendered",
+      "overview": "37 tab/surface rows with per-role case-status counts and full-feature counts",
+      "html_case_rows": "724 case IDs rendered once each",
+      "control_gaps": "all source-unmapped control IDs checked against rendered docs; per-feature gap sections present",
+      "parity": "Generated headers agree with inventory source counts; generator successfully rewrote both outputs."
+    }
   }
 }
