@@ -30,6 +30,7 @@
 
 import * as cdp from '@/lib/cdp/client';
 import { log } from '@/lib/debug/log';
+import { assertScreenshotDocument, readScreenshotDocument } from '@/lib/screenshot/document';
 import { type ScreenshotProfile, resolveProfile } from '@/lib/screenshot/profiles';
 import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
@@ -135,6 +136,12 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
   run: async (args, ctx) => {
     const tabId = args.tab_id ?? (await getAssignedTabId(ctx));
     if (tabId == null) return { ok: false, reason: 'No active tab' };
+    let document;
+    try {
+      document = await readScreenshotDocument(tabId);
+    } catch (err) {
+      return { ok: false, reason: (err as Error).message };
+    }
     const att = await cdp.attach(tabId);
     if (!att.ok) return { ok: false, reason: att.reason };
     const profileName = (args.profile ?? 'auto') as ScreenshotProfile;
@@ -181,6 +188,7 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
         captureBeyondViewport: args.full_page,
         clip,
       });
+      await assertScreenshotDocument(document, false);
       const mediaType =
         format === 'jpeg' ? 'image/jpeg' : format === 'webp' ? 'image/webp' : 'image/png';
       // Provider image limits apply to decoded bytes, not the base64 text.
@@ -204,10 +212,11 @@ export const cdp_full_page_screenshot: ToolHandler<FullPageScreenshotArgs, unkno
       let fileUrl: string | null = null;
       let screenshotId: string | null = null;
       try {
-        const tab = await chrome.tabs.get(tabId);
+        const currentTab = await chrome.tabs.get(tabId);
         const { persistScreenshot } = await import('@/lib/screenshot/persist');
         const persisted = await persistScreenshot({
-          tab,
+          tab: { ...currentTab, url: document.url, title: document.title ?? undefined },
+          documentId: document.documentId,
           base64: result.data,
           mimeType: mediaType,
           // persistScreenshot only uses `format` for the filename extension;
