@@ -1,7 +1,10 @@
 {
   "schema": 1,
   "task_id": "showcase-ai-copy-native-retest",
-  "inventory": ["EXT-F-2005-T03"],
+  "inventory": [
+    "EXT-F-1012-T49",
+    "EXT-F-2005-T03"
+  ],
   "defect": "Showcase Copy for AI omitted the source URL in the pre-fix native Gutenberg run",
   "result": "PASS_NATIVE_ORIGINAL_AND_URL_VARIATION",
   "runtime": {
