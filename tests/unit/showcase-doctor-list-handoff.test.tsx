@@ -11,7 +11,8 @@ const pickerListeners = vi.hoisted(
 );
 
 vi.mock('@/hooks/use-active-tab', () => ({
-  useActiveTab: () => ({ id: page.id, url: page.url, title: 'Vegas EDM Event Calendar' }),
+  useActiveTab: () => ({ id: page.id, url: page.url, title: 'Vegas EDM Event Calendar', documentId: 'document-a', pageKey: 'document-a' }),
+  isCurrentPageIdentity: (key: string) => key === 'document-a',
 }));
 vi.mock('@/lib/storage/zustand-adapter', () => ({
   chromeLocalStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} },
@@ -280,6 +281,7 @@ describe('Showcase Doctor recommendation handoff', () => {
       useShowcaseTabStore.getState().offerListRecommendation({
         tabId: 77,
         url: diagnostic.url,
+        pageKey: 'document-a',
         listRoot: detectedRoot,
         itemSelector: detectedItem,
       }),

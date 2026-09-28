@@ -1,5 +1,5 @@
 import { useActiveOrganization } from '@/hooks/use-active-organization';
-import { useActiveTab } from '@/hooks/use-active-tab';
+import { isCurrentPageIdentity, refreshActiveTabIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import type { ExtractionSource } from '@/hooks/use-extraction';
 import { useUserTables } from '@/hooks/use-user-tables';
 import { isDbFailureError } from '@/lib/supabase/db-failure';
@@ -20,7 +20,7 @@ import {
   PopoverTrigger,
 } from '@ai-matrx/design-system';
 import { CheckCircle2, Loader2, Save, TriangleAlert } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 const NEW_TABLE = '__new__';
 const NO_TABLE = '__none__';
@@ -58,6 +58,10 @@ export function SaveAsPattern({
   onSaved,
 }: SaveAsPatternProps) {
   const tab = useActiveTab();
+  // This component mounts with the rows it offers to save. A navigation can
+  // precede React's next render, so the click also checks the shared snapshot.
+  const resultPageKey = useRef(tab.pageKey);
+  const resultIsCurrent = isCurrentPageIdentity(resultPageKey.current);
   const [open, setOpen] = useState(false);
   const [name, setName] = useState(defaultName);
   const [target, setTarget] = useState<string>(NO_TABLE);
@@ -91,6 +95,10 @@ export function SaveAsPattern({
 
   const handleSave = async () => {
     if (!host) return;
+    if (!isCurrentPageIdentity(resultPageKey.current)) {
+      setErr('This result belongs to a previous page. Capture the current page, then save it.');
+      return;
+    }
 
     // Capture the selected organization at the initiating click. A later
     // Settings change must not redirect this in-flight dataset create.
@@ -117,6 +125,7 @@ export function SaveAsPattern({
     try {
       let targetTableId: string | null = null;
 
+      if (!isCurrentPageIdentity(resultPageKey.current)) throw new Error('The page changed before Save. Capture it again.');
       if (target === NEW_TABLE) {
         // Throws on refusal (the user already saw the reason as a notice);
         // the catch at the bottom of this function renders the same sentence
@@ -151,6 +160,7 @@ export function SaveAsPattern({
         }
       }
 
+      if (!isCurrentPageIdentity(resultPageKey.current)) throw new Error('The page changed before Save. Capture it again.');
       const saved = await savePattern({
         // DD-131: the person clicked "Save as pattern" in Showcase — no actor header.
         authored_by: 'person',
@@ -190,6 +200,7 @@ export function SaveAsPattern({
 
         let result: { inserted: number };
         try {
+          if (!isCurrentPageIdentity(resultPageKey.current)) throw new Error('The page changed before rows could be saved. Capture it again.');
           result = await appendRows(targetTableId, operationOrganizationId, rows);
         } catch (appendErr) {
           // The pattern row IS saved — but the rows are not. Saying
@@ -218,14 +229,14 @@ export function SaveAsPattern({
     }
   };
 
-  const canSave = host && !saving && (rows.length > 0 || kind === 'manual_css');
+  const canSave = host && resultIsCurrent && !saving && (rows.length > 0 || kind === 'manual_css');
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <><Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="secondary"
-          disabled={disabled || !host}
+          disabled={disabled || !host || !resultIsCurrent}
           className="rounded-full"
           title={host ? 'Save as pattern' : 'No active page'}
         >
@@ -345,7 +356,7 @@ export function SaveAsPattern({
           </Button>
         </div>
       </PopoverContent>
-    </Popover>
+    </Popover>{!resultIsCurrent && <span className="text-xs text-muted-foreground">{tab.identityError ?? 'Checking the current page…'} <button type="button" className="underline" onClick={() => void refreshActiveTabIdentity()}>Retry</button></span>}</>
   );
 }
 

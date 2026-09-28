@@ -3,15 +3,17 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  tab: { id: 23, url: 'https://example.org/a', title: 'A' } as {
+  tab: { id: 23, url: 'https://example.org/a', title: 'A', documentId: 'document-a', pageKey: 'page-a' } as {
     id: number;
     url: string;
     title: string;
+    documentId: string;
+    pageKey: string;
   },
   preparePage: vi.fn(),
 }));
 
-vi.mock('@/hooks/use-active-tab', () => ({ useActiveTab: () => mocks.tab }));
+vi.mock('@/hooks/use-active-tab', () => ({ useActiveTab: () => mocks.tab, isCurrentPageIdentity: (key: string) => key === mocks.tab.pageKey, refreshActiveTabIdentity: vi.fn() }));
 vi.mock('@/lib/data-pattern/page-prep', () => ({
   defaultPagePrepConfig: { dismissBanners: true, expandLoadMore: true, scrollToBottom: true },
   preparePage: mocks.preparePage,
@@ -45,7 +47,7 @@ function deferred<T>() {
 }
 
 beforeEach(() => {
-  mocks.tab = { id: 23, url: 'https://example.org/a', title: 'A' };
+  mocks.tab = { id: 23, url: 'https://example.org/a', title: 'A', documentId: 'document-a', pageKey: 'page-a' };
   mocks.preparePage.mockReset();
 });
 
@@ -86,7 +88,7 @@ describe('Prepare current-attempt lifecycle', () => {
       });
       expect(hook.result.current.running).toBe(true);
 
-      mocks.tab = { id: 23, url: 'https://example.org/b', title: 'B' };
+      mocks.tab = { id: 23, url: 'https://example.org/b', title: 'B', documentId: 'document-b', pageKey: 'page-b' };
       hook.rerender();
       expect(hook.result.current).toMatchObject({ report: null, error: null, running: false });
       await act(async () => {
@@ -216,4 +218,29 @@ describe('Prepare current-attempt lifecycle', () => {
     expect(second.result.current.report).toEqual(report(22, 'fresh'));
     expect(second.result.current.error).toBeNull();
   });
+
+  it.each(['resolve', 'reject'] as const)(
+    'same-URL document replacement hides A and rejects its late %s',
+    async (settlement) => {
+      const pending = deferred<NonNullable<Report>>();
+      mocks.preparePage.mockReturnValueOnce(pending.promise).mockResolvedValueOnce(report(31, 'B'));
+      const hook = renderHook(() => usePagePrep());
+      let oldCompletion!: Promise<Report>;
+      act(() => { oldCompletion = hook.result.current.run(); });
+      act(() => {
+        mocks.tab = { ...mocks.tab, documentId: 'document-b', pageKey: 'page-b' };
+        hook.rerender();
+      });
+      expect(hook.result.current.report).toBeNull();
+      await act(async () => {
+        if (settlement === 'resolve') pending.resolve(report(90, 'A'));
+        else pending.reject(new Error('old document failed'));
+        await oldCompletion;
+      });
+      expect(hook.result.current.report).toBeNull();
+      expect(hook.result.current.error).toBeNull();
+      await act(async () => { await hook.result.current.run(); });
+      expect(hook.result.current.report).toEqual(report(31, 'B'));
+    },
+  );
 });

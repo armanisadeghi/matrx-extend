@@ -1,0 +1,52 @@
+{
+  "id": "EXT-D-0059",
+  "status": "PARTIAL_SOURCE_CHECKPOINT_UNVERIFIED",
+  "accepted_outcome_met": false,
+  "checkpoint": "bb78e844f2027cf7117dfaa7037ead69c01425fe",
+  "summary": "One shared useActiveTab external-store snapshot now sequences active-tab query and Chrome top-frame getFrame, withholds page results at top-frame navigation start, admits only a resolved documentId plus URL, rejects old async reads, and exposes an unresolved reason and Retry. Document-scoped admission was added to several live-result consumers. This is not yet a complete census migration or verified fix.",
+  "migrated_live_result_consumers": [
+    "use-page-prep / PrepareTab: document-targeted injection, immediate old-report withholding, late-result rejection, unresolved remedy",
+    "use-extraction / Snapshot and generic Showcase extraction: document-targeted detection and run, detection/result invalidation, late-result rejection, unresolved Snapshot remedy",
+    "use-auto-extract / auto-extract store / DataView auto rows: document-keyed cache and run admission",
+    "DataView manual rows and picker: document-keyed preview, late-result admission, picker invalidation and targeted injection",
+    "use-ai-extraction: document-targeted capture and stream/result invalidation",
+    "use-pattern-from-data: document-targeted sample/probe and stream/result invalidation",
+    "use-network-capture ordinary tap: document-targeted injection and event admission; approved page-load discovery controller retained",
+    "Showcase Recipes, Framework, Patterns, ListPattern, Doctor: document-keyed preview/source/recommendation admission",
+    "SaveAsPattern: result-mount document admission checked before save mutations, with visible retry remedy",
+    "SeoView live audit: document-keyed preview/save admission; URL history remains URL-scoped"
+  ],
+  "intentionally_url_or_domain_scoped": [
+    "use-page-recognition saved-by-URL lookup",
+    "Showcase domain pattern and recipe catalog fetch",
+    "SeoView saved-audit history",
+    "ScreenshotsView saved gallery lookup",
+    "HighlightView saved highlights lookup",
+    "TasksView active-tab URL matching",
+    "VaultView domain credential lookup"
+  ],
+  "pending_live_consumers_and_risks": [
+    "ScrapeView/use-scrape and use-auto-scrape retain URL-scoped live capture/cache and can carry same-URL A content into B; their capture and save flows still need document binding.",
+    "ScreenshotsView captureNow can persist a capture after a same-URL document replacement; saved gallery lookup itself is intentionally URL-scoped.",
+    "HighlightView live picker/selection, ShowcaseView shell, and sidepanel App live context need source audit for document-bound state.",
+    "Some runPattern modes use runInExtension and saved run-interactive paths whose injection is not document-targeted; result admission blocks stale display in migrated surfaces but side effects between click and execution need audit.",
+    "Network page-load discovery retains its approved replay contract, but after replay settles the resulting events need a native source-identity check.",
+    "Existing mocked useActiveTab fixtures across Showcase, Network, SaveAsPattern, and DataView suites need migration to documentId/pageKey and isCurrentPageIdentity; only selected fixtures were updated.",
+    "Unresolved identity remedies are present in Prepare, Snapshot, SaveAsPattern, and SEO, but not every page-result control yet."
+  ],
+  "authored_regression_tests_unrun": [
+    "tests/unit/active-tab-document-identity.test.tsx: same-URL A/B, title/subframe churn, SPA URL change, out-of-order activation, unresolved frame",
+    "tests/unit/prepare-lifecycle.test.tsx: same-URL A/B with late success and failure",
+    "tests/unit/extraction-document-identity.test.tsx: Snapshot hook same-URL A/B with late success and failure"
+  ],
+  "verification": {
+    "d59-compile-1": "Guard admitted; tsc exited 0 before consumer migration.",
+    "d59-compile-2": "Guard admitted; tsc exited 1 because use-auto-extract passed string|null to runPattern and a saved-run-data-view-health fixture lacked pageKey. Both source issues were corrected after this run. Wrapper final decision was refused, so no further heavy run was attempted.",
+    "native_browser": "Not run in this source-only lane.",
+    "journals": [
+      { "path": "docs/stabilization/resource-journals/d59-compile-1.jsonl", "sha256": "59178a791bffc332f3caa9f8732a4170c82fc7c8224a82d8d7f9c61710ec2bdc" },
+      { "path": "docs/stabilization/resource-journals/d59-compile-2.jsonl", "sha256": "98d85436643b455f6de83ce45d52284247fc0f4c4fcc465e69dae0f0408a2f5a" }
+    ]
+  },
+  "next_gate": "Fresh independent source review, fixture completion, guarded compile and focused regressions after resource permission, then native installed-extension Chrome Reload on a real HTTPS page. Do not mark D59 complete from this checkpoint."
+}

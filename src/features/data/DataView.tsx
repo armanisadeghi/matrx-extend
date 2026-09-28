@@ -61,6 +61,9 @@ export function DataView() {
 
   useEffect(() => {
     runSequence.current += 1;
+    pickTabRef.current = null;
+    setPicking(false);
+    setPickedFields([]);
     setRunSource(null);
     setRows(null);
     setRunning(false);
@@ -160,13 +163,13 @@ export function DataView() {
   }, [dataHandoff, setDataHandoff]);
 
   const enterPicker = async () => {
-    if (!tab.id || picking) return;
+    if (!tab.id || !tab.documentId || !tab.pageKey || picking) return;
     setPicking(true);
     setPickedFields([]);
     pickTabRef.current = tab.id;
     try {
       await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
+        target: { tabId: tab.id, documentIds: [tab.documentId] },
         files: ['content-scripts/data-picker.js'],
       });
     } catch (err) {
@@ -176,10 +179,11 @@ export function DataView() {
   };
 
   const handleSavePattern = async () => {
-    if (!host || pickedFields.length === 0) return;
+    if (!host || pickedFields.length === 0 || !isCurrentPageIdentity(pageKey)) return;
     setSaving(true);
     setError(null);
     try {
+      if (!isCurrentPageIdentity(pageKey)) return;
       const r = await savePattern({
         // DD-131: the person clicked Save in the Data tab — no actor header.
         authored_by: 'person',
