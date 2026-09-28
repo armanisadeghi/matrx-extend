@@ -18,11 +18,11 @@
   },
   "resource_guard": {
     "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
-    "admitted_at_utc": "2026-09-28T09:19:05.482Z",
-    "watch_samples": 14,
+    "admitted_at_utc": "2026-09-28T08:59:02.633Z",
+    "watch_samples": 51,
     "unsafe_samples": 0,
-    "stop_requested_at_utc": "2026-09-28T09:22:51.909Z",
-    "terminal_at_utc": "2026-09-28T09:22:51.909Z",
+    "stop_requested_at_utc": "2026-09-28T09:12:57.791Z",
+    "terminal_at_utc": "2026-09-28T09:12:57.792Z",
     "terminal_confirmed": true,
     "full_sample_timestamps": "docs/stabilization/reports/showcase-discovery-native-acceptance.json#guard.healthy_watch_samples_utc"
   },
@@ -40,11 +40,9 @@
       "id": "667a7a91-604a-41cd-a289-b3327a3e22ca",
       "selected_path": "hits",
       "replay_1": "PASS, 10 rows; first row matched visible public values",
-      "replay_2": "PASS, already terminal when re-inspected; the saved recipe displayed 10 rows and the first row matched the live page"
+      "replay_2": "approved, one request matched, capture window still checking at final UI observation; terminal state unverified"
     },
-    "stop_cancel_pending_page_load": "PASS; 0 responses while awaiting approval, Stop yielded Replay cancelled and Page-load capture cancelled; no approval or reload",
-    "panel_unmount_pending_page_load": "PASS; closing panel while awaiting approval removed the pending prompt, left HN loaded, and showed no debugger infobar; active attached capture untested",
-    "debugger_cleanup": "PASS for the terminal replay and canceled pending requests; no debugger infobar visible.",
+    "debugger_cleanup": "Completed runs showed the infobar disappear; cleanup after the second hits replay is unverified.",
     "observed_regressions": [],
     "whole_feature_closure_inferred": false
   }

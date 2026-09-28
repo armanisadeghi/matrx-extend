@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-discovery-repeat-cleanup-20260928",
+  "status": "NATIVE_PARTIAL",
+  "report": "docs/stabilization/reports/showcase-discovery-repeat-cleanup.json",
+  "prior_acceptance_report": "docs/stabilization/reports/showcase-discovery-native-acceptance.json",
+  "artifact": {
+    "build_receipt": "docs/stabilization/runs/showcase-discovery-corrected-artifact-20260928.json",
+    "path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "extension_id_observed_in_sidepanel_url": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256_after_ui_session": "8b0f8adc1e576451da4d549780958766f7bb7e51b545e8dd421d36eb6e65ee45",
+    "tree_matches_build_receipt": true
+  },
+  "resource_guard": {
+    "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "admitted_at_utc": "2026-09-28T09:19:05.482Z",
+    "admission_sample_recorded": true,
+    "healthy_watch_samples": 13,
+    "unsafe_samples": 0,
+    "stop_requested_at_utc": "2026-09-28T09:22:51.909Z",
+    "terminal_at_utc": "2026-09-28T09:22:51.909Z",
+    "terminal_confirmed": true,
+    "sample_timestamps": "docs/stabilization/reports/showcase-discovery-repeat-cleanup.json#/resource_guard/healthy_watch_samples_utc"
+  },
+  "results": {
+    "visible_10_rows_and_cleanup": "PASS for the visible UI state and no-infobar observation; run attribution of cached rows is unverified",
+    "second_replay_attribution": "UNVERIFIED",
+    "stop_cancel_pending_approval": "PASS",
+    "panel_unmount_pending_approval": "PASS; attached debugger and active capture untested",
+    "observed_regressions": [],
+    "whole_feature_closure_inferred": false
+  }
+}

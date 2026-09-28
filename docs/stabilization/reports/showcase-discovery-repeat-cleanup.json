@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-discovery-repeat-cleanup-20260928",
+  "at_utc": "2026-09-28T09:27:41Z",
+  "status": "PARTIAL",
+  "scope": "Repeat-lane UI inspection and pending-approval cleanup only; no full-feature closure claim.",
+  "prior_acceptance_report": "docs/stabilization/reports/showcase-discovery-native-acceptance.json",
+  "artifact": {
+    "build_receipt": "docs/stabilization/runs/showcase-discovery-corrected-artifact-20260928.json",
+    "artifact_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "extension_id_observed_in_sidepanel_url": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256_after_ui_session": "8b0f8adc1e576451da4d549780958766f7bb7e51b545e8dd421d36eb6e65ee45",
+    "matches_build_receipt": true
+  },
+  "resource_guard": {
+    "run_id": "showcase-discovery-repeat-20260928",
+    "mode": "browser",
+    "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "admitted_at_utc": "2026-09-28T09:19:05.482Z",
+    "admission_sample": {
+      "pressure_level": 1,
+      "available_memory_gib": 13.44,
+      "required_memory_gib": 4,
+      "one_minute_load": 2.17,
+      "logical_cpus": 10,
+      "cpu_busy_fraction": 0.1337,
+      "repo_free_gib": 1673.119945,
+      "profile_free_gib": 26.0398,
+      "reasons": []
+    },
+    "healthy_watch_samples_utc": [
+      "2026-09-28T09:19:21.787Z",
+      "2026-09-28T09:19:38.101Z",
+      "2026-09-28T09:19:54.430Z",
+      "2026-09-28T09:20:10.765Z",
+      "2026-09-28T09:20:27.075Z",
+      "2026-09-28T09:20:43.387Z",
+      "2026-09-28T09:20:59.704Z",
+      "2026-09-28T09:21:16.028Z",
+      "2026-09-28T09:21:32.358Z",
+      "2026-09-28T09:21:48.689Z",
+      "2026-09-28T09:22:05.027Z",
+      "2026-09-28T09:22:21.355Z",
+      "2026-09-28T09:22:37.684Z"
+    ],
+    "unsafe_samples": 0,
+    "watch_reasons": [],
+    "stop_requested_at_utc": "2026-09-28T09:22:51.909Z",
+    "terminal_at_utc": "2026-09-28T09:22:51.909Z",
+    "terminal_confirmed": true
+  },
+  "observations": {
+    "visible_hits_rows_state": {
+      "status": "PASS_SCREEN_STATE_ONLY",
+      "observed": "The saved hits recipe displayed OK, `last run 7m ago · 10 rows`, and a 10-row table. The first row matched the visible HN story's title, author, points, and comments. This confirms the screen state and its content, not which run produced the cached rows."
+    },
+    "second_replay_attribution": {
+      "status": "UNVERIFIED",
+      "basis": "The prior acceptance report records that the second run matched one request and was still checking at 09:12:39Z. The repeat-lane UI displayed only a relative `7m ago` label and 10 cached rows; it exposed no absolute timestamp or explicit completion identifier tying those rows to that second run."
+    },
+    "stop_cancel_pending_page_load": {
+      "status": "PASS",
+      "observed": "With the page-load approval pending and 0 responses captured, clicked Stop. UI showed `Replay cancelled.` and `Page-load capture cancelled.`; no approval was granted and the page was not reloaded."
+    },
+    "panel_unmount_pending_page_load": {
+      "status": "PASS",
+      "observed": "Started a second page-load request and closed the side panel while its approval was pending. The prompt and capture status disappeared on unmount; the HN page remained loaded. This covers pending approval only, not an attached debugger or active response capture."
+    },
+    "debugger_cleanup": {
+      "status": "PASS_VISIBLE_STATE",
+      "observed": "The terminal-looking rows view and post-unmount HN page screenshots showed no Chrome debugger infobar. No debugger approval was granted during the cancellation and unmount checks."
+    },
+    "observed_regressions": [],
+    "not_exercised": [
+      "Attribution of the visible 10 rows to the second replay.",
+      "Panel unmount after debugger attachment or while response capture is active.",
+      "Navigation/document change and tab switching."
+    ],
+    "whole_feature_closure": false
+  }
+}
