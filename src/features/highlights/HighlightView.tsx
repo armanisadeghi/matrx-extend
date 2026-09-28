@@ -13,8 +13,8 @@
 
 import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { confirmDestructive } from '@/lib/destructive/confirm';
-import { setHighlighterMode, startHighlighter, stopHighlighter } from '@/lib/highlights/control';
-import { deleteHighlight, listHighlightsForUrl, listMyHighlights } from '@/lib/highlights/queries';
+import { setHighlightSessionMode, startHighlightSession, stopHighlightSession } from '@/lib/highlights/session';
+import { deleteHighlight, listMyHighlights } from '@/lib/highlights/queries';
 import type { HighlightListItem, HighlightMode } from '@/lib/highlights/types';
 import { useHighlightStore } from '@/state/highlights';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
@@ -40,9 +40,8 @@ export function HighlightView() {
   const items = useHighlightStore((s) => s.items);
   const setItems = useHighlightStore((s) => s.setItems);
   const overlayActive = useHighlightStore((s) => s.overlayActive);
-  const overlayTabId = useHighlightStore((s) => s.overlayTabId);
+  const overlaySession = useHighlightStore((s) => s.overlaySession);
   const mode = useHighlightStore((s) => s.mode);
-  const setMode = useHighlightStore((s) => s.setMode);
   const attachedIds = useHighlightStore((s) => s.attachedIds);
   const attach = useHighlightStore((s) => s.attach);
   const detach = useHighlightStore((s) => s.detach);
@@ -84,19 +83,18 @@ export function HighlightView() {
     return items.filter((h) => h.url === tab.url);
   }, [items, scope, host, tab.url]);
 
-  const isActiveHere = overlayActive && overlayTabId === tab.id;
+  const isActiveHere = overlayActive && overlaySession?.pageKey === tab.pageKey && tab.identityStatus === 'ready';
+  const isStartingHere = overlaySession?.status === 'starting' && overlaySession.pageKey === tab.pageKey;
+  const isElsewhere = !!overlaySession && overlaySession.pageKey !== tab.pageKey;
 
   const handleToggle = async () => {
-    if (!tab.id) return;
+    if (tab.identityStatus !== 'ready' || !tab.id || !tab.documentId || !tab.pageKey) return;
     setBusy(true);
     try {
       if (isActiveHere) {
-        await stopHighlighter(tab.id);
-        useHighlightStore.getState().setOverlay({ active: false });
+        await stopHighlightSession();
       } else {
-        const existing = tab.url ? await listHighlightsForUrl(tab.url) : [];
-        const ok = await startHighlighter(tab.id, existing);
-        if (ok) useHighlightStore.getState().setOverlay({ active: true, tabId: tab.id });
+        await startHighlightSession();
       }
     } finally {
       setBusy(false);
@@ -104,8 +102,7 @@ export function HighlightView() {
   };
 
   const handleMode = async (m: HighlightMode) => {
-    setMode(m);
-    if (isActiveHere && tab.id) await setHighlighterMode(tab.id, m);
+    await setHighlightSessionMode(m);
   };
 
   const handleDelete = async (h: HighlightListItem) => {
@@ -198,7 +195,7 @@ export function HighlightView() {
         <div className="flex items-center gap-2">
           <Button
             onClick={() => void handleToggle()}
-            disabled={busy || !tab.id}
+            disabled={busy || tab.identityStatus !== 'ready' || isStartingHere}
             className="flex-1 rounded-full"
             variant={isActiveHere ? 'secondary' : 'default'}
           >
@@ -206,6 +203,13 @@ export function HighlightView() {
             {isActiveHere ? 'Stop highlighting' : 'Highlight this page'}
           </Button>
         </div>
+        {isElsewhere && (
+          <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+            <span>Highlighting is active on another page.</span>
+            <button className="shrink-0 underline" onClick={() => void stopHighlightSession()}>Stop there</button>
+          </div>
+        )}
+        {tab.identityStatus !== 'ready' && tab.identityError && <p role="status" className="text-xs text-muted-foreground">{tab.identityError}</p>}
         <div className="flex items-center gap-1 rounded-full bg-secondary/50 p-0.5 text-xs">
           <ModeButton active={mode === 'text'} onClick={() => void handleMode('text')}>
             <Type className="size-3.5" /> Text
@@ -259,7 +263,7 @@ export function HighlightView() {
       <div className="flex-1 overflow-y-auto px-3">
         {visible.length === 0 ? (
           <div className="grid place-items-center px-4 py-16 text-center text-sm text-muted-foreground">
-            {overlayActive
+            {isActiveHere
               ? 'Select text or click elements on the page to capture highlights.'
               : 'Start the highlighter, then select text or click elements to capture.'}
           </div>
