@@ -1198,6 +1198,14 @@ Every entry follows this shape:
   The panel must show a visible error that says to reload and retry, with no
   green “Prepared” report. Restore normal injection and run again with known
   banner/load-more/scroll effects; the actual counts and duration must appear.
+- **Current-attempt lifecycle (EXT-D-0058):** Prepare once successfully, then
+  make a retry's script injection fail. The old green report clears as soon as
+  the retry starts; only the failure appears afterward. Start a delayed Prepare
+  on page A, navigate the active tab to page B, then let A finish successfully
+  or fail. B must show neither A's report nor A's error, and must allow a fresh
+  Prepare. Resetting or closing the Prepare tab while a run is pending must
+  leave no stale report when it returns. Also retry normally after a failure:
+  the new report must replace the error and show the current page's counts.
 
 ### Showcase — Snapshot / JSON-LD / Microdata tabs
 - **What it does:** One-shot metadata grab / typed JSON-LD blocks / Schema.org

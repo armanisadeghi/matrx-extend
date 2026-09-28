@@ -1,0 +1,28 @@
+{
+  "id": "EXT-D-0058",
+  "status": "source_repaired_guarded_tests_green_native_pending",
+  "cause": "usePagePrep kept its previous report when a retry began and allowed any pending completion to write report, error, or running state after a newer run, reset, navigation, or unmount.",
+  "changes": [
+    "A new Prepare attempt clears the previous report and error immediately.",
+    "Only the latest mounted attempt for the current tab ID and URL may commit visible report, error, or completion state.",
+    "Navigation, reset, and unmount invalidate pending attempt completions; a page-keyed visible state hides the old page's status before the reset effect completes.",
+    "Added connected hook and Prepare UI tests using deferred page-preparation promises and a manual feature-test procedure."
+  ],
+  "evidence": [
+    "Guarded red run prepare-d58-red-20260928-01: 5 failed, 1 passed; failures showed retained prior success, old page busy state, stale overlapping report, and reset busy state.",
+    "Guarded green run prepare-d58-green-20260928-01: 6 passed.",
+    "Guarded final run prepare-d58-final-20260928-01: 6 passed after typed fixture correction.",
+    "Guarded compile prepare-d58-compile-20260928-02: tsc --noEmit passed. The first compile caught and led to correction of a missing selector in the test fixture."
+  ],
+  "files": [
+    "src/hooks/use-page-prep.ts",
+    "tests/unit/prepare-lifecycle.test.tsx",
+    "docs/feature-tests.md"
+  ],
+  "sibling_census": "useExtraction already invalidates by tab ID and URL and guards run sequence; other Showcase hooks have different async responsibilities. This repair is scoped to Prepare's proven defect.",
+  "gaps": [
+    "No native browser or localhost exercise in this lane; independent installed verification remains open.",
+    "Same-tab same-URL reload has no document identity in useActiveTab. Both Prepare and Snapshot share that broader identity gap; tab ID and URL guards do not resolve it.",
+    "This repair suppresses stale UI results; it does not cancel the injected page script."
+  ]
+}
