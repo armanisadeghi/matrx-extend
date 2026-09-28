@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "task_id": "showcase-structured-journal-retest-20260928",
+  "lane": "structured native execution",
+  "model_effort": "GPT-6 Luna / medium",
+  "status": "BOUNDED_PARTIAL_PASS",
+  "scope": "Admin primary-Chrome replay and filter acceptance for existing Showcase JSON-LD and OG recipes on Google's public Article structured-data page. This is not whole-feature closure.",
+  "target": {
+    "url": "https://developers.google.com/search/docs/appearance/structured-data/article",
+    "changed_page_url": "https://developers.google.com/search/docs/appearance/structured-data/article/nonexistent-20260928",
+    "browser": "Primary Google Chrome",
+    "chrome_version": "153.0.8010.54",
+    "profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "identity": "admin@admin.com visible in the extension panel",
+    "localhost": false,
+    "devtools_open": false
+  },
+  "build": {
+    "artifact_path": ".output/chrome-mv3-dev",
+    "artifact_version": "0.2.114",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "receipt": "docs/stabilization/runs/showcase-d50-runtime-artifact-20260928.json",
+    "chrome_source_identity": "chrome://extensions showed enabled Matrx Extend, matching ID/version, and loaded-from path .output/chrome-mv3-dev",
+    "explicit_reload": "Chrome extensions details displayed Reloaded after the explicit Reload action; the article tab was then refreshed."
+  },
+  "resource_guard": {
+    "command": "node scripts/stabilization-resource.mjs browser --run-id showcase-structured-journal-retest-20260928 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "journal": "docs/stabilization/resource-journals/showcase-structured-journal-retest-20260928.jsonl",
+    "journal_sha256": "5617fa4e5befcdcb9feeed69adcebfa2165e9ff7003a2b87661d9ab74bd49710",
+    "admitted_at_utc": "2026-09-28T11:29:10.304Z",
+    "recovery": "Three healthy samples satisfied the existing unsafe-hold recovery requirement before admission.",
+    "watch_evidence": "Every retained watch event was RESOURCE_WATCH_HEALTHY; no unsafe event or stop-at-boundary request occurred.",
+    "stop_confirmed_at_utc": "2026-09-28T11:34:40.659Z",
+    "terminal_exit_code": 0,
+    "resource_invalid": false,
+    "decision": "valid"
+  },
+  "observations": [
+    {
+      "case": "EXT-F-1012-T10",
+      "verdict": "PASS_BOUNDED",
+      "result": "Clicking the sole rendered BreadcrumbList type chip populated the filter. Clearing the field and extracting retained one row; BreadcrumbList filtering also returned the one matching block; NonexistentType showed 'No matching JSON-LD blocks.'"
+    },
+    {
+      "case": "EXT-F-1012-T11",
+      "verdict": "PASS_BOUNDED",
+      "result": "Blank and BreadcrumbList filters each returned one live row. The row's @type was BreadcrumbList and itemListElement contained Search Central, Documentation, and the current Article page URL. NonexistentType returned the visible no-match state."
+    },
+    {
+      "case": "EXT-F-1012-T40",
+      "verdict": "PASS_BOUNDED_REPLAY",
+      "result": "After extension reload and public-page refresh, the existing saved JSON-LD recipe codex-structured-native-20260928-jsonld-breadcrumb was replayed from Showcase Patterns. It returned one BreadcrumbList row with the current page's breadcrumb links. No recipe was created or deleted."
+    },
+    {
+      "case": "EXT-F-1012-T41",
+      "verdict": "PARTIAL_PASS",
+      "result": "After extension reload and public-page refresh, the existing saved OG snapshot recipe codex-structured-native-20260928-og-metadata was replayed and returned one row. The displayed title matched Chrome's visible article document title; OG values included Google for Developers, the Article title, current page URL, and the current social image. The replay values were not independently compared field-by-field against a separate DOM metadata read."
+    },
+    {
+      "case": "changed-page-stale-row-control",
+      "verdict": "PASS_FOR_EXERCISED_PATH",
+      "result": "Navigated the same Chrome tab to the listed same-host 404 path. The JSON-LD tab displayed 'No JSON-LD on this page'. A fresh Snapshot capture returned one row with the 404 title, its current URL, current OG/Twitter image, and Google for Developers site name. This was a fresh Snapshot capture, not a replay of either saved recipe on the changed page."
+    }
+  ],
+  "saved_recipes": [
+    {
+      "name": "codex-structured-native-20260928-jsonld-breadcrumb",
+      "id": "585785a0-862b-45bb-85bc-08da355f6f70",
+      "kind": "json_ld",
+      "replay_observed": true
+    },
+    {
+      "name": "codex-structured-native-20260928-og-metadata",
+      "id": "6501466d-a03e-4bc4-b2d8-dbf1cbb637f9",
+      "kind": "og_meta",
+      "replay_observed": true
+    }
+  ],
+  "limitations": [
+    "No independent field-by-field DOM metadata comparison was captured for the Article page.",
+    "The changed-page check used live JSON-LD empty state and a new Snapshot capture; saved-recipe replay on the 404 page was not run.",
+    "Recipe editor reopen, draft/save variation, auth transitions, service errors, guest/member modes, metadata mutation on the same route, and whole-feature closure remain unverified.",
+    "No screenshots, credentials, tokens, or unrelated page content were retained."
+  ],
+  "source_changes": [],
+  "commit_policy": "Exact evidence paths only; do not push (CI red)."
+}

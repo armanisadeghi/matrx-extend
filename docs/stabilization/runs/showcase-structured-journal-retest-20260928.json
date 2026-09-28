@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-structured-journal-retest-20260928",
+  "task_id": "showcase-structured-journal-retest-20260928",
+  "started_at_utc": "2026-09-28T11:28:00.694Z",
+  "ended_at_utc": "2026-09-28T11:34:40.666Z",
+  "status": "BOUNDED_PARTIAL_PASS",
+  "case_ids": [
+    "EXT-F-1012-T10",
+    "EXT-F-1012-T11",
+    "EXT-F-1012-T40",
+    "EXT-F-1012-T41"
+  ],
+  "receipt": {
+    "source_receipt": "docs/stabilization/runs/showcase-d50-runtime-artifact-20260928.json",
+    "artifact_path": ".output/chrome-mv3-dev",
+    "artifact_version": "0.2.114",
+    "artifact_tree_sha256": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "chrome_version": "153.0.8010.54",
+    "profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "auth_mode": "signed-in admin; admin@admin.com visible in side panel",
+    "target_page": "https://developers.google.com/search/docs/appearance/structured-data/article",
+    "changed_page": "https://developers.google.com/search/docs/appearance/structured-data/article/nonexistent-20260928",
+    "mocking_or_interception": "No response interception or mocked page data observed; product UI read live public page content."
+  },
+  "resource_admission": {
+    "journal": "docs/stabilization/resource-journals/showcase-structured-journal-retest-20260928.jsonl",
+    "journal_sha256": "5617fa4e5befcdcb9feeed69adcebfa2165e9ff7003a2b87661d9ab74bd49710",
+    "admitted": true,
+    "watch_events": 20,
+    "unsafe_events": 0,
+    "stop_at_safe_boundary": false,
+    "stop_confirmed": true,
+    "resource_invalid": false,
+    "wrapper_exit_code": 0,
+    "decision": "valid"
+  },
+  "outcomes": {
+    "EXT-F-1012-T10": {
+      "status": "pass",
+      "observation": "BreadcrumbList type chip populated the filter; blank, matching, and nonexistent filter states were exercised."
+    },
+    "EXT-F-1012-T11": {
+      "status": "pass",
+      "observation": "Blank and matching extraction each returned one current BreadcrumbList; nonexistent filter produced 'No matching JSON-LD blocks.'"
+    },
+    "EXT-F-1012-T40": {
+      "status": "pass_bounded",
+      "observation": "Existing saved JSON-LD recipe was run after extension reload and public-page refresh; one current BreadcrumbList row returned."
+    },
+    "EXT-F-1012-T41": {
+      "status": "partial_pass",
+      "observation": "Existing saved OG snapshot recipe returned one row after reload and refresh. Visible article title agreed with displayed title; independent field-by-field DOM comparison was not captured."
+    },
+    "changed_page_stale_row_control": {
+      "status": "pass_for_exercised_path",
+      "observation": "On same-host 404, JSON-LD tab showed no JSON-LD; new Snapshot capture returned current 404 title, URL, OG/Twitter image and site name. Saved recipe replay on the changed page was not exercised."
+    }
+  },
+  "evidence": {
+    "report": "docs/stabilization/reports/showcase-structured-journal-retest.json",
+    "ui_evidence": "Native CUA accessibility observations in this task session; no screenshots retained.",
+    "recipe_ids": [
+      "585785a0-862b-45bb-85bc-08da355f6f70",
+      "6501466d-a03e-4bc4-b2d8-dbf1cbb637f9"
+    ]
+  },
+  "invalidations": [],
+  "whole_feature_closure": false
+}
