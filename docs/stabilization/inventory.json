@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-28T12:38:00.604065+00:00",
+  "updated_at": "2026-09-28T12:50:39.812052+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -15526,11 +15526,13 @@
           ],
           "results": {
             "admin": {
-              "status": "fail",
+              "status": "partial",
+              "run_id": "showcase-nuxt-admitted-native-retry-20260928-1244",
               "evidence": [
-                "docs/stabilization/reports/showcase-nuxt-diagnosis.json"
+                "docs/stabilization/reports/showcase-nuxt-admitted-native-retry.json",
+                "docs/stabilization/reports/showcase-nuxt-guarded-peer.json"
               ],
-              "detail": "Supported Nuxt transport references are not decoded; rawrepo pointer10 is returned instead ofnuxt/nuxt. Native final resource receipt pending; source rootcause confirmed."
+              "detail": "Nuxt decodedsemanticpathreturnsnuxt/nuxt; nativepreview/save/reopen/replay andrefresh pass onexplicitlyReloaded78ff463f; old7.repo clearreselecterror. Alternateframeworksources/auth/serviceerror dimensionsnotfullynativeverified; no wholecasepass."
             }
           }
         },
@@ -16310,11 +16312,13 @@
           ],
           "results": {
             "admin": {
-              "status": "fail",
+              "status": "partial",
+              "run_id": "showcase-nuxt-admitted-native-retry-20260928-1244",
               "evidence": [
-                "docs/stabilization/reports/showcase-nuxt-diagnosis.json"
+                "docs/stabilization/reports/showcase-nuxt-admitted-native-retry.json",
+                "docs/stabilization/reports/showcase-nuxt-guarded-peer.json"
               ],
-              "detail": "Supported Nuxt transport references are not decoded; rawrepo pointer10 is returned instead ofnuxt/nuxt. Native final resource receipt pending; source rootcause confirmed."
+              "detail": "Nuxt decodedsemanticpathreturnsnuxt/nuxt; nativepreview/save/reopen/replay andrefresh pass onexplicitlyReloaded78ff463f; old7.repo clearreselecterror. Alternateframeworksources/auth/serviceerror dimensionsnotfullynativeverified; no wholecasepass."
             }
           }
         },
