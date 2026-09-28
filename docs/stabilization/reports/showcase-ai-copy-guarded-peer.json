@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "task_id": "showcase-ai-copy-guarded-peer",
+  "defect_id": "EXT-D-0055",
+  "lane": "independent source peer and guarded runtime",
+  "reviewed_source_commit": "43ebf322",
+  "head_at_run": "f5a726fcedb12c5ef9b10cd1fe74e1687a405663",
+  "A_outcome": {
+    "status": "source candidate; guarded clipboard proof blocked by test failure; native UI open",
+    "evidence": "ResultPreview receives source with its rows. Saved Network replay uses the page URL captured at run time and labels it web page; no API response URL is inferred from the saved filter. A selected live Network response uses the selected event URL and labels it network response. The connected test mounts the real PatternsTab or NetworkTab, ResultPreview, and CopyMenu, but all five new test cases failed at the Copy for AI button selector before reading the clipboard.",
+    "remaining": "Correct the test selector and rerun through a fresh resource permit; then compile, development build, and independently exercise Copy for AI on the installed extension. The pre-fix native receipt is not post-fix verification."
+  },
+  "B_quality": {
+    "status": "source review pass for provenance distinction and credential-aware hash preservation; test guard fails at interaction seam",
+    "findings": [
+      {
+        "severity": "P1 test blocker",
+        "location": "tests/unit/showcase-ai-copy-source.test.tsx",
+        "observation": "All five cases use getByRole('button', { name: 'Copy for AI' }). The real CopyMenu option's accessible name combines its label and description, such as 'Copy for AI JSON wrapped with page URL + a one-line preamble for chat.' The exact-name query finds no button and never invokes the clipboard path.",
+        "action": "Use a selector that matches the option's actual accessible name while still selecting the real Copy for AI control; rerun the full focused suite under a new permit."
+      }
+    ],
+    "positive_source_evidence": "sanitizePageSourceUrl retains hash route fragments and ordinary query parameters while masking recognized credential values; live Network adds user-marked credential keys before binding the selected response URL. ResultPreview binds source kind and row count into its AI copy payload. PatternsTab commits source and rows under the same run/page sequence guard.",
+    "limits": "No source mutation, compile, build, installed extension, or localhost run in this lane. The test failure is a selector failure, not evidence that the product clipboard content is wrong."
+  },
+  "guarded_run": {
+    "run_id": "d55-ai-copy-peer-tests-20260928a",
+    "command": "pnpm exec vitest run --maxWorkers=1 tests/unit/showcase-ai-copy-source.test.tsx tests/unit/showcase-patterns-replay-provenance.test.tsx tests/unit/clipboard-export.test.ts tests/unit/network-urls.test.ts tests/unit/showcase-network-credential.test.tsx tests/unit/showcase-network-save-replay.test.tsx",
+    "result": "1 file failed, 5 passed; 5 tests failed, 27 passed",
+    "child_exit_code": 1,
+    "resource_invalid": false,
+    "resource_decision": "refused",
+    "journal": "docs/stabilization/resource-journals/d55-ai-copy-peer-tests-20260928a.jsonl",
+    "journal_sha256": "74cd42ca74f7edea704f83135f478d3a69702b50734f0c9a5b50dbb484fe673e"
+  },
+  "stopped_after_first_failure": true,
+  "compile": "not run",
+  "development_build": "not run",
+  "resource_cleanup": "Guard command exited and heavy lease was absent after the failed run."
+}

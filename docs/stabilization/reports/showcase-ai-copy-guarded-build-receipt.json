@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "task_id": "showcase-ai-copy-guarded-peer",
+  "source_commit": "43ebf322",
+  "head_at_guarded_run": "f5a726fcedb12c5ef9b10cd1fe74e1687a405663",
+  "lockfile_sha256": "ffcab03bab71819d1fee1c1f4a2a1fb1857c11abe0e2541be9be76aa39b58042",
+  "build_status": "not attempted because the first guarded focused suite failed",
+  "output_directory": null,
+  "canonical_tree_sha256": null,
+  "canonical_hash_method": "hashReleaseTree from scripts/sync-unpacked-release.mjs; pending a successful guarded development build",
+  "test_run_id": "d55-ai-copy-peer-tests-20260928a",
+  "test_journal": "docs/stabilization/resource-journals/d55-ai-copy-peer-tests-20260928a.jsonl",
+  "test_journal_sha256": "74cd42ca74f7edea704f83135f478d3a69702b50734f0c9a5b50dbb484fe673e",
+  "test_child_exit_code": 1,
+  "test_resource_decision": "refused",
+  "reason": "The five connected AI-copy cases failed on an exact accessible-name selector before clipboard assertions; the lane stopped at first failure."
+}
