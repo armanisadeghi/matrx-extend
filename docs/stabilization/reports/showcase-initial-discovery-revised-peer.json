@@ -1,0 +1,39 @@
+{
+  "review": "EXT-F-1012-T59 / EXT-D-0049 initial-document Network discovery revised peer",
+  "scope": "Independent source inspection only; no browser, native replay, or test execution under resource guard",
+  "snapshot": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/showcase-discovery-final-review.diff",
+    "sha256": "c0329f5020847ffed81148c5613ef0d0ed2b7b17c3af2d86ea3415605662dc93"
+  },
+  "currentSource": {
+    "dirtyTrackedDiffSha256": "06284093c7a04967fba6b92395f06581e796f20117f9ff1a640358e970c932b2",
+    "driftFromSnapshot": "The live NetworkTab.tsx adds a SaveAsPattern gate at line 358 requiring selected, source, and !discovering. The frozen diff lacks this gate. The report assesses live source and names snapshot-only exposure separately. Untracked test files were read from the live checkout; native execution was not attempted."
+  },
+  "priorFindings": [
+    {
+      "title": "Stale route on save",
+      "status": "ADDRESSED_IN_CURRENT_SOURCE",
+      "evidence": "dispatch.ts:1803-1834 binds approval to queried tab URL and Chrome document ID; executePreparedOperation re-prepares after approval (prepared-tool-operation.ts:49-80); document-network-capture.ts:422-436 rechecks both plus top-frame URL before reload; the core rejects navigation away (285-297). The Port validates a result containing pageUrl (document-network-transport.ts:212-217), the hook derives source from result.pageUrl (use-network-capture.ts:116-122), and NetworkTab.tsx:358-375 passes that bound source to SaveAsPattern. In the frozen snapshot, NetworkTab lacks the source gate, so partial events before result could expose SaveAsPattern's live-tab fallback (SaveAsPattern.tsx:85-90)."
+    },
+    {
+      "title": "Mocked initial-document delivery seam",
+      "status": "ADDRESSED_FOR_DISPATCH_PORT_CORE_BOUNDARY",
+      "evidence": "document-network-discovery-connected.test.ts imports the real dispatcher, Port host/client, and capture core (54-56), with CDP, Chrome, policy lookup, and messaging APIs stubbed beneath them. The approval is delivered through the real request/response listeners (167-174). It injects prior-document and reloaded-document packets with request_sequence and distinct body digests (68-87), then asserts only the new-document packet crosses the Port with its digest and without raw headers (175-183). It cancels on the first event, so it does not prove normal window completion, a successful result, or saved-row persistence."
+    },
+    {
+      "title": "Misleading zero-response completion",
+      "status": "ADDRESSED",
+      "evidence": "dispatch.ts:1873-1875 throws a specific retry remedy when the capture window closes with no events; use-network-capture.ts:123-129 clears events and source and displays the error."
+    }
+  ],
+  "verdictA": {
+    "status": "UNVERIFIED",
+    "reason": "No installed extension, real initial page request, saved pattern, reopened Patterns result, or two native replays were exercised. Source inspection and unexecuted tests cannot establish user-seat behavior."
+  },
+  "verdictB": {
+    "status": "PASS",
+    "basis": "Source evidence only. The new path uses the existing privileged cdp_attach policy, explicit requestConfirmation and post-approval identity recheck (dispatch.ts:1783-1902; prepared-tool-operation.ts:49-80), the existing document capture core and Port with abort/close handling (document-network-transport.ts:37-103,111-227; document-network-capture.ts:107-175), and the normal SaveAsPattern source contract. The core whitelists captured response fields and rejects old or replaced documents (document-network-capture.ts:195-207,230-393). Saved replay retains exact request_body_key comparison (run-interactive.ts:394-412).",
+    "coverageLimit": "The connected test proves event delivery across dispatcher, approval, Port, and real capture core with external APIs stubbed, but aborts at the first event and cannot prove normal completion or persistence. The hook test stubs transport and asserts source binding; it does not save a recipe. These are live-verification targets, and the tests have not been executed in this lane.",
+    "findings": []
+  }
+}
