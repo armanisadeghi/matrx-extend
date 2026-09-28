@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-structured-native-20260928",
+  "feature_id": "EXT-F-1012",
+  "case_ids": [
+    "EXT-F-1012-T10",
+    "EXT-F-1012-T11",
+    "EXT-F-1012-T40",
+    "EXT-F-1012-T41"
+  ],
+  "status": "PARTIAL",
+  "at_utc": "2026-09-28T10:54:19Z",
+  "report": "docs/stabilization/reports/showcase-structured-native.json",
+  "runtime": {
+    "profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.114",
+    "artifact_path": ".output/chrome-mv3-dev",
+    "receipt": "docs/stabilization/runs/showcase-d50-runtime-artifact-20260928.json",
+    "tree_sha256_before": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "tree_sha256_after": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "chrome_extension_reloaded": true,
+    "page_refreshed": true,
+    "developer_tools_open": false,
+    "localhost_used": false
+  },
+  "guard": {
+    "mode": "browser",
+    "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "admitted_at_utc": "2026-09-28T10:44:25Z",
+    "pid": 38892,
+    "stop_requested_at_utc": "2026-09-28T10:54:19Z",
+    "stop_confirmed_at_utc": "2026-09-28T10:54:21Z",
+    "terminal": true,
+    "lease_released": true
+  },
+  "target": "https://developers.google.com/search/docs/appearance/structured-data/article",
+  "public_source_verification": {
+    "json_ld_type": "BreadcrumbList",
+    "visible_values": ["Search Central", "Documentation", "Learn About Article Schema Markup"],
+    "og_title": "Learn About Article Schema Markup | Google Search Central | Documentation | Google for Developers",
+    "og_description": "Learn how adding article schema markup to your news articles and blogs can enhance their appearance in Google Search results.",
+    "og_site_name": "Google for Developers",
+    "og_type": "website",
+    "og_image": "https://developers.google.com/static/search/images/home-social-share-lockup.jpg",
+    "og_url": "https://developers.google.com/search/docs/appearance/structured-data/article"
+  },
+  "case_results": {
+    "EXT-F-1012-T10": "PARTIAL_PASS: rendered BreadcrumbList chip selected; filter edited and cleared; no-match typed.",
+    "EXT-F-1012-T11": "PARTIAL_PASS: blank and matching type returned the actual BreadcrumbList; no-match was explicit; post-reload replay matched.",
+    "EXT-F-1012-T40": "PARTIAL_PASS: saved/reopened/replayed JSON-LD and Snapshot recipes; draft-shift save preserved executed BreadcrumbList config; same-host 404 showed current no-match, not stale JSON-LD.",
+    "EXT-F-1012-T41": "PARTIAL_PASS: actual OG fields matched page metadata and replay; same-host 404 replay returned current 404 metadata, not the prior article."
+  },
+  "owned_recipe_ids": [
+    "585785a0-862b-45bb-85bc-08da355f6f70",
+    "c61d5061-bc33-4301-9a43-f60f25a1d09d",
+    "6501466d-a03e-4bc4-b2d8-dbf1cbb637f9"
+  ],
+  "database_mutation": "Saved three owned disposable recipes via Showcase UI; used read-only SQL only to identify and confirm safe fields for exact cleanup IDs. No direct DB write.",
+  "remaining": [
+    "Auth-transition and service-error dimensions remain unverified.",
+    "Guest/member gate, same-route metadata mutation and cleanup of the three owned recipes remain unverified/not done.",
+    "Independent live-surface and doctrine-quality review remain outstanding."
+  ]
+}

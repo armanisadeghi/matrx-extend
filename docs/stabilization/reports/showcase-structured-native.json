@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "lane": "EXT-F-1012-T10/T11/T40/T41 bounded native structured-data acceptance",
+  "status": "PARTIAL",
+  "at_utc": "2026-09-28T10:54:19Z",
+  "scope": "Bounded admin Showcase acceptance on the installed unpacked extension; not whole-feature closure.",
+  "source": {
+    "build_receipt": "docs/stabilization/runs/showcase-d50-runtime-artifact-20260928.json",
+    "artifact_path": ".output/chrome-mv3-dev",
+    "artifact_version": "0.2.114",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "receipt_tree_sha256": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "tree_sha256_after": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "artifact_match": true,
+    "explicit_primary_chrome_reload": "Reloaded Matrx Extend from chrome://extensions; Chrome showed Reloaded, then refreshed the public source page before replay."
+  },
+  "target": {
+    "url": "https://developers.google.com/search/docs/appearance/structured-data/article",
+    "profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "session": "Existing primary Chrome profile; admin@admin.com was already signed in.",
+    "localhost": false,
+    "developer_tools_open": false,
+    "source_grounding": "Live page exposed BreadcrumbList in Showcase JSON-LD. Read-only public HTML inspection confirmed its application/ld+json block and OG metadata; extracted values were compared with actual page metadata and visible page title."
+  },
+  "guard": {
+    "run_id": "showcase-structured-native-20260928",
+    "mode": "browser",
+    "admitted_at_utc": "2026-09-28T10:44:25Z",
+    "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "stop_requested_at_utc": "2026-09-28T10:54:19Z",
+    "stop_confirmed_at_utc": "2026-09-28T10:54:21Z",
+    "terminal": true,
+    "lease_released": true,
+    "stop": "Sent SIGINT to the owned guard PID 38892; confirmed it exited and the heavy lease directory was released."
+  },
+  "acceptance": {
+    "EXT-F-1012-T10": {
+      "status": "PARTIAL_PASS",
+      "observed": "The only rendered type chip was BreadcrumbList; clicking it filled the filter. Blank filter was retained after clearing, and an edited NonexistentType value was retained. The saved draft-shift test changed the filter after a successful preview and confirmed the preview configuration remained BreadcrumbList.",
+      "unverified": ["auth-transition", "service-error", "every chip on other pages"]
+    },
+    "EXT-F-1012-T11": {
+      "status": "PARTIAL_PASS",
+      "observed": "On the real Google documentation page, blank and BreadcrumbList filters each returned one row. @type was BreadcrumbList and itemListElement contained Search Central, Documentation, and Learn About Article Schema Markup. NonexistentType produced the visible message 'No matching JSON-LD blocks.' Saved replay after extension reload and page refresh returned the same one row.",
+      "unverified": ["auth-transition", "service-error"]
+    },
+    "EXT-F-1012-T40": {
+      "status": "PARTIAL_PASS",
+      "observed": "Saved and reopened the successful JSON-LD configuration through Showcase UI. Exact owned recipe codex-structured-native-20260928-jsonld-breadcrumb: 585785a0-862b-45bb-85bc-08da355f6f70; read-only safe fields confirmed kind=json_ld and config.ld_type=BreadcrumbList. After changing the draft to NonexistentType following preview, a second UI save retained config.ld_type=BreadcrumbList; owned challenge recipe codex-structured-native-20260928-draft-shift: c61d5061-bc33-4301-9a43-f60f25a1d09d. Reopening and replaying the challenge recipe returned the preview's one BreadcrumbList row. On a same-host public 404 URL, the saved route was identified as outside-route and replay showed a clear no-match message instead of stale article data. Snapshot recipe codex-structured-native-20260928-og-metadata: 6501466d-a03e-4bc4-b2d8-dbf1cbb637f9 also reopened/replayed one row; a same-host 404 replay showed current 404 title and OG data, not stale source data.",
+      "unverified": ["auth-transition", "service-error", "cleanup of the three owned UI-saved recipes"]
+    },
+    "EXT-F-1012-T41": {
+      "status": "PARTIAL_PASS",
+      "observed": "Snapshot on the real page returned one row. title, description, og.title, og.description, og.image, og.site_name, og.type and og.url matched the page's actual metadata; title matched the visible browser document title. UI save/reopen/replay returned the same values. On a same-host 404 page, replay returned that page's 404 title, OG image and current URL instead of the prior article values.",
+      "unverified": ["auth-transition", "service-error", "source metadata mutation on the same route"]
+    },
+    "owned_ui_saved_recipes": [
+      {"id": "585785a0-862b-45bb-85bc-08da355f6f70", "name": "codex-structured-native-20260928-jsonld-breadcrumb", "kind": "json_ld", "config": {"ld_type": "BreadcrumbList"}},
+      {"id": "c61d5061-bc33-4301-9a43-f60f25a1d09d", "name": "codex-structured-native-20260928-draft-shift", "kind": "json_ld", "config": {"ld_type": "BreadcrumbList"}},
+      {"id": "6501466d-a03e-4bc4-b2d8-dbf1cbb637f9", "name": "codex-structured-native-20260928-og-metadata", "kind": "og_meta", "config": {}}
+    ],
+    "database_writes": "The three recipes were saved using the authorized Showcase UI. The database was only read afterward for exact owned IDs and safe name/domain/kind/config fields; no direct database mutation was made.",
+    "observed_regressions": [],
+    "not_exercised": ["service-error paths", "auth transitions", "guest/member access", "source metadata mutation on the same route", "cleanup of the three owned recipes"],
+    "whole_feature_closure": false
+  },
+  "verdicts": {
+    "A_live_surface": "PARTIAL_PASS for the listed warm/reload/source-change observations. This is the implementer's native-seat evidence; independent review is outstanding.",
+    "B_doctrine_quality": "UNVERIFIED. No product source changed in this lane, and this run did not review implementation diffs or provide an independent engineering verdict."
+  }
+}
