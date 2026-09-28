@@ -16670,7 +16670,17 @@
             "reload",
             "navigation",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "diagnostic-only",
+              "run_id": "showcase-d47-installed-live-001",
+              "evidence": [
+                "docs/stabilization/runs/showcase-d47-installed-live-001.json"
+              ],
+              "detail": "Observations only; no acceptance proof. Fresh .111 unpacked build was loaded in primary Chrome. On real HN Search, a user-triggered query change produced a captured 200 POST; a saved recipe masked x-algolia-api-key before persistence. One Run click left the row disabled/never-run with no visible approval or progress. The browser guard ended resourceInvalid=true after unsafe pressure/swap growth, and UI inspection continued while watcher output was buffered; this is invalid for a product verdict. No product failure or pass is claimed. Initial-load capture, approved replay, prior-document isolation, and cancel denial remain unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T58",

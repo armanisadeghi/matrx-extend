@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-d47-installed-live-001",
+  "status": "RESOURCE_INVALID_INCONCLUSIVE",
+  "scope": "Installed unpacked Chrome acceptance for D47 saved Network replay on public HN Search. No localhost/test server, test fixture, source edit, dataset append, deletion, or publication.",
+  "build": {
+    "source_commit": "b0f456471c8db227e8168c98fdea09a603e2f25d",
+    "source_basis": "Clean HEAD verified immediately before production and development builds; no product source changes during this native run.",
+    "version": "0.2.111",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "extension_dir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "tree_sha256": "01ae8a830c987566f8a58959cea46c40a16cba83c724e690d1e221ba253de622",
+    "artifact_receipt": "test-results/source-dev-build-d47-20260928.json",
+    "artifact_receipt_sha256": "395ca7974b6db64f06b43a00a0abad717217f6ca406a747bd7c3ee62a5b1e110"
+  },
+  "dependency_refresh": {
+    "guarded_frozen_install": {
+      "run_id": "showcase-d47-install-001",
+      "admission": "RESOURCE_ADMITTED at 2026-09-28T00:12:00.840Z; pressureLevel 1, 12 GiB available, no refusal reasons.",
+      "terminal": "Child exit 0 at 2026-09-28T00:12:02.695Z; wrapper exit 0.",
+      "result": "@ai-matrx/design-system updated 0.48.13 to 0.48.14. Changelog says automatic documentation/metadata republish; no source change or consumer action required."
+    },
+    "guarded_prepare_retry": {
+      "run_id": "showcase-d47-prepare-001",
+      "result": "Refused before child launch at 2026-09-28T00:12:15.746Z with RESOURCE_LEGACY_RUNNER_BUSY; no bypass or process termination.",
+      "retry": {
+        "run_id": "showcase-d47-prepare-002",
+        "admission": "RESOURCE_ADMITTED at 2026-09-28T00:14:22.364Z; pressureLevel 1, 12 GiB available, no refusal reasons.",
+        "terminal": "WXT 0.21.4 generated types; child exit 0 at 2026-09-28T00:14:23.416Z; wrapper exit 0."
+      }
+    },
+    "guarded_compile": {
+      "run_id": "showcase-d47-compile-001",
+      "admission": "RESOURCE_ADMITTED at 2026-09-28T00:16:07.990Z; pressureLevel 1, 12 GiB available, no refusal reasons.",
+      "terminal": "pnpm compile (tsc --noEmit) child exit 0 at 2026-09-28T00:16:10.286Z; wrapper exit 0."
+    },
+    "guarded_docs_tools": {
+      "run_id": "showcase-d47-docs-tools-001",
+      "admission": "RESOURCE_ADMITTED at 2026-09-28T00:17:35.792Z; pressureLevel 1, 11.84 GiB available, no refusal reasons.",
+      "terminal": "Generated 82 tools; child exit 0 at 2026-09-28T00:17:37.741Z; wrapper exit 0. The DB-sourced network_capture guidance was regenerated to describe admin access, Chrome debugger permission, per-run approval, and arming in the new document before reload."
+    }
+  },
+  "build_runs": {
+    "production": {
+      "run_id": "showcase-d47-production-build-001",
+      "source_commit": "b0f456471c8db227e8168c98fdea09a603e2f25d",
+      "admission": "RESOURCE_ADMITTED at 2026-09-28T00:19:12.338Z; pressureLevel 1, 12 GiB available, no refusal reasons.",
+      "terminal": "WXT production build completed; child exit 0 at 2026-09-28T00:19:15.245Z; wrapper exit 0. Ineffective dynamic-import warnings only."
+    },
+    "development": {
+      "run_id": "showcase-d47-dev-build-001",
+      "source_commit": "b0f456471c8db227e8168c98fdea09a603e2f25d",
+      "admission": "RESOURCE_ADMITTED at 2026-09-28T00:20:44.959Z; pressureLevel 1, 12 GiB available, no refusal reasons.",
+      "terminal": "WXT development build completed; child exit 0 at 2026-09-28T00:20:47.608Z; wrapper exit 0. Ineffective dynamic-import warnings only."
+    }
+  },
+  "browser_guard": {
+    "run_id": "showcase-d47-installed-live-001",
+    "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "admission": "RESOURCE_ADMITTED at 2026-09-28T00:22:48.706Z; pressureLevel 1, 11.84 GiB available, no refusal reasons.",
+    "terminal": "RESOURCE_STOP_AT_SAFE_BOUNDARY at 2026-09-28T00:27:59.661Z for RESOURCE_PRESSURE_UNSAFE and RESOURCE_SWAP_GROWTH; subsequent unsafe pressure required operator stop. Ctrl-C at 00:28:36.331Z emitted RESOURCE_STOP_REQUESTED and RESOURCE_BROWSER_STOP_CONFIRMED resourceInvalid=true at 00:28:36.333Z; wrapper exit 3.",
+    "state": "Manual UI work stopped; Chrome remains the user's app. The guard emitted RESOURCE_STOP_AT_SAFE_BOUNDARY at 00:27:59.661Z for unsafe pressure and swap growth. I continued manual CUA inspection while watcher output was buffered and did not see that event until sending Ctrl-C; the UI tool does not expose per-action timestamps, so the exact final UI action time relative to the boundary is unavailable. Since the guard ended resourceInvalid=true, no product pass/fail conclusion is drawn from this browser session. No further browser run was started."
+  },
+  "installed_extension": {
+    "before_reload": "chrome://extensions showed Matrx Extend 0.2.109.",
+    "reload": "Explicit Reload produced visible Reloaded confirmation and updated the card to 0.2.111.",
+    "details": "Details showed version 0.2.111, ID cihdmkcdjjckfhjpgoedmgfpoljebaml, and unpacked source /Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev.",
+    "debug_identity": "Debug surface showed EXTENSION IDENTITY OK and version 0.2.111.",
+    "page_refresh": "After the extension reload, HN Search was opened in primary Chrome and rendered results. A later browser refresh retained the page and results."
+  },
+  "public_page": {
+    "url": "https://hn.algolia.com/?q=matrx",
+    "site": "HN Search powered by Algolia",
+    "discovery": "Network capture was armed after page load. Changing the visible search query to OpenAI and submitting it produced one captured 200 POST response from Algolia; the rendered results changed to OpenAI stories. This is a user-triggered discovery request, not proof of capturing the site's initial request during page load.",
+    "credential_handling": "The request UI exposed x-algolia-api-key as a query key. Treat as credential was checked before save and UI changed its value to [credential]. The raw value is intentionally omitted. The selected POST body matcher stores an opaque digest."
+  },
+  "saved_replay": {
+    "recipe": {
+      "title": "Codex D47 HN Search OpenAI network replay 20260928",
+      "kind": "NETWORK",
+      "host": "hn.algolia.com",
+      "saved": "UI displayed Pattern saved; Patterns showed the saved title and never run.",
+      "dataset": "No append selected; no dataset mutation."
+    },
+    "attempt": {
+      "actions": "Clicked Run pattern once from Patterns.",
+      "observed": "Run pattern became disabled, while the recipe remained never run. No progress note, approval card, or page reload became visible. The browser stayed on the same HN Search query/results.",
+      "checks": "Switched to Chat and Debug once. No approval UI, error, or recovery action was visible. Debug filters for confirm and replay showed no matching events.",
+      "result": "OBSERVED_ONLY_INVALID_FOR_VERDICT. At the sampled UI state the Run control was disabled, the recipe still said never run, and no approval/progress/error was visible. This browser run ended resourceInvalid=true, so it cannot establish a product failure or pass. No replay response rows or captured initial-load request were verified; no second attempt was made."
+    }
+  },
+  "inventory_scope": {
+    "feature_id": "EXT-F-1012",
+    "case_id": "EXT-F-1012-T57",
+    "supports": "Fresh .111 receipt/source binding, primary Chrome reload and version/path, real HN Search page, a user-triggered captured API response, masking x-algolia-api-key before saving an owned recipe, and exact stalled-run UI state.",
+    "remaining": "Saved replay did not surface approval or progress and remained disabled/never-run; no initial page-load capture/replay, delayed prior-document response isolation, current-document provenance comparison, cancel denial, or successful replay. D47 remains unverified for acceptance."
+  },
+  "limitations": [
+    "A visible user-triggered HN search request was used to discover the API shape; this does not establish capture of initial document-load requests.",
+    "One Run attempt was observed in a disabled/never-run state without visible approval, progress, error, or recovery. This is a lead for a healthy reproduction, not a verified product failure; independent source diagnosis is assigned separately.",
+    "Browser resource guard terminated invalid after pressure/swap growth. Watcher output was only visible when Ctrl-C was sent, after additional manual CUA inspection; the exact last UI action time is unavailable. No product verdict or repeated browser attempt is claimed.",
+    "The owned HN recipe is intentionally retained. No existing recipe or dataset was changed."
+  ]
+}
