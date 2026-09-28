@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "defect": "EXT-D-0050",
+  "reviewed_commit": "a011a6829298287af2c389abce70237032693b28",
+  "lane": "independent source verifier; no product authorship or native browser work",
+  "verdict_a": {
+    "native_outcome": "UNVERIFIED",
+    "source_contract": "PARTIAL",
+    "evidence": "PatternsTab now awaits bumpPatternRun before refreshing, so the card fetch follows the metadata response; it keeps extracted rows when the metadata response reports failure. Native installed replay and persisted timestamp remain untested by this lane.",
+    "missing": [
+      "DataView does not display the auto-extraction history-write warning stored in record.note when record.status is ok.",
+      "When an extraction failure and history-write failure happen together in PatternsTab or DataView, the second error message replaces the extraction reason."
+    ]
+  },
+  "verdict_b": {
+    "quality": "FIX_FIRST",
+    "findings": [
+      {
+        "severity": "important",
+        "location": "src/hooks/use-auto-extract.ts:115-124; src/features/data/DataView.tsx:363-370",
+        "finding": "Auto-extraction records a successful row result with a history-write failure in note, but DataView's status=ok branch always renders the fixed success text and never renders note. The metadata failure is silent to the person even though rows remain visible.",
+        "required_fix": "Show the saved-history warning in the successful auto result without discarding rows; add a connected assertion that reads the rendered DataView."
+      },
+      {
+        "severity": "important",
+        "location": "src/features/showcase/tabs/PatternsTab.tsx:165-171; src/features/data/DataView.tsx:248-257",
+        "finding": "When both extraction and history write fail, setRunError is called twice and the history message drops the extraction error. The failed focused test's rendered DOM showed only the history message and omitted 'Selector could not execute'.",
+        "required_fix": "Keep the extraction reason and distinguish the history-write error in the same visible result; guard both callers."
+      },
+      {
+        "severity": "important",
+        "location": "tests/unit/saved-run-data-view-health.test.tsx:84-90,118-131",
+        "finding": "The new history-failure test installs mocks.bumpRun.mockResolvedValue('Database unavailable'), while afterEach calls vi.clearAllMocks(), which preserves mock implementation. A later existing test inherits the failure and the final four-file suite is red.",
+        "required_fix": "Reset the mock implementation between tests and rerun the four exact focused files."
+      }
+    ],
+    "shared_query_assessment": "bumpPatternRun now awaits UPDATE ... select('id').maybeSingle(), distinguishes a returned PostgREST error and a zero-row result, and reports thrown exceptions. This is an appropriate detection shape for an RLS-filtered UPDATE; no live RLS or persisted-write proof was performed in this lane.",
+    "forcing_test_assessment": "The Showcase ordering test uses a pending metadata promise and distinct old/new persisted timestamps, so an early refresh should fail. A temporary red mutation was not run. The auto-warning visibility and dual-failure cases have no forcing UI assertions."
+  },
+  "guarded_focused_run": {
+    "run_id": "showcase-d50-peer-focused-20260928",
+    "command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node scripts/stabilization-resource.mjs run --run-id showcase-d50-peer-focused-20260928 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec vitest run --maxWorkers=1 tests/unit/showcase-patterns-replay-provenance.test.tsx tests/unit/saved-run-data-view-health.test.tsx tests/unit/saved-run-auto-health.test.tsx tests/unit/saved-run-tool-health.test.ts",
+    "admission": "RESOURCE_ADMITTED; zero refusal reasons",
+    "result": "RESOURCE_JOB_EXIT childExitCode=1; 4 files, 21 tests, 20 passed and 1 failed",
+    "failure": "saved-run-data-view-health.test.tsx: preserves health for failure outside saved route /calendar/ timed out waiting for 'Selector could not execute'; rendered error contained only 'Database unavailable'.",
+    "terminal": true
+  },
+  "build": "Not run because source and focused suite require fixes.",
+  "source_mutation": "Not run; this review leaves the product tree unchanged.",
+  "next": "Implement fixes, rerun all four focused files, demonstrate meaningful red-before/green-after ordering proof, then obtain fresh independent source and native installed verification."
+}
