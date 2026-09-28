@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "review": "independent-source-peer-review",
+  "target": "D63 Notes autosave candidate, with narrow D64/D65 source review",
+  "source_files": [
+    "src/features/notes/NoteEditor.tsx",
+    "src/features/notes/NotesView.tsx",
+    "src/features/notes/NoteEditor.autosave.test.tsx",
+    "src/features/files/FilesView.tsx",
+    "src/features/files/FilesView.test.tsx",
+    "src/features/saved-captures/SavedCapturesView.tsx",
+    "src/features/saved-captures/SavedCapturesView.test.tsx"
+  ],
+  "A_source_outcome": {
+    "D63_original_data_loss": "The original same-note overlapping-save loss is addressed in current source: persist retains the latest queued draft and drains it after the in-flight write; onAppend shares this path; each note editor is keyed by noteId so a switch creates separate refs and write queues; failed drafts are retained by ID and have a visible retry.",
+    "switch_and_unmount": "The keyed NoteEditor at NotesView prevents a new note's snapshot from entering the old note's queue. Old editor cleanup can flush its latest draft; if its write fails after unmount, the draft is retained in the unsavedDrafts map for later reopening.",
+    "remaining_source_finding": {
+      "id": "D63-PEER-01",
+      "title": "Returning to the saved value leaves status stuck at Saving",
+      "feature_case_id": "EXT-F-2007-T01",
+      "reproduction": [
+        "Open a note with a known saved body and wait until the editor is idle.",
+        "Change the body, then restore it exactly to the original value before the 600 ms debounce expires.",
+        "Wait for the debounce to settle."
+      ],
+      "expected": "Because the final draft equals the saved snapshot, no write is needed and the status returns to Saved (or idle) rather than claiming a write is active.",
+      "actual": "updateDraft sets savingState to saving. persist detects sameDraft(writing, savedRef.current), clears the matching unsaved draft and continues without changing savingState. No network update starts, so the indicator remains Saving indefinitely.",
+      "severity": "S3: status remains misleading after an edit is reverted; note data is not lost",
+      "priority": "P2: visible save status is inaccurate",
+      "evidence": [
+        "src/features/notes/NoteEditor.tsx:128-131",
+        "src/features/notes/NoteEditor.tsx:192-200",
+        "src/features/notes/NoteEditor.tsx:387-400"
+      ],
+      "next_fix": "When the queued snapshot equals savedRef.current, clear the matching unsaved draft and set an honest settled status (Saved with the last successful timestamp, or idle when no timestamp exists). Add a regression assertion that no update request occurs and Saving disappears."
+    }
+  },
+  "B_test_quality": {
+    "assessment": "The five autosave cases exercise the real NotesView/NoteEditor component path with controlled update promises and fake debounce timers; they assert both request snapshots and final stored contents. This is a meaningful guard for the original issue, note identity separation, append serialization, unmount flush, and failure recovery/retry.",
+    "coverage_mapping": {
+      "D63-A1": "Overlapping same-note edits; checks second write carries latest body and only latest success displays Saved.",
+      "D63-A2": "Switch to B during A write; asserts distinct note IDs and stored values.",
+      "D63-A3": "Append during pending save; checks appended content reaches storage.",
+      "D63-A4": "Unmount with a newer queued draft; checks trailing write reaches storage.",
+      "failure_retry": "Null update response leaves original stored value, shows Save failed, recovers draft after switching away/back, and persists it on Retry save."
+    },
+    "gap": "No case covers edit-then-revert to the currently saved snapshot; the source-only D63-PEER-01 path would leave Saving visible forever.",
+    "execution": "This peer did not run the suite. The separate guarded 5/5 result was not independently reproduced here."
+  },
+  "D64_D65_current_source": {
+    "D64_Files_read_error": "The active Library and Screenshots panels now branch on state === error before the empty state and render InventoryLoadError with Retry; FilesView.test.tsx has a table-driven failure/retry test for both reads. No residual issue found in this narrow source check.",
+    "D65_saved_capture_open_race": "openCapture increments openGeneration and ignores both stale success and stale error completions; SavedCapturesView.test.tsx covers both response orders. No residual issue found in this narrow source check."
+  },
+  "limits": [
+    "Static source review only; no runtime/browser verification or test execution by this reviewer.",
+    "Findings describe current code paths. Source-level correctness does not certify the native UI or data service behavior."
+  ]
+}
