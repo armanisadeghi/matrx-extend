@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "report_id": "prepare-source-audit",
+  "scope": "EXT-F-1012-T07/T08/T09 Showcase Prepare and Snapshot; source-only audit of 084fe593",
+  "verification": "Source trace only. No test, build, browser, or native acceptance was run under this lane's resource constraint.",
+  "path_inventory": {
+    "prepare": "PrepareTab's three independent checkbox states are passed to usePagePrep.run; usePagePrep calls preparePage(tab.id, config), which merges defaults and injects preparePageInPage through chrome.scripting.executeScript (src/features/showcase/tabs/PrepareTab.tsx:6-14,30-46; src/hooks/use-page-prep.ts:24-40; src/lib/data-pattern/page-prep.ts:223-240).",
+    "snapshot": "SnapshotTab calls useExtraction('og_meta').run({}); runMode injects ogMetaMode.runInPage and requires an array result. The extractor reads document title, URL, metadata and JSON-LD and returns one row; ResultPreview renders it (src/features/showcase/tabs/SnapshotTab.tsx:7-41; src/hooks/use-extraction.ts:88-120; src/lib/data-pattern/run-pattern.ts:104-123; src/lib/data-pattern/modes/og-meta.ts:17-76).",
+    "page_identity": "Both hooks consume useActiveTab, whose identity comprises tab id, URL and title; usePagePrep invalidates on id/URL and useExtraction invalidates and guards results on id/URL (src/hooks/use-active-tab.ts:3-26; src/hooks/use-page-prep.ts:16-22; src/hooks/use-extraction.ts:47-65,88-119)."
+  },
+  "findings": [
+    {
+      "id": "PREP-EMPTY-INJECTION-SUCCESS",
+      "case_ids": ["EXT-F-1012-T08"],
+      "confidence": "deterministic source defect; native occurrence unverified",
+      "source_anchor": "src/lib/data-pattern/page-prep.ts:228-240; src/hooks/use-page-prep.ts:30-32; src/features/showcase/tabs/PrepareTab.tsx:58-64",
+      "trigger": "For a resolved chrome.scripting.executeScript call whose result is [] or whose first result is absent, click Prepare.",
+      "expected": "The page did not return a preparation report; show a visible failure with a retry remedy.",
+      "actual_by_code": "preparePage substitutes a zero-count, zero-duration report. usePagePrep stores it and PrepareTab displays a green 'Prepared in 0ms' success.",
+      "minimal_shared_repair": "Validate the injected report at the scripting boundary and throw an actionable error instead of synthesizing success, matching run-pattern.ts extractionRows. Census all executeScript callers for the same silent-fallback pattern."
+    },
+    {
+      "id": "PREP-STALE-REPORT-AFTER-FAILURE",
+      "case_ids": ["EXT-F-1012-T08"],
+      "confidence": "deterministic source defect; native occurrence unverified",
+      "source_anchor": "src/hooks/use-page-prep.ts:24-39; src/features/showcase/tabs/PrepareTab.tsx:53-79",
+      "trigger": "Complete Prepare once on page A, then run it again on the same page and make chrome.scripting.executeScript reject (for example, revoke access before the second click).",
+      "expected": "The failed attempt shows its error without presenting the old success as the current result.",
+      "actual_by_code": "run clears error but never clears report; on rejection it sets error and retains the prior report. PrepareTab renders the error and green success report together.",
+      "minimal_shared_repair": "Clear the previous report when a new run starts, as useExtraction clears previous rows at run start; keep its visible error behavior."
+    },
+    {
+      "id": "PREP-CROSS-PAGE-LATE-RESULT",
+      "case_ids": ["EXT-F-1012-T08"],
+      "confidence": "source-supported deterministic ordering; native reproduction needed",
+      "source_anchor": "src/hooks/use-page-prep.ts:16-40; src/hooks/use-extraction.ts:47-65,88-119",
+      "trigger": "Start a long Prepare on page A, navigate the active tab to page B with a different URL, let the invalidation effect clear the old report, then let the A promise resolve.",
+      "expected": "Page B cannot display A's preparation report.",
+      "actual_by_code": "The A continuation unconditionally calls setReport after the page-change effect clears it; no generation or page-key guard blocks the late result. A failed late run likewise writes A's error on B.",
+      "minimal_shared_repair": "Use a tab/document generation and run-sequence guard in usePagePrep, following the guarded useExtraction pattern. Include current-document identity for same-URL reloads in the shared active-tab primitive."
+    }
+  ],
+  "non_findings_and_limits": [
+    "T07: the three toggles have separate state and their booleans reach preparePage via the merged config. No source defect established for the basic option mapping; UI interaction and actual page effects remain unverified.",
+    "T09: runMode validates that Snapshot receives an array, useExtraction displays errors and resets rows on tab-id/URL changes, and the button is disabled while running. No deterministic Snapshot defect established in this bounded trace; exact metadata and native busy/error states remain unverified.",
+    "A same-tab, same-URL document reload leaves the id/URL page key unchanged, so old results can remain visible. This is a document-identity gap shared by Prepare and Snapshot, but actual behavior across an installed reload was not exercised here.",
+    "If useActiveTab has not resolved a tab id, both run hooks return without an error. This is a transient no-op risk; no stable user-visible reproduction was established."
+  ],
+  "remaining_acceptance": "Run native T07-T09 on an ordinary controlled page, including checkbox combinations, a rejected injection, a page change during Prepare, current-page Snapshot field comparison, reload, and service errors."
+}

@@ -13,12 +13,15 @@
   "actual": "Independentregex matches against fullcommand conflate executable/scriptoperands with shellstrings or node-e text. Refusalrecords omitdetectedPID so historicalrefusals cannotbeattributed.",
   "severity": "S2: falsebusy detection blocks necessary tests/builds and loses diagnosticcause.",
   "priority": "P1: restore trustworthy guarded admission withoutweakeningcap.",
-  "state": "triaged",
+  "state": "closed",
   "evidence": [
     "docs/stabilization/reports/resource-legacy-runner-diagnosis.json",
-    "docs/stabilization/reports/showcase-ai-copy-runtime-retry.json"
+    "docs/stabilization/reports/showcase-ai-copy-runtime-retry.json",
+    "docs/stabilization/reports/resource-legacy-runner-repair.json",
+    "docs/stabilization/reports/resource-legacy-runner-peer.json",
+    "docs/stabilization/reports/showcase-ai-copy-build-after-guard.json"
   ],
-  "verification_status": "Source-proven predicate falsepositive; no controlled runtime reproductionyet. Historicalrefusalsunattributed, notclaimedfalsepositives.",
+  "verification_status": "Closed for reported processclassification class; ambiguouspaths conservativelyrefused, caps/leases unchanged, boundedprocessidentity journaled. 19infra tests and actualcompile/build pass.",
   "transition_history": [
     {
       "at": "2026-09-28T13:58:11.686359+00:00",
@@ -31,6 +34,30 @@
       "from": "open",
       "to": "triaged",
       "reason": "Source matcher demonstrably ignores actualexecutable/scriptoperand; rootinspected samecode. Repair requires properclassification and boundedPIDevidence, thresholds/leases unchanged."
+    },
+    {
+      "at": "2026-09-28T14:12:59.649090+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "3796392c implemented executable/script classification andboundedrefusalidentity."
+    },
+    {
+      "at": "2026-09-28T14:12:59.649090+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh peerfa1830cc accepted source and19lightweightinfra tests, realrunnerrefusal retained."
+    },
+    {
+      "at": "2026-09-28T14:12:59.649090+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "304752e2 realguardedcompile/devbuild admitted andpassed exit0; no cap/thresholdchange."
+    },
+    {
+      "at": "2026-09-28T14:12:59.649090+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Falsepositiveregex regression red/green, independentpeer andactualguardedjob proofcomplete. Historicalrefusalattribution remainsunknown, notrewritten."
     }
   ]
 }

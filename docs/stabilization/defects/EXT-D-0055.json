@@ -5,19 +5,21 @@
   "surface": "Showcase ResultPreview Copy for AI",
   "auth_mode": "admin",
   "reproduction": [
-    "Reloaddevelopmentextension; openpublicGutenbergbook andShowcasePatterns.",
-    "Run ownedmanual_css pattern60b0c5bb-b4d4-4642-857a-2924b56445d5.",
-    "OpenResultPreviewCopy menu; CopyforAI; readclipboard immediately."
+    "Build the development extension, explicitly Reload it in Chrome, refresh the public Gutenberg book page and open Showcase > Patterns.",
+    "Run owned manual_css pattern 60b0c5bb-b4d4-4642-857a-2924b56445d5.",
+    "Open Result Preview > Copy > Copy for AI and read the clipboard immediately."
   ],
   "expected": "AdvertisedsourceURL included inAI copy, bound toactualextractedresult.",
   "actual": "Menu promises sourceURL butpreambleonlyrowcount, noURL; DataAIcopy includesURL.",
   "severity": "S2: copieddata loses advertisedsourceprovenance.",
   "priority": "P1: sharedresultprovenance correctness.",
-  "state": "in-fix",
+  "state": "closed",
   "evidence": [
     "docs/stabilization/reports/data-picker-long-native.json",
     "docs/stabilization/reports/showcase-ai-copy-source-peer.json",
-    "docs/stabilization/reports/showcase-ai-copy-runtime-retry.json"
+    "docs/stabilization/reports/showcase-ai-copy-runtime-retry.json",
+    "docs/stabilization/reports/showcase-ai-copy-build-after-guard.json",
+    "docs/stabilization/reports/showcase-ai-copy-native-retest.json"
   ],
   "transition_history": [
     {
@@ -37,7 +39,25 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol ai_copy_source_repair assigned diagnosis andsource-bound repair."
+    },
+    {
+      "at": "2026-09-28T14:12:59.649090+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Sourcepeers and32guardedtests accepted;304752e2 guardedcompile/devbuild pass afterD56repair. NativeAIcopy sourceURL retest pending."
+    },
+    {
+      "at": "2026-09-28T14:34:04.241728+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent native original and query/fragment URL retest passed after explicit Reload; full 719594-character field hash unchanged. Completed resource journal verified valid, exit 0, nine healthy watches, zero unsafe."
+    },
+    {
+      "at": "2026-09-28T14:34:04.241728+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Independent native original and query/fragment URL retest passed after explicit Reload; full 719594-character field hash unchanged. Completed resource journal verified valid, exit 0, nine healthy watches, zero unsafe."
     }
   ],
-  "verification_status": "Sourcecorrections8ae31220/43ebf322 plusselector7719d739;32guardedtests pass. Compilepreflightrefusedlegacyrunnerbusy, no newbuild/native. D56guardmatcherdefectsourceconfirmed, pastrefusalcauseunknown."
+  "verification_status": "Original missing source URL defect closed. Native saved-page provenance and URL freshness pass; live Network response provenance remains unverified in the broader inventory case."
 }

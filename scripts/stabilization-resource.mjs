@@ -33,6 +33,7 @@ import {
   resourceLeaseRoot,
 } from './stabilization-resource-lease.mjs';
 import { openResourceJournal } from './stabilization-resource-journal.mjs';
+import { classifyLegacyRunner, parseProcessIdentity } from './stabilization-resource-process.mjs';
 
 const run = promisify(execFile);
 const repo = resolve(import.meta.dirname, '..');
@@ -430,23 +431,49 @@ async function acquire(owner) {
   }
 }
 
+async function legacyRunnerEvidence() {
+  // comm is the kernel's executable identity on macOS. ps command is display
+  // text only, so inspect it only after comm establishes an actual Node PID.
+  const processes = await output('/bin/ps', ['-axo', 'pid=,ppid=,lstart=,comm=']);
+  const matches = [];
+  let overflow = 0;
+  for (const line of processes.split('\n')) {
+    if (!line.trim()) continue;
+    const entry = parseProcessIdentity(line);
+    if (entry.pid === process.pid || entry.executable.split('/').at(-1) !== 'node') continue;
+    let detail;
+    try {
+      detail = await output('/bin/ps', ['-p', String(entry.pid), '-o', 'lstart=,command=']);
+    } catch (error) {
+      if (error.code === 1) continue; // Exited before its command could be read.
+      throw error;
+    }
+    const start = detail.slice(0, 24).trim();
+    if (start !== entry.processStart) continue; // PID was reused during the scan.
+    const reason = classifyLegacyRunner(entry.executable, detail.slice(24).trim());
+    if (!reason) continue;
+    // Recheck the same PID and start just before attributing the refusal.
+    if ((await processIdentity(entry.pid)) !== entry.processStart) continue;
+    if (matches.length < 5) {
+      matches.push({
+        pid: entry.pid,
+        ppid: entry.ppid,
+        processStart: entry.processStart,
+        executable: 'node',
+        reason,
+      });
+    } else overflow++;
+  }
+  return matches.length ? { matches, overflow } : null;
+}
+
 async function assertNoLegacyWork() {
   await assertNoLegacyLease(await legacyLeaseRoots(undefined, policy.legacyTempDirectories));
   // Existing runners may have used an arbitrary external TMPDIR. Refuse while
   // one is alive, even when its old lease directory is outside our known roots.
-  const processes = await output('/bin/ps', ['-axo', 'pid=,command=']);
-  if (
-    processes.split('\n').some((line) => {
-      const match = line.trim().match(/^(\d+)\s+(.+)$/);
-      return (
-        match &&
-        Number(match[1]) !== process.pid &&
-        /(?:^|\/)node(?:\s|$)/.test(match[2]) &&
-        /(?:^|\/)stabilization-resource\.mjs(?:\s|$)/.test(match[2])
-      );
-    })
-  )
-    throw new Error('RESOURCE_LEGACY_RUNNER_BUSY');
+  const evidence = await legacyRunnerEvidence();
+  if (evidence)
+    throw Object.assign(new Error('RESOURCE_LEGACY_RUNNER_BUSY'), { processEvidence: evidence });
   // A dead old holder can leave detached owned work. Never admit over it.
   const environment = await output('/bin/ps', ['eww', '-axo', 'pid=,stat=,command=']);
   if (
@@ -509,17 +536,7 @@ async function recoverOwnerless() {
       (await readdir(lock)).length
     )
       throw new Error('RESOURCE_OWNERLESS_NOT_PROVEN');
-    const processes = await output('/bin/ps', ['-axo', 'pid=,command=']);
-    const anotherRunner = processes.split('\n').some((line) => {
-      const match = line.trim().match(/^(\d+)\s+(.+)$/);
-      return (
-        match &&
-        Number(match[1]) !== process.pid &&
-        /(?:^|\/)node\s/.test(match[2]) &&
-        match[2].includes('stabilization-resource.mjs')
-      );
-    });
-    if (anotherRunner) throw new Error('RESOURCE_OWNERLESS_NOT_PROVEN');
+    if (await legacyRunnerEvidence()) throw new Error('RESOURCE_OWNERLESS_NOT_PROVEN');
     await rmdir(lock);
     emit('RESOURCE_OWNERLESS_RETIRED', { root });
   } finally {
@@ -750,7 +767,11 @@ try {
       ? error.message
       : 'RESOURCE_MEASUREMENT_FAILED';
     try {
-      fail(code, { runId: activeRunId, detail: error.message });
+      fail(code, {
+        runId: activeRunId,
+        detail: error.message,
+        ...(error.processEvidence && { processEvidence: error.processEvidence }),
+      });
     } catch {
       process.stderr.write(`RESOURCE_JOURNAL_WRITE_FAILED runId=${activeRunId ?? 'unavailable'}\n`);
       process.exitCode = 3;

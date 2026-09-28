@@ -1,0 +1,35 @@
+{
+  "observed_at": "2026-09-28T14:58:44.958438+00:00",
+  "scope": "Read-only resource attribution after native admission refusal. No cleanup, process termination, threshold changes or browser launches.",
+  "internal_volume_free_gib": 8.9,
+  "external_volume_free": "1.6 TiB",
+  "disk_groom_inventory": {
+    "stale_linked_worktrees": 0,
+    "linked_worktrees": 0,
+    "primary_checkouts": 9,
+    "temporary_directories": [
+      {
+        "path": "/private/tmp/matrx-tsc-slots",
+        "size": "0 B"
+      },
+      {
+        "path": "/private/tmp/matrx-tsc-queue-501",
+        "size": "2.6 MiB"
+      },
+      {
+        "path": "/private/tmp/matrx-network-replay-escalation",
+        "size": "420 KiB"
+      }
+    ]
+  },
+  "swap_used_mib": 4895.44,
+  "conclusion": "No sufficient campaign-owned disposable cleanup candidate established. Listed small directories would not restore the 20 GiB profile-volume floor. Ownership of other app memory not established; no unrelated process terminated.",
+  "next_action": "Continue source-only product diagnosis. Reattempt native only after genuine resource recovery, preserving guard policy.",
+  "commands": [
+    "df -h /Users/armanisadeghi /Volumes/Samsung2TB",
+    "python3 common-docs/meta/scripts/disk-groom/groom.py inventory",
+    "du -sh on three listed temporary directories",
+    "sysctl vm.swapusage",
+    "ps PID/RSS/executable metadata only; no command arguments"
+  ]
+}

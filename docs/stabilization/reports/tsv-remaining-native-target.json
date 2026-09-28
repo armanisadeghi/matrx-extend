@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "report_id": "tsv-remaining-native-target",
+  "defect_id": "EXT-D-0054",
+  "status": "TARGET_IDENTIFIED_NATIVE_ACCEPTANCE_OPEN",
+  "scope": "Source-only inventory of remaining TSV native acceptance and a genuine public target. No browser, build, tests, or product edits were performed.",
+  "evidence_reviewed": [
+    "docs/stabilization/defects/EXT-D-0054.json",
+    "docs/stabilization/reports/showcase-export-native.json",
+    "docs/stabilization/reports/data-picker-long-native.json",
+    "docs/stabilization/reports/showcase-export-guarded-runtime.json",
+    "docs/stabilization/reports/showcase-export-source-peer.json",
+    "docs/stabilization/inventory.json"
+  ],
+  "current_verified_state": {
+    "formatter": "Source peer says src/lib/clipboard/copy.ts quotes TSV headers and cells containing tab, CR, LF, or double quote, doubles embedded quotes, and preserves ordinary values. Guarded formatter test exercises strict round-trip, including quote-bearing header and cell cases.",
+    "native_existing": "Gutenberg Data + Showcase copied a genuine 719594-character field with 5613 line feeds and 104 tabs; strict TSV parse matched the JSON field hash. Native Wikipedia Showcase copied 241 rows with six columns and multiline headers; strict TSV parse retained dimensions and values.",
+    "limits": "These native reports contain no double quotes in the tested TSV source values, and neither performed a real spreadsheet paste. They establish parser/clipboard fidelity for other cases, not quote-case native or paste acceptance."
+  },
+  "public_native_target": {
+    "url": "https://en.wikipedia.org/wiki/AFI%27s_100_Years...100_Movie_Quotes",
+    "title": "AFI's 100 Years...100 Movie Quotes",
+    "verification_method": "Browser-free web page retrieval; page text explicitly identifies the list table and exposes headers and cell values.",
+    "page_evidence": "The page says the table reproduces quotes as AFI published them. Its table headers are Rank, Quotation, Character, Actor/Actress, Film, Year. Rows include Rank 1 Quotation `\"Frankly, my dear, I don't give a damn\"`, Character `Rhett Butler`; Rank 18 Character `Arthur \"Cody\" Jarrett`; and Rank 27 Character `\"Ratso\" Rizzo`.",
+    "expected_values_if_extracted_verbatim": {
+      "headers": [
+        "Rank",
+        "Quotation",
+        "Character",
+        "Actor/Actress",
+        "Film",
+        "Year"
+      ],
+      "row_1": [
+        "1",
+        "\"Frankly, my dear, I don't give a damn\"",
+        "Rhett Butler",
+        "Clark Gable",
+        "Gone with the Wind",
+        "1939"
+      ],
+      "row_18_character": "Arthur \"Cody\" Jarrett",
+      "row_27_character": "\"Ratso\" Rizzo"
+    },
+    "header_quote_coverage": "This genuine table has no double quote in its header values. It is a verified target for quote-bearing cells only; do not claim quote-bearing header coverage from this page.",
+    "evidence_url": "https://en.wikipedia.org/wiki/AFI%27s_100_Years...100_Movie_Quotes"
+  },
+  "remaining_acceptance_gaps": [
+    "Run actual native extraction and TSV copy from the AFI public page; verify the quoted Quotation and Character cell values are present exactly, with six columns and intact row boundaries.",
+    "Paste the copied TSV into a real spreadsheet application and compare the affected cells and dimensions. Strict parsing of clipboard text is not spreadsheet-paste proof.",
+    "Quote-bearing headers remain unverified natively. Find a genuine public table whose header text includes a straight double quote, or record this as unavailable if none is found; do not invent or inject a header.",
+    "EXT-F-2005-T03 Data/manual-rerun native path remains separately open per docs/stabilization/reports/showcase-export-native.json; the AFI page target alone does not prove that caller."
+  ],
+  "open_questions": [
+    "Is a genuine public quote-bearing header required to close EXT-D-0054, or is source-level formatter coverage sufficient for that header case once native quote-bearing cells and spreadsheet paste are proven?"
+  ],
+  "files_touched": [
+    "docs/stabilization/reports/tsv-remaining-native-target.json"
+  ],
+  "source_urls": [
+    "https://en.wikipedia.org/wiki/AFI%27s_100_Years...100_Movie_Quotes"
+  ],
+  "native_followup": {
+    "report": "docs/stabilization/reports/tsv-quote-native.json",
+    "ruling": "Live native source and spreadsheet value take precedence over web-text reconnaissance: Rank 1 quotation includes a period before its closing straight quote. This is a target-description correction, not a product defect.",
+    "actual_rank_1_quotation": "\"Frankly, my dear, I don't give a damn.\""
+  }
+}

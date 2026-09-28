@@ -20,9 +20,10 @@
     "docs/stabilization/reports/showcase-export-correction-peer.json",
     "docs/stabilization/reports/showcase-export-guarded-runtime.json",
     "docs/stabilization/reports/showcase-export-native.json",
-    "docs/stabilization/reports/data-picker-long-native.json"
+    "docs/stabilization/reports/data-picker-long-native.json",
+    "docs/stabilization/reports/tsv-quote-native.json"
   ],
-  "verification_status": "NativeData+Showcase TSVstrictparse preserves719594charfield incl5613newlines/104tabs exactJSONhash. Priorrealheaders newlinepass. Quote-bearingcells/headers andactualspreadsheetpaste remainunverified; staysfixed.",
+  "verification_status": "Fixed, partial native acceptance. Gutenberg TSV preserves 719594-character field including 5613 newlines and 104 tabs under strict parsing. AFI native quote-bearing cells pasted correctly into Google Sheets as 101 rows including headers by 6 columns; three exact quote-bearing cells inspected. Quote-bearing headers remain unverified natively; Data quote-case and multiline spreadsheet paste remain open.",
   "transition_history": [
     {
       "at": "2026-09-28T12:38:00.604065+00:00",

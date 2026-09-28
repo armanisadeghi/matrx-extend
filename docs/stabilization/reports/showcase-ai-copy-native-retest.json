@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "task_id": "showcase-ai-copy-native-retest",
+  "inventory": [
+    "EXT-F-1012-T49",
+    "EXT-F-2005-T03"
+  ],
+  "defect": "Showcase Copy for AI omitted the source URL in the pre-fix native Gutenberg run",
+  "result": "PASS_NATIVE_ORIGINAL_AND_URL_VARIATION",
+  "runtime": {
+    "browser": "Primary Google Chrome profile, actual Matrx Extend side panel",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "extension_version": "0.2.114",
+    "artifact_path": ".output/chrome-mv3-dev",
+    "artifact_tree_sha256": "a000d26b9d5d01b4ebe37f80ab830184fd74135c49fd8a5559f8e73c9b19560e",
+    "artifact_hash_method": "hashReleaseTree from scripts/sync-unpacked-release.mjs, checked after the run",
+    "installed_source": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "explicit_reload": "Clicked Reload on chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml; Chrome displayed Reloaded. Refreshed the real Gutenberg tab and reopened the Matrx side panel before testing."
+  },
+  "resource_guard": {
+    "command": "node scripts/stabilization-resource.mjs browser --run-id showcase-ai-copy-native-retest-20260928-01 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "admitted_at": "2026-09-28T14:25:21.548Z",
+    "first_healthy_watch_at": "2026-09-28T14:25:37.962Z",
+    "healthy_watch_count": 9,
+    "unsafe_watch_count": 0,
+    "stop_confirmed_at": "2026-09-28T14:27:49.541Z",
+    "actual_exit_code": 0,
+    "final_decision": "valid",
+    "completed_journal": "docs/stabilization/resource-journals/showcase-ai-copy-native-retest-20260928-01.jsonl",
+    "completed_journal_sha256": "15d4d326eb2077f45f2751661312a0b3848063642879d3a61ccb29af55fb5208"
+  },
+  "source": {
+    "url": "https://www.gutenberg.org/files/1342/1342-h/1342-h.htm",
+    "title": "Pride and prejudice | Project Gutenberg",
+    "provenance": "Genuine public page opened in Chrome. No injected DOM, fixture, local server, or response interception.",
+    "saved_pattern_id": "60b0c5bb-b4d4-4642-857a-2924b56445d5",
+    "saved_pattern_name": "EXT-F-2005-T03 Gutenberg whole-book native 20260928",
+    "saved_pattern_kind": "manual_css"
+  },
+  "steps": [
+    "On the original URL, opened Showcase > Patterns, ran the saved pattern, and observed Result Preview 1 ROW.",
+    "Clicked Result Preview Copy > Copy for AI; the UI displayed Copied and the clipboard was read immediately.",
+    "Navigated the same live tab to the same Gutenberg page with ?native_copy_check=20260928#chapter-1, reran the saved pattern, and copied for AI again."
+  ],
+  "clipboard_results": {
+    "original": {
+      "characters": 725615,
+      "source_url_line": "- Source URL: https://www.gutenberg.org/files/1342/1342-h/1342-h.htm",
+      "source_kind_line": "- Source kind: web page",
+      "row_count_line": "- Row count: 1",
+      "parsed_rows": 1,
+      "field_characters": 719594,
+      "field_sha256": "e90baaaccd79f23d7daa2d72bec603f136c06a25b6bd2ebde852d7fab5a605d2"
+    },
+    "query_and_fragment": {
+      "characters": 725652,
+      "source_url_line": "- Source URL: https://www.gutenberg.org/files/1342/1342-h/1342-h.htm?native_copy_check=20260928#chapter-1",
+      "source_kind_line": "- Source kind: web page",
+      "row_count_line": "- Row count: 1",
+      "parsed_rows": 1,
+      "field_characters": 719594,
+      "field_sha256": "e90baaaccd79f23d7daa2d72bec603f136c06a25b6bd2ebde852d7fab5a605d2"
+    },
+    "field_matches_pre_fix_native_receipt": true
+  },
+  "scope_limit": "The saved Gutenberg DOM replay and its URL freshness were verified in the native UI. A distinct live Network response source was not exercised in this bounded run."
+}

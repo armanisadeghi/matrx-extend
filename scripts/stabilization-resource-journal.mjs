@@ -1,40 +1,15 @@
 import {
-  closeSync,
-  existsSync,
-  fsyncSync,
-  linkSync,
-  lstatSync,
-  mkdirSync,
-  openSync,
-  realpathSync,
-  unlinkSync,
-  writeSync,
+  closeSync, existsSync, fsyncSync, linkSync, lstatSync, mkdirSync, openSync,
+  realpathSync, unlinkSync, writeSync,
 } from 'node:fs';
 import { join } from 'node:path';
 
 const RUN_ID = /^[A-Za-z0-9_.-]+$/;
 const JOURNAL_FIELDS = new Set([
-  'schema',
-  'at',
-  'code',
-  'runId',
-  'mode',
-  'policySchema',
-  'sample',
-  'reasons',
-  'cpuBusySamples',
-  'swapWindowSeconds',
-  'groupId',
-  'reason',
-  'signal',
-  'resourceInvalid',
-  'exitCode',
-  'decision',
-  'instruction',
-  'recovery',
-  'previousRunId',
-  'childExitCode',
-  'childSignal',
+  'schema', 'at', 'code', 'runId', 'mode', 'policySchema', 'sample',
+  'reasons', 'cpuBusySamples', 'swapWindowSeconds', 'groupId', 'reason',
+  'signal', 'resourceInvalid', 'exitCode', 'decision', 'instruction',
+  'recovery', 'previousRunId', 'childExitCode', 'childSignal', 'processEvidence',
 ]);
 
 // This writer receives guard-owned events only. Child stdout still goes directly
@@ -60,9 +35,7 @@ export function openResourceJournal(repo, runId, { closeFd = closeSync } = {}) {
     fd = openSync(path, 'wx', 0o600);
   } catch (error) {
     throw new Error(
-      error.code === 'EEXIST'
-        ? 'RESOURCE_RUN_ID_ALREADY_JOURNALED'
-        : 'RESOURCE_JOURNAL_OPEN_FAILED',
+      error.code === 'EEXIST' ? 'RESOURCE_RUN_ID_ALREADY_JOURNALED' : 'RESOURCE_JOURNAL_OPEN_FAILED',
     );
   }
   return {
@@ -72,8 +45,25 @@ export function openResourceJournal(repo, runId, { closeFd = closeSync } = {}) {
         const safe = Object.fromEntries(
           Object.entries(event).filter(([key]) => JOURNAL_FIELDS.has(key)),
         );
+        if (safe.processEvidence) {
+          const evidence = safe.processEvidence;
+          if (!Array.isArray(evidence.matches) || evidence.matches.length > 5 ||
+              !Number.isSafeInteger(evidence.overflow) || evidence.overflow < 0)
+            throw new Error('invalid process evidence');
+          safe.processEvidence = {
+            matches: evidence.matches.map(({ pid, ppid, processStart, executable, reason }) => {
+              if (![pid, ppid].every((value) => Number.isSafeInteger(value) && value >= 0) ||
+                  !/^[A-Za-z]{3} [A-Za-z]{3} [\d ]\d \d\d:\d\d:\d\d \d{4}$/.test(processStart) ||
+                  executable !== 'node' ||
+                  !['script-operand', 'ambiguous-command', 'ambiguous-arguments'].includes(reason))
+                throw new Error('invalid process identity');
+              return { pid, ppid, processStart, executable, reason };
+            }),
+            overflow: evidence.overflow,
+          };
+        }
         const bytes = Buffer.from(`${JSON.stringify(safe)}\n`);
-        for (let offset = 0; offset < bytes.length; ) {
+        for (let offset = 0; offset < bytes.length;) {
           const written = writeSync(fd, bytes, offset, bytes.length - offset);
           if (written <= 0) throw new Error('short journal write');
           offset += written;

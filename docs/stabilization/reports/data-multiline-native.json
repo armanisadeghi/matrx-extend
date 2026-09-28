@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "run_id": "data-multiline-native-20260928-01",
+  "defect_id": "EXT-D-0054",
+  "inventory_case_ids": [
+    "EXT-F-2005-T03",
+    "EXT-F-1012-T49"
+  ],
+  "status": "BLOCKED_RESOURCE_ADMISSION_REFUSED",
+  "scope": "Requested native verification of multiline Data/manual picker extraction and TSV paste into the user's existing spreadsheet. No browser, spreadsheet, product edits, build, or tests were performed.",
+  "expected_runtime": {
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.114",
+    "build_tree_sha256": "d1626c0d007fac7d53a6e17ae3c054fe55bf38c309f6a1207fcd2592ea22f3b0"
+  },
+  "resource_admission": {
+    "command": "node scripts/stabilization-resource.mjs browser --run-id data-multiline-native-20260928-01 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "result": "RESOURCE_PREFLIGHT_REFUSED",
+    "journal": "docs/stabilization/resource-journals/data-multiline-native-20260928-01.jsonl",
+    "journal_sha256": "218dbba284ac0a5583201c13250e84251d5970e5c06cadad938dc8b3ce5c1ce0",
+    "at": "2026-09-28T14:56:07.371Z",
+    "profile_free_gib": 15.611358642578125,
+    "required_free_gib": 20,
+    "swap_used_mib": 5063.44,
+    "reasons": [
+      "RESOURCE_DISK_LOW",
+      "RESOURCE_SWAP_GROWTH"
+    ],
+    "terminal_exit_code": 2,
+    "final_decision": "refused"
+  },
+  "native_execution": {
+    "status": "NOT_STARTED",
+    "admitted": false,
+    "healthy_watch_sample": false,
+    "reload_or_navigation": "none",
+    "owned_pattern_ids": [],
+    "spreadsheet_id": "1ebP-kWXgjUPoNy20rMIRB0ZuXYuR5_1u80rhCU9xHEc",
+    "spreadsheet_tab": null,
+    "clipboard_read": "none",
+    "field_lines_quotes_and_dimensions": "unverified"
+  },
+  "source_and_prior_evidence": {
+    "header_path_report": "docs/stabilization/reports/header-native-path.json concludes ordinary Data controls cannot set a quote-bearing field name/header; Showcase AI Extract is a separate UI.",
+    "prior_tsv_report": "docs/stabilization/reports/tsv-quote-native.json demonstrates quote-bearing cell values pasted into a spreadsheet but explicitly leaves Data/manual T03 open.",
+    "target_source": "The Raven HTML from Project Gutenberg was recommended for a stanza-sized multiline value, but was not opened."
+  },
+  "open_gaps": [
+    "Data T03 stanza-sized multiline and quote-bearing value paste into an actual spreadsheet remains unverified. Prior Data/manual extraction, save and replay evidence remains valid at its recorded scope.",
+    "Showcase T49 Data caller has partial prior coverage; this refused run adds no native evidence.",
+    "Quote-bearing headers remain unverified; Data ordinary controls cannot create named headers."
+  ]
+}

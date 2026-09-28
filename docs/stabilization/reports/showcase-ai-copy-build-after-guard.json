@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "task_id": "showcase-ai-copy-build-after-guard",
+  "defect_id": "EXT-D-0056",
+  "at_utc": "2026-09-28T14:10:42Z",
+  "status": "PASS",
+  "scope": "Post-guard compile and development build admission only; no UI or runtime acceptance.",
+  "receipt": "docs/stabilization/runs/showcase-ai-copy-build-after-guard.json",
+  "source_head": "fa1830cc69ddce2df77edd10ff4fce17f2e1e795",
+  "tracked_dirty_at_run": false,
+  "source_edits": "none",
+  "compile": {
+    "result": "pass",
+    "child_exit_code": 0,
+    "resource_invalid": false,
+    "decision": "valid",
+    "journal_sha256": "f6ecffb93c8d1a042db75b620ad5b43db64ab0068abff88fc1710fbe47df5768"
+  },
+  "development_build": {
+    "result": "pass",
+    "child_exit_code": 0,
+    "resource_invalid": false,
+    "decision": "valid",
+    "journal_sha256": "3f5e1ac4f3800503b5b10f3a4470a96c3d19ab9a4019b673d710e34e6d9d788c"
+  },
+  "artifact": {
+    "path": ".output/chrome-mv3-dev",
+    "version": "0.2.114",
+    "canonical_tree_sha256": "be95fefdcf5d70e5828828d8db42d0d74bff8085bb6ba3d2ea203ebc31b6d331",
+    "installed_chrome_reloaded": false
+  },
+  "limits": [
+    "This establishes successful guarded compile/build after the resource guard repair.",
+    "It does not establish UI behavior, native runtime acceptance, or a Chrome reload."
+  ]
+}

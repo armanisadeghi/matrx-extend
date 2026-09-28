@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "defect": "EXT-D-0056",
+  "status": "implemented; independent peer verification pending",
+  "cause": "The legacy runner scan searched ps command text for independent Node and guard-script substrings, so zsh -lc command text and Node eval source could look like a runner. Ownerless recovery repeated the same pattern.",
+  "repair": [
+    "The guard now reads macOS ps comm as executable identity, inspects the Node script operand, and treats uncertain Node arguments mentioning the guard as ambiguous blocking state.",
+    "Admission and ownerless recovery share the classifier; canonical and known legacy lease checks, the one-heavy-owner cap, and all resource thresholds are unchanged.",
+    "A matched PID is rechecked against its process start before refusal. The refusal journal carries at most five identities (PID, parent PID, start time, executable basename, match reason) and an overflow count; command text and environment are never persisted."
+  ],
+  "verification": {
+    "label": "UNGUARDED lightweight infrastructure tests and guard refusal probe only; no product runtime, build, or browser verification",
+    "command": "node --test scripts/test-stabilization-resource-process.mjs scripts/test-stabilization-resource-lease.mjs scripts/test-stabilization-resource-journal.mjs",
+    "result": "19 passed, 0 failed",
+    "red_green": "The shell false-positive and Node-e false-positive tests each failed under a matching one-line classifier mutation through plant.py, then passed after exact source restoration. The tool verified byte-identical restoration.",
+    "live_process_probe": "A live idle Node process running a guard-named script was observed through macOS ps. A copied guard using the real canonical lease refused it with RESOURCE_LEGACY_RUNNER_BUSY and journaled its bounded identity. The probe replaced preflight in the scratch copy with an immediate failure sentinel, so it could not launch heavy work if the classifier missed the runner.",
+    "lease_regressions": "Existing canonical cross-TMPDIR cap and known legacy lease tests passed.",
+    "process_cleanup": "Both probe child processes exited; no legacy-runner-identity or legacy-runner-admission process remained."
+  },
+  "limits": "Process argv is display text in ps, not a lossless argv vector. Unrecognized Node option layouts that mention this guard fail closed as ambiguous. Historical refusals remain unattributed because old journals have no PID evidence.",
+  "next": "Independent source and probe review before D55 product runtime resumes."
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-28T13:58:11.686359+00:00",
+  "updated_at": "2026-09-28T15:00:57.328820+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -15235,7 +15235,20 @@
             "reload",
             "auth-transition",
             "service-error"
-          ]
+          ],
+          "defect_ids": [
+            "EXT-D-0057",
+            "EXT-D-0058"
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "evidence": [
+                "docs/stabilization/reports/prepare-source-audit.json"
+              ],
+              "detail": "Source-derived defects D57/D58 cover absent reports, stale retry success and late page results. Runtime and native reproduction not yet executed; no UI pass/fail assigned."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T09",
@@ -16160,7 +16173,18 @@
             "reload",
             "navigation",
             "service-error"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "data-picker-long-native-20260928-01",
+              "evidence": [
+                "docs/stabilization/reports/data-picker-long-native.json",
+                "docs/stabilization/reports/showcase-ai-copy-native-retest.json"
+              ],
+              "detail": "Existing native evidence linked to this lifecycle case: real Data field picking, manual_css save with retained exact ID60b0c5bb-b4d4-4642-857a-2924b56445d5, Data refresh/replay and Showcase saved replay preserve the 719594-character field. Later explicitly reloaded native replay binds the actual URL including query/fragment. Draft-change isolation, wrong-route/missing-structure, service-error and broader source-change behavior remain unverified; this is evidence reconciliation, not a new run or whole-case pass."
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T40",
@@ -16524,9 +16548,11 @@
               "run_id": "data-picker-long-native-20260928-01",
               "evidence": [
                 "docs/stabilization/reports/data-picker-long-native.json",
-                "docs/stabilization/reports/showcase-export-guarded-runtime.json"
+                "docs/stabilization/reports/showcase-export-guarded-runtime.json",
+                "docs/stabilization/reports/showcase-ai-copy-native-retest.json",
+                "docs/stabilization/reports/tsv-quote-native.json"
               ],
-              "detail": "Actualfieldpicker/manualCSSsave/Data+Showcase replay JSON/AI/TSV preserve719594charbookfield identicalhash; Data refreshreplaypasses. D53closed; D54quotes/spreadsheetpaste open; ShowcaseAIURLmissingD55; broaderauth/cancel/failurestatesunverified."
+              "detail": "Data and Showcase replay preserve the full 719594-character book field in JSON, AI and TSV. D53 and D55 closed: native AI copy includes correct page source URL/kind, including query and fragment after rerun. D54 quote-bearing cells and spreadsheet paste remain open; native Network provenance and broader failure/shared-consumer dimensions remain unverified. Native AFI table TSV pasted into Google Sheets A1:F101 with exact quotation/character cells intact. This resolves the quote-bearing-cell paste gap only; quote-bearing headers, multiline spreadsheet paste and Data quote-case remain unverified."
             }
           },
           "defect_ids": [
