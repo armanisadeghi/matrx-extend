@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "defect": "EXT-D-0050",
+  "source_commit_at_build": "8c1624440f3bc98e24af624d0b50cadfc94665db",
+  "working_tree_at_build": "Only tests/unit/saved-run-bump-boundary.test.ts was untracked; tracked source had no diff",
+  "source_identity": {
+    "pnpm_lock_sha256": "3c8f3aba248b2d9135be85f2913c19046d6f56da6a006c918de7aec0e04be0c5",
+    "patterns_tab_sha256": "ec7368f4cce0d0cd484261ba9d73c254d83390e4f054c96f16d11da6cc548140",
+    "queries_sha256": "bafbda9a6a9489222009e4d4dac90cc8ecb65e4387152aac6a74e1406341b9ae",
+    "boundary_test_sha256": "b7e6525070a4860ba5ea07062800feeece54f6e097f119b6cbb2fcf6a43dd706"
+  },
+  "build": {
+    "run_id": "showcase-d50-runtime-build-20260928",
+    "command": "node scripts/stabilization-resource.mjs run --run-id showcase-d50-runtime-build-20260928 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec wxt build --mode development",
+    "admission": "RESOURCE_ADMITTED",
+    "terminal_exit_code": 0,
+    "artifact_path": ".output/chrome-mv3-dev",
+    "artifact_kind": "development unpacked Chrome MV3",
+    "manifest_version": "0.2.114",
+    "manifest_key_present": true,
+    "hash_method": "hashReleaseTree from scripts/sync-unpacked-release.mjs",
+    "tree_sha256_before": "8b0f8adc1e576451da4d549780958766f7bb7e51b545e8dd421d36eb6e65ee45",
+    "tree_sha256_after": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43"
+  },
+  "postbuild_source_and_lock_hashes_unchanged": true,
+  "chrome_install_and_persisted_row": "UNVERIFIED in this lane"
+}

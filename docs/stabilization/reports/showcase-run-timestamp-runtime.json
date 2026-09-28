@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "defect": "EXT-D-0050",
+  "lane": "independent guarded runtime verifier",
+  "source_commit": "8c1624440f3bc98e24af624d0b50cadfc94665db",
+  "verdict_a": {
+    "native_outcome": "UNVERIFIED",
+    "reason": "This lane ran source tests, typecheck, and a development build. It did not install or drive Chrome or inspect a persisted Supabase row."
+  },
+  "verdict_b": {
+    "runtime_quality": "PASS_FOR_FOCUSED_SOURCE_AND_BUILD",
+    "evidence": [
+      "The saved-run race test failed under a controlled refresh-before-write mutation and passed on the restored source.",
+      "The direct bumpPatternRun PostgREST-boundary test failed for both zero-row and error responses under a constant-success mutation and passed on the restored source.",
+      "Five focused files passed 28 tests before and after mutation proof; TypeScript compile and WXT development build exited 0."
+    ],
+    "limitations": [
+      "No installed-extension replay or live database timestamp observation was performed in this lane.",
+      "The test double exercises the query boundary but cannot prove live RLS behavior."
+    ]
+  },
+  "commands": {
+    "focused_initial": "showcase-d50-runtime-focused-20260928: RESOURCE_ADMITTED; pnpm exec vitest run --maxWorkers=1 [five focused files]; 5 files, 28 tests passed; terminal 0",
+    "race_mutation": "showcase-d50-race-red-final-20260928: RESOURCE_ADMITTED; plant.py changed only the awaited PatternsTab health write to fire-and-forget; the named refresh-after-health test failed; plant verdict RED and restored original SHA ec7368f4; terminal 0",
+    "boundary_mutation": "showcase-d50-boundary-red-20260928: RESOURCE_ADMITTED; plant.py changed only the bumpPatternRun success branch to constant success; zero-row and error tests failed; plant verdict RED and restored original SHA bafbda9a; terminal 0",
+    "compile": "showcase-d50-runtime-compile-20260928: RESOURCE_ADMITTED; pnpm compile; terminal 0",
+    "build": "showcase-d50-runtime-build-20260928: RESOURCE_ADMITTED; pnpm exec wxt build --mode development; terminal 0",
+    "focused_final": "showcase-d50-runtime-final-green-20260928: RESOURCE_ADMITTED; pnpm exec vitest run --maxWorkers=1 [five focused files]; 5 files, 28 tests passed; terminal 0"
+  },
+  "artifact_receipt": "docs/stabilization/runs/showcase-d50-runtime-artifact-20260928.json",
+  "next": "A separate Chrome lane should replay a real saved pattern, observe the displayed Last run timestamp, and check the persisted last_run_at value."
+}
