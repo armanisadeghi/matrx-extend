@@ -3,6 +3,8 @@
   "defect": "EXT-D-0055",
   "status": "SOURCE_CANDIDATE_UNVERIFIED",
   "source_commit": "8ae31220",
+  "source_review_repair_commit": "43ebf322",
+  "review_commit": "1edc9224",
   "push": "not pushed; root owns integration and runtime gates",
   "original_native_evidence": "docs/stabilization/reports/data-picker-long-native.json",
   "root_cause": "ResultPreview accepted an optional source and wrapJsonForAgent printed it, but nine Showcase result callers omitted the source prop. The observed saved-pattern replay therefore copied its row count and rows with no Source URL, although Data's separate copy action did include the source. List Pattern supplied the live tab URL instead of its extraction snapshot.",
@@ -17,9 +19,14 @@
     "patterns": "PatternsTab captures URL and title before runSavedPattern, stores them only when the guarded run commits rows, and clears them when the page or run changes.",
     "network": "NetworkTab passes the selected captured response's URL, sanitized with the credential query keys marked for that selected response. Search and replay URL filter drafts cannot replace the copied source."
   },
-  "credential_handling": "ResultPreview uses the existing sanitizeNetworkUrl helper on its source URL for both Copy for AI and Send to agent. It masks recognized credential query keys and keeps ordinary query parameters that identify the page. Network's selected-response URL is first sanitized with user-marked extra credential keys. The shared clipboard formatter and general URL policy were not changed.",
+  "credential_handling": "ResultPreview uses sanitizePageSourceUrl, built from the existing sanitizeNetworkUrl classifier, on its source URL for both Copy for AI and Send to agent. It masks recognized credential keys in the query and fragment while keeping ordinary query parameters and hash routes that identify the page. Network's selected-response URL is first sanitized with user-marked extra credential keys. The shared clipboard formatter's URL policy was not changed.",
+  "source_review_round_1": {
+    "hash_route_fix": "ResultPreview and Doctor now use sanitizePageSourceUrl, which applies the existing credential-key classification to the page query and each hash fragment while retaining route fragments and ordinary query identity.",
+    "provenance_kind_ruling": "The saved Network runner returns rows without the matched response URL. Those rows were extracted during a known page run, so the page URL is valid page provenance; calling it the matched API response would be unproven. ResultPreview now labels the source kind as web page for replay and network response for a selected live captured response. The saved runner is not changed or guessed from its recipe URL filter.",
+    "connected_guard": "The new showcase-ai-copy-source guard renders PatternsTab, the real ResultPreview and real CopyMenu, then reads the clipboard sink after two different saved replays; it also selects a captured Network response, marks a custom credential key, edits the replay URL filter, and checks the copied response provenance. External pattern execution and capture transport are controlled dependencies."
+  },
   "guards_added": [
-    "tests/unit/showcase-ai-copy-source.test.tsx: two distinct source queries and rows, recognized credential masking, and unavailable-source behavior",
+    "tests/unit/showcase-ai-copy-source.test.tsx: real ResultPreview and CopyMenu copied output for two source queries and rows, hash routes, recognized credential masking, unavailable-source behavior, saved replay through PatternsTab, and selected Network response versus edited replay filter",
     "tests/unit/showcase-patterns-replay-provenance.test.tsx: two saved replays from distinct page URLs bind their respective result preview sources"
   ],
   "verification": {
@@ -28,5 +35,5 @@
     "typecheck": "NOT RUN: runtime permit and source peer review pending",
     "native_ui": "NOT RUN after this source change; original reproduction was on the installed extension"
   },
-  "next": "Obtain fresh source review, then run the focused tests, typecheck, and installed-extension Copy for AI check under the root lane's resource permit. Preserve the existing Gutenberg pattern 60b0c5bb-b4d4-4642-857a-2924b56445d5 for that native check."
+  "next": "Obtain fresh source review of this round, then run the focused tests, typecheck, and installed-extension Copy for AI check under the root lane's resource permit. Preserve the existing Gutenberg pattern 60b0c5bb-b4d4-4642-857a-2924b56445d5 for that native check."
 }
