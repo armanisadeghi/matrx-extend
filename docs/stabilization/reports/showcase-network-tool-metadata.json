@@ -1,0 +1,22 @@
+{
+  "id": "showcase-network-tool-metadata",
+  "scope": "EXT-D-0047 registered tool description only",
+  "status": "metadata_updated_readback_verified",
+  "project_ref": "brsgrqvjdzwihsvnfqkf",
+  "project_api_url": "https://db.matrxserver.com",
+  "table": "tool.definition",
+  "tool_id": "c1c6d788-cf8a-47b0-8380-d5e9458b4205",
+  "tool_name": "data_patterns",
+  "source_evidence": [
+    "src/lib/tools/handlers/data-patterns.ts: network_capture prepares an exact saved recipe and document snapshot, inherits privileged/admin/debugger requirements from cdp_attach, and only runs after dispatcher approval",
+    "src/lib/data-pattern/document-network-capture.ts: Page.addScriptToEvaluateOnNewDocument arms capture before Page.reload; the assigned page is rechecked before reload",
+    "src/lib/data-pattern/run-interactive.ts: matching window is configured by timeoutMs and starts when capture is armed",
+    "src/features/chat/AgentApprovalCard.tsx: approval preview tells the person about Chrome debugger, reload, and matching Network responses"
+  ],
+  "live_before": "network_capture reloads the tab and listens ~20s for the matching API request — tell the user before running it since the page will reload",
+  "live_after": "network_capture requires admin access, Chrome debugger permission, and approval for each run; after approval it arms capture in the new document before reloading the assigned page, then waits within the configured capture window for a matching API response",
+  "write": "Single-row description-only compare-and-swap on id, name, is_active, and the full old description; actor_system set to codex:showcase-network-tool-metadata in the same statement. One row returned.",
+  "readback": "Fresh Supabase execute_sql SELECT by tool id returned the active data_patterns row with the complete amended description.",
+  "limitation": "This lane verified source and database metadata only. It did not run the extension, tests, catalog generation, or the native build.",
+  "owner_followup": "Regenerate docs/TOOLS.generated.md from the database after the active native build lane finishes; its checked-in data_patterns paragraph still has the old description."
+}
