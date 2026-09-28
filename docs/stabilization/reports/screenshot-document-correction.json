@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "report_id": "screenshot-document-correction",
+  "defect_id": "EXT-D-0059",
+  "rank": 3,
+  "status": "SOURCE_CORRECTION_VERIFIED_NATIVE_ACCEPTANCE_OPEN",
+  "scope": "Screenshot capture, persistence attribution, and URL-history completion in the extension. No native browser or release was run in this lane.",
+  "diagnosis": {
+    "confirmed_source_failure": "ScreenshotsView knew the clicked tab ID but passed assignedTabId:null; take_screenshot then resolved the active tab later. Its captureVisibleTab call was window-scoped, as were all full-page tiles, and neither checked Chrome documentId. Same-URL reload and active-tab change could therefore accept or persist bytes from another page under the stale tab URL.",
+    "sibling_census": ["take_screenshot visible and full_page", "screenshot_region", "cdp_full_page_screenshot"],
+    "persistence_boundary": "All three writers use persistScreenshot; wbx_screenshot is URL-keyed historical lookup and has no documentId column. The capture document ID is included in uploaded file metadata and successful take_screenshot output. The index row retains the captured document's URL/title."
+  },
+  "correction": [
+    "The screenshot button pins its initiating tab and Chrome top-frame document ID in ToolContext before invoking the shared handler.",
+    "Window-scoped visible, region, and full-page tile capture checks active tab and document ID before and after capture; full-page scroll scripts target the original document ID and restore that document's scroll on failure.",
+    "The tab-targeted CDP path checks its original document after capture and stores original page metadata.",
+    "The gallery explicitly labels URL history, and a user capture that finishes saving after later navigation reports that it belongs to the earlier page."
+  ],
+  "verification": {
+    "behavioral_red": "Guarded d59-screenshot-red2-0928: naive shared boundary returned bytes after same-URL document replacement and different active tab; two assertions failed, one baseline passed. This was a boundary red, not a replay of the unmodified handler.",
+    "behavioral_green": "Guarded d59-screenshot-tests2-0928: six tests passed, including real take_screenshot.run rejection on same-URL replacement and different visible tab, plus full-page scroll restoration on failure.",
+    "typecheck": "Guarded d59-screenshot-compile3-0928: pnpm compile passed.",
+    "generated": "Guarded d59-screenshot-catalog2-0928 and d59-screenshot-docs-0928 passed. Initial catalog run failed because RECORDS_GUIDE_SOURCE was unset; rerun used the existing aidream source.",
+    "resource_journals_sha256": {
+      "d59-screenshot-red2-0928.jsonl": "a84e33d499934a2de99b35e72e88e135ceeaf1c2d63083714a81b482d047867b",
+      "d59-screenshot-tests2-0928.jsonl": "113d2bcc93a7697a9b6d2c622863fbc27630388c967b61f75f8fda54d97f9ee9",
+      "d59-screenshot-compile3-0928.jsonl": "656698cba06a562378aaae6f3398e55262f7c29d3ddb077c2b7be815f0a364ec",
+      "d59-screenshot-catalog2-0928.jsonl": "0074ae3acd6b2f60a3041bb1724bbf29e696650fe8fb3a412d84504a0904abde",
+      "d59-screenshot-docs-0928.jsonl": "327b119ee3f04ed62a0f16e9f21a8fe3ffbae93384684e667aabd81e9cca1a88"
+    }
+  },
+  "limits": [
+    "Chrome captureVisibleTab returns a window image without atomic tab or document identity. Checks detect a change observed before or after the API call; a switch away and back entirely inside one capture call cannot be certified.",
+    "No native UI capture, same-URL reload, persistence row, or release verification was run here. EXT-D-0059 remains incomplete until native acceptance and the other census ranks finish."
+  ]
+}

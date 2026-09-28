@@ -17,6 +17,7 @@ import { classifyTabUrl } from '@/lib/scrape/capture-error';
 import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
 import { scrollToLoadLazy } from '@/lib/scrape/page-ready';
 import { type ScreenshotProfile, resolveProfile } from '@/lib/screenshot/profiles';
+import { captureForDocument, readScreenshotDocument } from '@/lib/screenshot/document';
 import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { base64ByteLength } from '@ai-matrx/kit/base64';
@@ -247,6 +248,8 @@ interface ScreenshotResult {
    * full page in that case.
    */
   truncated?: boolean;
+  captured_document_id?: string;
+  captured_page_url?: string;
 }
 
 /**
@@ -331,7 +334,7 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
   argsSchema: ScreenshotArgs,
   run: async (args, ctx) => {
     const tab = await getAssignedTab(ctx);
-    if (!tab?.windowId) return { ok: false, reason: 'No active tab' };
+    if (!tab?.id || !tab.windowId) return { ok: false, reason: 'No active tab' };
     const profileName = (args.profile ?? 'auto') as ScreenshotProfile;
     const profile = resolveProfile(profileName);
     const format = args.format ?? profile.format;
@@ -341,6 +344,10 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
     const captureSource = (args.capture_source ?? 'unknown') as 'agent' | 'user' | 'unknown';
     const mode = (args.mode ?? 'visible') as 'visible' | 'full_page';
     try {
+      const document = ctx.screenshotDocument ?? await readScreenshotDocument(tab.id);
+      if (document.tabId !== tab.id || document.windowId !== tab.windowId) {
+        return { ok: false, reason: 'The screenshot tab changed before capture. Try again.' };
+      }
       // Both paths feed the same processScreenshot (PNG → optionally
       // resized → encoded at requested format/quality). The built-in
       // captureVisibleTab JPEG encoder ignores quality consistently
@@ -350,14 +357,14 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
       let truncated: boolean | undefined;
       if (mode === 'full_page') {
         const { captureFullPage } = await import('@/lib/screenshot/full-page');
-        const fp = await captureFullPage(tab);
+        const fp = await captureFullPage(document);
         dataUrl = fp.dataUrl;
         tileCount = fp.tileCount;
         truncated = fp.truncated;
       } else {
-        dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, {
+        dataUrl = await captureForDocument(document, () => chrome.tabs.captureVisibleTab(document.windowId, {
           format: 'png',
-        });
+        }));
       }
       const processed = await processScreenshot(dataUrl, format, quality, maxDim);
       const mediaType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
@@ -375,7 +382,8 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
         try {
           const { persistScreenshot } = await import('@/lib/screenshot/persist');
           const persisted = await persistScreenshot({
-            tab,
+            tab: { ...tab, url: document.url, title: document.title ?? undefined },
+            documentId: document.documentId,
             base64: processed.base64,
             mimeType: mediaType,
             format,
@@ -410,6 +418,8 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
               source_height: processed.sourceHeight,
               ...(tileCount !== undefined && { tile_count: tileCount }),
               ...(truncated !== undefined && { truncated }),
+              document_id: document.documentId,
+              page_url: document.url,
             },
           }),
           mode,
@@ -417,6 +427,8 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
           width: processed.width,
           height: processed.height,
           profile: profileName,
+          captured_document_id: document.documentId,
+          captured_page_url: document.url,
         } as ScreenshotResult;
       }
 
@@ -439,6 +451,8 @@ export const take_screenshot: ToolHandler<ScreenshotArgs, ScreenshotResult> = {
         screenshot_id: screenshotId,
         ...(tileCount !== undefined && { tile_count: tileCount }),
         ...(truncated !== undefined && { truncated }),
+        captured_document_id: document.documentId,
+        captured_page_url: document.url,
       };
     } catch (err) {
       return { ok: false, reason: (err as Error).message };

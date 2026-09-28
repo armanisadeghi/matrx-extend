@@ -19,6 +19,7 @@ import type { ToolHandler } from '@/lib/tools/types';
  *    .research/proposed-tools-and-features.md (items #2 and #4)
  */
 import { z } from 'zod';
+import { assertScreenshotDocument, captureForDocument, readScreenshotDocument } from '@/lib/screenshot/document';
 
 // ─── extract_table ─────────────────────────────────────────────────────────
 const ExtractTableArgs = z
@@ -529,6 +530,12 @@ export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegi
   run: async (args, ctx) => {
     const tab = await getAssignedTab(ctx);
     if (!tab?.id || !tab.windowId) return { ok: false, reason: 'No active tab' };
+    let document;
+    try {
+      document = await readScreenshotDocument(tab.id);
+    } catch (err) {
+      return { ok: false, reason: (err as Error).message };
+    }
 
     // 1. Resolve the rect — either explicit or derived from ref/selector.
     let viewportRect: { x: number; y: number; w: number; h: number } | null = null;
@@ -541,7 +548,7 @@ export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegi
       if (!refSelector) return { ok: false, reason: 'No selector resolved' };
       try {
         const [first] = await chrome.scripting.executeScript({
-          target: { tabId: tab.id },
+          target: { tabId: tab.id, documentIds: [document.documentId] },
           func: resolveRectInPage,
           args: [refSelector],
         });
@@ -572,7 +579,7 @@ export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegi
     const quality = args.quality ?? profile.quality;
     let dataUrl: string;
     try {
-      dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: 'png' });
+      dataUrl = await captureForDocument(document, () => chrome.tabs.captureVisibleTab(document.windowId, { format: 'png' }));
     } catch (err) {
       return { ok: false, reason: `captureVisibleTab failed: ${(err as Error).message}` };
     }
@@ -581,12 +588,17 @@ export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegi
     let dpr = 1;
     try {
       const [first] = await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
+        target: { tabId: tab.id, documentIds: [document.documentId] },
         func: () => window.devicePixelRatio || 1,
       });
       dpr = (first?.result as number) ?? 1;
     } catch {
       // ignore — fall back to 1x
+    }
+    try {
+      await assertScreenshotDocument(document);
+    } catch (err) {
+      return { ok: false, reason: (err as Error).message };
     }
 
     // 5. Crop + re-encode to the requested format/quality.
@@ -635,7 +647,8 @@ export const screenshot_region: ToolHandler<ScreenshotRegionArgs, ScreenshotRegi
       try {
         const { persistScreenshot } = await import('@/lib/screenshot/persist');
         const persisted = await persistScreenshot({
-          tab,
+          tab: { ...tab, url: document.url, title: document.title ?? undefined },
+          documentId: document.documentId,
           base64,
           mimeType: mediaType,
           format,

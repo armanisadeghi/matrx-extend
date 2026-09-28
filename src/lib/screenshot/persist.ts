@@ -24,6 +24,7 @@ import { normalizeUrl } from '@/lib/url/match';
 
 interface PersistInput {
   tab: chrome.tabs.Tab;
+  documentId: string;
   /** Base64-encoded image bytes (without the data: prefix). */
   base64: string;
   /** Final mime type, e.g. 'image/jpeg' or 'image/png'. */
@@ -121,6 +122,7 @@ export async function persistScreenshot(input: PersistInput): Promise<PersistRes
         kind: 'screenshot',
         page_url: url,
         page_url_canonical: canonical,
+        page_document_id: input.documentId,
         source: input.source,
         width: input.width,
         height: input.height,
