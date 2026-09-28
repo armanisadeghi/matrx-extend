@@ -27,11 +27,18 @@
     "mode": "browser",
     "admitted_at_utc": "2026-09-28T10:44:25Z",
     "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
-    "stop_requested_at_utc": "2026-09-28T10:54:19Z",
-    "stop_confirmed_at_utc": "2026-09-28T10:54:21Z",
-    "terminal": true,
-    "lease_released": true,
-    "stop": "Sent SIGINT to the owned guard PID 38892; confirmed it exited and the heavy lease directory was released."
+    "watch_evidence": {
+      "stdout_or_session_log": "UNAVAILABLE. No app terminal session was attached, and no saved stdout/log for this run was found in the stabilization resource directory or searched run records.",
+      "healthy_watch_times_before_ui_batches": "UNRECORDED; exact RESOURCE_WATCH_HEALTHY samples and the last watch time could not be recovered.",
+      "unsafe_watch_signals": "UNKNOWN; no retained output establishes whether RESOURCE_WATCH_UNSAFE or RESOURCE_STOP_AT_SAFE_BOUNDARY occurred."
+    },
+    "stop_signal_sent_at_utc": "2026-09-28T10:54:19Z",
+    "stop_signal": "SIGINT sent to owned PID 38892.",
+    "terminal_output": "UNAVAILABLE; RESOURCE_BROWSER_STOP_CONFIRMED output was not captured.",
+    "guard_exit_code": null,
+    "resource_invalid_flag": "UNKNOWN",
+    "process_check": "PID 38892 was still listed about one second after SIGINT and absent about three seconds later; a shell check also found the heavy lease directory absent. This confirms process/lease disappearance, not the guard's terminal JSON or exit code.",
+    "resource_validity": "UNVERIFIED"
   },
   "acceptance": {
     "EXT-F-1012-T10": {
@@ -65,7 +72,7 @@
     "whole_feature_closure": false
   },
   "verdicts": {
-    "A_live_surface": "PARTIAL_PASS for the listed warm/reload/source-change observations. This is the implementer's native-seat evidence; independent review is outstanding.",
-    "B_doctrine_quality": "UNVERIFIED. No product source changed in this lane, and this run did not review implementation diffs or provide an independent engineering verdict."
+    "A_live_surface": "Observed partial passes on the listed warm/reload/source-change interactions. The required resource guard watch history and terminal result are missing, so this run is not resource-validated.",
+    "B_evidence_quality": "PARTIAL. Live UI observations and public-source comparisons are recorded, but watch samples, unsafe-signal history, guard resourceInvalid, and terminal exit code were not retained. No product code was changed or code-quality review performed in this lane."
   }
 }

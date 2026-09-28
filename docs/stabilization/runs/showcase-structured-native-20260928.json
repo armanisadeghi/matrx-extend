@@ -29,10 +29,14 @@
     "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
     "admitted_at_utc": "2026-09-28T10:44:25Z",
     "pid": 38892,
-    "stop_requested_at_utc": "2026-09-28T10:54:19Z",
-    "stop_confirmed_at_utc": "2026-09-28T10:54:21Z",
-    "terminal": true,
-    "lease_released": true
+    "stop_signal_sent_at_utc": "2026-09-28T10:54:19Z",
+    "stop_signal": "SIGINT",
+    "terminal_output": "UNAVAILABLE; no attached app terminal and no retained run log found.",
+    "guard_exit_code": null,
+    "resource_invalid_flag": "UNKNOWN",
+    "process_check": "PID remained listed about one second after SIGINT, was absent about three seconds after SIGINT; the heavy lease directory was absent. This does not establish the guard terminal JSON or exit code.",
+    "watch_log": "UNAVAILABLE. Exact healthy watch samples before UI batches, last watch time, and unsafe-signal history were not retained or recoverable.",
+    "resource_validity": "UNVERIFIED"
   },
   "target": "https://developers.google.com/search/docs/appearance/structured-data/article",
   "public_source_verification": {
@@ -58,8 +62,9 @@
   ],
   "database_mutation": "Saved three owned disposable recipes via Showcase UI; used read-only SQL only to identify and confirm safe fields for exact cleanup IDs. No direct DB write.",
   "remaining": [
+    "Resource guard validity is UNVERIFIED: watch samples, unsafe-signal history, resourceInvalid and terminal exit code are unavailable.",
     "Auth-transition and service-error dimensions remain unverified.",
     "Guest/member gate, same-route metadata mutation and cleanup of the three owned recipes remain unverified/not done.",
-    "Independent live-surface and doctrine-quality review remain outstanding."
+    "No product code was changed or code-quality review performed in this lane."
   ]
 }
