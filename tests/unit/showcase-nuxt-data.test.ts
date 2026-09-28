@@ -44,7 +44,7 @@ afterEach(() => {
 describe('Nuxt Framework source decoding', () => {
   it('resolves captured Nuxt references in the tree, preview, and saved replay', async () => {
     setScript('__NUXT_DATA__', nuxtPayload);
-    const sources = await readFrameworkSources(37);
+    const sources = await readFrameworkSources(37, 'document-a');
     const root = sources.find((source) => source.source === '__NUXT_DATA__')?.data as {
       state: { $sstats: { repo: string; description: string } };
     };
@@ -53,9 +53,9 @@ describe('Nuxt Framework source decoding', () => {
     });
 
     const config = { source: '__NUXT_DATA__', key_path: ['state', '$sstats', 'repo'] };
-    await expect(runMode('next_data', 37, config)).resolves.toEqual([{ value: 'nuxt/nuxt' }]);
+    await expect(runMode('next_data', 37, config, 'document-a')).resolves.toEqual([{ value: 'nuxt/nuxt' }]);
     await expect(
-      runPattern({ kind: 'next_data', config } as Parameters<typeof runPattern>[0], 37),
+      runPattern({ kind: 'next_data', config } as Parameters<typeof runPattern>[0], 37, 'document-a'),
     ).resolves.toEqual([{ value: 'nuxt/nuxt' }]);
   });
 
@@ -66,7 +66,7 @@ describe('Nuxt Framework source decoding', () => {
       runMode('next_data', 37, {
         source: '__NUXT_DATA__',
         key_path: ['message'],
-      }),
+      }, 'document-a'),
     ).resolves.toEqual([{ value: 'hello' }]);
   });
 
@@ -79,20 +79,21 @@ describe('Nuxt Framework source decoding', () => {
           config: { source: '__NUXT_DATA__', key_path: ['7', 'repo'] },
         } as Parameters<typeof runPattern>[0],
         37,
+        'document-a',
       ),
     ).rejects.toThrow(/choose a field in the decoded tree/);
   });
 
   it('reports an unsupported Nuxt custom type instead of raw indexes', async () => {
     setScript('__NUXT_DATA__', '[["SiteSpecificWidget",1],{"title":2},"News"]');
-    const sources = await readFrameworkSources(37);
+    const sources = await readFrameworkSources(37, 'document-a');
     expect(sources[0]?.data).toBeUndefined();
     expect(sources[0]?.error).toMatch(/Nuxt page data could not be decoded/);
     await expect(
       runMode('next_data', 37, {
         source: '__NUXT_DATA__',
         key_path: ['title'],
-      }),
+      }, 'document-a'),
     ).rejects.toThrow(/Nuxt page data could not be decoded/);
   });
 
@@ -100,7 +101,7 @@ describe('Nuxt Framework source decoding', () => {
     setScript('__NEXT_DATA__', JSON.stringify({ props: { title: 'Nuxt launch notes' } }));
     setScript('__NUXT_DATA__', '[["SiteSpecificWidget",1],{"title":2},"News"]');
     setScript('__APOLLO_STATE__', JSON.stringify({ Repository: { name: 'nuxt/nuxt' } }));
-    const sources = await readFrameworkSources(37);
+    const sources = await readFrameworkSources(37, 'document-a');
     expect(sources.map((source) => source.source)).toEqual([
       '__NEXT_DATA__',
       '__NUXT_DATA__',
@@ -113,7 +114,7 @@ describe('Nuxt Framework source decoding', () => {
       runMode('next_data', 37, {
         source: '__NEXT_DATA__',
         key_path: ['props', 'title'],
-      }),
+      }, 'document-a'),
     ).resolves.toEqual([{ value: 'Nuxt launch notes' }]);
     await expect(
       runPattern(
@@ -122,6 +123,7 @@ describe('Nuxt Framework source decoding', () => {
           config: { source: 'apollo', key_path: ['Repository', 'name'] },
         } as Parameters<typeof runPattern>[0],
         37,
+        'document-a',
       ),
     ).resolves.toEqual([{ value: 'nuxt/nuxt' }]);
   });
@@ -135,6 +137,7 @@ describe('Nuxt Framework source decoding', () => {
           config: { source: '__NUXT_DATA__', key_path: ['state', '$sstats', 'repo'] },
         } as Parameters<typeof runPattern>[0],
         37,
+        'document-a',
       ),
     ).rejects.toThrow(
       /Framework source "__NUXT_DATA__" is no longer on this page.*choose an available source/,

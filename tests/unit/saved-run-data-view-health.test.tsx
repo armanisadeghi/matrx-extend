@@ -1,4 +1,5 @@
 import type { ExtractionPattern } from '@/lib/supabase/queries';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useLayoutEffect } from 'react';
@@ -10,11 +11,15 @@ const mocks = vi.hoisted(() => ({
   fetchPatterns: vi.fn(),
   runSaved: vi.fn(),
   bumpRun: vi.fn(),
+  savePattern: vi.fn(),
+  pickerListeners: new Map<string, (payload: unknown) => unknown>(),
+  retryIdentity: vi.fn(),
 }));
 
 vi.mock('@/hooks/use-active-tab', () => ({
   useActiveTab: () => ({ ...mocks.page }),
   isCurrentPageIdentity: (key: string) => key === mocks.page.pageKey,
+  refreshActiveTabIdentity: mocks.retryIdentity,
 }));
 vi.mock('@/hooks/use-auth', () => ({
   useAuth: () => ({ user: { id: 'user-1' }, status: 'signed-in', signIn: vi.fn() }),
@@ -22,13 +27,13 @@ vi.mock('@/hooks/use-auth', () => ({
 vi.mock('@/lib/supabase/queries', () => ({
   fetchPatternsForDomain: mocks.fetchPatterns,
   bumpPatternRun: mocks.bumpRun,
-  savePattern: vi.fn(),
+  savePattern: mocks.savePattern,
 }));
 vi.mock('@/lib/data-pattern/run-interactive', () => ({
   runSavedPattern: mocks.runSaved,
   NetworkNoMatchError: class NetworkNoMatchError extends Error {},
 }));
-vi.mock('@/lib/messaging/native', () => ({ on: () => () => {}, send: vi.fn() }));
+vi.mock('@/lib/messaging/native', () => ({ on: (kind: string, callback: (payload: unknown) => unknown) => { mocks.pickerListeners.set(kind, callback); return () => { mocks.pickerListeners.delete(kind); }; }, send: vi.fn() }));
 vi.mock('@/lib/api/routes/auth', () => ({ requireRequestOrganizationId: vi.fn() }));
 vi.mock('@/components/CopyMenu', () => ({
   CopyMenu: ({
@@ -82,10 +87,14 @@ const pattern = {
 
 afterEach(() => {
   cleanup();
-  mocks.page = { id: 37, url: 'https://electronic.vegas/calendar/', title: 'Vegas events' };
+  mocks.page = { id: 37, url: 'https://electronic.vegas/calendar/', title: 'Vegas events', documentId: 'document-a', pageKey: 'page-a' };
   mocks.copied = '';
   vi.clearAllMocks();
   mocks.bumpRun.mockReset();
+  mocks.savePattern.mockReset();
+  mocks.retryIdentity.mockReset();
+  mocks.pickerListeners.clear();
+  vi.unstubAllGlobals();
   useAutoExtractStore.setState({ records: new Map() });
 });
 
@@ -166,6 +175,51 @@ it('shows the auto-extract history warning alongside its extracted rows', async 
   expect(screen.getByText(/Friday night concert/)).toBeTruthy();
 });
 
+it('rejects document A picker fields after document B starts a new session on the same URL', async () => {
+  mocks.fetchPatterns.mockResolvedValue([]);
+  mocks.savePattern.mockResolvedValue(pattern);
+  const sessions: string[] = [];
+  vi.stubGlobal('chrome', {
+    scripting: { executeScript: vi.fn(async ({ args }: { args?: unknown[] }) => {
+      if (typeof args?.[0] === 'string') sessions.push(args[0]);
+      return [];
+    }) },
+  });
+  const user = userEvent.setup();
+  const view = render(<DataView />);
+  await user.click(screen.getByRole('button', { name: /pick fields on this page/i }));
+  const sessionA = sessions[0];
+  expect(sessionA).toBeTruthy();
+  await act(async () => {
+    mocks.page = { ...mocks.page, documentId: 'document-b', pageKey: 'page-b' };
+    view.rerender(<DataView />);
+  });
+  await user.click(screen.getByRole('button', { name: /pick fields on this page/i }));
+  const sessionB = sessions[1];
+  expect(sessionB).toBeTruthy();
+  expect(sessionB).not.toBe(sessionA);
+  const emit = mocks.pickerListeners.get(CHANNELS.DATA_PICKER_RESULT);
+  if (!emit) throw new Error('Data picker result listener was not installed');
+  act(() => { emit({ tab_id: 37, document_id: 'document-a', session_id: sessionA, fields: [{ name: 'old', selector: '#old' }] }); });
+  expect(screen.queryByRole('button', { name: /save pattern/i })).toBeNull();
+  act(() => { emit({ tab_id: 37, document_id: 'document-b', session_id: sessionB, fields: [{ name: 'current', selector: '#current' }] }); });
+  await user.click(screen.getByRole('button', { name: /save pattern/i }));
+  expect(mocks.savePattern).toHaveBeenCalledOnce();
+  expect(mocks.savePattern.mock.calls[0]?.[0]).toMatchObject({ fields: [{ name: 'current', selector: '#current' }] });
+});
+
+it('shows a Retry remedy and disables Data picker actions when document identity is unresolved', async () => {
+  mocks.page.pageKey = '';
+  mocks.page.documentId = '';
+  mocks.fetchPatterns.mockResolvedValue([]);
+  const user = userEvent.setup();
+  render(<DataView />);
+  expect((await screen.findByRole('status')).textContent).toMatch(/checking the current page/i);
+  expect(screen.getByRole('button', { name: /pick fields on this page/i }).hasAttribute('disabled')).toBe(true);
+  await user.click(screen.getByRole('button', { name: 'Retry' }));
+  expect(mocks.retryIdentity).toHaveBeenCalledOnce();
+});
+
 // The host contract is persistence and current-page presentation; extraction is the external runner.
 it.each(['resolve', 'reject'] as const)(
   'ignores stale DataView %s after a page switch',
@@ -182,6 +236,7 @@ it.each(['resolve', 'reject'] as const)(
     await screen.findAllByText('Calendar events');
     await userEvent.click(screen.getByRole('button', { name: 'Extract' }));
     mocks.page.url = 'https://electronic.vegas/search/';
+    mocks.page.pageKey = 'page-search';
     view.rerender(<DataView />);
     await act(async () => {
       if (outcome === 'resolve') resolve([{ title: 'Old calendar result' }]);
@@ -216,6 +271,7 @@ it('hides completed DataView rows on the first commit for another tab at the sam
   expect(mocks.copied).toContain('https://electronic.vegas/calendar/');
   expect(mocks.copied).toContain('Calendar events');
   mocks.page.id = 38;
+  mocks.page.pageKey = 'page-other-tab';
   view.rerender(
     <>
       <DataView />
