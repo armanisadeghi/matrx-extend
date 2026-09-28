@@ -1,0 +1,10 @@
+{
+  "lane": "standard independent plan attack; source only",
+  "plan": "docs/stabilization/pending/EXT-D-0049/initial-discovery-plan.md",
+  "snapshot_sha256": "33184108efd1a71e8a315a9fc694124dab3a1206b63d8d89953bfb9aa36f0d6a",
+  "verdict": "FIX_FIRST",
+  "coverage": "Core discovery, exact save/replay, SW transport, identity and teardown are mapped; truthful approval presentation is not yet mapped to its actual contract.",
+  "blocking": ["Explicitly extend the shared prepared-approval preview type, persisted confirm preview and AgentApprovalCard for a page-load discovery action. Today SavedNetworkReplayApproval only has recipeName/pageUrl, and AgentApprovalCard always says 'Your saved recipe' and 'Saved Network recipe' for local previews (src/lib/tools/types.ts:75; src/features/chat/AgentApprovalCard.tsx:26,101). A local discovery approval through requestConfirmation would falsely tell the person they approved a saved recipe unless this contract and UI are part of the plan; keep privileged confirmation and local recovery fail-closed."],
+  "source_support": ["src/lib/data-pattern/document-network-capture.ts:424-464 binds URL/document before reload and releases a scoped capture", "src/lib/data-pattern/document-network-transport.ts:99-151 authenticates extension non-tab Port sender and owns cancellation", "src/lib/tools/prepared-tool-operation.ts:49-82 re-prepares after approval", "src/lib/tools/dispatch.ts:1269-1282 fails local approval closed after SW restart", "src/features/showcase/SavedReplayApprovalHost.tsx:40-80 hydrates local confirms and denies on unmount"],
+  "live_contact": "No browser or heavy job by lane assignment. Prior docs/stabilization/reports/showcase-request-identity.json is a diagnostic lead, not new native proof."
+}
