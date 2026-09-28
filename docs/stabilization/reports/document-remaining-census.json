@@ -7,8 +7,22 @@
     {
       "rank": 1,
       "surface": "Scrape manual capture, saved draft, and Diagnose picker",
-      "inventory": ["EXT-F-1007-C01", "EXT-F-1007-C02", "EXT-F-1007-C03", "EXT-F-1007-C04", "EXT-F-1007-C16", "EXT-F-1007-C17", "EXT-F-1007-C25", "EXT-F-1007-C32"],
-      "source_proof": ["src/hooks/use-scrape.ts:100-153 queries active tab independently, optionally awaits scrolling, captures by tabId+URL, then writes shared scrape store without document identity or current-page check", "src/hooks/use-scrape.ts:180-208 saves whichever shared current capture is present", "src/state/scrape.ts:16-25 stores current/original without page provenance; setCurrent replaces global draft", "src/hooks/use-scrape.ts:66-92 handles picker result/exit without tab, document, or session admission"],
+      "inventory": [
+        "EXT-F-1007-C01",
+        "EXT-F-1007-C02",
+        "EXT-F-1007-C03",
+        "EXT-F-1007-C04",
+        "EXT-F-1007-C16",
+        "EXT-F-1007-C17",
+        "EXT-F-1007-C25",
+        "EXT-F-1007-C32"
+      ],
+      "source_proof": [
+        "src/hooks/use-scrape.ts:100-153 queries active tab independently, optionally awaits scrolling, captures by tabId+URL, then writes shared scrape store without document identity or current-page check",
+        "src/hooks/use-scrape.ts:180-208 saves whichever shared current capture is present",
+        "src/state/scrape.ts:16-25 stores current/original without page provenance; setCurrent replaces global draft",
+        "src/hooks/use-scrape.ts:66-92 handles picker result/exit without tab, document, or session admission"
+      ],
       "repro_sequence": "Start fast/deep capture or Diagnose on A; reload A to same URL; allow A work or picker message to finish after B is current; inspect Scrape draft and attempt Save/diagnosis actions.",
       "expected": "Capture, edits, diagnose result, and save remain bound to their originating pageKey/document; A completion cannot replace B draft or be saved as B. A retained A draft must be visibly identified and must not present B as its page.",
       "qualification": "Source shows no shared document admission on these paths; whether timing yields a visible stale result requires runtime reproduction."
@@ -16,8 +30,15 @@
     {
       "rank": 2,
       "surface": "Automatic scrape and chat context cache",
-      "inventory": ["EXT-F-1007", "EXT-F-1007-C20"],
-      "source_proof": ["src/hooks/use-auto-scrape.ts:27-54 deduplicates/freshness-checks by tabId+URL", "src/hooks/use-auto-scrape.ts:62-113 awaits scroll/capture, checks returned URL only, then stores soup", "src/state/auto-scrape.ts stores current capture by URL/time (hook references)"],
+      "inventory": [
+        "EXT-F-1007",
+        "EXT-F-1007-C20"
+      ],
+      "source_proof": [
+        "src/hooks/use-auto-scrape.ts:27-54 deduplicates/freshness-checks by tabId+URL",
+        "src/hooks/use-auto-scrape.ts:62-113 awaits scroll/capture, checks returned URL only, then stores soup",
+        "src/state/auto-scrape.ts stores current capture by URL/time (hook references)"
+      ],
       "repro_sequence": "With auto-scrape enabled, complete capture on A, reload same URL to B within the freshness window or hold A capture until B is current; inspect chat context / auto-scrape store.",
       "expected": "A is invalidated on document replacement; automatic work is tied to the captured document and cannot repopulate the active cache after B becomes current. Same-URL B receives a fresh capture when configured.",
       "qualification": "The source's same-URL freshness shortcut and URL-only completion check leave this possibility open; no runtime failure is claimed."
@@ -25,8 +46,15 @@
     {
       "rank": 3,
       "surface": "Screenshot capture and persisted gallery result",
-      "inventory": ["EXT-F-1009-C01", "EXT-F-1009-C02"],
-      "source_proof": ["src/features/screenshots/ScreenshotsView.tsx:147-183 accepts tab.id/url then invokes take_screenshot with assignedTabId:null; result is not checked against captured page identity before completion handling", "src/features/screenshots/ScreenshotsView.tsx:95-105 reloads gallery by canonical URL", "src/lib/tools/handlers/read.ts take_screenshot handler is shared with agent path; audit exact capture target and persistence boundary during implementation"],
+      "inventory": [
+        "EXT-F-1009-C01",
+        "EXT-F-1009-C02"
+      ],
+      "source_proof": [
+        "src/features/screenshots/ScreenshotsView.tsx:147-183 accepts tab.id/url then invokes take_screenshot with assignedTabId:null; result is not checked against captured page identity before completion handling",
+        "src/features/screenshots/ScreenshotsView.tsx:95-105 reloads gallery by canonical URL",
+        "src/lib/tools/handlers/read.ts take_screenshot handler is shared with agent path; audit exact capture target and persistence boundary during implementation"
+      ],
       "repro_sequence": "Start visible or full-page capture on A, reload same URL before handler finishes, then inspect the completion notice and gallery.",
       "expected": "Capture/persistence records the actual initiating document and a late A completion cannot be represented as a B capture. URL-keyed gallery remains available as historical lookup and may show prior captures for that URL.",
       "qualification": "View source does not prove the handler's internal target or persisted document metadata; inspect handler and reproduce before asserting misattribution."
@@ -34,8 +62,18 @@
     {
       "rank": 4,
       "surface": "Highlight overlay and highlight-to-Scrape handoff",
-      "inventory": ["EXT-F-1010-C01", "EXT-F-1010-C02", "EXT-F-1010-C03", "EXT-F-1010-C04"],
-      "source_proof": ["src/features/highlights/HighlightView.tsx:99-110 starts/stops highlighter by tab ID and stores active overlay by tab ID", "src/features/highlights/HighlightView.tsx:130-139 changes overlay mode by tab ID", "src/features/highlights/HighlightView.tsx:176-184 sends saved text highlights to Scrape without checking current page identity", "src/features/highlights/HighlightView.tsx:69-81,116-118 intentionally fetches saved highlights and filters page/site/all by URL/domain"],
+      "inventory": [
+        "EXT-F-1010-C01",
+        "EXT-F-1010-C02",
+        "EXT-F-1010-C03",
+        "EXT-F-1010-C04"
+      ],
+      "source_proof": [
+        "src/features/highlights/HighlightView.tsx:99-110 starts/stops highlighter by tab ID and stores active overlay by tab ID",
+        "src/features/highlights/HighlightView.tsx:130-139 changes overlay mode by tab ID",
+        "src/features/highlights/HighlightView.tsx:176-184 sends saved text highlights to Scrape without checking current page identity",
+        "src/features/highlights/HighlightView.tsx:69-81,116-118 intentionally fetches saved highlights and filters page/site/all by URL/domain"
+      ],
       "repro_sequence": "Start highlighting on A, same-URL reload to B while the overlay/session remains; try interacting/stopping, then route a saved A text highlight to Scrape.",
       "expected": "An overlay/session is bound to its originating document and is stopped or visibly invalidated when that document ends; page-derived routing is explicit about source and cannot imply A text came from B. Saved page/site/all history remains URL/domain scoped.",
       "qualification": "Runtime overlay behavior depends on content-script teardown and bridge handling, which this source-only lane did not exercise."
@@ -43,18 +81,56 @@
     {
       "rank": 5,
       "surface": "Showcase shell identity notice and remaining page-derived tab actions",
-      "inventory": [],
-      "source_proof": ["src/features/showcase/ShowcaseView.tsx:22-23 reads shared tab snapshot and renders PageIdentityNotice; this shell itself has no retained page result", "src/features/showcase/tabs/JsonLdTab.tsx, MicrodataTab.tsx, TablesTab.tsx and AiExtractTab.tsx should be checked as live extraction/action surfaces; only reports/call-site inventory establish partial migration, not exhaustive behavior", "Current shared hook exposes pageKey/documentId plus unresolved status; control-level remedies are inconsistent in audited peers per document-identity-partial-peer.json"],
+      "inventory": [
+        "EXT-F-1012",
+        "EXT-F-1012-T02",
+        "EXT-F-1012-T06",
+        "EXT-F-1012-T08",
+        "EXT-F-1012-T09",
+        "EXT-F-1012-T11",
+        "EXT-F-1012-T13",
+        "EXT-F-1012-T15",
+        "EXT-F-1012-T17",
+        "EXT-F-1012-T18",
+        "EXT-F-1012-T20",
+        "EXT-F-1012-T24",
+        "EXT-F-1012-T29",
+        "EXT-F-1012-T30",
+        "EXT-F-1012-T36"
+      ],
+      "source_proof": [
+        "src/features/showcase/ShowcaseView.tsx:22-23 reads shared tab snapshot and renders PageIdentityNotice; this shell itself has no retained page result",
+        "src/features/showcase/tabs/JsonLdTab.tsx, MicrodataTab.tsx, TablesTab.tsx and AiExtractTab.tsx should be checked as live extraction/action surfaces; only reports/call-site inventory establish partial migration, not exhaustive behavior",
+        "Current shared hook exposes pageKey/documentId plus unresolved status; control-level remedies are inconsistent in audited peers per document-identity-partial-peer.json",
+        "Canonical cases are in docs/stabilization/inventory.json under EXT-F-1012; linked cases cover the page-derived run, picker, and capture actions named here. D59 defect EXT-D-0059 specifically links T08/T09."
+      ],
       "repro_sequence": "Force each remaining tab's extraction/control during a same-URL reload or while identity is unresolved; inspect whether it runs silently, displays stale output, or offers retry.",
       "expected": "Every page-derived action gates on resolved shared identity, targets that exact document, rejects late completion, and provides an explicit retry/remedy when unresolved; catalog-only fetches remain usable.",
       "qualification": "This is a targeted follow-up census item, not a claim that these tabs currently fail. No matching Showcase feature inventory ID was found in docs/stabilization/inventory.json."
     }
   ],
   "intentionally_url_or_domain_scoped": [
-    {"surface": "Screenshot saved gallery", "source": "src/features/screenshots/ScreenshotsView.tsx:60-61,95-105", "reason": "Historical captures are selected by canonical page URL; same-URL reload does not make prior captures live page output."},
-    {"surface": "Highlight saved lookup/history", "inventory": "EXT-F-1010", "source": "src/features/highlights/HighlightView.tsx:69-81,116-118", "reason": "Stored highlight history/filtering is URL/domain based; only active overlay and live handoff require document identity."},
-    {"surface": "Page recognition, Showcase catalogs, SEO history, Tasks matching, Vault domain lookup", "source": "docs/stabilization/reports/document-identity-repair.json", "reason": "Persisted lookup/catalog/history keyed by URL/domain is intentionally retained; any live page-derived output or mutation sourced from the current DOM still requires document-bound admission."}
+    {
+      "surface": "Screenshot saved gallery",
+      "source": "src/features/screenshots/ScreenshotsView.tsx:60-61,95-105",
+      "reason": "Historical captures are selected by canonical page URL; same-URL reload does not make prior captures live page output."
+    },
+    {
+      "surface": "Highlight saved lookup/history",
+      "inventory": "EXT-F-1010",
+      "source": "src/features/highlights/HighlightView.tsx:69-81,116-118",
+      "reason": "Stored highlight history/filtering is URL/domain based; only active overlay and live handoff require document identity."
+    },
+    {
+      "surface": "Page recognition, Showcase catalogs, SEO history, Tasks matching, Vault domain lookup",
+      "source": "docs/stabilization/reports/document-identity-repair.json",
+      "reason": "Persisted lookup/catalog/history keyed by URL/domain is intentionally retained; any live page-derived output or mutation sourced from the current DOM still requires document-bound admission."
+    }
   ],
   "out_of_scope_overlap": "DataView/Data picker and highlight-store correction are owned by another lane; the highlight observations above identify only remaining view-level overlay and text-handoff questions and do not duplicate that correction.",
-  "verification": {"source_audit": "complete for listed paths", "tests_build_ui_browser": "not run by instruction", "runtime_claim": "none"}
+  "verification": {
+    "source_audit": "complete for listed paths",
+    "tests_build_ui_browser": "not run by instruction",
+    "runtime_claim": "none"
+  }
 }
