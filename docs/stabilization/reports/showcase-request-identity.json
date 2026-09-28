@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "lane": "EXT-D-0049 saved Network request identity diagnosis",
+  "status": "ROOT_CAUSE_LOCALIZED_REPLAY_STILL_FAILS",
+  "at_utc": "2026-09-28T07:59:00Z",
+  "artifact_provenance": {
+    "source_base_commit": "9ac3afcfbaebfa368ec8b818f6516d6cc547a2ad",
+    "diagnostic_diff": "Temporary privacy-safe run-interactive.ts counters at the consumeEvent URL/method/body/success gates and timeout message; no matcher or transport branch changed. This diff was removed after the native run.",
+    "diagnostic_diff_sha256": null,
+    "diagnostic_artifact_tree_sha256": null,
+    "diagnostic_receipt_limitation": "The instrumented direct WXT build was run through the resource guard but no artifact tree receipt was recorded before native UI work. Its output was subsequently replaced. The counter result is a diagnostic lead, not acceptance proof or an exact source-to-artifact attestation; the next lane must re-establish it on a receipted artifact.",
+    "clean_build_run": "showcase-d49-clean-build-0928: admitted 2026-09-28T08:01:37.823Z, WXT exit 0 at 08:01:41.722Z; guard exited 0",
+    "clean_build_receipt": "test-results/showcase-d49-clean-build-20260928.json",
+    "clean_build_tree_sha256": "cbb365edb1b88a22eaf29be172a1c037071c4de7a6de21a64d84863416d84841",
+    "installed_state": "The unpacked output is clean and receipted, but primary Chrome was not reloaded after that final build. Its running extension may still be the temporary diagnostic artifact; do not treat the clean receipt as an installed native acceptance result."
+  },
+  "native_scope": {
+    "browser": "Primary Chrome, installed unpacked 0.2.114, admin@admin.com, active organization, public HN Search",
+    "original_recipe": "Codex D47 HN Search OpenAI network replay 20260928",
+    "fresh_owned_recipe": "Codex D49 HN OpenAI fresh replay 20260928",
+    "fresh_recipe_selection": "Network tab captured a real 200 POST after changing the visible HN search from matrx to OpenAI. The selected response's hits array preview showed 10 rows; the top two titles and point counts matched the visible page (5710 and 2455). The x-algolia-api-key query key was explicitly classified as a credential before save. Save showed Pattern saved and Patterns showed the new recipe after reopening. No dataset append was selected.",
+    "saved_identity": "Both the prior and new owned recipes store exact URL, POST, exact body and the same opaque SHA-256 request-body digest (25fa…d72b). The fresh recipe is not a stale historic artifact.",
+    "fresh_replay": "Per-run Allow attached Chrome debugger and automatically reloaded the expanded OpenAI search route. Listening appeared. After the capture window the fresh recipe returned the same no-match message and remained never run; zero rows. No manual retrigger occurred during the window.",
+    "instrumented_boundary": "A temporary source counter, built into an unreceipted diagnostic artifact and then removed, observed 10 valid current-document responses at runNetworkCapturePattern.consumeEvent. Exactly one matched the saved URL and POST; zero matched the saved body identity. This localizes the diagnostic lead to exact request-body identity; it is not an artifact-bound acceptance proof.",
+    "semantic_difference": "The selected manual OpenAI Algolia response preview reported params queryType=prefixLast. The same primary Chrome page's fresh reload POST, inspected read-only in DevTools Network Payload, contained queryType=prefixNone on a URL with prefix=false. Both requests used query OpenAI, page 0, story tags, and the same endpoint. Prefix matching changes search semantics, so the exact matcher correctly rejected the different operation. No request body, credential value, or header is retained here.",
+    "guard_runs": [
+      "showcase-d49-fresh-native-0928: admitted; clean browser stop 2026-09-28T07:46:06.393Z, exit 0, resourceInvalid false",
+      "showcase-d49-counters-build-0928: admitted; direct development WXT build exit 0 at 2026-09-28T07:48:20.968Z",
+      "showcase-d49-counters-native-0928: admitted; clean browser stop 2026-09-28T07:51:41.706Z, resourceInvalid false",
+      "showcase-d49-url-method-native-0928: admitted; used only for same-profile read-only DevTools comparison, no URL-only recipe created; clean browser stop 2026-09-28T07:59:05.584Z, resourceInvalid false"
+    ]
+  },
+  "public_site_probe": {
+    "guard_runs": [
+      "showcase-d49-hn-identity-0928b: admitted, exit 0",
+      "showcase-d49-hn-identity-0928c: admitted, exit 0",
+      "showcase-d49-tap-wire-0928: admitted, exit 0"
+    ],
+    "result": "On a fresh public HN page in guarded headless Chrome, the production networkTapMain request-body digest exactly equaled Chrome's wire-byte SHA-256 for initial load, reload, prior query and submitted search. This rules out tap hashing/serialization as the cause for those exercised requests. It does not substitute for the same-profile native semantic comparison above."
+  },
+  "source_census": {
+    "discovery": "src/hooks/use-network-capture.ts installs a MAIN-world tap only after Start on the already loaded document. Its Reload action stops capture and destroys the tap; it does not capture document-start requests on reload.",
+    "selection": "src/features/showcase/tabs/NetworkTab.tsx lists captured responses append-only without URL/body deduplication; choosing an event pins that response and defaults to exact URL and body. A transient request can therefore be selected even after the page route settles into a different search mode. In this run the three manual-capture responses included only one OpenAI response, whose params showed prefixLast; no settled prefixNone response was offered before save.",
+    "replay": "src/lib/data-pattern/document-network-capture.ts installs the tap before reload, while src/lib/data-pattern/run-interactive.ts correctly requires the saved exact body digest. This discovery/replay timing asymmetry exposes the mismatch on sites whose request semantics change as the route settles."
+  },
+  "remaining": "No product repair or end-to-end acceptance is claimed. A correct class repair must let a person capture and select the intended settled initial-document request, preserve exact request semantics, save, reopen and replay it twice on the real site. Do not silently change exact body matching to URL+method or ignore queryType. The original and fresh owned recipes remain for targeted retest; neither was deleted. The temporary diagnostic counters, public-site script and temporary resource-policy entry were removed after evidence was recorded."
+}
