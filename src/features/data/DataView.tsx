@@ -49,6 +49,8 @@ export function DataView() {
   const pageKey = tab.pageKey ?? '';
   const currentPage = useRef(pageKey);
   const runSequence = useRef(0);
+  const saveSequence = useRef(0);
+  const savePhase = useRef<'idle' | 'organization' | 'write' | 'refresh'>('idle');
   currentPage.current = pageKey;
   const [runSource, setRunSource] = useState<{
     pageKey: string;
@@ -66,6 +68,9 @@ export function DataView() {
 
   useEffect(() => {
     runSequence.current += 1;
+    saveSequence.current += 1;
+    const interruptedSave = savePhase.current;
+    savePhase.current = 'idle';
     pickTabRef.current = null;
     pickDocumentRef.current = null;
     pickSessionRef.current = null;
@@ -79,6 +84,12 @@ export function DataView() {
     setRunError(null);
     setRunNote(null);
     setRunInfo(null);
+    setSaving(false);
+    setError(interruptedSave === 'organization'
+      ? 'Page changed before saving. Select fields again on this page.'
+      : interruptedSave === 'write' || interruptedSave === 'refresh'
+        ? 'Page changed while the previous pattern was saving. Check saved patterns before retrying on this page.'
+        : null);
     return () => {
       runSequence.current += 1;
     };
@@ -223,39 +234,51 @@ export function DataView() {
       setError('These fields are not verified for the current page. Pick fields again or resend highlights from this page.');
       return;
     }
+    const sourcePageKey = pageKey;
+    const saveId = ++saveSequence.current;
+    const isCurrentSave = () => saveSequence.current === saveId && currentPage.current === sourcePageKey && isCurrentPageIdentity(sourcePageKey);
+    const selectedFields = pickedFields.map((field) => ({ name: field.name, selector: field.selector, is_list: false }));
+    const selectedName = patternName || `${host} pattern`;
+    const selectedHost = host;
+    const selectedRoute = tab.url ? new URL(tab.url).pathname : null;
+    savePhase.current = 'organization';
     setSaving(true);
     setError(null);
     try {
-      if (!isCurrentPageIdentity(pageKey)) return;
+      const organizationId = await requireRequestOrganizationId();
+      if (!isCurrentSave()) return;
+      savePhase.current = 'write';
       const r = await savePattern({
         // DD-131: the person clicked Save in the Data tab — no actor header.
         authored_by: 'person',
-        organization_id: await requireRequestOrganizationId(),
-        name: patternName || `${host} pattern`,
-        domain: host,
-        route_pattern: tab.url ? new URL(tab.url).pathname : null,
+        organization_id: organizationId,
+        name: selectedName,
+        domain: selectedHost,
+        route_pattern: selectedRoute,
         list_root_selector: null,
         kind: 'manual_css',
         config: {},
-        fields: pickedFields.map((f) => ({
-          name: f.name,
-          selector: f.selector,
-          is_list: false,
-        })),
+        fields: selectedFields,
       });
+      if (!isCurrentSave()) return;
       if (!r) {
         setError('Failed to save pattern. Check your connection and try again.');
         return;
       }
+      savePhase.current = 'refresh';
+      const refreshed = await fetchPatternsForDomain(selectedHost);
+      if (!isCurrentSave()) return;
       setPatternName('');
       setPickedFields([]);
-      const refreshed = await fetchPatternsForDomain(host);
-      setPatternSnapshot({ host, patterns: refreshed });
+      setPatternSnapshot({ host: selectedHost, patterns: refreshed });
       setPatternLoadError(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      if (isCurrentSave()) setError(err instanceof Error ? err.message : String(err));
     } finally {
-      setSaving(false);
+      if (saveSequence.current === saveId) {
+        savePhase.current = 'idle';
+        setSaving(false);
+      }
     }
   };
 
