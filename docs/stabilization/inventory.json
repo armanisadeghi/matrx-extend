@@ -1556,7 +1556,7 @@
         {
           "id": "EXT-F-1001-C02",
           "label": "Capture needs-you badge",
-          "action": "Open capture view and confirm count/elsewhere label reflects state."
+          "action": "Open Capture from the icon-only tab; confirm its badge count and tooltip/accessibility information reflect the current workspace."
         },
         {
           "id": "EXT-F-1001-C03",
@@ -1750,10 +1750,10 @@
           ],
           "steps": [
             "Open Sidepanel tab strip and persisted selected tab.",
-            "Open capture view and confirm count/elsewhere label reflects state."
+            "Open Capture from the icon-only tab; confirm its badge count and tooltip/accessibility information reflect the current workspace."
           ],
           "expected": [
-            "Badge count and accessible label agree with pending count and elsewhere total; activating opens Capture."
+            "Badge count and accessible label agree with pending count and elsewhere total; activating opens Capture. Visible toolbar content is only the Inbox icon and count; descriptive text stays in the tooltip and accessible name."
           ],
           "dimensions": [
             "warm",
@@ -1774,10 +1774,10 @@
           ],
           "steps": [
             "Open Sidepanel tab strip and persisted selected tab.",
-            "Open capture view and confirm count/elsewhere label reflects state."
+            "Open Capture from the icon-only tab; confirm its badge count and tooltip/accessibility information reflect the current workspace."
           ],
           "expected": [
-            "Badge count and accessible label agree with pending count and elsewhere total; activating opens Capture."
+            "Badge count and accessible label agree with pending count and elsewhere total; activating opens Capture. Visible toolbar content is only the Inbox icon and count; descriptive text stays in the tooltip and accessible name."
           ],
           "dimensions": [
             "warm",
