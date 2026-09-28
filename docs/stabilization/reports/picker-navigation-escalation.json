@@ -2,11 +2,11 @@
   "id": "EXT-D-0059-picker-navigation-escalation",
   "status": "Fixture correction committed; 29/29 tests passed before final typing correction; compile failed then typed transport corrected unverified. Independent fixture review and fresh compile remain required. Full D59 native verification pending.",
   "base_commit": "c17eb2c7aa3092b824e9785a518ad44d7c2a1e4e",
-  "fixture_commit": "0cc4ac46bc1ad1500dcefcbf7feb64439254c5a0",
+  "fixture_commit": "1457a283c1531ddae0be66fa868dca7b3d4d61a2",
   "diagnosis": "Stale navigation fixture, not evidence of a product regression: use-active-tab refresh publishes pageKey as [tab id, document id, URL], and withholds identity at navigation start. D43 changed URL while its mock returned constant pageKey document-a and isCurrentPageIdentity remained true. ListPatternTab invalidation correctly depends on pageKey.",
   "independent_evidence": [
     "src/hooks/use-active-tab.ts refreshActiveTabIdentity, withhold, and isCurrentPageIdentity inspected directly",
-    "tests/unit/active-tab-identity.test.ts existing URL-change and same-URL document navigation assertions inspected",
+    "tests/unit/active-tab-document-identity.test.tsx existing URL-change and same-URL document navigation assertions inspected",
     "src/features/showcase/tabs/ListPatternTab.ts closePickerSession, navigation effect and fromOurPick inspected directly"
   ],
   "hypotheses": [
