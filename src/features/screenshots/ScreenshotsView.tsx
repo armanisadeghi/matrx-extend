@@ -32,6 +32,7 @@ import { newId } from '@/lib/id';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import type { ScreenshotSavedPayload } from '@/lib/screenshot/persist';
+import { assertScreenshotDocument, readScreenshotDocument } from '@/lib/screenshot/document';
 import {
   type ScreenshotRow,
   deleteScreenshot,
@@ -72,6 +73,7 @@ export function ScreenshotsView() {
   const [capturingMode, setCapturingMode] = useState<CaptureMode | null>(null);
   const [captureError, setCaptureError] = useState<string | null>(null);
   const [persistWarning, setPersistWarning] = useState<string | null>(null);
+  const [captureNotice, setCaptureNotice] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   // Track the URL we last fetched for, so the "tab url change" effect
@@ -153,6 +155,7 @@ export function ScreenshotsView() {
       }
       setCaptureError(null);
       setPersistWarning(null);
+      setCaptureNotice(null);
       setCapturingMode(mode);
       const callId = newId('user-screenshot');
       broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
@@ -162,6 +165,7 @@ export function ScreenshotsView() {
         args: { capture_source: 'user', mode },
       });
       try {
+        const initiatingDocument = await readScreenshotDocument(tab.id);
         const result = await take_screenshot.run(
           {
             profile: 'auto',
@@ -178,7 +182,8 @@ export function ScreenshotsView() {
             callId,
             agentName: 'user',
             permissionMode: 'act',
-            assignedTabId: null,
+            assignedTabId: tab.id,
+            screenshotDocument: initiatingDocument,
           },
         );
         const r = result as {
@@ -207,6 +212,13 @@ export function ScreenshotsView() {
             );
           } else if (mode === 'full_page' && r.truncated) {
             setPersistWarning('Page exceeded the 30-screen tile cap; the bottom is cropped.');
+          }
+          try {
+            await assertScreenshotDocument(initiatingDocument);
+          } catch {
+            setCaptureNotice(r.screenshot_id && r.file_id
+              ? 'Saved for the page that was active when capture began. The current tab or page has changed; this gallery includes earlier visits to the same URL.'
+              : 'This capture belongs to the page that was active when it began. The current tab or page has changed.');
           }
           broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
             callId,
@@ -293,6 +305,11 @@ export function ScreenshotsView() {
           <RefreshCw className={loadState === 'loading' ? 'size-3.5 animate-spin' : 'size-3.5'} />
         </Button>
       </div>
+      {canonicalUrl && (
+        <p className="px-3 text-[11px] text-muted-foreground">
+          History for this URL, including screenshots from earlier visits and reloads.
+        </p>
+      )}
 
       <div className="flex-1 overflow-y-auto">
         {!canonicalUrl ? (
@@ -342,6 +359,9 @@ export function ScreenshotsView() {
             <AlertTriangle className="mt-0.5 size-3 shrink-0" />
             <span>{persistWarning}</span>
           </div>
+        )}
+        {captureNotice && !captureError && (
+          <div className="text-xs text-muted-foreground" role="status">{captureNotice}</div>
         )}
         {deleteError && (
           <div className="flex items-start gap-1.5 text-xs text-destructive">
