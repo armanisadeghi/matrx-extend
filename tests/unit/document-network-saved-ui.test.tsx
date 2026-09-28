@@ -240,13 +240,37 @@ it.each([
     await vi.dynamicImportSettled();
     await act(drain);
     expect(attach).not.toHaveBeenCalled();
-    const allow = screen.getByRole('button', { name: 'Allow' });
+    // Dispatch crosses async storage and messaging boundaries before the
+    // approval host receives the request. Advance the fake clock in small,
+    // bounded steps instead of relying on an incidental microtask count.
+    for (
+      let i = 0;
+      i < 10 && screen.queryAllByRole('button', { name: 'Allow' }).length === 0;
+      i++
+    ) {
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(100);
+        await drain();
+      });
+    }
+    const allows = screen.getAllByRole('button', { name: 'Allow' });
+    expect(allows).toHaveLength(1);
+    const allow = allows[0];
+    if (!allow) throw new Error('The saved replay approval did not render.');
     const approvalText = allow.parentElement?.parentElement?.textContent ?? '';
     expect(approvalText).toContain('Events');
     expect(approvalText).toContain('https://calendar.invalid/calendar');
     expect(approvalText).toMatch(/debugger.*reload/i);
     fireEvent.click(allow);
-    await act(drain);
+    // The persisted-confirm recovery crosses the message boundary before it
+    // begins CDP setup. Under fake timers, yield a bounded amount of that
+    // boundary rather than assuming a fixed microtask count.
+    for (let i = 0; i < 10 && !releaseSetup; i++) {
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(100);
+        await drain();
+      });
+    }
     expect(releaseSetup).toBeTypeOf('function');
     await act(async () => {
       await vi.advanceTimersByTimeAsync(10000);
