@@ -44,9 +44,12 @@
     "docs/stabilization/reports/highlight-session-peer.json",
     "docs/stabilization/reports/showcase-identity-remaining.json",
     "docs/stabilization/reports/document-integrated-checks.json",
-    "docs/stabilization/reports/document-integrated-peer.json"
+    "docs/stabilization/reports/document-integrated-peer.json",
+    "docs/stabilization/reports/list-picker-document-correction.json",
+    "docs/stabilization/reports/list-picker-source-peer.json",
+    "docs/stabilization/reports/picker-navigation-escalation.json"
   ],
-  "verification_status": "Integrated suite58/58 across15files after exactdocument Prepare expectationb5462b9b, compile and directdevbuild passed; independentpeer0fc1b5c8 validates assertion preservation/artifact. New artifact44a478fe not reloaded. Remaining sourcegap: ListPattern picker install/start/cancel tab-only, relay lacks document stamp (casesT23/T24/T28); stale resultguard exists. Native/broad coverage incomplete, D59infix.",
+  "verification_status": "Picker productc17eb2c7 exactdocumenttarget/trustedsenderguard sourceaccepted03cbd7f1. Escalationfixture1457a283 corrected stale D43 navigation and exercises real lateDone; 29/29passed before finaltype-only mockcorrection. Compilefailed then typedtransportfixed unverified atcap. Fixture sourcepeer0cc4ac46 accepted lifecycle assertions. Next freshguardedtests/compile/build required; native/fullD59 stillopen.",
   "transition_history": [
     {
       "at": "2026-09-28T15:30:38.553635+00:00",

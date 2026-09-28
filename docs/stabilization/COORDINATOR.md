@@ -10,6 +10,14 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest picker checkpoint — source accepted, final typecheck pending
+
+- Merged origin/main2e1dd471 cleanly (remote packageupdate and platform-list instruction). Design-system0.49.11→0.49.12, guardedfrozeninstall --ignore-scripts valid; CHANGELOG no consumeraction. Current artifact44a478fe predates thisdependency and pickerfix.
+- c17eb2c7 targets ListPicker install/start/cancel to originaldocument, guards delayedstart, stamps trustedrelaydocument and admits tab/session/document/pageKey. Worker hit2failedroundcap at28/29; stopped. Sourcepeer03cbd7f1 accepts scopedA/B, noimportantissue; lowseverity navigationmessage may clear on identityreset, currentinjectionfailure remainsvisible.
+- Bounded freshAstra escalation1457a283 confirms D43mock stale: realidentity includes tab/document/URL. Newfixture queues realproducerDone, changes identity then delivers, preserves clearbuilder and extraction assertions. Focused29/29pass; compile failed TS mockedtransportoverload. Typedtransport corrected afterward, notrerun atonefailurecap. Reportsd1d0770c/0b9738f4; finalfixtureSHA f7dc31e7f5ac7183f22971722d66c653a70a50ee29c017fd097fb4b821b30b38. Rootverifiedreportedhashes.
+- Fixture sourcepeer0cc4ac46 accepts identitysimulation/lateproducer/assertions; separate from productpeer. NEXT fresh Sol/Luna guardedfivefile suite + compile afterfinaltypefix, directdevbuild ifgreen; don'tclaim prior29test run covers finaltypedrewrite. D59stillinfix/nativepending, no regression hidden by assertions.
+- All lanes terminal, no ownedheavy/browserjob. Primarydisk6.4GiB stillbelow20GiB nativeguard. No localhost. Rootno redtrunkpush; CI credential repair and fullrelease incomplete. Goalturnprogress sourcepickerrepair + independentreview, exactremainingverification recorded.
+
 ## Latest integrated checkpoint — current development build, picker gap open
 
 - Initial integrated suiteea977edb:56/58 pass;2stale Prepare expectations omitted now-required documentId. Testonlyb5462b9b adds exact document-b assertion, preserves lifecycle assertions. Corrected suite58/58 across15files, compile, direct WXT devbuild all guardedpass; reporte6c9f079. Fresh peer0fc1b5c8 accepts correction, checks journals and recomputes matching artifact hash.
