@@ -1,4 +1,4 @@
-import { useActiveTab } from '@/hooks/use-active-tab';
+import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { urlMatchesPattern } from '@/lib/data-pattern/matcher';
 import { NetworkNoMatchError, runSavedPattern } from '@/lib/data-pattern/run-interactive';
 import { classifySavedRun } from '@/lib/data-pattern/saved-run-outcome';
@@ -61,9 +61,9 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
   const [activeName, setActiveName] = useState<string | null>(null);
   const [runInfo, setRunInfo] = useState<string | null>(null);
   const [resultPageKey, setResultPageKey] = useState<string | null>(null);
-  const pageKey = `${tab.id ?? 'none'}|${tab.url ?? ''}`;
+  const pageKey = tab.pageKey ?? '';
   const patterns = patternSnapshot?.pageKey === pageKey ? patternSnapshot.patterns : null;
-  const visibleRows = resultPageKey === pageKey ? rows : null;
+  const visibleRows = tab.pageKey && resultPageKey === pageKey ? rows : null;
   const visibleRunInfo = resultPageKey === pageKey ? runInfo : null;
   const visibleRunError = resultPageKey === pageKey ? runError : null;
   const currentPageKey = useRef(pageKey);
@@ -132,10 +132,10 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
   }, [active, refresh]);
 
   const handleRun = async (p: ExtractionPattern) => {
-    if (!tab.id) return;
+    if (!tab.id || !tab.pageKey) return;
     const runPageKey = pageKey;
     const seq = ++runSeq.current;
-    const isCurrent = () => seq === runSeq.current && currentPageKey.current === runPageKey;
+    const isCurrent = () => seq === runSeq.current && currentPageKey.current === runPageKey && isCurrentPageIdentity(runPageKey);
     const onSavedRoute = urlMatchesPattern(tab.url ?? '', p);
     const sourceAtRun = { url: tab.url, title: tab.title };
     setRunningId(p.id);

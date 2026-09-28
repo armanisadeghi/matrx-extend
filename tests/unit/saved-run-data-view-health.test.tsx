@@ -6,7 +6,7 @@ import { afterEach, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   copied: '',
-  page: { id: 37, url: 'https://electronic.vegas/calendar/', title: 'Vegas events' },
+  page: { id: 37, url: 'https://electronic.vegas/calendar/', title: 'Vegas events', documentId: 'document-a', pageKey: 'page-a' },
   fetchPatterns: vi.fn(),
   runSaved: vi.fn(),
   bumpRun: vi.fn(),
@@ -14,6 +14,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('@/hooks/use-active-tab', () => ({
   useActiveTab: () => ({ ...mocks.page }),
+  isCurrentPageIdentity: (key: string) => key === mocks.page.pageKey,
 }));
 vi.mock('@/hooks/use-auth', () => ({
   useAuth: () => ({ user: { id: 'user-1' }, status: 'signed-in', signIn: vi.fn() }),
@@ -147,10 +148,11 @@ it('shows the auto-extract history warning alongside its extracted rows', async 
   await act(async () => {
     useAutoExtractStore
       .getState()
-      .setRecord(`37|${pattern.id}|https://electronic.vegas/calendar/`, {
+      .setRecord(`page-a|${pattern.id}`, {
         pattern,
         url: 'https://electronic.vegas/calendar/',
         tabId: 37,
+        pageKey: 'page-a',
         rows: [{ title: 'Friday night concert' }],
         status: 'ok',
         note: 'Saved run history could not be updated: Database unavailable',
