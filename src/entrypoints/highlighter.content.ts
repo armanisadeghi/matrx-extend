@@ -1,4 +1,5 @@
 import { defineContentScript } from 'wxt/utils/define-content-script';
+import { mountHighlighter } from '@/lib/highlights/highlighter';
 
 /**
  * Highlighter content script. Registered but only injected on demand from the
@@ -15,8 +16,7 @@ export default defineContentScript({
   matches: ['<all_urls>'],
   registration: 'runtime',
   runAt: 'document_idle',
-  async main() {
-    const { mountHighlighter } = await import('@/lib/highlights/highlighter');
+  main() {
     mountHighlighter();
   },
 });
