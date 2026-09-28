@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-27",
+  "updated_at": "2026-09-28",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -16790,10 +16790,12 @@
               "evidence": [
                 "docs/stabilization/reports/showcase-initial-discovery-source-peer.json",
                 "docs/stabilization/reports/showcase-initial-discovery-revised-peer.json",
-                "docs/stabilization/reports/showcase-discovery-native-acceptance.json"
+                "docs/stabilization/reports/showcase-discovery-native-acceptance.json",
+                "docs/stabilization/reports/showcase-discovery-repeat-cleanup.json",
+                "docs/stabilization/reports/showcase-discovery-active-lifecycle.json"
               ],
-              "detail": "Independent native artifact8b0f8adc: denial, truthful approved initial capture, credential-safe exact save/reopen PASS. hits path yielded10 records and first saved replay returned10 matching public story rows. Second replay only observed matched1/checking, no terminal result. Stop/cancel, navigation, tab switch, panel unmount and final cleanup remain unverified. Overall PARTIAL, status unverified until remaining requirements pass.",
-              "run_id": "showcase-discovery-native-20260928"
+              "detail": "Exact8b0f8adc native: denial, approved initial capture, credential-safe exact save/reopen and first10row replay PASS. Independent9cee037c observed a fresh own invocation approval\u2192matched1\u2192terminal10matchingrows plus attached Stop, panel close, document replacement and tab-switch cancellation/cleanup PASS. Old second-run cached output remains unattributed (b90b04be), not needed as repeat proof. No-response/service-error recovery still unverified; overall status unverified pending that dimension. Other roles use T38; full Showcase not certified.",
+              "run_id": "showcase-discovery-active-lifecycle-20260928"
             }
           }
         }

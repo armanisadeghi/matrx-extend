@@ -44,11 +44,11 @@
     "Rerun CI to expose any later gate failure; all later steps in run 36379571405 are currently unmeasured."
   ],
   "latest_checkpoint": {
-    "run_id": 36391465964,
-    "commit": "0ea509f87fcd9156500ec24d22e969d4c51ca3f0",
+    "run_id": 36399534388,
+    "commit": "80a64727139d46ece2e8d522573ab217b30850e8",
     "status": "completed",
     "conclusion": "failure",
     "first_failed_step": "Require canonical records reader",
-    "verification": "gh run view with explicit --repo armanisadeghi/matrx-extend; later code gates remain unmeasured. No credential values accessed."
+    "verification": "Fresh gh run list and gh run view with explicit --repo armanisadeghi/matrx-extend. Later code gates remain unmeasured. No credential values accessed."
   }
 }

@@ -39,7 +39,7 @@
   "priority": "P1: blocks Showcase saved replay acceptance and D47 retest.",
   "state": "fixed",
   "reproduction_status": "Native diagnostic localized first stalled boundary to worker lazy dispatcher import; Port and run message acceptance and worker log delivery verified. Worker DevTools closed.",
-  "verification_status": "Native daf2890e on exact8b0f8adc: denial, initial capture, exact save/reopen and first hits replay PASS with10 correct public records. Second hits replay matched request but terminal output/cleanup not observed. In-flight cancel/navigation/tab-change/panel-unmount remain unverified. State stays fixed, retest incomplete, no closure.",
+  "verification_status": "Exact8b0f8adc: original native daf2890e passed denial, initial capture, exact save/reopen and first10matchingstoryrows. Independent9cee037c passed fresh own start\u2192terminal10row replay plus attached Stop, panel unmount, document replacement and tab-switch cleanup. Old cached second-run attribution remains unverified, superseded by controlled fresh replay evidence. Empty-result/service-error recovery remains pending; fixed, not closed.",
   "transition_history": [
     {
       "at": "2026-09-28T06:06:00Z",
