@@ -13,6 +13,13 @@ const context = (id: number, uniqueId: string) =>
     context: { id, uniqueId, auxData: { frameId: 'main-frame', isDefault: true } },
   });
 let binding = '';
+const nonce = 'a'.repeat(32);
+const handshake = (contextId: number, hookNonce = nonce) =>
+  emit('Runtime.bindingCalled', {
+    name: binding,
+    executionContextId: contextId,
+    payload: JSON.stringify({ __matrx_capture_hook: 'network-tap', nonce: hookNonce }),
+  });
 const packet = (contextId: number, body: string, sequence: number) =>
   emit('Runtime.bindingCalled', {
     name: binding,
@@ -178,6 +185,7 @@ it('arms before reload and retains the earliest new-document response while reje
       packet(2, '[{"venue":"Brooklyn Bowl"}]', 1);
       expect(opts.onEvent).not.toHaveBeenCalled();
       committed();
+      handshake(2);
     }
     return baseSend(method, params);
   });
@@ -199,7 +207,7 @@ it('arms before reload and retains the earliest new-document response while reje
         target: { tabId: 37 },
         world: 'MAIN',
         func: networkTapCleanupPresent,
-        args: [binding],
+        args: [binding, nonce],
       }),
     ),
   );
@@ -208,11 +216,43 @@ it('arms before reload and retains the earliest new-document response while reje
       target: { tabId: 37, documentIds: ['replayed-document'] },
       world: 'MAIN',
       func: cleanupNetworkTapMain,
-      args: [binding],
+      args: [binding, nonce],
     }),
   );
   expect(harness.send.mock.calls.some(([method]) => method === 'Runtime.evaluate')).toBe(false);
   expect(harness.release).toHaveBeenCalledTimes(1);
+});
+
+it('refuses a replacement document when navigation arrives after the cleanup probe', async () => {
+  let resolveProbe!: (value: Array<{ documentId: string; result: boolean }>) => void;
+  Object.assign(chrome, {
+    scripting: {
+      executeScript: vi.fn(
+        () =>
+          new Promise<Array<{ documentId: string; result: boolean }>>((resolve) => {
+            resolveProbe = resolve;
+          }),
+      ),
+    },
+  });
+  const capture = await startDocumentNetworkCapture(options());
+  context(2, 'reloaded-document');
+  committed();
+  handshake(2);
+  await vi.waitFor(() => expect(chrome.scripting.executeScript).toHaveBeenCalledOnce());
+
+  const closing = capture.close();
+  // The browser has navigated, but its CDP frame event is delayed until after
+  // close starts. The tab-scoped probe therefore runs in the replacement.
+  context(3, 'replacement-document');
+  committed();
+  resolveProbe([{ documentId: 'replacement-document', result: false }]);
+
+  await expect(closing).rejects.toThrow(/did not confirm removal/);
+  expect(chrome.scripting.executeScript).toHaveBeenCalledTimes(1);
+  expect(chrome.scripting.executeScript).toHaveBeenLastCalledWith(
+    expect.objectContaining({ args: [binding, nonce], func: networkTapCleanupPresent }),
+  );
 });
 
 it('removes a late script registration when cancellation races installation', async () => {
@@ -249,6 +289,7 @@ it('terminates when a second document replaces the replay document at the identi
   const capture = await startDocumentNetworkCapture(opts);
   context(2, 'reloaded-document');
   committed();
+  handshake(2);
   context(3, 'another-document-at-same-url');
   packet(3, '[{"venue":"Other document"}]', 1);
   await vi.waitFor(() =>

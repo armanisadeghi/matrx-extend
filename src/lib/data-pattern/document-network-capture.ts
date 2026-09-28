@@ -47,10 +47,21 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
   let committed = false;
   let documentContext: { id: number; uniqueId: string } | null = null;
   let replayDocumentReplaced = false;
+  let captureNonce: string | null = null;
+  let captureNonceSettled = false;
+  let settleCaptureNonce: (nonce: string | null) => void = () => {};
+  const captureNonceReady = new Promise<string | null>((resolve) => {
+    settleCaptureNonce = (nonce) => {
+      if (captureNonceSettled) return;
+      captureNonceSettled = true;
+      resolve(nonce);
+    };
+  });
   let cleanupTarget: CleanupTarget | null = null;
   let cleanupTargetPromise: Promise<CleanupTarget | null> | null = null;
   const oldContexts = new Set<string>();
   const contexts = new Map<number, { uniqueId: string; frameId: string; isDefault: boolean }>();
+  const hookNoncesByContext = new Map<number, string>();
   const early: Array<{ event: CapturedNetEvent; bytes: number }> = [];
   let earlyBytes = 0;
   const canonicalUrl = (url: string) => {
@@ -62,8 +73,9 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
     if (closed || opts.signal.aborted) throw new Error('Network replay was cancelled.');
   };
   const captureCleanupTarget = () => {
-    if (!committed || !documentContext || cleanupTargetPromise) return;
+    if (!committed || !documentContext || !captureNonce || cleanupTargetPromise) return;
     const context = documentContext;
+    const nonce = captureNonce;
     // `executeScript` reports the Chrome document ID of the document in which
     // its MAIN-world function ran. The probe confirms that this *capture's*
     // hook is present before we retain that ID for cleanup.
@@ -72,7 +84,7 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
         target: { tabId: opts.tabId },
         world: 'MAIN',
         func: networkTapCleanupPresent,
-        args: [bindingName],
+        args: [bindingName, nonce],
       })
       .then(([result]) => {
         if (!result?.documentId || result.result !== true)
@@ -93,7 +105,6 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
     if (closePromise) return closePromise;
     closed = true;
     early.length = 0;
-    chrome.debugger.onEvent.removeListener(onEvent);
     chrome.debugger.onDetach.removeListener(onDetach);
     opts.signal.removeEventListener('abort', onAbort);
     closePromise = (async () => {
@@ -105,26 +116,29 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
         removals.push(
           lease.send('Page.removeScriptToEvaluateOnNewDocument', { identifier: scriptId }),
         );
-      captureCleanupTarget();
-      if (cleanupTargetPromise)
+      if (documentContext)
         removals.push(
-          cleanupTargetPromise.then((target) => {
+          (async () => {
+            const nonce = captureNonce ?? (await captureNonceReady);
+            if (!nonce || replayDocumentReplaced) return;
+            captureCleanupTarget();
+            const target = await cleanupTargetPromise;
             if (
               !target ||
               replayDocumentReplaced ||
               documentContext?.uniqueId !== target.contextUniqueId
             )
               return;
-            return chrome.scripting.executeScript({
+            await chrome.scripting.executeScript({
               target: {
                 tabId: opts.tabId,
                 documentIds: [target.documentId],
               } as chrome.scripting.InjectionTarget,
               world: 'MAIN',
               func: cleanupNetworkTapMain,
-              args: [bindingName],
+              args: [bindingName, nonce],
             });
-          }),
+          })(),
         );
       if (bindingAdded) removals.push(lease.send('Runtime.removeBinding', { name: bindingName }));
       let timer: ReturnType<typeof setTimeout> | undefined;
@@ -153,6 +167,7 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
           );
       } finally {
         if (timer !== undefined) clearTimeout(timer);
+        chrome.debugger.onEvent.removeListener(onEvent);
       }
     })();
     return closePromise;
@@ -170,6 +185,7 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
   const onDetach = (source: chrome.debugger.Debuggee) => {
     if (source.tabId !== opts.tabId) return;
     detached = true;
+    settleCaptureNonce(null);
     fail('Chrome detached the capture or closed the tab. Start the saved replay again.');
   };
   const onAbort = () => fail('Network replay was cancelled.');
@@ -187,13 +203,37 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
     for (const { event } of early.splice(0)) emit(event);
     earlyBytes = 0;
   };
+  const acceptCaptureNonce = (contextId: number, nonce: string) => {
+    const context = contexts.get(contextId);
+    if (
+      !reloadIssued ||
+      !documentContext ||
+      !context?.isDefault ||
+      context.frameId !== mainFrame ||
+      context.uniqueId !== documentContext.uniqueId ||
+      oldContexts.has(context.uniqueId)
+    )
+      return;
+    if (captureNonce && captureNonce !== nonce) {
+      replayDocumentReplaced = true;
+      settleCaptureNonce(null);
+      fail('The replay document reported conflicting capture hooks. Run the recipe again.');
+      return;
+    }
+    captureNonce = nonce;
+    settleCaptureNonce(nonce);
+    captureCleanupTarget();
+  };
   const onEvent = (
     source: chrome.debugger.Debuggee & { sessionId?: string },
     method: string,
     raw?: object,
   ) => {
-    if (closed || source.tabId !== opts.tabId || source.sessionId) return;
+    if (source.tabId !== opts.tabId || source.sessionId) return;
     const params = (raw ?? {}) as Record<string, unknown>;
+    // Close keeps this one listener alive only long enough to receive the
+    // capture hook handshake. It never accepts post-close page data.
+    if (closed && method !== 'Runtime.bindingCalled') return;
     if (method === 'Runtime.executionContextCreated') {
       const context = params.context as {
         id: number;
@@ -219,11 +259,14 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
       ) {
         if (documentContext && documentContext.uniqueId !== context.uniqueId) {
           replayDocumentReplaced = true;
+          settleCaptureNonce(null);
           fail('The page changed again during replay. Run the recipe on the intended document.');
           return;
         }
         documentContext = { id: context.id, uniqueId: context.uniqueId };
         flush();
+        const nonce = hookNoncesByContext.get(context.id);
+        if (nonce) acceptCaptureNonce(context.id, nonce);
         captureCleanupTarget();
       }
     } else if (method === 'Page.navigatedWithinDocument' && params.frameId === mainFrame) {
@@ -237,7 +280,10 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
       }
       if (frame.id !== mainFrame) return;
       if (!reloadIssued || committed || !frame.url || canonicalUrl(frame.url) !== initialUrl) {
-        if (committed) replayDocumentReplaced = true;
+        if (committed) {
+          replayDocumentReplaced = true;
+          settleCaptureNonce(null);
+        }
         fail(
           'The page navigated away while replay was preparing or listening. Run the recipe on the intended page.',
         );
@@ -262,9 +308,22 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
       try {
         parsed = JSON.parse(params.payload);
       } catch {
+        if (closed) return;
         fail('The page returned malformed capture data.');
         return;
       }
+      const handshake = parsed as { __matrx_capture_hook?: unknown; nonce?: unknown } | null;
+      if (
+        handshake?.__matrx_capture_hook === 'network-tap' &&
+        typeof handshake.nonce === 'string' &&
+        /^[a-f0-9]{32}$/.test(handshake.nonce)
+      ) {
+        const contextId = Number(params.executionContextId);
+        hookNoncesByContext.set(contextId, handshake.nonce);
+        acceptCaptureNonce(contextId, handshake.nonce);
+        return;
+      }
+      if (closed) return;
       const e = parsed as Partial<CapturedNetEvent> | null;
       if (
         !e ||
@@ -317,12 +376,14 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
       const id = Number(params.executionContextId);
       if (documentContext?.id === id) {
         replayDocumentReplaced = true;
+        settleCaptureNonce(null);
         fail('The replay document was replaced. Run the recipe again.');
       }
       contexts.delete(id);
     } else if (method === 'Runtime.executionContextsCleared') {
       if (documentContext) {
         replayDocumentReplaced = true;
+        settleCaptureNonce(null);
         fail('The replay document was replaced. Run the recipe again.');
       }
       contexts.clear();

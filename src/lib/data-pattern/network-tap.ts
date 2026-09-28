@@ -46,6 +46,13 @@ export function networkTapMain(maxBodyBytes = 1_000_000, initialBindingName?: st
     return;
   }
   w[SENTINEL] = { manual: !bindingName };
+  // Each document gets a fresh value. It is not page-supplied and is reported
+  // through the CDP binding before the worker will authorize scripted cleanup.
+  const hookNonce = bindingName
+    ? Array.from(crypto.getRandomValues(new Uint32Array(4)), (part) =>
+        part.toString(16).padStart(8, '0'),
+      ).join('')
+    : '';
 
   let active = true;
   const post = (event: Record<string, unknown>) => {
@@ -313,11 +320,17 @@ export function networkTapMain(maxBodyBytes = 1_000_000, initialBindingName?: st
     PatchedXHR as unknown as typeof XMLHttpRequest;
   if (bindingName) {
     const cleanupKey = `${bindingName}_cleanup`;
+    const nonceKey = `${bindingName}_hook_nonce`;
+    Object.defineProperty(window, nonceKey, {
+      configurable: true,
+      value: hookNonce,
+    });
     Object.defineProperty(window, cleanupKey, {
       configurable: true,
       value: () => {
         if (w[SENTINEL]?.manual) {
           bindingName = undefined;
+          delete (window as unknown as Record<string, unknown>)[nonceKey];
           delete (window as unknown as Record<string, unknown>)[cleanupKey];
           return;
         }
@@ -326,9 +339,18 @@ export function networkTapMain(maxBodyBytes = 1_000_000, initialBindingName?: st
         if (window.XMLHttpRequest === (PatchedXHR as unknown as typeof XMLHttpRequest))
           window.XMLHttpRequest = OrigXHR;
         delete w[SENTINEL];
+        delete (window as unknown as Record<string, unknown>)[nonceKey];
         delete (window as unknown as Record<string, unknown>)[cleanupKey];
       },
     });
+    try {
+      const binding = (window as unknown as Record<string, unknown>)[bindingName];
+      if (typeof binding === 'function')
+        binding(JSON.stringify({ __matrx_capture_hook: 'network-tap', nonce: hookNonce }));
+    } catch {
+      // The worker treats a missing handshake as an unconfirmed hook and keeps
+      // its bounded cleanup failure rather than guessing at a document.
+    }
   }
 }
 
@@ -338,10 +360,11 @@ export function networkTapMain(maxBodyBytes = 1_000_000, initialBindingName?: st
  * scope. It lets the service worker bind the post-reload Chrome document ID to
  * the capture hook without executing that hook.
  */
-export function networkTapCleanupPresent(bindingName: string): boolean {
+export function networkTapCleanupPresent(bindingName: string, hookNonce: string): boolean {
+  const values = globalThis as unknown as Record<string, unknown>;
   return (
-    typeof (globalThis as unknown as Record<string, unknown>)[`${bindingName}_cleanup`] ===
-    'function'
+    values[`${bindingName}_hook_nonce`] === hookNonce &&
+    typeof values[`${bindingName}_cleanup`] === 'function'
   );
 }
 
@@ -350,8 +373,10 @@ export function networkTapCleanupPresent(bindingName: string): boolean {
  * Never target a replacement document: the caller obtains that ID only from a
  * probe which observed this capture's cleanup hook in the same document.
  */
-export function cleanupNetworkTapMain(bindingName: string): boolean {
-  const cleanup = (globalThis as unknown as Record<string, unknown>)[`${bindingName}_cleanup`];
+export function cleanupNetworkTapMain(bindingName: string, hookNonce: string): boolean {
+  const values = globalThis as unknown as Record<string, unknown>;
+  if (values[`${bindingName}_hook_nonce`] !== hookNonce) return false;
+  const cleanup = values[`${bindingName}_cleanup`];
   if (typeof cleanup !== 'function') return false;
   cleanup();
   return true;

@@ -25,8 +25,8 @@ it('real saved tap sends response and credential canaries only to the CDP bindin
   try {
     networkTapMain(4096, bindingName);
     await window.fetch('https://calendar.invalid/api?token=CREDENTIAL_CANARY');
-    await vi.waitFor(() => expect(binding).toHaveBeenCalledOnce());
-    expect(binding.mock.calls[0]![0]).toContain('PRIVATE_RESPONSE_CANARY');
+    await vi.waitFor(() => expect(binding).toHaveBeenCalledTimes(2));
+    expect(binding.mock.calls.at(-1)?.[0]).toContain('PRIVATE_RESPONSE_CANARY');
     expect(pageMessages).not.toHaveBeenCalled();
     expect(observer).not.toHaveBeenCalled();
   } finally {
@@ -46,9 +46,12 @@ it('an explicitly started manual capture retains its existing relay', async () =
 it('runs the saved-capture cleanup function only while this capture hook is present', () => {
   const originalFetch = window.fetch;
   networkTapMain(4096, bindingName);
-  expect(networkTapCleanupPresent(bindingName)).toBe(true);
-  expect(cleanupNetworkTapMain(bindingName)).toBe(true);
+  const hookNonce = (window as unknown as Record<string, unknown>)[`${bindingName}_hook_nonce`];
+  expect(typeof hookNonce).toBe('string');
+  expect(networkTapCleanupPresent(bindingName, hookNonce as string)).toBe(true);
+  expect(networkTapCleanupPresent(bindingName, 'b'.repeat(32))).toBe(false);
+  expect(cleanupNetworkTapMain(bindingName, hookNonce as string)).toBe(true);
   expect(window.fetch).toBe(originalFetch);
-  expect(networkTapCleanupPresent(bindingName)).toBe(false);
-  expect(cleanupNetworkTapMain(bindingName)).toBe(false);
+  expect(networkTapCleanupPresent(bindingName, hookNonce as string)).toBe(false);
+  expect(cleanupNetworkTapMain(bindingName, hookNonce as string)).toBe(false);
 });
