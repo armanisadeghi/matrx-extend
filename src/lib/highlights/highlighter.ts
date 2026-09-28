@@ -75,6 +75,7 @@ let layer: HTMLElement | null = null; // absolutely-positioned overlay rects liv
 let hoverBox: HTMLElement | null = null; // element-mode hover outline
 let countEl: HTMLElement | null = null;
 let mode: HighlightMode = 'text';
+let sessionId: string | null = null;
 const painted: PaintedItem[] = [];
 let repaintQueued = false;
 
@@ -158,7 +159,7 @@ export function mountHighlighter(initialMode: HighlightMode = 'text'): void {
   chrome.runtime.onMessage.addListener(onRuntimeMessage);
 
   window.__matrxHighlighter = { unmount: unmountHighlighter };
-  emitState();
+  // HIGHLIGHT_START binds this mount before any capture or state is sent.
 }
 
 export function unmountHighlighter(): void {
@@ -179,6 +180,7 @@ export function unmountHighlighter(): void {
   hoverBox = null;
   countEl = null;
   painted.length = 0;
+  sessionId = null;
   delete window.__matrxHighlighter;
 }
 
@@ -195,6 +197,7 @@ function syncModeButtons() {
 }
 
 function onToggleClick(e: Event) {
+  if (!sessionId) return;
   const t = e.target as HTMLElement;
   const next = t?.dataset?.mode as HighlightMode | undefined;
   if (next && (next === 'text' || next === 'element')) {
@@ -205,6 +208,8 @@ function onToggleClick(e: Event) {
 }
 
 function onClearClick() {
+  const requestSessionId = sessionId;
+  if (!requestSessionId) return;
   // Ask the side panel to soft-delete every highlight on this URL. The side
   // panel is where the confirmation lives (this overlay has no dialog host),
   // so the answer says whether the person actually went through with it —
@@ -212,8 +217,9 @@ function onClearClick() {
   void safeAsk<{ ok: boolean }>(CHANNELS.HIGHLIGHT_CLEAR_REQUEST, {
     url: location.href,
     count: painted.length,
+    sessionId: requestSessionId,
   }).then((answer) => {
-    if (!answer?.ok) return;
+    if (!answer?.ok || sessionId !== requestSessionId) return;
     for (const item of painted) for (const b of item.boxes) b.remove();
     painted.length = 0;
     updateCount();
@@ -229,6 +235,7 @@ function requestStop() {
 // ─── Capture: text mode ─────────────────────────────────────────────────────
 
 function onMouseUp(e: Event) {
+  if (!sessionId) return;
   if (mode !== 'text') return;
   if (insideHost(e.target)) return;
   const sel = window.getSelection();
@@ -289,6 +296,7 @@ function onHover(e: Event) {
 }
 
 function onElementClick(e: Event) {
+  if (!sessionId) return;
   if (mode !== 'element') return;
   const t = e.target;
   if (!(t instanceof Element) || insideHost(t)) return;
@@ -411,18 +419,20 @@ function relocate(
 // ─── Persistence handshake ──────────────────────────────────────────────────
 
 async function persist(item: PaintedItem, draft: CaptureDraft) {
+  const requestSessionId = sessionId;
+  if (!requestSessionId) return;
   try {
     const res = (await chrome.runtime.sendMessage({
       __matrx: true,
       kind: CHANNELS.HIGHLIGHT_CAPTURED,
-      payload: draft,
+      payload: { ...draft, sessionId: requestSessionId },
     })) as { id?: string } | undefined;
-    if (res?.id) item.id = res.id;
+    if (res?.id && sessionId === requestSessionId) item.id = res.id;
   } catch {
     // Side panel closed / runtime gone — keep the local paint; it just isn't
     // synced. The user can re-toggle to recapture.
   }
-  emitState();
+  if (sessionId === requestSessionId) emitState();
 }
 
 // ─── Messaging from the side panel ──────────────────────────────────────────
@@ -431,25 +441,35 @@ function onRuntimeMessage(msg: unknown): undefined {
   if (!msg || typeof msg !== 'object') return;
   const env = msg as { __matrx?: boolean; kind?: string; payload?: unknown };
   if (env.__matrx !== true) return;
+  const payload = env.payload as { sessionId?: string; mode?: HighlightMode; items?: Parameters<typeof paintExisting>[0] } | undefined;
+  if (env.kind === CHANNELS.HIGHLIGHT_START) {
+    if (typeof payload?.sessionId === 'string' && payload.sessionId) {
+      sessionId = payload.sessionId;
+      emitState();
+    }
+    return undefined;
+  }
+  if (!sessionId || payload?.sessionId !== sessionId) return undefined;
   if (env.kind === CHANNELS.HIGHLIGHT_STOP) {
     unmountHighlighter();
   } else if (env.kind === CHANNELS.HIGHLIGHT_SET_MODE) {
-    const next = (env.payload as { mode?: HighlightMode } | undefined)?.mode;
+    const next = payload.mode;
     if (next === 'text' || next === 'element') {
       mode = next;
       syncModeButtons();
       emitState();
     }
   } else if (env.kind === CHANNELS.HIGHLIGHT_PAINT) {
-    const items = (env.payload as { items?: Parameters<typeof paintExisting>[0] } | undefined)
-      ?.items;
+    const items = payload.items;
     if (Array.isArray(items)) paintExisting(items);
   }
   return undefined;
 }
 
 function emitState(mounted = true) {
+  if (!sessionId) return;
   safeSend(CHANNELS.HIGHLIGHT_OVERLAY_STATE, {
+    sessionId,
     mounted,
     mode,
     count: painted.length,
