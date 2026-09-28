@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "lane": "independent D49 standalone worker and primary Chrome acceptance",
+  "status": "FAIL_NATIVE_OUTCOME_WITH_PARTIAL_RECOVERY",
+  "source": {
+    "fix_commit": "afb7486692dbdd46d611021c46022a91b22ab227",
+    "merged_start_commit": "8048b81eebce8bbc49c85d7521b5b45d3a1e2572",
+    "background_source_sha256": "6b175385607fda6e6191324461bf0e6dfe931470aeeef5f172547151cac7523a",
+    "wxt_config_sha256": "6132c34e5423355917dd6c8e92bc4373e0369532ef610146bc9f99b11cfccd23",
+    "lock_sha256": "f44c6aa0575db589e5fd9bb040b40ef54f0c930abb56addcb12612ea990a441a",
+    "artifact_receipt": "test-results/showcase-d49-standalone-peer-20260928T0727Z.json",
+    "artifact_tree_sha256": "57e37156a018e5eebbc3a0a884c3fff9b8ff40b7950278656fe749db7f2453f4",
+    "artifact_directory": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "version": "0.2.114",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "build_and_source_verification": {
+    "frozen_install_run_id": "showcase-d49-peer-install-20260928-0724",
+    "install_admitted_utc": "2026-09-28T07:25:35.734Z",
+    "install_terminal_utc": "2026-09-28T07:25:37.166Z",
+    "install_exit_code": 0,
+    "dependency_delta": "agents 0.17.2 to 0.17.3 and associations 0.13.16 to 0.13.17; both installed changelogs say metadata republish, no consumer action or intended source changes",
+    "development_build_run_id": "showcase-d49-peer-build-20260928-0726",
+    "build_admitted_utc": "2026-09-28T07:27:08.831Z",
+    "build_terminal_utc": "2026-09-28T07:27:13.217Z",
+    "build_exit_code": 0,
+    "emitted_worker": "Manifest background.service_worker is background.js with no module type. Independent TypeScript parse of the emitted background.js found zero dynamic import expressions and zero static import/export declarations. Worker size 1,948,224 characters.",
+    "guard_review": "The generateBundle plugin traverses Rollup imports and dynamicImports from background.js and AST-rejects any emitted import() call in reachable chunks. The standalone background isolates the worker from page ESM chunks. These checks establish worker import legality, not end-to-end recipe capture."
+  },
+  "native_guard": {
+    "run_id": "showcase-d49-standalone-peer-native-20260928T0728Z",
+    "profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "admitted_utc": "2026-09-28T07:28:51.417Z",
+    "last_healthy_watch_utc": "2026-09-28T07:31:34.751Z",
+    "stop_confirmed_utc": "2026-09-28T07:31:42.409Z",
+    "terminal": "RESOURCE_BROWSER_STOP_CONFIRMED; wrapper exited 0; resourceInvalid false"
+  },
+  "native_context": {
+    "browser": "primary Google Chrome profile; worker DevTools closed",
+    "page": "https://hn.algolia.com/?q=OpenAI",
+    "identity": "Chrome extension Details showed version 0.2.114, expected ID and exact unpacked output path before explicit Reload",
+    "account": "admin@admin.com",
+    "recipe": "Codex D47 HN Search OpenAI network replay 20260928, NETWORK",
+    "public_page_reference": "Visible search rows included OpenAI's board has fired Sam Altman (5710 points) and Google We have no moat, and neither does OpenAI (2455 points).",
+    "privacy": "No console injection, raw headers, API keys, credentials or private data recorded."
+  },
+  "native_observations": [
+    "Explicit extension Reload showed Chrome's Reloaded toast and the service worker inspect link; the HN page was then manually refreshed once before the recipe run. Showcase Patterns rendered with dark styling.",
+    "First Run displayed the per-run privileged Allow/Deny card, naming the saved recipe and warning that Allow uses Chrome debugger, reloads the page and captures matching responses.",
+    "Deny removed the approval card, displayed User denied this action, and re-enabled Run.",
+    "Second Run displayed a fresh per-run approval card. Allow triggered Chrome's debugger infobar, automatically reloaded the HN page, and displayed Listening in the reloaded document. No manual page request or reload was triggered after Allow.",
+    "After the capture window, Showcase displayed No successful request matching the saved Algolia query URL and saved body identity was captured within 20 seconds of reloading. It advised interacting with the page during a future listening window. The recipe remained BROKEN, last run 37 seconds ago, 0 rows. The debugger infobar was gone by the final screenshot."
+  ],
+  "verdict_a_user_outcome": {
+    "status": "FAIL",
+    "reason": "Per-run approval, denial and automatic reload work, but the automatic capture did not match the saved request and yielded zero rows. Correct rows and public-value comparison remain unverified."
+  },
+  "verdict_b_source_quality": {
+    "status": "WORKER_IMPORT_FIX_VERIFIED_NARROWLY",
+    "reason": "The fresh merged-lock artifact builds as a classic standalone worker with no emitted import declarations or import() expressions. Native execution now crosses the prior document/window failures and reaches live capture. The new no-matching-request outcome needs its own root-cause diagnosis; the visible message alone does not prove why the saved request identity missed."
+  },
+  "mailbox_toolbar_side_observation": "The final native screenshot showed an envelope icon with badge 2 in the top Matrx toolbar and no long mailbox text label; this was incidental to the D49 session.",
+  "open_actions": [
+    "Keep D49 open. Diagnose why the saved Algolia query URL/body identity misses the request generated by the automatic reload, including whether the recipe itself is stale or page requests require interaction.",
+    "After repair, repeat independent native Allow with automatic fresh capture and compare resulting saved rows against visible public values."
+  ]
+}

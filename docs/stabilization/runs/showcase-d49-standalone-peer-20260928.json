@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-d49-standalone-peer-native-20260928T0728Z",
+  "report": "docs/stabilization/reports/showcase-d49-standalone-peer.json",
+  "artifact_receipt": "test-results/showcase-d49-standalone-peer-20260928T0727Z.json",
+  "artifact_tree_sha256": "57e37156a018e5eebbc3a0a884c3fff9b8ff40b7950278656fe749db7f2453f4",
+  "admitted_utc": "2026-09-28T07:28:51.417Z",
+  "last_healthy_watch_utc": "2026-09-28T07:31:34.751Z",
+  "terminal_utc": "2026-09-28T07:31:42.409Z",
+  "terminal": "RESOURCE_BROWSER_STOP_CONFIRMED",
+  "wrapper_exit_code": 0,
+  "resource_invalid": false,
+  "result": "Approval and automatic reload passed; fresh capture returned no matching saved Algolia request and zero rows. D49 remains open."
+}

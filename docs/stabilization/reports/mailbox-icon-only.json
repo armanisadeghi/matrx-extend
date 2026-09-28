@@ -18,5 +18,17 @@
     "accessibility_before_reload": "Capture tab was named '2 pages need your browser — 3 more waiting in another workspace'. This confirms the accessible name and live count, not rendered toolbar text.",
     "rendered_toolbar": "UNVERIFIED; the side panel closed after extension reload and timebox ended before it could be reopened and visually inspected.",
     "full_feature_acceptance": "NOT CLAIMED"
+  },
+  "followup_2026_09_28": {
+    "run_id": "showcase-d49-standalone-peer-native-20260928T0728Z",
+    "artifact_receipt": "test-results/showcase-d49-standalone-peer-20260928T0727Z.json",
+    "artifact_tree_sha256": "57e37156a018e5eebbc3a0a884c3fff9b8ff40b7950278656fe749db7f2453f4",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.114",
+    "profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "observation": "After explicit extension Reload and reopening the side panel on hn.algolia.com, the primary Chrome screenshot showed an envelope icon with numeric badge 2 in the Matrx top toolbar and no long mailbox text label. The accessibility tree retained the longer explanatory tab name, which was not rendered as visible toolbar text.",
+    "scope": "Visual toolbar check only; mailbox feature behavior was not exercised.",
+    "browser_guard_terminal_utc": "2026-09-28T07:31:42.409Z",
+    "browser_guard_terminal": "RESOURCE_BROWSER_STOP_CONFIRMED; resourceInvalid false; wrapper exit 0"
   }
 }
