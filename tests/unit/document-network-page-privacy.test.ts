@@ -1,4 +1,8 @@
-import { networkTapMain } from '@/lib/data-pattern/network-tap';
+import {
+  cleanupNetworkTapMain,
+  networkTapCleanupPresent,
+  networkTapMain,
+} from '@/lib/data-pattern/network-tap';
 import { afterEach, expect, it, vi } from 'vitest';
 const bindingName = '__matrx_capture_privacy';
 afterEach(() => {
@@ -37,4 +41,14 @@ it('an explicitly started manual capture retains its existing relay', async () =
   networkTapMain(4096);
   await window.fetch('https://calendar.invalid/api');
   await vi.waitFor(() => expect(pageMessages).toHaveBeenCalledOnce());
+});
+
+it('runs the saved-capture cleanup function only while this capture hook is present', () => {
+  const originalFetch = window.fetch;
+  networkTapMain(4096, bindingName);
+  expect(networkTapCleanupPresent(bindingName)).toBe(true);
+  expect(cleanupNetworkTapMain(bindingName)).toBe(true);
+  expect(window.fetch).toBe(originalFetch);
+  expect(networkTapCleanupPresent(bindingName)).toBe(false);
+  expect(cleanupNetworkTapMain(bindingName)).toBe(false);
 });

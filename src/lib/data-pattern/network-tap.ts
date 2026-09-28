@@ -333,6 +333,31 @@ export function networkTapMain(maxBodyBytes = 1_000_000, initialBindingName?: st
 }
 
 /**
+ * Runs in MAIN world via chrome.scripting. This is deliberately self-contained
+ * because `func` payloads are serialized by Chrome and do not retain module
+ * scope. It lets the service worker bind the post-reload Chrome document ID to
+ * the capture hook without executing that hook.
+ */
+export function networkTapCleanupPresent(bindingName: string): boolean {
+  return (
+    typeof (globalThis as unknown as Record<string, unknown>)[`${bindingName}_cleanup`] ===
+    'function'
+  );
+}
+
+/**
+ * Runs in MAIN world via chrome.scripting against a captured document ID.
+ * Never target a replacement document: the caller obtains that ID only from a
+ * probe which observed this capture's cleanup hook in the same document.
+ */
+export function cleanupNetworkTapMain(bindingName: string): boolean {
+  const cleanup = (globalThis as unknown as Record<string, unknown>)[`${bindingName}_cleanup`];
+  if (typeof cleanup !== 'function') return false;
+  cleanup();
+  return true;
+}
+
+/**
  * Runs in ISOLATED world. Listens for window messages from the MAIN-world
  * tap and forwards via chrome.runtime.sendMessage with the NET_CAPTURE_EVENT
  * channel. Also idempotent.

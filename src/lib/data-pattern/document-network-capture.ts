@@ -1,5 +1,10 @@
 import { acquireSession } from '@/lib/cdp/client';
-import { type CapturedNetEvent, networkTapMain } from './network-tap';
+import {
+  type CapturedNetEvent,
+  cleanupNetworkTapMain,
+  networkTapCleanupPresent,
+  networkTapMain,
+} from './network-tap';
 
 export interface DocumentCaptureOptions {
   tabId: number;
@@ -15,6 +20,8 @@ export interface DocumentCaptureOptions {
   expectedPage?: { url: string; documentId: string };
   onArmed?: () => void;
 }
+
+type CleanupTarget = { documentId: string; contextUniqueId: string };
 
 /** Runs only in the SW, so all CDP clients share attachment ownership. */
 export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) {
@@ -39,6 +46,9 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
   let initialUrl = '';
   let committed = false;
   let documentContext: { id: number; uniqueId: string } | null = null;
+  let replayDocumentReplaced = false;
+  let cleanupTarget: CleanupTarget | null = null;
+  let cleanupTargetPromise: Promise<CleanupTarget | null> | null = null;
   const oldContexts = new Set<string>();
   const contexts = new Map<number, { uniqueId: string; frameId: string; isDefault: boolean }>();
   const early: Array<{ event: CapturedNetEvent; bytes: number }> = [];
@@ -50,6 +60,33 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
   };
   const assertOpen = () => {
     if (closed || opts.signal.aborted) throw new Error('Network replay was cancelled.');
+  };
+  const captureCleanupTarget = () => {
+    if (!committed || !documentContext || cleanupTargetPromise) return;
+    const context = documentContext;
+    // `executeScript` reports the Chrome document ID of the document in which
+    // its MAIN-world function ran. The probe confirms that this *capture's*
+    // hook is present before we retain that ID for cleanup.
+    cleanupTargetPromise = chrome.scripting
+      .executeScript({
+        target: { tabId: opts.tabId },
+        world: 'MAIN',
+        func: networkTapCleanupPresent,
+        args: [bindingName],
+      })
+      .then(([result]) => {
+        if (!result?.documentId || result.result !== true)
+          throw new Error('Chrome could not bind cleanup to the replay document.');
+        // A replacement document must never become a cleanup target. In that
+        // case the exact document ID below either no longer exists or is not
+        // used at all, matching the former CDP unique-context behavior.
+        if (replayDocumentReplaced || documentContext?.uniqueId !== context.uniqueId) return null;
+        cleanupTarget = { documentId: result.documentId, contextUniqueId: context.uniqueId };
+        return cleanupTarget;
+      });
+    // The close path observes this promise and reports a bounded failure. Keep
+    // the background identity probe from becoming an unhandled rejection first.
+    void cleanupTargetPromise.catch(() => undefined);
   };
 
   const close = (): Promise<void> => {
@@ -68,11 +105,25 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
         removals.push(
           lease.send('Page.removeScriptToEvaluateOnNewDocument', { identifier: scriptId }),
         );
-      if (documentContext)
+      captureCleanupTarget();
+      if (cleanupTargetPromise)
         removals.push(
-          lease.send('Runtime.evaluate', {
-            expression: `globalThis[${JSON.stringify(`${bindingName}_cleanup`)}]?.()`,
-            uniqueContextId: documentContext.uniqueId,
+          cleanupTargetPromise.then((target) => {
+            if (
+              !target ||
+              replayDocumentReplaced ||
+              documentContext?.uniqueId !== target.contextUniqueId
+            )
+              return;
+            return chrome.scripting.executeScript({
+              target: {
+                tabId: opts.tabId,
+                documentIds: [target.documentId],
+              } as chrome.scripting.InjectionTarget,
+              world: 'MAIN',
+              func: cleanupNetworkTapMain,
+              args: [bindingName],
+            });
           }),
         );
       if (bindingAdded) removals.push(lease.send('Runtime.removeBinding', { name: bindingName }));
@@ -167,11 +218,13 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
         !oldContexts.has(context.uniqueId)
       ) {
         if (documentContext && documentContext.uniqueId !== context.uniqueId) {
+          replayDocumentReplaced = true;
           fail('The page changed again during replay. Run the recipe on the intended document.');
           return;
         }
         documentContext = { id: context.id, uniqueId: context.uniqueId };
         flush();
+        captureCleanupTarget();
       }
     } else if (method === 'Page.navigatedWithinDocument' && params.frameId === mainFrame) {
       fail('The page route changed during replay. Run the recipe on the intended page.');
@@ -184,6 +237,7 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
       }
       if (frame.id !== mainFrame) return;
       if (!reloadIssued || committed || !frame.url || canonicalUrl(frame.url) !== initialUrl) {
+        if (committed) replayDocumentReplaced = true;
         fail(
           'The page navigated away while replay was preparing or listening. Run the recipe on the intended page.',
         );
@@ -191,6 +245,7 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
       }
       committed = true;
       flush();
+      captureCleanupTarget();
     } else if (method === 'Runtime.bindingCalled' && params.name === bindingName) {
       const context = contexts.get(Number(params.executionContextId));
       if (
@@ -260,11 +315,16 @@ export async function startDocumentNetworkCapture(opts: DocumentCaptureOptions) 
       } else emit(event);
     } else if (method === 'Runtime.executionContextDestroyed') {
       const id = Number(params.executionContextId);
-      if (documentContext?.id === id)
+      if (documentContext?.id === id) {
+        replayDocumentReplaced = true;
         fail('The replay document was replaced. Run the recipe again.');
+      }
       contexts.delete(id);
     } else if (method === 'Runtime.executionContextsCleared') {
-      if (documentContext) fail('The replay document was replaced. Run the recipe again.');
+      if (documentContext) {
+        replayDocumentReplaced = true;
+        fail('The replay document was replaced. Run the recipe again.');
+      }
       contexts.clear();
     }
   };

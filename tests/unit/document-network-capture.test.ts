@@ -2,6 +2,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 const harness = vi.hoisted(() => ({ send: vi.fn(), release: vi.fn(), acquire: vi.fn() }));
 vi.mock('@/lib/cdp/client', () => ({ acquireSession: harness.acquire }));
 import { startDocumentNetworkCapture } from '@/lib/data-pattern/document-network-capture';
+import { cleanupNetworkTapMain, networkTapCleanupPresent } from '@/lib/data-pattern/network-tap';
 const events = new Set<(source: { tabId: number }, method: string, params: object) => void>();
 const detaches = new Set<(source: { tabId: number }) => void>();
 const emit = (method: string, params: object) => {
@@ -51,6 +52,9 @@ beforeEach(() => {
         removeListener: (callback: (source: { tabId: number }) => void) =>
           detaches.delete(callback),
       },
+    },
+    scripting: {
+      executeScript: vi.fn(async () => [{ documentId: 'replayed-document', result: true }]),
     },
   });
   harness.send.mockImplementation(async (method, params) => {
@@ -189,6 +193,25 @@ it('arms before reload and retains the earliest new-document response while reje
   expect(harness.send).toHaveBeenCalledWith('Page.removeScriptToEvaluateOnNewDocument', {
     identifier: 'new-document-script',
   });
+  await vi.waitFor(() =>
+    expect(chrome.scripting.executeScript).toHaveBeenCalledWith(
+      expect.objectContaining({
+        target: { tabId: 37 },
+        world: 'MAIN',
+        func: networkTapCleanupPresent,
+        args: [binding],
+      }),
+    ),
+  );
+  expect(chrome.scripting.executeScript).toHaveBeenCalledWith(
+    expect.objectContaining({
+      target: { tabId: 37, documentIds: ['replayed-document'] },
+      world: 'MAIN',
+      func: cleanupNetworkTapMain,
+      args: [binding],
+    }),
+  );
+  expect(harness.send.mock.calls.some(([method]) => method === 'Runtime.evaluate')).toBe(false);
   expect(harness.release).toHaveBeenCalledTimes(1);
 });
 
@@ -235,6 +258,10 @@ it('terminates when a second document replaces the replay document at the identi
   );
   expect(opts.onEvent).not.toHaveBeenCalled();
   await capture.close();
+  // The identity probe was allowed to finish, but its result was rejected once
+  // CDP reported the replacement. Cleanup must not touch that next document.
+  await Promise.resolve();
+  expect(chrome.scripting.executeScript).toHaveBeenCalledTimes(1);
   expect(harness.release).toHaveBeenCalledTimes(1);
 });
 
