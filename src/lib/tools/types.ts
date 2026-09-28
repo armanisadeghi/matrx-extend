@@ -112,6 +112,8 @@ export interface ToolContext {
    * currently-focused tab.
    */
   assignedTabId: number | null;
+  /** Internal screenshot-button binding to the document visible when the user clicked. */
+  screenshotDocument?: { tabId: number; windowId: number; documentId: string; url: string; title: string | null };
 }
 
 export interface ToolHandler<TArgs, TResult> {
