@@ -129,22 +129,70 @@ describe('Prepare current-attempt lifecycle', () => {
     expect(hook.result.current.running).toBe(false);
   });
 
-  it('reset cancels visible completion and releases the running state', async () => {
-    const pending = deferred<NonNullable<Report>>();
-    mocks.preparePage.mockReturnValue(pending.promise);
-    const hook = renderHook(() => usePagePrep());
-    let completion!: Promise<Report>;
-    act(() => {
-      completion = hook.result.current.run();
-    });
-    act(() => hook.result.current.reset());
-    expect(hook.result.current).toMatchObject({ report: null, error: null, running: false });
-    await act(async () => {
-      pending.resolve(report(60, 'old'));
-      await completion;
-    });
-    expect(hook.result.current).toMatchObject({ report: null, error: null, running: false });
-  });
+  it.each(['before', 'after'] as const)(
+    'ignores an older rejection %s the newer result settles',
+    async (order) => {
+      const older = deferred<NonNullable<Report>>();
+      const newer = deferred<NonNullable<Report>>();
+      mocks.preparePage.mockReturnValueOnce(older.promise).mockReturnValueOnce(newer.promise);
+      const hook = renderHook(() => usePagePrep());
+      let first!: Promise<Report>;
+      let second!: Promise<Report>;
+      act(() => {
+        first = hook.result.current.run();
+        second = hook.result.current.run();
+      });
+
+      if (order === 'before') {
+        await act(async () => {
+          older.reject(new Error('old access denied'));
+          await first;
+        });
+        expect(hook.result.current).toMatchObject({ report: null, error: null, running: true });
+      }
+      await act(async () => {
+        newer.resolve(report(33, 'new'));
+        await second;
+      });
+      expect(hook.result.current).toMatchObject({
+        report: report(33, 'new'),
+        error: null,
+        running: false,
+      });
+      if (order === 'after') {
+        await act(async () => {
+          older.reject(new Error('old access denied'));
+          await first;
+        });
+        expect(hook.result.current).toMatchObject({
+          report: report(33, 'new'),
+          error: null,
+          running: false,
+        });
+      }
+    },
+  );
+
+  it.each(['resolve', 'reject'] as const)(
+    'reset cancels a late %s and releases the running state',
+    async (settlement) => {
+      const pending = deferred<NonNullable<Report>>();
+      mocks.preparePage.mockReturnValue(pending.promise);
+      const hook = renderHook(() => usePagePrep());
+      let completion!: Promise<Report>;
+      act(() => {
+        completion = hook.result.current.run();
+      });
+      act(() => hook.result.current.reset());
+      expect(hook.result.current).toMatchObject({ report: null, error: null, running: false });
+      await act(async () => {
+        if (settlement === 'resolve') pending.resolve(report(60, 'old'));
+        else pending.reject(new Error('old access denied'));
+        await completion;
+      });
+      expect(hook.result.current).toMatchObject({ report: null, error: null, running: false });
+    },
+  );
 
   it('unmount discards an in-flight error and allows a new mount to prepare independently', async () => {
     const pending = deferred<NonNullable<Report>>();
