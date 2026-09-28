@@ -21,9 +21,10 @@
     "docs/stabilization/reports/showcase-export-source-audit.json",
     "src/lib/clipboard/copy.ts:115",
     "docs/stabilization/reports/showcase-export-correction-peer.json",
-    "docs/stabilization/reports/showcase-export-guarded-runtime.json"
+    "docs/stabilization/reports/showcase-export-guarded-runtime.json",
+    "docs/stabilization/reports/showcase-export-native.json"
   ],
-  "verification_status": "Fixed with guarded regression/compile/build proof, not nativeaccepted. Test installedJSON/AI fullbytes andTSVspreadsheet specialcells in Showcase andData; truthfulcopy UI remains pending.",
+  "verification_status": "Fixed; native d55e0901 verifiesactual241rowJSON/TSV/AIclipboard,lastrow andrealmultilineheaders. Originalsinglecell>50k, tab/quote cells, spreadsheetpaste, DataT03 and failureUI stillunverified. Wholepayload>50k is NOT proof of singlecellbug closure.",
   "transition_history": [
     {
       "at": "2026-09-28T12:38:00.604065+00:00",
