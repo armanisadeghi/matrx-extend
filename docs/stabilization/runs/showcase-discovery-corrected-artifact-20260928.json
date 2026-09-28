@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "run_id": "d49-integrated-devbuild-20260928",
+  "status": "CURRENT_SOURCE_DEVELOPMENT_BUILD_PASS_NATIVE_UNVERIFIED",
+  "source": {
+    "head_before_build": "80a64727139d46ece2e8d522573ab217b30850e8",
+    "head_after_build": "80a64727139d46ece2e8d522573ab217b30850e8",
+    "working_tree_before_build": "clean",
+    "working_tree_after_build": "clean",
+    "unstaged_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "staged_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pnpm_lock_sha256_before_and_after": "3c8f3aba248b2d9135be85f2913c19046d6f56da6a006c918de7aec0e04be0c5"
+  },
+  "build": {
+    "command": "pnpm exec wxt build --mode development",
+    "admitted_at_utc": "2026-09-28T08:54:50.521Z",
+    "child_exit_code": 0,
+    "terminal_at_utc": "2026-09-28T08:54:54.434Z",
+    "wrapper_terminal_exit_code": 0,
+    "toolchain": "WXT 0.21.4, Vite 8.3.1",
+    "artifact_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "manifest_version": "0.2.114",
+    "artifact_tree_sha256_before_build": "c887422198117822e9fac0437279bb4c729483333b8ef4a6403db5a22cdc5165",
+    "artifact_tree_sha256_after_build": "8b0f8adc1e576451da4d549780958766f7bb7e51b545e8dd421d36eb6e65ee45"
+  },
+  "native_acceptance": "NOT_RUN"
+}
