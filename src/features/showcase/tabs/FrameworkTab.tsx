@@ -1,15 +1,13 @@
 import { JsonTree } from '@/components/ui/json-tree';
 import { useActiveTab } from '@/hooks/use-active-tab';
 import { useExtraction } from '@/hooks/use-extraction';
-import { readFrameworkSources } from '@/lib/data-pattern/framework-sources';
+import { type FrameworkSource, readFrameworkSources } from '@/lib/data-pattern/framework-sources';
 import { formatJsonKeyPath } from '@/lib/data-pattern/json-key-path';
 import { Button } from '@ai-matrx/design-system';
 import { Loader2, PlayCircle, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ResultPreview } from '../components/ResultPreview';
 import { SaveAsPattern } from '../components/SaveAsPattern';
-
-type ParsedSource = { source: string; data: unknown };
 
 export function FrameworkTab({ active = true }: { active?: boolean }) {
   const tab = useActiveTab();
@@ -19,7 +17,7 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
       autoDetect: active,
     },
   );
-  const [sources, setSources] = useState<ParsedSource[]>([]);
+  const [sources, setSources] = useState<FrameworkSource[]>([]);
   const [sourcesPageKey, setSourcesPageKey] = useState<string | null>(null);
   const dumpSeq = useRef(0);
   const pageKey = `${tab.id ?? ''}:${tab.url ?? ''}`;
@@ -53,7 +51,7 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
       if (seq !== dumpSeq.current) return;
       setSources(fetched);
       setSourcesPageKey(pageKeyAtDump);
-      const first = fetched[0];
+      const first = fetched.find((candidate) => !candidate.error) ?? fetched[0];
       if (first && !activeSource) setActiveSource(first.source);
     } catch (err) {
       // Previously try/finally with NO catch — restricted pages stopped the
@@ -69,7 +67,8 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
   }, [detection?.available, dump]);
 
   const visibleSources = sourcesPageKey === pageKey ? sources : [];
-  const activeData = visibleSources.find((s) => s.source === activeSource)?.data;
+  const selectedSource = visibleSources.find((s) => s.source === activeSource);
+  const activeData = selectedSource?.data;
   const previewKeyPath = (previewConfig as { key_path?: unknown } | null)?.key_path;
 
   return (
@@ -92,6 +91,12 @@ export function FrameworkTab({ active = true }: { active?: boolean }) {
         {dumpError && (
           <div className="rounded-xl bg-destructive/10 px-3 py-2 text-xs text-destructive">
             Could not read framework data: {dumpError}
+          </div>
+        )}
+
+        {selectedSource?.error && (
+          <div className="rounded-xl bg-destructive/10 px-3 py-2 text-xs text-destructive">
+            {selectedSource.error}
           </div>
         )}
 

@@ -1264,6 +1264,9 @@ Every entry follows this shape:
   show the repository text, never the numeric slot in the serialized payload.
   If a Nuxt custom type cannot be decoded, the tab shows a decoder error with
   another extraction option instead of saving raw reference numbers as rows.
+  On a page with both a valid Next/Apollo source and an unreadable Nuxt source,
+  the valid source still previews and replays. A saved pattern whose named
+  source has disappeared says which source is missing and how to reselect it.
 
 ### Showcase — literal JSON keys in Network and Framework (EXT-D-0046)
 - **What it does:** Tree selection keeps each JSON object key as one exact

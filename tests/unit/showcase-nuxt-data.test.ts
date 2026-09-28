@@ -84,6 +84,49 @@ describe('Nuxt Framework source decoding', () => {
 
   it('reports an unsupported Nuxt custom type instead of raw indexes', async () => {
     setScript('__NUXT_DATA__', '[["SiteSpecificWidget",1],{"title":2},"News"]');
-    await expect(readFrameworkSources(37)).rejects.toThrow(/Nuxt page data could not be decoded/);
+    const sources = await readFrameworkSources(37);
+    expect(sources[0]?.data).toBeUndefined();
+    expect(sources[0]?.error).toMatch(/Nuxt page data could not be decoded/);
+    await expect(
+      runMode('next_data', 37, {
+        source: '__NUXT_DATA__',
+        key_path: ['title'],
+      }),
+    ).rejects.toThrow(/Nuxt page data could not be decoded/);
+  });
+
+  it('keeps valid Next and Apollo sources usable beside an unsupported Nuxt source', async () => {
+    setScript('__NEXT_DATA__', JSON.stringify({ props: { title: 'Nuxt launch notes' } }));
+    setScript('__NUXT_DATA__', '[["SiteSpecificWidget",1],{"title":2},"News"]');
+    setScript('__APOLLO_STATE__', JSON.stringify({ Repository: { name: 'nuxt/nuxt' } }));
+    const sources = await readFrameworkSources(37);
+    expect(sources.map((source) => source.source)).toEqual([
+      '__NEXT_DATA__', '__NUXT_DATA__', 'apollo',
+    ]);
+    expect(sources[1]?.error).toMatch(/Nuxt page data could not be decoded/);
+    expect(sources[0]?.data).toEqual({ props: { title: 'Nuxt launch notes' } });
+    expect(sources[2]?.data).toEqual({ Repository: { name: 'nuxt/nuxt' } });
+    await expect(
+      runMode('next_data', 37, {
+        source: '__NEXT_DATA__',
+        key_path: ['props', 'title'],
+      }),
+    ).resolves.toEqual([{ value: 'Nuxt launch notes' }]);
+    await expect(
+      runPattern({
+        kind: 'next_data',
+        config: { source: 'apollo', key_path: ['Repository', 'name'] },
+      } as Parameters<typeof runPattern>[0], 37),
+    ).resolves.toEqual([{ value: 'nuxt/nuxt' }]);
+  });
+
+  it('names a missing saved source and tells the person how to repair it', async () => {
+    setScript('__NEXT_DATA__', JSON.stringify({ props: { title: 'Nuxt launch notes' } }));
+    await expect(runPattern({
+      kind: 'next_data',
+      config: { source: '__NUXT_DATA__', key_path: ['state', '$sstats', 'repo'] },
+    } as Parameters<typeof runPattern>[0], 37)).rejects.toThrow(
+      /Framework source "__NUXT_DATA__" is no longer on this page.*choose an available source/,
+    );
   });
 });

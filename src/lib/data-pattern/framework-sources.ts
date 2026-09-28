@@ -3,8 +3,10 @@ import { type FrameworkDumpSource, frameworkDumpInPage } from './framework-dump'
 import type { JsonKeyPath } from './json-key-path';
 import type { ExtractedRow } from './types';
 
+export type FrameworkSource = FrameworkDumpSource & { error?: string };
+
 /** Decode after the page-to-extension boundary, where package imports are available. */
-export function decodeFrameworkSources(sources: FrameworkDumpSource[]): FrameworkDumpSource[] {
+export function decodeFrameworkSources(sources: FrameworkDumpSource[]): FrameworkSource[] {
   return sources.map(({ source, data }) => {
     if (source !== '__NUXT_DATA__' || !Array.isArray(data)) return { source, data };
     try {
@@ -65,14 +67,19 @@ export function decodeFrameworkSources(sources: FrameworkDumpSource[]): Framewor
       return { source, data: toNavigable(decoded) };
     } catch (error) {
       const detail = error instanceof Error ? error.message : String(error);
-      throw new Error(
-        `Nuxt page data could not be decoded: ${detail}. Try another Showcase source or AI Extract.`,
-      );
+      return {
+        source,
+        data: undefined,
+        error: `Nuxt page data could not be decoded: ${detail}. Try another Showcase source or AI Extract.`,
+      };
     }
   });
 }
 
-export async function readFrameworkSources(tabId: number): Promise<FrameworkDumpSource[]> {
+export async function readFrameworkSources(
+  tabId: number,
+  requestedSource?: string,
+): Promise<FrameworkSource[]> {
   const result = await chrome.scripting.executeScript({
     target: { tabId },
     func: frameworkDumpInPage,
@@ -80,18 +87,36 @@ export async function readFrameworkSources(tabId: number): Promise<FrameworkDump
   if (!Array.isArray(result?.[0]?.result)) {
     throw new Error('The page did not return framework data. Reload the page and try again.');
   }
-  return decodeFrameworkSources(result[0].result);
+  const rawSources = result[0].result as FrameworkDumpSource[];
+  if (requestedSource !== undefined) {
+    const selected = rawSources.find((candidate) => candidate.source === requestedSource);
+    if (!selected) {
+      throw new Error(
+        `Framework source "${requestedSource}" is no longer on this page. Open Framework, choose an available source, and save the pattern again.`,
+      );
+    }
+    return decodeFrameworkSources([selected]);
+  }
+  return decodeFrameworkSources(rawSources);
 }
 
 export function rowsFromFrameworkSources(
-  sources: FrameworkDumpSource[],
+  sources: FrameworkSource[],
   config: { source?: string | undefined; key_path: JsonKeyPath },
 ): ExtractedRow[] {
   const picked =
     config.source != null
       ? sources.find((candidate) => candidate.source === config.source)
-      : sources[0];
-  if (!picked) return [];
+      : (sources.find((candidate) => !candidate.error) ?? sources[0]);
+  if (!picked) {
+    if (config.source != null) {
+      throw new Error(
+        `Framework source "${config.source}" is no longer on this page. Open Framework, choose an available source, and save the pattern again.`,
+      );
+    }
+    return [];
+  }
+  if (picked.error) throw new Error(picked.error);
   const keyParts =
     typeof config.key_path === 'string'
       ? config.key_path
@@ -120,6 +145,6 @@ export async function runFrameworkPattern(
   tabId: number,
   config: { source?: string | undefined; key_path: JsonKeyPath },
 ): Promise<ExtractedRow[]> {
-  const sources = await readFrameworkSources(tabId);
+  const sources = await readFrameworkSources(tabId, config.source);
   return rowsFromFrameworkSources(sources, config);
 }
