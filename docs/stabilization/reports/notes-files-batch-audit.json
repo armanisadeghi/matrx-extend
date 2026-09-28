@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "audit": "notes-files-saved-capture-source-audit",
+  "source_scope": [
+    "EXT-F-2006",
+    "EXT-F-2007",
+    "EXT-F-2008",
+    "EXT-F-2009"
+  ],
+  "method": "Read-only current-source control-flow audit. Findings are source-confirmed paths, not native reproductions. No runtime pass is asserted.",
+  "findings": [
+    {
+      "id": "NFS-01",
+      "feature_case_id": "EXT-F-2006-T03",
+      "controls": ["EXT-F-2006-C06"],
+      "title": "Note-list read failure is presented as an empty list",
+      "severity": "S3: notes query failure is indistinguishable from a genuinely empty collection",
+      "priority": "P1: user cannot tell whether their notes are absent or the read failed",
+      "reproduction": [
+        "Open Notes while signed in with the selected device organization set.",
+        "Make the notes SELECT return a Supabase error (for example, deny the read or make the network unavailable).",
+        "Observe Notes after the query settles."
+      ],
+      "expected": "The query failure is visibly distinct from a successful empty result, with an available recovery action or clear retry guidance.",
+      "actual": "listMyNotes logs the error and returns []; NotesView receives a successful query result and renders NotesList, which says ‘No notes yet’ with no error state.",
+      "evidence": [
+        "src/lib/notes/queries.ts:28-44",
+        "src/features/notes/NotesView.tsx:25-48",
+        "src/features/notes/NotesList.tsx:142-147"
+      ],
+      "next_fix": "Preserve the read failure as an error result (rather than empty data), render an explicit error state in NotesView, and provide retry/reopen guidance.",
+      "native_verified": false
+    },
+    {
+      "id": "NFS-02",
+      "feature_case_id": "EXT-F-2006-T03",
+      "controls": ["EXT-F-2006-C01"],
+      "title": "Failed note creation produces no user-visible result",
+      "severity": "S3: create failure is silent in the Notes surface",
+      "priority": "P2: user repeats the action or assumes a note was created",
+      "reproduction": [
+        "Open Notes as a signed-in user with organization selected.",
+        "Make the notes INSERT fail, such as by denying it at the database boundary.",
+        "Click New note and observe the settled UI."
+      ],
+      "expected": "The failed create is reported and the user remains in the list with a clear way to retry.",
+      "actual": "createNote converts a database error into null; NotesList only changes selection when the result is truthy and renders no error or notice for null.",
+      "evidence": [
+        "src/lib/notes/queries.ts:85-110",
+        "src/features/notes/NotesList.tsx:69-83"
+      ],
+      "next_fix": "Return a surfaced failure from createNote and display an actionable error beside the create control; preserve creating cleanup.",
+      "native_verified": false
+    },
+    {
+      "id": "NFS-03",
+      "feature_case_id": "EXT-F-2007-T01",
+      "controls": ["EXT-F-2007-C04", "EXT-F-2007-C05", "EXT-F-2007-C06"],
+      "title": "Debounced note edits are dropped when a save is already in flight",
+      "severity": "S2: latest user edits can be lost while the UI reports an earlier snapshot saved",
+      "priority": "P1: silent note data loss",
+      "reproduction": [
+        "Open a note and change its body; allow the 600 ms debounce to start the update request.",
+        "Before that request resolves, make a second body change and wait for its 600 ms debounce to expire.",
+        "Let the first request succeed, then reload the note."
+      ],
+      "expected": "The latest draft is eventually persisted, and ‘Saved’ refers to that latest draft.",
+      "actual": "The second timer calls persist while inflightRef is true; persist returns immediately and discards that snapshot. Completion of the first update marks the earlier snapshot saved and does not schedule a trailing write.",
+      "evidence": [
+        "src/features/notes/NoteEditor.tsx:95-114",
+        "src/features/notes/NoteEditor.tsx:118-136"
+      ],
+      "next_fix": "Serialize writes while retaining the newest queued draft; after each in-flight write settles, persist the latest draft if it differs from the saved snapshot.",
+      "native_verified": false
+    },
+    {
+      "id": "NFS-04",
+      "feature_case_id": "EXT-F-2008-T02",
+      "controls": ["EXT-F-2008-C01", "EXT-F-2008-C02", "EXT-F-2008-C03", "EXT-F-2008-C04", "EXT-F-2008-C05"],
+      "title": "Files read failure also renders an empty-library or empty-captures claim",
+      "severity": "S3: an error is accompanied by a contradictory empty-state claim",
+      "priority": "P2: user may infer files or screenshots do not exist",
+      "reproduction": [
+        "Open Files as a signed-in user with the selected organization set and no cached rows.",
+        "Make fetchRecentFiles or fetchRecentExtensionCaptures reject.",
+        "Inspect the active Library or Screenshots tab after loading ends."
+      ],
+      "expected": "Show the read error and retry state without describing the collection as empty.",
+      "actual": "reload sets state to error and displays the error banner, but both tab panels branch only on state === loading and then use an empty-row test; the active panel additionally says ‘No library files yet’ or ‘No captures yet’.",
+      "evidence": [
+        "src/features/files/FilesView.tsx:81-109",
+        "src/features/files/FilesView.tsx:236-241",
+        "src/features/files/FilesView.tsx:273-313"
+      ],
+      "next_fix": "Render explicit error/retry content in the active tab before its empty-state branch; distinguish successful empty reads from failed reads.",
+      "native_verified": false
+    },
+    {
+      "id": "NFS-05",
+      "feature_case_id": "EXT-F-2009-T02",
+      "controls": ["EXT-F-2009-C04", "EXT-F-2009-C05"],
+      "title": "Concurrent saved-capture opens can select a different item than the last click",
+      "severity": "S3: delayed detail response can navigate to a stale capture",
+      "priority": "P2: user sees the wrong saved Source after selecting another row",
+      "reproduction": [
+        "From a list with two Sources, click Source A, then click Source B before A’s getSavedCapture request returns.",
+        "Arrange for B’s request to return first and A’s request to return last.",
+        "Observe the detail selected after both requests complete."
+      ],
+      "expected": "The detail view corresponds to the most recent row selection, Source B.",
+      "actual": "openCapture has no request generation or selected-ID guard; each resolution calls setSelected, so the slower A response overwrites B.",
+      "evidence": [
+        "src/features/saved-captures/SavedCapturesView.tsx:113-125",
+        "src/features/saved-captures/SavedCapturesView.tsx:269-276"
+      ],
+      "next_fix": "Guard detail-open results with a monotonically increasing request generation or current selected ID so stale responses cannot replace the latest selection.",
+      "native_verified": false
+    }
+  ],
+  "coverage_limits": [
+    "No browser, live data, build, or test execution was performed; the listed triggers are derived from concrete current-source branches and need native verification before closure.",
+    "No additional defects are claimed for the remaining controls in EXT-F-2006 through EXT-F-2009; their behavior was not exhaustively runtime exercised."
+  ]
+}
