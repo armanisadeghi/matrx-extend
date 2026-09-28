@@ -14,7 +14,7 @@
  */
 
 import { CopyMenu } from '@/components/CopyMenu';
-import { useActiveTab } from '@/hooks/use-active-tab';
+import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { formatDiagnoseBundle } from '@/lib/scrape/diagnose-bundle';
 import { cn } from '@/lib/utils';
 import { useScrapeStore } from '@/state/scrape';
@@ -29,10 +29,14 @@ export function DiagnoseCard() {
   const setDraftNote = useScrapeStore((s) => s.setDiagnoseDraftNote);
   const clearDiagnose = useScrapeStore((s) => s.clearDiagnose);
   const current = useScrapeStore((s) => s.current);
+  const capturedPageKey = useScrapeStore((s) => s.pageKey);
   const [showSelectors, setShowSelectors] = useState(false);
   const [showHtml, setShowHtml] = useState(false);
 
   if (!result || !tab.pageKey || result.pageKey !== tab.pageKey) return null;
+  const currentScrape = capturedPageKey === result.pageKey && isCurrentPageIdentity(capturedPageKey)
+    ? current
+    : null;
 
   const modeLabel = result.mode === 'missing' ? 'Missing element' : 'Unwanted element';
   const modeTone =
@@ -49,8 +53,8 @@ export function DiagnoseCard() {
     formatDiagnoseBundle({
       result,
       userNote: draftNote,
-      scrapeMarkdown: current?.article.content_markdown ?? null,
-      extractor: current?.article.extractor ?? null,
+      scrapeMarkdown: currentScrape?.article.content_markdown ?? null,
+      extractor: currentScrape?.article.extractor ?? null,
       scrapeMode: null,
       capturedAt: result.capturedAt,
     });

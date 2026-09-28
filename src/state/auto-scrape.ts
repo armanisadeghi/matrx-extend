@@ -46,6 +46,13 @@ interface AutoScrapeState {
   inFlight: boolean;
   /** Last error from a background capture, if any. */
   lastError: string | null;
+  /** The page and run currently allowed to change shared capture status. */
+  captureOwner: { pageKey: string; run: number } | null;
+  beginCapture: (pageKey: string) => number;
+  ownsCapture: (pageKey: string, run: number) => boolean;
+  finishCapture: (pageKey: string, run: number) => void;
+  setCaptureError: (pageKey: string, run: number, error: string | null) => void;
+  cancelCaptureUnlessPage: (pageKey: string | null) => void;
   set: (r: AutoScrapeRecord | null) => void;
   setInFlight: (b: boolean) => void;
   setLastError: (s: string | null) => void;
@@ -56,10 +63,29 @@ interface AutoScrapeState {
   clear: () => void;
 }
 
-export const useAutoScrapeStore = create<AutoScrapeState>((set) => ({
+let nextCaptureRun = 0;
+export const useAutoScrapeStore = create<AutoScrapeState>((set, get) => ({
   current: null,
   inFlight: false,
   lastError: null,
+  captureOwner: null,
+  beginCapture: (pageKey) => {
+    const run = ++nextCaptureRun;
+    set({ captureOwner: { pageKey, run }, inFlight: true, lastError: null });
+    return run;
+  },
+  ownsCapture: (pageKey, run) => get().captureOwner?.pageKey === pageKey && get().captureOwner?.run === run,
+  finishCapture: (pageKey, run) => {
+    if (get().ownsCapture(pageKey, run)) set({ captureOwner: null, inFlight: false });
+  },
+  setCaptureError: (pageKey, run, lastError) => {
+    if (get().ownsCapture(pageKey, run)) set({ lastError });
+  },
+  cancelCaptureUnlessPage: (pageKey) => {
+    if (get().captureOwner && get().captureOwner?.pageKey !== pageKey) {
+      set({ captureOwner: null, inFlight: false, lastError: null });
+    }
+  },
   set: (current) => set({ current, lastError: null }),
   setInFlight: (inFlight) => set({ inFlight }),
   setLastError: (lastError) => set({ lastError }),

@@ -146,7 +146,7 @@ export async function refreshPageContextBeforeSend(opts: RefreshOptions): Promis
   //     proceed and do the scroll. The user asked for it; honor it.
   //   - !wantsDeep → keep the cheap short-circuit (the in-flight fast capture
   //     will land in the store on its own; no reason to double up).
-  if (store.inFlight && cur) {
+  if (store.inFlight && cur && (!store.captureOwner || store.captureOwner.pageKey === pageKey)) {
     if (!wantsDeep) {
       return { action: 'noop', record: cur, reason: 'capture in flight' };
     }
@@ -168,8 +168,11 @@ export async function refreshPageContextBeforeSend(opts: RefreshOptions): Promis
     };
   }
 
-  store.setInFlight(true);
-  store.setLastError(null);
+  if (!isCurrentPageIdentity(pageKey)) {
+    return { action: 'noop', record: null, reason: 'page changed before refresh' };
+  }
+
+  const run = store.beginCapture(pageKey);
   try {
     if (wantsDeep) {
       const startY = await getScrollY(tabId, documentId);
@@ -185,7 +188,9 @@ export async function refreshPageContextBeforeSend(opts: RefreshOptions): Promis
         await setScrollY(tabId, documentId, startY);
       }
       if (!soup || soup.url !== url || !isCurrentPageIdentity(pageKey)) {
-        store.setLastError('deep capture failed or URL changed mid-scroll');
+        if (isCurrentPageIdentity(pageKey)) {
+          store.setCaptureError(pageKey, run, 'deep capture failed or URL changed mid-scroll');
+        }
         return {
           action: 'noop',
           record: cur,
@@ -200,6 +205,9 @@ export async function refreshPageContextBeforeSend(opts: RefreshOptions): Promis
         initialScrollY: startY ?? null,
         soup,
       };
+      if (!store.ownsCapture(pageKey, run)) {
+        return { action: 'noop', record: cur, reason: 'newer capture owns page' };
+      }
       store.set(record);
       return { action: 'deep', record, reason: 'fresh deep capture' };
     }
@@ -220,9 +228,12 @@ export async function refreshPageContextBeforeSend(opts: RefreshOptions): Promis
       initialScrollY: cur && cur.url === url ? (cur.initialScrollY ?? null) : null,
       soup,
     };
+    if (!store.ownsCapture(pageKey, run)) {
+      return { action: 'noop', record: cur, reason: 'newer capture owns page' };
+    }
     store.set(record);
     return { action: 'fast', record, reason: 'fresh fast capture' };
   } finally {
-    store.setInFlight(false);
+    store.finishCapture(pageKey, run);
   }
 }
