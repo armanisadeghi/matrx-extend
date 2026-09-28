@@ -10,6 +10,13 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest native attempt — resource refusal, zero UI actions
+
+- Goal-turn classification: progress. Existing genuine manual-CSS lifecycle evidence was linked to T39 as partial in `43a2d7c7`, without claiming its draft-isolation, wrong-route or failure dimensions.
+- Native lane `data_multiline_native` completed `a2156f46`. Browser preflight refused at 14:56:07Z: profile volume 15.61 GiB free against 20 GiB minimum, plus swap growth. No Reload, navigation, picker, clipboard or spreadsheet action occurred. Completed journal SHA `218dbba284ac0a5583201c13250e84251d5970e5c06cadad938dc8b3ce5c1ce0` verified; refused/exit 2.
+- Artifact d1626c0d remains built but not natively reloaded. Prior AFI and Gutenberg results retain their original scoped acceptance; this refusal changes none of them. D54 remains fixed/partial.
+- Next: inspect resource ownership non-destructively; no threshold bypass, repeated blind launch, or cleanup of unrelated processes/files. Source-only work remains available while resource pressure prevents native acceptance. All workers terminal; no owned browser run remains.
+
 ## Latest integration checkpoint — development build refreshed
 
 - Progress: merged origin/main `796a0b5e` in `10a8cb82`, preserving all local work. Design-system 0.49.11 is a docs/metadata-only republish, with no consumer action.

@@ -2,7 +2,10 @@
   "schema_version": 1,
   "run_id": "data-multiline-native-20260928-01",
   "defect_id": "EXT-D-0054",
-  "inventory_case_ids": ["EXT-F-2005-T03", "EXT-F-1012-T49"],
+  "inventory_case_ids": [
+    "EXT-F-2005-T03",
+    "EXT-F-1012-T49"
+  ],
   "status": "BLOCKED_RESOURCE_ADMISSION_REFUSED",
   "scope": "Requested native verification of multiline Data/manual picker extraction and TSV paste into the user's existing spreadsheet. No browser, spreadsheet, product edits, build, or tests were performed.",
   "expected_runtime": {
@@ -19,7 +22,10 @@
     "profile_free_gib": 15.611358642578125,
     "required_free_gib": 20,
     "swap_used_mib": 5063.44,
-    "reasons": ["RESOURCE_DISK_LOW", "RESOURCE_SWAP_GROWTH"],
+    "reasons": [
+      "RESOURCE_DISK_LOW",
+      "RESOURCE_SWAP_GROWTH"
+    ],
     "terminal_exit_code": 2,
     "final_decision": "refused"
   },
@@ -40,8 +46,8 @@
     "target_source": "The Raven HTML from Project Gutenberg was recommended for a stanza-sized multiline value, but was not opened."
   },
   "open_gaps": [
-    "EXT-F-2005-T03 multiline value extraction and Data copy remain unverified natively.",
-    "EXT-F-1012-T49 Data/manual caller remains unverified natively.",
-    "No new quote-bearing header test was attempted; prior source evidence says Data ordinary controls cannot create one."
+    "Data T03 stanza-sized multiline and quote-bearing value paste into an actual spreadsheet remains unverified. Prior Data/manual extraction, save and replay evidence remains valid at its recorded scope.",
+    "Showcase T49 Data caller has partial prior coverage; this refused run adds no native evidence.",
+    "Quote-bearing headers remain unverified; Data ordinary controls cannot create named headers."
   ]
 }
