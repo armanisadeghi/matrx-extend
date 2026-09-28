@@ -20,9 +20,10 @@
   "evidence": [
     "docs/stabilization/reports/prepare-source-audit.json",
     "docs/stabilization/reports/prepare-lifecycle-repair.json",
-    "docs/stabilization/reports/prepare-lifecycle-peer.json"
+    "docs/stabilization/reports/prepare-lifecycle-peer.json",
+    "docs/stabilization/reports/prepare-integrated-verification.json"
   ],
-  "verification_status": "Candidate46b22e50 source accepted by fresh peer70abfdba. Guarded old hook5fail/1pass then repaired6pass and compilepass. Root retained/inspected completed journals22388d09. Peer notes missing reset late-rejection and overlapping older-rejection assertions. Build/native pending; stays in-fix. SameURL document identity is separate D59.",
+  "verification_status": "Candidate and correction78041e16 independently reviewed3d01fcf1. Reset and overlapping older-rejection assertions now pass; guarded combined D57/D58 18tests pass, prior guarded compile passes. Integrated build refused CPU_HIGH_LOAD_BUSY before launch; no new artifact. Remains in-fix pending build/native. SameURL identity tracked D59.",
   "transition_history": [
     {
       "at": "2026-09-28T15:00:57.328820+00:00",

@@ -10,6 +10,13 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest integrated Prepare verification — tests pass, build refused
+
+- Progress: follow-up78041e16 covers reset late rejection and both older-rejection/newer-result orderings. Implementer9tests/compile pass; fresh peer3d01fcf1 independently accepted assertions and ran combined D57/D58:18tests passed. Root verified completed journal hashes and actual exit records.
+- Guarded direct build prepare-integrated-devbuild-20260928-01 refused CPU_HIGH_LOAD_BUSY before launch (exit2); no new artifact. No blind retry. Current historical a8670bf7 still lacks D58; do not test it as the new repair.
+- D58 stays in-fix pending integrated build and native. D57 remains fixed/native pending. D59 shared sameURL identity remains open. Next safe work is source diagnosis/reproduction of D59 while runtime resources recover; resume build only after meaningful resource recovery.
+- All workers terminal, no owned heavy/browser job remains. Reports prepare-integrated-verification.json and prepare-lifecycle-repair.json are current. Full stabilization and shipping remain incomplete.
+
 ## Latest D58 checkpoint — source repair and peer accepted, build/native pending
 
 - Progress: remote formatting work merged as ef052e03. D57/D58 JSON conflicts were verified formatting-only against merge base; newer local transitions retained. Internal Chrome volume observed5.8GiB free; no native launch attempted.
