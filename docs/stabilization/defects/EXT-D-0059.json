@@ -36,7 +36,8 @@
     "docs/stabilization/reports/scrape-document-correction.json",
     "docs/stabilization/reports/scrape-document-peer.json",
     "docs/stabilization/reports/scrape-correction-fresh.json",
-    "docs/stabilization/reports/scrape-correction-peer.json"
+    "docs/stabilization/reports/scrape-correction-peer.json",
+    "docs/stabilization/reports/highlight-identity-audit.json"
   ],
   "verification_status": "Scrape scoped correction fe389b5e fixes mixed-document Diagnose bundle and refresh status ownership; guarded reported red2, final6tests/4files and compile passed. Fresh source/evidence peer220ba074 accepts both scoped findings, no important new issue, all journal/source hashes match. Journals capture exit metadata, detailed test counts/assertions rely on builder report. Broader consumer migration and native Chrome acceptance remain unverified; D59 in-fix.",
   "transition_history": [
@@ -62,6 +63,7 @@
   "scope_ruling": "Use one shared top-frame identity snapshot; keep URL/domain persisted lookup semantics separate. Include detection, completed/pending rows, auto-extract cache, AI/pattern derivation and capture residue. Explicit recovery for unresolved identity; no null-equals-null page key. Preserve approved network-replay document contract.",
   "related_feature_ids": [
     "EXT-F-1007",
+    "EXT-F-1009",
     "EXT-F-1010"
   ]
 }

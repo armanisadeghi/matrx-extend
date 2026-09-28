@@ -13068,17 +13068,20 @@
         "guest": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0030"
+            "EXT-D-0030",
+            "EXT-D-0059"
           ],
           "run_ids": [
             "screenshot-guest-003",
             "screenshot-guest-dev093-002"
           ],
-          "retest_status": "partial"
+          "retest_status": "not-run"
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0059"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
@@ -13092,7 +13095,8 @@
             "EXT-D-0035",
             "EXT-D-0036",
             "EXT-D-0037",
-            "EXT-D-0038"
+            "EXT-D-0038",
+            "EXT-D-0059"
           ],
           "run_ids": [
             "screenshot-capture-dev093-001",
@@ -13115,7 +13119,7 @@
             "gallery-d38-dev096-003",
             "gallery-d38-dev097-001"
           ],
-          "retest_status": "partial"
+          "retest_status": "not-run"
         }
       },
       "inventory_status": "complete",
@@ -13861,19 +13865,25 @@
       "cells": {
         "guest": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0059"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0059"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0059"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         }
