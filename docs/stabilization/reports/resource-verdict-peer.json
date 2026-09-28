@@ -1,0 +1,35 @@
+{
+  "review": "independent peer review",
+  "candidate_commit": "e4b2f39e5faea464eaf0127351e64b51feeb70e0",
+  "scope": "reporting-only verdict correction; no edits to thresholds, watchdog, exit codes, or command allowlist",
+  "A_result": {
+    "verdict": "fixes the captured admitted-child-failure misclassification",
+    "evidence": {
+      "reproduction": "docs/stabilization/resource-journals/d59-compile-2.jsonl shows RESOURCE_ADMITTED, RESOURCE_JOB_EXIT childExitCode=1, resourceInvalid=false, then the old decision refused",
+      "correction": "docs/stabilization/resource-journals/d60-verdict-tests-20260928-1.jsonl has the same admitted/non-invalid child exit and records child_failed; the success journal records valid",
+      "consumer_compatibility": "Repository search found no active consumer branching on final decision values beyond the focused guard test. Historical journal values remain readable; the launch-refusal assertion still expects refused.",
+      "guard_invariants": "Candidate diff changes verdict state/reporting only; resource-policy thresholds, sampling/watchdog logic, child stop logic, exit-code assignment, and allowlist are unchanged."
+    },
+    "important_findings": [
+      {
+        "severity": "P2",
+        "finding": "resourceVerdict checks resourceInvalid before admitted. emit() sets resourceInvalid on journal write failure before RESOURCE_ADMITTED. If that write failure is transient and a later final-event write succeeds, the persisted outcome can be decision=invalid with admitted=false, despite invalid being documented as an admitted resource-run outcome. Persistent journal failure instead leaves no final verdict.",
+        "evidence": "scripts/stabilization-resource.mjs emit() sets resourceInvalid=true and process.exitCode=3 on journal write failure; the final call passes both admitted and resourceInvalid to resourceVerdict(). The second final-event write can persist only if the journal recovers.",
+        "suggestion": "Specify pre-admission infrastructure failure as its own decision (for example, guard_failed) if consumers need to distinguish it from ordinary refusal; otherwise map !admitted to refused while retaining the fail-closed permit behavior. Do not use invalid for this case unless its contract is broadened explicitly. Add focused coverage for the chosen semantics."
+      }
+    ]
+  },
+  "B_quality": {
+    "verdict": "focused evidence is credible and relevant; no independent test rerun performed",
+    "strengths": [
+      "The original and corrected journals are real wrapper runs with admission, child exit, resourceInvalid, exit code, and final decision fields.",
+      "The failure reproduction is a genuine admitted child exit 1; the report transparently says Vitest failed because the selected .js test was outside configured include patterns.",
+      "The successful run provides a separate admitted exit-0 control."
+    ],
+    "limitations": [
+      "The focused test-only cases exercise the pure classifier but not the wrapper's post-admission guard-error or pre-admission journal-write-failure paths.",
+      "No mutation proof was run; the recorded failure journal itself does directly exercise the formerly conflated branch."
+    ],
+    "overall": "Accept the captured D60 correction, with pre-admission infrastructure failure explicitly classified before treating the five-way classifier as complete."
+  }
+}
