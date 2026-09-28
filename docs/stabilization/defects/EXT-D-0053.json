@@ -22,9 +22,10 @@
     "src/lib/clipboard/copy.ts:115",
     "docs/stabilization/reports/showcase-export-correction-peer.json",
     "docs/stabilization/reports/showcase-export-guarded-runtime.json",
-    "docs/stabilization/reports/showcase-export-native.json"
+    "docs/stabilization/reports/showcase-export-native.json",
+    "docs/stabilization/reports/showcase-long-text-native.json"
   ],
-  "verification_status": "Fixed; native d55e0901 verifiesactual241rowJSON/TSV/AIclipboard,lastrow andrealmultilineheaders. Originalsinglecell>50k, tab/quote cells, spreadsheetpaste, DataT03 and failureUI stillunverified. Wholepayload>50k is NOT proof of singlecellbug closure.",
+  "verification_status": "Shared clipboardJSONhelper nativeScrape path preservesone727835character genuinebookfield innormalJSON+AIJSON samehash/end;24healthy exit0. DirectShowcaseResultPreview/Data longrow notexercised: Data onlyPickfields action shown, worker didnotenterpicker; nofixture/recipecreated. D53notclosed.",
   "transition_history": [
     {
       "at": "2026-09-28T12:38:00.604065+00:00",
