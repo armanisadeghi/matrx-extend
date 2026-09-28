@@ -7,7 +7,7 @@
 > common-docs/systems/agents/agent-tools/STATE.md).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-09-27T23:45:58.371Z
+Generated: 2026-09-28T00:17:37.717Z
 Total tools: 82
 
 ## ai
@@ -494,7 +494,7 @@ Show the user one Gmail message and let THEM send it. Pass the exact recipient, 
 
 _action_
 
-Manage and run the user's saved data-extraction patterns (the same system behind the extension's Showcase and Data tabs). Actions: 'list' — saved patterns for a domain (defaults to the current tab's host) with health badges; 'describe' — one pattern's full config and fields; 'recipes' — curated extraction recipes matching the current page (known-good configs for popular sites); 'run' — execute a saved pattern on the current tab and get rows back (DOM kinds run instantly; ai_extract re-runs the extraction agent against the page; network_capture reloads the tab and listens ~20s for the matching API request — tell the user before running it since the page will reload); 'save' — persist a new pattern (requires name + kind, mode-specific config, and fields for manual_css); 'delete' — remove a pattern. Run results are capped at rows_limit (default 100) with the true row_count reported. Prefer 'list' then 'run' over re-scraping a page the user has already built a pattern for.
+Manage and run the user's saved data-extraction patterns (the same system behind the extension's Showcase and Data tabs). Actions: 'list' — saved patterns for a domain (defaults to the current tab's host) with health badges; 'describe' — one pattern's full config and fields; 'recipes' — curated extraction recipes matching the current page (known-good configs for popular sites); 'run' — execute a saved pattern on the current tab and get rows back (DOM kinds run instantly; ai_extract re-runs the extraction agent against the page; network_capture requires admin access, Chrome debugger permission, and approval for each run; after approval it arms capture in the new document before reloading the assigned page, then waits within the configured capture window for a matching API response); 'save' — persist a new pattern (requires name + kind, mode-specific config, and fields for manual_css); 'delete' — remove a pattern. Run results are capped at rows_limit (default 100) with the true row_count reported. Prefer 'list' then 'run' over re-scraping a page the user has already built a pattern for.
 
 **Parameters:** `kind` (string) = ["manual_css","json_ld","og_meta","auto_table","next_data","ai_extract","list_pattern","microdata","network_capture"]; `name` (string); `action` (string, required) = ["list","describe","recipes","run","save","delete"]; `config` (object); `domain` (string); `fields` (array); `pattern_id` (string); `rows_limit` (integer)
 
@@ -765,3 +765,4 @@ _action · admin-only_
 Discover and invoke tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). Actions: 'check' (probe API + count tools), 'list' (enumerate page-registered tools), 'call' (invoke; pass `tool_name` and `arguments`). Admin-only experimental capability.
 
 **Parameters:** `action` (string, required) = ["check","list","call"]; `arguments` (any); `tool_name` (string)
+
