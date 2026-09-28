@@ -1,0 +1,34 @@
+{
+  "id": "EXT-D-0059",
+  "feature_id": "EXT-F-1012",
+  "case_ids": [
+    "EXT-F-1012-T08",
+    "EXT-F-1012-T09"
+  ],
+  "title": "Same-URL reload lacks document identity for page-result invalidation",
+  "surface": "Shared active-tab identity; Showcase Prepare and Snapshot",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Run Prepare or Snapshot on a page.",
+    "Reload the same tab at the same URL without closing the side panel.",
+    "Inspect whether the previous document report remains current, or a pending old-document completion appears after reload."
+  ],
+  "expected": "Results and pending completions are scoped to the actual document, not merely the tab ID and URL.",
+  "actual": "Source trace shows useActiveTab lacks document identity and consumers invalidate only tab ID/URL; same-URL reload is not distinguished. Native reproduction remains unverified.",
+  "severity": "S2: old-document results can appear current",
+  "priority": "P1: shared document identity correctness",
+  "state": "open",
+  "evidence": [
+    "docs/stabilization/reports/prepare-source-audit.json",
+    "docs/stabilization/reports/prepare-lifecycle-repair.json"
+  ],
+  "verification_status": "Source-supported gap; needs controlled regression and native reproduction before triage. D58 does not claim to fix it.",
+  "transition_history": [
+    {
+      "at": "2026-09-28T15:30:38.553635+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Sibling census identified document identity gap beyond D58 run ordering."
+    }
+  ]
+}
