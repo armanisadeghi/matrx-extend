@@ -1,0 +1,29 @@
+{
+  "defect_id": "EXT-D-0052",
+  "reviewed_commit": "fb91cc329a90bb4a4851c2015bd09a045e027b07",
+  "lane": "independent source peer",
+  "scope": "Source and diff inspection only; no install, build, test, or browser execution in this lane.",
+  "A_outcome": {
+    "status": "source-supported; native verification open",
+    "evidence": "The Framework tree calls readFrameworkSources, while preview runMode and saved runPattern both use nextDataMode.runInExtension -> runFrameworkPattern -> the same readFrameworkSources decoder. The captured Nuxt fixture guard checks decoded state.$sstats.repo = nuxt/nuxt, preview, saved replay, stale 7.repo rejection, and unknown custom type rejection. I did not independently execute those tests or the native page.",
+    "remaining": "Reload the installed extension and verify the real Nuxt page tree, preview, saved replay, and the old-path remedy against the new artifact. The builder's checks were resource-unverified and are not campaign proof."
+  },
+  "B_quality": {
+    "status": "changes requested",
+    "findings": [
+      {
+        "severity": "P2",
+        "location": "src/lib/data-pattern/framework-sources.ts:7-10,75-83,119-124",
+        "problem": "readFrameworkSources eagerly decodes every source before runFrameworkPattern chooses config.source. If a page has valid __NEXT_DATA__ or Apollo JSON plus __NUXT_DATA__ with an unknown site-defined reducer or a cycle, Nuxt decoding throws and blocks extraction of the unrelated valid source. The error suggests trying another Showcase source, but the same eager decoding blocks that remedy.",
+        "required_change": "Select the configured source before decoding for extraction, and isolate a failing Nuxt source in the Framework picker so other sources remain usable. Add a mixed-source guard with valid ordinary JSON and unsupported Nuxt data."
+      },
+      {
+        "severity": "P3",
+        "location": "src/lib/data-pattern/framework-sources.ts:90-94",
+        "problem": "A saved pattern whose configured source has disappeared resolves to an empty extraction before the Nuxt stale-path check. The caller receives no source-specific remedy, even though the source key is known and the decoded-path repair already offers one.",
+        "required_change": "Raise a clear source-missing error for an explicitly selected source and cover the saved replay path."
+      }
+    ],
+    "positive_evidence": "The in-page scanner remains self-contained for MV3 injection; devalue is imported only in the extension realm. Other JSON sources bypass Nuxt decoding when Nuxt is absent, and the key-path loop uses own-property checks."
+  }
+}
