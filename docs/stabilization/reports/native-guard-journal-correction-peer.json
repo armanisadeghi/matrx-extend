@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "report_id": "native-guard-journal-correction-peer",
+  "defect_id": "EXT-D-0051",
+  "reviewed_commits": [
+    "c29b0514bfa4fcf0bb81f0b8dc7e2a6bb237d020",
+    "fe877f1719c89fcacee0c07d95431c06eedd03bf"
+  ],
+  "verdict_a_engineering_outcome": "PARTIAL",
+  "verdict_a_reason": "A real browser guard journal contains admission, a healthy watch, stop confirmation and final decision under one run ID; its committed SHA-256 matches the implementation report. Refused and duplicate-ID paths pass focused tests. The retained isolated writer-fault journal has resourceInvalid=true, exitCode=3, and a second launch refused by the stale browser lease. However the terminal record can disagree with the actual wrapper exit if closing the journal fails after RESOURCE_FINAL_DECISION was synced, so the all-runs truthful-terminal claim is not yet complete.",
+  "verdict_b_safety_quality": "FIX_FIRST",
+  "prior_findings": [
+    {
+      "code": "JOURNAL_DIRECTORY_SYMLINK_ESCAPE",
+      "status": "addressed",
+      "evidence": "openResourceJournal resolves the repository root, rejects symlinked docs/stabilization or resource-journals paths, and uses exclusive wx creation; the focused containment test rejects an outside symlink and accepts a legitimate repository alias."
+    },
+    {
+      "code": "MID_RUN_WRITE_FAILURE_VERDICT_DOWNGRADE",
+      "status": "addressed_in_isolated_fault_evidence",
+      "evidence": "emit now sets resourceInvalid and exitCode=3 before throwing, and the outer catch no longer calls fail after journalBroken. The retained fault-fixed and fault-second-fixed journals have matching reported hashes and show an invalid first run followed by a stale-browser refusal. No physical disk fault was induced in the primary repository."
+    }
+  ],
+  "new_findings": [
+    {
+      "severity": "important",
+      "code": "FINAL_CLOSE_FAILURE_MISREPORTS_EXIT",
+      "location": "scripts/stabilization-resource.mjs:761-775",
+      "observation": "The final event is written with exitCode 0 and decision valid before journal.close(). If closeSync throws, the catch changes process.exitCode to 3, but the already synced terminal event still claims exitCode 0 and valid. The lease was already released in main's finally. This conclusion follows directly from the ordering; close failure was not induced.",
+      "implication": "A reader of the durable journal can accept a run that the wrapper itself invalidated. The journal no longer tells the exact terminal truth for that failure path.",
+      "repair_direction": "Make the durable final verdict and wrapper exit agree for close failure, or define a separately durable completion marker whose successful write and close precede a valid exit. Add a focused fault test at the close seam."
+    }
+  ],
+  "verification": {
+    "focused_tests": "node --test scripts/test-stabilization-resource-journal.mjs: 3/3 pass; the test only invokes a denied pre-permit command and local journal operations.",
+    "syntax": "node --check on both changed scripts: pass.",
+    "evidence_integrity": "All six committed JSONL SHA-256 values match the retained implementation and first peer reports. The real watch journal has one RESOURCE_WATCH_HEALTHY after admission and before confirmed stop; no child output or obvious credential marker was found in committed journals.",
+    "caps_and_allowlist": "docs/stabilization/resource-policy.json SHA-256 is unchanged from the parent of c29b0514: 4bf72a2d9c62359c193b527aa70f648b7fbffbd9ec532bb69f9b4ce0f81eca84.",
+    "process_and_lease_terminal": "No stabilization-resource.mjs process found; /var/tmp/matrx-stabilization-resource-$(id -u)/heavy is absent. A pre-existing stop-*.json remains at the lease root and was not modified. No new heavy permit or browser UI was opened in this review."
+  },
+  "limits": "The live admission/watch evidence was retained from the builder's run and independently hashed and inspected, not rerun by this reviewer. The write-fault evidence used an isolated source copy. No localhost, Chrome UI, new 60-second preflight, or product test was run."
+}
