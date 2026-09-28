@@ -95,12 +95,17 @@ import { bumpPatternRun } from '@/lib/supabase/queries';
 import { startToolDispatcher } from '@/lib/tools/dispatch';
 // Browser APIs and DB/auth are boundary doubles. Actual PatternsTab, saved runner,
 // port host, dispatcher, preparation, CDP client, capture core and row parser run.
-afterEach(() => {
+afterEach(async () => {
   // Every case deliberately stalls a different CDP operation. Release all
   // test-owned gates even if an assertion fails, so no background replay can
   // mutate the next case's Chrome doubles.
-  for (const release of h.releases) release();
+  for (const release of [...h.releases]) release();
   h.releases.clear();
+  // Releasing a deliberately stalled CDP setup resumes async work that can
+  // otherwise reach the next case after its Chrome boundary doubles changed.
+  // Drain that work under this case's fake clock before replacing its globals.
+  await vi.runAllTimersAsync();
+  await vi.dynamicImportSettled();
   h.handlers.clear();
   cleanup();
   vi.useRealTimers();
