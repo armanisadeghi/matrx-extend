@@ -9,6 +9,7 @@ const h = vi.hoisted(() => ({
   group: -1,
   document: 'original-document',
   url: 'https://calendar.invalid/calendar',
+  releases: new Set<() => void>(),
 }));
 vi.mock('@/lib/messaging/native', () => ({
   on: (kind: string, fn: (p: any) => unknown) => {
@@ -95,6 +96,11 @@ import { startToolDispatcher } from '@/lib/tools/dispatch';
 // Browser APIs and DB/auth are boundary doubles. Actual PatternsTab, saved runner,
 // port host, dispatcher, preparation, CDP client, capture core and row parser run.
 afterEach(() => {
+  // Every case deliberately stalls a different CDP operation. Release all
+  // test-owned gates even if an assertion fails, so no background replay can
+  // mutate the next case's Chrome doubles.
+  for (const release of h.releases) release();
+  h.releases.clear();
   cleanup();
   vi.useRealTimers();
   vi.clearAllMocks();
@@ -167,19 +173,28 @@ it.each([
     let releaseSetup!: () => void;
     const attach = vi.fn(async () => {});
     const detach = vi.fn(async () => {
-      if (stallDetach) await new Promise(() => {});
+      if (stallDetach)
+        await new Promise<void>((resolve) => {
+          h.releases.add(resolve);
+        });
       if (rejectDetach) throw new Error('Chrome refused debugger detach');
     });
     const sendCommand = vi.fn(async (_target, method, params) => {
       if (stallCleanup && method === 'Page.removeScriptToEvaluateOnNewDocument')
-        return new Promise(() => {});
+        return new Promise<void>((resolve) => {
+          h.releases.add(resolve);
+        });
       if (method === 'Page.getFrameTree')
         return { frameTree: { frame: { id: 'main', url: h.url } } };
       if (method === 'Runtime.enable') context(1, 'old');
       if (method === 'Runtime.addBinding') binding = params.name;
       if (method === 'Page.addScriptToEvaluateOnNewDocument') {
         await new Promise<void>((resolve) => {
-          releaseSetup = resolve;
+          releaseSetup = () => {
+            h.releases.delete(releaseSetup);
+            resolve();
+          };
+          h.releases.add(releaseSetup);
         });
         registered = true;
         return { identifier: 'script' };
