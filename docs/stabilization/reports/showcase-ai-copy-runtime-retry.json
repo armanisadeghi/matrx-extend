@@ -1,0 +1,58 @@
+{
+  "schema": 1,
+  "task_id": "showcase-ai-copy-runtime-retry",
+  "defect_id": "EXT-D-0055",
+  "exact_commit": "7719d739158047217f39369057a8e88de320833b",
+  "A_runtime_outcome": {
+    "focused_suite": {
+      "command": "pnpm exec vitest run --maxWorkers=1 tests/unit/showcase-ai-copy-source.test.tsx tests/unit/showcase-patterns-replay-provenance.test.tsx tests/unit/clipboard-export.test.ts tests/unit/network-urls.test.ts tests/unit/showcase-network-credential.test.tsx tests/unit/showcase-network-save-replay.test.tsx",
+      "run_id": "d55-ai-copy-runtime-retry-20260928a",
+      "result": "6 files passed; 32 tests passed",
+      "child_exit_code": 0,
+      "resource_invalid": false,
+      "resource_decision": "valid",
+      "journal": "docs/stabilization/resource-journals/d55-ai-copy-runtime-retry-20260928a.jsonl",
+      "journal_sha256": "98d609c1aede419f9b7d30dc429f5551d26de339f019f6e5c366101e608f87ce"
+    },
+    "compile": {
+      "run_id": "d55-ai-copy-runtime-compile-20260928a",
+      "command": "pnpm compile",
+      "result": "not run; guard refused before child launch with RESOURCE_LEGACY_RUNNER_BUSY",
+      "child_exit_code": null,
+      "resource_invalid": false,
+      "resource_decision": "refused",
+      "journal": "docs/stabilization/resource-journals/d55-ai-copy-runtime-compile-20260928a.jsonl",
+      "journal_sha256": "61f787a2cd969fb9b13063c14586c0a753e8f3dc0c6ac3b70928d1ec2a879fd3"
+    },
+    "post_refusal_check": {
+      "result": "same RESOURCE_LEGACY_RUNNER_BUSY refusal; no child launched",
+      "resource_invalid": false,
+      "resource_decision": "refused",
+      "journal": "docs/stabilization/resource-journals/check-f36c822b-53a3-4a90-8614-ab8f874f7914.jsonl",
+      "journal_sha256": "e6597308c826cfe65ec5b4bf392f67acbf5468689fe2d8f42a3ecb7da3404a4b"
+    },
+    "development_build": "not run because compile was not admitted",
+    "native_postfix": "unverified",
+    "artifact_receipt": {
+      "status": "no post-retry development build receipt; build permit was not admitted",
+      "output_directory": null,
+      "canonical_tree_sha256": null,
+      "canonical_hash_method": "hashReleaseTree from scripts/sync-unpacked-release.mjs",
+      "observed_preexisting_dev_output_sha256": "b081b8748a562dc7575e435bdd3411bc08cff404520671282066ba48dc7ff6fc",
+      "observed_output_is_post_retry_artifact": false,
+      "lockfile_sha256": "ffcab03bab71819d1fee1c1f4a2a1fb1857c11abe0e2541be9be76aa39b58042"
+    }
+  },
+  "B_selector_review": {
+    "result": "pass",
+    "evidence": "At the exact commit, the test-only diff changes Copy for AI selectors from exact accessible-name equality to /^Copy for AI/ in all eight interactions. The actual menu option name includes its description after the label, so the prefix selector selects the intended real control. Clipboard assertions are unchanged.",
+    "product_changes": "none"
+  },
+  "stopped_after": "compile guard refusal; no retry, threshold change, or unguarded command",
+  "worktree_changes": [
+    "docs/stabilization/reports/showcase-ai-copy-runtime-retry.json",
+    "docs/stabilization/resource-journals/d55-ai-copy-runtime-retry-20260928a.jsonl",
+    "docs/stabilization/resource-journals/d55-ai-copy-runtime-compile-20260928a.jsonl",
+    "docs/stabilization/resource-journals/check-f36c822b-53a3-4a90-8614-ab8f874f7914.jsonl"
+  ]
+}
