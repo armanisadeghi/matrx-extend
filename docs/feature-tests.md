@@ -1444,6 +1444,8 @@ Every entry follows this shape:
 
 **Copy JSON completeness (EXT-D-0053):** Run a saved pattern that returns a text value longer than 50,000 characters, then choose Copy JSON and Copy for AI from its result preview. Read the clipboard after each copy and confirm the complete value and every row are present; the AI payload's fenced JSON must parse to those same rows. Repeat JSON copy from Data manual rerun. An unsupported or cyclic value must show copy failure and leave the clipboard unchanged.
 
+**Copy TSV fidelity (EXT-D-0054):** Run a saved pattern with two distinct cells containing respectively a tab or newline and an ordinary space, plus a quoted value and a field name containing a tab. Copy TSV from the result preview and Data manual rerun, paste into a spreadsheet, and compare the resulting column names and cell values with the extraction. Plain cells must remain unchanged, while tabs, line breaks, and quotes remain inside their original cells.
+
 ### Showcase — preview configuration survives later edits
 - **What it does:** Saving a preview keeps the exact settings that produced
   its rows, even if the controls are edited before Save is clicked.

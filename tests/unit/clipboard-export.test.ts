@@ -1,4 +1,4 @@
-import { stringifyJson, wrapJsonForAgent } from '@/lib/clipboard/copy';
+import { rowsToTsv, stringifyJson, wrapJsonForAgent } from '@/lib/clipboard/copy';
 import { describe, expect, it } from 'vitest';
 
 describe('Showcase saved-result copy formatters', () => {
@@ -26,4 +26,64 @@ describe('Showcase saved-result copy formatters', () => {
       'Could not copy JSON',
     );
   });
+
+  it('keeps spreadsheet TSV headers and cells distinct when they contain tabs, newlines, or quotes', () => {
+    // Regression: replacing separators with spaces collapsed different event values.
+    const rows = [
+      {
+        event_title: 'Harbor Jazz Friday',
+        'venue\tzone': 'Pier 7\tNorth',
+        notes: 'Doors\nat 8 pm',
+        quote: 'He said "welcome".',
+      },
+      {
+        event_title: 'Sunday Matinee',
+        'venue\tzone': 'Pier 7 North',
+        notes: 'Doors at 8 pm',
+        quote: 'No quote',
+      },
+    ];
+
+    const tsv = rowsToTsv(rows);
+    expect(tsv).toBe(
+      'event_title\t"venue\tzone"\tnotes\tquote\n' +
+        'Harbor Jazz Friday\t"Pier 7\tNorth"\t"Doors\nat 8 pm"\t"He said ""welcome""."\n' +
+        'Sunday Matinee\tPier 7 North\tDoors at 8 pm\tNo quote',
+    );
+    expect(readQuotedTsv(tsv)).toEqual([
+      ['event_title', 'venue\tzone', 'notes', 'quote'],
+      ['Harbor Jazz Friday', 'Pier 7\tNorth', 'Doors\nat 8 pm', 'He said "welcome".'],
+      ['Sunday Matinee', 'Pier 7 North', 'Doors at 8 pm', 'No quote'],
+    ]);
+  });
 });
+
+/** Spreadsheet-style reader used only to check that encoded fields round-trip. */
+function readQuotedTsv(input: string): string[][] {
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let cell = '';
+  let quoted = false;
+  for (let i = 0; i < input.length; i++) {
+    const char = input.charAt(i);
+    if (char === '"') {
+      if (quoted && input[i + 1] === '"') {
+        cell += '"';
+        i++;
+      } else quoted = !quoted;
+    } else if (char === '\t' && !quoted) {
+      row.push(cell);
+      cell = '';
+    } else if (char === '\n' && !quoted) {
+      row.push(cell);
+      rows.push(row);
+      row = [];
+      cell = '';
+    } else {
+      cell += char;
+    }
+  }
+  row.push(cell);
+  rows.push(row);
+  return rows;
+}

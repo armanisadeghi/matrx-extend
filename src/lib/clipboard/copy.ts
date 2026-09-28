@@ -176,10 +176,12 @@ export function rowsToTsv(rows: Record<string, unknown>[]): string {
   );
   const escape = (v: unknown): string => {
     if (v === null || v === undefined) return '';
-    const s = typeof v === 'string' ? v : JSON.stringify(v);
-    return s.replace(/\t/g, ' ').replace(/\r?\n/g, ' ');
+    const s = typeof v === 'string' ? v : stringifyJson(v, 0);
+    // Spreadsheet paste treats doubled quotes inside a quoted TSV field as
+    // literal quotes, including when the field contains tabs or newlines.
+    return /[\t\r\n"]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
-  const lines = [headers.join('\t')];
+  const lines = [headers.map(escape).join('\t')];
   for (const r of rows) lines.push(headers.map((h) => escape(r[h])).join('\t'));
   return lines.join('\n');
 }
