@@ -145,6 +145,33 @@ afterEach(() => {
 });
 
 describe('Notes editor autosave', () => {
+  it('settles an exact revert without a write, but waits when an older write is pending', async () => {
+    mount();
+    const body = await screen.findByDisplayValue('Call new patient.');
+    vi.useFakeTimers();
+    fireEvent.change(body, { target: { value: 'Call new patient. Confirm coverage.' } });
+    fireEvent.change(body, { target: { value: 'Call new patient.' } });
+    expect(screen.getByText('Saving…')).toBeTruthy();
+    await debounce();
+    expect(api.update).not.toHaveBeenCalled();
+    expect(screen.queryByText('Saving…')).toBeNull();
+    expect(screen.getByText(/^Saved /)).toBeTruthy();
+
+    fireEvent.change(body, { target: { value: 'Call new patient. Confirm coverage.' } });
+    await debounce();
+    expect(writes).toHaveLength(1);
+    fireEvent.change(body, { target: { value: 'Call new patient.' } });
+    await debounce();
+    resolveWrite(0);
+    await settle();
+    expect(writes).toHaveLength(2);
+    expect(screen.queryByText(/^Saved /)).toBeNull();
+    resolveWrite(1);
+    await settle();
+    expect(stored.get(A)?.content).toBe('Call new patient.');
+    expect(screen.getByText(/^Saved /)).toBeTruthy();
+  });
+
   it('stores the latest edit after an older write, and only then says Saved', async () => {
     mount();
     const body = await screen.findByDisplayValue('Call new patient.');
@@ -229,5 +256,32 @@ describe('Notes editor autosave', () => {
     resolveWrite(1);
     await settle();
     expect(stored.get(A)?.content).toBe('Call new patient at 9 AM and confirm insurance.');
+  });
+
+  it('keeps a failed draft available after switching away and offers a retry', async () => {
+    mount();
+    const body = await screen.findByDisplayValue('Call new patient.');
+    api.update.mockImplementationOnce(async () => null);
+    vi.useFakeTimers();
+    fireEvent.change(body, { target: { value: 'Call new patient and confirm insurance.' } });
+    await debounce();
+    await settle();
+    expect(screen.getByText('Save failed')).toBeTruthy();
+    expect(stored.get(A)?.content).toBe('Call new patient.');
+    vi.useRealTimers();
+    await act(async () => {
+      useNotesUiStore.getState().setSelectedNoteId(B);
+    });
+    await screen.findByDisplayValue('Order gloves.');
+    await act(async () => {
+      useNotesUiStore.getState().setSelectedNoteId(A);
+    });
+    expect(await screen.findByDisplayValue('Call new patient and confirm insurance.')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Retry save' }));
+    expect(writes).toHaveLength(1);
+    resolveWrite(0);
+    await settle();
+    expect(stored.get(A)?.content).toBe('Call new patient and confirm insurance.');
+    expect(screen.getByText(/^Saved /)).toBeTruthy();
   });
 });
