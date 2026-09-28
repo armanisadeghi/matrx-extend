@@ -1,0 +1,78 @@
+import { cleanup, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { JsonTree } from '@/components/ui/json-tree';
+import { rowsFromBody } from '@/lib/data-pattern/run-interactive';
+import { runMode } from '@/lib/data-pattern/run-pattern';
+import { appendJsonKeyPath, parseJsonKeyPath } from '@/lib/data-pattern/json-key-path';
+
+const payload = {
+  'feeds.news': [{ title: 'Literal edition' }],
+  feeds: { news: [{ title: 'Nested edition' }] },
+};
+
+async function pickTreePath(label: string): Promise<string> {
+  let selected = '';
+  render(<JsonTree data={payload} defaultDepth={3} onSelectPath={(path) => { selected = path; }} />);
+  const labelNode = screen.getByText(label);
+  const button = labelNode.closest('button');
+  if (!button) throw new Error(`Missing selectable JSON node ${label}`);
+  await userEvent.setup().click(button);
+  cleanup();
+  return selected;
+}
+
+afterEach(() => {
+  cleanup();
+  document.body.innerHTML = '';
+  vi.restoreAllMocks();
+});
+
+describe('Showcase JSON key paths', () => {
+  it('keeps a literal dotted key distinct from nested keys through JsonTree and Network extraction', async () => {
+    const literal = await pickTreePath('["feeds.news"]');
+    const nested = await pickTreePath('feeds.news');
+    expect(literal).toBe('["feeds.news"]');
+    expect(nested).toBe('feeds.news');
+
+    // A saved recipe is JSON data; reopening must retain the same path string.
+    const reopenedLiteral = JSON.parse(JSON.stringify({ key_path: literal })).key_path as string;
+    const reopenedNested = JSON.parse(JSON.stringify({ key_path: nested })).key_path as string;
+    expect(rowsFromBody(JSON.stringify(payload), reopenedLiteral)).toEqual([{ title: 'Literal edition' }]);
+    expect(rowsFromBody(JSON.stringify(payload), reopenedNested)).toEqual([{ title: 'Nested edition' }]);
+  });
+
+  it('keeps a literal dotted key distinct from nested keys through JsonTree and Framework extraction', async () => {
+    const literal = await pickTreePath('["feeds.news"]');
+    const nested = await pickTreePath('feeds.news');
+    const script = document.createElement('script');
+    script.id = '__NEXT_DATA__';
+    script.type = 'application/json';
+    script.textContent = JSON.stringify(payload);
+    document.body.append(script);
+    Object.assign(chrome, {
+      scripting: {
+        executeScript: vi.fn(async ({ func, args }: { func: (config: unknown) => unknown; args?: unknown[] }) => [
+          { frameId: 0, result: func(args?.[0]) },
+        ]),
+      },
+    });
+
+    await expect(runMode('next_data', 37, JSON.parse(JSON.stringify({ source: '__NEXT_DATA__', key_path: literal })))).resolves.toEqual([{ title: 'Literal edition' }]);
+    await expect(runMode('next_data', 37, JSON.parse(JSON.stringify({ source: '__NEXT_DATA__', key_path: nested })))).resolves.toEqual([{ title: 'Nested edition' }]);
+  });
+
+  it('preserves ordinary dotted paths and quotes keys containing punctuation', () => {
+    expect(parseJsonKeyPath('feeds.news.0')).toEqual(['feeds', 'news', '0']);
+    expect(appendJsonKeyPath('', 'feeds.news')).toBe('["feeds.news"]');
+    expect(appendJsonKeyPath('feeds', 'news.today')).toBe('feeds["news.today"]');
+    expect(parseJsonKeyPath('feeds["news.today"]')).toEqual(['feeds', 'news.today']);
+  });
+
+  it('documents the historical bracket collision instead of treating it as a safe migration', () => {
+    // An old unescaped key literally named '["feeds.news"]' has this same
+    // stored string. Such recipes need an explicit format marker to migrate
+    // without ambiguity; this codec only preserves ordinary dotted paths.
+    expect(parseJsonKeyPath('["feeds.news"]')).toEqual(['feeds.news']);
+  });
+});
