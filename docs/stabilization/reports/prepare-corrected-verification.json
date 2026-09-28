@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "report_id": "prepare-corrected-verification",
+  "defect_id": "EXT-D-0057",
+  "candidate_commit": "5dea4dd3121ae0af85ef04edbf8e3f4325c7bb47",
+  "correction_commit": "1dfe73333d8e9222384486b9f2641ecf111aee3f",
+  "verified_head": "693e5fa77ae16dcd5ecc12ce8b16a5092b512ded",
+  "scope": "Independent verification of the corrected parameter table and candidate source. No source edits were made by this verifier.",
+  "correction_review": {
+    "status": "PASS",
+    "finding": "The it.each rows now use named objects, allowing the empty array to be passed as one value rather than inferred as zero callback arguments.",
+    "preserved_cases": [
+      "[]",
+      "[{ result: undefined }]",
+      "[{ result: null }]"
+    ]
+  },
+  "verdict_a_runtime": {
+    "status": "PASS_FOR_FOCUSED_TEST_COMPILE_AND_BUILD; NATIVE_UNVERIFIED",
+    "focused_test": {
+      "run_id": "d57-prepare-corrected-focused-20260928-01",
+      "command": "node scripts/stabilization-resource.mjs run --run-id d57-prepare-corrected-focused-20260928-01 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec vitest run --maxWorkers=1 src/lib/data-pattern/page-prep.test.ts",
+      "exit_code": 0,
+      "result": "1 file and 9 tests passed",
+      "journal": "docs/stabilization/resource-journals/d57-prepare-corrected-focused-20260928-01.jsonl",
+      "journal_sha256": "a352859f6c184da7ec317481fd34ed83e0168774f13b1ceb2cd3167743927ae0"
+    },
+    "compile": {
+      "run_id": "d57-prepare-corrected-compile-20260928-01",
+      "command": "node scripts/stabilization-resource.mjs run --run-id d57-prepare-corrected-compile-20260928-01 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm compile",
+      "exit_code": 0,
+      "result": "tsc --noEmit passed",
+      "journal": "docs/stabilization/resource-journals/d57-prepare-corrected-compile-20260928-01.jsonl",
+      "journal_sha256": "9b614247f8c0a389d4e7796ff81d4b557ff211e6ccbef270d707915d4a6133cb"
+    },
+    "development_build": {
+      "run_id": "d57-prepare-corrected-devbuild-20260928-01",
+      "command": "node scripts/stabilization-resource.mjs run --run-id d57-prepare-corrected-devbuild-20260928-01 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec wxt build --mode development",
+      "exit_code": 0,
+      "result": "WXT development build finished successfully",
+      "journal": "docs/stabilization/resource-journals/d57-prepare-corrected-devbuild-20260928-01.jsonl",
+      "journal_sha256": "8a6245bd17973d4896b4a1ae44b50ec65a34e654b831251de955796be8abf167",
+      "artifact": ".output/chrome-mv3-dev",
+      "artifact_hash_method": "hashReleaseTree from scripts/sync-unpacked-release.mjs",
+      "artifact_hashReleaseTree": "a8670bf7ba4a31a3ce73596b41f1dbfc192e94d990342e8063ed82645b703b5f"
+    },
+    "resource_decisions": "All three guarded journals record RESOURCE_ADMITTED and RESOURCE_FINAL_DECISION valid with exitCode 0. No command was retried after a refusal or failure.",
+    "native_acceptance": "Not performed; actual Prepare UI behavior remains unverified."
+  },
+  "verdict_b_test_quality": {
+    "status": "PASS_FOR_CORRECTED_TYPING; PRIOR_CAUSAL_RED_GREEN_REMAINS_SEPARATE_EVIDENCE",
+    "sut": "preparePage at the chrome.scripting.executeScript result boundary; only executeScript is doubled.",
+    "prior_mutation_evidence": "prepare-empty-runtime.json records that planting the exact previous fallback caused 7 of 9 assertions to fail, including the missing-report rejection assertion; the restored candidate passed 9 of 9. This verification did not repeat that unchanged mutation proof.",
+    "limits": "Focused unit coverage does not prove a real page script ran or that PrepareTab rendered the error. Native acceptance remains open."
+  },
+  "source_hashes": {
+    "src/lib/data-pattern/page-prep.ts": "dd3c3d53a289a4fe719e248b15598f95ddde769f0520c4798fe269a097736cd2",
+    "src/lib/data-pattern/page-prep.test.ts": "909e9ace704836bfb52017b7db76616ea4bc50506b03844b29f973ca6bb0d882",
+    "pnpm-lock.yaml": "82acc89c8d9b60568def970fff9125b69afcfe713ae0a7de053f18f4b6137e28"
+  },
+  "defect_status": "EXT-D-0057 remains open pending native Prepare acceptance and any required independent product review.",
+  "ci_status": "Not run; no claim of CI green.",
+  "release_status": "No release performed.",
+  "push_status": "No push performed by this verifier."
+}
