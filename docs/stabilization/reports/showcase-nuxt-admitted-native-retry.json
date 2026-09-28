@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "task_id": "showcase-nuxt-admitted-native-retry-20260928-1244",
+  "lane": "D52 guarded native Nuxt retest",
+  "defect_id": "EXT-D-0052",
+  "status": "NATIVE_PASS_BOUNDED",
+  "scope": "Primary Chrome, the real public Nuxt introduction page, and the installed unpacked development extension. This verifies the Nuxt decoded-tree, extract, save, and replay flow, not the whole Showcase feature.",
+  "target": {
+    "url": "https://nuxt.com/docs/4.x/getting-started/introduction",
+    "browser": "Primary Google Chrome",
+    "profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "extension_version_observed": "0.2.114",
+    "artifact_path": ".output/chrome-mv3-dev",
+    "canonical_hash_method": "hashReleaseTree from scripts/sync-unpacked-release.mjs",
+    "canonical_tree_sha256_before_and_after": "78ff463f44e66e7ead0d9229eccdd2d6b2a6f98f9bff748794454435264e88f3"
+  },
+  "resource_guard": {
+    "run_id": "showcase-nuxt-admitted-native-retry-20260928-1244",
+    "journal": "docs/stabilization/resource-journals/showcase-nuxt-admitted-native-retry-20260928-1244.jsonl",
+    "journal_sha256": "fc2096f288364c6392244a0b778857e5ddc86775e5cc2153262992ddfaa6d4fa",
+    "admitted_at": "2026-09-28T12:44:30.765Z",
+    "first_healthy_watch_at": "2026-09-28T12:44:47.139Z",
+    "ui_action_before_admission_or_healthy_watch": false,
+    "healthy_watch_events": 15,
+    "unsafe_watch_events": 0,
+    "stop_requested_at": "2026-09-28T12:48:44.295Z",
+    "browser_stop_confirmed_at": "2026-09-28T12:48:44.301Z",
+    "final_decision_at": "2026-09-28T12:48:44.307Z",
+    "final_decision": "valid",
+    "resource_invalid": false,
+    "terminal_exit_code": 0,
+    "owned_guard_process_after_exit": "None; process census matched only the census command itself."
+  },
+  "native_observations": {
+    "installed_extension_reload": "Clicked Reload on Matrx Extend in chrome://extensions during this admitted run. Chrome displayed Reloaded with the expected ID and version.",
+    "public_page_refresh": "Refreshed the real Nuxt introduction page after the extension reload, then refreshed it again before repeating saved-pattern replay.",
+    "decoded_tree": "The __NUXT_DATA__ tree exposed state.$sstats.repo as the string nuxt/nuxt.",
+    "extract_preview": "Selected state.$sstats.repo and clicked Extract from key path; the preview showed one row, value nuxt/nuxt.",
+    "corrected_existing_recipe": {
+      "id": "1260dbcc-ac75-45d3-b7d2-9c02d902f9cc",
+      "name": "codex-framework-native-20260928-nuxt-decoded-repo",
+      "config": { "source": "__NUXT_DATA__", "key_path": ["state", "$sstats", "repo"] },
+      "replay": "Patterns displayed OK and one row with value nuxt/nuxt before and after the second page refresh."
+    },
+    "prior_raw_recipe": {
+      "id": "92d3df60-fa8e-4b14-ba37-c5c630b49294",
+      "name": "codex-framework-native-20260928-nuxt-repo-pointer",
+      "config": { "source": "__NUXT_DATA__", "key_path": ["7", "repo"] },
+      "replay": "Patterns displayed BROKEN and zero rows before and after the second page refresh, with: This Nuxt key path no longer names page data. Open Framework, choose a field in the decoded tree, and save the pattern again. It never displayed the raw reference 10 as an OK result."
+    },
+    "new_owned_recipe": {
+      "name": "codex-framework-native-admitted-20260928-nuxt-repo",
+      "save": "Saved once under nuxt.com from the selected decoded state.$sstats.repo preview; the UI confirmed Pattern saved.",
+      "reopen_replay": "Reopened Patterns, found the new recipe as never run, clicked Run pattern, and observed OK, one row, nuxt/nuxt."
+    }
+  },
+  "limits": [
+    "The pre-admission/refused prior attempt remains separately recorded and supplies no native result.",
+    "No localhost, fixture, mock, source edit, build, or unrelated saved-pattern mutation occurred in this retry.",
+    "The new owned recipe's database ID was not displayed in the browser UI; its unique name identifies the tested row."
+  ]
+}
