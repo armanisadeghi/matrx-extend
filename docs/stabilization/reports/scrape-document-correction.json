@@ -17,15 +17,33 @@
     "Saved highlight text in the Scrape handoff remains available with each source URL and an explicit historical label; URL/domain Source recognition remains historical lookup."
   ],
   "checks": {
-    "typecheck": "pnpm compile passed after source and auto test; the later manual test file was not included in that compile run",
+    "typecheck": "Direct pnpm compile passed after source and auto test; the later manual test file was not included in that compile run. This was not resource-guard admitted verification.",
     "focused_tests": [
       "auto-scrape-document-identity.test.tsx passed (A late success rejected, B same-URL exact document captured)",
       "scrape-document-identity.test.tsx passed (A late manual success rejected, B captured)",
       "page-ready.test.ts passed"
     ],
-    "diff_check": "git diff --check passed before report write",
+    "diff_check": "Direct git diff --check passed before report write",
     "red_before_green": "not performed; peer must not infer it from green tests",
     "native_browser": "pending rebuilt extension acceptance; localhost forbidden by user"
+  },
+  "resource_evidence": {
+    "classification": "UNVERIFIED: every compile and Vitest invocation in this lane was direct, without scripts/stabilization-resource.mjs. TMPDIR for Vitest was set to /Volumes/Samsung2TB/code/.stabilization-scratch, which is a scratch location, not resource admission.",
+    "guard_run_ids": [],
+    "guard_journals": [],
+    "admitted_decisions": [],
+    "terminal_guard_decisions": [],
+    "run_hashes": [],
+    "direct_output_chunks": {
+      "compile_first_failure": "3a02e5",
+      "compile_after_source_fix_success": "1411fa",
+      "compile_test_enum_failure": "1796df",
+      "compile_after_enum_fix_success": "08204d",
+      "auto_test_first_success": "d7c454",
+      "auto_and_page_ready_success": "c8e399",
+      "manual_test_success": "d409f4"
+    },
+    "note": "Existing d59-correction-compile-1/2 and d59-correction-tests-1 journals predate these direct runs and belong to other work; they are not evidence for this Scrape lane. Source commit a021ae82 identifies the candidate, not a guarded run hash."
   },
   "failed_commands_and_repairs": [
     "First pnpm compile failed with two TypeScript errors: tabs.sendMessage overload disallowed explicit undefined options; exactOptionalPropertyTypes disallowed documentId:undefined in settlePage options. Corrected both, next compile passed.",
