@@ -18,13 +18,15 @@
     "docs/stabilization/runs/showcase-network-current-001.json",
     "test-results/source-dev-build-showcase-current-20260928T053930Z.json",
     "docs/stabilization/reports/showcase-current-run-stall.json",
-    "docs/stabilization/reports/showcase-d49-source-peer.json"
+    "docs/stabilization/reports/showcase-d49-source-peer.json",
+    "docs/stabilization/runs/showcase-d49-native-retest-001.json",
+    "docs/stabilization/reports/showcase-d49-worker-build-peer.json"
   ],
   "severity": "S1: the observed saved Network extraction cannot run and gives no recovery feedback.",
   "priority": "P1: blocks Showcase saved replay acceptance and D47 retest.",
   "state": "fixed",
   "reproduction_status": "Native diagnostic localized first stalled boundary to worker lazy dispatcher import; Port and run message acceptance and worker log delivery verified. Worker DevTools closed.",
-  "verification_status": "Source peer accepted callback architecture with native bootstrap proof required.8 connected tests, compile and development build passed; fresh independent installed retest in progress. D47 timing/provenance acceptance remains open.",
+  "verification_status": "Round1 native failed with document is not defined. Round2 artifact1df62d6e214f0a70c25cf34fc762dc22582a1e64a002f12a9f69bf16efcb882d passed compile/build and emitted census (25 worker-reachable chunks,24 wrapped imports,zero nonempty dependency arrays). Independent source and installed acceptance in progress; D49 not closed.",
   "transition_history": [
     {
       "at": "2026-09-28T06:06:00Z",
@@ -49,8 +51,30 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source fix227d3540 passed8 connected guards, compile and direct devbuild; independent installed retest is pending, no closure claim."
+    },
+    {
+      "at": "2026-09-28T07:01:31Z",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Reconcile independent installed retestdd094d85: exact227d3540 artifact reports document is not defined before approval; guard valid. First implementation round did not restore full replay."
+    },
+    {
+      "at": "2026-09-28T07:01:31Z",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Emitted worker import path was wrapped in Vite DOM-dependent preload helper. Source/output diagnosis located document.getElementsByTagName before handler import; no page document exists in MV3 worker."
+    },
+    {
+      "at": "2026-09-28T07:01:31Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Second repairdd6f12a2 disables DOM preload dependency optimization and guards worker-reachable emitted import sites. Refreshed dependency install, compile and devbuild passed. Independent source/native acceptance remains pending."
     }
   ],
   "closure_requirement": "Prove the failing execution stage, correct the actual saved UI path, then independently repeat this native reproduction and demonstrate approval, fresh automatic reload capture, saved result, and surrounding cancellation/error recovery under a valid watchdog.",
-  "fix_commit": "227d3540f19b24d21b9038586e99770058c70480"
+  "fix_commit": "dd6f12a2",
+  "fix_commits": [
+    "227d3540f19b24d21b9038586e99770058c70480",
+    "dd6f12a2"
+  ]
 }
