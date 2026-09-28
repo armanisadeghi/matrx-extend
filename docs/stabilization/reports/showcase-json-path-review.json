@@ -10,7 +10,7 @@
   "candidate": {
     "patch": "docs/stabilization/pending/EXT-D-0046/product.patch",
     "test": "docs/stabilization/pending/EXT-D-0046/showcase-json-key-path.test.pending",
-    "representation": "key_path is string | string[]. Existing strings retain the exact dotted split behavior. New JsonTree selections are arrays of literal object-key segments, serialized directly in the same JSON config field. The array type is the unambiguous structural discriminator; no parser or duplicate source of truth is introduced.",
+    "representation": "key_path is string | string[]. Existing strings retain each runner's original dotted behavior: Network skips empty segments; Framework preserves them in nonempty strings and treats the empty string as root. New JsonTree selections are arrays of literal object-key segments, serialized directly in the same JSON config field. The array type is the unambiguous structural discriminator; no parser or duplicate source of truth is introduced.",
     "scope": "JsonTree emits segments; Network preview and saved replay traverse them; Framework preview and saved replay traverse them inside the injected runner; the Zod mode schemas accept both persisted shapes. Formatting is only for display and is never parsed for extraction.",
     "reason_against_versioned_string": "Any reserved string prefix can already be a saved dotted path or literal object key, so the prefix alone cannot preserve all existing valid recipes. A separate version marker would be a second persisted field that must stay synchronized. JSON array versus string gives the discriminator in the path value itself."
   },

@@ -20,7 +20,7 @@
   "priority": "P1: saved Network replay must identify the intended request and source document.",
   "state": "in-fix",
   "reproduction_status": "Original missed-initial-request reproduced through pre-fix runSavedPattern; source/document and cleanup regressions under repair. Installed D47 build unverified.",
-  "verification_status": "Initial candidate focused tests/types passed; fresh peer c49edf98 found reload timeout and approval-content defects. F2 source fixed; F1 first repair failed end-to-end peer because cleanup remained unbounded. Second cleanup repair passes focused real-caller tests; integrated tests/types/lint and fresh reverify remain pending. Do not claim installed D47 health.",
+  "verification_status": "Engineering repair through 30310ae4 passed guarded final full suite (219 files, 1650 tests passed, 4 skipped), compile and lint. Fresh source peer 63076042 accepted rejected-detach cleanup correction. Actual saved-UI failure proved red then green. Remote dependency integration and installed Chrome retest are pending; do not claim installed D47 health.",
   "source_report": "docs/stabilization/reports/showcase-network-final-peer.json",
   "transition_history": [
     {

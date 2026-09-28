@@ -165,7 +165,7 @@
 -    if (cfg.key_path) {
 -      for (const part of cfg.key_path.split('.')) {
 +    const keyParts = typeof cfg.key_path === 'string'
-+      ? cfg.key_path.split('.').filter(Boolean)
++      ? (cfg.key_path ? cfg.key_path.split('.') : [])
 +      : cfg.key_path ?? [];
 +    for (const part of keyParts) {
          if (target == null || typeof target !== 'object') break;
