@@ -1,0 +1,43 @@
+{
+  "id": "EXT-D-0057",
+  "feature_id": "EXT-F-1012",
+  "case_ids": [
+    "EXT-F-1012-T08"
+  ],
+  "title": "Prepare synthesizes success when no execution report returns",
+  "surface": "Showcase Prepare",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Build and reload development extension, open Showcase > Prepare on an accessible page.",
+    "Reproduce boundary case where chrome.scripting.executeScript resolves with [] or an absent result, then run Prepare. Controlled regression reproduction is required; native trigger not yet verified."
+  ],
+  "expected": "Visible failure and retry remedy; no green success without an execution report.",
+  "actual": "preparePage substitutes zero counts and duration; UI displays Prepared in 0ms.",
+  "severity": "S2: misleading preparation status",
+  "priority": "P1: truthful current-page results",
+  "state": "in-fix",
+  "evidence": [
+    "docs/stabilization/reports/prepare-source-audit.json"
+  ],
+  "verification_status": "Source-derived deterministic finding; runtime and native reproduction not yet performed.",
+  "transition_history": [
+    {
+      "at": "2026-09-28T15:00:57.328820+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Source trace records concrete execution and state sequence."
+    },
+    {
+      "at": "2026-09-28T15:00:57.328820+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Owner inspected source-backed reproduction; no native acceptance claim."
+    },
+    {
+      "at": "2026-09-28T15:00:57.328820+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol assigned source-only shared-boundary repair and regressions; tests pending resource admission."
+    }
+  ]
+}
