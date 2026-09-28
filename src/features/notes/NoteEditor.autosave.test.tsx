@@ -1,7 +1,7 @@
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Note, UpdateNotePatch } from '@/lib/notes/types';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const api = vi.hoisted(() => ({ get: vi.fn(), list: vi.fn(), update: vi.fn(), delete: vi.fn() }));
 vi.mock('@/lib/notes/queries', () => ({
@@ -10,12 +10,24 @@ vi.mock('@/lib/notes/queries', () => ({
   updateNote: api.update,
   softDeleteNote: api.delete,
 }));
-vi.mock('@/components/MarkdownView', () => ({ MarkdownView: ({ content }: { content: string }) => <div>{content}</div> }));
+vi.mock('@/components/MarkdownView', () => ({
+  MarkdownView: ({ content }: { content: string }) => <div>{content}</div>,
+}));
 vi.mock('./AppendFromPagePanel', () => ({
-  AppendFromPagePanel: ({ getCurrentContent, onAppend }: {
+  AppendFromPagePanel: ({
+    getCurrentContent,
+    onAppend,
+  }: {
     getCurrentContent: () => string;
     onAppend: (content: string) => Promise<void>;
-  }) => <button type="button" onClick={() => void onAppend(`${getCurrentContent()}\n\nReferral call completed.`)}>Append from page</button>,
+  }) => (
+    <button
+      type="button"
+      onClick={() => void onAppend(`${getCurrentContent()}\n\nReferral call completed.`)}
+    >
+      Append from page
+    </button>
+  ),
 }));
 
 import { useNotesUiStore } from '@/state/notes';
@@ -27,12 +39,44 @@ const A = '11111111-1111-4111-8111-111111111111';
 const B = '22222222-2222-4222-8222-222222222222';
 const stamp = '2026-09-28T18:00:00.000Z';
 const initial = new Map<string, Note>([
-  [A, { id: A, created_by: A, label: 'Harbor Dental intake', folder_name: 'Patients', folder_id: null,
-    tags: [], updated_at: stamp, position: 1, visibility: 'private', content: 'Call new patient.',
-    metadata: null, deleted_at: null, version: 1, created_at: stamp }],
-  [B, { id: B, created_by: A, label: 'Harbor Dental supplies', folder_name: 'Operations', folder_id: null,
-    tags: [], updated_at: stamp, position: 2, visibility: 'private', content: 'Order gloves.',
-    metadata: null, deleted_at: null, version: 1, created_at: stamp }],
+  [
+    A,
+    {
+      id: A,
+      created_by: A,
+      label: 'Harbor Dental intake',
+      folder_name: 'Patients',
+      folder_id: null,
+      tags: [],
+      updated_at: stamp,
+      position: 1,
+      visibility: 'private',
+      content: 'Call new patient.',
+      metadata: null,
+      deleted_at: null,
+      version: 1,
+      created_at: stamp,
+    },
+  ],
+  [
+    B,
+    {
+      id: B,
+      created_by: A,
+      label: 'Harbor Dental supplies',
+      folder_name: 'Operations',
+      folder_id: null,
+      tags: [],
+      updated_at: stamp,
+      position: 2,
+      visibility: 'private',
+      content: 'Order gloves.',
+      metadata: null,
+      deleted_at: null,
+      version: 1,
+      created_at: stamp,
+    },
+  ],
 ]);
 let stored: Map<string, Note>;
 let writes: { id: string; patch: UpdateNotePatch; resolve: () => void }[];
@@ -45,16 +89,26 @@ function resolveWrite(index: number) {
 
 function mount() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  const view = render(<QueryClientProvider client={client}><NotesView /></QueryClientProvider>);
+  const view = render(
+    <QueryClientProvider client={client}>
+      <NotesView />
+    </QueryClientProvider>,
+  );
   return { ...view, client };
 }
 
 async function debounce() {
-  await act(async () => { vi.advanceTimersByTime(600); await Promise.resolve(); });
+  await act(async () => {
+    vi.advanceTimersByTime(600);
+    await Promise.resolve();
+  });
 }
 
 async function settle() {
-  await act(async () => { await Promise.resolve(); await Promise.resolve(); });
+  await act(async () => {
+    await Promise.resolve();
+    await Promise.resolve();
+  });
 }
 
 beforeEach(() => {
@@ -62,19 +116,33 @@ beforeEach(() => {
   writes = [];
   api.get.mockReset().mockImplementation(async (id: string) => stored.get(id) ?? null);
   api.list.mockReset().mockImplementation(async () => [...stored.values()]);
-  api.update.mockReset().mockImplementation((id: string, patch: UpdateNotePatch) => new Promise<Note | null>((resolve) => {
-    writes.push({ id, patch, resolve: () => {
-      const updated = { ...stored.get(id)!, ...patch, updated_at: `2026-09-28T18:00:0${writes.length}.000Z` };
-      stored.set(id, updated);
-      resolve(updated);
-    } });
-  }));
+  api.update.mockReset().mockImplementation(
+    (id: string, patch: UpdateNotePatch) =>
+      new Promise<Note | null>((resolve) => {
+        writes.push({
+          id,
+          patch,
+          resolve: () => {
+            const updated = {
+              ...stored.get(id)!,
+              ...patch,
+              updated_at: `2026-09-28T18:00:0${writes.length}.000Z`,
+            };
+            stored.set(id, updated);
+            resolve(updated);
+          },
+        });
+      }),
+  );
   api.delete.mockReset().mockResolvedValue(true);
   useNotesUiStore.setState({ selectedNoteId: A, viewMode: 'edit' });
   useSidepanelTabStore.setState({ tab: 'notes' });
 });
 
-afterEach(() => { cleanup(); vi.useRealTimers(); });
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
 
 describe('Notes editor autosave', () => {
   it('stores the latest edit after an older write, and only then says Saved', async () => {
@@ -84,7 +152,9 @@ describe('Notes editor autosave', () => {
     fireEvent.change(body, { target: { value: 'Call new patient. Confirm coverage.' } });
     await debounce();
     expect(writes).toHaveLength(1);
-    fireEvent.change(body, { target: { value: 'Call new patient. Confirm coverage and appointment.' } });
+    fireEvent.change(body, {
+      target: { value: 'Call new patient. Confirm coverage and appointment.' },
+    });
     await debounce();
     expect(screen.queryByText(/^Saved /)).toBeNull();
     resolveWrite(0);
@@ -106,7 +176,9 @@ describe('Notes editor autosave', () => {
     await debounce();
     expect(writes[0]?.id).toBe(A);
     vi.useRealTimers();
-    await act(async () => { useNotesUiStore.getState().setSelectedNoteId(B); });
+    await act(async () => {
+      useNotesUiStore.getState().setSelectedNoteId(B);
+    });
     const second = await screen.findByDisplayValue('Order gloves.');
     vi.useFakeTimers();
     fireEvent.change(second, { target: { value: 'Order nitrile gloves and masks.' } });
@@ -123,7 +195,9 @@ describe('Notes editor autosave', () => {
 
   it('serializes Append from page behind an in-flight autosave', async () => {
     mount();
-    const body = await screen.findByPlaceholderText('Start writing… or use Append from page to capture content.');
+    const body = await screen.findByPlaceholderText(
+      'Start writing… or use Append from page to capture content.',
+    );
     vi.useFakeTimers();
     fireEvent.change(body, { target: { value: 'Call new patient at 9 AM.' } });
     await debounce();
@@ -138,11 +212,15 @@ describe('Notes editor autosave', () => {
 
   it('flushes the latest queued draft after editor unmount', async () => {
     const view = mount();
-    const body = await screen.findByPlaceholderText('Start writing… or use Append from page to capture content.');
+    const body = await screen.findByPlaceholderText(
+      'Start writing… or use Append from page to capture content.',
+    );
     vi.useFakeTimers();
     fireEvent.change(body, { target: { value: 'Call new patient at 9 AM.' } });
     await debounce();
-    fireEvent.change(body, { target: { value: 'Call new patient at 9 AM and confirm insurance.' } });
+    fireEvent.change(body, {
+      target: { value: 'Call new patient at 9 AM and confirm insurance.' },
+    });
     await debounce();
     view.unmount();
     resolveWrite(0);

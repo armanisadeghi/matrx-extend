@@ -34,7 +34,9 @@ interface DraftState {
 }
 
 function sameDraft(a: DraftState | null, b: DraftState | null): boolean {
-  return !!a && !!b && a.label === b.label && a.content === b.content && a.folderName === b.folderName;
+  return (
+    !!a && !!b && a.label === b.label && a.content === b.content && a.folderName === b.folderName
+  );
 }
 
 // Keep unsaved edits available when switching notes while a write fails. This
@@ -56,7 +58,9 @@ export function NoteEditor({ noteId }: { noteId: string }) {
   const note = detailQuery.data ?? null;
 
   const [draft, setDraft] = useState<DraftState | null>(null);
-  const [savingState, setSavingState] = useState<'idle' | 'saving' | 'saved' | 'error' | 'unsaved'>('idle');
+  const [savingState, setSavingState] = useState<'idle' | 'saving' | 'saved' | 'error' | 'unsaved'>(
+    'idle',
+  );
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const draftRef = useRef<DraftState | null>(null);
@@ -69,7 +73,9 @@ export function NoteEditor({ noteId }: { noteId: string }) {
 
   useEffect(() => {
     mountedRef.current = true;
-    return () => { mountedRef.current = false; };
+    return () => {
+      mountedRef.current = false;
+    };
   }, []);
 
   // Reset draft when noteId changes (user opened a different note).
@@ -347,9 +353,13 @@ export function NoteEditor({ noteId }: { noteId: string }) {
               <option key={f} value={f} />
             ))}
           </datalist>
-          <SaveStatus state={savingState} lastSavedAt={lastSavedAt} onRetry={() => {
-            if (draftRef.current) void persist(draftRef.current);
-          }} />
+          <SaveStatus
+            state={savingState}
+            lastSavedAt={lastSavedAt}
+            onRetry={() => {
+              if (draftRef.current) void persist(draftRef.current);
+            }}
+          />
         </div>
       </div>
 
@@ -388,7 +398,14 @@ function SaveStatus({
     return <span className="text-[10px] text-muted-foreground">Saving…</span>;
   }
   if (state === 'error' || state === 'unsaved') {
-    return <span className="text-[10px] text-destructive">{state === 'error' ? 'Save failed' : 'Unsaved changes'} <button type="button" onClick={onRetry} className="underline">Retry save</button></span>;
+    return (
+      <span className="text-[10px] text-destructive">
+        {state === 'error' ? 'Save failed' : 'Unsaved changes'}{' '}
+        <button type="button" onClick={onRetry} className="underline">
+          Retry save
+        </button>
+      </span>
+    );
   }
   if (lastSavedAt) {
     return (

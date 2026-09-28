@@ -959,7 +959,9 @@ function InventoryLoadError({ onRetry }: { onRetry: () => void }) {
       <AlertTriangle className="size-5 text-destructive" />
       <p className="text-sm font-medium">Files could not be loaded</p>
       <p className="text-xs text-muted-foreground">Retry to check your library and screenshots.</p>
-      <Button size="sm" variant="secondary" onClick={onRetry}>Retry files</Button>
+      <Button size="sm" variant="secondary" onClick={onRetry}>
+        Retry files
+      </Button>
     </div>
   );
 }
