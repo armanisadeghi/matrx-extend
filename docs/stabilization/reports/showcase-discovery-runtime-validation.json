@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "lane": "EXT-D-0049 initial-document Network discovery runtime validation",
+  "status": "RESOURCE_PREFLIGHT_REFUSED",
+  "at_utc": "2026-09-28T08:32:34.862Z",
+  "source_head": "f2b14f685c13c2ec8b260fae2443c9db494c36a1",
+  "source_change": "ef744dc6",
+  "run_id": "d49-runtime-tests-0928",
+  "profile_dir": "/Volumes/Samsung2TB/code/.stabilization-scratch",
+  "attempt": {
+    "command": "pnpm exec vitest run --maxWorkers=1 tests/unit/document-network-discovery-connected.test.ts tests/unit/document-network-dispatch.test.ts tests/unit/document-network-port.test.ts tests/unit/document-network-approval-remount.test.tsx tests/unit/use-network-page-load-source.test.tsx tests/unit/document-network-capture.test.ts",
+    "result": "Guard refused before child launch; no tests executed.",
+    "guard": {
+      "code": "RESOURCE_PREFLIGHT_REFUSED",
+      "reason": "RESOURCE_PRESSURE_UNSAFE",
+      "pressure_level": 1,
+      "pressure_evidence": "The reported pressure_level is the final aggregate sample. The guard evaluated a 60-second window and refuses when any sample has pressure above the configured normal level. Per-sample pressure values were not emitted, so the specific sample that triggered refusal is unavailable.",
+      "available_memory_gib": 13.28,
+      "required_memory_gib": 4,
+      "one_minute_load": 9.03,
+      "logical_cpus": 10,
+      "cpu_busy_fraction": 0.4907,
+      "swap_used_mib": 4164.31,
+      "cpu_busy_samples": [0.6328, 0.462, 0.4889, 0.3682, 0.447, 0.4058, 0.6302],
+      "swap_window_seconds": 60
+    }
+  },
+  "follow_up": "Stopped immediately after the refusal. No retry, threshold or allowlist change, cleanup, compile, build, browser action, or native validation was performed.",
+  "artifact_receipt": null,
+  "test_results_receipt": null,
+  "native_acceptance": "UNVERIFIED",
+  "ready_for_native_acceptance": false
+}
