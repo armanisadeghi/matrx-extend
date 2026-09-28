@@ -766,7 +766,9 @@ try {
         exitCode,
         decision: exitCode === 0 && !resourceInvalid ? 'valid' : 'refused',
       });
-      journal.close();
+      const closed = journal.close();
+      if (closed.pendingCleanupFailed)
+        process.stderr.write(`RESOURCE_JOURNAL_PENDING_CLEANUP_FAILED runId=${activeRunId}\n`);
     } catch {
       process.stderr.write(`RESOURCE_JOURNAL_FINALIZE_FAILED runId=${activeRunId}\n`);
       process.exitCode = 3;

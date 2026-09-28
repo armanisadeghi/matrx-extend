@@ -4,9 +4,9 @@
   "defect_id": "EXT-D-0051",
   "scope": "Guard-owned resource evidence for check/run/browser invocations; no extension behavior or product test verdict changed",
   "root_cause": "The resource guard emitted admission, watch, unsafe, stop and refusal events only to terminal stdout. Browser UI work could outlive or lose terminal capture, so a useful native observation had no durable resource verdict. The existing evidence recorder reads an already captured guard log and cannot recover missing terminal output.",
-  "change": "The guard opens a private, exclusive repo-local JSONL journal before policy and command admission; synchronously writes only bounded guard fields on every emit; refuses run-ID reuse; and writes a final resourceInvalid/exitCode/decision event after cleanup. Canonical-path checks refuse a symlinked journal directory while allowing a symlinked repository root. Child stdout is never journaled. If journaling fails while a permit is held, stderr requires browser work to stop, resourceInvalid becomes true, the wrapper exits 3, and the lease remains held for the existing recovery procedure.",
+  "change": "The guard opens a private, exclusive repo-local pending JSONL journal before policy and command admission; synchronously writes only bounded guard fields on every emit; refuses run-ID reuse; and writes a final resourceInvalid/exitCode/decision event after cleanup. A completed .jsonl path is published only after successful descriptor close. Canonical-path checks refuse a symlinked journal directory while allowing a symlinked repository root. Child stdout is never journaled. If journaling fails while a permit is held, stderr requires browser work to stop, resourceInvalid becomes true, the wrapper exits 3, and the lease remains held for the existing recovery procedure.",
   "verification": {
-    "lightweight_test": "node --test scripts/test-stabilization-resource-journal.mjs: 3/3 pass, run outside guard because it invokes only a denied pre-permit command and writer/filesystem operations; no heavy child ran. Symlink test proves no outside file is created and a legitimate alias to the repository root works.",
+    "lightweight_test": "node --test scripts/test-stabilization-resource-journal.mjs: 5/5 pass, run outside guard because it invokes only denied pre-permit commands and writer/filesystem operations; no heavy child ran. Symlink test proves no outside file is created and a legitimate alias to the repository root works. Close-fault tests prove a valid-looking event stays pending and a real guard process exits 3 with no completed journal.",
     "syntax": "node --check scripts/stabilization-resource.mjs and scripts/stabilization-resource-journal.mjs: pass",
     "live_guard_probe": {
       "run_id": "native-guard-journal-signal-20260928",
@@ -29,6 +29,12 @@
       "wrapper_exit_code": 0,
       "ui_actions": 0,
       "post_probe_global_heavy_lease": "absent"
+    },
+    "final_close_failure_correction": {
+      "peer_finding": "RESOURCE_FINAL_DECISION previously synced exitCode 0 before closeSync could fail and change the actual wrapper exit to 3.",
+      "red": "A focused injected close failure failed before the repair: the writer ignored the injected close seam and left a completed valid-looking journal.",
+      "green": "The helper now writes to <run-id>.pending.jsonl and atomically publishes <run-id>.jsonl only after close succeeds. An injected helper close failure leaves no completed path; an injected guard close failure exits 3, writes RESOURCE_JOURNAL_FINALIZE_FAILED to stderr, and leaves only a pending path. A pending path is never a resource verdict.",
+      "production_guard_window": "No additional admission/watch preflight was run because this correction affects only final publication after cleanup."
     },
     "isolated_watch_write_fault": {
       "method": "Copied the guard, policy and two helper modules to a scratch directory. Only the copied lease-root function was redirected to a private scratch lock, and only the copied journal writer was made to throw on RESOURCE_WATCH_*; admission thresholds and allowlist were unchanged. No Chrome UI was opened.",

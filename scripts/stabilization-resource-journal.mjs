@@ -1,5 +1,6 @@
 import {
-  closeSync, fsyncSync, lstatSync, mkdirSync, openSync, realpathSync, writeSync,
+  closeSync, existsSync, fsyncSync, linkSync, lstatSync, mkdirSync, openSync,
+  realpathSync, unlinkSync, writeSync,
 } from 'node:fs';
 import { join } from 'node:path';
 
@@ -13,7 +14,7 @@ const JOURNAL_FIELDS = new Set([
 
 // This writer receives guard-owned events only. Child stdout still goes directly
 // to the caller's terminal and is never copied into the journal.
-export function openResourceJournal(repo, runId) {
+export function openResourceJournal(repo, runId, { closeFd = closeSync } = {}) {
   if (!runId || !RUN_ID.test(runId)) throw new Error('RESOURCE_RUN_ID_INVALID');
   const canonicalRepo = realpathSync(repo);
   const parent = join(canonicalRepo, 'docs/stabilization');
@@ -26,7 +27,9 @@ export function openResourceJournal(repo, runId) {
   }
   if (!lstatSync(dir).isDirectory() || realpathSync(dir) !== dir)
     throw new Error('RESOURCE_JOURNAL_PATH_INVALID');
-  const path = join(dir, `${runId}.jsonl`);
+  const finalPath = join(dir, `${runId}.jsonl`);
+  const path = join(dir, `${runId}.pending.jsonl`);
+  if (existsSync(finalPath)) throw new Error('RESOURCE_RUN_ID_ALREADY_JOURNALED');
   let fd;
   try {
     fd = openSync(path, 'wx', 0o600);
@@ -54,7 +57,16 @@ export function openResourceJournal(repo, runId) {
       }
     },
     close() {
-      closeSync(fd);
+      // Publication is the commit point. A failed close leaves only the
+      // pending file, so no completed journal can claim a valid exit.
+      closeFd(fd);
+      linkSync(path, finalPath);
+      try {
+        unlinkSync(path);
+      } catch {
+        return { pendingCleanupFailed: true };
+      }
+      return { pendingCleanupFailed: false };
     },
   };
 }

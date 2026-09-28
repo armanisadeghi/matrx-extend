@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { mkdir, mkdtemp, readFile, rm, stat, symlink } from 'node:fs/promises';
+import { closeSync } from 'node:fs';
+import { copyFile, mkdir, mkdtemp, readFile, rm, stat, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import { test } from 'node:test';
@@ -63,7 +64,7 @@ test('journal writes only guard fields and refuses overwrite', async () => {
       detail: 'private detail',
     });
     assert.throws(() => openResourceJournal(repo, runId), /RESOURCE_RUN_ID_ALREADY_JOURNALED/);
-    assert.deepEqual(JSON.parse((await readFile(path, 'utf8')).trim()), {
+    assert.deepEqual(JSON.parse((await readFile(journal.path, 'utf8')).trim()), {
       schema: 1, at: '2026-09-28T00:00:00.000Z', code: 'RESOURCE_WATCH_HEALTHY', runId,
       reasons: [], sample: { pressureLevel: 1 },
     });
@@ -93,5 +94,61 @@ test('journal refuses a symlinked directory without creating evidence outside th
     assert.equal((await readFile(resolve(fixtureRepo, 'docs/stabilization/resource-journals', `${runId}.jsonl`), 'utf8')).includes('RESOURCE_ADMITTED'), true);
   } finally {
     await rm(scratch, { recursive: true, force: true });
+  }
+});
+
+test('a close failure leaves a valid-looking decision uncommitted', async () => {
+  const runId = `journal-close-fault-${randomUUID()}`;
+  const finalPath = journalPath(runId);
+  const pendingPath = resolve(repo, 'docs/stabilization/resource-journals', `${runId}.pending.jsonl`);
+  const journal = openResourceJournal(repo, runId, {
+    closeFd: (fd) => { closeSync(fd); throw new Error('injected close failure'); },
+  });
+  try {
+    journal.write({
+      schema: 1, at: '2026-09-28T00:00:00.000Z', code: 'RESOURCE_FINAL_DECISION',
+      runId, resourceInvalid: false, exitCode: 0, decision: 'valid',
+    });
+    assert.throws(() => journal.close(), /injected close failure/);
+    await assert.rejects(stat(finalPath), { code: 'ENOENT' });
+    assert.match(await readFile(pendingPath, 'utf8'), /RESOURCE_FINAL_DECISION/);
+    assert.throws(() => openResourceJournal(repo, runId), /RESOURCE_RUN_ID_ALREADY_JOURNALED/);
+  } finally {
+    await rm(finalPath, { force: true });
+    await rm(pendingPath, { force: true });
+  }
+});
+
+test('guard exits invalid and leaves no completed journal when close fails', async () => {
+  const fixtureRepo = await mkdtemp(resolve(tmpdir(), 'resource-guard-close-'));
+  const scripts = resolve(fixtureRepo, 'scripts');
+  const docs = resolve(fixtureRepo, 'docs/stabilization');
+  try {
+    await mkdir(scripts);
+    await mkdir(docs, { recursive: true });
+    for (const name of [
+      'stabilization-resource.mjs',
+      'stabilization-resource-journal.mjs',
+      'stabilization-resource-lease.mjs',
+    ]) await copyFile(resolve(repo, 'scripts', name), resolve(scripts, name));
+    await copyFile(resolve(repo, 'docs/stabilization/resource-policy.json'), resolve(docs, 'resource-policy.json'));
+    const helperPath = resolve(scripts, 'stabilization-resource-journal.mjs');
+    const helper = await readFile(helperPath, 'utf8');
+    const faulted = helper.replace('closeFd(fd);\n      linkSync', "closeFd(fd);\n      throw new Error('injected close failure');\n      linkSync");
+    assert.notEqual(faulted, helper);
+    await writeFile(helperPath, faulted);
+    const runId = 'close-fault-run';
+    const result = spawnSync(process.execPath, [
+      resolve(scripts, 'stabilization-resource.mjs'), 'run', '--run-id', runId,
+      '--', 'node', '-e', 'secret',
+    ], { cwd: fixtureRepo, encoding: 'utf8' });
+    assert.equal(result.status, 3);
+    assert.match(result.stderr, /RESOURCE_JOURNAL_FINALIZE_FAILED/);
+    const pending = resolve(docs, 'resource-journals', `${runId}.pending.jsonl`);
+    const completed = resolve(docs, 'resource-journals', `${runId}.jsonl`);
+    assert.match(await readFile(pending, 'utf8'), /RESOURCE_FINAL_DECISION/);
+    await assert.rejects(stat(completed), { code: 'ENOENT' });
+  } finally {
+    await rm(fixtureRepo, { recursive: true, force: true });
   }
 });
