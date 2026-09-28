@@ -1,0 +1,57 @@
+diff --git a/tests/unit/document-network-dispatch.test.ts b/tests/unit/document-network-dispatch.test.ts
+--- a/tests/unit/document-network-dispatch.test.ts
++++ b/tests/unit/document-network-dispatch.test.ts
+@@ -8,5 +8,6 @@ const h = vi.hoisted(() => ({
+   admin: true,
+   group: -1,
+   document: 'original-document',
++  prepGate: null as Promise<void> | null,
+   url: 'https://calendar.invalid/calendar',
+ }));
+@@ -25,3 +26,5 @@ vi.mock('@/lib/supabase/queries', () => ({
+   PATTERN_KINDS: ['network_capture'],
+-  fetchPatternsForDomain: async () => [
++  fetchPatternsForDomain: async () => {
++    if (h.prepGate) await h.prepGate;
++    return [
+     {
+@@ -38,4 +42,5 @@ vi.mock('@/lib/supabase/queries', () => ({
+       list_root_selector: null,
+     },
+-  ],
++    ];
++  },
+   bumpPatternRun: vi.fn(),
+@@ -83,3 +88,4 @@ beforeEach(() => {
+   h.group = -1;
+   h.document = 'original-document';
++  h.prepGate = null;
+   h.url = 'https://calendar.invalid/calendar';
+@@ -132,3 +138,27 @@ it('actual local dispatcher waits for TOOL_CONFIRM_RESPONSE then runs the real saved handler', async () => {
+   expect(h.run.mock.calls[0]![1]).toBe(37);
+ });
++it('reports preparation and refuses late approval after cancellation of a pending pattern read', async () => {
++  let release!: () => void;
++  h.prepGate = new Promise<void>((resolve) => { release = resolve; });
++  const dispatch = await import('@/lib/tools/dispatch');
++  dispatch.startToolDispatcher({ defaultPermissionMode: () => 'act' });
++  const controller = new AbortController();
++  const progress = vi.fn();
++  const result = dispatch.runLocalSavedPattern(
++    'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', 37, controller.signal, progress,
++  );
++  await vi.waitFor(() =>
++    expect(progress).toHaveBeenCalledWith('Checking saved recipe and page…'),
++  );
++  expect(h.broadcasts.mock.calls.some(
++    ([kind]) => kind === CHANNELS.TOOL_CONFIRM_REQUEST,
++  )).toBe(false);
++  controller.abort();
++  release();
++  await expect(result).rejects.toThrow('cancelled');
++  expect(h.broadcasts.mock.calls.some(
++    ([kind]) => kind === CHANNELS.TOOL_CONFIRM_REQUEST,
++  )).toBe(false);
++  expect(h.run).not.toHaveBeenCalled();
++});
+ it('actual global confirmation recovery executes a persisted data_patterns operation once', async () => {

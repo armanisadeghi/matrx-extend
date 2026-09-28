@@ -1,0 +1,23 @@
+{
+  "status": "SOURCE_GAP_RUNTIME_UNPROVEN",
+  "subject": "Saved Network replay can show a disabled Run control without preapproval progress or a terminal outcome",
+  "native_evidence": {
+    "observation": "One installed run showed a disabled Run control with no visible progress, approval, result, or error.",
+    "validity": "The native guard ended with resourceInvalid=true (exit 3); this run cannot establish a product root cause or installed acceptance. No retry was made by this lane."
+  },
+  "source_boundary": [
+    "PatternsTab.handleRun sets runningId, clears runNote, and awaits runSavedPattern before restoring the row (src/features/showcase/tabs/PatternsTab.tsx:129-173).",
+    "For network_capture, runSavedPattern opens a runtime Port and awaits its result (src/lib/data-pattern/run-interactive.ts:536-560). The client Port has no initial progress or operation deadline (src/lib/data-pattern/document-network-transport.ts:140-174).",
+    "The service worker invokes runLocalSavedPattern after the Port message. It emits no progress while prepareOperation and policy requirements run (src/lib/tools/dispatch.ts:1754-1777).",
+    "Preparation awaits assigned tab lookup, a Supabase pattern query, chrome.scripting.executeScript, digest, and handler import (src/lib/tools/handlers/data-patterns.ts:113-147). Confirmation is broadcast only after preparation and policy checks, and after the pending record is persisted (src/lib/tools/dispatch.ts:1173-1258).",
+    "The existing saved UI test supplies resolving doubles for the DB, scripting, permissions, and Port. It proves the happy approval path, but cannot distinguish which preapproval dependency failed to settle on a live system (tests/unit/document-network-saved-ui.test.tsx)."
+  ],
+  "finding": "A pending preapproval dependency is observationally indistinguishable from a broken approval host: the row spins, no progress is emitted, and no transport deadline rejects it. The invalid native run does not establish which dependency, if any, was pending.",
+  "correction": "At the canonical local saved-operation boundary, emit phase progress before preparation and before approval; offer a safe Cancel action that aborts and disconnects the Port, clears the disabled state, and does not mark the recipe broken. Keep legitimate organization and user approval holds under their own existing lifetimes rather than imposing a new arbitrary preparation timeout. A test should hold a real boundary dependency pending, assert the visible stage and Cancel control, then release it after cancellation and prove that late completion cannot execute capture or overwrite the result. Re-run installed Chrome only under a healthy full guard and inspect the phase/approval event sequence.",
+  "verification": "Source inspection only. No browser, build, tests, DB mutation, or product source edits were performed while the live tester owned the permit.",
+  "open_questions": [
+    "Did the Port message reach the service worker in the invalid native run?",
+    "Which preapproval await, if any, remained pending?",
+    "Was a confirmation record persisted or broadcast in that run?"
+  ]
+}

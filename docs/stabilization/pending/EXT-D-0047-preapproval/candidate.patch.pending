@@ -1,0 +1,133 @@
+diff --git a/src/lib/data-pattern/document-network-transport.ts b/src/lib/data-pattern/document-network-transport.ts
+--- a/src/lib/data-pattern/document-network-transport.ts
++++ b/src/lib/data-pattern/document-network-transport.ts
+@@ -143,5 +143,6 @@ export function openSavedPatternOperation(
+   options: { signal?: AbortSignal; onProgress?: (note: string) => void } = {},
+ ): Promise<unknown> {
+   return new Promise((resolve, reject) => {
++    options.onProgress?.('Connecting to saved replay…');
+     const port = chrome.runtime.connect({ name: PORT });
+     let settled = false;
+diff --git a/src/lib/tools/dispatch.ts b/src/lib/tools/dispatch.ts
+--- a/src/lib/tools/dispatch.ts
++++ b/src/lib/tools/dispatch.ts
+@@ -1735,6 +1735,7 @@ async function runPrepared(
+       return next;
+     },
+-    confirm: async (identity, tier, abortSignal) =>
+-      (
++    confirm: async (identity, tier, abortSignal) => {
++      if (ctx.localInvocation) ctx.reportProgress?.('Waiting for your approval…');
++      return (
+         await requestConfirmation(handler, args, ctx, meta, {
+           effectiveTier: tier,
+@@ -1747,5 +1750,6 @@ async function runPrepared(
+           },
+         })
+-      ).allow,
++      ).allow;
++    },
+   });
+ }
+@@ -1773,5 +1774,6 @@ export async function runLocalSavedPattern(
+       if (label) progress(label);
+     },
+   };
++  progress('Checking saved recipe and page…');
+   const prepared = await prepareOperation(handler, parsed, ctx);
+   if (prepared) return runPrepared(handler, parsed, ctx, undefined, prepared, signal);
+diff --git a/src/features/showcase/tabs/PatternsTab.tsx b/src/features/showcase/tabs/PatternsTab.tsx
+--- a/src/features/showcase/tabs/PatternsTab.tsx
++++ b/src/features/showcase/tabs/PatternsTab.tsx
+@@ -68,3 +68,4 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
+   const loadSeq = useRef(0);
+   const runSeq = useRef(0);
++  const runController = useRef<AbortController | null>(null);
+   currentPageKey.current = pageKey;
+@@ -100,4 +101,6 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
+   useEffect(() => {
+     if (previousPageKey.current === pageKey) return;
+     previousPageKey.current = pageKey;
++    runController.current?.abort();
++    runController.current = null;
+     loadSeq.current += 1;
+@@ -116,3 +119,5 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
+   useEffect(
+     () => () => {
++      runController.current?.abort();
++      runController.current = null;
+       loadSeq.current += 1;
+@@ -130,4 +135,7 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
+     if (!tab.id) return;
+     const runPageKey = pageKey;
+     const seq = ++runSeq.current;
++    runController.current?.abort();
++    const controller = new AbortController();
++    runController.current = controller;
+     const isCurrent = () => seq === runSeq.current && currentPageKey.current === runPageKey;
+@@ -145,4 +153,5 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
+         onProgress: (note) => {
+           if (isCurrent()) setRunNote(note);
+         },
++        signal: controller.signal,
+         initiation: 'user',
+@@ -149,24 +158,28 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
+       });
++      if (controller.signal.aborted) throw new Error('Saved replay was cancelled.');
+       if (!isCurrent()) return;
+       setRows(data);
+       const outcome = classifySavedRun(p, tab.url ?? '', data);
+       setRunInfo(outcome.message);
+       if (outcome.kind === 'matched') {
+         void bumpPatternRun(p.id, 'ok', data.length);
+       }
+     } catch (err) {
+       if (!isCurrent()) return;
+-      if (err instanceof NetworkNoMatchError) {
++      if (controller.signal.aborted) {
++        setRunError('Saved replay was cancelled.');
++      } else if (err instanceof NetworkNoMatchError) {
+         // Circumstantial — the page may just not have fired that API on
+         // reload. Guidance only; don't mark the pattern broken.
+         setRunError(err.message);
+       } else {
+         setRunError(`"${p.name}" failed: ${err instanceof Error ? err.message : String(err)}`);
+         if (onSavedRoute) void bumpPatternRun(p.id, 'broken', 0);
+       }
+     } finally {
++      if (runController.current === controller) runController.current = null;
+       if (isCurrent()) {
+         setRunningId(null);
+         setRunNote(null);
+         void refresh();
+       }
+@@ -242,3 +252,4 @@ export function PatternsTab({ active = true }: { active?: boolean }) {
+                 routeMatches={urlMatchesPattern(tab.url ?? '', p)}
+                 onRun={() => void handleRun(p)}
++                onCancel={() => runController.current?.abort()}
+                 onChanged={() => void refresh()}
+@@ -269,4 +280,5 @@ function PatternRow({
+   routeMatches,
+   onRun,
++  onCancel,
+   onChanged,
+ }: {
+@@ -279,3 +291,4 @@ function PatternRow({
+   routeMatches: boolean;
+   onRun: () => void;
++  onCancel: () => void;
+   onChanged: () => void;
+@@ -427,3 +440,13 @@ function PatternRow({
+             )}
+           </Button>
++          {running && p.kind === 'network_capture' && (
++            <Button
++              size="sm"
++              variant="outline"
++              onClick={onCancel}
++              className="h-7 px-2 text-xs"
++            >
++              Cancel
++            </Button>
++          )}
+         </div>

@@ -1,0 +1,98 @@
+// Candidate regression; move to tests/unit/document-network-preapproval-stall.test.tsx
+// after review. Do not count as a passing test until baseline RED and repair GREEN run.
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, expect, it, vi } from 'vitest';
+
+const h = vi.hoisted(() => ({
+  run: vi.fn(),
+  url: 'https://hn.algolia.com/?q=OpenAI',
+}));
+vi.mock('@/hooks/use-active-tab', () => ({ useActiveTab: () => ({ id: 42, url: h.url }) }));
+vi.mock('@/lib/supabase/queries', () => ({
+  fetchPatternsForDomain: async () => [{
+    id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    name: 'HN search',
+    domain: 'hn.algolia.com',
+    route_pattern: '/',
+    list_root_selector: null,
+    kind: 'network_capture',
+    config: { url_filter: '/api/v1/search' },
+    fields: [],
+    last_status: 'never_run',
+    last_run_at: null,
+    last_run_count: null,
+  }],
+  bumpPatternRun: vi.fn(),
+  deletePattern: vi.fn(),
+  renamePattern: vi.fn(),
+}));
+vi.mock('@/lib/data-pattern/run-interactive', () => ({
+  NetworkNoMatchError: class extends Error {},
+  runSavedPattern: (...args: unknown[]) => h.run(...args),
+}));
+vi.mock('@/lib/destructive/confirm', () => ({ confirmDestructive: vi.fn() }));
+import { PatternsTab } from '@/features/showcase/tabs/PatternsTab';
+import { openSavedPatternOperation } from '@/lib/data-pattern/document-network-transport';
+
+afterEach(() => {
+  cleanup();
+  h.run.mockReset();
+});
+
+it('lets the person cancel a prepared replay while its dependency never settles', async () => {
+  let complete!: (rows: Array<{ title: string }>) => void;
+  h.run.mockImplementation((_pattern, _tab, opts) => {
+    opts.onProgress('Connecting to saved replay…');
+    const dependency = new Promise<Array<{ title: string }>>((resolve) => { complete = resolve; });
+    const cancelled = new Promise<never>((_resolve, reject) => {
+      opts.signal.addEventListener('abort', () => reject(new Error('Saved replay was cancelled.')),
+        { once: true });
+    });
+    return Promise.race([dependency, cancelled]);
+  });
+  render(<PatternsTab />);
+  const run = await screen.findByTitle('Run pattern');
+  fireEvent.click(run);
+  expect(run.hasAttribute('disabled')).toBe(true);
+  expect(await screen.findByText('Connecting to saved replay…')).toBeTruthy();
+  const cancel = screen.getByRole('button', { name: 'Cancel' });
+  const signal = h.run.mock.calls[0]![2].signal as AbortSignal;
+  fireEvent.click(cancel);
+  expect(signal.aborted).toBe(true);
+  // The real Port reacts to abort. Releasing the dependency later must not
+  // overwrite the visible terminal result.
+  await act(async () => { complete([{ title: 'late row' }]); });
+  expect(screen.queryByText('late row')).toBeNull();
+  expect(screen.getByText(/cancelled/i)).toBeTruthy();
+  expect(run.hasAttribute('disabled')).toBe(false);
+});
+
+it('closes a silent saved-operation Port on cancellation and gives a terminal error', async () => {
+  const clientMessages = new Set<(message: unknown) => void>();
+  const disconnect = vi.fn();
+  const postMessage = vi.fn();
+  const port = {
+    onMessage: { addListener: (fn: (message: unknown) => void) => clientMessages.add(fn) },
+    onDisconnect: { addListener: vi.fn() },
+    postMessage,
+    disconnect,
+  };
+  const connect = vi.fn(() => port);
+  Object.assign(chrome.runtime, { connect });
+  const controller = new AbortController();
+  const progress = vi.fn();
+  const pending = openSavedPatternOperation(
+    'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    42,
+    { signal: controller.signal, onProgress: progress },
+  );
+  expect(progress).toHaveBeenCalledWith('Connecting to saved replay…');
+  expect(postMessage).toHaveBeenCalledWith({
+    kind: 'run', patternId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', tabId: 42,
+  });
+  const rejected = expect(pending).rejects.toThrow('Replay cancelled.');
+  controller.abort();
+  await rejected;
+  expect(postMessage).toHaveBeenCalledWith({ kind: 'cancel' });
+  expect(disconnect).toHaveBeenCalledOnce();
+});
