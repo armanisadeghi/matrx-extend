@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-discovery-active-lifecycle-20260928",
+  "status": "NATIVE_BOUNDED_PASS_WHOLE_FEATURE_PARTIAL",
+  "report": "docs/stabilization/reports/showcase-discovery-active-lifecycle.json",
+  "artifact_receipt": "docs/stabilization/runs/showcase-discovery-corrected-artifact-20260928.json",
+  "artifact_version": "0.2.114",
+  "built_source_head": "80a64727139d46ece2e8d522573ab217b30850e8",
+  "expected_tree_sha256": "8b0f8adc1e576451da4d549780958766f7bb7e51b545e8dd421d36eb6e65ee45",
+  "tree_sha256_after_run": "8b0f8adc1e576451da4d549780958766f7bb7e51b545e8dd421d36eb6e65ee45",
+  "pre_run_independent_hash_in_this_lane": false,
+  "guard": {
+    "profile_dir": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "admitted_at_utc": "2026-09-28T09:28:35.652Z",
+    "healthy_watch_samples": 23,
+    "unsafe_watch_samples": 0,
+    "terminal_at_utc": "2026-09-28T09:34:58.820Z",
+    "terminal_code": "RESOURCE_BROWSER_STOP_CONFIRMED",
+    "exit_code": 0
+  },
+  "results": {
+    "stop_after_attached_capture": "PASS",
+    "panel_close_after_attached_capture": "PASS",
+    "same_tab_document_replacement": "PASS",
+    "user_tab_switch": "PASS",
+    "fresh_existing_hits_recipe_replay": "PASS: observed own approval -> matched one request -> terminal ten rows and debugger cleanup"
+  },
+  "whole_feature_closure": false
+}
