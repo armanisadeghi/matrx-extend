@@ -16,20 +16,41 @@
   "actual": "Run became disabled and the recipe remained never run for >113 seconds. No approval, progress, result or failure appeared. Debug replay search showed no matching events. The active organization was set and resources stayed healthy until clean guard termination.",
   "evidence": [
     "docs/stabilization/runs/showcase-network-current-001.json",
-    "test-results/source-dev-build-showcase-current-20260928T053930Z.json"
+    "test-results/source-dev-build-showcase-current-20260928T053930Z.json",
+    "docs/stabilization/reports/showcase-current-run-stall.json",
+    "docs/stabilization/reports/showcase-d49-source-peer.json"
   ],
   "severity": "S1: the observed saved Network extraction cannot run and gives no recovery feedback.",
   "priority": "P1: blocks Showcase saved replay acceptance and D47 retest.",
-  "state": "open",
-  "reproduction_status": "one installed native reproduction with valid resource watchdog; internal stage unknown",
-  "verification_status": "Retest not run; source diagnosis in progress. D47 capture-timing and provenance acceptance remains unverified behind this blocker.",
+  "state": "fixed",
+  "reproduction_status": "Native diagnostic localized first stalled boundary to worker lazy dispatcher import; Port and run message acceptance and worker log delivery verified. Worker DevTools closed.",
+  "verification_status": "Source peer accepted callback architecture with native bootstrap proof required.8 connected tests, compile and development build passed; fresh independent installed retest in progress. D47 timing/provenance acceptance remains open.",
   "transition_history": [
     {
       "at": "2026-09-28T06:06:00Z",
       "from": null,
       "to": "open",
       "reason": "Valid primary Chrome .114 native run reproduced silent disabled Run, with admin identity and active organization confirmed."
+    },
+    {
+      "at": "2026-09-28T06:36:22Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "State reconciliation: valid instrumented native run admitted Port/run receipt, then observed no dispatch import settlement for >90s with same-run worker log positive control; report committed57c514dd."
+    },
+    {
+      "at": "2026-09-28T06:36:22Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "State reconciliation: implementation replaced per-run lazy dispatcher import with canonical dispatcher callback wired by background bootstrap."
+    },
+    {
+      "at": "2026-09-28T06:36:22Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source fix227d3540 passed8 connected guards, compile and direct devbuild; independent installed retest is pending, no closure claim."
     }
   ],
-  "closure_requirement": "Prove the failing execution stage, correct the actual saved UI path, then independently repeat this native reproduction and demonstrate approval, fresh automatic reload capture, saved result, and surrounding cancellation/error recovery under a valid watchdog."
+  "closure_requirement": "Prove the failing execution stage, correct the actual saved UI path, then independently repeat this native reproduction and demonstrate approval, fresh automatic reload capture, saved result, and surrounding cancellation/error recovery under a valid watchdog.",
+  "fix_commit": "227d3540f19b24d21b9038586e99770058c70480"
 }
