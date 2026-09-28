@@ -2,7 +2,10 @@
   "id": "EXT-D-0059",
   "status": "IN_FIX_NEW_REGRESSIONS_FOUND",
   "role": "bounded independent escalation verifier; zero product authorship",
-  "reviewed_commits": ["858dfd8fdfc2f1471f806eaa0a71430fb395ff65", "140d99c7e41271830d490f86862d5fc5f3ca52aa"],
+  "reviewed_commits": [
+    "858dfd8fdfc2f1471f806eaa0a71430fb395ff65",
+    "140d99c7e41271830d490f86862d5fc5f3ca52aa"
+  ],
   "reviewed_working_head": "140d99c7e41271830d490f86862d5fc5f3ca52aa",
   "original_findings": [
     {
@@ -30,7 +33,7 @@
     "outcome": "PARTIAL",
     "scoped_four_findings": "Addressed at source and focused-guard level, with the visible-remedy native limitation above.",
     "accepted_outcome_met": false,
-    "reason": "No native UI proof was authorized; two new correction regressions remain. D59 remains in fix, not done."
+    "reason": "Native UI proof was not performed in this scoped verification lane; two new correction regressions remain. D59 remains in-fix."
   },
   "verdict_b": {
     "quality": "FAIL_IMPORTANT",
@@ -59,9 +62,22 @@
   ],
   "verification": {
     "focused_command": "node scripts/stabilization-resource.mjs run --run-id d59-escalation-tests-20260928-1 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec vitest run --maxWorkers=1 tests/unit/document-relay-provenance.test.tsx tests/unit/framework-document-target.test.ts tests/unit/saved-run-data-view-health.test.tsx tests/unit/showcase-nuxt-data.test.ts tests/unit/showcase-json-key-path.test.tsx tests/unit/showcase-json-path-connected.test.tsx",
-    "focused_result": { "files_passed": 6, "tests_passed": 27, "resource_admitted": true, "child_exit_code": 0, "resource_invalid": false, "final_decision": "valid" },
+    "focused_result": {
+      "files_passed": 6,
+      "tests_passed": 27,
+      "resource_admitted": true,
+      "child_exit_code": 0,
+      "resource_invalid": false,
+      "final_decision": "valid"
+    },
     "compile_command": "node scripts/stabilization-resource.mjs run --run-id d59-escalation-compile-20260928-1 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm compile",
-    "compile_result": { "resource_admitted": true, "child_exit_code": 0, "resource_invalid": false, "final_decision": "valid", "result": "tsc --noEmit passed" },
+    "compile_result": {
+      "resource_admitted": true,
+      "child_exit_code": 0,
+      "resource_invalid": false,
+      "final_decision": "valid",
+      "result": "tsc --noEmit passed"
+    },
     "journals": [
       "docs/stabilization/resource-journals/d59-escalation-tests-20260928-1.jsonl",
       "docs/stabilization/resource-journals/d59-escalation-compile-20260928-1.jsonl"

@@ -10,6 +10,13 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Latest D59 correction checkpoint — two regressions remain
+
+- Independent escalation 9e5db722 confirms the original four correction findings addressed at source/guard level in 858dfd8f/140d99c7. Guarded 27 tests and compile passed; native remains unverified. A PARTIAL/B FAIL_IMPORTANT.
+- New confirmed source findings: Highlight-to-Data handoff leaves Save without document provenance, silently returning; a delayed old-picker injection rejection clears the new picker session. Both require connected regression evidence and visible recovery for current failures.
+- Sol document_identity_repair now owns this bounded correction and the sole heavy lease. No browser/build lane active. Report target reports/document-handoff-correction.json. Prior goal turn only confirmed the already-completed mailbox request; no stabilization state changed then. This turn resumes concrete D59 correction work.
+- Broad live-consumer census/migration, handler catalog/docs regeneration, integrated build and actual Chrome acceptance remain outstanding. D60 guard verdict defect remains open. No full-health or shipping claim; historical artifact a8670bf7 lacks D58/D59.
+
 ## Latest D59 implementation checkpoint — partial, peer rejected
 
 - Progress: Sol committed bb78e844 and27aaaf96: shared external-store document snapshot, core live-result consumers, SaveAsPattern/SEO/Data picker guards and authored A/B tests. No full-fix acceptance. Fresh source peer180eacfa A PARTIAL/B FAIL_IMPORTANT.
