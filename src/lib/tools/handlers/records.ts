@@ -24,7 +24,7 @@
  */
 
 import { openRecordStore } from '@/lib/records/store';
-import { getSupabase } from '@/lib/supabase/client';
+import canonicalGuideByTopic from '@/lib/tools/generated/records-guide.json';
 import type { ToolHandler, ToolTier } from '@/lib/tools/types';
 import { z } from 'zod';
 
@@ -196,93 +196,7 @@ const RecordsArgs = z.object({
 
 type RecordsToolArgs = z.infer<typeof RecordsArgs>;
 
-type GuideParameter = Record<string, unknown>;
-type RecordsGuideDefinition = {
-  actions: string[];
-  variants: Record<string, Record<string, GuideParameter>>;
-};
-
-// The DB remains the contract source. These short routing headings deliberately
-// keep the browser bundle free of the server's long worked examples; the live
-// per-action argument contract below gives the model the current exact shape.
-const GUIDE_HOW: Record<string, string> = {
-  table_list: 'List the organization’s Tables and homes before choosing where new work belongs.',
-  metadata_search: 'Search Table structure and fields, not record values.',
-  record_read: 'Read one record or a Table’s records through the record store.',
-  record_aggregate: 'Ask one grouped count, sum, average, minimum, or maximum inside the store.',
-  record_write: 'Create or update records through the store’s one write door.',
-  record_delete: 'Soft-delete a record; set undo to restore it instead.',
-  record_history: 'Read the version history for one record.',
-  record_restore_version: 'Restore one named historical version of a record.',
-  field_propose: 'Propose one new Field on an existing Table.',
-  table_propose: 'Propose a Table and its Fields together in one request.',
-  form_propose:
-    'Create a public form, its Table, typed Fields, completion rules, and published link in one request.',
-  booking_propose:
-    'Create a booking surface with availability and slots, not a form with a date field.',
-  import_propose:
-    'Import the supplied file rows exactly as given; the store resolves their structure.',
-  dashboard_propose:
-    'Create a saved dashboard and return the requested aggregate results together.',
-  pipeline_propose: 'Create a stage board and its transition rules as one coherent store change.',
-  document_propose: 'Create a record-backed proposal, quote, invoice, contract, letter, or report.',
-  checklist_propose:
-    'Create an operational checklist or SOP with its steps and triggers in one request.',
-  capture_propose:
-    'Create a field-capture surface for an organization’s own crew, including offline collection.',
-  enrich_propose:
-    'Propose model-owned fields, their inputs, review interval, and optional first run.',
-  portal_propose: 'Create a client portal whose exposed Tables each name their client relation.',
-  signature_request: 'Create one record-bound signing link for a precise document version.',
-  subscription_propose:
-    'Create the saved view and every requested notification over that shared definition.',
-  entity_read: 'Read the organization’s canonical entity representation.',
-  entity_write:
-    'Write the organization’s canonical entity representation through its authorized door.',
-};
-
-let guideDefinition: Promise<RecordsGuideDefinition> | null = null;
-
-function isGuideParameters(value: unknown): value is {
-  action: { enum: string[] };
-  $variants: Record<string, Record<string, GuideParameter>>;
-} {
-  if (!value || typeof value !== 'object') return false;
-  const parameters = value as { action?: { enum?: unknown }; $variants?: unknown };
-  return (
-    Array.isArray(parameters.action?.enum) &&
-    parameters.action.enum.every((action) => typeof action === 'string') &&
-    !!parameters.$variants &&
-    typeof parameters.$variants === 'object'
-  );
-}
-
-async function loadGuideDefinition(): Promise<RecordsGuideDefinition> {
-  if (guideDefinition) return guideDefinition;
-  guideDefinition = (async () => {
-    const { data, error } = await getSupabase()
-      .schema('tool')
-      .from('definition')
-      .select('parameters')
-      .eq('name', 'records')
-      .eq('is_active', true)
-      .maybeSingle();
-    if (error) throw new Error(`Could not load the records guide: ${error.message}`);
-    const parameters = (data as { parameters?: unknown } | null)?.parameters;
-    if (!isGuideParameters(parameters))
-      throw new Error('The live records guide contract is invalid.');
-    return {
-      actions: parameters.action.enum,
-      variants: parameters.$variants,
-    };
-  })();
-  try {
-    return await guideDefinition;
-  } catch (error) {
-    guideDefinition = null;
-    throw error;
-  }
-}
+const GUIDE_ACTIONS = Object.keys(canonicalGuideByTopic);
 
 /**
  * A refusal the store made, handed on verbatim. The store's own words are the
@@ -306,34 +220,18 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
   argsSchema: RecordsArgs,
   run: async (args) => {
     if (args.action === 'guide') {
-      try {
-        const definition = await loadGuideDefinition();
-        const topic = args.topic?.trim() ?? '';
-        const actions = definition.actions.filter((action) => action !== 'guide');
-        if (!topic || !actions.includes(topic) || !definition.variants[topic]) {
-          return {
-            ok: true,
-            action: 'guide',
-            topic: null,
-            note: `${topic ? `${JSON.stringify(topic)} is not an action of this tool. ` : ''}Call {"action": "guide", "topic": "<action>"} with one of these.`,
-            actions,
-          };
-        }
+      const topic = args.topic?.trim() ?? '';
+      const guide = canonicalGuideByTopic[topic as keyof typeof canonicalGuideByTopic];
+      if (!guide) {
         return {
           ok: true,
           action: 'guide',
-          topic,
-          how: GUIDE_HOW[topic] ?? `Canonical guidance for records.${topic}.`,
-          arguments: definition.variants[topic],
-        };
-      } catch (error) {
-        return {
-          ok: false,
-          action: 'guide',
-          reason: error instanceof Error ? error.message : 'Could not load the records guide.',
-          code: 'records_guide_unavailable',
+          topic: null,
+          note: `${topic ? `${JSON.stringify(topic)} is not an action of this tool. ` : ''}Call {"action": "guide", "topic": "<action>"} with one of these.`,
+          actions: GUIDE_ACTIONS,
         };
       }
+      return { ok: true, action: 'guide', ...guide };
     }
     if (UNSUPPORTED_BROWSER_ACTIONS.has(args.action)) {
       return {

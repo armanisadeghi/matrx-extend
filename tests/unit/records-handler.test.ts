@@ -5,21 +5,20 @@
  */
 
 import { buildToolCatalog } from '@/lib/tools/catalog';
+import canonicalGuideByTopic from '@/lib/tools/generated/records-guide.json';
 import { lookup } from '@/lib/tools/registry';
 import type { ToolContext } from '@/lib/tools/types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { store, openRecordStore, getSupabase } = vi.hoisted(() => ({
+const { store, openRecordStore } = vi.hoisted(() => ({
   store: {
     tableList: vi.fn(),
     recordWrite: vi.fn(),
   },
   openRecordStore: vi.fn(),
-  getSupabase: vi.fn(),
 }));
 
 vi.mock('@/lib/records/store', () => ({ openRecordStore }));
-vi.mock('@/lib/supabase/client', () => ({ getSupabase }));
 
 function context(): ToolContext {
   return {
@@ -54,46 +53,35 @@ beforeEach(() => {
     ],
   });
   store.recordWrite.mockResolvedValue({ ok: true, data: 'rec-harbor-dental-maya-chen' });
-  const maybeSingle = vi.fn().mockResolvedValue({
-    data: {
-      parameters: {
-        action: { enum: ['table_list', 'form_propose', 'guide'] },
-        $variants: {
-          table_list: { limit: { type: 'integer', default: 50 } },
-          form_propose: {
-            title: { type: 'string', required: true, description: 'What the form calls itself.' },
-            fields: { type: 'array', required: true, description: 'The form fields.' },
-          },
-        },
-      },
-    },
-    error: null,
-  });
-  const isActive = vi.fn(() => ({ maybeSingle }));
-  const name = vi.fn(() => ({ eq: isActive }));
-  const select = vi.fn(() => ({ eq: name }));
-  getSupabase.mockReturnValue({ schema: vi.fn(() => ({ from: vi.fn(() => ({ select })) })) });
 });
 
 describe('registered records schema null defaults', () => {
-  it('routes a canonical guide topic to its live arguments without opening the record store', async () => {
+  it('returns every generated server guide verbatim without opening the record store', async () => {
     const handler = registeredRecords();
-    const parsed = handler.argsSchema.parse({ action: 'guide', topic: 'form_propose' }) as Record<
-      string,
-      unknown
-    >;
-
-    expect(parsed).toMatchObject({ action: 'guide', topic: 'form_propose' });
-    await expect(handler.run(parsed, context())).resolves.toMatchObject({
-      ok: true,
-      action: 'guide',
-      topic: 'form_propose',
-      how: expect.stringContaining('public form'),
-      arguments: {
-        title: { type: 'string', required: true },
-        fields: { type: 'array', required: true },
-      },
-    });
+    for (const [topic, guide] of Object.entries(canonicalGuideByTopic)) {
+      const parsed = handler.argsSchema.parse({ action: 'guide', topic }) as Record<
+        string,
+        unknown
+      >;
+      await expect(handler.run(parsed, context())).resolves.toEqual({
+        ok: true,
+        action: 'guide',
+        ...guide,
+      });
+    }
+    expect(canonicalGuideByTopic.form_propose.how).toContain('A PUBLIC FORM, whole, in ONE call.');
+    expect(canonicalGuideByTopic.portal_propose.how).toContain(
+      'A PORTAL FOR CLIENTS, whole, in ONE call.',
+    );
+    expect(canonicalGuideByTopic.form_propose.how).toContain(
+      'never a table plus a plan to build a form later',
+    );
+    expect(canonicalGuideByTopic.form_propose.how).toContain(
+      '{"action": "form_propose", "title": "New patient intake"',
+    );
+    expect(canonicalGuideByTopic.document_propose.how).toContain(
+      'NEVER WRITE THE LETTERHEAD YOURSELF',
+    );
     expect(openRecordStore).not.toHaveBeenCalled();
   });
 
@@ -108,7 +96,7 @@ describe('registered records schema null defaults', () => {
       ok: true,
       action: 'guide',
       topic: null,
-      actions: ['table_list', 'form_propose'],
+      actions: Object.keys(canonicalGuideByTopic),
     });
     expect(openRecordStore).not.toHaveBeenCalled();
   });
