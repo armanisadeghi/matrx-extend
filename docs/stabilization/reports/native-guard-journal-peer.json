@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "report_id": "native-guard-journal-peer",
+  "defect_id": "EXT-D-0051",
+  "reviewed_commit": "c29b0514bfa4fcf0bb81f0b8dc7e2a6bb237d020",
+  "verdict_a_engineering_goal": "PARTIAL",
+  "verdict_a_reason": "The unique-run refusal and final decision are evidenced in the original test and peer preflight probe. The original admission probe has no watch event. This peer probe was stopped during preflight, so neither live watch journaling nor mid-run I/O failure is demonstrated.",
+  "verdict_b_safety_quality": "FIX_FIRST",
+  "findings": [
+    {
+      "severity": "important",
+      "code": "JOURNAL_DIRECTORY_SYMLINK_ESCAPE",
+      "location": "scripts/stabilization-resource-journal.mjs:17-20",
+      "observation": "mkdirSync(recursive) accepts a symlink at docs/stabilization/resource-journals, and openSync writes through it. The returned path looks repo-local even though the durable evidence is elsewhere. An isolated temp-repo reproduction returned outsideFileCreated=true. The legitimate repository root may itself be symlinked; containment should be checked against its canonical directory.",
+      "implication": "A guard invocation can be admitted while its evidence escapes the expected repo-local journal directory.",
+      "repair_direction": "Reject a symlinked journal directory or canonicalize and verify the actual destination is under the canonical repo's journal directory before opening, while preserving exclusive creation and the fail-closed launch behavior."
+    }
+  ],
+  "mid_run_write_failure_source_audit": {
+    "result": "SOURCE_ONLY_SAFE_PATH_CONFIRMED",
+    "details": "emit sets journalBroken before throwing. A failure inside the main try enters finally, where owned run descendants are stopped/censused and release is skipped; browser mode also skips release. A signal-handler emit failure exits without cleanup but leaves the lease held. A final-decision write failure occurs after ordinary cleanup, so no owned child should remain, though the resource verdict is unverified and wrapper exits 3. No live I/O fault was induced.",
+    "limits": "The source audit cannot prove runtime behavior during an actual filesystem or fsync error."
+  },
+  "peer_probe": {
+    "run_id": "native-guard-journal-peer-watch-20260928",
+    "journal_path": "docs/stabilization/resource-journals/native-guard-journal-peer-watch-20260928.jsonl",
+    "journal_sha256": "8fb828e04f4facdf9c436b0be8d4fa3e2dc1ccf18b469934fe37bbb791cd191d",
+    "events": ["RESOURCE_JOURNAL_OPENED", "RESOURCE_STOP_REQUESTED", "RESOURCE_STOP_REQUESTED", "RESOURCE_FINAL_DECISION"],
+    "wrapper_exit_code": 2,
+    "final_decision": "refused",
+    "admitted": false,
+    "watch_observed": false,
+    "ui_actions": 0,
+    "post_probe_heavy_lease": "absent",
+    "post_probe_guard_process": "absent"
+  }
+}

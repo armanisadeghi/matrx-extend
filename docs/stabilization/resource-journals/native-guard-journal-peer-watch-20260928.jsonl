@@ -1,0 +1,4 @@
+{"schema":1,"at":"2026-09-28T11:07:02.538Z","runId":"native-guard-journal-peer-watch-20260928","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-09-28T11:08:07.238Z","runId":"native-guard-journal-peer-watch-20260928","signal":"SIGINT","code":"RESOURCE_STOP_REQUESTED"}
+{"schema":1,"at":"2026-09-28T11:08:12.297Z","runId":"native-guard-journal-peer-watch-20260928","code":"RESOURCE_STOP_REQUESTED"}
+{"schema":1,"at":"2026-09-28T11:08:12.303Z","runId":"native-guard-journal-peer-watch-20260928","resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}
