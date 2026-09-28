@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "lane": "EXT-D-0049 initial-document Network discovery runtime validation",
-  "status": "RESOURCE_PREFLIGHT_REFUSED",
+  "status": "FOCUSED_TEST_FAILURE",
   "at_utc": "2026-09-28T08:32:34.862Z",
   "source_head": "f2b14f685c13c2ec8b260fae2443c9db494c36a1",
   "source_change": "ef744dc6",
@@ -25,7 +25,34 @@
       "swap_window_seconds": 60
     }
   },
-  "follow_up": "Stopped immediately after the refusal. No retry, threshold or allowlist change, cleanup, compile, build, browser action, or native validation was performed.",
+  "resumed_attempt": {
+    "run_id": "d49-runtime-tests-0928-resume1",
+    "admission": {
+      "at_utc": "2026-09-28T08:36:36.385Z",
+      "code": "RESOURCE_ADMITTED",
+      "pressure_level": 1,
+      "available_memory_gib": 11.2,
+      "one_minute_load": 6.17,
+      "logical_cpus": 10,
+      "cpu_busy_fraction": 0.443,
+      "swap_used_mib": 4044.31,
+      "reasons": []
+    },
+    "result": {
+      "at_utc": "2026-09-28T08:37:10.880Z",
+      "guard_code": "RESOURCE_JOB_EXIT",
+      "child_exit_code": 1,
+      "summary": "5 of 6 files passed; 33 passed and 1 failed out of 34 tests.",
+      "failure": {
+        "file": "tests/unit/document-network-dispatch.test.ts",
+        "test": "page-load discovery with no responses ends with a usable remedy",
+        "reason": "Test timed out in 30000ms.",
+        "location": "tests/unit/document-network-dispatch.test.ts:261"
+      },
+      "guard_terminal_exit_code": 1
+    }
+  },
+  "follow_up": "The original attempt stopped immediately after preflight refusal. After the separately admitted recovery check, the same focused command ran once and failed on the recorded timeout. Stopped at that failure; no further attempt, threshold or allowlist change, cleanup, compile, build, browser action, or native validation was performed.",
   "artifact_receipt": null,
   "test_results_receipt": null,
   "native_acceptance": "UNVERIFIED",
