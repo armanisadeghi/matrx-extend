@@ -77,6 +77,7 @@ export function SavedCapturesView() {
   /** Saved captures the database returned that could not be read — said, never hidden. */
   const [unreadable, setUnreadable] = useState(0);
   const requestGeneration = useRef(0);
+  const openGeneration = useRef(0);
   const setTab = useSidepanelTabStore((state) => state.setTab);
 
   const load = useCallback(async (search = '') => {
@@ -111,16 +112,19 @@ export function SavedCapturesView() {
   }, [load, query]);
 
   const openCapture = async (summary: SavedCaptureSummary) => {
+    const generation = ++openGeneration.current;
     setLoading(true);
     setError(null);
     try {
       const capture = await getSavedCapture(summary.id);
+      if (generation !== openGeneration.current) return;
       if (!capture) throw new Error('This Source no longer exists.');
       setSelected(capture);
     } catch (cause) {
+      if (generation !== openGeneration.current) return;
       setError(cause instanceof Error ? cause.message : 'This Source could not be opened.');
     } finally {
-      setLoading(false);
+      if (generation === openGeneration.current) setLoading(false);
     }
   };
 
@@ -177,6 +181,7 @@ export function SavedCapturesView() {
         <SavedCaptureDetail
           capture={selected}
           onBack={() => {
+            openGeneration.current += 1;
             setSelected(null);
             void load(query);
           }}

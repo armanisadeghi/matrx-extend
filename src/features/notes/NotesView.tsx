@@ -42,7 +42,7 @@ export function NotesView() {
   }
 
   if (selectedNoteId) {
-    return <NoteEditor noteId={selectedNoteId} />;
+    return <NoteEditor key={selectedNoteId} noteId={selectedNoteId} />;
   }
 
   return <NotesList notes={notesQuery.data ?? []} />;
