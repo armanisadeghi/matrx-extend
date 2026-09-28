@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "defect": "EXT-D-0050",
+  "run_id": "showcase-d50-native-20260928",
+  "browser": "Google Chrome primary profile /Users/armanisadeghi/Library/Application Support/Google/Chrome",
+  "resource_guard": {
+    "command": "node scripts/stabilization-resource.mjs browser --run-id showcase-d50-native-20260928 --profile-dir /Users/armanisadeghi/Library/Application Support/Google/Chrome",
+    "admission_at": "2026-09-28T10:21:14Z",
+    "admission_code": "RESOURCE_ADMITTED",
+    "last_healthy_watch_at": "2026-09-28T10:27:30Z",
+    "stop_at": "2026-09-28T10:27:40Z",
+    "stop_code": "RESOURCE_BROWSER_STOP_CONFIRMED",
+    "resource_invalid": false
+  },
+  "artifact": {
+    "receipt": "docs/stabilization/runs/showcase-d50-runtime-artifact-20260928.json",
+    "version": "0.2.114",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256_before": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "tree_sha256_after": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "manifest_sha256_before_and_after": "9140ab8686f4552f2507c85a773e99826feff482b524a8deba615b05513f738c",
+    "explicit_chrome_reload": {
+      "approx_at": "2026-09-28T10:22:20Z",
+      "page": "chrome://extensions/",
+      "visible_identity": "Matrx Extend, 0.2.114, cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "visible_result": "Reloaded"
+    }
+  },
+  "recipe": {
+    "name": "Codex D49 exact HN hits rows 20260928",
+    "id": "667a7a91-604a-41cd-a289-b3327a3e22ca",
+    "page": "https://hn.algolia.com/?q=OpenAI",
+    "pre_run_card": "last run 40m ago · 10 rows",
+    "run_clicked_approx_at": "2026-09-28T10:24:47Z",
+    "approval_visible": true,
+    "approval_action": "Allow",
+    "approval_completed_approx_at": "2026-09-28T10:25:05Z",
+    "matched_request_visible": true,
+    "terminal_visible_approx_at": "2026-09-28T10:25:36Z",
+    "terminal_card": "last run 1s ago · 10 rows",
+    "terminal_rows_heading": "10 ROWS",
+    "terminal_result": "PASS: ten HN story rows were displayed in the table.",
+    "panel_close_reopen_visible_approx_at": "2026-09-28T10:27:14Z",
+    "remounted_patterns_card": "last run 1m ago · 10 rows",
+    "database_row_directly_read": false
+  },
+  "scope": {
+    "created_or_deleted_recipes": false,
+    "database_injection": false,
+    "reserved_d22_source_save_attempt_touched": false,
+    "source_or_build_changed": false,
+    "localhost_used": false,
+    "other_data_touched": false
+  },
+  "companion_report": "docs/stabilization/reports/showcase-run-timestamp-native.json"
+}

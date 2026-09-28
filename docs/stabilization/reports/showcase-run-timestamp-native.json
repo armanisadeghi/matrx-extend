@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "defect": "EXT-D-0050",
+  "lane": "independent native Chrome acceptance",
+  "artifact": {
+    "path": ".output/chrome-mv3-dev",
+    "version": "0.2.114",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256_before": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "tree_sha256_after": "9ea6687b004f1d72c64719f41704c112e0ba7b671c1969f11c52c7d0de16ec43",
+    "manifest_sha256_before_and_after": "9140ab8686f4552f2507c85a773e99826feff482b524a8deba615b05513f738c"
+  },
+  "verdict_a": {
+    "status": "PASS",
+    "evidence": [
+      "On the primary Chrome profile, chrome://extensions identified the unpacked Matrx Extend as version 0.2.114, id cihdmkcdjjckfhjpgoedmgfpoljebaml; explicit Reload produced Chrome's 'Reloaded' confirmation.",
+      "On https://hn.algolia.com/?q=OpenAI, ran the existing 'Codex D49 exact HN hits rows 20260928' saved Network recipe (id 667a7a91-604a-41cd-a289-b3327a3e22ca). The native approval card identified that recipe and its exact id; after Allow, Chrome showed the extension had started debugging and the panel reported one matched request.",
+      "Terminal UI displayed the recipe card as 'last run 1s ago · 10 rows', a 10 ROWS result heading, and the existing table of ten HN story rows.",
+      "Closed and reopened the Chrome side panel, selected Showcase, and reopened Patterns. The recipe still displayed 'last run 1m ago · 10 rows' with the same result card available. This is UI evidence after panel remount, separate from the initial transient render."
+    ],
+    "limitations": [
+      "No direct Supabase row read was made, so the exact persisted last_run_at value and database write result are not independently verified.",
+      "Native metadata-failure UI was not exercised; it remains covered only by source regression evidence.",
+      "The guarded native session replaced the original HN tab with chrome://extensions temporarily, then navigated back to the same exact HN Algolia URL before replay."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS_WITH_LIMITS",
+    "evidence_quality": [
+      "Build-tree hash matched the supplied artifact receipt both before and after all Chrome actions; no source or artifact mutation occurred in the UI lane.",
+      "An independent resource browser lease was admitted at 2026-09-28T10:21:14Z, remained healthy during UI work, and stopped with RESOURCE_BROWSER_STOP_CONFIRMED and resourceInvalid=false at 2026-09-28T10:27:40Z.",
+      "Evidence came from the user's primary Chrome UI and admin@admin.com session, not localhost or an in-app browser."
+    ],
+    "limits": [
+      "The remounted panel displayed the refreshed last-run age and rows, supporting UI-level persistence across side-panel close/reopen; this does not establish the exact database row or live RLS result.",
+      "This lane does not address broader Showcase coverage or release readiness."
+    ]
+  },
+  "run_receipt": "docs/stabilization/runs/showcase-d50-native-20260928.json"
+}
