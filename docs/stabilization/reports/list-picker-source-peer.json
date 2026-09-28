@@ -7,6 +7,7 @@
   "failure_visibility": "PASS for current-page injection/start failures (friendly error displayed). A navigation transition closes the picker as expected; its explanatory message may be cleared by the pageKey effect during that same transition. This is a low-severity optional UX issue, not a concealed current-page failure.",
   "workflow_review": "PASS by source — picker detections stage provisional config, cancel discards it, Done merges/appends field paths, and existing Extract/save controls consume committed config.",
   "findings": ["Low severity, optional UX: after navigation, the picker closes and pageKey effect clears errors; therefore the navigation watcher’s explanation can disappear. Current-page injection failures remain surfaced through the catch path."],
-  "limits": "No source changes or tests/build/compile/runtime/UI performed. D43 failure remains unverified until fixture provides a document identity transition; do not treat test result as source proof.",
+  "fixture_review": {"change": "tests/unit/showcase-d43-entry.test.tsx since c17eb2c7aa3092b824e9785a518ad44d7c2a1e4e", "verdict": "PASS by source — fixture pageKey matches resolver JSON [tab.id, frame.documentId, url]; it buffers the real picker producer's result while still on document-a, transitions URL and document to document-b, then delivers the old stamped completion. Original builder-cleared assertions remain (Pick an example item visible; old list root absent). Completion is required by the subsequent payload assertion.", "limits": "Independent source review only; no test run. Runtime result reported by owner (29/29) is not independently claimed."},
+  "limits": "No source changes or tests/build/compile/runtime/UI performed.",
   "source_hashes_match_input_report": true
 }
