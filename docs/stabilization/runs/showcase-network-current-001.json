@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "run_id": "showcase-network-current-001",
+  "status": "BUILD_GREEN_NATIVE_NOT_RUN",
+  "scope": "Refresh current integrated dev dependencies and build a fresh unpacked extension for the planned EXT-F-1012-T57 acceptance. Native work was stopped by updated task direction before any UI was opened.",
+  "source": {
+    "commit": "d4bbe70ea652c0e23f6dd5941ccf72945a31d5e5",
+    "git_tree": "e7f1a030471503f1f968828bebcb2c8dc00e0d9f",
+    "working_tree": "clean at receipt recording",
+    "lockfile_sha256": "0cd2a1c8e0477fdacf5dadc5bd0f40542f255287a22012a0a7ea4387d95abb89"
+  },
+  "resource_history": {
+    "primary_profile_preflight": {
+      "at": "2026-09-28T05:28:44.233Z",
+      "result": "RESOURCE_ADMITTED",
+      "profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+      "pressure_level": 1,
+      "available_memory_gib": 13.44,
+      "one_minute_load": 1.55,
+      "cpu_busy_fraction": 0.168,
+      "swap_used_mib": 3410.69,
+      "profile_free_gib": 26.37
+    },
+    "frozen_install": {
+      "run_id": "showcase-current-install-20260928T052900Z",
+      "result": "admitted_child_and_wrapper_exit_0",
+      "admitted_at": "2026-09-28T05:30:04.477Z",
+      "terminal_at": "2026-09-28T05:30:06.121Z",
+      "command": "pnpm install --frozen-lockfile --ignore-scripts",
+      "updated": {
+        "@ai-matrx/agents": "0.17.0",
+        "@ai-matrx/associations": "0.13.15",
+        "@ai-matrx/content-ir": "0.19.19",
+        "@ai-matrx/design-system": "0.49.5",
+        "@ai-matrx/kit": "0.16.13",
+        "@ai-matrx/records": "0.58.39"
+      }
+    },
+    "wxt_prepare": {
+      "run_id": "showcase-current-prepare-20260928T053010Z",
+      "result": "admitted_child_and_wrapper_exit_0",
+      "admitted_at": "2026-09-28T05:31:34.158Z",
+      "terminal_at": "2026-09-28T05:31:35.493Z",
+      "tool": "WXT 0.21.4 generated types"
+    },
+    "superseded_preflight_only_attempt": {
+      "run_id": "showcase-current-devbuild-20260928T053200Z",
+      "result": "operator_cancelled_before_admission_child_never_launched",
+      "terminal_at": "2026-09-28T05:33:03.025Z",
+      "reason": "Root redirected sequence to package changelog reconciliation and guarded compile before direct development build."
+    },
+    "compile": {
+      "run_id": "showcase-current-compile-20260928T053400Z",
+      "result": "admitted_child_and_wrapper_exit_0",
+      "admitted_at": "2026-09-28T05:34:43.758Z",
+      "terminal_at": "2026-09-28T05:34:45.734Z",
+      "command": "pnpm compile"
+    },
+    "development_build_first_attempt": {
+      "run_id": "showcase-current-devbuild-20260928T053500Z",
+      "result": "RESOURCE_PREFLIGHT_REFUSED_CHILD_NEVER_LAUNCHED",
+      "terminal_at": "2026-09-28T05:36:11.666Z",
+      "reason": "RESOURCE_CPU_HIGH_LOAD_BUSY",
+      "pressure_level": 1,
+      "available_memory_gib": 13.12,
+      "one_minute_load": 8.91,
+      "cpu_busy_fraction": 0.6314,
+      "swap_used_mib": 3394.69
+    },
+    "fresh_primary_profile_preflight": {
+      "at": "2026-09-28T05:38:01.713Z",
+      "result": "RESOURCE_ADMITTED",
+      "profile": "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+      "pressure_level": 1,
+      "available_memory_gib": 13.12,
+      "one_minute_load": 7.99,
+      "cpu_busy_fraction": 0.3798,
+      "swap_used_mib": 3394.69,
+      "profile_free_gib": 26.35
+    },
+    "development_build_retry": {
+      "run_id": "showcase-current-devbuild-retry-20260928T053805Z",
+      "result": "admitted_child_and_wrapper_exit_0",
+      "admitted_at": "2026-09-28T05:39:18.529Z",
+      "terminal_at": "2026-09-28T05:39:21.664Z",
+      "command": "pnpm exec wxt build --mode development",
+      "warnings": "Existing ineffective dynamic-import warnings only."
+    }
+  },
+  "installed_packages_and_consumer_actions": {
+    "versions": {
+      "@ai-matrx/agents": "0.17.0",
+      "@ai-matrx/associations": "0.13.15",
+      "@ai-matrx/content-ir": "0.19.19",
+      "@ai-matrx/design-system": "0.49.5",
+      "@ai-matrx/kit": "0.16.13",
+      "@ai-matrx/records": "0.58.39"
+    },
+    "reconciliation": "Read each installed changelog. agents' Source types action names matrx-frontend; associations and records specify no action; content-ir's latest /source behavior requires no extension migration; design-system's current package is a changed-only republish and its older SelectChevron action has no extension import; kit's points-format action has no extension formatCost/cost renderer use. No extension catch-up action applies to the bounded acceptance."
+  },
+  "artifact": {
+    "directory": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "version": "0.2.114",
+    "extension_id_expected": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "artifact_tree_sha256": "f6dd0f94fc4a37800e26f11d98eb37e35d8d1f47b3e474d299af17b2b50a28be",
+    "receipt": "test-results/source-dev-build-showcase-current-20260928T053930Z.json",
+    "receipt_sha256": "b01ab31033e93cdebab9bdbb19dae902891df9509538c7c0a2ed7e33163f708b",
+    "receipt_recorded_at": "2026-09-28T05:39:40.925Z"
+  },
+  "acceptance": {
+    "case_id": "EXT-F-1012-T57",
+    "target": "Owned HN Search saved Network replay recipe `Codex D47 HN Search OpenAI network replay 20260928`",
+    "result": "NOT_RUN",
+    "reason": "Updated root direction explicitly ended this lane after the existing guarded development-build retry. No browser guard, Chrome reload, page refresh, Showcase open, approval interaction, replay, or product verdict was performed.",
+    "inventory_change": "None; no bounded UI evidence exists and no feature pass/fail is promoted."
+  },
+  "limitations": [
+    "The artifact is built and receipt-bound but was not loaded into Chrome; loaded extension version and source directory remain unverified.",
+    "No secrets, raw Algolia request values, or unrelated user data were read or recorded.",
+    "The existing HN recipe was not opened or changed."
+  ]
+}

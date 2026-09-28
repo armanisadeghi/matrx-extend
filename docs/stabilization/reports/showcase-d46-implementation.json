@@ -1,0 +1,30 @@
+{
+  "defect_id": "EXT-D-0046",
+  "case_id": "EXT-F-1012-T56",
+  "status": "prepared_waiting_for_source_ownership",
+  "current_truth": "Current product code remains unchanged and still collapses a literal JSON key containing a dot into the same dotted string as nested keys. No test, build, browser, or database operation has run in this lane.",
+  "confirmed_source_boundary": {
+    "origin": "JsonTree constructs child paths by concatenating object keys with dots.",
+    "network": "NetworkTab passes the ambiguous string to rowsFromBody for preview and into saved config for runNetworkCapturePattern replay.",
+    "framework": "FrameworkTab passes the same ambiguous string through useExtraction and saved config to nextDataMode.runInPage for preview and runPattern replay.",
+    "sibling_census": "NetworkTab and FrameworkTab are the only production JsonTree selection callers. Debug views render JsonTree without selection. Existing saved string paths and built-in recipe literals are compatibility inputs."
+  },
+  "candidate": {
+    "product_patch": "docs/stabilization/pending/EXT-D-0046/product.patch",
+    "component_guard": "docs/stabilization/pending/EXT-D-0046/showcase-json-path-connected.test.tsx.pending",
+    "runner_guard": "docs/stabilization/pending/EXT-D-0046/showcase-json-key-path.test.pending",
+    "representation": "New tree picks persist exact string segments as a JSON array in key_path. Existing saved strings continue to use each runner's current dotted-string semantics, including Network's skipped empty segments and Framework's preserved interior empty segments. The type of key_path itself distinguishes old and new representations.",
+    "static_check": "git apply --check passed against current shared checkout."
+  },
+  "guard_quality": {
+    "connected_scope": "The staged connected test renders the real NetworkTab and FrameworkTab with real JsonTree, useExtraction, SaveAsPattern, and runners. It replaces external capture transport and database persistence only. It asserts the saved config, passes it through JSON serialization to model reopen, and asserts the distinct literal-key row from real replay.",
+    "runner_scope": "The smaller staged guard covers literal dots, nested keys, bracket-looking keys, array indexes, empty keys, and old string behavior. The new-helper import and artificial save/reopen assertion were removed so the old source can fail on behavior rather than import failure.",
+    "unproven": "Both guards are pending and unrun. The connected guard may need harness adjustment when moved into tests/unit. Red/green, mutation, typecheck, existing tests, and installed public-page acceptance remain open."
+  },
+  "integration_hazards": [
+    "Existing showcase-network-save-replay and showcase-network-credential tests mock JsonTree with a string callback and assert string key_path; adapt those fixtures to exact-segment arrays when the product patch lands.",
+    "Verify the in-page Framework runner remains self-contained after the type-only import; chrome.scripting serializes the function body, not its module imports.",
+    "Keep selected response values out of reports/logs; tests use synthetic publisher titles only."
+  ],
+  "next_action": "After root releases source ownership, move staged guards into tests/unit, prove assertion-red against current source, apply the product patch, reconcile existing selection mocks, prove green, run compile and focused tests, then return source ownership for build and installed verification."
+}

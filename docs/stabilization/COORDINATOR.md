@@ -1,6 +1,6 @@
 # Matrx Extend stabilization: resume here
 
-Current priority (2026-09-27): finish Showcase detect → extract → save → reopen → repeat, per latest owner request. SHOWCASE-PLAN.md and inventory EXT-F-1012 own scope. Broad stabilization remains incomplete; old blocked goal-tool state reflects historical resource refusals, not the current active repair.
+Current priority (2026-09-27): finish Showcase detect → extract → save → reopen → repeat, per latest owner request. SHOWCASE-PLAN.md and inventory EXT-F-1012 own scope. Broad stabilization remains incomplete; the goal is active.
 
 **Owner ruling (2026-09-27): Showcase UI acceptance uses the built development
 extension in Chrome on real public websites. Verify build identity, reload the
@@ -10,7 +10,17 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
-## Current checkpoint (2026-09-27 local; D47 engineering pushed, native retest resource-invalid)
+## Current checkpoint (2026-09-27 22:42 local)
+
+- **Previous goal turn: progress.** Current remote source `fc667925` was integrated, frozen dependencies installed, WXT types prepared, and compile passed. The first build was refused for CPU load; a subsequent full healthy admission allowed a successful direct development build. Evidence: `runs/showcase-network-current-001.json`, commit `9a47fa62`.
+- **Current build:** version 0.2.114, source `d4bbe70e`, artifact tree SHA-256 `f6dd0f94fc4a37800e26f11d98eb37e35d8d1f47b3e474d299af17b2b50a28be`. Receipt: `test-results/source-dev-build-showcase-current-20260928T053930Z.json`. Chrome has NOT been reloaded to this artifact; no current-build native acceptance is claimed. Old installed observations below are historical.
+- **D46 next:** implementation lane `/root/showcase_json_paths_implementation` (Sol medium) owns the scoped JSON selection/persistence repair and sole guarded runtime permit. Require connected behavior-red before repair, corrected green, focused regressions, compile, fresh independent review, then rebuilt/reloaded native proof. A source census found the saved Network sanitizer discards array key paths; include that real save boundary rather than mocking it away. Pending connected guard/report are in `reports/showcase-d46-implementation.json` and `pending/EXT-D-0046/`. D46 remains open until evidence justifies transitions; no native closure yet.
+- **CI integration remains blocked:** `fc667925` Actions run `36379571405` fails because its required `AIDREAM_REPO_TOKEN` is not configured; downstream tests/build were skipped. Existing Vault metadata and GitHub App routes have been audited, not provisioned. No approved restricted reader is currently configured. Do not substitute the broad operator token or bypass the gate. Full evidence and next action: `reports/current-ci-recovery.json`. Local work remains committed but unpushed pending green integration; repository fetch confirms no additional remote commits at this checkpoint.
+- **Mailbox:** icon/count-only source change `3f3ce058` is present and previously pushed. Native reload was confirmed, but rendered toolbar verification remains open (`reports/mailbox-icon-only.json`). No broad Capture coverage promotion.
+- **Resource ownership:** build lane `/root/showcase_current_delta` is terminal (guarded child and wrapper exit 0). No native session was started. Sole runtime/source ownership transferred to D46 after terminal confirmation. Preserve concurrency cap 1 and immediate watchdog polling for native batches. No localhost UI.
+- **Remaining scope:** D47 current-document saved replay, D48 credential persistence/rotation, other Showcase methods, exhaustive guest/member/admin controls, and all other inventory gaps remain unresolved. Chat/Pilot systematic work stays last. Native reports and source tests are bounded evidence, never full-feature certification.
+
+## Historical checkpoint (superseded; D47 engineering pushed, native retest resource-invalid)
 
 Latest built artifact is **0.2.111**, source `b0f456471c8db227e8168c98fdea09a603e2f25d`, tree `01ae8a830c987566f8a58959cea46c40a16cba83c724e690d1e221ba253de622`. Root independently recomputed the tree and receipt SHA. `runs/showcase-d47-installed-live-001.json` binds source, dependency integration, passing compile/production/dev builds, and Chrome reload observations. The browser run ended **RESOURCE_INVALID_INCONCLUSIVE**, exit 3, after unsafe pressure/swap growth. Its HN Search save/replay observations are diagnostic leads only; no acceptance pass/fail is inferred. The previously valid D48 .109 Network evidence remains bounded to its earlier source/tree (`runs/showcase-d48-devbuild-001.json` and `runs/showcase-installed-d48-network-001.json`).
 

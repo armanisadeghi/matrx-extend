@@ -2,7 +2,6 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { JsonTree } from '@/components/ui/json-tree';
-import { formatJsonKeyPath } from '@/lib/data-pattern/json-key-path';
 import { rowsFromBody } from '@/lib/data-pattern/run-interactive';
 import { runMode, runPattern } from '@/lib/data-pattern/run-pattern';
 
@@ -35,7 +34,7 @@ afterEach(() => {
 });
 
 describe('Showcase JSON key paths', () => {
-  it('keeps exact segments distinct through tree selection, save/reopen, and Network extraction', async () => {
+  it('keeps exact segments distinct through tree selection and Network extraction', async () => {
     const selections = [
       { label: '["feeds.news"]', path: ['feeds.news'], title: 'Literal edition' },
       { label: 'feeds.news', path: ['feeds', 'news'], title: 'Nested edition' },
@@ -46,13 +45,11 @@ describe('Showcase JSON key paths', () => {
     for (const { label, path, title } of selections) {
       const selected = await pickTreePath(label);
       expect(selected).toEqual(path);
-      expect(formatJsonKeyPath(selected)).toBe(label);
-      const reopened = JSON.parse(JSON.stringify({ key_path: selected })).key_path as string[];
-      expect(rowsFromBody(JSON.stringify(payload), reopened)).toEqual([{ title }]);
+      expect(rowsFromBody(JSON.stringify(payload), selected)).toEqual([{ title }]);
     }
   });
 
-  it('uses the saved exact path in Framework preview and saved-pattern replay', async () => {
+  it('uses exact paths in Framework preview and saved-pattern replay', async () => {
     const literal = await pickTreePath('["feeds.news"]');
     const nested = await pickTreePath('feeds.news');
     const script = document.createElement('script');
@@ -68,12 +65,13 @@ describe('Showcase JSON key paths', () => {
       },
     });
 
-    const config = JSON.parse(JSON.stringify({ source: '__NEXT_DATA__', key_path: literal }));
+    const config = { source: '__NEXT_DATA__', key_path: literal };
     await expect(runMode('next_data', 37, config)).resolves.toEqual([{ title: 'Literal edition' }]);
     await expect(runMode('next_data', 37, { source: '__NEXT_DATA__', key_path: nested })).resolves.toEqual([{ title: 'Nested edition' }]);
     await expect(runPattern({ kind: 'next_data', config } as Parameters<typeof runPattern>[0], 37)).resolves.toEqual([{ title: 'Literal edition' }]);
     await expect(runMode('next_data', 37, { source: '__NEXT_DATA__', key_path: 'odd..path' })).resolves.toEqual([{ title: 'Double-dot edition' }]);
     await expect(runMode('next_data', 37, { source: '__NEXT_DATA__', key_path: '' })).resolves.toEqual([payload]);
+    await expect(runMode('next_data', 37, { source: '__NEXT_DATA__', key_path: '["literal"]' })).resolves.toEqual([{ title: 'Bracket-key edition' }]);
   });
 
   it('preserves the meaning of old dotted strings and bracket-looking literal keys', () => {

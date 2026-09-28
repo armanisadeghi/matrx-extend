@@ -1,0 +1,79 @@
+{
+  "kind": "source_reconciliation",
+  "as_of": {
+    "head": "fc667925",
+    "head_full": "fc667925",
+    "compared_from": "b0f45647",
+    "dirty_tree": false,
+    "scope": "EXT-F-1012 Showcase D46-D48 plus D47 saved-replay progress candidate"
+  },
+  "current_truth": {
+    "EXT-D-0046": {
+      "state": "open_unapplied_candidate",
+      "pending_product": "docs/stabilization/pending/EXT-D-0046/product.patch",
+      "pending_test": "docs/stabilization/pending/EXT-D-0046/showcase-json-key-path.test.pending",
+      "reconciliation": "Still unapplied. The later source review docs/stabilization/reports/showcase-json-path-review.json supersedes the earlier bracket-string candidate description: use string | string[] so legacy strings retain semantics and new tree picks preserve key segments. The pending patch still needs root integration and rebase; no test/build/runtime evidence exists.",
+      "current_source_evidence": "json-tree.tsx still emits `${path}.${key}`; Network and Framework persisted consumers still accept and split string key_path. Current source does not contain the array candidate.",
+      "prerequisite": "Integrate the array representation across JsonTree, Network preview/replay, Framework preview/replay and schemas; then test red on old source, green after, and verify real installed save/reopen/replay for literal dotted and nested keys."
+    },
+    "EXT-D-0047": {
+      "state": "core_repair_landed_live_acceptance_still_open",
+      "landed_since_baseline": [
+        "326a4ccd: document-start capture cleanup without CDP eval",
+        "10510f80: hook cleanup pinned to nonce",
+        "792e2721: cleanup hook before frame commit",
+        "9ec14eec: merged remote saved-UI test cleanup and dependency integration; current HEAD descends from this merge"
+      ],
+      "unapplied_repairs": [
+        {
+          "item": "docs/stabilization/pending/EXT-D-0047-ci-causal/test.patch.pending",
+          "status": "unapplied_reconcile_required",
+          "detail": "The five-case teardown candidate remains explicitly untested in its report. The saved-UI test also changed in merged commit 9ec14eec, so candidate must be reconciled against current test before any application. Historical four-case green does not verify the five-case candidate."
+        },
+        {
+          "item": "docs/stabilization/pending/EXT-D-0047-preapproval/",
+          "status": "do_not_apply_as_written",
+          "detail": "Independent peer report showcase-preapproval-candidate-peer.json says FIX_FIRST for connected UI-to-dispatch coverage, cancel timing, Network-only scope, and candidate documentation. No valid product defect or acceptance pass follows from the resource-invalid .111 observation."
+        }
+      ],
+      "source_delta_invalidates_build": "The .111 receipt is for b0f45647. D47 capture source changed in 326a4ccd, 10510f80 and 792e2721 after that build; package lock also moved through later dependency syncs including d90447ee. The .111 artifact cannot verify current HEAD.",
+      "next_acceptance": {
+        "case": "EXT-F-1012-T57, installed-development HN Search saved Network replay, including initial/current-document request capture and repeated saved replay",
+        "prerequisites": [
+          "safe full resource admission; prior guard refusals do not authorize bypass or threshold changes",
+          "prepare/install latest development build from current integrated source and record a fresh source/tree receipt",
+          "reload the unpacked extension and target page, reopen Showcase, confirm build identity",
+          "poll foreground resource guard immediately before each UI batch; stop on any stale/unsafe sample",
+          "use a real public page and the owned HN recipe; no secret material"
+        ],
+        "limits": "The old .111 run was resource-invalid and diagnostic only. It proves no pass or product failure. Maintain surrounding initial-request, old-document isolation and cancellation expectations."
+      }
+    },
+    "EXT-D-0048": {
+      "state": "source_fix_landed_installed_privacy_acceptance_open",
+      "reconciliation": "No D48 implementation patch is pending. Current source still contains credential-aware URL and save normalization, dispatcher pre-observer normalization, user-selectable unknown query-key masking, and replay identity fingerprinting; these correspond to the already-landed de819649 repair. Existing .109 live evidence is partial and predates later D47 source/dependency changes.",
+      "remaining_case": "EXT-F-1012-T58 credential-safe Network save/name, reopen, rotation, and in-window ambiguity; then Debug/chat observation as defect closure requires.",
+      "prerequisites": [
+        "fresh current-source development build receipt and installed reload after D47 acceptance/build work",
+        "real public page; synthetic canary values only, no real credentials",
+        "verify safe saved config and name after reopening; change only synthetic credential value for rotation; exercise two distinct synthetic identities for ambiguity"
+      ],
+      "existing_evidence_limit": "showcase-installed-d48-network-001 exercised recognized and user-selected unknown-key masking, then restored the ordinary matcher before saving. It did not persist/reopen a credential-bearing case or test rotation/ambiguity; T50/T53/T58 remain partial."
+    }
+  },
+  "source_drift_and_receipts": [
+    {
+      "claim": "Latest installed artifact was .111 at b0f45647",
+      "current_delta": "Superseded by current source. D47 source changed after b0 in three capture-cleanup commits, and current HEAD includes later lockfile refreshes. Rebuild before any claim about current source."
+    },
+    {
+      "claim": "D48 installed .109 replay is current acceptance",
+      "current_delta": "Historical bounded evidence only; the source/dependency tree has advanced. Its ordinary replay/control observations remain valid for their recorded build but do not certify the current build or credential-bearing persistence."
+    },
+    {
+      "claim": "No latest integration CI result",
+      "current_delta": "COORDINATOR records remote 9e73c695 CI run 36363514238 passed and merge 9ec14eec. Earlier b0f45647 and d60a9e0e failures remain historical failures. This does not establish local installed acceptance or verify pending five-case candidate."
+    }
+  ],
+  "scope_note": "Source reconciliation only; no test, build, browser, database, or product mutation was performed. No new defect inferred from an invalid native observation."
+}

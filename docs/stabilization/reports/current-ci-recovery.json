@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "task_id": "current-ci-recovery",
+  "status": "blocked_on_approved_repository_reader",
+  "observed_at_utc": "2026-09-28T05:26:23Z",
+  "source_sha": "fc667925f76fc5d98bd25ceb14d7304908915145",
+  "failed_run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/36379571405",
+  "first_failure": {
+    "job": "checks",
+    "step": "Require canonical records reader",
+    "message": "AIDREAM_REPO_TOKEN is required for records-guide parity; configure the approved read-only repository reader.",
+    "consequence": "Every later CI step was skipped, so the run contains no typecheck, schema, lint, unit-test, or build verdict."
+  },
+  "confirmed_cause": "The workflow requires secrets.AIDREAM_REPO_TOKEN to read the pinned private AI-Matrix-Engine/aidream source, but the matrx-extend repository currently has zero Actions secrets. The pinned aidream commit exists. This is missing credential provisioning, not a demonstrated records-guide or product-code failure.",
+  "credential_route_audit": {
+    "matrx_extend_actions_secret_count": 0,
+    "aidream_repository": "private; pinned commit ea1db98d9acceed438cd3e476b3de3f8585f90e9 exists",
+    "process_environment": "No AIDREAM_REPO_TOKEN or vault credential variable name present; values were not inspected or printed.",
+    "organization_secret_read": "gh secret list -o AI-Matrix-Engine returned HTTP 403: current credential lacks organization Actions secrets permission.",
+    "local_github_auth": "Authenticated user credential has broad repo and workflow scopes, so it is not an approved read-only CI reader and was not copied into Actions.",
+    "documented_platform_vault": "The shared GitHub connection contract describes per-user OAuth credentials in Vault; it does not designate one as the dedicated CI repository reader. The canonical Vault UI entry point is https://www.aimatrx.com/vault (source: ai-matrx/app/(core)/vault/page.tsx).",
+    "live_vault_metadata": "A targeted, metadata-only query of users.credential_items and users.user_secrets found zero active AIDREAM_REPO_TOKEN keys and zero related aidream/repository-reader/records-guide key names. It found generic personal and organization GITHUB_PAT/GITHUB_TOKEN entries and per-user OAuth connections, all marked execution_purpose=general; their repository scope and approval for this CI use are unknown. No encrypted value was selected, decrypted, or printed."
+  },
+  "github_app_route": {
+    "existing_installation": "Safe users.integration_connection_resources metadata shows AI-Matrix-Engine/aidream under AI Matrx Admin installation 162010875 with contents:write granted to the installation.",
+    "technical_capability": "GitHub permits an installation token restricted to one repository and contents:read, expiring after one hour. Its documented creation requires an App JWT signed with an App private key. Sources: https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/authenticating-as-a-github-app-installation and https://github.com/actions/create-github-app-token/blob/main/README.md.",
+    "current_platform_state": "The documented first-party connection and aidream github_integrations source issue per-user OAuth tokens using GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET. No installation-token mint broker, App private-key configuration name, or create-github-app-token workflow was found in the inspected canonical integration, aidream service/workflows, or matrx-extend workflow. Existing local aidream .env key names include GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET, but no App private-key name; values were not read. matrx-extend Actions has zero repository secrets.",
+    "verdict": "The existing installation can support a least-privilege CI reader after App-private-key provisioning and a workflow mint step, but there is no already configured, documented broker path that can issue that token now. An OAuth client secret or generic PAT is not an App private key."
+  },
+  "safe_remediation": "Provision a dedicated GitHub credential limited to contents:read on AI-Matrix-Engine/aidream, approved for this CI purpose, then set it as AIDREAM_REPO_TOKEN on armanisadeghi/matrx-extend Actions with repository access confirmed. Rerun the exact failed workflow at a new commit/ref and inspect its first failing step. Do not replace it with the broad operator token, suppress the preflight, or treat this run as a code-test verdict.",
+  "runtime_verification": "No test, build, install, or browser command was run; no stabilization resource permit was acquired.",
+  "changed_paths": [
+    "docs/stabilization/reports/current-ci-recovery.json"
+  ],
+  "open_actions": [
+    "An authorized owner must identify or provision an approved, aidream-scoped contents:read CI credential and configure the repository secret; the generic Vault PATs cannot be assumed to have that scope or purpose.",
+    "Rerun CI to expose any later gate failure; all later steps in run 36379571405 are currently unmeasured."
+  ]
+}
