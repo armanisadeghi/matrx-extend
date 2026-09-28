@@ -1,0 +1,32 @@
+{
+  "id": "EXT-D-0060",
+  "feature_id": "EXT-F-0002",
+  "case_ids": [
+    "EXT-F-0002-T01"
+  ],
+  "title": "Final resource verdict conflates admitted command failure with refusal",
+  "surface": "Stabilization resource guard reporting",
+  "auth_mode": "not-applicable",
+  "reproduction": [
+    "Run an admitted guarded command which exits nonzero, e.g. a TypeScript compile error.",
+    "Inspect RESOURCE_ADMITTED, RESOURCE_JOB_EXIT and RESOURCE_FINAL_DECISION."
+  ],
+  "expected": "Report an admitted child failure distinctly from a denied resource launch or invalid resource run.",
+  "actual": "scripts/stabilization-resource.mjs:788 uses refused for every nonzero exit, including admitted compiler errors with resourceInvalid false. D59 worker misclassified this and stopped verification.",
+  "severity": "S2: misleading diagnostics stall validation",
+  "priority": "P1: reliable test/run attribution",
+  "state": "open",
+  "evidence": [
+    "docs/stabilization/resource-journals/d59-compile-2.jsonl",
+    "scripts/stabilization-resource.mjs:788"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-09-28T16:07:07.892217+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Owner inspected admitted/child-exit/final journal and confirmed source ternary conflation."
+    }
+  ],
+  "verification_status": "Observed journal and source proof; no repair yet."
+}

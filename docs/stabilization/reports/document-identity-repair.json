@@ -41,11 +41,17 @@
   ],
   "verification": {
     "d59-compile-1": "Guard admitted; tsc exited 0 before consumer migration.",
-    "d59-compile-2": "Guard admitted; tsc exited 1 because use-auto-extract passed string|null to runPattern and a saved-run-data-view-health fixture lacked pageKey. Both source issues were corrected after this run. Wrapper final decision was refused, so no further heavy run was attempted.",
+    "d59-compile-2": "Guard admitted with reasons [], then tsc exited 1 on nullable documentId and missing fixture pageKey. Both were corrected afterward but remain uncompiled. Final journal says refused with resourceInvalid=false/exitCode=1: this denotes failed child execution, NOT resource preflight refusal. Worker misinterpreted that label and stopped; no resource rejection occurred in this run.",
     "native_browser": "Not run in this source-only lane.",
     "journals": [
-      { "path": "docs/stabilization/resource-journals/d59-compile-1.jsonl", "sha256": "59178a791bffc332f3caa9f8732a4170c82fc7c8224a82d8d7f9c61710ec2bdc" },
-      { "path": "docs/stabilization/resource-journals/d59-compile-2.jsonl", "sha256": "98d85436643b455f6de83ce45d52284247fc0f4c4fcc465e69dae0f0408a2f5a" }
+      {
+        "path": "docs/stabilization/resource-journals/d59-compile-1.jsonl",
+        "sha256": "59178a791bffc332f3caa9f8732a4170c82fc7c8224a82d8d7f9c61710ec2bdc"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/d59-compile-2.jsonl",
+        "sha256": "98d85436643b455f6de83ce45d52284247fc0f4c4fcc465e69dae0f0408a2f5a"
+      }
     ]
   },
   "next_gate": "Fresh independent source review, fixture completion, guarded compile and focused regressions after resource permission, then native installed-extension Chrome Reload on a real HTTPS page. Do not mark D59 complete from this checkpoint."
