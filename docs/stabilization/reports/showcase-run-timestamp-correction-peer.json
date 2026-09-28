@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "defect": "EXT-D-0050",
+  "reviewed_commits": ["a011a6829298287af2c389abce70237032693b28", "f65b020aa0ebcd6aae2ec138d63e9910b8cb3c18"],
+  "lane": "fresh independent source-only correction verifier; zero product authorship",
+  "prior_findings": [
+    {
+      "finding": "DataView hides a successful auto-extraction's saved-history warning",
+      "status": "ADDRESSED",
+      "evidence": "DataView.tsx:362-369 renders the auto record note in the matched card while the rows remain available at :390-399. use-auto-extract.ts:115-124 preserves status ok and rows when bumpPatternRun reports failure. The new DataView test renders both the note and rows."
+    },
+    {
+      "finding": "A metadata failure overwrites the original extraction error in PatternsTab and DataView",
+      "status": "ADDRESSED",
+      "evidence": "PatternsTab.tsx:168-173 and DataView.tsx:250-255 retain failureMessage and append the separate history error. Both new rendered tests assert the original selector failure followed by the metadata error. The auto hook and data_patterns tool also preserve original error fields across their return contracts."
+    },
+    {
+      "finding": "A failed metadata mock leaks into later tests",
+      "status": "ADDRESSED",
+      "evidence": "AfterEach now mockReset()s bumpRun in all four focused files, removing the persistent mockResolvedValue implementation that clearAllMocks() leaves intact. Runtime re-run is pending."
+    }
+  ],
+  "verdict_a": {
+    "native_outcome": "UNVERIFIED",
+    "source_contract": "PASS",
+    "evidence": "PatternsTab awaits bumpPatternRun before its finally refresh; bumpPatternRun awaits a returned row from UPDATE and reports PostgREST errors, zero-row updates, and thrown exceptions. DataView, auto extraction, and the tool return path preserve extracted rows while exposing metadata failure. Original extraction errors remain distinct where a failed run also fails to record health.",
+    "limitations": ["No installed native extension replay, persisted timestamp observation, or live RLS write proof was allowed in this source-only lane."]
+  },
+  "verdict_b": {
+    "quality": "CONCERNS_UNVERIFIED",
+    "new_regressions": [],
+    "evidence": "The correction uses existing run and display paths, with no parallel history mechanism. New UI assertions observe visible text and rows, and the ordering test holds the metadata promise while checking that refresh has not started. The store producer and DataView renderer are tested separately, and the tool result asserts both rows and warning.",
+    "proof_gaps": [
+      "No test/build/browser command was run in this lane because resource admission refused CPU_HIGH_LOAD_BUSY; the previous red four-file run has not been superseded by fresh green evidence.",
+      "The required executed return-expected and mutation checks for forcing-function quality were not run; their adequacy cannot be certified from source reading.",
+      "The shared Supabase update result branch has no direct test of a zero-row or error response in this correction; live persistence remains unverified."
+    ]
+  },
+  "next": "After resource admission, rerun the four focused files and required compile/build checks, then verify the installed extension against a real saved pattern and inspect the persisted timestamp."
+}
