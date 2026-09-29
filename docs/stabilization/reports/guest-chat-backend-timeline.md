@@ -16,3 +16,9 @@ This is a functional mismatch for guest Chat: its no-login request enters with n
 ## Attribution and limits
 
 The source change is attributable to commit `5b1deadf13` as a repository event. Git author/committer metadata is a shared identity and co-author line; it does not prove which person or agent wrote, reviewed, or released the patch. This trace identifies the introducing commit and policy mismatch, not the actual human actor. No backend files or database rows were changed or queried, and no tests or browser runs were performed for this report.
+
+## Later live database recovery and provenance
+
+The incident follow-up reports that the live definition of `public._provision_new_user_organization` now calls `iam.provision_signup_organization(new.id)` for anonymous users, while the earlier trigger behavior did not. That would provide the membership the funnel requires, and it is a plausible explanation for recovery. It is a live SQL definition, not a migration or local `aidream` commit; local source history therefore does not date or identify this change.
+
+A targeted search of local 2026-09-29 Codex rollout logs and Claude project logs for `_provision_new_user_organization` and the exact call found only discussion/diagnostic references in guest Chat sessions. I found no persisted Supabase SQL tool-action record or source patch proving who changed the live function, which task performed the write, or its timestamp. The matching Codex threads include the guest Chat incident fixer and diagnostic tasks, but their metadata alone cannot establish that either issued the database change. **Actual actor, task, and change time remain unknown.** The local service health SHA reported during the incident was `c0b49ba5…`; it is not a local Git commit explaining the live SQL alteration.
