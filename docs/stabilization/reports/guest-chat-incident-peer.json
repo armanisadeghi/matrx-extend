@@ -6,7 +6,7 @@
     "verdict": "conditional_pass_for_guest_visibility_and_identity_boundary",
     "resolved": "Guest Chat tab and public Mandate target restored; actor marker waits for settled auth and chat hydration; account conversation, messages, draft, variables, attachments and active stream are cleared on identity switch; hydration callback race is closed.",
     "proof": "A real store-clear test now seeds private fields and checks they are removed; guarded final unit journal guest-chat-final-unit-002 reports admitted, valid, exit 0. Earlier red/green pure-boundary journals also completed.",
-    "remaining": "The strengthened native gate requires unpredictable page codes and a second post-reload answer, but its fixture is on harness localhost rather than the public demo origin; its second answer is a fresh chat after reload, not continuation of the first conversation. Public-site end-to-end proof remains pending."
+    "remaining": "The strengthened native gate opens the public HTTPS demo, appends unpredictable page codes, and asserts that demo tab is active at each send. Its second answer after panel reload is a fresh guest turn, not continuation of the first conversation. Public-site end-to-end proof remains pending until the native run passes."
   },
   "release_gate_note": "release.sh runs checks serially; maxWorkers=4 is one Vitest process tree under one guarded release invocation, subject to the same pressure watchdog.",
   "checks": ["Targeted source review and journal inspection only; no browser, build, or heavy command launched by this peer."]
