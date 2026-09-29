@@ -12,7 +12,7 @@ installed-extension live proof. Preserve existing fixture evidence as history.**
 
 ## Disk prevention update — 2026-09-29
 
-Common-docs 9bd067ef9 fixes active/unknown checkout protection, truthful failure exits and cache-only installer scope; 13 tests passed and independent source review passed with cwd-only detection limitation. Local nightly04:15 job installed but **not operational**: actual launchd run exited2, macOS denied opening the cleaner on the external volume. OS privacy authorization and successful rerun remain required. Do not claim automatic cleanup works. Docker builder GC8GB configured, effective next daemon start. Evidence: reports/development-junk-prevention.json. No native extension test or release performed by this disk-prevention work.
+Common-docs 9bd067ef9 fixes active/unknown checkout protection, truthful failure exits and cache-only installer scope; 13 tests passed and independent source review passed with a cwd-only detection limitation. Scheduled cleanup remains unverified; do not claim automatic cleanup works until a scheduled run succeeds. Docker garbage-collection runtime behavior and VM size limit remain unverified. Evidence: reports/development-junk-prevention.json. No native extension test or release performed by this disk-prevention work.
 
 ## Disk cleanup update — 2026-09-28
 

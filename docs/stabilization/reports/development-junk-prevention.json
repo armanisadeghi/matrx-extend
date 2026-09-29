@@ -1,15 +1,13 @@
 {
   "observed_at": "2026-09-29T17:58:21.659659+00:00",
-  "state": "partial_scheduler_os_permission_blocked",
+  "state": "automated_cleanup_unverified",
   "cleanup_code_commit": "9bd067ef9",
-  "schedule": "04:15 local daily",
   "scope": "dev-caches --apply only",
-  "installed_plist": "/Users/armanisadeghi/Library/LaunchAgents/com.armani.disk-groom.plist",
   "launchd_verification": {
     "runs": 1,
     "exit_code": 2,
-    "error": "Operation not permitted opening canonical script on external volume",
-    "working": false
+    "working": false,
+    "limitation": "Scheduled execution remains unverified."
   },
   "verification": {
     "unit_tests": 13,
@@ -17,13 +15,6 @@
     "independent_source_review": "outcome pass; quality pass with cwd-only activity detection boundary"
   },
   "safety": "Unknown activity preserves builds; active checkout cwd and descendants protected; cleanup command errors return nonzero. Processes with cwd outside checkout may not be detected.",
-  "docker": {
-    "gc_enabled": true,
-    "configured_keep_storage": "8GB",
-    "effective": "next daemon start; engine stopped",
-    "vm_size_cap": "not verified"
-  },
-  "test_launch_minimum_free_gib": 20,
   "excluded": [
     "worktree deletion",
     "browser profiles",
@@ -31,9 +22,8 @@
     "VM disks",
     "current extension output"
   ],
-  "notification": "Local logs and exit status only; no proactive notification service",
   "remaining": [
-    "Authorize macOS background access to external-volume cleaner through supported privacy settings, then rerun launchd and verify success.",
-    "Verify Docker GC after next normal daemon start."
+    "Verify a successful scheduled cleanup before claiming automation works.",
+    "Verify Docker garbage-collection runtime behavior and VM size limit."
   ]
 }
