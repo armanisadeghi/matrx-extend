@@ -3,6 +3,7 @@ import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
 import type { ProviderRetryState } from '@/lib/stream/provider-retry';
 import type { ToolProgressUpdate } from '@/lib/tools/types';
 import { useGoogleFilesStore } from '@/state/google-files';
+import { useHighlightStore } from '@/state/highlights';
 import { useToolInbox } from '@/state/tool-inbox';
 import type { ComputeTargetRef } from '@/types/compute-target';
 import { create } from 'zustand';
@@ -125,6 +126,8 @@ export interface StreamInterruption {
 export type PermissionMode = 'ask' | 'act';
 
 interface ChatState {
+  /** Identity that owns the persisted Chat setup; null marks older unscoped storage. */
+  chatActorId: string | null;
   selectedAgentId: string | null;
   selectedConversationId: string | null;
   draft: string;
@@ -263,6 +266,7 @@ interface ChatState {
   /** Set or clear the user's compute-target selection. */
   setBoundComputeTarget: (ref: ComputeTargetRef | null) => void;
   reset: () => void;
+  clearForIdentityChange: (nextActorId: string) => void;
 }
 
 const varKey = (agentId: string, name: string) => `${agentId}.${name}`;
@@ -270,6 +274,7 @@ const varKey = (agentId: string, name: string) => `${agentId}.${name}`;
 export const useChatStore = create<ChatState>()(
   persist(
     (set, get) => ({
+      chatActorId: null,
       selectedAgentId: null,
       selectedConversationId: null,
       draft: '',
@@ -547,6 +552,21 @@ export const useChatStore = create<ChatState>()(
       },
       setBoundComputeTarget: (boundComputeTarget) => set({ boundComputeTarget }),
       reset: () => set({ messages: [], draft: '', isStreaming: false, streamInterruption: null }),
+      clearForIdentityChange: (nextActorId) => {
+        get().setConversation(null);
+        useHighlightStore.getState().clearAttached();
+        set({
+          chatActorId: nextActorId,
+          selectedAgentId: null,
+          draft: '',
+          variableValues: {},
+          permissionMode: {},
+          boundComputeTarget: null,
+          isStreaming: false,
+          streamInterruption: null,
+          providerRetry: null,
+        });
+      },
     }),
     {
       name: 'matrx.chat.v1',
@@ -559,6 +579,7 @@ export const useChatStore = create<ChatState>()(
       // would force a re-fetch of the prior thread on every open and
       // break the "new chat by default" expectation.
       partialize: (s) => ({
+        chatActorId: s.chatActorId,
         selectedAgentId: s.selectedAgentId,
         draft: s.draft,
         variableValues: s.variableValues,
@@ -584,6 +605,7 @@ export const useChatStore = create<ChatState>()(
       migrate: (persisted) => {
         const p = (persisted ?? {}) as Record<string, unknown>;
         const out: Record<string, unknown> = {};
+        if (typeof p.chatActorId === 'string') out.chatActorId = p.chatActorId;
         if (typeof p.selectedAgentId === 'string' || p.selectedAgentId === null)
           out.selectedAgentId = p.selectedAgentId;
         if (typeof p.draft === 'string') out.draft = p.draft;

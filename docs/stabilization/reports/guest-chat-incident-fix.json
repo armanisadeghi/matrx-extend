@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "defect": "EXT-D-0066",
+  "status": "source_verified_pending_live_guest_response",
+  "root_cause": "Chat was explicitly limited to signed-in viewers even though the fingerprint guest start path was repaired. Persisted account chat choices could also remain visible or be reused across an identity change.",
+  "repair": [
+    "Expose Chat to guests and default the sidepanel to it.",
+    "Route every guest Chat start to the server-resolved extend.browser_chat Mandate, ignoring saved account Agent ids and avoiding signed-in execution reads.",
+    "Wait for both auth resolution and chat storage hydration, then clear account conversation, messages, draft, variables, attachments, compute binding and agent choice when the chat actor changes.",
+    "Fence a cancelled stream synchronously before its asynchronous service-worker cancel so late events cannot restore cleared content."
+  ],
+  "server_contract_observed_in_source": "The current aidream /v2/ai/mandates/{key} path resolves a fingerprint guest using the system Mandate rung. agent_run installs the server-resolved guest organization before the conversation write. The extension stream transport sends X-Fingerprint-ID and strips organization_id for guests.",
+  "verification": {
+    "red_guard": "guest-chat-red-001: 2 failed assertions (private account Agent selected for guest; account turns not discarded), resource decision child_failed as expected",
+    "focused_tests": "guest-chat-final-unit-002: 3 files, 14 tests passed, resource decision valid",
+    "typecheck": "guest-chat-final-compile-002: pnpm compile passed, resource decision valid",
+    "build": "guest-chat-wxt-build-001: pnpm exec wxt build passed, resource decision valid",
+    "local_receipt": "test-results/guest-chat-local-20260929-001.json"
+  },
+  "remaining": [
+    "Independent native guest send and assistant response on the immutable local build receipt.",
+    "Update cross-repo extension STATE.md after live guest acceptance confirms the outcome."
+  ]
+}

@@ -6,8 +6,8 @@ import { Button } from '@ai-matrx/design-system';
  * (sidepanel App.tsx) don't need to change. As of the guest-mode rollout
  * (2026-05-16) the extension never blocks on sign-in — the SW resolves
  * the caller via X-Fingerprint-ID when there's no Supabase session. The
- * audience switchboard currently keeps Chat signed-in-only while the guest
- * run path is repaired; the public Scrape, Data, SEO, and Settings tabs render.
+ * audience switchboard exposes Chat and the local Scrape, Data, SEO, and
+ * Settings tabs to guests.
  *
  * Sign-in remains available from the user menu.
  */

@@ -277,19 +277,24 @@ Every entry follows this shape:
 
 ## Store-review guest path
 
-### Guest navigation while Chat is unavailable
-- **What it does:** hides the broken guest Chat surface while keeping the local
-  Scrape, Data, SEO, and Settings surfaces usable.
+### Guest Chat and navigation
+- **What it does:** offers the platform Chat Mandate to guests through a stable
+  fingerprint identity, alongside Scrape, Data, SEO, and Settings.
 - **Where to test:** a fresh isolated Chrome profile with no AI Matrx sign-in.
 - **Steps:**
   1. Open the Matrx Extend side panel.
-  2. Inspect the navigation, then open Scrape, Data, SEO, and Settings.
-  3. Reload the side panel while still signed out.
-- **Expected:** Chat has no trigger or mounted pane, and the panel defaults to
-  Scrape. Each listed guest surface has one selected trigger and its matching
-  visible pane after navigation and reload. Signing in restores Chat.
-- **Covered by:** `tests/unit/sidepanel-visibility.test.ts` and
-  `tests/browser/screenshot-guest-acceptance.mjs`.
+  2. Confirm Chat is selected. Send a short message and wait for a real assistant response.
+  3. Send a follow-up in that conversation, then open Scrape, Data, SEO, and Settings.
+  4. Reload the side panel while still signed out.
+  5. Sign in, leave an account draft and selected Agent, sign out, then reopen Chat.
+- **Expected:** The guest can send and receive both turns without signing in or
+  choosing an organization. Chat remains in navigation after reload. Account-only
+  agent selection and saved history stay behind sign-in; the old account draft,
+  variables, attachments, and running turn disappear on sign-out. The next
+  guest send uses the platform chat Mandate.
+- **Covered by:** `tests/unit/sidepanel-visibility.test.ts`,
+  `tests/unit/chat-guest-boundary.test.ts`; browser send and
+  response require a live guest run.
 
 ### Chat stream failure recovery
 - **What it does:** Keeps backend diagnostics in the Debug log while Chat shows

@@ -1042,7 +1042,13 @@ export function useChatStream() {
   );
 
   const cancel = useCallback(async () => {
-    if (!runIdRef.current) return;
+    const runId = runIdRef.current;
+    if (!runId) return;
+    const targetId = targetIdRef.current;
+    // Fence the run before the async SW cancel: a late chunk must never
+    // repopulate a conversation the person has left or signed out of.
+    runIdRef.current = null;
+    targetIdRef.current = null;
     watchdogRef.current?.stop();
     useChatStore.getState().setProviderRetry(null);
     // Cancelling the user's run means the user wants OUT — discard any
@@ -1050,12 +1056,10 @@ export function useChatStream() {
     // later. The server will see the cancel + the outstanding tool call;
     // a re-send by the user re-arms a new run cleanly.
     pendingContinueRef.current = null;
-    await send(CHANNELS.STREAM_CANCEL, { runId: runIdRef.current });
-    if (targetIdRef.current) useChatStore.getState().finalizeAssistant(targetIdRef.current);
+    if (targetId) useChatStore.getState().finalizeAssistant(targetId);
     useChatStore.getState().setStreaming(false);
     useChatStore.getState().setStreamInterruption(null);
-    runIdRef.current = null;
-    targetIdRef.current = null;
+    await send(CHANNELS.STREAM_CANCEL, { runId });
   }, []);
 
   /**

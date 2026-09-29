@@ -29,13 +29,13 @@ import { enqueueInboxMessage } from '@/lib/api/routes/ai';
 import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
 import { triggerColdResume } from '@/lib/chat/cold-resume';
 import { isOptimisticNewConversation } from '@/lib/chat/history';
+import { chatTargetForViewer, shouldDiscardChatOnIdentityChange } from '@/lib/chat/guest-boundary';
 import { wrapForAgent } from '@/lib/clipboard/copy';
 import { warmContentIr } from '@/lib/content-ir/route-env';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
 import {
   DEFAULT_CHAT_MANDATE_KEY,
-  DEFAULT_CHAT_MANDATE_REF,
   mandateKeyFromAgentRef,
 } from '@/lib/mandates';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -123,7 +123,15 @@ function formatMicErrorForUser(message: string, code?: string): string {
 }
 
 export function ChatView() {
-  const { user } = useAuth();
+  const { user, status } = useAuth();
+  const currentUserId = user?.id ?? null;
+  const [chatHydrated, setChatHydrated] = useState(() => useChatStore.persist.hasHydrated());
+  useEffect(() => {
+    const unsubscribe = useChatStore.persist.onFinishHydration(() => setChatHydrated(true));
+    // Hydration can complete between the first render and effect registration.
+    if (useChatStore.persist.hasHydrated()) setChatHydrated(true);
+    return unsubscribe;
+  }, []);
   const organizationId = useRequestOrganizationId();
   // One warm load per session for the Content IR registries (which kinds
   // exist, and what draws them on chrome-extension). Here rather than at
@@ -142,10 +150,20 @@ export function ChatView() {
     setDraft,
     setMessages,
   } = useChatStore();
+  const chatActorId = useChatStore((state) => state.chatActorId);
   const { send, cancel, retry, interruptAndSend } = useChatStream();
+  useEffect(() => {
+    if (!chatHydrated || (status !== 'signed-in' && status !== 'signed-out')) return;
+    const nextActorId = currentUserId ?? 'guest';
+    if (!shouldDiscardChatOnIdentityChange(useChatStore.getState().chatActorId, nextActorId)) return;
+    // Invalidate the old run synchronously before clearing its conversation.
+    // Late stream events are then ignored by the run-id listener.
+    void cancel();
+    useChatStore.getState().clearForIdentityChange(nextActorId);
+  }, [chatHydrated, status, currentUserId, cancel]);
   const streamInterruption = useChatStore((s) => s.streamInterruption);
   const providerRetry = useChatStore((s) => s.providerRetry);
-  const { variableDefs } = useAgentExecution(selectedAgentId);
+  const { variableDefs } = useAgentExecution(user ? selectedAgentId : null);
   const getAgentVariables = useChatStore((s) => s.getAgentVariables);
   const defaultPermissionMode = useSettingsStore((s) => s.defaultPermissionMode);
   const explicitPermissionMode = useChatStore((s) =>
@@ -230,7 +248,7 @@ export function ChatView() {
     // valid target; a concrete saved Agent id is an explicit user choice and
     // is honoured as-is.
     const chat = useChatStore.getState();
-    const savedDefaultId = useSettingsStore.getState().defaultAgentId;
+    const savedDefaultId = user ? useSettingsStore.getState().defaultAgentId : null;
     if (!chat.selectedAgentId && savedDefaultId) chat.setAgent(savedDefaultId);
 
     void refreshHistory();
@@ -407,7 +425,9 @@ export function ChatView() {
   // The selected target is always real: an explicit agent id, or the platform
   // default Mandate this client is bound to. Its NAME is resolved live by the
   // package (a Mandate row is named after its real Holder — never a constant).
-  const runTargetId = selectedAgentId ?? DEFAULT_CHAT_MANDATE_REF;
+  // A persisted account choice may survive sign-out. Guests always start the
+  // public platform chat Mandate; a private Agent id is never a guest target.
+  const runTargetId = chatTargetForViewer(currentUserId, selectedAgentId);
   const selectedAgent = useAgentRow(runTargetId);
 
   const firstName = useMemo<string>(() => {
@@ -442,7 +462,7 @@ export function ChatView() {
   // re-engaging auto-scroll, matching the prior inline behavior.
   const buildFreshRunArgs = (): { opts: Parameters<typeof send>[1] } | null => {
     const agentId = runTargetId;
-    if (!selectedAgentId) setAgent(agentId);
+    if (user && !selectedAgentId) setAgent(agentId);
     pinnedToBottomRef.current = true;
     const rawVars = getAgentVariables(agentId);
     const variables: Record<string, string> = {};
@@ -519,6 +539,18 @@ export function ChatView() {
     useTurnInboxStore.getState().clearForConversation(selectedConversationId);
     setConversation(id);
   };
+
+  if (
+    !chatHydrated ||
+    (status !== 'signed-in' && status !== 'signed-out') ||
+    chatActorId !== (currentUserId ?? 'guest')
+  ) {
+    return (
+      <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+        Preparing chat…
+      </div>
+    );
+  }
 
   return (
     <div className="relative flex h-full flex-col bg-background">

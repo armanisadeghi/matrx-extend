@@ -10,9 +10,7 @@ import type { SidepanelTab } from '@/state/sidepanel-tab';
 export type SidepanelAudience = 'everyone' | 'signed-in' | 'admin';
 
 export const SIDEPANEL_TAB_AUDIENCE = {
-  // Guest Chat cannot currently start a reliable run. Keep the Store surface
-  // truthful until the guest start contract is repaired.
-  chat: 'signed-in',
+  chat: 'everyone',
   pilot: 'admin',
   tasks: 'signed-in',
   agenda: 'signed-in',

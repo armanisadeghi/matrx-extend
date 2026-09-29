@@ -15,7 +15,7 @@ describe('sidepanel visibility', () => {
     // be a deliberate act somebody signs. It sat at 20 with 21 tabs live, so
     // the whole suite was red for every lane that ran it.
     expect(ALL_TABS).toHaveLength(22);
-    expect(SIDEPANEL_TAB_AUDIENCE.chat).toBe('signed-in');
+    expect(SIDEPANEL_TAB_AUDIENCE.chat).toBe('everyone');
     expect(SIDEPANEL_TAB_AUDIENCE.profile).toBe('signed-in');
     expect(SIDEPANEL_TAB_AUDIENCE['saved-captures']).toBe('signed-in');
     expect(SIDEPANEL_TAB_AUDIENCE.debug).toBe('admin');
@@ -25,7 +25,7 @@ describe('sidepanel visibility', () => {
     const visible = ALL_TABS.filter((tab) =>
       canAccessSidepanelTab(tab, { signedIn: false, isAdmin: false }),
     );
-    expect(visible).toEqual(['scrape', 'data', 'seo', 'settings']);
+    expect(visible).toEqual(['chat', 'scrape', 'data', 'seo', 'settings']);
   });
 
   it('shows signed-in members everything except admin tabs', () => {
@@ -54,7 +54,7 @@ describe('sidepanel visibility', () => {
   });
 
   it('returns a safe public fallback', () => {
-    expect(firstAccessibleSidepanelTab({ signedIn: false, isAdmin: false })).toBe('scrape');
+    expect(firstAccessibleSidepanelTab({ signedIn: false, isAdmin: false })).toBe('chat');
     expect(firstAccessibleSidepanelTab({ signedIn: true, isAdmin: false })).toBe('chat');
   });
 });
