@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "lane": "fresh independent source review; read-only, no build/test/browser run",
+  "scope": "Guest Chat visibility and Mandate routing; signed-in to guest state boundary; committed native acceptance script c2e26f53",
+  "verdict_a_runtime": {
+    "status": "PENDING",
+    "reason": "This lane did not acquire the browser/resource lease. No current-build runtime evidence was available in the inspected guest-chat records.",
+    "acceptance_script_scope": "Fresh guest with no token/profile/org; two page-grounded answers using unpredictable fixture codes; panel reload between turns; receipt/tree binding. It does not exercise signed-in account sign-out into guest.",
+    "required_evidence": "Run the receipt-bound native acceptance on the exact current artifact, and separately exercise signed-in account -> sign-out -> guest if claiming the full identity-isolation outcome."
+  },
+  "verdict_b_source": {
+    "status": "PASS_SCOPED",
+    "findings": [],
+    "evidence": [
+      "Chat is exposed to everyone by src/config/sidepanel-visibility.ts; guest target selection always resolves to DEFAULT_CHAT_MANDATE_REF in src/lib/chat/guest-boundary.ts and ChatView passes its mandate key into the stream options.",
+      "Guest catalog/data startup remains guarded by signed-in checks in ensureAuthenticatedCatalogLoaded and useAgentRow; guest useAgentRow returns without resolving private account catalog data.",
+      "After hydration and settled auth, ChatView hides the surface until chatActorId matches the current identity, fences/cancels an active run, and calls clearForIdentityChange. The store clears conversation/messages, draft, selected Agent, variables, per-agent permission state, compute target, attached Google files and highlights; the run cancellation clears refs before awaiting worker cancellation.",
+      "tests/unit/chat-guest-boundary.test.ts covers target selection, identity changes, and clearing representative private chat fields/attachments. The test was inspected but not executed in this lane."
+    ],
+    "limits": [
+      "The independent source review establishes the state transformation, not the real guest network/stream path or native UI behavior.",
+      "No cross-identity browser test is present in the strengthened native runner; source/unit evidence alone does not establish sign-out/reopen behavior in Chrome."
+    ]
+  },
+  "verification": {
+    "commands": ["read-only source inspection; git show c2e26f53"],
+    "builds_tests_or_browser_runs": false
+  }
+}
