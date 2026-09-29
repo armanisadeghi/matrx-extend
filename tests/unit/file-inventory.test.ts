@@ -39,7 +39,12 @@ describe('extension file inventory', () => {
         },
       ]),
     ).toEqual([
-      expect.objectContaining({ id: FILE_ID, name: 'report.pdf', sizeBytes: 42, publishedToWeb: true }),
+      expect.objectContaining({
+        id: FILE_ID,
+        name: 'report.pdf',
+        sizeBytes: 42,
+        publishedToWeb: true,
+      }),
       expect.objectContaining({
         id: SECOND_FILE_ID,
         name: 'photo.png',

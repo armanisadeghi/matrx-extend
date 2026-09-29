@@ -45,10 +45,7 @@ const safeRead = (read: () => unknown): string | undefined => {
 const required = (label: string, value: string | undefined): string => {
   if (value) return value;
   throw new Error(
-    `Missing required env var: ${label}. ` +
-      'This usually means the module was loaded outside of Vite/WXT ' +
-      '(e.g. a tsx script). Either avoid touching ENV from script context, ' +
-      'or run inside the WXT build.',
+    `Missing required env var: ${label}. This usually means the module was loaded outside of Vite/WXT (e.g. a tsx script). Either avoid touching ENV from script context, or run inside the WXT build.`,
   );
 };
 
