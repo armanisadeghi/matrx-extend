@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "run_id": "reviewer-chat-native-002",
+  "source_result": "test-results/reviewer-chat-store-312c283a-b7a9-40d5-8bf5-fe0d259ec0c0.json",
+  "scope": "fresh owned Chrome-for-Testing profile; authenticated account; native signed-in Chat",
+  "runner_status": "pass",
+  "build": {
+    "version": "0.2.130",
+    "tree_sha256": "be0f08139c1ae8e518eb71cc8200c60e217c8ea64300cf9ee5b406e0c38a0a56",
+    "receipt_kind": "release",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "artifact_surface": "keyed unpacked tree matching the release receipt; not installed from the live Chrome Web Store"
+  },
+  "account": {
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "sign_out_visible": true,
+    "observed_role_category": "absent",
+    "non_admin_proven": false,
+    "reason": "The runner predicate accepts any category other than admin, including absent; it does not require an observed non_admin category.",
+    "organization_selected_in_ui": true,
+    "organization_picker_available": true,
+    "storage_shape": {
+      "access_token_present": true,
+      "profile_present": true,
+      "active_organization_key_present": false
+    }
+  },
+  "chat": {
+    "visible": true,
+    "real_answer_completed": true,
+    "answer_names_capture_understand_use": true,
+    "question_fingerprint": "3461006324ce0420",
+    "page_capture_signal": "Screenshot displays 'Failed to read page', followed by 'Extracted article text words' and the expected three-stage answer; do not treat this as clean page-capture/toolflow proof."
+  },
+  "resource_journal": {
+    "path": "docs/stabilization/resource-journals/reviewer-chat-native-002.jsonl",
+    "decision": "valid",
+    "admitted": true,
+    "child_exit_code": 0
+  },
+  "screenshots": [
+    "test-results/native-sidepanel-qa-WJgyz9/reviewer-chat-before.png",
+    "test-results/native-sidepanel-qa-WJgyz9/reviewer-chat-action.png",
+    "test-results/native-sidepanel-qa-WJgyz9/reviewer-chat-result.png"
+  ],
+  "not_established": [
+    "authenticated account is non-admin",
+    "signed-in account to sign-out to guest privacy transition",
+    "broad Chat or reliable page-capture/toolflow coverage"
+  ],
+  "store_submission": "HOLD; not authorized"
+}

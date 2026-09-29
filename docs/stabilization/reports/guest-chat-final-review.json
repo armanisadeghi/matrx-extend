@@ -14,13 +14,15 @@
       "Native run guest-chat-native-005 is status pass and its completed resource journal records admission, child exit 0, valid decision.",
       "In the fresh owned profile, guest UI was visible with no access token, profile, or organization. The real first answer contained the unpredictable page-only code and requested workflow stages, without a login/paywall/error.",
       "After side-panel reload, guest state and Chat remained visible with session credentials/org absent. The runner explicitly reinstalled the fixture after reload; the second real answer included the new unpredictable code and fixture heading. The final artifact tree hash matched the release receipt.",
-      "Screenshots show guest UI and real first/follow-up answers. Sanitized result is preserved at docs/stabilization/runs/guest-chat-native-005.json."
+      "Screenshots show guest UI and real first/follow-up answers. Sanitized result is preserved at docs/stabilization/runs/guest-chat-native-005.json.",
+      "Native reviewer run reviewer-chat-native-002 completed a real signed-in Chat answer on the same receipt-matched keyed unpacked candidate. Its screenshot displays 'Failed to read page' followed by extracted article text and the correct three-stage answer, so it is signed-in Chat completion evidence but not clean page-capture evidence."
     ],
     "limits": [
       "The signed-in account -> sign-out -> restored guest transition was not exercised in this live run. Its privacy behavior remains source/unit supported but unverified in native UI.",
+      "Reviewer run observed role category 'absent'. Its script accepts observedRoleCategory !== 'admin', which accepts absence, so the reviewer is not proven non-admin.",
       "This bounded run does not establish broad Chat coverage across all agents, organizations, streams, or guest failure/recovery cases."
     ],
-    "adjudication": "The urgent missing-guest-Chat/no-account-usability regression is verified repaired on the exact 0.2.130 release artifact. Native005 resolves the earlier follow-up uncertainty by reinstalling the page fixture after panel reload and obtaining a second nonce-grounded answer. Keep the live identity-transition and broad coverage limits explicit."
+    "adjudication": "The urgent missing-guest-Chat/no-account-usability regression is verified repaired on the 0.2.130 receipt-matched keyed unpacked release tree; it was not tested as a CRX installed from the live Store. Native005 resolves the earlier follow-up uncertainty by reinstalling the page fixture after panel reload and obtaining a second nonce-grounded answer. Reviewer native002 verifies signed-in Chat completion, but not non-admin identity or clean page-capture flow. Keep the live identity-transition and broad coverage limits explicit."
   },
   "verdict_b_source": {
     "status": "PASS_SCOPED",
@@ -36,7 +38,9 @@
   "release_authorization": {
     "chrome_web_store_submission": "HOLD",
     "authorized": false,
-    "reason": "The owner expressly holds Store submission pending review and another agent's server work. This verification authorizes no submission."
+    "reason": "The owner expressly holds Store submission pending review and another agent's server work. The evidence review row is human_required; this verification authorizes no submission.",
+    "evidence_review_row": "https://manage.aimatrx.com/administration/users/agent-review/4169515a-eab4-475d-9e5d-7c2d63837954",
+    "evidence_review_conversation_id": "a993d2cf-1810-4d27-accd-6ecb910218d4"
   },
   "verification": {
     "read": [
@@ -44,6 +48,9 @@
       "docs/stabilization/resource-journals/guest-chat-native-005.jsonl",
       "test-results/native-sidepanel-qa-lrz5St/guest-chat-real-answer.png",
       "test-results/native-sidepanel-qa-lrz5St/guest-chat-real-followup-answer.png",
+      "test-results/reviewer-chat-store-312c283a-b7a9-40d5-8bf5-fe0d259ec0c0.json",
+      "docs/stabilization/runs/reviewer-chat-native-002.json",
+      "test-results/native-sidepanel-qa-WJgyz9/reviewer-chat-result.png",
       "src/features/chat/ChatView.tsx",
       "src/state/chat.ts",
       "src/hooks/use-chat-stream.ts"
