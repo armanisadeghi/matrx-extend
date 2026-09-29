@@ -1,6 +1,6 @@
 # Guest Chat release review
 
-Guest Chat now works without sign-in on the receipt-matched, keyed unpacked build for release 0.2.130. This is not a CRX installed from the live Chrome Web Store. The 0.2.130 draft is uploaded in the publisher dashboard but **has not been submitted to Google**. Store submission is expressly on hold pending your review and the other agent's server work; this packet authorizes no submission.
+Guest Chat passed the bounded guest acceptance on the receipt-matched 0.2.130 candidate, and a fresh non-admin reviewer run completed a real Chat answer. On September 29 at 21:44 UTC, the exact 0.2.130 Store ZIP was submitted to the primary Chrome Web Store item and the dashboard showed **Pending review**. Automatic publishing was checked. This records submission, not publication: the public listing may still serve 0.2.105 until Google completes review. The signed-in-to-guest privacy transition and broader Chat coverage remain unverified.
 
 ## What happened
 
@@ -24,11 +24,10 @@ The repair restores Chat to guest navigation and makes it the guest default. Gue
 ## Evidence for this candidate
 
 - The guarded release checks recorded **1,803 passing and 5 skipped**.
-- A fresh guest in isolated native Chrome used the keyed unpacked 0.2.130 release tree matching the receipt (extension ID `cihdmkcdjjckfhjpgoedmgfpoljebaml`). The test did not install a CRX from the live Chrome Web Store; the public listing still showed 0.2.105, while 0.2.130 was an unsubmitted draft. The guest sent a page-aware question and received a real answer with an unpredictable page code and the requested workflow stages. After reloading the panel, the test reinstalled its page fixture, started a new guest conversation, and received a second answer containing the new code and fixture heading. The unpacked tree hash matched the receipt. This is a new conversation after reload, not persisted conversation continuity, and it does not establish behavior of the currently published 0.2.105 package.
-- The final independent review marks runtime and source results `PASS_SCOPED`; the bounded guest-Chat flow is verified. The real signed-in-account → sign-out → guest transition was not exercised in native UI, and broad coverage across organizations, agents, streams, and recovery paths remains unverified.
-- Native reviewer run `reviewer-chat-native-002` used a real signed-in account and completed a real Chat answer on the receipt-matched unpacked candidate. The observed role category was `absent`; the script's `observedRoleCategory !== 'admin'` predicate treats an absent role as acceptable, so this run does not prove the account was non-admin. The screenshot also displays “Failed to read page” before showing extracted article text and the answer; this run proves signed-in Chat completed, not broad or reliable page-capture fidelity. The non-admin Store reviewer experience remains unverified.
-- The real signed-in-account → sign-out → guest transition was not exercised in native UI, and broad coverage across organizations, agents, streams, and recovery paths remains unverified.
-- The publisher dashboard was freshly checked: the 0.2.130 draft is present and remains unsubmitted. The public Store still showed 0.2.105 at the observed time.
+- A fresh guest in isolated native Chrome used the keyed unpacked 0.2.130 release tree matching the receipt (extension ID `cihdmkcdjjckfhjpgoedmgfpoljebaml`). The test did not install a CRX from the live Chrome Web Store; the public listing still showed 0.2.105, before the subsequent submission of 0.2.130. The guest sent a page-aware question and received a real answer with an unpredictable page code and the requested workflow stages. After reloading the panel, the test reinstalled its page fixture, started a new guest conversation, and received a second answer containing the new code and fixture heading. The unpacked tree hash matched the receipt. This is a new conversation after reload, not persisted conversation continuity, and it does not establish behavior of the currently published 0.2.105 package.
+- The final independent review marks runtime and source results `PASS_SCOPED`; the bounded guest-Chat flow is verified. Reviewer presubmit 003 completed a real signed-in non-admin Chat answer; live database matching of its reviewer fingerprint found no admin assignment. The real signed-in-account → sign-out → guest transition was not exercised in native UI, and broad coverage across organizations, agents, streams, and recovery paths remains unverified.
+- Historical native reviewer run `reviewer-chat-native-002` completed a real signed-in Chat answer, but its observed role category was absent and its script accepted absence as non-admin. Fresh reviewer presubmit 003 closes that specific identity gap: its sanitized account fingerprint matched the live reviewer record, and the live role lookup found no admin assignment. This proves a non-admin could complete a real answer on the candidate. Reviewer 003 shows clean Capture → Understand → Use output and a green Context status; it did not reproduce reviewer 002’s earlier “Failed to read page” row, but one clean sample does not prove that failure class is fully resolved or establish broad Chat health.
+- The publisher dashboard was checked after submission: the primary item showed 0.2.130 **Pending review** at 2026-09-29 21:44 UTC, with automatic publishing enabled. The public listing is not yet verified on 0.2.130.
 
 ## Reviewer steps
 
@@ -36,7 +35,7 @@ For guest Chat, open [the public demo page](https://www.aimatrx.com/matrx-extend
 
 For signed-in-only checks, use reviewer credentials already provided through the approved review channel with the ordinary sign-in flow; choose the reviewer organization if prompted. No credentials are included in this packet. The candidate's extension permissions are unchanged.
 
-The prepared evidence-review hold is tracked in the human-required [Agent Review row](https://manage.aimatrx.com/administration/users/agent-review/4169515a-eab4-475d-9e5d-7c2d63837954) (conversation `a993d2cf-1810-4d27-accd-6ecb910218d4`). Its status is `submitted` / `human_required`, and `store_submission_authorized` is false. That row is for human review of the evidence; it does not authorize Store submission or clear the current hold.
+The [Agent Review row](https://manage.aimatrx.com/administration/users/agent-review/4169515a-eab4-475d-9e5d-7c2d63837954) (conversation `a993d2cf-1810-4d27-accd-6ecb910218d4`) now records the conditional submission authorization, the actual Pending review event, and the remaining verification gaps.
 
 ## Artifact identity
 
@@ -48,23 +47,23 @@ The prepared evidence-review hold is tracked in the human-required [Agent Review
 | Store ZIP SHA-256 | `9bdf93b207cef0ff849189b124f1899a8a425a860e5801dcbd164a9c4c75467a` |
 | Local ZIP SHA-256 | `94978c2c63d01dbc26d04666b0f50f884d32a6c4da7d7a037a727b8787a77c0c` |
 | Native test surface | Keyed unpacked release tree matching receipt; not installed Google Web Store CRX |
-| Store submission | **On hold; not submitted or authorized** |
+| Store submission | **Submitted 2026-09-29 21:44 UTC; Pending review; automatic publishing checked** |
 
 ## Review status
 
 - [x] Restore guest Chat and public guest routing.
 - [x] Pass the recorded release check suite: 1,803 passed, 5 skipped.
 - [x] Pass real guest question and a second real guest turn after panel reload on the receipt-matched, keyed unpacked 0.2.130 release tree (not a Google-installed CRX).
-- [x] Confirm the publisher dashboard contains the 0.2.130 draft and the public listing remains 0.2.105.
-- [x] Verify signed-in Chat can complete a real answer on the current candidate.
-- [ ] Verify a real signed-in non-admin reviewer can use Chat; current run has no observed role category, so non-admin status is not proven.
+- [x] Submit the exact 0.2.130 ZIP to the primary Store item; dashboard showed Pending review and automatic publishing checked.
+- [x] Verify a real signed-in non-admin reviewer can complete a Chat answer; reviewer presubmit 003 fingerprint matched the live reviewer record with no admin assignment.
 - [ ] Verify the signed-in account → sign-out → guest transition in native UI.
-- [ ] Review and confirm before any Store submission.
+- [ ] Verify the public listing after Google publishes 0.2.130.
+- [ ] Broaden Chat verification across organizations, agents, streams, and recovery paths.
 
-The defect remains open for the unverified account-to-guest privacy transition and non-admin review. No Store submission is authorized by this packet.
+The defect remains open until public-version verification and the signed-in-to-guest privacy transition are complete. Non-admin reviewer acceptance is now verified on the candidate; the historical 0.2.105 public regression has not yet been verified against a published repair.
 
-## Before submission
+## After submission
 
-Another agent is changing parts of the server flow. The successful tests above describe the server at their observation time, not a guarantee about subsequent deployments; the reported backend recovery is time-bounded, and the live SQL change's actor, task, and timestamp are unknown. Reconcile the server work, rerun guest and signed-in acceptance against the final server, and replace/retest the extension artifact if its contract must change. The no-login reviewer guidance remains the intended acceptance contract.
+The fresh guest presubmit 006 and reviewer presubmit 003 passed against the submitted candidate after the server work was reconciled. This is bounded acceptance evidence, not full Chat health. The live SQL change's actor, task, and timestamp remain unknown. Next verify the public listing after Google publishes the candidate and exercise the native signed-in-to-guest transition.
 
-The [new screenshot candidate](evidence/guest-chat-0.2.130/guest-chat-store-candidate.png) shows a real guest answer from the normal demo, without synthetic test codes. It is prepared for review, not yet uploaded to the listing; its 640×400 crop clips part of the question and should be reviewed before use. The draft description and reviewer steps have been saved. No submission or publication action is authorized; the current hold remains until Arman's review and the other agent's server work are complete.
+The [screenshot candidate](evidence/guest-chat-0.2.130/guest-chat-store-candidate.png) shows a real guest answer from the normal demo, without synthetic test codes. Its 640×400 crop clips part of the question. The listing is submitted and pending Google review; do not describe it as published until the public listing verifies the new version.

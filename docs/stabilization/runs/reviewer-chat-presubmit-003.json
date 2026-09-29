@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "run_id": "reviewer-chat-presubmit-003",
+  "observed_at": "2026-09-29T21:43:41.719Z",
+  "status": "pass_scoped",
+  "candidate": {
+    "version": "0.2.130",
+    "tree_sha256": "be0f08139c1ae8e518eb71cc8200c60e217c8ea64300cf9ee5b406e0c38a0a56",
+    "receipt_kind": "release",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "scope": "Real signed-in non-admin reviewer completed a Chat answer on the receipt-matched 0.2.130 candidate.",
+  "chat": {
+    "visible": true,
+    "accepted": true,
+    "completed_real_answer": true,
+    "completed_reply_count": 1,
+    "answer_names_capture_understand_use": true,
+    "demo_route": "https://www.aimatrx.com/matrx-extend-demo",
+    "clean_capture_answer_observed": true,
+    "context_status": "green"
+  },
+  "identity_verification": {
+    "runner_observed_role_category": "absent",
+    "reviewer_fingerprint_matched_live_reviewer_record": true,
+    "live_admin_assignment_found": false,
+    "conclusion": "Non-admin identity confirmed by live record match and absence of admin assignment."
+  },
+  "limitations": [
+    "This proves one real signed-in non-admin Chat answer on the candidate, not broad Chat health.",
+    "The signed-in-account to sign-out to guest privacy transition remains unverified.",
+    "The candidate is submitted and Pending review; public behavior is not yet verified.",
+    "The clean capture result does not prove the earlier page-capture failure class is fully resolved from one sample."
+  ],
+  "source_report": "test-results/reviewer-chat-store-1e927f55-e7e6-428b-844e-a73fc104c99f.json",
+  "store_submission": {
+    "at": "2026-09-29T21:44:00Z",
+    "version": "0.2.130",
+    "zip_sha256": "9bdf93b207cef0ff849189b124f1899a8a425a860e5801dcbd164a9c4c75467a",
+    "primary_item": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "status": "Pending review",
+    "automatic_publishing_enabled": true,
+    "published": false
+  }
+}

@@ -10,7 +10,7 @@
     "Inspect navigation and attempt to open Chat without signing in."
   ],
   "expected": "Chat is visible and a guest can send a page-aware question and receive a real answer without an account.",
-  "actual": "Historical reproduction: public Store 0.2.105 hid Chat from guests and instructed sign-in. Current candidate retest: real guest Chat passes on the receipt-matched, keyed unpacked 0.2.130 release tree, including a page-aware answer and a new guest turn after panel reload; this was not a CRX installed from the live Store. A real signed-in account also completed Chat on the candidate, but the role category was absent and the runner accepts absent role as not-admin, so non-admin status is unproven. The account-to-guest native privacy transition remains unverified; Store submission is held.",
+  "actual": "Historical reproduction: public Store 0.2.105 hid Chat from guests and instructed sign-in. Candidate 0.2.130 passed bounded real guest first-answer and post-reload follow-up checks on the receipt-matched keyed unpacked build. Reviewer presubmit 003 completed a real signed-in Chat answer and its fingerprint matched a live reviewer record with no admin assignment. Exact 0.2.130 ZIP was submitted to the primary Store item at 2026-09-29T21:44Z; dashboard showed Pending review with automatic publishing enabled. Publication is not yet verified. Native signed-in-to-guest privacy transition and broad Chat coverage remain unverified.",
   "evidence": [
     "docs/stabilization/reports/guest-chat-incident-timeline.md",
     "docs/stabilization/reports/guest-chat-incident-peer.json",
@@ -27,13 +27,14 @@
     "docs/stabilization/runs/reviewer-chat-native-002.json",
     "test-results/reviewer-chat-store-312c283a-b7a9-40d5-8bf5-fe0d259ec0c0.json",
     "docs/stabilization/resource-journals/reviewer-chat-native-002.jsonl",
-    ".output/release-receipt.json"
+    ".output/release-receipt.json",
+    "docs/stabilization/runs/reviewer-chat-presubmit-003.json"
   ],
   "severity": "S1: entire public no-login Chat workflow unavailable.",
   "priority": "P0: user-authorized immediate Store incident, overrides deferred Chat sequencing.",
   "state": "retest-pass",
-  "reproduction_status": "Historical published 0.2.105 regression observed on the primary public listing (2026-09-29 19:29 UTC). Candidate retest passes on the receipt-matched, keyed unpacked 0.2.130 release tree: fresh guest first answer and post-reload new guest follow-up both ground in unpredictable page-specific content; tree hash matches the release receipt. This is not a CRX installed from the live Store and does not establish behavior of the still-published 0.2.105 package.",
-  "verification_status": "retest-pass scoped to guest Chat availability and page-grounded answers on the keyed unpacked 0.2.130 candidate; release checks reported 1,803 passed, 5 skipped. Reviewer native002 completed a real signed-in Chat answer, but observed_role_category was absent and the script's !== admin predicate accepts absence, so it does not verify a non-admin reviewer. Native signed-in-account to guest privacy transition remains unverified. The answer screenshot includes a visible 'Failed to read page' row followed by extracted article text and the correct three-stage answer; signed-in Chat completion passes, but this is not clean page-capture/toolflow evidence. Backend recovery is based on a time-bounded live database observation; another agent's server work must be reconciled and guest/signed-in acceptance rerun against the final server. Publisher dashboard has 0.2.130 as an uploaded draft, not submitted; public listing remains 0.2.105. Keep open; publication held and unauthorized.",
+  "reproduction_status": "Historical published 0.2.105 regression observed on the primary public listing (2026-09-29 19:29 UTC). Candidate retest passes on the receipt-matched, keyed unpacked 0.2.130 release tree: fresh guest first answer and post-reload new guest follow-up both ground in unpredictable page-specific content; tree hash matches the release receipt. This is not a CRX installed from the live Store and does not establish behavior of the still-published 0.2.105 package. Exact candidate submitted to Google 2026-09-29T21:44Z, Pending review; awaiting public publication verification.",
+  "verification_status": "Retest passes scoped to guest Chat availability/page-grounded first and post-reload answers and signed-in non-admin Chat completion on the 0.2.130 receipt-matched candidate. Reviewer presubmit 003 identity was verified by live database fingerprint match and absence of an admin assignment; the original sanitized runner field observed_role_category=absent is preserved as raw run output. The 0.2.130 ZIP was submitted and is Pending review, not yet public-verified. Keep defect open until published behavior is confirmed and the native signed-in-to-guest privacy transition is exercised. Broader Chat coverage remains unverified.",
   "transition_history": [
     {
       "at": "2026-09-29T18:27:38.241098Z",
@@ -82,6 +83,12 @@
       "from": "fixed",
       "to": "retest-pass",
       "reason": "Native005 confirms fresh guest first answer and second page-grounded guest turn after panel reload on the keyed unpacked 0.2.130 tree matching its receipt. Reviewer native002 confirms a signed-in Chat answer, but role was absent and the runner accepted absence as non-admin; do not claim non-admin acceptance. Keep defect open: native signed-in-to-guest privacy transition and non-admin reviewer proof are missing; dashboard draft is not submitted and publication is held."
+    },
+    {
+      "at": "2026-09-29T21:44:00Z",
+      "from": "retest-pass",
+      "to": "retest-pass",
+      "reason": "Exact receipt-matched 0.2.130 Store ZIP was submitted to the primary listing; dashboard showed Pending review with automatic publishing enabled. This is not publication. Fresh reviewer presubmit 003 confirms a real non-admin Chat answer via live reviewer fingerprint match and no admin assignment. Keep the defect open for post-publication verification and the native signed-in-to-guest privacy transition."
     }
   ],
   "root_cause": "Two linked failures: extension commit b66e979c intentionally gated Chat to signed-in users while the guest start path was considered unreliable; later a real guest request failed in the backend because that anonymous auth identity had zero active organization memberships, despite the guest funnel requiring one. The live anonymous-user signup function has since been reported changed to provision the required organization. The database change has no local migration/commit evidence; actor, task, timestamp, and exact causal chain are unknown."
