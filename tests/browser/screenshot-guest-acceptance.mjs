@@ -114,9 +114,8 @@ function guestViewAccepted(value) {
     !value.suspenseFallback &&
     value.guestAvatarCount === 1 &&
     value.adminAvatarCount === 0 &&
-    value.chatTriggerCount === 0 &&
-    !value.chatTriggerVisible &&
-    value.chatPaneCount === 0 &&
+    value.chatTriggerCount === 1 &&
+    value.chatTriggerVisible &&
     !value.chatComponentMounted &&
     !value.guestChatGuidancePresent &&
     value.screenshotTriggerCount === 0 &&
@@ -225,8 +224,8 @@ async function exercise({ page, panel, artifacts }) {
     assert.equal(initial.screenshotTriggerCount, 0);
     assert.equal(initial.screenshotContentMounted, false);
     assert.equal(initial.screenshotPaneCount, 0);
-    assert.equal(initial.chatTriggerCount, 0);
-    assert.equal(initial.chatPaneCount, 0);
+    assert.equal(initial.chatTriggerCount, 1);
+    assert.equal(initial.chatTriggerVisible, true);
     assert.equal(initial.chatComponentMounted, false);
     assert.equal(initial.guestChatGuidancePresent, false);
     assert.equal(initial.guestAvatarCount, 1);
@@ -234,7 +233,8 @@ async function exercise({ page, panel, artifacts }) {
     report.cases.push({
       id: 'EXT-F-1009-T09',
       status: 'pass',
-      expected: 'Guest cannot see Chat or Screenshots navigation or protected content.',
+      expected:
+        'Guest can see Chat, while Screenshots navigation and protected content stay hidden.',
       actual: initial,
       evidence: 'role-scoped navigation and content booleans',
     });
@@ -311,10 +311,10 @@ async function exercise({ page, panel, artifacts }) {
       id: 'EXT-F-1009-T09',
       subcase: 'visible_navigation',
       status: 'pass',
-      expected: 'Moving through every guest tab does not expose Chat or Screenshots.',
+      expected: 'Moving through guest tabs keeps Chat available and Screenshots hidden.',
       actual: { scrape, capturedScrape, data, seo, settings, autoCaptureOff },
       evidence:
-        'selected public trigger, linked visible pane, mounted target marker, and Chat/Screenshots absence at each transition',
+        'selected public trigger, linked visible pane, mounted target marker, visible Chat, and Screenshots absence at each transition',
     });
 
     if (GUEST_RELOAD) {
@@ -334,10 +334,10 @@ async function exercise({ page, panel, artifacts }) {
         subcase: 'guest_real_reload',
         status: 'pass',
         expected:
-          'Real guest panel reload returns to Scrape and keeps Chat and Screenshots inaccessible.',
+          'Real guest panel reload returns to Scrape, with Chat available and Screenshots hidden.',
         actual: { newDocument: true, guestView: reloaded },
         evidence:
-          'new loader identity; settled mounted Scrape pane; Chat and Screenshots trigger/pane/content absent',
+          'new loader identity; settled mounted Scrape pane; visible Chat and Screenshots trigger/pane/content absent',
       });
     } else {
       report.cases.push({
@@ -389,13 +389,13 @@ async function exercise({ page, panel, artifacts }) {
         id: 'EXT-F-1009-T09',
         subcase: 'stale_selection_after_real_signout',
         status: 'pass',
-        expected: 'Signing out from selected Screenshots returns to Scrape without exposing Chat.',
+        expected: 'Signing out from selected Screenshots returns to Scrape with Chat available.',
         actual: {
           adminScreenshotsSelected: selected.targetSelected && selected.linkedPaneVisible,
           guestRecovery: recovered,
         },
         evidence:
-          'same owned profile; real avatar Sign out; settled mounted Scrape pane with Chat and Screenshots trigger/pane/content absent',
+          'same owned profile; real avatar Sign out; settled mounted Scrape pane with visible Chat and Screenshots trigger/pane/content absent',
       });
     } else {
       report.cases.push({

@@ -150,7 +150,7 @@ function isSettledGuestPanel(state) {
     state?.ready === true &&
     state?.guestAccount === true &&
     state?.scrapeTrigger === true &&
-    state?.chatTrigger === false &&
+    state?.chatTrigger === true &&
     state?.visibleControls >= 2
   );
 }
