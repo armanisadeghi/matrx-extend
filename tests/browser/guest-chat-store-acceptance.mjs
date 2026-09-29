@@ -148,10 +148,10 @@ async function watchGuestAiRequests(panel) {
   };
 }
 
-async function installPageFixture(page) {
+async function installPageFixture(page, existingFixture = null) {
   const expectedOrigin = `${WEB_ORIGIN}`;
   const originalTitle = await page.title();
-  const fixture = {
+  const fixture = existingFixture ?? {
     fragment: `guest-chat-${randomUUID()}`,
     title: `Matrx guest Chat grounding fixture ${randomUUID()}`,
     openingCode: randomUUID().toUpperCase(),
@@ -163,6 +163,7 @@ async function installPageFixture(page) {
     if (!article || !articleHeader) {
       throw new Error('the public demo primary article is missing');
     }
+    article.querySelector('[data-guest-chat-fixture]')?.remove();
     // get_page_text prefers <main> and removes headers before reading it.
     // Put the unpredictable fixture in the article's readable body, ahead of
     // the real workflow section, rather than appending a second body article.
@@ -214,6 +215,33 @@ async function installPageFixture(page) {
   assert.ok(installed.readerText.includes(fixture.openingCode));
   assert.ok(installed.readerText.includes(fixture.followupCode));
   return fixture;
+}
+
+async function readableFixturePresent(page, fixture) {
+  return page.evaluate((values) => {
+    const section = document.querySelector(
+      'main[data-public-main="true"] article [data-guest-chat-fixture]',
+    );
+    const style = section ? getComputedStyle(section) : null;
+    const rect = section?.getBoundingClientRect();
+    const clone = document.querySelector('main, article, [role="main"]')?.cloneNode(true);
+    for (const element of clone?.querySelectorAll(
+      'nav, aside, header, footer, script, style, noscript, [aria-hidden="true"], [hidden]',
+    ) ?? []) {
+      element.remove();
+    }
+    const readable = clone?.textContent ?? '';
+    return Boolean(
+      section &&
+        rect?.width > 0 &&
+        rect.height > 0 &&
+        style?.display !== 'none' &&
+        style.visibility !== 'hidden' &&
+        readable.includes(values.title) &&
+        readable.includes(values.openingCode) &&
+        readable.includes(values.followupCode),
+    );
+  }, fixture);
 }
 
 async function submitQuestion(panel, question, label) {
@@ -384,6 +412,16 @@ try {
 
         markStage('guest_question');
         networkWatch = await watchGuestAiRequests(panel);
+        const fixtureSurvivedOpen = await readableFixturePresent(web, fixture);
+        if (!fixtureSurvivedOpen) {
+          await installPageFixture(web, fixture);
+        }
+        report.guest.fixture_reinstalled_before_first_send = !fixtureSurvivedOpen;
+        assert.equal(
+          await readableFixturePresent(web, fixture),
+          true,
+          'opening fixture must remain in the primary readable article before send',
+        );
         await requireActiveFixtureTab(attachWorker, web);
         networkWatch.arm('opening');
         await submitQuestion(panel, FIRST_QUESTION, 'opening_question');
@@ -393,12 +431,7 @@ try {
           'real_guest_answer_with_page_nonce',
           () => observe(panel, { nonce: fixture.openingCode, diagnostics: true }),
           (state) =>
-            state?.errorNotice ||
-            (state?.replyCount > before.replyCount &&
-              !state.streaming &&
-              (state.terminalAnswerError ||
-                state.answerIsRefusal ||
-                (state.answerContainsNonce && state.answerMatchesPublicStages))),
+            state?.errorNotice || (state?.replyCount > before.replyCount && !state.streaming),
           180_000,
         );
         report.failure_observation = diagnosticState(answered, fixture);
@@ -457,6 +490,16 @@ try {
         );
         markStage('guest_followup_question');
         networkWatch.arm('post_reload_new_conversation');
+        const fixtureSurvivedReload = await readableFixturePresent(web, fixture);
+        if (!fixtureSurvivedReload) {
+          await installPageFixture(web, fixture);
+        }
+        report.guest.fixture_reinstalled_after_reload = !fixtureSurvivedReload;
+        assert.equal(
+          await readableFixturePresent(web, fixture),
+          true,
+          'follow-up fixture must remain in the primary readable article before send',
+        );
         await requireActiveFixtureTab(attachWorker, web);
         await submitQuestion(panel, FOLLOWUP_QUESTION, 'followup_question');
 
@@ -471,11 +514,7 @@ try {
             }),
           (state) =>
             state?.errorNotice ||
-            (state?.replyCount > beforeFollowup.replyCount &&
-              !state.streaming &&
-              (state.terminalAnswerError ||
-                state.answerIsRefusal ||
-                (state.answerContainsNonce && state.answerContainsFixtureHeading))),
+            (state?.replyCount > beforeFollowup.replyCount && !state.streaming),
           180_000,
         );
         report.failure_observation = diagnosticState(followup, fixture);
