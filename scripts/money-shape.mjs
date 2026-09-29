@@ -524,11 +524,7 @@ export function selfTestMoneyShape() {
   }
   // A MINIFIED BUNDLE is not source.
   const minified = [
-    '"use strict";(()=>{' +
-      'x'.repeat(400) +
-      'let a=`$${n.toFixed(2)}`,b=c/100;' +
-      'y'.repeat(200) +
-      '})();',
+    `"use strict";(()=>{${'x'.repeat(400)}let a=\`$\${n.toFixed(2)}\`,b=c/100;${'y'.repeat(200)}})();`,
   ].join('\n');
   const minifiedHits = moneyShapeIn(minified);
   if (minifiedHits.length !== 0) {

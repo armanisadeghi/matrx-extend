@@ -174,7 +174,6 @@ export function AddToProjectButton({ url, title, variant = 'inline' }: AddToProj
                     value={filter}
                     onChange={(e) => setFilter(e.target.value)}
                     className="h-6 flex-1 bg-transparent text-xs focus:outline-none"
-                    autoFocus
                   />
                 </div>
               </div>

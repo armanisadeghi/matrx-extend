@@ -143,13 +143,16 @@ describe('server-built render blocks reach real components', () => {
     // note, never an error and never a blank block.
     const source = BLOCKS.flashcard_set;
     expect(source, 'the flashcard_set fixture is missing').toBeTruthy();
-    const envelope = JSON.parse(JSON.stringify(source!.metadata!.__ir)) as {
+    const ir = source?.metadata?.__ir;
+    if (!source || !ir) throw new Error('the flashcard_set fixture has no Content IR envelope');
+    const envelope = JSON.parse(JSON.stringify(ir)) as {
       root: { kind: string };
     };
     envelope.root.kind = 'research_report';
-    const block = readInboundRenderBlock({ ...source!, metadata: { __ir: envelope } });
+    const block = readInboundRenderBlock({ ...source, metadata: { __ir: envelope } });
     expect(block).not.toBeNull();
-    render(<RenderBlockView block={block!} />);
+    if (!block) throw new Error('the relabelled fixture did not survive the wire gate');
+    render(<RenderBlockView block={block} />);
     expect(screen.getByText(/no custom view/i)).toBeTruthy();
     // The data is still there — nothing vanished.
     expect(screen.getByText(/What pigment absorbs light\?/)).toBeTruthy();

@@ -558,11 +558,7 @@ export function selfTestRelativeTimeShape() {
   }
   // A MINIFIED BUNDLE is not source.
   const minified = [
-    '"use strict";(()=>{' +
-      'x'.repeat(400) +
-      'let a=Date.now()-t,b=a/86400000,c=`${b}d ago`;' +
-      'y'.repeat(200) +
-      '})();',
+    `"use strict";(()=>{${'x'.repeat(400)}let a=Date.now()-t,b=a/86400000,c=\`\${b}d ago\`;${'y'.repeat(200)}})();`,
   ].join('\n');
   const minifiedHits = relativeTimeShapeIn(minified);
   if (minifiedHits.length !== 0) {

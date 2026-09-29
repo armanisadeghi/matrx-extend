@@ -85,15 +85,15 @@ export function RenderBlockView({ block }: { block: InboundRenderBlock }) {
   //
   // `version` is the repaint key on both: a late schema/component arrival
   // changes it and only then does the decision get remade.
-  const superseded = useMemo(
-    () => resolveSupersededKindRender<IrRenderBlock>(source, contentIrRouteEnv),
-    [source, version],
-  );
+  const superseded = useMemo(() => {
+    void version;
+    return resolveSupersededKindRender<IrRenderBlock>(source, contentIrRouteEnv);
+  }, [source, version]);
 
-  const routed = useMemo(
-    () => superseded?.block ?? applyIrKindRoute<IrRenderBlock>(source, contentIrRouteEnv),
-    [source, superseded, version],
-  );
+  const routed = useMemo(() => {
+    void version;
+    return superseded?.block ?? applyIrKindRoute<IrRenderBlock>(source, contentIrRouteEnv);
+  }, [source, superseded, version]);
 
   const envelope = superseded?.envelope ?? verifiedEnvelope;
   // A `superseded` terminal IS the producer's proof that the region closed.

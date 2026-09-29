@@ -33,14 +33,14 @@
  *   node scripts/check-t13-row-column-source.mjs --shrink-baseline
  *   node scripts/check-t13-row-column-source.mjs --self-test
  */
-import { execFileSync } from "node:child_process";
-import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { execFileSync } from 'node:child_process';
+import { existsSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const BASELINE = join(ROOT, "scripts", "t13-row-column-source-baseline.json");
-const WORD = "visi" + "bility";
+const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const BASELINE = join(ROOT, 'scripts', 't13-row-column-source-baseline.json');
+const WORD = 'visi' + 'bility';
 const ROW = new RegExp(`(?<![A-Za-z0-9_\\-])${WORD}(?![A-Za-z0-9_\\-])`);
 const NOISE = [
   new RegExp(`${WORD}\\s*[:=]\\s*["'\`]?(hidden|visible|collapse|inherit|initial|unset|revert)\\b`),
@@ -56,16 +56,20 @@ const SKIP =
 
 function files() {
   const out = new Set();
-  for (const args of [["ls-files"], ["ls-files", "--others", "--exclude-standard"]]) {
-    const res = execFileSync("git", args, { cwd: ROOT, encoding: "utf8", maxBuffer: 256 * 1024 * 1024 });
-    for (const p of res.split("\n")) if (p) out.add(p);
+  for (const args of [['ls-files'], ['ls-files', '--others', '--exclude-standard']]) {
+    const res = execFileSync('git', args, {
+      cwd: ROOT,
+      encoding: 'utf8',
+      maxBuffer: 256 * 1024 * 1024,
+    });
+    for (const p of res.split('\n')) if (p) out.add(p);
   }
   return [...out].filter((p) => CODE.test(p) && !SKIP.test(p)).sort();
 }
 
 export function matchingLines(text) {
   const hits = [];
-  text.split("\n").forEach((line, i) => {
+  text.split('\n').forEach((line, i) => {
     if (ROW.test(line) && !NOISE.some((n) => n.test(line))) hits.push([i + 1, line.trim()]);
   });
   return hits;
@@ -79,7 +83,7 @@ export function scan(overrides = {}) {
     else {
       const p = join(ROOT, rel);
       if (!existsSync(p) || !statSync(p).isFile()) continue;
-      text = readFileSync(p, "utf8");
+      text = readFileSync(p, 'utf8');
     }
     const hits = matchingLines(text);
     if (hits.length) found[rel] = hits;
@@ -87,7 +91,7 @@ export function scan(overrides = {}) {
   return found;
 }
 
-const loadBaseline = () => JSON.parse(readFileSync(BASELINE, "utf8")).files;
+const loadBaseline = () => JSON.parse(readFileSync(BASELINE, 'utf8')).files;
 
 export function verdict(found, baseline) {
   const grew = [];
@@ -97,8 +101,9 @@ export function verdict(found, baseline) {
     const hits = found[rel];
     if (hits.length > allowed) {
       grew.push(
-        `${rel}: ${hits.length} reference(s), baseline allows ${allowed}` +
-          hits.map(([n, l]) => `\n    ${rel}:${n}: ${l.slice(0, 160)}`).join(""),
+        `${rel}: ${hits.length} reference(s), baseline allows ${allowed}${hits
+          .map(([n, l]) => `\n    ${rel}:${n}: ${l.slice(0, 160)}`)
+          .join('')}`,
       );
     }
   }
@@ -110,7 +115,7 @@ export function verdict(found, baseline) {
 }
 
 function shrink(found) {
-  const data = JSON.parse(readFileSync(BASELINE, "utf8"));
+  const data = JSON.parse(readFileSync(BASELINE, 'utf8'));
   const old = data.files;
   const next = {};
   for (const [rel, n] of Object.entries(old)) {
@@ -118,9 +123,9 @@ function shrink(found) {
     if (live) next[rel] = Math.min(n, live);
   }
   const added = Object.keys(next).filter((r) => !(r in old) || next[r] > old[r]);
-  if (added.length) throw new Error(`refused: shrinking would add ${added.join(", ")}`);
+  if (added.length) throw new Error(`refused: shrinking would add ${added.join(', ')}`);
   data.files = Object.fromEntries(Object.entries(next).sort(([a], [b]) => (a < b ? -1 : 1)));
-  writeFileSync(BASELINE, JSON.stringify(data, null, 1) + "\n");
+  writeFileSync(BASELINE, `${JSON.stringify(data, null, 1)}\n`);
   const sum = (o) => Object.values(o).reduce((a, b) => a + b, 0);
   console.log(`[t13-row-column-source] baseline shrunk: ${sum(old)} -> ${sum(next)} lines`);
   return 0;
@@ -129,15 +134,25 @@ function shrink(found) {
 function selfTest() {
   const baseline = loadBaseline();
   const someFile = Object.keys(baseline)[0];
-  const real = readFileSync(join(ROOT, someFile), "utf8");
-  const plantNew = "src/__t13_selftest_plant__.ts";
+  const real = readFileSync(join(ROOT, someFile), 'utf8');
+  const plantNew = 'src/__t13_selftest_plant__.ts';
   const cases = [
-    ["real tree, no plant", {}, false],
-    ["planted new file filtering on the column", { [plantNew]: `q.eq("${WORD}", "public");\n` }, true],
-    ["one more reference in a baselined file", { [someFile]: `${real}\nrow.${WORD} = "public";\n` }, true],
+    ['real tree, no plant', {}, false],
     [
-      "planted CSS/DOM lines only (must not fire)",
-      { [plantNew]: `el.style.${WORD} = "hidden";\nconst css = "${WORD}: hidden;";\nconst ai_${WORD}_panel = 1;\n` },
+      'planted new file filtering on the column',
+      { [plantNew]: `q.eq("${WORD}", "public");\n` },
+      true,
+    ],
+    [
+      'one more reference in a baselined file',
+      { [someFile]: `${real}\nrow.${WORD} = "public";\n` },
+      true,
+    ],
+    [
+      'planted CSS/DOM lines only (must not fire)',
+      {
+        [plantNew]: `el.style.${WORD} = "hidden";\nconst css = "${WORD}: hidden;";\nconst ai_${WORD}_panel = 1;\n`,
+      },
       false,
     ],
   ];
@@ -145,36 +160,42 @@ function selfTest() {
   for (const [name, overrides, wantFail] of cases) {
     const { grew } = verdict(scan(overrides), baseline);
     const failed = grew.length > 0;
-    const named = wantFail ? Object.keys(overrides).every((k) => grew.some((g) => g.includes(k))) : true;
+    const named = wantFail
+      ? Object.keys(overrides).every((k) => grew.some((g) => g.includes(k)))
+      : true;
     const good = failed === wantFail && named;
     ok &&= good;
     console.log(
-      `  ${good ? "ok  " : "FAIL"} ${name}: ${failed ? "red" : "green"}${grew.length ? ` — ${grew[0].split("\n")[0]}` : ""}`,
+      `  ${good ? 'ok  ' : 'FAIL'} ${name}: ${failed ? 'red' : 'green'}${grew.length ? ` — ${grew[0].split('\n')[0]}` : ''}`,
     );
   }
-  console.log(`[t13-row-column-source] self-test ${ok ? "PASS" : "FAIL"} (in memory, nothing written)`);
+  console.log(
+    `[t13-row-column-source] self-test ${ok ? 'PASS' : 'FAIL'} (in memory, nothing written)`,
+  );
   return ok ? 0 : 1;
 }
 
 function main(argv) {
-  if (argv.includes("--self-test")) return selfTest();
+  if (argv.includes('--self-test')) return selfTest();
   const found = scan();
-  if (argv.includes("--shrink-baseline")) return shrink(found);
+  if (argv.includes('--shrink-baseline')) return shrink(found);
   const { grew, shrinkable } = verdict(found, loadBaseline());
   if (shrinkable.length) {
-    console.log(`[t13-row-column-source] ${shrinkable.length} file(s) converted below baseline — run --shrink-baseline`);
+    console.log(
+      `[t13-row-column-source] ${shrinkable.length} file(s) converted below baseline — run --shrink-baseline`,
+    );
   }
   if (grew.length) {
     for (const g of grew) console.log(`FAIL ${g}`);
     console.log(
-      `[t13-row-column-source] FAIL — ${grew.length} file(s) gained a reference to the row column access-ladder T-13 retires. ` +
-        "Read published_to_web for the anonymous lane and shown_to for list narrowing " +
-        "(common-docs/projects/access-ladder/t13/PLAN.md); the baseline never grows.",
+      `[t13-row-column-source] FAIL — ${grew.length} file(s) gained a reference to the row column access-ladder T-13 retires. Read published_to_web for the anonymous lane and shown_to for list narrowing (common-docs/projects/access-ladder/t13/PLAN.md); the baseline never grows.`,
     );
     return 1;
   }
   const total = Object.values(found).reduce((a, h) => a + h.length, 0);
-  console.log(`[t13-row-column-source] clean — ${total} baselined reference(s) in ${Object.keys(found).length} file(s), none new`);
+  console.log(
+    `[t13-row-column-source] clean — ${total} baselined reference(s) in ${Object.keys(found).length} file(s), none new`,
+  );
   return 0;
 }
 

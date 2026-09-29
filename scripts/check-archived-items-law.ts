@@ -210,9 +210,7 @@ export function scanFile(file: string, raw: string): Finding[] {
       findings.push({
         file,
         line,
-        reason:
-          `list read hardcodes \`${match[0].trim()}\` with no archive control anywhere in ` +
-          'the file — archived rows are impossible to reveal',
+        reason: `list read hardcodes \`${match[0].trim()}\` with no archive control anywhere in the file — archived rows are impossible to reveal`,
       });
     }
   }
@@ -233,9 +231,7 @@ export function scanFile(file: string, raw: string): Finding[] {
       findings.push({
         file,
         line: lineFor(code, match.index),
-        reason:
-          `component names \`${column}\`, renders the rows, and offers no archive ` +
-          'control — archived and active render mixed and unlabelled',
+        reason: `component names \`${column}\`, renders the rows, and offers no archive control — archived and active render mixed and unlabelled`,
       });
       break;
     }
@@ -342,8 +338,7 @@ function selfTest(): void {
   const expectRed = (name: string, source: string, file = 'self-test.ts') => {
     if (scanFile(file, source).length === 0) {
       failures.push(
-        `${name}: the detector stayed GREEN on a source that breaks the law — ` +
-          'a guard that cannot fail proves nothing.',
+        `${name}: the detector stayed GREEN on a source that breaks the law — a guard that cannot fail proves nothing.`,
       );
     }
   };

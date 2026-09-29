@@ -300,11 +300,10 @@ function main(): void {
     const budget = BUDGET[file] ?? 0;
     if (found.length > budget) {
       over.push(
-        `${file}: ${found.length} swallowed refusals, budget ${budget}\n` +
-          found
-            .slice(budget)
-            .map((f) => `      line ${f.line} — ${f.reason}`)
-            .join('\n'),
+        `${file}: ${found.length} swallowed refusals, budget ${budget}\n${found
+          .slice(budget)
+          .map((f) => `      line ${f.line} — ${f.reason}`)
+          .join('\n')}`,
       );
     } else if (found.length < budget) {
       under.push(`${file}: ${found.length} left, budget still says ${budget}`);
@@ -317,10 +316,7 @@ function main(): void {
   if (over.length === 0 && under.length === 0) {
     const total = [...counts.values()].reduce((n, f) => n + f.length, 0);
     console.log(
-      `✅ swallowed-refusals ratchet holds: ${total} known sites, none added.\n` +
-        '   New database calls in these modules route failures through failDbCall()\n' +
-        '   (src/lib/supabase/db-failure.ts) — the user is told, the platform error\n' +
-        '   store is told, and nothing success-shaped comes back from a failed call.',
+      `✅ swallowed-refusals ratchet holds: ${total} known sites, none added.\n   New database calls in these modules route failures through failDbCall()\n   (src/lib/supabase/db-failure.ts) — the user is told, the platform error\n   store is told, and nothing success-shaped comes back from a failed call.`,
     );
     return;
   }

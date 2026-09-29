@@ -351,11 +351,7 @@ export function selfTestCountShape() {
   }
   // A MINIFIED BUNDLE is not source.
   const minified = [
-    '"use strict";(()=>{' +
-      'x'.repeat(400) +
-      'let a=new Intl.NumberFormat("en-US"),b=`${(n/1000).toFixed(1)}k`;' +
-      'y'.repeat(200) +
-      '})();',
+    `"use strict";(()=>{${'x'.repeat(400)}let a=new Intl.NumberFormat("en-US"),b=\`\${(n/1000).toFixed(1)}k\`;${'y'.repeat(200)}})();`,
   ].join('\n');
   const minifiedHits = countShapeIn(minified);
   if (minifiedHits.length !== 0) {

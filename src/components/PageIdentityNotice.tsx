@@ -6,10 +6,7 @@ export function PageIdentityNotice({
 }: { tab: Pick<ActiveTabInfo, 'pageKey' | 'identityError'> }) {
   if (tab.pageKey) return null;
   return (
-    <div
-      role="status"
-      className="mx-3 my-2 rounded-xl bg-secondary/40 px-3 py-2 text-xs text-muted-foreground"
-    >
+    <output className="mx-3 my-2 rounded-xl bg-secondary/40 px-3 py-2 text-xs text-muted-foreground">
       {tab.identityError ?? 'Checking the current page…'}{' '}
       <button
         type="button"
@@ -18,6 +15,6 @@ export function PageIdentityNotice({
       >
         Retry
       </button>
-    </div>
+    </output>
   );
 }
