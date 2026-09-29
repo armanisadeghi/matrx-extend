@@ -26852,7 +26852,7 @@
           "results": {
             "guest": {
               "status": "fail",
-              "detail": "Published0.2.105 hides Chat; fixed-build retest pending.",
+              "detail": "Public 0.2.105 remains failing. Candidate 0.2.130 native005 passes fresh guest page-grounded answer and new conversation after panel reload; live account-to-guest privacy transition remains unverified. See docs/stabilization/runs/guest-chat-native-005.json.",
               "defect_ids": [
                 "EXT-D-0066"
               ]

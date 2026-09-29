@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "scope": "normal public demo page; real signed-out Chat answer; panel-only Store candidate",
+  "status": "pass",
+  "build": {
+    "version": "0.2.130",
+    "tree_sha256": "be0f08139c1ae8e518eb71cc8200c60e217c8ea64300cf9ee5b406e0c38a0a56",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "guest": {
+    "fresh": true,
+    "no_session": true
+  },
+  "chat": {
+    "completed_real_answer": true,
+    "answer_names_stages_in_order": true,
+    "no_account_or_payment_gate": true,
+    "demo_route": "https://www.aimatrx.com/matrx-extend-demo"
+  },
+  "screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-SiFfJT/guest-chat-store-640x400.png",
+  "failure_stage": null
+}

@@ -8,6 +8,15 @@ The public listing was observed on version 0.2.105 on September 29 at 19:29 UTC.
 
 A fresh guest request later reached the backend but failed while streaming: the guest had zero active organization memberships. The current backend is recovered. The live signup function now provisions an organization for anonymous users, consistent with the funnel's one-membership contract. This database change has no local migration or matching local backend commit; its actor, task, timestamp, and exact causal path are unknown. See the [backend timeline](reports/guest-chat-backend-timeline.md).
 
+### Confirmed timeline (Pacific time)
+
+- September 27, 12:11:37 p.m.: `b66e979c` changes the Chat audience from everyone to signed-in users.
+- September 27, 12:31:51 p.m.: `2ca5068b` keeps that gate and changes the guest test to expect Chat to be absent.
+- September 27, approximately 12:38 p.m.: version 0.2.105 is released, then uploaded/submitted that day.
+- September 29: Google publishes 0.2.105. The live listing and dashboard verify the version; the exact publication minute is not established.
+
+These are code and release facts, not proof of a particular person's or agent's identity. There is no evidence that Google required this gate, and no evidence that a paid account was required; the confirmed regression was the login requirement.
+
 ## What changed in the extension
 
 The repair restores Chat to guest navigation and makes it the guest default. Guest sends use the public `extend.browser_chat` Mandate and do not reuse saved account Agent choices or signed-in catalog/execution reads. Once authentication and chat storage finish loading, the UI waits until the current actor matches the stored actor; on identity change it clears the previous account's conversation, messages, draft, variables, attachments, Google file selections, highlights, permissions, and compute binding. It also fences a canceled stream before the asynchronous cancellation completes, so late stream events cannot repopulate cleared state.
@@ -42,3 +51,9 @@ The repair restores Chat to guest navigation and makes it the guest default. Gue
 - [ ] Review and confirm before any Store submission.
 
 The defect remains open for the unverified account-to-guest privacy transition and non-admin review. No submission is authorized by this packet.
+
+## Before submission
+
+Another agent is changing parts of the server flow. The successful tests above describe the server at their observation time, not a guarantee about subsequent deployments. Reconcile those changes, rerun guest and signed-in acceptance against the final server, and replace/retest the extension artifact if its contract must change. The no-login reviewer guidance remains the intended acceptance contract.
+
+The [new screenshot candidate](evidence/guest-chat-0.2.130/guest-chat-store-candidate.png) shows a real guest answer from the normal demo, without synthetic test codes. It is prepared for review, not yet uploaded to the listing; its 640×400 crop clips part of the question and should be reviewed before use. The draft description and reviewer steps have been saved. No submission or publication action is authorized until Arman explicitly confirms.
