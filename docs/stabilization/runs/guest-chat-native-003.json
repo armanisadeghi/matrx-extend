@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "scope": "fresh owned guest profile; unpredictable page fixture; real Chat answer and post-reload guest follow-up",
+  "status": "unverified",
+  "build": {
+    "version": "0.2.128",
+    "tree_sha256": "22e53c6c2f605f411f13cfd04768921fd9cd11d14df78cf29c20dde932c604ee",
+    "receipt_kind": "local_dev_unpacked"
+  },
+  "guest": {
+    "fresh": true,
+    "chat_visible": true,
+    "after_reload": false
+  },
+  "chat": null,
+  "screenshot": null,
+  "followup_screenshot": null,
+  "failure_stage": "real_guest_answer",
+  "failure_code": "real_guest_answer_with_page_nonce_not_observed",
+  "failure_reason": "real_guest_answer_with_page_nonce_not_observed:{\"guestAccount\":true,\"accessTokenAbsent\":true,\"profileAbsent\":true,\"organ",
+  "stage_progress": [
+    "owned_profile",
+    "fresh_guest",
+    "public_demo_page",
+    "page_specific_fixture",
+    "guest_chat_open",
+    "guest_question",
+    "real_guest_answer"
+  ],
+  "guest_ai_requests": [],
+  "failure_observation": {
+    "guestAccount": true,
+    "accessTokenAbsent": true,
+    "profileAbsent": true,
+    "organizationAbsent": true,
+    "chatVisible": true,
+    "chatSelected": true,
+    "paneVisible": true,
+    "composerVisible": true,
+    "composerLength": 0,
+    "sendEnabled": false,
+    "streaming": false,
+    "replyCount": 1,
+    "answerContainsNonce": false,
+    "answerContainsFixtureHeading": false,
+    "answerMatchesPublicStages": true,
+    "answerIsRefusal": false,
+    "terminalAnswerError": false,
+    "interruptionNotice": false,
+    "errorNotice": false,
+    "latestAssistantReply": "The three workflow stages described in the article, in order, are:\n\nCapture \u2013 Turn the open page into readable content.\nUnderstand \u2013 Ask questions about what is actually on the page.\nUse \u2013 Extract the details needed for the next task.\n\nHere is the exact code as it appears on the page:\n\nThe three workflow stages Stage Purpose Expected result Capture Turn the open page into readable content. Article text, links, media, metadata, and schema. Understand Ask questions about what is actually on the page. Answers grounded in the current page. Use Extract the details needed for the next task. Structured rows that can be copied or reused.\n\nLet me know if you need further details or the text in a different format.",
+    "visibleAlerts": []
+  },
+  "failure_screenshot": "test-results/native-sidepanel-qa-OSG36l/guest-chat-failure.png"
+}
