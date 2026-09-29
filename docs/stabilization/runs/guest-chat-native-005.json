@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "run_id": "guest-chat-native-005",
+  "source_result": "test-results/guest-chat-store-1ed14002-02f1-41de-93e9-9af70af83401.json",
+  "scope": "fresh owned guest profile; page-grounded Chat answer and guest follow-up after side-panel reload",
+  "status": "pass",
+  "build": {
+    "version": "0.2.130",
+    "tree_sha256": "be0f08139c1ae8e518eb71cc8200c60e217c8ea64300cf9ee5b406e0c38a0a56",
+    "receipt_kind": "release",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "artifact_unchanged": true
+  },
+  "fresh_guest": {
+    "chat_visible": true,
+    "no_access_token": true,
+    "no_user_profile": true,
+    "no_active_organization": true
+  },
+  "first_real_answer": {
+    "page_only_nonce_present": true,
+    "required_workflow_stages_present": true,
+    "login_paywall_or_error": false
+  },
+  "after_panel_reload": {
+    "chat_visible": true,
+    "no_access_token_profile_or_organization": true,
+    "page_fixture_reinstalled": true,
+    "second_real_answer_completed": true,
+    "second_page_only_nonce_present": true,
+    "fixture_heading_present": true
+  },
+  "evidence": {
+    "acceptance_result": "test-results/guest-chat-store-1ed14002-02f1-41de-93e9-9af70af83401.json",
+    "resource_journal": "docs/stabilization/resource-journals/guest-chat-native-005.jsonl",
+    "resource_decision": "valid; admitted; child exit 0",
+    "screenshots": [
+      "test-results/native-sidepanel-qa-lrz5St/guest-chat-real-answer.png",
+      "test-results/native-sidepanel-qa-lrz5St/guest-chat-real-followup-answer.png"
+    ]
+  },
+  "not_established": [
+    "signed-in account to sign-out to restored guest UI privacy transition",
+    "broad Chat coverage beyond this bounded fresh-guest and post-reload path"
+  ],
+  "chrome_web_store_submission": "HOLD; no submission authorized"
+}

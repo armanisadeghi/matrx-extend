@@ -1,45 +1,52 @@
 {
   "schema_version": 1,
-  "lane": "fresh independent final acceptance adjudication; no product edits or browser/test launch",
+  "lane": "independent acceptance adjudication; artifact review only, no product edits or test/browser launch",
   "scope": "User outcome: public Chrome Store guests can use page-aware Chat without login, and restoring guest cannot reveal a prior signed-in Chat state.",
-  "release_artifact": {
-    "version": "0.2.130",
-    "tree_sha256": "be0f08139c1ae8e518eb71cc8200c60e217c8ea64300cf9ee5b406e0c38a0a56",
-    "source": "test-results/guest-chat-store-ad79f018-7371-4bc5-ac19-7b7e64b7b3c3.json"
-  },
   "verdict_a_runtime": {
-    "status": "PARTIAL_PASS",
-    "urgent_guest_chat_regression": "PASS",
-    "identity_restore_acceptance": "UNVERIFIED_IN_LIVE_UI",
+    "status": "PASS_SCOPED",
+    "current_release": {
+      "version": "0.2.130",
+      "tree_sha256": "be0f08139c1ae8e518eb71cc8200c60e217c8ea64300cf9ee5b406e0c38a0a56",
+      "receipt_kind": "release",
+      "artifact_unchanged": true
+    },
     "evidence": [
-      "On the immutable release receipt, the fresh profile had no access token, user profile, or active organization; Chat was visible/selected and the guest completed a real answer containing an unpredictable page-only code and the three required workflow stages, with no refusal or UI error.",
-      "After side-panel reload, the run again observed guest account UI, absent token/profile/organization, and visible Chat. A second real answer completed, but it did not contain the temporary injected fixture code/heading; it accurately listed the original public article's three headings and explained that no code was visible.",
-      "Thus the runner's strict post-reload fixture assertion failed honestly. The screenshots show the real guest answer UI; the failure screenshot shows the second answer's no-code explanation."
+      "Native run guest-chat-native-005 is status pass and its completed resource journal records admission, child exit 0, valid decision.",
+      "In the fresh owned profile, guest UI was visible with no access token, profile, or organization. The real first answer contained the unpredictable page-only code and requested workflow stages, without a login/paywall/error.",
+      "After side-panel reload, guest state and Chat remained visible with session credentials/org absent. The runner explicitly reinstalled the fixture after reload; the second real answer included the new unpredictable code and fixture heading. The final artifact tree hash matched the release receipt.",
+      "Screenshots show guest UI and real first/follow-up answers. Sanitized result is preserved at docs/stabilization/runs/guest-chat-native-005.json."
     ],
-    "adjudication": "The second-turn failure is not evidence that guest Chat is missing or gated: the first exact nonce-grounded answer proves no-login, page-aware use on the release artifact, and the reload proves Chat remains visible without auth. The second response is consistent with the fixture having disappeared from readable page content after navigation/hydration; this evidence cannot distinguish fixture teardown from a capture/indexing gap, so treat it as a separate page-fixture persistence weakness and do not count the strict two-turn runner as passed.",
-    "limit": "The requested signed-in account -> sign-out -> restored guest sequence was not exercised in this native run. Source and unit coverage support its cleanup path, but the full identity-isolation outcome is not live-UI verified."
+    "limits": [
+      "The signed-in account -> sign-out -> restored guest transition was not exercised in this live run. Its privacy behavior remains source/unit supported but unverified in native UI.",
+      "This bounded run does not establish broad Chat coverage across all agents, organizations, streams, or guest failure/recovery cases."
+    ],
+    "adjudication": "The urgent missing-guest-Chat/no-account-usability regression is verified repaired on the exact 0.2.130 release artifact. Native005 resolves the earlier follow-up uncertainty by reinstalling the page fixture after panel reload and obtaining a second nonce-grounded answer. Keep the live identity-transition and broad coverage limits explicit."
   },
   "verdict_b_source": {
     "status": "PASS_SCOPED",
     "evidence": [
       "Chat is available to everyone and guests always route to the public browser-chat Mandate; guest catalog and agent-row loads remain signed-in-only.",
       "After storage hydration and settled auth, ChatView holds the UI until the persisted actor matches the current identity, fences/cancels an old run, and clears the prior conversation/messages, draft, selected Agent, variables, per-agent permissions, compute binding, attached Google files, and highlights on identity change.",
-      "The focused unit report guest-chat-final-unit-002 is resource-journal valid; the tested boundary covers guest target selection and representative identity-change clearing. This verifier did not rerun tests."
+      "The focused guest boundary unit run is recorded as valid in guest-chat-final-unit-002; this verifier did not rerun it."
     ],
     "limits": [
-      "No end-to-end sign-out/restore test proves the UI sequence in Chrome.",
-      "The native runner's post-reload DOM fixture does not survive reliably enough to establish repeat page-code retrieval; repair/stabilize this oracle before using the strict two-turn case as a release gate."
+      "Source/unit coverage does not substitute for the unobserved native sign-out/restore transition."
     ]
+  },
+  "release_authorization": {
+    "chrome_web_store_submission": "HOLD",
+    "authorized": false,
+    "reason": "The owner expressly holds Store submission pending review and another agent's server work. This verification authorizes no submission."
   },
   "verification": {
     "read": [
-      "test-results/guest-chat-store-ad79f018-7371-4bc5-ac19-7b7e64b7b3c3.json",
-      "test-results/native-sidepanel-qa-jzQtNo/guest-chat-real-answer.png",
-      "test-results/native-sidepanel-qa-jzQtNo/guest-chat-failure.png",
+      "test-results/guest-chat-store-1ed14002-02f1-41de-93e9-9af70af83401.json",
+      "docs/stabilization/resource-journals/guest-chat-native-005.jsonl",
+      "test-results/native-sidepanel-qa-lrz5St/guest-chat-real-answer.png",
+      "test-results/native-sidepanel-qa-lrz5St/guest-chat-real-followup-answer.png",
       "src/features/chat/ChatView.tsx",
       "src/state/chat.ts",
-      "src/hooks/use-chat-stream.ts",
-      "tests/unit/chat-guest-boundary.test.ts"
+      "src/hooks/use-chat-stream.ts"
     ],
     "tests_builds_or_browser_launches_by_this_verifier": false
   }
