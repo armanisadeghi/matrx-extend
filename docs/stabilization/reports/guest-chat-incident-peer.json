@@ -1,7 +1,10 @@
 {
   "schema_version": 1,
   "reviewed": "667ad280 plus final 2026-09-29 guest Chat working tree",
-  "A_runtime": { "status": "unverified_pending_root_browser_lease", "claim": "No live guest answer, reload, or Store build was witnessed by this peer; a source gate cannot establish restored service." },
+  "A_runtime": {
+    "status": "unverified_pending_root_browser_lease",
+    "claim": "No live guest answer, reload, or Store build was witnessed by this peer; a source gate cannot establish restored service."
+  },
   "B_source": {
     "verdict": "conditional_pass_for_guest_visibility_and_identity_boundary",
     "resolved": "Guest Chat tab and public Mandate target restored; actor marker waits for settled auth and chat hydration; account conversation, messages, draft, variables, attachments and active stream are cleared on identity switch; hydration callback race is closed.",
@@ -9,5 +12,7 @@
     "remaining": "The strengthened native gate opens the public HTTPS demo, appends unpredictable page codes, and asserts that demo tab is active at each send. Its second answer after panel reload is a fresh guest turn, not continuation of the first conversation. Public-site end-to-end proof remains pending until the native run passes."
   },
   "release_gate_note": "release.sh runs checks serially; maxWorkers=4 is one Vitest process tree under one guarded release invocation, subject to the same pressure watchdog.",
-  "checks": ["Targeted source review and journal inspection only; no browser, build, or heavy command launched by this peer."]
+  "checks": [
+    "Targeted source review and journal inspection only; no browser, build, or heavy command launched by this peer."
+  ]
 }

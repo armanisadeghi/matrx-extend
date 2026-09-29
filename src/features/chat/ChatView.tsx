@@ -28,16 +28,13 @@ import { useAgentRow } from '@/lib/agents/use-agent-row';
 import { enqueueInboxMessage } from '@/lib/api/routes/ai';
 import { useRecordAndTranscribe } from '@/lib/audio/useRecordAndTranscribe';
 import { triggerColdResume } from '@/lib/chat/cold-resume';
-import { isOptimisticNewConversation } from '@/lib/chat/history';
 import { chatTargetForViewer, shouldDiscardChatOnIdentityChange } from '@/lib/chat/guest-boundary';
+import { isOptimisticNewConversation } from '@/lib/chat/history';
 import { wrapForAgent } from '@/lib/clipboard/copy';
 import { warmContentIr } from '@/lib/content-ir/route-env';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
-import {
-  DEFAULT_CHAT_MANDATE_KEY,
-  mandateKeyFromAgentRef,
-} from '@/lib/mandates';
+import { DEFAULT_CHAT_MANDATE_KEY, mandateKeyFromAgentRef } from '@/lib/mandates';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import type { ProviderRetryState } from '@/lib/stream/provider-retry';
 import {
@@ -155,7 +152,8 @@ export function ChatView() {
   useEffect(() => {
     if (!chatHydrated || (status !== 'signed-in' && status !== 'signed-out')) return;
     const nextActorId = currentUserId ?? 'guest';
-    if (!shouldDiscardChatOnIdentityChange(useChatStore.getState().chatActorId, nextActorId)) return;
+    if (!shouldDiscardChatOnIdentityChange(useChatStore.getState().chatActorId, nextActorId))
+      return;
     // Invalidate the old run synchronously before clearing its conversation.
     // Late stream events are then ignored by the run-id listener.
     void cancel();
