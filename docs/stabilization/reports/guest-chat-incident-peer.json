@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "reviewed": "667ad280 and 2026-09-29 guest Chat working tree",
+  "A_runtime": { "status": "pending_root_browser_lease", "claim": "No real guest response or reload was witnessed by this peer." },
+  "B_source": [
+    { "severity": "blocker", "finding": "On sign-out, mounted ChatView retains account conversation ID, messages, draft, and local task state; guest send forwards that account conversation ID despite switching the run target to the public Mandate.", "evidence": "ChatView buildFreshRunArgs and useListsSubscriber; chat store persists draft and agent selection; signOut does not clear chat state." },
+    { "severity": "high", "finding": "The browser gate can pass a generic answer containing Capture/Understand/Use without proving active-page grounding or a follow-up; after reload it checks only Chat visibility.", "evidence": "guest-chat-store-acceptance.mjs observes latest reply terms and one completed reply, then reloads." },
+    { "severity": "medium", "finding": "The refusal filter misses wording such as authentication required, and failure reporting drops the caught error, reducing diagnosis of a failed live run.", "evidence": "guest-chat-store-acceptance.mjs answerIsRefusal regex and catch block." }
+  ],
+  "requested_guard": "Failing-then-passing identity-transition tests plus a real guest answer with page-specific evidence and a second turn; assert private content and conversation ID are absent after sign-out.",
+  "checks": ["Targeted source review only; no browser or build run launched by this peer."]
+}
