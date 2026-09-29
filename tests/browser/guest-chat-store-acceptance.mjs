@@ -266,7 +266,12 @@ async function submitQuestion(panel, question, label) {
   await click(panel, 'title', 'Send');
 }
 
-async function requireActiveFixtureTab(attachWorker, page) {
+async function requireActiveFixtureTab(attachWorker, page, fixture) {
+  const body = await page.locator('body').innerText();
+  assert.ok(
+    body.includes(fixture.openingCode) && body.includes(fixture.followupCode),
+    'page_fixture_lost: the page re-rendered and erased the check codes before send',
+  );
   const worker = await attachWorker();
   try {
     const result = await worker.send('Runtime.evaluate', {
@@ -398,7 +403,7 @@ try {
         markStage('page_specific_fixture');
         fixture = await installPageFixture(web);
         await web.bringToFront();
-        await requireActiveFixtureTab(attachWorker, web);
+        await requireActiveFixtureTab(attachWorker, web, fixture);
 
         markStage('guest_chat_open');
         await click(panel, 'title', 'Chat');
@@ -422,7 +427,7 @@ try {
           true,
           'opening fixture must remain in the primary readable article before send',
         );
-        await requireActiveFixtureTab(attachWorker, web);
+        await requireActiveFixtureTab(attachWorker, web, fixture);
         networkWatch.arm('opening');
         await submitQuestion(panel, FIRST_QUESTION, 'opening_question');
 
@@ -500,7 +505,7 @@ try {
           true,
           'follow-up fixture must remain in the primary readable article before send',
         );
-        await requireActiveFixtureTab(attachWorker, web);
+        await requireActiveFixtureTab(attachWorker, web, fixture);
         await submitQuestion(panel, FOLLOWUP_QUESTION, 'followup_question');
 
         markStage('real_guest_followup_answer');
