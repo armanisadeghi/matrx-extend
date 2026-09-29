@@ -17,7 +17,10 @@ const deps = vi.hoisted(() => ({
   fill: vi.fn(),
   login: vi.fn(),
 }));
-vi.mock('@/lib/auth/flow', () => ({ getCurrentUser: async () => deps.user }));
+vi.mock('@/lib/auth/flow', () => ({
+  getAccessToken: async () => null,
+  getCurrentUser: async () => deps.user,
+}));
 vi.mock('@/lib/org/active-org', () => ({ getActiveOrganizationId: async () => deps.org.id }));
 vi.mock('@/hooks/use-active-tab', () => ({ useActiveTab: () => deps.tab }));
 vi.mock('@/hooks/use-auth', () => ({ useAuth: () => ({ user: deps.user }) }));
