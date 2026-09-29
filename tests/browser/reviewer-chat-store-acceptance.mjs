@@ -61,25 +61,28 @@ async function credentials() {
   return { email: parsed.email, password: parsed.password };
 }
 
-/** Read only the authenticated user's email from the real web session; never return token material. */
+/** Assert the cookie-backed web identity through the first-party, credential-free whoami door. */
 async function authenticatedWebEmail(page) {
   const location = safeLocation(page.url());
   if (location === `${WEB_ORIGIN}/login`) return null;
-  const storedEmail = await page.evaluate(() => {
-    for (const storage of [window.localStorage, window.sessionStorage]) {
-      for (let index = 0; index < storage.length; index += 1) {
-        try {
-          const value = JSON.parse(storage.getItem(storage.key(index)) ?? 'null');
-          const email = value?.user?.email ?? value?.session?.user?.email;
-          if (typeof email === 'string' && email.includes('@')) return email;
-        } catch {
-          // Ignore unrelated application storage without returning its contents.
-        }
-      }
-    }
-    return null;
+  const identity = await page.evaluate(async () => {
+    const response = await fetch('/api/whoami', { credentials: 'include', cache: 'no-store' });
+    if (!response.ok) return null;
+    const result = await response.json();
+    return result?.signed_in === true &&
+      typeof result.email === 'string' &&
+      result.email.includes('@')
+      ? result.email
+      : null;
   });
-  return storedEmail || INTERACTIVE_REVIEWER_EMAIL;
+  if (
+    identity &&
+    INTERACTIVE_REVIEWER_EMAIL &&
+    identity.toLowerCase() !== INTERACTIVE_REVIEWER_EMAIL.toLowerCase()
+  ) {
+    throw new Error('reviewer_web_identity_mismatch');
+  }
+  return identity;
 }
 
 async function capture(panel, artifacts, label) {
