@@ -1,0 +1,43 @@
+{
+  "id": "EXT-D-0066",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T10"],
+  "surface": "Chat",
+  "auth_mode": "guest",
+  "reproduction": [
+    "Install published Chrome Web Store version 0.2.105 from primary item hnfolienncfklkgmdjjmhhegglimlamg, or build its source tag v0.2.105 and reload the exact unpacked artifact. Confirm manifest version before testing.",
+    "Use a fresh signed-out profile; open an ordinary webpage and the extension side panel.",
+    "Inspect navigation and attempt to open Chat without signing in."
+  ],
+  "expected": "Chat is visible and a guest can send a page-aware question and receive a real answer without an account.",
+  "actual": "Version 0.2.105 sets Chat audience to signed-in; the guest tab and pane are absent. Published listing also instructs guests to sign in for Chat.",
+  "evidence": [
+    "docs/stabilization/reports/guest-chat-incident-timeline.md",
+    "docs/stabilization/reports/guest-chat-incident-peer.json"
+  ],
+  "severity": "S1: entire public no-login Chat workflow unavailable.",
+  "priority": "P0: user-authorized immediate Store incident, overrides deferred Chat sequencing.",
+  "state": "in-fix",
+  "reproduction_status": "Published version and listing verified in primary public Store and authenticated publisher dashboard; deterministic source gate traced to b66e979c. Fresh fixed-build guest runtime remains pending.",
+  "verification_status": "Repair in progress; no fixed, retest-pass, closed, submitted or published replacement claim.",
+  "transition_history": [
+    {
+      "at": "2026-09-29T18:27:38.241098Z",
+      "from": null,
+      "to": "open",
+      "reason": "User reported missing guest Chat in current public package; source and Store provenance corroborated."
+    },
+    {
+      "at": "2026-09-29T18:27:38.241098Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Intentional signed-in audience gate and absence-expecting harness identified."
+    },
+    {
+      "at": "2026-09-29T18:27:38.241098Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Restore guest Mandate path and isolate account state; independent source review and real guest browser acceptance required."
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-28T19:51:52.878308+00:00",
+  "updated_at": "2026-09-29T18:27:38.241098Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -26827,12 +26827,45 @@
               "detail": "New remote behavior; source census only."
             }
           }
+        },
+        {
+          "id": "EXT-F-2013-T10",
+          "title": "Public guest Chat sends page-grounded answers before and after reload",
+          "modes": [
+            "guest"
+          ],
+          "control_ids": [
+            "EXT-F-2013-C08",
+            "EXT-F-2013-C10"
+          ],
+          "preconditions": [
+            "Build under resource guard, record immutable receipt, load fresh isolated profile with exact unpacked build; verify no account token/profile/organization."
+          ],
+          "steps": [
+            "Open controlled ordinary page with unpredictable visible marker.",
+            "Open Chat and ask for that page marker; require real matching assistant answer.",
+            "Reload the side panel and send a second question; require another matching answer."
+          ],
+          "expected": [
+            "Chat remains visible and usable without login; real responses ground in current page; no private account state is carried into guest."
+          ],
+          "results": {
+            "guest": {
+              "status": "fail",
+              "detail": "Published0.2.105 hides Chat; fixed-build retest pending.",
+              "defect_ids": [
+                "EXT-D-0066"
+              ]
+            }
+          }
         }
       ],
       "cells": {
         "guest": {
-          "test_status": "unverified",
-          "defect_ids": [],
+          "test_status": "fail",
+          "defect_ids": [
+            "EXT-D-0066"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
