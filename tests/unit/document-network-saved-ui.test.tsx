@@ -114,11 +114,16 @@ afterEach(async () => {
   h.releases.clear();
   // Releasing a deliberately stalled CDP setup resumes async work that can
   // otherwise reach the next case after its Chrome boundary doubles changed.
-  // Drain that work under this case's fake clock before replacing its globals.
-  await vi.runAllTimersAsync();
-  await vi.dynamicImportSettled();
+  // Do not run every timer: the production CDP client intentionally renews
+  // its ten-minute idle timer while a lease exists, which makes a full fake
+  // clock drain an infinite loop rather than test cleanup.
+  for (let i = 0; i < 10; i++) {
+    await vi.advanceTimersByTimeAsync(100);
+    await vi.dynamicImportSettled();
+  }
   h.handlers.clear();
   cleanup();
+  vi.clearAllTimers();
   vi.useRealTimers();
   vi.clearAllMocks();
 });
