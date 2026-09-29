@@ -10,7 +10,8 @@ export interface FileInventoryItem {
   path: string;
   mimeType: string | null;
   sizeBytes: number | null;
-  visibility: string;
+  /** Anyone, signed in or not, can open it at its address (access ladder: "Published to the web"). */
+  publishedToWeb: boolean;
   updatedAt: string;
 }
 
@@ -137,7 +138,7 @@ export function parseFileInventoryRows(value: unknown): FileInventoryItem[] {
       path,
       mimeType: text(candidate, 'mime_type'),
       sizeBytes: number(candidate, 'size_bytes', 'file_size'),
-      visibility: text(candidate, 'visibility') ?? 'personal',
+      publishedToWeb: candidate.published_to_web === true,
       updatedAt,
     });
   }

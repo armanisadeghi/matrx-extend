@@ -41,7 +41,6 @@ export interface UploadFileOptions {
   path?: string;
   /** Set to true when the path was explicitly chosen by the user via a folder picker — bypasses the `system-files/matrx-extend/` auto-prefix. */
   userSelected?: boolean;
-  visibility?: 'public' | 'personal' | 'shared';
   metadata?: Record<string, unknown>;
 }
 
@@ -117,7 +116,6 @@ export async function uploadFile(
   const fd = new FormData();
   fd.append('file', blob, filename);
   fd.append('file_path', filePath);
-  fd.append('visibility', opts.visibility ?? 'personal');
   if (opts.metadata) fd.append('metadata_json', JSON.stringify(opts.metadata));
 
   const url = `${baseUrl}/files/upload`;

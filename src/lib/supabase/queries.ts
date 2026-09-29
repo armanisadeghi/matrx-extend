@@ -720,13 +720,12 @@ export const SavedCaptureSchema = SavedCaptureSummarySchema.extend({
   edited_content: z.string().nullable(),
   /** The full SoupResult JSON kept in S3 (null when the organization keeps text only). */
   original_file_id: z.string().uuid().nullable(),
-  visibility: z.string().nullable(),
 });
 export type SavedCapture = z.infer<typeof SavedCaptureSchema>;
 
 const SOURCE_SUMMARY_COLUMNS =
   'id, url:canonical_identity, captured_at:created_at, updated_at, title:name, description:structured_json->metadata->>description, kept_at, captured_by:created_by';
-const SOURCE_DETAIL_COLUMNS = `${SOURCE_SUMMARY_COLUMNS}, structured:structured_json, content, canonical_clean_id, original_file_id, visibility`;
+const SOURCE_DETAIL_COLUMNS = `${SOURCE_SUMMARY_COLUMNS}, structured:structured_json, content, canonical_clean_id, original_file_id`;
 
 export interface SavedCapturePage {
   rows: SavedCaptureSummary[];

@@ -41,7 +41,6 @@ const body: SourceLandingBody = {
   },
   attach_to: [],
   keep: true,
-  visibility: 'internal',
   organization_id: '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f',
 };
 const landed = {

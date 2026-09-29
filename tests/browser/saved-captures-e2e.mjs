@@ -129,7 +129,7 @@ async function main() {
     request({ url: `${supabaseUrl}/rest/v1/${path}`, key, token: session.access_token, ...init });
   const sourcesFor = (url) =>
     rest(
-      `processed_documents?origin_client=eq.extension&canonical_identity=eq.${encodeURIComponent(url)}&select=id,name,total_pages,original_file_id,kept_at,visibility,canonical_clean_id,deleted_at,structured_json`,
+      `processed_documents?origin_client=eq.extension&canonical_identity=eq.${encodeURIComponent(url)}&select=id,name,total_pages,original_file_id,kept_at,published_to_web,shown_to,canonical_clean_id,deleted_at,structured_json`,
     );
 
   const landed = [];
@@ -229,8 +229,11 @@ async function main() {
     landed.push(source.id);
     if (!source.original_file_id) fail('The Source has no original (the soup JSON was not kept).');
     if (!source.kept_at) fail('The Source was not kept.');
-    if (source.visibility !== 'internal')
-      fail(`Visibility is ${source.visibility}, not internal (a scrape is organization data).`);
+    // A scrape is organization data: never published to the web, never hidden from members' lists.
+    if (source.published_to_web !== false)
+      fail(`published_to_web is ${source.published_to_web}; a scrape is organization data.`);
+    if (source.shown_to === 'only_me')
+      fail('shown_to is only_me; a scrape is organization data, shown to the organization.');
     if ((source.total_pages ?? 0) < 2) fail(`Expected H1–H3 portions, got ${source.total_pages}.`);
     for (const k of ['images', 'links', 'metadata', 'ld_json', 'videos', 'audio', 'pattern_id']) {
       if (!(k in (source.structured_json ?? {}))) fail(`structured_json is missing ${k}.`);

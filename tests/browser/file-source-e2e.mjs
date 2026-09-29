@@ -194,7 +194,7 @@ async function main() {
     })();
     const rows = await rest(
       'docproc',
-      `processed_documents?origin_client=eq.extension&organization_id=eq.${organizationId}&canonical_identity=eq.${encodeURIComponent(identity)}&deleted_at=is.null&select=id,created_at,visibility&order=created_at.desc&limit=1`,
+      `processed_documents?origin_client=eq.extension&organization_id=eq.${organizationId}&canonical_identity=eq.${encodeURIComponent(identity)}&deleted_at=is.null&select=id,created_at,published_to_web&order=created_at.desc&limit=1`,
     );
     if (!rows?.[0]) fail(`No Source found for ${identity}.`);
     sourceId = rows[0].id;
@@ -215,7 +215,7 @@ async function main() {
         `No edge from Source ${sourceId} to project ${project.id}: ${JSON.stringify(edges).slice(0, 400)}`,
       );
     console.log(
-      `✓ independent read: Source ${sourceId} (${rows[0].visibility}) → project edge ${edge.id}`,
+      `✓ independent read: Source ${sourceId} (published_to_web ${rows[0].published_to_web}) → project edge ${edge.id}`,
     );
 
     const [opened] = await Promise.all([

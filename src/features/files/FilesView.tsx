@@ -382,8 +382,12 @@ function FileRow({
           <span>{formatFileSize(file.sizeBytes, { fallback: 'Unknown size' })}</span>
           <span>·</span>
           <span>{formatDate(file.updatedAt)}</span>
-          <span>·</span>
-          <span>{file.visibility}</span>
+          {file.publishedToWeb && (
+            <>
+              <span>·</span>
+              <span>Published to the web</span>
+            </>
+          )}
         </div>
       </div>
       <RowActions

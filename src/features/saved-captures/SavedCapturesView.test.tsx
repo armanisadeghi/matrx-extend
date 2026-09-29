@@ -94,7 +94,6 @@ const fullCapture = {
   content: 'Original alpha',
   edited_content: null,
   original_file_id: '99999999-9999-4999-8999-999999999999',
-  visibility: 'internal',
 };
 
 beforeEach(() => {

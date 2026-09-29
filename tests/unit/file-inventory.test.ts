@@ -19,7 +19,7 @@ describe('extension file inventory', () => {
           path: 'reports/report.pdf',
           mime_type: 'application/pdf',
           size_bytes: 42,
-          visibility: 'personal',
+          published_to_web: true,
           updated_at: '2026-07-23T00:00:00Z',
         },
         {
@@ -39,8 +39,13 @@ describe('extension file inventory', () => {
         },
       ]),
     ).toEqual([
-      expect.objectContaining({ id: FILE_ID, name: 'report.pdf', sizeBytes: 42 }),
-      expect.objectContaining({ id: SECOND_FILE_ID, name: 'photo.png', sizeBytes: 99 }),
+      expect.objectContaining({ id: FILE_ID, name: 'report.pdf', sizeBytes: 42, publishedToWeb: true }),
+      expect.objectContaining({
+        id: SECOND_FILE_ID,
+        name: 'photo.png',
+        sizeBytes: 99,
+        publishedToWeb: false,
+      }),
     ]);
   });
 

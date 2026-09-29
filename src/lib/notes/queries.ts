@@ -20,7 +20,7 @@ import {
 import { workbenchDb } from '@/lib/supabase/schemas';
 
 const LIST_COLUMNS =
-  'id, created_by, label, folder_name, folder_id, tags, updated_at, position, visibility';
+  'id, created_by, label, folder_name, folder_id, tags, updated_at, position';
 const FULL_COLUMNS = `${LIST_COLUMNS}, content, metadata, deleted_at, version, created_at`;
 
 // ─── Reads ──────────────────────────────────────────────────────────────────

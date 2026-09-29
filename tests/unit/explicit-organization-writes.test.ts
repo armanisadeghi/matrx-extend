@@ -54,7 +54,6 @@ describe('explicit organization writes', () => {
       tags: null,
       updated_at: '2026-08-23T00:00:00Z',
       position: null,
-      visibility: 'private',
       content: '',
       metadata: null,
       deleted_at: null,

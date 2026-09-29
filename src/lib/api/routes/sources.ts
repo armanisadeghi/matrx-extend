@@ -58,8 +58,6 @@ export interface SourceLandingBody {
   provenance: SourceProvenance;
   attach_to: AttachTarget[];
   keep: boolean;
-  /** A scrape is organization data: always `internal`, never personal (Arman, 2026-09-27). */
-  visibility: 'internal';
   organization_id: string;
 }
 

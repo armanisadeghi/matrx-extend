@@ -7,17 +7,13 @@
  * main app keeps using its full schema. RLS in Supabase scopes every row to the
  * owner via `created_by`, so we never need to filter manually.
  *
- * Ownership/visibility/soft-delete columns (canonical base-entity shape):
+ * Ownership/soft-delete columns (canonical base-entity shape):
  *   - `created_by` (uuid)            — owner; replaced the old `user_id`.
- *   - `visibility` (enum)            — 'private' | 'internal' | 'link' | 'public';
- *                                      replaced the old `is_public` boolean.
+ * Row access (`shown_to`, `published_to_web`) is neither read nor written here.
  *   - `deleted_at` (timestamptz)     — null = live; replaced the old `is_deleted`.
  */
 
 import { z } from 'zod';
-
-export const NoteVisibilitySchema = z.enum(['private', 'internal', 'link', 'public']);
-export type NoteVisibility = z.infer<typeof NoteVisibilitySchema>;
 
 export const NoteListItemSchema = z.object({
   id: z.string().uuid(),
@@ -28,7 +24,6 @@ export const NoteListItemSchema = z.object({
   tags: z.array(z.string()).nullable(),
   updated_at: z.string(),
   position: z.number().nullable(),
-  visibility: NoteVisibilitySchema,
 });
 export type NoteListItem = z.infer<typeof NoteListItemSchema>;
 

@@ -238,10 +238,11 @@ describe('Save never loses input', () => {
       source_kind: 'scrape_parsed_page',
       canonical_identity: soup.url,
       keep: true,
-      visibility: 'internal',
       organization_id: '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f',
       provenance: { origin_client: 'extension', capture_method: 'own_browser' },
     });
+    // Access ladder T-13: the extension never writes the retiring row column.
+    expect(body).not.toHaveProperty('visibility');
 
     // A retry that lands removes it from the device.
     mocks.apiPost.mockResolvedValue({

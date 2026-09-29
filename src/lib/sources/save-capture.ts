@@ -9,8 +9,8 @@
  *                    metadata, pattern_id) so the Saved captures tab keeps its
  *                    Details / Data / Copy panes,
  *   - provenance `{origin_client:'extension', capture_method:'own_browser'}`,
- *     `keep: true`, `visibility: 'internal'` — a scrape is organization data (Arman, 2026-09-27;
- *     there is no personal option).
+ *     `keep: true`. No row access field: a scrape is organization data (Arman, 2026-09-27),
+ *     which is the Source table's level, and the door files it that way (access ladder T-13).
  *
  * NEVER LOSE INPUT. A refused or unreachable landing does not drop the capture:
  * it is written to `chrome.storage.local` and shown as an "Not yet a Source" (retry)
@@ -149,7 +149,6 @@ export function prepareLanding(
     },
     attach_to: [],
     keep: true,
-    visibility: 'internal',
   };
 }
 
