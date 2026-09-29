@@ -42,7 +42,15 @@ const report = {
   failure_stage: null,
   failure_code: null,
   failure_reason: null,
+  stage_progress: [],
+  guest_ai_requests: [],
 };
+
+function markStage(next) {
+  stage = next;
+  report.stage_progress.push(next);
+  process.stdout.write(`STAGE ${next}\n`);
+}
 
 async function observe(panel, expected = {}) {
   return evaluate(
@@ -61,6 +69,11 @@ async function observe(panel, expected = {}) {
       const replies = active ? [...pane.querySelectorAll('button[title="Copy reply"]')]
         .map((button) => button.closest('div.group.space-y-2')?.innerText ?? '') : [];
       const latestReply = replies.at(-1) ?? '';
+      const visibleAlerts = active
+        ? [...pane.querySelectorAll('[role="alert"]')].filter(visible)
+          .map((element) => element.innerText ?? '')
+        : [];
+      const textarea = active ? pane.querySelector('textarea') : null;
       const stored = chrome.storage.local.get([
         'matrx.auth.accessToken', 'matrx.user.profile', 'matrx.org.active',
       ]);
@@ -86,9 +99,48 @@ async function observe(panel, expected = {}) {
         answerIsRefusal: /(?:authentication (?:is )?required|you (?:must|need to) (?:sign.?in|log.?in|authenticate)|(?:sign.?in|log.?in) (?:to|before) (?:use|ask|send|continue)|upgrade|subscribe|payment required|unauthori[sz]ed|forbidden|\\b401\\b|\\b403\\b)/i
           .test(latestReply),
         errorNotice: active && Boolean(pane.querySelector('[role="alert"]')),
+        ...( ${JSON.stringify(expected.diagnostics === true)} && {
+          latestReplyText: latestReply,
+          visibleAlertTexts: visibleAlerts,
+          composerLength: textarea?.value?.length ?? 0,
+        }),
       }));
     })()`,
   );
+}
+
+async function watchGuestAiRequests(panel) {
+  await panel.send('Network.enable');
+  let armedLabel = null;
+  const requests = new Map();
+  const targetPath = '/v2/ai/mandates/extend.browser_chat';
+  const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
+    if (!armedLabel) return;
+    try {
+      const url = new URL(request?.url);
+      if (!url.pathname.endsWith(targetPath)) return;
+      requests.set(requestId, { attempt: armedLabel, path: targetPath, status: null });
+    } catch {
+      // Ignore unrelated or malformed requests without retaining their URL.
+    }
+  });
+  const offResponse = panel.on('Network.responseReceived', ({ requestId, response }) => {
+    const request = requests.get(requestId);
+    if (request) request.status = Number.isFinite(response?.status) ? response.status : null;
+  });
+  return {
+    arm(label) {
+      armedLabel = label;
+    },
+    snapshot() {
+      return [...requests.values()].map(({ attempt, path, status }) => ({ attempt, path, status }));
+    },
+    stop() {
+      armedLabel = null;
+      offRequest();
+      offResponse();
+    },
+  };
 }
 
 async function installPageFixture(page) {
@@ -182,6 +234,49 @@ function safeFailure(error) {
   return { code, reason };
 }
 
+function safeVisibleText(value, fixture) {
+  let text = String(value ?? '');
+  for (const [raw, marker] of [
+    [fixture?.openingCode, '[opening-code]'],
+    [fixture?.followupCode, '[follow-up-code]'],
+    [fixture?.title, '[fixture-heading]'],
+  ]) {
+    if (raw) text = text.split(raw).join(marker);
+  }
+  return text
+    .replace(/Bearer\s+\S+/gi, 'Bearer [redacted]')
+    .replace(/\b(?:authorization|access[_ -]?token|password|secret)\b\s*[:=]\s*\S+/gi, '[redacted]')
+    .replace(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/g, '[email]')
+    .replace(/https?:\/\/\S+/gi, '[url]')
+    .replace(/\b[0-9a-f]{8}-[0-9a-f-]{27,}\b/gi, '[id]')
+    .slice(0, 1200);
+}
+
+function diagnosticState(state, fixture) {
+  if (!state) return null;
+  return {
+    guestAccount: state.guestAccount,
+    accessTokenAbsent: state.accessTokenAbsent,
+    profileAbsent: state.profileAbsent,
+    organizationAbsent: state.organizationAbsent,
+    chatVisible: state.chatVisible,
+    chatSelected: state.chatSelected,
+    paneVisible: state.paneVisible,
+    composerVisible: state.composerVisible,
+    composerLength: state.composerLength,
+    sendEnabled: state.sendEnabled,
+    streaming: state.streaming,
+    replyCount: state.replyCount,
+    answerContainsNonce: state.answerContainsNonce,
+    answerContainsFixtureHeading: state.answerContainsFixtureHeading,
+    answerMatchesPublicStages: state.answerMatchesPublicStages,
+    answerIsRefusal: state.answerIsRefusal,
+    errorNotice: state.errorNotice,
+    latestAssistantReply: safeVisibleText(state.latestReplyText, fixture),
+    visibleAlerts: (state.visibleAlertTexts ?? []).map((text) => safeVisibleText(text, fixture)),
+  };
+}
+
 async function capture(panel, path) {
   const { data } = await panel.send('Page.captureScreenshot', { format: 'png' });
   await writeFile(path, Buffer.from(data, 'base64'), { mode: 0o600 });
@@ -195,14 +290,14 @@ try {
     tree_sha256: receipt.treeSha256,
     receipt_kind: receipt.kind ?? 'release',
   };
-  stage = 'owned_profile';
+  markStage('owned_profile');
   const run = await runNativeSidepanelQa({
     extensionDir: EXTENSION_DIR,
     expectedRelease: receipt,
     releaseReceiptPath: RECEIPT,
     ...(receipt.kind === 'local_dev_unpacked' && { localDevReceiptPath: RECEIPT }),
     exercisePanel: async ({ page, panel, artifacts, attachWorker }) => {
-      stage = 'fresh_guest';
+      markStage('fresh_guest');
       const initial = await waitFor(
         'fresh_guest_chat_visible',
         () => observe(panel),
@@ -217,8 +312,10 @@ try {
       report.guest = { fresh: true, chat_visible: initial.chatVisible, after_reload: false };
 
       const web = await page.context().newPage();
+      let fixture = null;
+      let networkWatch = null;
       try {
-        stage = 'public_demo_page';
+        markStage('public_demo_page');
         await web.goto(`${WEB_ORIGIN}${DEMO_PATH}`, {
           waitUntil: 'domcontentloaded',
           timeout: 60_000,
@@ -234,11 +331,11 @@ try {
           30_000,
         );
 
-        stage = 'page_specific_fixture';
-        const fixture = await installPageFixture(web);
+        markStage('page_specific_fixture');
+        fixture = await installPageFixture(web);
         await web.bringToFront();
 
-        stage = 'guest_chat_open';
+        markStage('guest_chat_open');
         await click(panel, 'title', 'Chat');
         const before = await waitFor(
           'guest_chat_composer',
@@ -248,22 +345,32 @@ try {
         );
         assert.equal(before.replyCount, 0, 'fresh guest must have no prior reply');
 
-        stage = 'guest_question';
+        markStage('guest_question');
+        networkWatch = await watchGuestAiRequests(panel);
         await requireActiveFixtureTab(attachWorker, web);
+        networkWatch.arm('opening');
         await submitQuestion(panel, FIRST_QUESTION, 'opening_question');
 
-        stage = 'real_guest_answer';
+        markStage('real_guest_answer');
         const answered = await waitFor(
           'real_guest_answer_with_page_nonce',
-          () => observe(panel, { nonce: fixture.openingCode }),
+          () => observe(panel, { nonce: fixture.openingCode, diagnostics: true }),
           (state) =>
-            state?.replyCount > before.replyCount &&
-            !state.streaming &&
-            state.answerContainsNonce &&
-            state.answerMatchesPublicStages &&
-            !state.answerIsRefusal &&
-            !state.errorNotice,
+            state?.errorNotice ||
+            (state?.replyCount > before.replyCount &&
+              !state.streaming &&
+              (state.answerIsRefusal ||
+                (state.answerContainsNonce && state.answerMatchesPublicStages))),
           180_000,
+        );
+        report.failure_observation = diagnosticState(answered, fixture);
+        report.guest_ai_requests = networkWatch.snapshot();
+        assert.ok(
+          answered.answerContainsNonce &&
+            answered.answerMatchesPublicStages &&
+            !answered.answerIsRefusal &&
+            !answered.errorNotice,
+          'real guest answer must contain the page-specific code and workflow stages',
         );
         report.chat = {
           opening_question_fingerprint: digest(FIRST_QUESTION),
@@ -277,7 +384,7 @@ try {
         };
         report.screenshot = await capture(panel, join(artifacts, 'guest-chat-real-answer.png'));
 
-        stage = 'real_panel_reload';
+        markStage('real_panel_reload');
         const oldLoader = (await panel.send('Page.getFrameTree'))?.frameTree?.frame?.loaderId;
         assert.ok(oldLoader, 'panel loader before reload');
         await panel.send('Page.reload', { ignoreCache: false });
@@ -302,7 +409,7 @@ try {
         report.guest.session_absent_after_reload =
           reloaded.accessTokenAbsent && reloaded.profileAbsent && reloaded.organizationAbsent;
 
-        stage = 'guest_followup_composer';
+        markStage('guest_followup_composer');
         await click(panel, 'title', 'Chat');
         const beforeFollowup = await waitFor(
           'guest_chat_followup_composer',
@@ -310,22 +417,36 @@ try {
           (state) => state?.chatSelected && state.paneVisible && state.composerVisible,
           30_000,
         );
-        stage = 'guest_followup_question';
+        markStage('guest_followup_question');
+        networkWatch.arm('post_reload_new_conversation');
         await requireActiveFixtureTab(attachWorker, web);
         await submitQuestion(panel, FOLLOWUP_QUESTION, 'followup_question');
 
-        stage = 'real_guest_followup_answer';
+        markStage('real_guest_followup_answer');
         const followup = await waitFor(
           'real_guest_followup_answer_with_page_nonce',
-          () => observe(panel, { nonce: fixture.followupCode, fixtureHeading: fixture.title }),
+          () =>
+            observe(panel, {
+              nonce: fixture.followupCode,
+              fixtureHeading: fixture.title,
+              diagnostics: true,
+            }),
           (state) =>
-            state?.replyCount > beforeFollowup.replyCount &&
-            !state.streaming &&
-            state.answerContainsNonce &&
-            state.answerContainsFixtureHeading &&
-            !state.answerIsRefusal &&
-            !state.errorNotice,
+            state?.errorNotice ||
+            (state?.replyCount > beforeFollowup.replyCount &&
+              !state.streaming &&
+              (state.answerIsRefusal ||
+                (state.answerContainsNonce && state.answerContainsFixtureHeading))),
           180_000,
+        );
+        report.failure_observation = diagnosticState(followup, fixture);
+        report.guest_ai_requests = networkWatch.snapshot();
+        assert.ok(
+          followup.answerContainsNonce &&
+            followup.answerContainsFixtureHeading &&
+            !followup.answerIsRefusal &&
+            !followup.errorNotice,
+          'new guest conversation after reload must ground in the page fixture',
         );
         report.chat.followup_question_fingerprint = digest(FOLLOWUP_QUESTION);
         report.chat.followup_code_fingerprint = digest(fixture.followupCode);
@@ -337,12 +458,36 @@ try {
           panel,
           join(artifacts, 'guest-chat-real-followup-answer.png'),
         );
+      } catch (error) {
+        report.failure_stage = stage;
+        const failure = safeFailure(error);
+        report.failure_code = failure.code;
+        report.failure_reason = failure.reason;
+        report.failure_observation = diagnosticState(
+          await observe(panel, {
+            nonce: fixture?.openingCode,
+            fixtureHeading: fixture?.title,
+            diagnostics: true,
+          }).catch(() => null),
+          fixture,
+        );
+        report.guest_ai_requests = networkWatch?.snapshot() ?? [];
+        try {
+          report.failure_screenshot = await capture(
+            panel,
+            join(artifacts, 'guest-chat-failure.png'),
+          );
+        } catch {
+          report.failure_screenshot = 'capture_failed';
+        }
+        throw error;
       } finally {
+        networkWatch?.stop();
         await web.close();
       }
     },
   });
-  stage = 'artifact_unchanged';
+  markStage('artifact_unchanged');
   assert.equal(hashReleaseTree(EXTENSION_DIR), receipt.treeSha256);
   report.build.extension_id = run.extensionId;
   report.build.artifact_unchanged = true;
