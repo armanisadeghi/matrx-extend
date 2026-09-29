@@ -73,6 +73,9 @@ async function observe(panel, expected = {}) {
         ? [...pane.querySelectorAll('[role="alert"]')].filter(visible)
           .map((element) => element.innerText ?? '')
         : [];
+      const interruptionNotice = active && [...pane.querySelectorAll('button,[role="status"],[role="alert"]')]
+        .filter(visible)
+        .some((element) => /(?:interruption|interrupted|retry)/i.test(element.innerText ?? ''));
       const textarea = active ? pane.querySelector('textarea') : null;
       const stored = chrome.storage.local.get([
         'matrx.auth.accessToken', 'matrx.user.profile', 'matrx.org.active',
@@ -98,7 +101,9 @@ async function observe(panel, expected = {}) {
           .every((term) => latestReply.includes(term)),
         answerIsRefusal: /(?:authentication (?:is )?required|you (?:must|need to) (?:sign.?in|log.?in|authenticate)|(?:sign.?in|log.?in) (?:to|before) (?:use|ask|send|continue)|upgrade|subscribe|payment required|unauthori[sz]ed|forbidden|\\b401\\b|\\b403\\b)/i
           .test(latestReply),
-        errorNotice: active && Boolean(pane.querySelector('[role="alert"]')),
+        terminalAnswerError: /^\s*Error\s*:/i.test(latestReply),
+        interruptionNotice,
+        errorNotice: active && (Boolean(pane.querySelector('[role="alert"]')) || interruptionNotice),
         ...( ${JSON.stringify(expected.diagnostics === true)} && {
           latestReplyText: latestReply,
           visibleAlertTexts: visibleAlerts,
@@ -271,6 +276,8 @@ function diagnosticState(state, fixture) {
     answerContainsFixtureHeading: state.answerContainsFixtureHeading,
     answerMatchesPublicStages: state.answerMatchesPublicStages,
     answerIsRefusal: state.answerIsRefusal,
+    terminalAnswerError: state.terminalAnswerError,
+    interruptionNotice: state.interruptionNotice,
     errorNotice: state.errorNotice,
     latestAssistantReply: safeVisibleText(state.latestReplyText, fixture),
     visibleAlerts: (state.visibleAlertTexts ?? []).map((text) => safeVisibleText(text, fixture)),
@@ -359,7 +366,8 @@ try {
             state?.errorNotice ||
             (state?.replyCount > before.replyCount &&
               !state.streaming &&
-              (state.answerIsRefusal ||
+              (state.terminalAnswerError ||
+                state.answerIsRefusal ||
                 (state.answerContainsNonce && state.answerMatchesPublicStages))),
           180_000,
         );
@@ -435,7 +443,8 @@ try {
             state?.errorNotice ||
             (state?.replyCount > beforeFollowup.replyCount &&
               !state.streaming &&
-              (state.answerIsRefusal ||
+              (state.terminalAnswerError ||
+                state.answerIsRefusal ||
                 (state.answerContainsNonce && state.answerContainsFixtureHeading))),
           180_000,
         );
