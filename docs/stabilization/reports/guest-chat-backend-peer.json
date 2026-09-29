@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "report_id": "guest-chat-backend-peer",
+  "incident": "EXT-D-0066",
+  "scope": "Independent read-only backend source and live Supabase inspection. No tests, build, browser run, or backend mutation in this lane.",
+  "verdicts": {
+    "A_runtime": "PENDING_INDEPENDENT_RUNTIME",
+    "B_source": "NO_SERVER_PATCH_NEEDED_ON_CURRENT_LIVE_STATE"
+  },
+  "evidence": [
+    "The earlier HTTP 200 NDJSON GuestOrganizationRequiredError was a real production failure reported by the root lane. The root lane later reported three fresh guest starts and same-conversation continuation completing, but this peer did not run them.",
+    "The aidream checkout is clean at 32e5c7b97da7d6d01c02da987a1478b7a5b805d6; the proposed agent_run.py/effective_org.py fallback diff was withdrawn.",
+    "Live brsgrqvjdzwihsvnfqkf auth.users has enabled on_auth_user_mirror to iam._mirror_sign_in_account; iam.users has enabled on_auth_user_created to public._provision_new_user_organization.",
+    "The live public._provision_new_user_organization body has no is_anonymous skip and calls iam.provision_signup_organization(new.id). The latter checks that the auth user exists, creates an organization and owner membership when none exists, and handles concurrent unique violations by rereading membership.",
+    "A read-only aggregate across distinct anonymous auth users linked from users.guest_executions found 922 guest users: 0 with zero active organization memberships, 922 with one, and 0 with multiple. Both the guest registry model and membership model map to supabase_automation_matrix.",
+    "agent_run.py still installs the public app record's organization before the guest membership funnel, preserving public-app owner attribution; the new SQL organization is the guest's own for ordinary browser Chat. No arbitrary default or platform tenant is selected."
+  ],
+  "open_questions": [
+    "The exact time and delivery path of the live SQL change are unproven: pg_proc xmin is 20509274, track_commit_timestamp is disabled, and no matching Supabase migration statement or local migration file was found.",
+    "The former production GuestOrganizationRequiredError and current complete runs are not reconciled to a specific deployed Git diff; the reported ac251f8a and c0b49ba5 build identifiers are not available as Git objects in the local aidream checkout.",
+    "This peer did not independently verify the extension UI or the runtime run receipts."
+  ]
+}

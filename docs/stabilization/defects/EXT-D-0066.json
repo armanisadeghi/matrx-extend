@@ -13,13 +13,19 @@
   "actual": "Version 0.2.105 sets Chat audience to signed-in; the guest tab and pane are absent. Published listing also instructs guests to sign in for Chat.",
   "evidence": [
     "docs/stabilization/reports/guest-chat-incident-timeline.md",
-    "docs/stabilization/reports/guest-chat-incident-peer.json"
+    "docs/stabilization/reports/guest-chat-incident-peer.json",
+    "docs/stabilization/reports/guest-chat-incident-fix.json",
+    "docs/stabilization/reports/guest-chat-final-review.json",
+    "test-results/guest-chat-store-8a32d84d-8738-43a5-a8a8-796b5e6776ab.json",
+    "docs/stabilization/resource-journals/guest-chat-native-001.jsonl",
+    "docs/stabilization/runs/guest-chat-native-002.json",
+    "docs/stabilization/resource-journals/guest-chat-native-002.jsonl"
   ],
   "severity": "S1: entire public no-login Chat workflow unavailable.",
   "priority": "P0: user-authorized immediate Store incident, overrides deferred Chat sequencing.",
   "state": "in-fix",
   "reproduction_status": "Published version and listing verified in primary public Store and authenticated publisher dashboard; deterministic source gate traced to b66e979c. Fresh fixed-build guest runtime remains pending.",
-  "verification_status": "Repair in progress; no fixed, retest-pass, closed, submitted or published replacement claim.",
+  "verification_status": "Source navigation repair verified; live guest002 returns assistant Error: The chat service could not complete this request. Try again, plus interruption notice. Guest is unauthenticated with no org; resource valid. Backend diagnosis underway. Not ready for Store submission.",
   "transition_history": [
     {
       "at": "2026-09-29T18:27:38.241098Z",
@@ -38,6 +44,25 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Restore guest Mandate path and isolate account state; independent source review and real guest browser acceptance required."
+    },
+    {
+      "at": "2026-09-29T18:45:07.641116Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source repair80e961bc verified by14focusedtests, compile/build; live original reproduction retest required."
+    },
+    {
+      "at": "2026-09-29T18:45:07.641116Z",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Fresh guest Chat visible, but real answer acceptance timed out. Insufficient failure diagnostics; cannot distinguish backend/UI/grounding oracle yet."
+    },
+    {
+      "at": "2026-09-29T18:45:07.641116Z",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Diagnose observed guest response boundary before any further product change."
     }
-  ]
+  ],
+  "root_cause": "Two boundaries: extension commitb66e979c deliberately hides Chat for guests; live aidream fresh fingerprint request reaches NDJSON then emits GuestOrganizationRequiredError because guest has zero active organization memberships. Extension fallback masks this as generic chat service retry error. Server guest provisioning repair required; no client-side organization substitution."
 }
