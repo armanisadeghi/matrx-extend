@@ -59,7 +59,10 @@ const SKIP =
 // may assemble it (it must name the word without counting itself).
 const SPLIT = new RegExp(
   Array.from({ length: WORD.length - 1 }, (_, i) => i + 1)
-    .map((k) => `${WORD.slice(0, k)}["'\`]\\s*(?:\\+|\\|\\||,|\\s)\\s*[rbfuRBFU]{0,2}["'\`]${WORD.slice(k)}`)
+    .map(
+      (k) =>
+        `${WORD.slice(0, k)}["'\`]\\s*(?:\\+|\\|\\||,|\\s)\\s*[rbfuRBFU]{0,2}["'\`]${WORD.slice(k)}`,
+    )
     .join('|'),
   'i',
 );
@@ -189,10 +192,10 @@ function selfTest() {
   const splitPlant = 'scripts/__t13_selftest_split__.ts';
   const [a, b] = [WORD.slice(0, 4), WORD.slice(4)];
   for (const [name, text, wantFail] of [
-    ["planted split spelling with +", `const W = "${a}" + "${b}";\n`, true],
-    ["planted split spelling with || (SQL)", `const q = "select '${a}' || '${b}'";\n`, true],
-    ["planted list join", `const W = ["${a}", "${b}"].join('');\n`, true],
-    ["unrelated concatenation (must not fire)", `const x = "vis" + "ual";\n`, false],
+    ['planted split spelling with +', `const W = "${a}" + "${b}";\n`, true],
+    ['planted split spelling with || (SQL)', `const q = "select '${a}' || '${b}'";\n`, true],
+    ['planted list join', `const W = ["${a}", "${b}"].join('');\n`, true],
+    ['unrelated concatenation (must not fire)', `const x = "vis" + "ual";\n`, false],
   ]) {
     const hits = splitSpellings({ [splitPlant]: text }).filter((h) => h.startsWith(splitPlant));
     const good = hits.length > 0 === wantFail;
@@ -201,7 +204,9 @@ function selfTest() {
   }
   const realSplit = splitSpellings();
   ok &&= realSplit.length === 0;
-  console.log(`  ${realSplit.length ? 'FAIL' : 'ok  '} real tree has no split spelling outside the guard (${realSplit.length})`);
+  console.log(
+    `  ${realSplit.length ? 'FAIL' : 'ok  '} real tree has no split spelling outside the guard (${realSplit.length})`,
+  );
   for (const [name, overrides, wantFail] of cases) {
     const { grew } = verdict(scan(overrides), baseline);
     const failed = grew.length > 0;
@@ -224,8 +229,11 @@ function main(argv) {
   if (argv.includes('--self-test')) return selfTest();
   const split = splitSpellings();
   if (split.length) {
-    for (const s of split) console.log(`FAIL split spelling of the row column (hides a reader from this guard): ${s}`);
-    console.log("[t13-row-column-source] FAIL — write the column name plainly (common-docs/projects/access-ladder/t13/PLAN.md §2.5).");
+    for (const s of split)
+      console.log(`FAIL split spelling of the row column (hides a reader from this guard): ${s}`);
+    console.log(
+      '[t13-row-column-source] FAIL — write the column name plainly (common-docs/projects/access-ladder/t13/PLAN.md §2.5).',
+    );
     return 1;
   }
   const found = scan();
