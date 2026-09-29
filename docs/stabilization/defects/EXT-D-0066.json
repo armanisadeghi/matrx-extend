@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0066",
   "feature_id": "EXT-F-2013",
-  "case_ids": [
-    "EXT-F-2013-T10"
-  ],
+  "case_ids": ["EXT-F-2013-T10"],
   "surface": "Chat",
   "auth_mode": "guest",
   "reproduction": [

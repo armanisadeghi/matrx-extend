@@ -9,6 +9,7 @@
     "ignore": [
       ".output/**",
       ".wxt/**",
+      ".canonical/aidream/**",
       "node_modules/**",
       "dist/**",
       "types/python-generated/**",
