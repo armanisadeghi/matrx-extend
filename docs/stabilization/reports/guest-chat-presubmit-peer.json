@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "review": "independent bounded guest-chat Store candidate adjudication",
+  "reviewed_run": "guest-chat-presubmit-006",
+  "source_result": "test-results/guest-chat-store-1da79c2f-72c3-4c83-9e3b-fe6f61dc87aa.json",
+  "runtime_evidence_verdict": "pass_with_limits",
+  "runtime_evidence": {
+    "candidate": "0.2.130",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "release_tree_sha256": "be0f08139c1ae8e518eb71cc8200c60e217c8ea64300cf9ee5b406e0c38a0a56",
+    "store_zip_sha256": "9bdf93b207cef0ff849189b124f1899a8a425a860e5801dcbd164a9c4c75467a",
+    "artifact_integrity": "matches release receipt and test result; result says unchanged after run",
+    "guest_state": "fresh profile, Chat visible, no auth token/profile/organization; same guest state verified after panel reload",
+    "page_grounding": "test result reports nonce and all workflow terms in first completed answer; screenshot shows the three stages and no gate/error",
+    "after_reload": "test result reports follow-up completed, unpredictable code and fixture heading; screenshot shows heading and answer",
+    "resource_run": "resource journal records admitted, healthy watcher, child exit 0, and valid final decision"
+  },
+  "test_quality_source_verdict": "adequate_for_bounded_regression_with_observability_gaps",
+  "test_quality": {
+    "source_reviewed": "tests/browser/guest-chat-store-acceptance.mjs",
+    "strengths": [
+      "Generates unpredictable opening/follow-up codes and fixture heading, inserts them into the visible primary article, and checks the page reader clone contains them.",
+      "Requires the page-specific opening code plus all three workflow terms in a completed guest answer, then reloads the real side panel and requires a new guest answer with its own code and fixture heading.",
+      "Checks guest storage state before and after reload and hashes the unpacked release tree against the receipt after the run."
+    ],
+    "limits": [
+      "The result has guest_ai_requests=[] even though the source contains a network observer; the run does not assert an observed request, so transport-level proof is absent.",
+      "The follow-up screenshot renders the code as [follow-up-code], while the structured result reports a nonce match; the code-to-answer check is therefore supported by the runtime assertion/result, not legible screenshot text.",
+      "The resource journal proves the harness process was admitted and exited cleanly, but it does not itself bind the process to the result UUID; association is by run record/path and timing."
+    ],
+    "scope_boundary": "This evidence covers fresh guest Chat, page grounding, and a post-reload guest follow-up on the immutable 0.2.130 artifact. It does not establish broad Chat certification, account-to-guest privacy transition, or other release behavior."
+  },
+  "submission_adjudication": "The bounded regression is demonstrated on the immutable candidate. This evidence supports lifting the guest-chat regression hold for 0.2.130; it does not itself submit to the Store.",
+  "reviewed_evidence": [
+    "test-results/guest-chat-store-1da79c2f-72c3-4c83-9e3b-fe6f61dc87aa.json",
+    "test-results/native-sidepanel-qa-BuF9LT/guest-chat-real-answer.png",
+    "test-results/native-sidepanel-qa-BuF9LT/guest-chat-real-followup-answer.png",
+    "docs/stabilization/resource-journals/guest-chat-presubmit-006.jsonl",
+    ".output/release-receipt.json",
+    "tests/browser/guest-chat-store-acceptance.mjs"
+  ]
+}
