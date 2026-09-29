@@ -1,29 +1,46 @@
 {
   "schema_version": 1,
-  "lane": "fresh independent source review; read-only, no build/test/browser run",
-  "scope": "Guest Chat visibility and Mandate routing; signed-in to guest state boundary; committed native acceptance script c2e26f53",
+  "lane": "fresh independent final acceptance adjudication; no product edits or browser/test launch",
+  "scope": "User outcome: public Chrome Store guests can use page-aware Chat without login, and restoring guest cannot reveal a prior signed-in Chat state.",
+  "release_artifact": {
+    "version": "0.2.130",
+    "tree_sha256": "be0f08139c1ae8e518eb71cc8200c60e217c8ea64300cf9ee5b406e0c38a0a56",
+    "source": "test-results/guest-chat-store-ad79f018-7371-4bc5-ac19-7b7e64b7b3c3.json"
+  },
   "verdict_a_runtime": {
-    "status": "PENDING",
-    "reason": "This lane did not acquire the browser/resource lease. No current-build runtime evidence was available in the inspected guest-chat records.",
-    "acceptance_script_scope": "Fresh guest with no token/profile/org; two page-grounded answers using unpredictable fixture codes; panel reload between turns; receipt/tree binding. It does not exercise signed-in account sign-out into guest.",
-    "required_evidence": "Run the receipt-bound native acceptance on the exact current artifact, and separately exercise signed-in account -> sign-out -> guest if claiming the full identity-isolation outcome."
+    "status": "PARTIAL_PASS",
+    "urgent_guest_chat_regression": "PASS",
+    "identity_restore_acceptance": "UNVERIFIED_IN_LIVE_UI",
+    "evidence": [
+      "On the immutable release receipt, the fresh profile had no access token, user profile, or active organization; Chat was visible/selected and the guest completed a real answer containing an unpredictable page-only code and the three required workflow stages, with no refusal or UI error.",
+      "After side-panel reload, the run again observed guest account UI, absent token/profile/organization, and visible Chat. A second real answer completed, but it did not contain the temporary injected fixture code/heading; it accurately listed the original public article's three headings and explained that no code was visible.",
+      "Thus the runner's strict post-reload fixture assertion failed honestly. The screenshots show the real guest answer UI; the failure screenshot shows the second answer's no-code explanation."
+    ],
+    "adjudication": "The second-turn failure is not evidence that guest Chat is missing or gated: the first exact nonce-grounded answer proves no-login, page-aware use on the release artifact, and the reload proves Chat remains visible without auth. The second response is consistent with the fixture having disappeared from readable page content after navigation/hydration; this evidence cannot distinguish fixture teardown from a capture/indexing gap, so treat it as a separate page-fixture persistence weakness and do not count the strict two-turn runner as passed.",
+    "limit": "The requested signed-in account -> sign-out -> restored guest sequence was not exercised in this native run. Source and unit coverage support its cleanup path, but the full identity-isolation outcome is not live-UI verified."
   },
   "verdict_b_source": {
     "status": "PASS_SCOPED",
-    "findings": [],
     "evidence": [
-      "Chat is exposed to everyone by src/config/sidepanel-visibility.ts; guest target selection always resolves to DEFAULT_CHAT_MANDATE_REF in src/lib/chat/guest-boundary.ts and ChatView passes its mandate key into the stream options.",
-      "Guest catalog/data startup remains guarded by signed-in checks in ensureAuthenticatedCatalogLoaded and useAgentRow; guest useAgentRow returns without resolving private account catalog data.",
-      "After hydration and settled auth, ChatView hides the surface until chatActorId matches the current identity, fences/cancels an active run, and calls clearForIdentityChange. The store clears conversation/messages, draft, selected Agent, variables, per-agent permission state, compute target, attached Google files and highlights; the run cancellation clears refs before awaiting worker cancellation.",
-      "tests/unit/chat-guest-boundary.test.ts covers target selection, identity changes, and clearing representative private chat fields/attachments. The test was inspected but not executed in this lane."
+      "Chat is available to everyone and guests always route to the public browser-chat Mandate; guest catalog and agent-row loads remain signed-in-only.",
+      "After storage hydration and settled auth, ChatView holds the UI until the persisted actor matches the current identity, fences/cancels an old run, and clears the prior conversation/messages, draft, selected Agent, variables, per-agent permissions, compute binding, attached Google files, and highlights on identity change.",
+      "The focused unit report guest-chat-final-unit-002 is resource-journal valid; the tested boundary covers guest target selection and representative identity-change clearing. This verifier did not rerun tests."
     ],
     "limits": [
-      "The independent source review establishes the state transformation, not the real guest network/stream path or native UI behavior.",
-      "No cross-identity browser test is present in the strengthened native runner; source/unit evidence alone does not establish sign-out/reopen behavior in Chrome."
+      "No end-to-end sign-out/restore test proves the UI sequence in Chrome.",
+      "The native runner's post-reload DOM fixture does not survive reliably enough to establish repeat page-code retrieval; repair/stabilize this oracle before using the strict two-turn case as a release gate."
     ]
   },
   "verification": {
-    "commands": ["read-only source inspection; git show c2e26f53"],
-    "builds_tests_or_browser_runs": false
+    "read": [
+      "test-results/guest-chat-store-ad79f018-7371-4bc5-ac19-7b7e64b7b3c3.json",
+      "test-results/native-sidepanel-qa-jzQtNo/guest-chat-real-answer.png",
+      "test-results/native-sidepanel-qa-jzQtNo/guest-chat-failure.png",
+      "src/features/chat/ChatView.tsx",
+      "src/state/chat.ts",
+      "src/hooks/use-chat-stream.ts",
+      "tests/unit/chat-guest-boundary.test.ts"
+    ],
+    "tests_builds_or_browser_launches_by_this_verifier": false
   }
 }
