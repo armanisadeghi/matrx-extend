@@ -21,6 +21,8 @@ const RECEIPT = resolve(
   process.env.MATRX_REVIEWER_RELEASE_RECEIPT ?? join(REPO, '.output', 'release-receipt.json'),
 );
 const CREDENTIALS = process.env.MATRX_REVIEWER_CREDENTIALS_FILE;
+const INTERACTIVE_REVIEWER = process.env.MATRX_REVIEWER_INTERACTIVE === '1';
+const INTERACTIVE_REVIEWER_EMAIL = process.env.MATRX_REVIEWER_EMAIL?.trim() || null;
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const DEMO_PATH = '/matrx-extend-demo';
 const QUESTION = 'What are the three workflow stages on this page?';
@@ -57,6 +59,27 @@ async function credentials() {
   )
     throw new Error('reviewer_credentials_unavailable');
   return { email: parsed.email, password: parsed.password };
+}
+
+/** Read only the authenticated user's email from the real web session; never return token material. */
+async function authenticatedWebEmail(page) {
+  const location = safeLocation(page.url());
+  if (location === `${WEB_ORIGIN}/login`) return null;
+  const storedEmail = await page.evaluate(() => {
+    for (const storage of [window.localStorage, window.sessionStorage]) {
+      for (let index = 0; index < storage.length; index += 1) {
+        try {
+          const value = JSON.parse(storage.getItem(storage.key(index)) ?? 'null');
+          const email = value?.user?.email ?? value?.session?.user?.email;
+          if (typeof email === 'string' && email.includes('@')) return email;
+        } catch {
+          // Ignore unrelated application storage without returning its contents.
+        }
+      }
+    }
+    return null;
+  });
+  return storedEmail || INTERACTIVE_REVIEWER_EMAIL;
 }
 
 async function capture(panel, artifacts, label) {
@@ -214,6 +237,7 @@ try {
   };
   stage = 'owned_profile';
   const run = await runNativeSidepanelQa({
+    headed: INTERACTIVE_REVIEWER,
     extensionDir: EXTENSION_DIR,
     expectedRelease: receipt,
     ...(receipt.kind === 'local_dev_unpacked' && { localDevReceiptPath: RECEIPT }),
@@ -224,21 +248,34 @@ try {
         await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
         if (safeLocation(web.url()) !== `${WEB_ORIGIN}/login`)
           throw new Error('reviewer_login_route_unverified');
-        const { email, password } = await credentials();
+        let email;
+        if (INTERACTIVE_REVIEWER) {
+          stage = 'ready_manual_reviewer_login';
+          process.stdout.write('STAGE ready_manual_reviewer_login\n');
+          email = await waitFor(
+            'reviewer_manual_web_session',
+            () => authenticatedWebEmail(web),
+            (value) => typeof value === 'string' && value.includes('@'),
+            180_000,
+          );
+        } else {
+          const auth = await credentials();
+          email = auth.email;
+          report.account = { reviewer_fingerprint: hash(email), web_signed_in: false };
+          stage = 'fill_reviewer_web_login';
+          await web.locator('input[name="email"]').fill(auth.email);
+          await web.locator('input[name="password"]').fill(auth.password);
+          stage = 'submit_reviewer_web_login';
+          await web.getByRole('button', { name: 'Sign in', exact: true }).click();
+          await waitFor(
+            'reviewer_real_web_session',
+            () => safeLocation(web.url()),
+            (location) => location.startsWith(WEB_ORIGIN) && location !== `${WEB_ORIGIN}/login`,
+            90_000,
+          );
+        }
         report.account = { reviewer_fingerprint: hash(email), web_signed_in: false };
-        stage = 'fill_reviewer_web_login';
-        await web.locator('input[name="email"]').fill(email);
-        await web.locator('input[name="password"]').fill(password);
-        stage = 'submit_reviewer_web_login';
-        await web.getByRole('button', { name: 'Sign in', exact: true }).click();
-        const signedInLocation = await waitFor(
-          'reviewer_real_web_session',
-          () => safeLocation(web.url()),
-          (location) => location.startsWith(WEB_ORIGIN) && location !== `${WEB_ORIGIN}/login`,
-          90_000,
-        );
         report.account.web_signed_in = true;
-        report.account.web_location_after_sign_in = signedInLocation;
         stage = 'open_demo_page';
         await web.goto(`${WEB_ORIGIN}${DEMO_PATH}`, {
           waitUntil: 'domcontentloaded',
