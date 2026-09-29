@@ -1,0 +1,174 @@
+name: Hosted release
+
+on:
+  workflow_dispatch:
+    inputs:
+      aidream_sha:
+        description: 'Immutable AI Dream commit SHA used for records-guide generation'
+        required: true
+        type: string
+      message:
+        description: 'Release note appended to the generated release commit'
+        required: true
+        type: string
+
+# release.sh publishes main and an immutable v* tag atomically.  The workflow
+# token is deliberately limited to that repository; the Store upload remains a
+# separate human action using the uploaded, validated Store ZIP.
+permissions:
+  contents: write
+
+concurrency:
+  group: matrx-extend-hosted-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Release exact validated candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      AIDREAM_SHA: ${{ inputs.aidream_sha }}
+      RELEASE_MESSAGE: ${{ inputs.message }}
+      # Every value is required by the existing release gates.  Empty/missing
+      # secrets stop before installation, generation, checks, or publication;
+      # this workflow never substitutes a weaker check or a public fallback.
+      AIDREAM_REPO_TOKEN: ${{ secrets.AIDREAM_REPO_TOKEN }}
+      WXT_SUPABASE_URL: ${{ secrets.WXT_SUPABASE_URL }}
+      WXT_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.WXT_SUPABASE_PUBLISHABLE_KEY }}
+      MATRX_SUPABASE_PROJECT_REF: ${{ secrets.MATRX_SUPABASE_PROJECT_REF }}
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      WXT_EXTENSION_OAUTH_CLIENT_ID: ${{ secrets.WXT_EXTENSION_OAUTH_CLIENT_ID }}
+      WXT_SAFARI_OAUTH_CLIENT_ID: ${{ secrets.WXT_SAFARI_OAUTH_CLIENT_ID }}
+      WXT_DESKTOP_NATIVE_HOST: ${{ secrets.WXT_DESKTOP_NATIVE_HOST }}
+
+    steps:
+      - name: Require release authority and production configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$AIDREAM_SHA" =~ ^[0-9a-f]{40}$ ]] || {
+            echo 'aidream_sha must be a full 40-character commit SHA.' >&2
+            exit 1
+          }
+          required=(
+            AIDREAM_REPO_TOKEN
+            WXT_SUPABASE_URL
+            WXT_SUPABASE_PUBLISHABLE_KEY
+            MATRX_SUPABASE_PROJECT_REF
+            SUPABASE_ACCESS_TOKEN
+            WXT_EXTENSION_OAUTH_CLIENT_ID
+            WXT_SAFARI_OAUTH_CLIENT_ID
+            WXT_DESKTOP_NATIVE_HOST
+          )
+          missing=()
+          for name in "${required[@]}"; do
+            [[ -n "${!name:-}" ]] || missing+=("$name")
+          done
+          if (( ${#missing[@]} )); then
+            echo "Missing required release secrets: ${missing[*]}" >&2
+            exit 1
+          fi
+
+      - name: Check out extension main
+        uses: actions/checkout@v4
+        with:
+          path: matrx-extend
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Check out pinned AI Dream records guide
+        uses: actions/checkout@v4
+        with:
+          repository: AI-Matrix-Engine/aidream
+          ref: ${{ inputs.aidream_sha }}
+          path: aidream
+          token: ${{ secrets.AIDREAM_REPO_TOKEN }}
+          persist-credentials: false
+
+      - name: Configure the release commit identity
+        working-directory: matrx-extend
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - name: Verify pinned records-guide source
+        working-directory: matrx-extend
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git -C ../aidream rev-parse HEAD)"
+          [[ "$actual" == "$AIDREAM_SHA" ]] || {
+            echo 'AI Dream checkout did not resolve to the requested immutable SHA.' >&2
+            exit 1
+          }
+          test -f ../aidream/scripts/sync-types.mjs
+          test -f ../aidream/packages/matrx-ai/matrx_ai/guide_for.py
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: matrx-extend/pnpm-lock.yaml
+
+      - name: Install locked dependencies
+        working-directory: matrx-extend
+        run: pnpm install --frozen-lockfile
+
+      - name: Release through the repository contract
+        working-directory: matrx-extend
+        shell: bash
+        run: ./release.sh --message "$RELEASE_MESSAGE"
+
+      - name: Verify tag, receipt, and candidate identity
+        id: candidate
+        working-directory: matrx-extend
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --quiet --tags origin
+          head_sha="$(git rev-parse HEAD)"
+          tag="$(git tag --points-at "$head_sha" --list 'v*' | sort -V | tail -n 1)"
+          [[ -n "$tag" ]] || { echo 'No release tag points at the checked-out candidate.' >&2; exit 1; }
+          remote_sha="$(git ls-remote --tags origin "refs/tags/$tag" "refs/tags/$tag^{}" | awk -v ref="refs/tags/$tag" '$2 == ref {sha = $1} $2 == ref "^{}" {sha = $1} END {print sha}')"
+          [[ "$remote_sha" == "$head_sha" ]] || {
+            echo 'Remote release tag does not resolve to the validated candidate.' >&2
+            exit 1
+          }
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+          const receipt = JSON.parse(readFileSync('.output/release-receipt.json', 'utf8'));
+          const head = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+          if (receipt.sourceSha !== head || receipt.publishState !== 'pushed') {
+            throw new Error('Release receipt does not attest to this pushed candidate.');
+          }
+          if (!receipt.storeZip?.sha256 || !receipt.localZip?.sha256 || !receipt.treeSha256) {
+            throw new Error('Release receipt is missing artifact or promoted-tree hashes.');
+          }
+          NODE
+          echo "sha=$head_sha" >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Upload validated release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: matrx-extend-${{ steps.candidate.outputs.tag }}
+          if-no-files-found: error
+          include-hidden-files: true
+          path: |
+            matrx-extend/.output/matrx-extend-*-store.zip
+            matrx-extend/.output/matrx-extend-*-local.zip
+            matrx-extend/.output/release-receipt.json
+            matrx-extend/tmp/release-logs/latest.log
+
+      - name: Publish candidate identity
+        shell: bash
+        run: |
+          echo "Released tag: ${{ steps.candidate.outputs.tag }}"
+          echo "Validated candidate: ${{ steps.candidate.outputs.sha }}"
+          echo 'Chrome Web Store upload/submission remains a separate approved human step.'
