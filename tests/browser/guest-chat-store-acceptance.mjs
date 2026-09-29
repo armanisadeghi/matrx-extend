@@ -24,7 +24,7 @@ const DEMO_PATH = '/matrx-extend-demo';
 const FIRST_QUESTION =
   'Read the unique opening check code from the article on my current tab. What are the three workflow stages in order? Include the exact code.';
 const FOLLOWUP_QUESTION =
-  'Read the unique follow-up check code from the article on my current tab and give the article title. Include the exact code.';
+  'Read the unique follow-up check code from the article on my current tab and name the heading directly above the check codes. Include the exact code.';
 const REQUIRED_ANSWER_TERMS = ['Capture', 'Understand', 'Use'];
 const digest = (value) => createHash('sha256').update(value).digest('hex').slice(0, 16);
 
@@ -158,9 +158,17 @@ async function installPageFixture(page) {
     followupCode: randomUUID().toUpperCase(),
   };
   const installed = await page.evaluate((values) => {
-    const article = document.createElement('article');
-    article.setAttribute('aria-label', 'Guest Chat grounding article');
-    const heading = document.createElement('h1');
+    const article = document.querySelector('main[data-public-main="true"] article');
+    const articleHeader = article?.querySelector(':scope > header');
+    if (!article || !articleHeader) {
+      throw new Error('the public demo primary article is missing');
+    }
+    // get_page_text prefers <main> and removes headers before reading it.
+    // Put the unpredictable fixture in the article's readable body, ahead of
+    // the real workflow section, rather than appending a second body article.
+    const fixtureSection = document.createElement('section');
+    fixtureSection.setAttribute('data-guest-chat-fixture', '');
+    const heading = document.createElement('h2');
     heading.textContent = values.title;
     const opening = document.createElement('p');
     opening.textContent = `Opening check code: ${values.openingCode}`;
@@ -168,22 +176,43 @@ async function installPageFixture(page) {
     stages.textContent = 'Workflow stages: Capture, Understand, Use.';
     const followup = document.createElement('p');
     followup.textContent = `Follow-up check code: ${values.followupCode}`;
-    article.append(heading, opening, stages, followup);
-    document.body.append(article);
+    fixtureSection.append(heading, opening, stages, followup);
+    articleHeader.after(fixtureSection);
     history.replaceState(null, '', `${location.pathname}#${values.fragment}`);
+    const style = getComputedStyle(fixtureSection);
+    const rect = fixtureSection.getBoundingClientRect();
+    const readerRoot = document.querySelector('main, article, [role="main"]');
+    const readerClone = readerRoot?.cloneNode(true);
+    for (const element of readerClone?.querySelectorAll(
+      'nav, aside, header, footer, script, style, noscript, [aria-hidden="true"], [hidden]',
+    ) ?? []) {
+      element.remove();
+    }
     return {
       url: location.href,
       title: document.title,
-      text: article.innerText,
+      text: fixtureSection.innerText,
+      inPrimaryArticle: article.contains(fixtureSection),
+      visible:
+        rect.width > 0 &&
+        rect.height > 0 &&
+        style.display !== 'none' &&
+        style.visibility !== 'hidden',
+      readerText: readerClone?.textContent ?? '',
     };
   }, fixture);
   assert.equal(new URL(installed.url).origin, expectedOrigin);
   assert.equal(new URL(installed.url).pathname, DEMO_PATH);
   assert.equal(new URL(installed.url).hash, `#${fixture.fragment}`);
   assert.equal(installed.title, originalTitle);
+  assert.equal(installed.inPrimaryArticle, true);
+  assert.equal(installed.visible, true);
   assert.ok(installed.text.includes(fixture.openingCode));
   assert.ok(installed.text.includes(fixture.followupCode));
   assert.ok(REQUIRED_ANSWER_TERMS.every((term) => installed.text.includes(term)));
+  assert.ok(installed.readerText.includes(fixture.title));
+  assert.ok(installed.readerText.includes(fixture.openingCode));
+  assert.ok(installed.readerText.includes(fixture.followupCode));
   return fixture;
 }
 
@@ -341,6 +370,7 @@ try {
         markStage('page_specific_fixture');
         fixture = await installPageFixture(web);
         await web.bringToFront();
+        await requireActiveFixtureTab(attachWorker, web);
 
         markStage('guest_chat_open');
         await click(panel, 'title', 'Chat');
