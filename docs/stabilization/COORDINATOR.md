@@ -10,6 +10,12 @@ controls. Do not launch localhost/test-server UI acceptance or use
 unit tests remain focused code-regression evidence only; they never replace
 installed-extension live proof. Preserve existing fixture evidence as history.**
 
+## Disk cleanup update — 2026-09-28
+
+User authorized development-junk removal. Existing groomer removed 22.2 GiB of idle Next build output on the external drive; uv prune, Homebrew cleanup and unavailable-simulator cleanup succeeded. No source, browser profiles, VM disks or current extension build were removed. Evidence: reports/development-junk-cleanup.json.
+
+Internal disk was already 25 GiB free before cleanup and remained about 25 GiB afterward. Do not attribute that recovery to these deletions. The 20 GiB disk prerequisite is now met; recheck the full unchanged resource guard and current artifact identity before native Chrome Reload/testing. No native test ran in this cleanup turn. Scheduler health was not verified; no new schedule created.
+
 ## Latest picker checkpoint — source accepted, final typecheck pending
 
 - Merged origin/main2e1dd471 cleanly (remote packageupdate and platform-list instruction). Design-system0.49.11→0.49.12, guardedfrozeninstall --ignore-scripts valid; CHANGELOG no consumeraction. Current artifact44a478fe predates thisdependency and pickerfix.
