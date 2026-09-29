@@ -1,0 +1,32 @@
+{
+  "observed_at": "2026-09-29T00:00:06.776751+00:00",
+  "authorization": "User requested finding and deleting development junk.",
+  "method": "Existing common-docs disk-groom dev-caches dry-run then --apply; no Next dev/build processes found before cleanup.",
+  "deleted_build_bytes": 23883743232,
+  "deleted_build_paths": [
+    "/Volumes/Samsung2TB/code/ai-matrx/.next-verify",
+    "/Volumes/Samsung2TB/code/ai-matrx/.next",
+    "/Volumes/Samsung2TB/code/ai-matrx/.next-preview",
+    "/Volumes/Samsung2TB/code/my-matrx/.next"
+  ],
+  "maintenance": [
+    "uv cache prune succeeded",
+    "brew cleanup -s --prune=7 succeeded",
+    "xcrun simctl delete unavailable succeeded"
+  ],
+  "internal_free_before_gib_rounded": 25,
+  "internal_free_after_gib_rounded": 25,
+  "external_free_after_tib_rounded": 1.7,
+  "attribution": "Internal disk had already recovered before this turn. Do not attribute that recovery to this cleanup. 22.2GiB measured deleted build artifacts were external.",
+  "preserved": [
+    "source code",
+    "current extension build",
+    "browser profiles",
+    "Docker.raw and Claude VM",
+    "installed runtime dependencies"
+  ],
+  "docker": "Engine stopped; prune skipped, VM not deleted.",
+  "native_next": "Disk now above20GiB minimum. Rerun full unmodified browser guard before any native test; other CPU/memory/swap checks still required.",
+  "log": "/Users/armanisadeghi/.matrx/disk-groom/logs/2026-09-28.jsonl",
+  "scheduler_limit": "Register reports repaired PATH, but expected ~/Library/LaunchAgents/com.armani.disk-groom.plist absent here; scheduled-job operational state not verified, no new schedule created."
+}
