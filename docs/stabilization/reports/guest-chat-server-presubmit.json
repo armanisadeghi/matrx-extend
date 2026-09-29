@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "checked_at_utc": "2026-09-29T21:43:00Z",
+  "scope": "Read-only production backend, database, source, and prepared extension artifact compatibility; no browser run or database mutation in this check",
+  "prepared_extension": {
+    "version": "0.2.130",
+    "source_sha": "10ac483f35d97faf5affdd57d8c4a5a258d91c65",
+    "tree_sha256": "be0f08139c1ae8e518eb71cc8200c60e217c8ea64300cf9ee5b406e0c38a0a56",
+    "store_zip_sha256": "9bdf93b207cef0ff849189b124f1899a8a425a860e5801dcbd164a9c4c75467a7",
+    "receipt": ".output/release-receipt.json"
+  },
+  "backend": {
+    "live_health_version": {
+      "status": 200,
+      "git_sha": "775ff719f504d5bca063a998580abf4a1680c469",
+      "built_at": "2026-09-29T20:47:12Z"
+    },
+    "live_database_identity": {
+      "status": 200,
+      "database_project_ref": "brsgrqvjdzwihsvnfqkf",
+      "auth_project_ref": "brsgrqvjdzwihsvnfqkf",
+      "paired": true
+    },
+    "remote_main_sha": "c471e92ee63389e66aadfbca18e917f9e9d067bc",
+    "ancestry": "Live SHA is an ancestor of remote main and includes f5c679ef08 (guest-owned organization) and ba1b4a696b (bounded, race-safe guest minting). No later remote-main changes touched the inspected guest authentication, guest organization, or run-entry source paths."
+  },
+  "live_database": {
+    "method": "Supabase MCP read-only SQL on the project reported by both production health identities",
+    "signup_trigger_function": "public._provision_new_user_organization calls iam.provision_signup_organization(new.id) without an anonymous-user skip",
+    "anonymous_auth_users": 1026,
+    "anonymous_users_without_membership": 0,
+    "anonymous_users_without_exactly_one_membership": 0
+  },
+  "contract_compatibility": {
+    "extension_fingerprint": "The prepared source sends a stable 64-character SHA-256 hex X-Fingerprint-ID for guests; deployed aidream accepts 16-200 ASCII letters, digits, underscore, or hyphen.",
+    "guest_organization": "The extension omits an organization for a fingerprint guest; the deployed funnel reads the guest's sole signup membership and installs that organization on the run.",
+    "actual_incompatibility_found": false,
+    "verdict": "Read-only source and live-service evidence supports the prepared 0.2.130 guest contract. The separate native acceptance receipts establish real guest answers; this report does not replace a fresh browser run."
+  },
+  "reviewer_account": {
+    "prior_browser_receipt": "test-results/reviewer-chat-store-312c283a-b7a9-40d5-8bf5-fe0d259ec0c0.json",
+    "method": "The receipt's 16-hex SHA-256 email fingerprint matched exactly one live auth.users email via read-only SQL; the matched user has no admin.admins row. No email or credential was selected or logged.",
+    "matching_auth_users": 1,
+    "matching_extension_admin_rows": 0,
+    "extension_admin_status": "confirmed_non_admin_by_live_database",
+    "browser_role_display": "absent in the prior receipt; the read-only database check supplies the missing role evidence"
+  },
+  "limits": [
+    "Production health and database checks are point-in-time; they do not promise future deployment or service availability.",
+    "This check does not prove ordinary-member organization permissions or account-to-guest UI state transition."
+  ]
+}
