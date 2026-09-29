@@ -41,14 +41,14 @@ jobs:
 
       # The complete records guide comes only from aidream's guide_for. The
       # server repository is private: this preflight deliberately fails before
-      # tests if the approved read-only organization secret is not configured.
+      # tests if the approved read-only deploy key is not configured.
       # CI must measure this pinned server revision, never ambient machine state.
       - name: Require canonical records reader
         env:
-          AIDREAM_REPO_TOKEN: ${{ secrets.AIDREAM_REPO_TOKEN }}
+          AIDREAM_DEPLOY_KEY: ${{ secrets.AIDREAM_DEPLOY_KEY }}
         run: |
-          if [ -z "$AIDREAM_REPO_TOKEN" ]; then
-            echo "::error::AIDREAM_REPO_TOKEN is required for records-guide parity; configure the approved read-only repository reader."
+          if [ -z "$AIDREAM_DEPLOY_KEY" ]; then
+            echo "::error::AIDREAM_DEPLOY_KEY is required for records-guide parity; configure the approved read-only AI Dream deploy key."
             exit 1
           fi
 
@@ -57,7 +57,8 @@ jobs:
           repository: AI-Matrix-Engine/aidream
           ref: ea1db98d9acceed438cd3e476b3de3f8585f90e9
           path: .canonical/aidream
-          token: ${{ secrets.AIDREAM_REPO_TOKEN }}
+          ssh-key: ${{ secrets.AIDREAM_DEPLOY_KEY }}
+          ssh-strict: true
           persist-credentials: false
 
       - uses: pnpm/action-setup@v4

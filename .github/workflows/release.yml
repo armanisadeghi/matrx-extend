@@ -33,7 +33,6 @@ jobs:
       # Every value is required by the existing release gates.  Empty/missing
       # secrets stop before installation, generation, checks, or publication;
       # this workflow never substitutes a weaker check or a public fallback.
-      AIDREAM_REPO_TOKEN: ${{ secrets.AIDREAM_REPO_TOKEN }}
       WXT_SUPABASE_URL: ${{ secrets.WXT_SUPABASE_URL }}
       WXT_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.WXT_SUPABASE_PUBLISHABLE_KEY }}
       MATRX_SUPABASE_PROJECT_REF: ${{ secrets.MATRX_SUPABASE_PROJECT_REF }}
@@ -45,6 +44,8 @@ jobs:
     steps:
       - name: Require release authority and production configuration
         shell: bash
+        env:
+          AIDREAM_DEPLOY_KEY: ${{ secrets.AIDREAM_DEPLOY_KEY }}
         run: |
           set -euo pipefail
           [[ "$AIDREAM_SHA" =~ ^[0-9a-f]{40}$ ]] || {
@@ -52,7 +53,7 @@ jobs:
             exit 1
           }
           required=(
-            AIDREAM_REPO_TOKEN
+            AIDREAM_DEPLOY_KEY
             WXT_SUPABASE_URL
             WXT_SUPABASE_PUBLISHABLE_KEY
             MATRX_SUPABASE_PROJECT_REF
@@ -84,7 +85,8 @@ jobs:
           repository: AI-Matrix-Engine/aidream
           ref: ${{ inputs.aidream_sha }}
           path: aidream
-          token: ${{ secrets.AIDREAM_REPO_TOKEN }}
+          ssh-key: ${{ secrets.AIDREAM_DEPLOY_KEY }}
+          ssh-strict: true
           persist-credentials: false
 
       - name: Configure the release commit identity
