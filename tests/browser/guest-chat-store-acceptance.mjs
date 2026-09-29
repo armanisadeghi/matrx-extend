@@ -21,23 +21,30 @@ const EXTENSION_DIR = resolve(
 const OUTPUT = join(REPO, 'test-results', `guest-chat-store-${randomUUID()}.json`);
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const DEMO_PATH = '/matrx-extend-demo';
-const QUESTION = 'What are the three workflow stages on this page?';
+const FIRST_QUESTION =
+  'Read the unique opening check code from the article on my current tab. What are the three workflow stages in order? Include the exact code.';
+const FOLLOWUP_QUESTION =
+  'Read the unique follow-up check code from the article on my current tab and give the article title. Include the exact code.';
 const REQUIRED_ANSWER_TERMS = ['Capture', 'Understand', 'Use'];
 const digest = (value) => createHash('sha256').update(value).digest('hex').slice(0, 16);
 
 let stage = 'receipt';
 const report = {
   schema_version: 1,
-  scope: 'fresh owned guest profile; public demo page; real native Chat answer and reload',
+  scope:
+    'fresh owned guest profile; unpredictable page fixture; real Chat answer and post-reload guest follow-up',
   status: 'unverified',
   build: null,
   guest: null,
   chat: null,
   screenshot: null,
+  followup_screenshot: null,
   failure_stage: null,
+  failure_code: null,
+  failure_reason: null,
 };
 
-async function observe(panel) {
+async function observe(panel, expected = {}) {
   return evaluate(
     panel,
     `(() => {
@@ -70,14 +77,109 @@ async function observe(panel) {
           .some((button) => visible(button) && !button.disabled),
         streaming: active && Boolean(pane.querySelector('button[title="Stop"]')),
         replyCount: replies.length,
-        answerMatchesPublicPage: ${JSON.stringify(REQUIRED_ANSWER_TERMS)}
+        answerContainsNonce: Boolean(${JSON.stringify(expected.nonce ?? null)}) &&
+          latestReply.includes(${JSON.stringify(expected.nonce ?? '')}),
+        answerContainsFixtureHeading: Boolean(${JSON.stringify(expected.fixtureHeading ?? null)}) &&
+          latestReply.includes(${JSON.stringify(expected.fixtureHeading ?? '')}),
+        answerMatchesPublicStages: ${JSON.stringify(REQUIRED_ANSWER_TERMS)}
           .every((term) => latestReply.includes(term)),
-        answerIsRefusal: /(?:sign in|log in|upgrade|subscribe|payment required|unauthorized|forbidden)/i
+        answerIsRefusal: /(?:authentication (?:is )?required|you (?:must|need to) (?:sign.?in|log.?in|authenticate)|(?:sign.?in|log.?in) (?:to|before) (?:use|ask|send|continue)|upgrade|subscribe|payment required|unauthori[sz]ed|forbidden|\\b401\\b|\\b403\\b)/i
           .test(latestReply),
         errorNotice: active && Boolean(pane.querySelector('[role="alert"]')),
       }));
     })()`,
   );
+}
+
+async function installPageFixture(page) {
+  const expectedOrigin = `${WEB_ORIGIN}`;
+  const originalTitle = await page.title();
+  const fixture = {
+    fragment: `guest-chat-${randomUUID()}`,
+    title: `Matrx guest Chat grounding fixture ${randomUUID()}`,
+    openingCode: randomUUID().toUpperCase(),
+    followupCode: randomUUID().toUpperCase(),
+  };
+  const installed = await page.evaluate((values) => {
+    const article = document.createElement('article');
+    article.setAttribute('aria-label', 'Guest Chat grounding article');
+    const heading = document.createElement('h1');
+    heading.textContent = values.title;
+    const opening = document.createElement('p');
+    opening.textContent = `Opening check code: ${values.openingCode}`;
+    const stages = document.createElement('p');
+    stages.textContent = 'Workflow stages: Capture, Understand, Use.';
+    const followup = document.createElement('p');
+    followup.textContent = `Follow-up check code: ${values.followupCode}`;
+    article.append(heading, opening, stages, followup);
+    document.body.append(article);
+    history.replaceState(null, '', `${location.pathname}#${values.fragment}`);
+    return {
+      url: location.href,
+      title: document.title,
+      text: article.innerText,
+    };
+  }, fixture);
+  assert.equal(new URL(installed.url).origin, expectedOrigin);
+  assert.equal(new URL(installed.url).pathname, DEMO_PATH);
+  assert.equal(new URL(installed.url).hash, `#${fixture.fragment}`);
+  assert.equal(installed.title, originalTitle);
+  assert.ok(installed.text.includes(fixture.openingCode));
+  assert.ok(installed.text.includes(fixture.followupCode));
+  assert.ok(REQUIRED_ANSWER_TERMS.every((term) => installed.text.includes(term)));
+  return fixture;
+}
+
+async function submitQuestion(panel, question, label) {
+  const focused = await evaluate(
+    panel,
+    `(() => {
+      const chat = document.querySelector('button[role="tab"][title="Chat"]');
+      const pane = document.getElementById(chat?.getAttribute('aria-controls') ?? '');
+      const textarea = pane?.querySelector('textarea');
+      textarea?.focus();
+      return textarea !== null && document.activeElement === textarea;
+    })()`,
+  );
+  assert.equal(focused, true, `${label} guest Chat composer must focus`);
+  await panel.send('Input.insertText', { text: question });
+  await waitFor(
+    `${label}_send_ready`,
+    () => observe(panel),
+    (state) => state?.sendEnabled,
+    10_000,
+  );
+  await click(panel, 'title', 'Send');
+}
+
+async function requireActiveFixtureTab(attachWorker, page) {
+  const worker = await attachWorker();
+  try {
+    const result = await worker.send('Runtime.evaluate', {
+      expression: `new Promise((resolve) => chrome.tabs.query(
+        { active: true, lastFocusedWindow: true },
+        (tabs) => resolve(tabs[0]?.url ?? null),
+      ))`,
+      awaitPromise: true,
+      returnByValue: true,
+    });
+    assert.equal(result.result?.value, page.url(), 'the nonce fixture tab must be active at send');
+  } finally {
+    await worker.detach();
+  }
+}
+
+function safeFailure(error) {
+  const message = error instanceof Error ? error.message : 'unknown_error';
+  const reason = message
+    .split(/\r?\n/, 1)[0]
+    .replace(/https?:\/\/\S+/gi, '[url]')
+    .replace(/\b[0-9a-f]{8}-[0-9a-f-]{27,}\b/gi, '[nonce]')
+    .slice(0, 120);
+  const code =
+    /^([a-z][a-z0-9_]{0,79})(?::|$)/i.exec(message)?.[1] ??
+    (error instanceof Error ? error.name : 'error').toLowerCase();
+  return { code, reason };
 }
 
 async function capture(panel, path) {
@@ -99,7 +201,7 @@ try {
     expectedRelease: receipt,
     releaseReceiptPath: RECEIPT,
     ...(receipt.kind === 'local_dev_unpacked' && { localDevReceiptPath: RECEIPT }),
-    exercisePanel: async ({ page, panel, artifacts }) => {
+    exercisePanel: async ({ page, panel, artifacts, attachWorker }) => {
       stage = 'fresh_guest';
       const initial = await waitFor(
         'fresh_guest_chat_visible',
@@ -121,14 +223,20 @@ try {
           waitUntil: 'domcontentloaded',
           timeout: 60_000,
         });
-        const location = new URL(web.url());
-        assert.equal(`${location.origin}${location.pathname}`, `${WEB_ORIGIN}${DEMO_PATH}`);
+        assert.equal(
+          `${new URL(web.url()).origin}${new URL(web.url()).pathname}`,
+          `${WEB_ORIGIN}${DEMO_PATH}`,
+        );
         await waitFor(
           'public_demo_content',
           () => web.locator('body').innerText(),
           (body) => REQUIRED_ANSWER_TERMS.every((term) => body.includes(term)),
           30_000,
         );
+
+        stage = 'page_specific_fixture';
+        const fixture = await installPageFixture(web);
+        await web.bringToFront();
 
         stage = 'guest_chat_open';
         await click(panel, 'title', 'Chat');
@@ -141,44 +249,31 @@ try {
         assert.equal(before.replyCount, 0, 'fresh guest must have no prior reply');
 
         stage = 'guest_question';
-        const focused = await evaluate(
-          panel,
-          `(() => {
-          const chat = document.querySelector('button[role="tab"][title="Chat"]');
-          const pane = document.getElementById(chat?.getAttribute('aria-controls') ?? '');
-          const textarea = pane?.querySelector('textarea');
-          textarea?.focus();
-          return textarea !== null && document.activeElement === textarea;
-        })()`,
-        );
-        assert.equal(focused, true, 'guest Chat composer must focus');
-        await panel.send('Input.insertText', { text: QUESTION });
-        await waitFor(
-          'guest_send_ready',
-          () => observe(panel),
-          (state) => state?.sendEnabled,
-          10_000,
-        );
-        await click(panel, 'title', 'Send');
+        await requireActiveFixtureTab(attachWorker, web);
+        await submitQuestion(panel, FIRST_QUESTION, 'opening_question');
 
         stage = 'real_guest_answer';
         const answered = await waitFor(
-          'real_guest_answer_from_public_page',
-          () => observe(panel),
+          'real_guest_answer_with_page_nonce',
+          () => observe(panel, { nonce: fixture.openingCode }),
           (state) =>
             state?.replyCount > before.replyCount &&
             !state.streaming &&
-            state.answerMatchesPublicPage &&
+            state.answerContainsNonce &&
+            state.answerMatchesPublicStages &&
             !state.answerIsRefusal &&
             !state.errorNotice,
           180_000,
         );
         report.chat = {
-          question_fingerprint: digest(QUESTION),
-          demo_route: `${WEB_ORIGIN}${DEMO_PATH}`,
+          opening_question_fingerprint: digest(FIRST_QUESTION),
+          fixture_fragment_fingerprint: digest(fixture.fragment),
+          opening_code_fingerprint: digest(fixture.openingCode),
           completed_reply_count: answered.replyCount,
-          answer_names_public_stages: answered.answerMatchesPublicPage,
+          answer_contains_unpredictable_page_code: answered.answerContainsNonce,
+          answer_names_page_stages: answered.answerMatchesPublicStages,
           no_login_paywall_or_error: !answered.answerIsRefusal && !answered.errorNotice,
+          followup_completed_after_reload: false,
         };
         report.screenshot = await capture(panel, join(artifacts, 'guest-chat-real-answer.png'));
 
@@ -204,6 +299,44 @@ try {
           30_000,
         );
         report.guest.after_reload = reloaded.chatVisible;
+        report.guest.session_absent_after_reload =
+          reloaded.accessTokenAbsent && reloaded.profileAbsent && reloaded.organizationAbsent;
+
+        stage = 'guest_followup_composer';
+        await click(panel, 'title', 'Chat');
+        const beforeFollowup = await waitFor(
+          'guest_chat_followup_composer',
+          () => observe(panel),
+          (state) => state?.chatSelected && state.paneVisible && state.composerVisible,
+          30_000,
+        );
+        stage = 'guest_followup_question';
+        await requireActiveFixtureTab(attachWorker, web);
+        await submitQuestion(panel, FOLLOWUP_QUESTION, 'followup_question');
+
+        stage = 'real_guest_followup_answer';
+        const followup = await waitFor(
+          'real_guest_followup_answer_with_page_nonce',
+          () => observe(panel, { nonce: fixture.followupCode, fixtureHeading: fixture.title }),
+          (state) =>
+            state?.replyCount > beforeFollowup.replyCount &&
+            !state.streaming &&
+            state.answerContainsNonce &&
+            state.answerContainsFixtureHeading &&
+            !state.answerIsRefusal &&
+            !state.errorNotice,
+          180_000,
+        );
+        report.chat.followup_question_fingerprint = digest(FOLLOWUP_QUESTION);
+        report.chat.followup_code_fingerprint = digest(fixture.followupCode);
+        report.chat.followup_reply_count = followup.replyCount;
+        report.chat.followup_contains_unpredictable_page_code = followup.answerContainsNonce;
+        report.chat.followup_names_fixture_heading = followup.answerContainsFixtureHeading;
+        report.chat.followup_completed_after_reload = true;
+        report.followup_screenshot = await capture(
+          panel,
+          join(artifacts, 'guest-chat-real-followup-answer.png'),
+        );
       } finally {
         await web.close();
       }
@@ -214,8 +347,11 @@ try {
   report.build.extension_id = run.extensionId;
   report.build.artifact_unchanged = true;
   report.status = 'pass';
-} catch {
+} catch (error) {
   report.failure_stage = stage;
+  const failure = safeFailure(error);
+  report.failure_code = failure.code;
+  report.failure_reason = failure.reason;
 }
 await mkdir(dirname(OUTPUT), { recursive: true, mode: 0o700 });
 await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });

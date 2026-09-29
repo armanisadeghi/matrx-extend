@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "status": "implemented_browser_acceptance_pending",
+  "scope": "guest Chat Store acceptance script only",
+  "changes": [
+    "Open the actual public demo page in the owned browser profile, append a per-run article with a unique heading and two unpredictable check codes, and preserve the page's existing content and URL path.",
+    "Before each send, query the extension's active browser tab and require the public demo fixture URL to be active.",
+    "Require the first real guest answer to include its page-only code and all three workflow stages.",
+    "Reload the native side panel, recheck guest session absence and Chat access, then send a new guest turn and require its separate page-only code and fixture heading.",
+    "Record only nonce fingerprints and boolean answer checks; retain a sanitized failure stage, code, and reason without answer transcripts or credentials."
+  ],
+  "verification": {
+    "node_syntax_check": "pass",
+    "diff_whitespace_check": "pass",
+    "browser_or_heavy_run": "not launched by this lane",
+    "auth_or_session_injection": false
+  },
+  "limit": "A real guest completion remains unverified until the root-owned native acceptance run exercises the script."
+}
