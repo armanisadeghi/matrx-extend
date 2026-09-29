@@ -113,11 +113,14 @@ jobs:
 
       # ACCESS LADDER T-13: the row column retires into shown_to (a list filter)
       # and published_to_web (the only anonymous lane). No file gains a literal
-      # reference to it; the per-file baseline only shrinks.
+      # reference to it; the per-file baseline only shrinks. A signal, never a
+      # gate (pre-launch: a new blocking gate needs Arman's approval).
       - name: T-13 no new reference to the retiring row column
+        continue-on-error: true
         run: pnpm check:t13-row-column
 
       - name: the T-13 row-column guard can still fail (self-test)
+        continue-on-error: true
         run: pnpm check:t13-row-column:self-test
 
       # A SIGN-OUT ENDS ONLY THE DEVICE THAT ASKED. A bare supabase-js
