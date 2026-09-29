@@ -200,8 +200,8 @@ export function FillDeviceSetupCard() {
           {waiting && (
             <div className="flex items-center gap-1.5" data-testid="fill-device-waiting">
               <p className="min-w-0 flex-1 text-xs text-muted-foreground">
-                Approve code <span className="font-mono text-foreground">{link.code}</span> on
-                the page that opened, then come back here.
+                Approve code <span className="font-mono text-foreground">{link.code}</span> on the
+                page that opened, then come back here.
               </p>
               <button
                 type="button"

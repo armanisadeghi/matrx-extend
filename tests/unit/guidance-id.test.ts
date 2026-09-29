@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
 import { isCloudSyncableGuidanceId, makeGuidanceId } from '@/lib/guidance/storage';
+import { describe, expect, it } from 'vitest';
 
 // extend.wbx_guidance.id is a uuid (access ladder T-21, 2026-09-28): the policy generator compares entity ids
 // with uuid sets, so a text id could never reach the cloud. New ids must be uuids; old gd_ ids stay local.

@@ -139,7 +139,10 @@ export async function pushGuidanceToCloud(item: GuidanceItem): Promise<void> {
   if (!isCloudSyncableGuidanceId(item.id)) {
     // Created before guidance ids became uuids (2026-09-28): the cloud table only takes uuid ids, so this
     // item stays on this machine. Re-creating it gives it a syncable id.
-    log.warn('sys', `guidance id=${item.id} predates uuid ids and stays local; re-create it to sync it`);
+    log.warn(
+      'sys',
+      `guidance id=${item.id} predates uuid ids and stays local; re-create it to sync it`,
+    );
     return;
   }
   try {

@@ -29,10 +29,10 @@
  * Nothing here ever holds a vault value.
  */
 
+import { ENV } from '@/config/env';
 import { type ApiResult, apiGet, apiPost } from '@/lib/api/client';
 import { getCurrentUser } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
-import { ENV } from '@/config/env';
 
 export type FillSurface = 'browser_login_materialize' | 'browser_authenticator_materialize';
 
