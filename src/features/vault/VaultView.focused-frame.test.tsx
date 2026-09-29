@@ -22,7 +22,10 @@ vi.mock('@/hooks/use-auth', () => ({
 vi.mock('@/hooks/use-active-organization', () => ({
   useActiveOrganization: () => ({ active: mocks.organization }),
 }));
-vi.mock('@/lib/auth/flow', () => ({ getCurrentUser: async () => mocks.user }));
+vi.mock('@/lib/auth/flow', () => ({
+  getAccessToken: async () => null,
+  getCurrentUser: async () => mocks.user,
+}));
 vi.mock('@/lib/org/active-org', () => ({
   getActiveOrganizationId: async () => mocks.organization.id,
 }));
