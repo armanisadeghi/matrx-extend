@@ -63,5 +63,6 @@
       "to": "in-fix",
       "reason": "Diagnose observed guest response boundary before any further product change."
     }
-  ]
+  ],
+  "root_cause": "Two boundaries: extension commitb66e979c deliberately hides Chat for guests; live aidream fresh fingerprint request reaches NDJSON then emits GuestOrganizationRequiredError because guest has zero active organization memberships. Extension fallback masks this as generic chat service retry error. Server guest provisioning repair required; no client-side organization substitution."
 }
