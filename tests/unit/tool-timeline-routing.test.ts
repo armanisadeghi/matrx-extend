@@ -38,6 +38,12 @@ function tool(message: ChatMessage, callId: string): ToolPartCall | undefined {
   return part?.type === 'tool' ? part.tool : undefined;
 }
 
+function requiredMessage(messages: ChatMessage[], index: number): ChatMessage {
+  const message = messages[index];
+  if (!message) throw new Error(`Expected a message at index ${index}`);
+  return message;
+}
+
 afterEach(() => {
   useChatStore.setState({ selectedConversationId: null, messages: [] });
   usePilotChatStore.setState({ selectedConversationId: null, messages: [] });
@@ -62,8 +68,12 @@ describe('client tool timeline routing', () => {
       args: { action: 'click' },
     });
 
-    expect(tool(useChatStore.getState().messages[0]!, 'call-a')?.phase).toBe('started');
-    expect(tool(usePilotChatStore.getState().messages[0]!, 'call-a')).toBeUndefined();
+    expect(tool(requiredMessage(useChatStore.getState().messages, 0), 'call-a')?.phase).toBe(
+      'started',
+    );
+    expect(
+      tool(requiredMessage(usePilotChatStore.getState().messages, 0), 'call-a'),
+    ).toBeUndefined();
   });
 
   it('completes the original call owner instead of the newest assistant bubble', () => {
@@ -83,9 +93,12 @@ describe('client tool timeline routing', () => {
       output: { ok: true },
     });
 
-    const [original, continuation] = useChatStore.getState().messages;
-    expect(tool(original!, 'call-1')).toMatchObject({ phase: 'completed', result: { ok: true } });
-    expect(tool(continuation!, 'call-1')).toBeUndefined();
+    const messages = useChatStore.getState().messages;
+    expect(tool(requiredMessage(messages, 0), 'call-1')).toMatchObject({
+      phase: 'completed',
+      result: { ok: true },
+    });
+    expect(tool(requiredMessage(messages, 1), 'call-1')).toBeUndefined();
   });
 
   it('routes Pilot progress and terminal events to the Pilot-owned call', () => {
@@ -113,12 +126,14 @@ describe('client tool timeline routing', () => {
       message: 'Delivery failed',
     });
 
-    expect(tool(usePilotChatStore.getState().messages[0]!, 'call-p')).toMatchObject({
-      phase: 'error',
-      message: 'Delivery failed',
-      progress: [expect.objectContaining({ label: 'Clicking' })],
-    });
-    expect(tool(useChatStore.getState().messages[0]!, 'call-p')).toBeUndefined();
+    expect(tool(requiredMessage(usePilotChatStore.getState().messages, 0), 'call-p')).toMatchObject(
+      {
+        phase: 'error',
+        message: 'Delivery failed',
+        progress: [expect.objectContaining({ label: 'Clicking' })],
+      },
+    );
+    expect(tool(requiredMessage(useChatStore.getState().messages, 0), 'call-p')).toBeUndefined();
   });
 
   it('does not invent a tool row for an ownerless terminal event', () => {
@@ -135,7 +150,7 @@ describe('client tool timeline routing', () => {
       output: { ok: true },
     });
 
-    expect(useChatStore.getState().messages[0]!.parts).toEqual([]);
+    expect(requiredMessage(useChatStore.getState().messages, 0).parts).toEqual([]);
   });
 
   it('never lets a late Pilot started event reopen a terminal call', () => {
@@ -157,6 +172,8 @@ describe('client tool timeline routing', () => {
       phase: 'started',
     });
 
-    expect(tool(usePilotChatStore.getState().messages[0]!, 'call-p')?.phase).toBe('completed');
+    expect(tool(requiredMessage(usePilotChatStore.getState().messages, 0), 'call-p')?.phase).toBe(
+      'completed',
+    );
   });
 });

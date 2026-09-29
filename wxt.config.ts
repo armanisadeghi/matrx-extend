@@ -279,7 +279,8 @@ export default defineConfig({
           const pending = [workerEntry.fileName];
           const reachable = new Set<string>();
           while (pending.length > 0) {
-            const name = pending.pop()!;
+            const name = pending.pop();
+            if (name === undefined) continue;
             if (reachable.has(name)) continue;
             reachable.add(name);
             const chunk = bundle[name];

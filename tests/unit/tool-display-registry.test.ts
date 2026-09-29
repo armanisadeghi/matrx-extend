@@ -81,9 +81,7 @@ describe('tool-display registry drift guard', () => {
     );
     expect(
       unknown,
-      `Registry has display configs for names that are not in CANONICAL_SURFACE and ` +
-        `not whitelisted. Either the tool was renamed (re-key or alias the config) or ` +
-        `the key is intentional (add it to ALLOWED_NON_CANONICAL). Offenders: ${unknown.join(', ')}`,
+      `Registry has display configs for names that are not in CANONICAL_SURFACE and not whitelisted. Either the tool was renamed (re-key or alias the config) or the key is intentional (add it to ALLOWED_NON_CANONICAL). Offenders: ${unknown.join(', ')}`,
     ).toEqual([]);
   });
 
@@ -92,8 +90,7 @@ describe('tool-display registry drift guard', () => {
       expect(CANONICAL_SURFACE.has(name), `${name} is expected to be a canonical tool`).toBe(true);
       expect(
         rendersImage(toolDisplayRegistry[name]),
-        `${name} must render its screenshot inline (Base64Image/Image or a ` +
-          `CustomComponent) — otherwise the user only sees a file_id/dimensions blob`,
+        `${name} must render its screenshot inline (Base64Image/Image or a CustomComponent) — otherwise the user only sees a file_id/dimensions blob`,
       ).toBe(true);
     }
   });
@@ -102,8 +99,7 @@ describe('tool-display registry drift guard', () => {
     const missing = [...CANONICAL_SURFACE].filter((name) => !toolDisplayRegistry[name]);
     expect(
       missing,
-      `These canonical tools have NO display config and fall back to the bare ` +
-        `default row. Add an entry in registry.tsx (header-only is fine). Missing: ${missing.join(', ')}`,
+      `These canonical tools have NO display config and fall back to the bare default row. Add an entry in registry.tsx (header-only is fine). Missing: ${missing.join(', ')}`,
     ).toEqual([]);
   });
 

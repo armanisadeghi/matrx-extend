@@ -202,10 +202,14 @@ describe('vault fill device (T-30)', () => {
     const { passkeyApprovalLink, turnOnFillingHere, fillDeviceStatus, publicKeyThumbprint } =
       await fresh();
     const link = await passkeyApprovalLink();
-    expect(link.url).toMatch(/^https:\/\/aimatrx\.com\/vault\/approve-browser\?key=[0-9a-f]{64}&label=/);
+    expect(link.url).toMatch(
+      /^https:\/\/aimatrx\.com\/vault\/approve-browser\?key=[0-9a-f]{64}&label=/,
+    );
     expect(posts).toHaveLength(0); // opening the link registers nothing
     expect(await turnOnFillingHere()).toEqual({ ok: true });
-    const reg = posts[0]?.body as { public_key_jwk: { kty: 'EC'; crv: 'P-256'; x: string; y: string } };
+    const reg = posts[0]?.body as {
+      public_key_jwk: { kty: 'EC'; crv: 'P-256'; x: string; y: string };
+    };
     expect('password' in (reg as object)).toBe(false);
     const key = new URL(link.url as string).searchParams.get('key');
     expect(key).toBe(await publicKeyThumbprint(reg.public_key_jwk));
@@ -218,7 +222,10 @@ describe('vault fill device (T-30)', () => {
       ok: false,
       status: 403,
       error: JSON.stringify({
-        detail: { error: 'no_step_up_method', user_message: 'Your account has no password or passkey yet.' },
+        detail: {
+          error: 'no_step_up_method',
+          user_message: 'Your account has no password or passkey yet.',
+        },
       }),
     });
     const r = await turnOnFillingHere();

@@ -356,12 +356,7 @@ function main(): void {
     console.error(`  ✗ ${finding.file}:${finding.line} — ${finding.reason}`);
   }
   console.error(
-    `\nRender AgentListDropdown / AgentListInlinePicker from ${CANONICAL_IMPORT} and add the\n` +
-      'configuration prop the package already has (consumerId, visibleTabs, excludeAgentIds,\n' +
-      'defaultMandateKey, …). A behaviour the package lacks is a PACKAGE change made and\n' +
-      'released in the same session — never a fork here. A control that is genuinely not a\n' +
-      'platform agent choice carries a nearby `canonical-agent-picker-exempt: <reason>`\n' +
-      'comment with 12+ characters of reason.\n',
+    `\nRender AgentListDropdown / AgentListInlinePicker from ${CANONICAL_IMPORT} and add the\nconfiguration prop the package already has (consumerId, visibleTabs, excludeAgentIds,\ndefaultMandateKey, …). A behaviour the package lacks is a PACKAGE change made and\nreleased in the same session — never a fork here. A control that is genuinely not a\nplatform agent choice carries a nearby \`canonical-agent-picker-exempt: <reason>\`\ncomment with 12+ characters of reason.\n`,
   );
   process.exit(1);
 }

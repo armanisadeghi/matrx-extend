@@ -45,7 +45,7 @@ it.each([
         source: 'fetch',
         method: 'POST',
         url: 'https://calendar.invalid/api/events',
-        request_body_key: 'sha256:' + 'a'.repeat(64),
+        request_body_key: `sha256:${'a'.repeat(64)}`,
         request_sequence: 1,
         status: 200,
         ts_ms: 1,
@@ -70,7 +70,7 @@ it.each([
       pathname,
     });
     expect(result.current.events).toHaveLength(1);
-    expect(result.current.events[0]?.request_body_key).toBe('sha256:' + 'a'.repeat(64));
+    expect(result.current.events[0]?.request_body_key).toBe(`sha256:${'a'.repeat(64)}`);
   },
 );
 
