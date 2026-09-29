@@ -24,7 +24,7 @@ const DEMO_PATH = '/matrx-extend-demo';
 const FIRST_QUESTION =
   'Read the unique opening check code from the article on my current tab. What are the three workflow stages in order? Include the exact code.';
 const FOLLOWUP_QUESTION =
-  'Read the unique follow-up check code from the article on my current tab and give the article title. Include the exact code.';
+  'Read the unique follow-up check code from the article on my current tab and quote the article\'s main heading (its H1) exactly. Include the exact code.';
 const REQUIRED_ANSWER_TERMS = ['Capture', 'Understand', 'Use'];
 const digest = (value) => createHash('sha256').update(value).digest('hex').slice(0, 16);
 
@@ -101,18 +101,24 @@ async function installPageFixture(page) {
     followupCode: randomUUID().toUpperCase(),
   };
   const installed = await page.evaluate((values) => {
-    const article = document.createElement('article');
-    article.setAttribute('aria-label', 'Guest Chat grounding article');
-    const heading = document.createElement('h1');
+    // The fixture goes INSIDE the page's own main article: the extension's article
+    // extractor (like every reader-mode extractor) keeps one main article, so a second
+    // <article> appended to <body> is never read and the guest could not see the codes.
+    const article =
+      document.querySelector('main article') ??
+      document.querySelector('article') ??
+      document.querySelector('main') ??
+      document.body;
+    const heading = article.querySelector('h1') ?? document.createElement('h1');
     heading.textContent = values.title;
+    if (!heading.isConnected) article.prepend(heading);
     const opening = document.createElement('p');
     opening.textContent = `Opening check code: ${values.openingCode}`;
     const stages = document.createElement('p');
     stages.textContent = 'Workflow stages: Capture, Understand, Use.';
     const followup = document.createElement('p');
     followup.textContent = `Follow-up check code: ${values.followupCode}`;
-    article.append(heading, opening, stages, followup);
-    document.body.append(article);
+    heading.after(opening, stages, followup);
     history.replaceState(null, '', `${location.pathname}#${values.fragment}`);
     return {
       url: location.href,
@@ -127,6 +133,14 @@ async function installPageFixture(page) {
   assert.ok(installed.text.includes(fixture.openingCode));
   assert.ok(installed.text.includes(fixture.followupCode));
   assert.ok(REQUIRED_ANSWER_TERMS.every((term) => installed.text.includes(term)));
+  // The demo is a hydrating Next.js page: a late client render silently replaces the
+  // DOM and erases the codes. Require them to survive before the guest is asked.
+  await waitFor(
+    'page_fixture_survives_hydration',
+    () => page.locator('body').innerText(),
+    (body) => body.includes(fixture.openingCode) && body.includes(fixture.followupCode),
+    10_000,
+  );
   return fixture;
 }
 
@@ -152,7 +166,12 @@ async function submitQuestion(panel, question, label) {
   await click(panel, 'title', 'Send');
 }
 
-async function requireActiveFixtureTab(attachWorker, page) {
+async function requireActiveFixtureTab(attachWorker, page, fixture) {
+  const body = await page.locator('body').innerText();
+  assert.ok(
+    body.includes(fixture.openingCode) && body.includes(fixture.followupCode),
+    'page_fixture_lost: the page re-rendered and erased the check codes before send',
+  );
   const worker = await attachWorker();
   try {
     const result = await worker.send('Runtime.evaluate', {
@@ -227,6 +246,7 @@ try {
           `${new URL(web.url()).origin}${new URL(web.url()).pathname}`,
           `${WEB_ORIGIN}${DEMO_PATH}`,
         );
+        await web.waitForLoadState('networkidle', { timeout: 60_000 });
         await waitFor(
           'public_demo_content',
           () => web.locator('body').innerText(),
@@ -249,7 +269,7 @@ try {
         assert.equal(before.replyCount, 0, 'fresh guest must have no prior reply');
 
         stage = 'guest_question';
-        await requireActiveFixtureTab(attachWorker, web);
+        await requireActiveFixtureTab(attachWorker, web, fixture);
         await submitQuestion(panel, FIRST_QUESTION, 'opening_question');
 
         stage = 'real_guest_answer';
@@ -311,7 +331,7 @@ try {
           30_000,
         );
         stage = 'guest_followup_question';
-        await requireActiveFixtureTab(attachWorker, web);
+        await requireActiveFixtureTab(attachWorker, web, fixture);
         await submitQuestion(panel, FOLLOWUP_QUESTION, 'followup_question');
 
         stage = 'real_guest_followup_answer';
