@@ -64,6 +64,8 @@ export function NoteEditor({ noteId }: { noteId: string }) {
   );
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteFailed, setDeleteFailed] = useState(false);
   const draftRef = useRef<DraftState | null>(null);
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inflightRef = useRef<Promise<void> | null>(null);
@@ -244,10 +246,27 @@ export function NoteEditor({ noteId }: { noteId: string }) {
 
   const performDelete = async () => {
     setDeleteOpen(false);
-    const ok = await softDeleteNote(noteId);
-    if (ok) {
-      await queryClient.invalidateQueries({ queryKey: ['notes', 'list'] });
+    if (deleting) return;
+    setDeleting(true);
+    setDeleteFailed(false);
+    try {
+      const ok = await softDeleteNote(noteId);
+      if (!ok) {
+        setDeleteFailed(true);
+        return;
+      }
+      queryClient.setQueryData<NoteListItem[]>(['notes', 'list'], (current) =>
+        current?.filter((item) => item.id !== noteId),
+      );
       setSelectedNoteId(null);
+      void queryClient.invalidateQueries({ queryKey: ['notes', 'list'] }).catch((error) => {
+        console.warn('[notes] list refresh after delete failed', error);
+      });
+    } catch (error) {
+      console.warn('[notes] delete action failed', error);
+      setDeleteFailed(true);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -342,6 +361,7 @@ export function NoteEditor({ noteId }: { noteId: string }) {
             className="size-7 p-0 text-destructive"
             onClick={() => setDeleteOpen(true)}
             title="Delete note"
+            disabled={deleting}
           >
             <Trash2 className="size-3.5" />
           </Button>
@@ -357,8 +377,18 @@ export function NoteEditor({ noteId }: { noteId: string }) {
         description="It will be marked deleted but is recoverable from the main app."
         confirmLabel="Delete"
         variant="destructive"
+        busy={deleting}
         onConfirm={() => void performDelete()}
       />
+
+      {deleteFailed && (
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-destructive/30 bg-destructive/5 px-3 py-2 text-xs" role="alert">
+          <span>Could not confirm deletion. This note remains open; check it before retrying.</span>
+          <Button type="button" size="sm" variant="outline" onClick={() => setDeleteOpen(true)}>
+            Retry delete
+          </Button>
+        </div>
+      )}
 
       {detailQuery.isError && (
         <div className="flex shrink-0 items-center justify-between gap-2 border-b border-destructive/30 bg-destructive/5 px-3 py-2 text-xs" role="alert">

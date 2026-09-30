@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0068",
+  "feature_id": "EXT-F-2007",
+  "case_ids": ["EXT-F-2007-T03"],
+  "title": "Unconfirmed note deletion silently closes the editor",
+  "surface": "Notes editor",
+  "auth_mode": "member/admin; source-derived, native unverified",
+  "reproduction": [
+    "Open a note and confirm Delete.",
+    "Make the filtered soft-delete UPDATE return zero affected rows or a transport error.",
+    "Observe whether the editor remains open and reports the outcome."
+  ],
+  "expected": "Only exactly one affected row confirms deletion. An error, unknown count, or zero rows keeps the editor open with a visible retry path.",
+  "actual": "softDeleteNote returned true whenever Supabase reported no error, without checking affected rows. NoteEditor then navigated to the list; false and thrown failures had no visible notice.",
+  "severity": "S3: a failed deletion is presented as completed",
+  "priority": "P1: a note remains while the user believes it was deleted",
+  "state": "in-fix",
+  "evidence": [
+    "docs/stabilization/reports/notes-remaining-failure-audit.json",
+    "src/lib/notes/queries.ts:softDeleteNote",
+    "src/features/notes/NoteEditor.tsx:performDelete"
+  ],
+  "verification_status": "Source correction and deterministic guards authored; guarded red/green runs, compile, and native acceptance pending.",
+  "transition_history": [
+    {
+      "at": "2026-09-30T08:55:18Z",
+      "from": null,
+      "to": "open",
+      "reason": "Independent Notes remaining-failure source audit identified the zero-row soft-delete branch."
+    },
+    {
+      "at": "2026-09-30T08:55:18Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Current source confirmed no affected-row check and no visible failure UI."
+    },
+    {
+      "at": "2026-09-30T08:55:18Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol assigned source and consumer guard repair after native artifact freeze."
+    }
+  ]
+}

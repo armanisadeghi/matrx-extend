@@ -3454,3 +3454,10 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 - **Where to test:** Signed-in Notes tab with a selected organization and an existing note.
 - **Steps:** Open a note while its detail SELECT fails; retry after restoring access. Repeat with a successful zero-row detail SELECT. While editing a loaded note, make a background detail refresh fail.
 - **Expected:** Failure and missing-note states name the problem and offer Retry loading note plus Back; neither remains a loading skeleton. A background failure shows a notice and preserves the current draft.
+
+### Notes delete failure (EXT-D-0068, EXT-F-2007-T03)
+
+- **What it does:** Note deletion requires confirmation that exactly one row changed. An error or zero affected rows keeps the editor open with a retry control.
+- **Where to test:** Signed-in Notes editor with an existing disposable note.
+- **Steps:** Confirm Delete while its filtered UPDATE returns zero affected rows. Repeat with a transport error. Restore access, use Retry delete, confirm again, and reopen the list.
+- **Expected:** An unconfirmed delete shows an explicit notice and preserves the editor draft. Retry requires confirmation again. A confirmed delete returns to the list without the note.

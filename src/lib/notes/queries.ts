@@ -128,12 +128,19 @@ export async function updateNote(id: string, patch: UpdateNotePatch): Promise<No
 }
 
 export async function softDeleteNote(id: string): Promise<boolean> {
-  const { error } = await workbenchDb()
+  const { count, error } = await workbenchDb()
     .from('notes')
-    .update({ deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .update(
+      { deleted_at: new Date().toISOString(), updated_at: new Date().toISOString() },
+      { count: 'exact' },
+    )
     .eq('id', id);
   if (error) {
     console.warn('[notes] softDeleteNote error', error.message);
+    return false;
+  }
+  if (count !== 1) {
+    console.warn('[notes] softDeleteNote affected unexpected row count', count);
     return false;
   }
   return true;
