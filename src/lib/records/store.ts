@@ -97,12 +97,15 @@ async function signedInUserId(): Promise<string | undefined> {
 export async function recordsClientFor(
   organizationId: string,
   actor: RecordActor,
+  /** EVERY organization the person belongs to: with it the package's reads span them all. */
+  organizationIds?: readonly string[],
 ): Promise<RecordsClient> {
   const userId = await signedInUserId();
   const supabase = actor === 'agent' ? getAgentAuthoredSupabase() : getSupabase();
   return createRecordsClient({
     dataSource: dataSourceFor(supabase),
     organizationId,
+    ...(organizationIds ? { organizationIds } : {}),
     actor: {
       actor,
       ...(userId ? { user_id: userId } : {}),
@@ -164,6 +167,24 @@ export async function openRecordStore(
     open: true,
     client: await recordsClientFor(status.organizationId, actor),
     organizationId: status.organizationId,
+  };
+}
+
+/**
+ * THE PACKAGE'S OWN ACROSS-ORGANIZATIONS CLIENT (`@ai-matrx/records` `config.organizationIds`):
+ * `tableList` / `tableRead` / `recordRead` answer for every organization the person belongs to
+ * (membership from `mbr_for_user`, never the active org alone) and open a record in its own
+ * organization. `organizationId` stays the write destination (the active one, else the first).
+ */
+export async function openSpanningClient(
+  actor: RecordActor = 'user',
+): Promise<{ client: RecordsClient; organizationIds: string[] }> {
+  const organizationIds = (await listMemberOrganizations('active')).map((o) => o.id);
+  const organizationId = (await getActiveOrganizationId()) ?? organizationIds[0];
+  if (!organizationId) throw new Error('You do not belong to an organization yet.');
+  return {
+    client: await recordsClientFor(organizationId, actor, organizationIds),
+    organizationIds,
   };
 }
 

@@ -25,7 +25,12 @@
  * active organization.
  */
 
-import { type OpenStore, openRecordStore, openRecordStores } from '@/lib/records/store';
+import {
+  type OpenStore,
+  openRecordStore,
+  openRecordStores,
+  openSpanningClient,
+} from '@/lib/records/store';
 import canonicalGuide from '@/lib/tools/generated/records-guide.json';
 import type { ToolHandler, ToolTier } from '@/lib/tools/types';
 import { z } from 'zod';
@@ -335,26 +340,18 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
 
     switch (args.action) {
       case 'table_list': {
-        const tables: unknown[] = [];
-        let firstRefusal: ReturnType<typeof refused> | null = null;
-        for (const { client, organizationId } of stores) {
-          const result = await client.tableList();
-          if (!result.ok) {
-            firstRefusal ??= refused('table_list', result.error);
-            continue;
-          }
-          for (const table of result.data) {
-            tables.push({
-              id: table.id,
-              slug: table.slug,
-              name: table.name,
-              type: table.type,
-              agent_writable: table.agent_writable,
-              organization_id: organizationId,
-            });
-          }
-        }
-        if (tables.length === 0 && firstRefusal) return firstRefusal;
+        // The package spans every organization itself; the optional filter narrows it.
+        const { client } = await openSpanningClient('agent');
+        const result = await client.tableList(orgArg ? { organization_id: orgArg } : undefined);
+        if (!result.ok) return refused('table_list', result.error);
+        const tables = result.data.map((table) => ({
+          id: table.id,
+          slug: table.slug,
+          name: table.name,
+          type: table.type,
+          agent_writable: table.agent_writable,
+          organization_id: table.organization_id,
+        }));
         const limited = tables.slice(0, args.limit);
         return { ok: true, action: 'table_list', tables: limited, count: limited.length, ...notes };
       }
@@ -401,24 +398,20 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
               'The Chrome extension currently reads one record at a time; provide `record_id`.',
           };
         }
-        // A record opens in ITS OWN organization: ask each store until one holds it.
-        let lastRefusal: ReturnType<typeof refused> | null = null;
-        for (const { client, organizationId } of stores) {
-          const result = await client.recordRead({ record_id: args.record_id as string });
-          if (!result.ok) {
-            lastRefusal = refused('record_read', result.error);
-            continue;
-          }
-          return {
-            ok: true,
-            action: 'record_read',
-            record_id: args.record_id,
-            organization_id: organizationId,
-            values: result.data.document,
-            hidden: result.data.hidden,
-          };
-        }
-        return lastRefusal ?? { ok: false, action: 'record_read', reason: 'Record not found.' };
+        // The package opens a record in ITS OWN organization.
+        const { client } = await openSpanningClient('agent');
+        const result = await client.recordRead({
+          record_id: args.record_id as string,
+          ...(orgArg ? { organization_id: orgArg } : {}),
+        });
+        if (!result.ok) return refused('record_read', result.error);
+        return {
+          ok: true,
+          action: 'record_read',
+          record_id: args.record_id,
+          values: result.data.document,
+          hidden: result.data.hidden,
+        };
       }
       case 'record_aggregate': {
         const owner = await ownerStore(stores, args);

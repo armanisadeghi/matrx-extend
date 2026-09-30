@@ -15,6 +15,7 @@ function clientFor(org: string) {
       ok: true,
       data: (h.tables[org] ?? []).map((t) => ({
         ...t,
+        organization_id: org,
         type: 't',
         agent_writable: true,
         is_kernel: false,
@@ -31,8 +32,27 @@ vi.mock('@/lib/records/store', () => ({
   openRecordStore: vi.fn(async () => {
     throw new Error('the active-org door must not be used for reads');
   }),
+  // The package's own across-organizations client: the union of every organization's tables,
+  // narrowed by the optional filter, a record opened wherever it lives.
+  openSpanningClient: async () => ({
+    organizationIds: [ORG_A, ORG_B],
+    client: {
+      tableList: async (args?: { organization_id?: string | null }) => {
+        h.opened.push(args?.organization_id ?? null);
+        const orgs = args?.organization_id ? [args.organization_id] : [ORG_A, ORG_B];
+        const parts = await Promise.all(orgs.map((o) => clientFor(o).tableList()));
+        return { ok: true, data: parts.flatMap((p) => p.data) };
+      },
+      recordRead: async (a: { record_id: string }) => {
+        for (const o of [ORG_A, ORG_B]) {
+          const r = await clientFor(o).recordRead(a);
+          if (r.ok) return r;
+        }
+        return { ok: false, error: { code: 'nf', message: 'not found' } };
+      },
+    },
+  }),
   openRecordStores: async (_actor: string, filter?: string | null) => {
-    h.opened.push(filter);
     const orgs = filter ? [filter] : [ORG_A, ORG_B];
     return { stores: orgs.map((o) => ({ organizationId: o, client: clientFor(o) })), closed: [] };
   },
@@ -81,6 +101,6 @@ describe('records tool: sees every organization, active org never narrows', () =
 
   it("record_read opens a record in the record's own organization", async () => {
     const out = await run({ action: 'record_read', record_id: 'rec-b' });
-    expect(out).toMatchObject({ ok: true, organization_id: ORG_B });
+    expect(out).toMatchObject({ ok: true, values: { name: 'in B' } });
   });
 });
