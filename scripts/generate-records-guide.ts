@@ -9,7 +9,7 @@
  * action's payload and unknown-topic fallback still exactly match the server.
  */
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 
@@ -53,10 +53,14 @@ if (check) {
     writeFileSync(generatedPath, generated);
     let difference = '';
     try {
-      execFileSync('diff', ['--unified=3', '--label', 'checked-in', OUTPUT, '--label', 'generated', generatedPath], {
-        encoding: 'utf8',
-        stdio: ['ignore', 'pipe', 'pipe'],
-      });
+      execFileSync(
+        'diff',
+        ['--unified=3', '--label', 'checked-in', OUTPUT, '--label', 'generated', generatedPath],
+        {
+          encoding: 'utf8',
+          stdio: ['ignore', 'pipe', 'pipe'],
+        },
+      );
     } catch (error) {
       difference = error instanceof Error && 'stdout' in error ? String(error.stdout) : '';
     } finally {
