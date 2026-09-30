@@ -22,6 +22,10 @@
       "scripts/byte-size-shape.mjs",
       "scripts/duration-shape.mjs",
       "scripts/format-input-shape.mjs",
+      "scripts/money-shape.mjs",
+      "scripts/count-shape.mjs",
+      "scripts/relative-time-shape.mjs",
+      "scripts/guard-origin.json",
       "scripts/package-twins.json",
       "tests/fixtures/portions/**",
       "docs/stabilization/inventory.json"
