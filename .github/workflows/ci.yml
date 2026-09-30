@@ -55,7 +55,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: AI-Matrix-Engine/aidream
-          ref: 60963c667a1c6f960f5a393104651d1e6f33b9bf
+          # Must match the immutable AI Dream revision that produced the checked-in
+          # records-guide artifact during the release candidate generation.
+          ref: 0b12e258aa5d1965ac8d2a812b09ed5b553d72ee
           path: .canonical/aidream
           ssh-key: ${{ secrets.AIDREAM_DEPLOY_KEY }}
           ssh-strict: true
