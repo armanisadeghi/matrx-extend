@@ -116,11 +116,11 @@ afterEach(async () => {
   // otherwise reach the next case after its Chrome boundary doubles changed.
   // Do not run every timer: the production CDP client intentionally renews
   // its ten-minute idle timer while a lease exists, which makes a full fake
-  // clock drain an infinite loop rather than test cleanup.
-  for (let i = 0; i < 10; i++) {
-    await vi.advanceTimersByTimeAsync(100);
-    await vi.dynamicImportSettled();
-  }
+  // clock drain an infinite loop rather than test cleanup. Advance exactly
+  // through the capture cleanup deadline instead, so a rejected/stalled
+  // detach cannot leak its owned lease into the next parameterized case.
+  await vi.advanceTimersByTimeAsync(20_000);
+  await vi.dynamicImportSettled();
   h.handlers.clear();
   cleanup();
   vi.clearAllTimers();
