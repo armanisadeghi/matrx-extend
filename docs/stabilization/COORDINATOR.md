@@ -14,6 +14,8 @@ Independent repair review: `/root/notes_failure_peer` (Luna medium, fresh seat) 
 
 Final correction review: `/root/notes_final_peer` (Luna medium, fresh seat) owns the final two-verdict source/evidence check after the initial review caught false certainty in create-error copy. Native runner `a134e82e` is committed. Root now owns the sole heavy permit; the last run was refused before launch for macOS pressure level 2, so final correction tests and native build remain pending. Product commits are held from push until final checks pass.
 
+Final source checks: root run `notes-final-owner-tests-20260930b` admitted after resource recovery and passed 11 tests across four Notes files. `/root/notes_native_acceptance` now owns the sole heavy permit for compile, current development build, and native execution. `/root/notes_detail_failure_audit` (Luna medium) owns a source-only census of remaining Notes failure paths; no heavy permit or product edits.
+
 The checkpoints below are historical. In particular, earlier disk refusals, build identities, and unapplied-patch claims must not override current evidence. Broad Chat/Pilot work remains deferred after the urgent guest Chat repair. No overall health claim is made.
 
 Current priority (2026-09-27): finish Showcase detect → extract → save → reopen → repeat, per latest owner request. SHOWCASE-PLAN.md and inventory EXT-F-1012 own scope. Broad stabilization remains incomplete; the goal is active.
