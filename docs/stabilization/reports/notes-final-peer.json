@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "lane": "fresh independent Notes D61/D62/D63 source and acceptance-runner review, Luna medium",
+  "reviewed_state": {
+    "runner_commit": "a134e82e",
+    "product_state": "shared working-tree source; exact product SHAs were not present in this review context",
+    "native_acceptance_executed": false
+  },
+  "verdict_a_product_outcome": {
+    "overall": "PARTIAL_PENDING_NATIVE_ACCEPTANCE",
+    "D61": "SOURCE_PASS: listMyNotes rejects DB and malformed-row failures; NotesView renders Retry loading notes; the successful empty message remains in NotesList after success only.",
+    "D62": "SOURCE_PASS: null and thrown create outcomes remain in the list and show 'Could not confirm note creation. Refresh your notes before retrying.' Refresh and retry controls remain available; the earlier false-certainty wording finding is addressed.",
+    "D63": "RUNNER_DESIGN_PASS: the acceptance flow holds the first PATCH through the second debounce, releases it, waits for save completion, reloads the panel, and reopens the note to require the latest draft from storage.",
+    "native_status": "UNVERIFIED: no installed-extension run occurred. The runner's failed POST is intercepted before reaching Supabase, so it verifies a definite preflight failure, not a response-lost-after-commit ambiguity; source copy is appropriately uncertain for either case."
+  },
+  "verdict_b_doctrine_quality": {
+    "overall": "PARTIAL_PENDING_EXECUTED_REGRESSION_PROOF",
+    "nothing_fails_silently": "SOURCE_PASS for list-read and note-create failures; each has visible recovery UI.",
+    "fix_the_class": "Source census found listMyNotes has the NotesView consumer and createNote's user-facing consumer is NotesList. Read, view, and create regression tests are present at the query/UI boundaries.",
+    "forcing_function_tests": "NOT_VERIFIED: tests were inspected but not run; no return-expected gut check or mutation proof was performed in this review. The native runner's D63 final reload/refetch check is a meaningful persistence assertion, beyond a saved-state indicator.",
+    "runner_quality": "Receipt-bound local build identity, isolated native side-panel harness, scoped workbench.notes transport faults, and cleanup are present. Its D62 success path refreshes before retry, but this deterministic failed request cannot establish behavior after a committed insert with a lost/malformed response."
+  },
+  "initial_finding": {
+    "finding": "The prior wording 'Nothing was saved' was unsupported because createNote can return null after an INSERT whose response is absent or fails validation.",
+    "disposition": "ADDRESSED in current source: copy says creation could not be confirmed and directs refresh before retry."
+  },
+  "review_limits": [
+    "No tests, build, browser, native acceptance, or product edits were performed.",
+    "Reviewed implementation is uncommitted shared working-tree source; exact product commit SHAs were unavailable to this seat."
+  ],
+  "evidence": [
+    "docs/stabilization/defects/EXT-D-0061.json",
+    "docs/stabilization/defects/EXT-D-0062.json",
+    "src/lib/notes/queries.ts",
+    "src/features/notes/NotesView.tsx",
+    "src/features/notes/NotesList.tsx",
+    "src/features/notes/NoteEditor.tsx",
+    "src/lib/notes/queries.failures.test.ts",
+    "src/features/notes/NotesView.failures.test.tsx",
+    "src/features/notes/NotesList.create-failures.test.tsx",
+    "tests/browser/notes-native-acceptance.mjs"
+  ]
+}
