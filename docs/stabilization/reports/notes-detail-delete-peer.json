@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "reviewed_commits": [
+    "fea4f443fe81892f519e894ab83685e48f1f4c1c",
+    "b875932033e0e06caf737c3b3b3d1059b4c9a0d2",
+    "3432c2cf"
+  ],
+  "reviewer_lane": "independent structured verification; no product authorship",
+  "verdict_a_live_surface_scope": "PARTIAL",
+  "verdict_b_code_doctrine_test_quality": "PARTIAL",
+  "defects": {
+    "EXT-D-0067": {
+      "source_behavior": "PASS",
+      "expected": "A detail query rejection reaches a terminal visible error with Retry and Back; successful zero-row resolves to a visible unavailable state; a failed background refresh keeps an initialized draft rendered.",
+      "evidence": [
+        "src/lib/notes/queries.ts:getNote throws on Supabase error and malformed data, and returns null only for successful empty maybeSingle",
+        "src/features/notes/NoteEditor.tsx renders error/unavailable controls when no note/draft remains and renders a retry banner when refresh fails after draft hydration",
+        "src/features/notes/NotesView.tsx keys NoteEditor by selectedNoteId, confirming Back exits the detail surface"
+      ],
+      "coverage_quality": "The query boundary tests distinguish error, missing row, and malformed row. The component tests cover failed read/retry, missing/Back, and a background refresh failure retaining edited text. These are useful behavioral assertions, though database and component seams are mocked."
+    },
+    "EXT-D-0068": {
+      "source_behavior": "PARTIAL",
+      "expected": "Only a confirmed single-row soft delete exits; false, thrown, zero, and unknown-count outcomes retain the editor and provide retry.",
+      "evidence": [
+        "src/lib/notes/queries.ts requests count='exact' and returns true only when count === 1 and error is absent",
+        "src/features/notes/NoteEditor.tsx retains the editor and exposes Retry delete for false or thrown results",
+        "src/features/notes/NotesView.tsx keys NoteEditor by selectedNoteId, so successful selection clearing unmounts it; NoteEditor's unmount cleanup flushes a pending saveTimerRef draft through persist",
+        "performDelete does not cancel the pending save timer or clear unsavedDrafts before successful navigation. updateNote then can issue an update to the already soft-deleted row (its patch does not clear deleted_at); if that update fails, persist keeps the draft in unsavedDrafts for later recovery."
+      ],
+      "finding": "Confirmed delete can race with an unmount autosave and leave stale local recovery state. The observed code supports a post-delete content/updated_at update and stale draft retention; it does not support a claim that the row is restored, since updateNote does not clear deleted_at.",
+      "coverage_quality": "Boundary tests cover zero, one, null, and database error counts; component tests cover false, thrown, and retry-to-success. No test covers success while the debounce timer is pending, canceled saves, or unsavedDrafts cleanup."
+    }
+  },
+  "count_semantics": "Installed @supabase/postgrest-js 2.117.2 source documents update({count:'exact'}) and implements it with Prefer: count=exact, then parses the total from Content-Range. A returned count of 0, null, or more than 1 is distinguishable; count === 1 is a supported confirmation check for this id-filtered update.",
+  "doctrine_quality": {
+    "reuse": "PASS: fixes use existing Notes query, React Query, editor, and recovery state primitives.",
+    "nothing_silent": "PASS for the reviewed read/delete failure branches; successful-delete autosave lifecycle remains an uncovered defect.",
+    "class_guard": "PARTIAL: added guards target detail query result distinctions and delete count/failure outcomes, but the pending-autosave-on-delete lifecycle class has no guard.",
+    "test_limit": "Test code was source-reviewed only in this peer pass. Builder red/green and compile evidence was pending at report creation. No tests, build, or browser/native flow were run by this reviewer."
+  },
+  "unverified": [
+    "Native UI behavior with a signed-in member/admin and real Notes data.",
+    "Builder's guarded red/green results, compile output, and browser/native acceptance evidence."
+  ],
+  "recommendation": "Repair successful-delete cleanup by canceling the pending timer, preventing unmount persistence for a confirmed deleted note, and clearing the deleted note's unsavedDrafts entry; preserve current recovery state on unsuccessful deletion. Add a forcing test for delete success with a pending debounced edit, then obtain a fresh scoped re-verification."
+}
