@@ -224,8 +224,11 @@ function armNotesTransport(panel, origin) {
   });
   const offRequest = panel.on('Network.requestWillBeSent', (event) => {
     const url = new URL(event.request.url);
-    if (url.origin === origin && url.pathname === '/rest/v1/notes' &&
-        ['GET', 'POST', 'PATCH'].includes(event.request.method))
+    if (
+      url.origin === origin &&
+      url.pathname === '/rest/v1/notes' &&
+      ['GET', 'POST', 'PATCH'].includes(event.request.method)
+    )
       requests.set(event.requestId, event.request.method);
   });
   const off = panel.on('Fetch.requestPaused', (event) => {
@@ -581,7 +584,9 @@ try {
         );
         report.observations.D63.reopened_latest_draft = true;
       } catch (error) {
-        report.observations.failure_ui = await notesState(panel).catch(() => ({ unavailable: true }));
+        report.observations.failure_ui = await notesState(panel).catch(() => ({
+          unavailable: true,
+        }));
         report.observations.failure_transport = transport.state();
         // The driver explicitly exposes content-free categories and geometry.
         if (error?.driverFailure) report.driver_failure = error.driverFailure;

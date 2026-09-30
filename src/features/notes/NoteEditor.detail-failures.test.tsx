@@ -57,7 +57,9 @@ describe('Notes detail recovery', () => {
     api.get.mockRejectedValueOnce(new Error('Network unavailable')).mockResolvedValueOnce(note);
     mount();
     expect(await screen.findByText('Could not load this note.')).toBeTruthy();
-    expect(screen.queryByPlaceholderText('Start writing… or use Append from page to capture content.')).toBeNull();
+    expect(
+      screen.queryByPlaceholderText('Start writing… or use Append from page to capture content.'),
+    ).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Retry loading note' }));
     expect(await screen.findByDisplayValue('Call new patient.')).toBeTruthy();
   });
