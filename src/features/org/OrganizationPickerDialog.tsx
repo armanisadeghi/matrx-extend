@@ -38,7 +38,10 @@ import {
   setActiveOrganization,
 } from '@/lib/org/active-org';
 import {
+  ArchiveFilter,
+  type ArchiveFilterValue,
   Button,
+  DEFAULT_ARCHIVE_FILTER,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -55,6 +58,7 @@ export function OrganizationPickerDialog() {
   const [loadFailed, setLoadFailed] = useState(false);
   const [choosing, setChoosing] = useState(false);
   const [chooseError, setChooseError] = useState<string | null>(null);
+  const [archiveFilter, setArchiveFilter] = useState<ArchiveFilterValue>(DEFAULT_ARCHIVE_FILTER);
 
   // The flag covers a panel that was closed when the request was held; the
   // broadcast covers a panel that was already open.
@@ -79,7 +83,7 @@ export function OrganizationPickerDialog() {
     let cancelled = false;
     setLoading(true);
     setLoadFailed(false);
-    void listMemberOrganizations()
+    void listMemberOrganizations(archiveFilter)
       .then((rows) => {
         if (!cancelled) setOrganizations(rows);
       })
@@ -94,7 +98,7 @@ export function OrganizationPickerDialog() {
     return () => {
       cancelled = true;
     };
-  }, [open]);
+  }, [open, archiveFilter]);
 
   const choose = useCallback((organizationId: string) => {
     setChoosing(true);
@@ -116,7 +120,9 @@ export function OrganizationPickerDialog() {
 
   // Nothing to choose from: the honest state. A picker with no rows and no
   // sentence is a dead screen; this one says what happened and what fixes it.
-  const nothingToChoose = !loading && !loadFailed && organizations.length === 0;
+  const activeOrganizations = organizations.filter((organization) => !organization.archivedAt);
+  const archivedOrganizations = organizations.filter((organization) => !!organization.archivedAt);
+  const nothingToChoose = !loading && !loadFailed && activeOrganizations.length === 0;
 
   return (
     <Dialog open onOpenChange={(next) => !next && dismiss()}>
@@ -144,12 +150,20 @@ export function OrganizationPickerDialog() {
             not been told which one to use. Pick it once — you can switch any time in Settings.
           </DialogDescription>
         </DialogHeader>
+        <ArchiveFilter
+          value={archiveFilter}
+          onValueChange={setArchiveFilter}
+          size="sm"
+          aria-label="Filter organizations by archive status"
+        />
         {nothingToChoose ? (
           <div className="space-y-3 text-sm text-muted-foreground">
             <p>
-              You are not a member of any organization yet, so there is nothing to pick. Any request
-              that needed one has already stopped waiting — create an organization or ask whoever
-              runs your workspace to invite you, then try again.
+              {archiveFilter === 'archived'
+                ? archivedOrganizations.length > 0
+                  ? 'Archived organizations are view-only here. Choose Active only to pick where this request runs, or restore one first.'
+                  : 'No archived organizations match this filter. Choose Active only to pick where this request runs.'
+                : 'There is no active organization to choose. Archived organizations can be viewed here, but must be restored before they can receive new work. Create or join an active organization, then try again.'}
             </p>
             <p>
               <OpenUrl
@@ -163,13 +177,27 @@ export function OrganizationPickerDialog() {
           </div>
         ) : (
           <OrganizationPicker
-            organizations={organizations}
+            organizations={activeOrganizations}
             activeOrganizationId={null}
             loading={loading || choosing}
             loadFailed={loadFailed}
             hideHeading
             onSelect={(organization) => choose(organization.id)}
           />
+        )}
+        {archivedOrganizations.length > 0 && (
+          <div className="space-y-2 text-sm">
+            {archivedOrganizations.map((organization) => (
+              <div key={organization.id} className="rounded-md border px-3 py-2">
+                <span className="font-medium">{organization.name}</span>
+                <span className="ml-2 text-muted-foreground">Archived</span>
+              </div>
+            ))}
+            <OpenUrl
+              url={`${ENV.FRONTEND_URL}/organizations`}
+              label="Open Organizations to restore an archived organization"
+            />
+          </div>
         )}
         {chooseError && <p className="text-sm text-destructive">{chooseError}</p>}
       </DialogContent>

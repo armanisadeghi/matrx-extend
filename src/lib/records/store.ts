@@ -186,7 +186,7 @@ export async function openRecordStores(
 ): Promise<{ stores: OpenStore[]; closed: { organizationId: string; reason: string }[] }> {
   const orgIds = organizationFilter
     ? [organizationFilter]
-    : (await listMemberOrganizations()).map((o) => o.id);
+    : (await listMemberOrganizations('active')).map((o) => o.id);
   const stores: OpenStore[] = [];
   const closed: { organizationId: string; reason: string }[] = [];
   await Promise.all(

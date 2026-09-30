@@ -15,12 +15,13 @@ import {
 } from '@/lib/org/active-org';
 import { onChange } from '@/lib/storage/chrome-local';
 import { useAuthStore } from '@/state/auth';
+import { type ArchiveFilterValue, DEFAULT_ARCHIVE_FILTER } from '@ai-matrx/design-system';
 import { useCallback, useEffect, useState } from 'react';
 
 export interface UseActiveOrganizationResult {
   /** The organization every request carries, or null when the user must pick. */
   active: MemberOrganization | null;
-  /** Every organization the user may act in. */
+  /** Memberships requested by the visible archive filter; archived rows are view-only. */
   organizations: MemberOrganization[];
   loading: boolean;
   /** Non-null when the organizations could not be read at all. */
@@ -31,7 +32,9 @@ export interface UseActiveOrganizationResult {
   reload: () => void;
 }
 
-export function useActiveOrganization(): UseActiveOrganizationResult {
+export function useActiveOrganization(
+  archiveFilter: ArchiveFilterValue = DEFAULT_ARCHIVE_FILTER,
+): UseActiveOrganizationResult {
   const user = useAuthStore((s) => s.user);
   const [active, setActive] = useState<MemberOrganization | null>(null);
   const [organizations, setOrganizations] = useState<MemberOrganization[]>([]);
@@ -55,7 +58,7 @@ export function useActiveOrganization(): UseActiveOrganizationResult {
       try {
         const [resolved, all] = await Promise.all([
           resolveActiveOrganization(),
-          listMemberOrganizations(),
+          listMemberOrganizations(archiveFilter),
         ]);
         if (cancelled) return;
         setActive(resolved);
@@ -73,7 +76,7 @@ export function useActiveOrganization(): UseActiveOrganizationResult {
     return () => {
       cancelled = true;
     };
-  }, [user, nonce]);
+  }, [user, nonce, archiveFilter]);
 
   // Another context (the service worker clearing a stale selection, a second
   // sidepanel) can change the active organization under us.

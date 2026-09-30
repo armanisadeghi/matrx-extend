@@ -9,7 +9,9 @@
  * extension at staging / dev / localhost from here.
  */
 
+import { OpenUrl } from '@/components/OpenUrl';
 import { Collapsible } from '@/components/ui/collapsible';
+import { ENV } from '@/config/env';
 import { AdvancedAgentCapabilities } from '@/features/settings/AdvancedAgentCapabilities';
 import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useAuth } from '@/hooks/use-auth';
@@ -30,7 +32,10 @@ import { useSettingsStore } from '@/state/settings';
 import { AgentListDropdown } from '@ai-matrx/agents/catalog/react';
 import { ConfirmDialog } from '@ai-matrx/design-system';
 import {
+  ArchiveFilter,
+  type ArchiveFilterValue,
   Button,
+  DEFAULT_ARCHIVE_FILTER,
   BasicInput as Input,
   Select,
   SelectContent,
@@ -100,11 +105,17 @@ export function SettingsView() {
   const [enginePortError, setEnginePortError] = useState<string | null>(null);
   const [clearLocalDataOpen, setClearLocalDataOpen] = useState(false);
   const [extensionUpdate, setExtensionUpdate] = useState<ExtensionUpdateStatus>({ kind: 'idle' });
+  const [orgArchiveFilter, setOrgArchiveFilter] =
+    useState<ArchiveFilterValue>(DEFAULT_ARCHIVE_FILTER);
   // Which organization this install acts in. Every backend request and every
   // organization-scoped write carries it, so a user with more than one
   // organization must state which one before the extension can do anything.
-  const org = useActiveOrganization();
+  const org = useActiveOrganization(orgArchiveFilter);
   const [orgError, setOrgError] = useState<string | null>(null);
+  const activeOrganizations = org.organizations.filter((organization) => !organization.archivedAt);
+  const archivedOrganizations = org.organizations.filter(
+    (organization) => !!organization.archivedAt,
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -199,6 +210,16 @@ export function SettingsView() {
 
           <Collapsible label="Organization" defaultOpen={org.mustChoose}>
             <Card>
+              {user && (
+                <div className="px-3 py-2">
+                  <ArchiveFilter
+                    value={orgArchiveFilter}
+                    onValueChange={setOrgArchiveFilter}
+                    size="sm"
+                    aria-label="Filter organizations by archive status"
+                  />
+                </div>
+              )}
               {org.error ? (
                 <Row
                   label="Organizations"
@@ -209,7 +230,23 @@ export function SettingsView() {
               ) : !user ? (
                 <Row label="Organization" value="Sign in to choose" />
               ) : org.organizations.length === 0 ? (
-                <Row label="Organization" value="You are not a member of any organization" />
+                <Row
+                  label="Organization"
+                  value={
+                    orgArchiveFilter === 'active'
+                      ? 'No active organization to choose. Show archived to inspect archived memberships.'
+                      : 'No organizations match this archive filter.'
+                  }
+                />
+              ) : activeOrganizations.length === 0 ? (
+                <Row
+                  label="Acting as"
+                  value={
+                    org.active
+                      ? `Working in ${org.active.name}. Archived organizations are view-only; show active organizations to switch.`
+                      : 'Archived organizations are view-only. Show active organizations to choose where new work goes.'
+                  }
+                />
               ) : (
                 <ControlRow
                   label="Acting as"
@@ -228,7 +265,7 @@ export function SettingsView() {
                       placeholder="Choose…"
                       options={[
                         ...(org.active ? [] : [{ value: NONE, label: 'Choose…' }]),
-                        ...org.organizations.map((o) => ({
+                        ...activeOrganizations.map((o) => ({
                           value: o.id,
                           label: o.name,
                         })),
@@ -236,6 +273,20 @@ export function SettingsView() {
                     />
                   }
                 />
+              )}
+              {archivedOrganizations.length > 0 && (
+                <div className="space-y-1 px-3 py-2 text-xs">
+                  {archivedOrganizations.map((organization) => (
+                    <div key={organization.id}>
+                      <span className="font-medium">{organization.name}</span>
+                      <span className="ml-2 text-muted-foreground">Archived · view only</span>
+                    </div>
+                  ))}
+                  <OpenUrl
+                    url={`${ENV.FRONTEND_URL}/organizations`}
+                    label="Open Organizations to restore an archived organization"
+                  />
+                </div>
               )}
               {orgError && (
                 <Row label="" value={<span className="text-destructive">{orgError}</span>} />

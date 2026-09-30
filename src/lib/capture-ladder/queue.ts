@@ -107,7 +107,7 @@ export async function countNeedsYou(): Promise<number> {
  */
 async function loadOrganizationNames(): Promise<Record<string, string>> {
   try {
-    const organizations = await listMemberOrganizations();
+    const organizations = await listMemberOrganizations('active');
     return Object.fromEntries(organizations.map((o) => [o.id, o.name]));
   } catch (err) {
     log.warn('scrape', 'could not read organization names for the capture tray', {

@@ -49,10 +49,12 @@ import { CHANNELS } from '@/lib/messaging/schemas';
 import { getOne, onChange, setOne } from '@/lib/storage/chrome-local';
 import { getSupabase } from '@/lib/supabase/client';
 import { iamDb } from '@/lib/supabase/schemas';
+import type { ArchiveFilterValue } from '@ai-matrx/design-system';
 
 export interface MemberOrganization {
   id: string;
   name: string;
+  archivedAt?: string | null;
 }
 
 let validatedSelection: { userId: string; organizationId: string } | null = null;
@@ -138,7 +140,9 @@ interface MembershipRow {
  * extension never re-derives membership from a junction table). RPCs are not
  * schema-scoped; they stay on the plain client.
  */
-export async function listMemberOrganizations(): Promise<MemberOrganization[]> {
+export async function listMemberOrganizations(
+  archiveFilter: ArchiveFilterValue = 'active',
+): Promise<MemberOrganization[]> {
   const { data, error } = await getSupabase().rpc('mbr_for_user', {
     p_container_type: 'organization',
   });
@@ -156,11 +160,10 @@ export async function listMemberOrganizations(): Promise<MemberOrganization[]> {
   ];
   if (ids.length === 0) return [];
 
-  const { data: orgRows, error: orgError } = await iamDb()
-    .from('organizations')
-    .select('id,name')
-    .in('id', ids)
-    .is('archived_at', null);
+  let query = iamDb().from('organizations').select('id,name,archived_at').in('id', ids);
+  if (archiveFilter === 'active') query = query.is('archived_at', null);
+  if (archiveFilter === 'archived') query = query.not('archived_at', 'is', null);
+  const { data: orgRows, error: orgError } = await query;
   if (orgError) {
     log.error('auth', 'listMemberOrganizations: organization read failed', orgError);
     throw new Error(`Could not read your organizations: ${orgError.message}`);
@@ -168,6 +171,7 @@ export async function listMemberOrganizations(): Promise<MemberOrganization[]> {
   return (orgRows ?? []).map((row) => ({
     id: String((row as { id: unknown }).id),
     name: String((row as { name?: unknown }).name ?? 'Untitled organization'),
+    archivedAt: (row as { archived_at?: string | null }).archived_at ?? null,
   }));
 }
 
@@ -187,7 +191,7 @@ async function readStoredSelection(): Promise<StoredActiveOrganization | null> {
 async function validateActiveOrganization(userId: string): Promise<MemberOrganization | null> {
   validatedSelection = null;
   const generation = selectionGeneration;
-  const organizations = await listMemberOrganizations();
+  const organizations = await listMemberOrganizations('active');
   const byId = new Map(organizations.map((o) => [o.id, o]));
 
   const stored = await readStoredSelection();
@@ -362,7 +366,7 @@ export async function holdForActiveOrganizationId(
   // shows the same "you have no organization" message in the panel, for
   // whoever is looking), but never make them, or a silent 120s clock, be the
   // thing that ends the hold.
-  const organizations = await listMemberOrganizations();
+  const organizations = await listMemberOrganizations('active');
   if (organizations.length === 0) {
     await requestOrganizationPicker();
     log.error('auth', 'held request settled immediately — user has no organization memberships');
@@ -410,6 +414,7 @@ export async function requireActiveOrganizationId(
  * `setActiveOrganization()`, which verifies first.
  */
 export async function selectActiveOrganization(org: MemberOrganization): Promise<void> {
+  if (org.archivedAt) throw new Error('Restore this organization before working in it.');
   await persistSelection(org);
   // Any explicit choice ANSWERS an outstanding picker request, wherever it
   // was made from — the panel's dialog, Settings, the frontend bridge. One
@@ -424,7 +429,7 @@ export async function selectActiveOrganization(org: MemberOrganization): Promise
  * in.
  */
 export async function setActiveOrganization(organizationId: string): Promise<MemberOrganization> {
-  const organizations = await listMemberOrganizations();
+  const organizations = await listMemberOrganizations('active');
   const match = organizations.find((o) => o.id === organizationId);
   if (!match) {
     throw new Error('You are not a member of that organization.');

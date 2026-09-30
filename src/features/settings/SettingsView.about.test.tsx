@@ -6,6 +6,8 @@ const mocks = vi.hoisted(() => ({
   getEnginePortOverride: vi.fn(),
   setEnginePortOverride: vi.fn(),
   send: vi.fn(),
+  user: null as null | { id: string; email: string },
+  chooseOrganization: vi.fn(),
 }));
 
 vi.mock('@/components/ui/collapsible', () => ({
@@ -17,17 +19,28 @@ vi.mock('@/features/settings/AdvancedAgentCapabilities', () => ({
   AdvancedAgentCapabilities: () => null,
 }));
 vi.mock('@/hooks/use-active-organization', () => ({
-  useActiveOrganization: () => ({
+  useActiveOrganization: (archiveFilter: string) => ({
     active: null,
-    organizations: [],
+    organizations: mocks.user
+      ? [
+          { id: 'active-org', name: 'Active Studio', archivedAt: null },
+          { id: 'archived-org', name: 'Old Studio', archivedAt: '2026-09-30T00:00:00Z' },
+        ].filter((organization) =>
+          archiveFilter === 'all'
+            ? true
+            : archiveFilter === 'archived'
+              ? !!organization.archivedAt
+              : !organization.archivedAt,
+        )
+      : [],
     error: null,
     loading: false,
     mustChoose: false,
-    choose: vi.fn(),
+    choose: mocks.chooseOrganization,
   }),
 }));
 vi.mock('@/hooks/use-auth', () => ({
-  useAuth: () => ({ user: null, signIn: vi.fn(), signOut: vi.fn(), isAdmin: false }),
+  useAuth: () => ({ user: mocks.user, signIn: vi.fn(), signOut: vi.fn(), isAdmin: false }),
 }));
 vi.mock('@/hooks/use-desktop', () => ({
   useDesktopBridge: () => ({ transport: 'none', health: null }),
@@ -74,13 +87,42 @@ vi.mock('@/state/settings', () => ({
 }));
 vi.mock('@ai-matrx/agents/catalog/react', () => ({ AgentListDropdown: () => null }));
 vi.mock('@ai-matrx/design-system', () => ({
+  DEFAULT_ARCHIVE_FILTER: 'active',
+  ArchiveFilter: ({
+    value,
+    onValueChange,
+  }: { value: string; onValueChange: (value: string) => void }) => (
+    <div role="group" aria-label="Filter organizations by archive status">
+      <button
+        type="button"
+        onClick={() => onValueChange('active')}
+        aria-pressed={value === 'active'}
+      >
+        Active only
+      </button>
+      <button
+        type="button"
+        onClick={() => onValueChange('archived')}
+        aria-pressed={value === 'archived'}
+      >
+        Archived only
+      </button>
+      <button type="button" onClick={() => onValueChange('all')} aria-pressed={value === 'all'}>
+        Active + archived
+      </button>
+    </div>
+  ),
   Button: ({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) => (
     <button {...props}>{children}</button>
   ),
   BasicInput: (props: React.InputHTMLAttributes<HTMLInputElement>) => <input {...props} />,
   Select: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   SelectContent: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  SelectItem: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  SelectItem: ({ children }: { children: React.ReactNode }) => (
+    <div role="option" tabIndex={0} aria-selected={false}>
+      {children}
+    </div>
+  ),
   SelectTrigger: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   SelectValue: () => null,
   Switch: ({
@@ -127,6 +169,8 @@ function setUserAgent(value: string) {
 
 describe('SettingsView About', () => {
   beforeEach(() => {
+    mocks.user = null;
+    mocks.chooseOrganization.mockReset();
     mocks.getEnginePortOverride.mockReset().mockResolvedValue(null);
     mocks.setEnginePortOverride.mockReset().mockResolvedValue(undefined);
     mocks.send.mockReset().mockResolvedValue(undefined);
@@ -227,6 +271,38 @@ describe('SettingsView About', () => {
     fireEvent.click(about().getByRole('button', { name: 'Check for extension update' }));
 
     expect(about().getByText(expected)).toBeTruthy();
+  });
+});
+
+describe('SettingsView organization archive filter', () => {
+  beforeEach(() => {
+    mocks.user = { id: 'member-1', email: 'member@example.test' };
+    mocks.chooseOrganization.mockReset();
+    mocks.getEnginePortOverride.mockResolvedValue(null);
+    setChromeRuntime({});
+  });
+
+  afterEach(() => {
+    cleanup();
+    mocks.user = null;
+  });
+
+  it('reveals archived memberships on this surface without offering them as work targets', () => {
+    render(<SettingsView />);
+    const section = within(screen.getByRole('region', { name: 'Organization' }));
+    expect(section.getByRole('option', { name: 'Active Studio' })).toBeTruthy();
+    expect(section.queryByText('Old Studio')).toBeNull();
+
+    fireEvent.click(section.getByRole('button', { name: 'Archived only' }));
+    const archived = section.getByText('Old Studio');
+    expect(archived.closest('button')).toBeNull();
+    expect(section.getByText(/Archived · view only/)).toBeTruthy();
+    expect(section.getByText(/restore an archived organization/i)).toBeTruthy();
+    expect(mocks.chooseOrganization).not.toHaveBeenCalled();
+
+    fireEvent.click(section.getByRole('button', { name: 'Active + archived' }));
+    expect(section.getByRole('option', { name: 'Active Studio' })).toBeTruthy();
+    expect(section.getByText('Old Studio')).toBeTruthy();
   });
 });
 

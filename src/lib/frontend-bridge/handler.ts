@@ -362,7 +362,7 @@ async function actionCaptureHandoffPickUp(
 
   let organizations: Awaited<ReturnType<typeof listMemberOrganizations>>;
   try {
-    organizations = await listMemberOrganizations();
+    organizations = await listMemberOrganizations('active');
   } catch (err) {
     return {
       ok: false,

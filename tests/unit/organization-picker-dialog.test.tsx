@@ -13,12 +13,19 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const ORG_A = '22222222-2222-4222-8222-222222222222';
 const ORG_B = '33333333-3333-4333-8333-333333333333';
+const ORG_C = '44444444-4444-4444-8444-444444444444';
 
 const harness = vi.hoisted(() => {
   const store = new Map<string, unknown>();
   const watchers = new Set<(key: string, value: unknown) => void>();
   const listeners = new Set<() => void>();
-  return { store, watchers, listeners, memberships: [] as string[] };
+  return {
+    store,
+    watchers,
+    listeners,
+    memberships: [] as string[],
+    archivedIds: new Set<string>(),
+  };
 });
 
 vi.mock('@/lib/auth/flow', () => ({ getCurrentUser: async () => ({ id: 'u1' }) }));
@@ -34,19 +41,37 @@ vi.mock('@/lib/supabase/schemas', () => ({
   iamDb: () => ({
     from: () => ({
       select: () => ({
-        in: () => ({
-          is: async (column: string, value: unknown) => {
-            if (column !== 'archived_at' || value !== null)
-              throw new Error('Archive filter missing');
-            return {
-              data: harness.memberships.map((id) => ({
+        in: () => {
+          const result = (filter: 'active' | 'archived' | 'all') => ({
+            data: harness.memberships
+              .filter(
+                (id) => filter === 'all' || harness.archivedIds.has(id) === (filter === 'archived'),
+              )
+              .map((id) => ({
                 id,
-                name: id === ORG_A ? 'Acme Recycling' : 'Data Destruction Inc',
+                name:
+                  id === ORG_A
+                    ? 'Acme Recycling'
+                    : id === ORG_B
+                      ? 'Data Destruction Inc'
+                      : 'Old Studio',
+                archived_at: harness.archivedIds.has(id) ? '2026-09-30T00:00:00Z' : null,
               })),
-              error: null,
-            };
-          },
-        }),
+            error: null,
+          });
+          return Object.assign(Promise.resolve(result('all')), {
+            is: async (column: string, value: unknown) => {
+              if (column !== 'archived_at' || value !== null)
+                throw new Error('Archive filter missing');
+              return result('active');
+            },
+            not: async (column: string, operator: string, value: unknown) => {
+              if (column !== 'archived_at' || operator !== 'is' || value !== null)
+                throw new Error('Archive filter missing');
+              return result('archived');
+            },
+          });
+        },
       }),
     }),
   }),
@@ -92,6 +117,7 @@ beforeEach(() => {
   harness.watchers.clear();
   harness.listeners.clear();
   harness.memberships = [ORG_A, ORG_B];
+  harness.archivedIds.clear();
 });
 
 describe('the organization question', () => {
@@ -136,6 +162,21 @@ describe('the organization question', () => {
     harness.memberships = [];
     harness.store.set('matrx.org.picker-pending', true);
     render(<OrganizationPickerDialog />);
-    expect(await screen.findByText(/not a member of any organization yet/i)).toBeTruthy();
+    expect(await screen.findByText(/there is no active organization to choose/i)).toBeTruthy();
+  });
+
+  it('reveals archived memberships in one click, but never offers them as request targets', async () => {
+    harness.memberships.push(ORG_C);
+    harness.archivedIds.add(ORG_C);
+    harness.store.set('matrx.org.picker-pending', true);
+    render(<OrganizationPickerDialog />);
+
+    expect(await screen.findByText('Data Destruction Inc')).toBeTruthy();
+    expect(screen.queryByText('Old Studio')).toBeNull();
+    screen.getByRole('tab', { name: 'Archived only' }).click();
+    expect(await screen.findByText('Old Studio')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Old Studio' })).toBeNull();
+    expect(screen.getByText(/restore an archived organization/i)).toBeTruthy();
+    expect(harness.store.get('matrx.org.active')).toBeUndefined();
   });
 });

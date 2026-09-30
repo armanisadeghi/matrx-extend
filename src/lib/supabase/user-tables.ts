@@ -194,7 +194,7 @@ export async function listPickableTables(
 ): Promise<PickableTable[]> {
   const orgIds = organizationFilter
     ? [requireOrganizationContext(organizationFilter)]
-    : (await listMemberOrganizations()).map((o) => o.id);
+    : (await listMemberOrganizations('active')).map((o) => o.id);
   const allOlder = await listUserTables();
   const picked = new Map<string, PickableTable>();
   const seenOlder = new Set<string>();
