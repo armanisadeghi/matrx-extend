@@ -45,6 +45,7 @@
     "check:matrx-packages": "node scripts/check-matrx-packages.mjs",
     "check:matrx-latest": "node scripts/check-matrx-packages.mjs",
     "sync:matrx-packages": "pnpm update -r \"@ai-matrx/*\" --latest && pnpm check:matrx-packages",
+    "postinstall": "node scripts/check-matrx-packages.mjs --duplicates",
     "check:package-twins": "node scripts/check-package-twins.mjs --strict",
     "check:package-twins:self-test": "node scripts/check-package-twins.mjs --self-test",
     "check:archived-items-law": "tsx scripts/check-archived-items-law.ts",
@@ -142,6 +143,11 @@
     "*.{ts,tsx,js,jsx,json,css}": "biome check --write --no-errors-on-unmatched"
   },
   "pnpm": {
+    "overrides": {
+      "@ai-matrx/records": "latest",
+      "@ai-matrx/associations": "latest",
+      "@ai-matrx/design-system": "latest"
+    },
     "onlyBuiltDependencies": ["@biomejs/biome", "esbuild", "spawn-sync"]
   }
 }
