@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  '@ai-matrx/records': latest
+  '@ai-matrx/associations': latest
+  '@ai-matrx/design-system': latest
+
 importers:
 
   .:
