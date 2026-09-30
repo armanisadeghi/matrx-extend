@@ -3440,3 +3440,10 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 - **Where to test:** The signed-in Notes side-panel tab with a selected organization.
 - **Steps:** Deny or disconnect the notes SELECT, open Notes, and use Retry after restoring access. Repeat with a successful empty SELECT.
 - **Expected:** A failed SELECT never says “No notes yet”; Retry displays existing notes after recovery. Only a successful empty SELECT shows “No notes yet.”
+
+### Notes create failure (EXT-D-0062)
+
+- **What it does:** An unconfirmed New note action leaves the list in place and offers Refresh notes and Retry creating note.
+- **Where to test:** The signed-in Notes side-panel tab with a selected organization.
+- **Steps:** Deny the notes INSERT, click New note, restore access, and use Retry creating note.
+- **Expected:** A failed or uncertain INSERT never claims creation. Refresh reconciles the list before a retry; Retry opens the newly created note only after the insert succeeds.

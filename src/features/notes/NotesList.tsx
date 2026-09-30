@@ -40,6 +40,7 @@ export function NotesList({ notes }: { notes: NoteListItem[] }) {
   const selectedFolder = useNotesUiStore((s) => s.selectedFolder);
   const setSelectedFolder = useNotesUiStore((s) => s.setSelectedFolder);
   const [creating, setCreating] = useState(false);
+  const [createFailed, setCreateFailed] = useState(false);
 
   const deferredSearch = useDeferredValue(searchQuery);
 
@@ -69,14 +70,20 @@ export function NotesList({ notes }: { notes: NoteListItem[] }) {
   const onCreate = async () => {
     if (creating) return;
     setCreating(true);
+    setCreateFailed(false);
     try {
       const label = generateUniqueLabel(notes, 'Untitled');
       const folderForCreate = selectedFolder && selectedFolder !== '' ? selectedFolder : null;
       const note = await createNote({ label, folder_name: folderForCreate });
       if (note) {
-        await queryClient.invalidateQueries({ queryKey: ['notes', 'list'] });
         setSelectedNoteId(note.id);
+        void queryClient.invalidateQueries({ queryKey: ['notes', 'list'] });
+      } else {
+        setCreateFailed(true);
       }
+    } catch (error) {
+      console.warn('[notes] create action failed', error);
+      setCreateFailed(true);
     } finally {
       setCreating(false);
     }
@@ -103,6 +110,20 @@ export function NotesList({ notes }: { notes: NoteListItem[] }) {
           New note
         </Button>
       </div>
+
+      {createFailed && (
+        <div className="flex shrink-0 flex-col gap-2 border-b border-destructive/30 bg-destructive/5 px-3 py-2 text-xs" role="alert">
+          <span>Could not confirm note creation. Refresh your notes before retrying.</span>
+          <div className="flex gap-2">
+            <Button type="button" size="sm" variant="outline" onClick={() => void queryClient.invalidateQueries({ queryKey: ['notes', 'list'] })}>
+              Refresh notes
+            </Button>
+            <Button type="button" size="sm" variant="outline" onClick={() => void onCreate()} disabled={creating}>
+              Retry creating note
+            </Button>
+          </div>
+        </div>
+      )}
 
       <div className="flex shrink-0 flex-col gap-2 border-b border-border/50 px-3 py-2">
         <div className="relative">
