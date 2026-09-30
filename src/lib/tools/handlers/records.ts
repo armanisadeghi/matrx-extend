@@ -143,6 +143,7 @@ const RecordsArgs = z.object({
   on_duplicate: z.string().default('skip'),
   on_entry: nullDefault(unknownObject()),
   open_to_crew: z.boolean().default(true),
+  options: nullDefault(z.array(z.string())),
   options_table_id: nullDefault(z.string()),
   presentation: nullDefault(unknownObject()),
   preview_only: z.boolean().default(false),
