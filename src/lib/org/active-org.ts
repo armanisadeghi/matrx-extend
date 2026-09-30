@@ -55,6 +55,20 @@ export interface MemberOrganization {
   name: string;
 }
 
+let validatedSelection: { userId: string; organizationId: string } | null = null;
+let resolutionInFlight: { userId: string; promise: Promise<MemberOrganization | null> } | null = null;
+let observingSelection = false;
+let selectionGeneration = 0;
+
+function observeSelectionChanges(): void {
+  if (observingSelection) return;
+  onChange<StoredActiveOrganization | null>(STORAGE_KEYS.ACTIVE_ORGANIZATION, () => {
+    selectionGeneration += 1;
+    validatedSelection = null;
+  });
+  observingSelection = true;
+}
+
 interface StoredActiveOrganization {
   id: string;
   name: string;
@@ -169,18 +183,21 @@ async function readStoredSelection(): Promise<StoredActiveOrganization | null> {
  * removed from an organization, and sending a stale one produces a server
  * rejection the user cannot interpret.
  */
-export async function resolveActiveOrganization(): Promise<MemberOrganization | null> {
-  const user = await getCurrentUser();
-  if (!user?.id) return null;
-
+async function validateActiveOrganization(userId: string): Promise<MemberOrganization | null> {
+  validatedSelection = null;
+  const generation = selectionGeneration;
   const organizations = await listMemberOrganizations();
-  if (organizations.length === 0) return null;
   const byId = new Map(organizations.map((o) => [o.id, o]));
 
   const stored = await readStoredSelection();
+  const currentUser = await getCurrentUser();
+  if (selectionGeneration !== generation || currentUser?.id !== userId) return null;
   if (stored) {
     const match = byId.get(stored.id);
-    if (match) return match;
+    if (match) {
+      validatedSelection = { userId, organizationId: match.id };
+      return match;
+    }
     // Selection survived losing the membership — drop it rather than send an
     // organization the server will refuse.
     log.warn('auth', 'active organization is no longer a membership — clearing selection', {
@@ -189,10 +206,31 @@ export async function resolveActiveOrganization(): Promise<MemberOrganization | 
     await setOne(STORAGE_KEYS.ACTIVE_ORGANIZATION, null);
   }
 
+  validatedSelection = null;
   return null;
 }
 
+function resolveForUser(userId: string): Promise<MemberOrganization | null> {
+  if (resolutionInFlight?.userId === userId) return resolutionInFlight.promise;
+  const promise = validateActiveOrganization(userId).finally(() => {
+    if (resolutionInFlight?.promise === promise) resolutionInFlight = null;
+  });
+  resolutionInFlight = { userId, promise };
+  return promise;
+}
+
+export async function resolveActiveOrganization(): Promise<MemberOrganization | null> {
+  observeSelectionChanges();
+  const user = await getCurrentUser();
+  if (!user?.id) {
+    validatedSelection = null;
+    return null;
+  }
+  return resolveForUser(user.id);
+}
+
 async function persistSelection(org: MemberOrganization): Promise<void> {
+  validatedSelection = null;
   await setOne<StoredActiveOrganization>(STORAGE_KEYS.ACTIVE_ORGANIZATION, {
     id: org.id,
     name: org.name,
@@ -200,14 +238,25 @@ async function persistSelection(org: MemberOrganization): Promise<void> {
 }
 
 /**
- * The active organization id, or null when the user must choose. Cheap: the
- * stored selection short-circuits, so the membership round-trip happens only
- * when there is nothing chosen yet or the choice needs re-verification.
+ * The active organization id, or null when the user must choose. Validate a
+ * stored choice once per signed-in identity in this execution context;
+ * concurrent first requests share the validation. Warm requests avoid DB
+ * reads. A remote archive during this context is still enforced by the server.
  */
 export async function getActiveOrganizationId(): Promise<string | null> {
+  observeSelectionChanges();
+  const user = await getCurrentUser();
+  if (!user?.id) {
+    validatedSelection = null;
+    return null;
+  }
   const stored = await readStoredSelection();
-  if (stored) return stored.id;
-  const resolved = await resolveActiveOrganization();
+  if (
+    stored &&
+    validatedSelection?.userId === user.id &&
+    validatedSelection.organizationId === stored.id
+  ) return stored.id;
+  const resolved = await resolveForUser(user.id);
   return resolved?.id ?? null;
 }
 
@@ -419,5 +468,6 @@ export function onActiveOrganizationChange(
 
 /** Forget this install's selection (sign-out). */
 export async function clearActiveOrganization(): Promise<void> {
+  validatedSelection = null;
   await setOne(STORAGE_KEYS.ACTIVE_ORGANIZATION, null);
 }

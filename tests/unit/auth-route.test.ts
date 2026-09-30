@@ -205,6 +205,52 @@ describe('the organization this install acts in', () => {
     expect(mocks.store.get(ACTIVE)).toBeNull();
   });
 
+  it('refuses a stored archived choice on the request path, even with no open organizations', async () => {
+    membershipsFor(ORG_GONE);
+    mocks.orgSelect.mockResolvedValueOnce({ data: [], error: null });
+    mocks.store.set(ACTIVE, { id: ORG_GONE, name: 'Archived organization' });
+    const { getActiveOrganizationId } = await import('@/lib/org/active-org');
+
+    await expect(getActiveOrganizationId()).resolves.toBeNull();
+    expect(mocks.store.get(ACTIVE)).toBeNull();
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+  });
+
+  it('shares the first validation and reuses it for warm requests of the same identity', async () => {
+    membershipsFor(ORG_A);
+    mocks.store.set(ACTIVE, { id: ORG_A, name: 'Active A' });
+    const { getActiveOrganizationId } = await import('@/lib/org/active-org');
+
+    await expect(Promise.all([getActiveOrganizationId(), getActiveOrganizationId()])).resolves.toEqual([
+      ORG_A,
+      ORG_A,
+    ]);
+    await expect(getActiveOrganizationId()).resolves.toBe(ORG_A);
+    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+    expect(mocks.orgSelect).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not certify or clear a choice changed while validation was in flight', async () => {
+    membershipsFor(ORG_A, ORG_B);
+    let finishRead: ((value: unknown) => void) | undefined;
+    mocks.orgSelect.mockImplementationOnce(
+      () => new Promise((resolve) => { finishRead = resolve; }),
+    );
+    mocks.store.set(ACTIVE, { id: ORG_A, name: 'Active A' });
+    const { getActiveOrganizationId } = await import('@/lib/org/active-org');
+
+    const first = getActiveOrganizationId();
+    for (let attempt = 0; !finishRead && attempt < 10; attempt += 1)
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(finishRead).toBeDefined();
+    await mocks.setOne(ACTIVE, { id: ORG_B, name: 'Active B' });
+    finishRead?.({ data: [{ id: ORG_A, name: 'Active A' }], error: null });
+
+    await expect(first).resolves.toBeNull();
+    expect(mocks.store.get(ACTIVE)).toEqual({ id: ORG_B, name: 'Active B' });
+    await expect(getActiveOrganizationId()).resolves.toBe(ORG_B);
+  });
+
   it('gives up with a remedy when nobody answers, and never guesses on the way out', async () => {
     membershipsFor(ORG_A, ORG_B);
     const { holdForActiveOrganizationId, isOrganizationNotSelectedError } = await import(
