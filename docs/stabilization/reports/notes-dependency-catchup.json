@@ -4,7 +4,7 @@
   "status": "installed package consumer actions verified",
   "target_versions": {
     "@ai-matrx/agents": { "from": "0.18.5", "to": "0.19.1" },
-    "@ai-matrx/design-system": { "from": "0.49.42", "to": "0.49.43" },
+    "@ai-matrx/design-system": { "from": "0.49.42", "to": "0.49.44" },
     "@ai-matrx/records": { "from": "0.58.112", "to": "0.58.113" }
   },
   "package_reviews": [
@@ -17,9 +17,9 @@
     },
     {
       "name": "@ai-matrx/design-system",
-      "verified_source": "installed @ai-matrx/design-system@0.49.43 CHANGELOG.md",
-      "verified_source_version": "0.49.43",
-      "verified_consumer_action": "0.49.43 is a changed-only metadata republish with no source change or consumer action. The 0.49.42 chart-axis and folded-toolbar changes also state consumer action: none.",
+      "verified_source": "installed @ai-matrx/design-system@0.49.44 CHANGELOG.md",
+      "verified_source_version": "0.49.44",
+      "verified_consumer_action": "0.49.44 and 0.49.43 are changed-only metadata republishes with no source change or consumer action. The 0.49.42 chart-axis and folded-toolbar changes also state consumer action: none.",
       "extension_assessment": "The extension uses design-system Button and Skeleton in Notes, but no MatrxDataTable or usePinnedFold call site exists. No Notes integration change is indicated."
     },
     {
@@ -37,7 +37,8 @@
   },
   "evidence": [
     "Frozen-lockfile ignore-scripts install ran under the sole guarded permit and completed valid with exit 0 in notes-integration-install-20260930a.jsonl.",
-    "Installed package.json and CHANGELOG.md confirm agents 0.19.1, design-system 0.49.43, and records 0.58.113 with the target-version actions above.",
+    "A guarded recursive latest refresh completed valid with exit 0 in notes-integration-package-refresh-20260930a.jsonl after design-system 0.49.44 was published during release validation.",
+    "Installed package.json and CHANGELOG.md confirm agents 0.19.1, design-system 0.49.44, and records 0.58.113 with the target-version actions above.",
     "Source searches found no Source review API call sites, no MatrxDataTable/usePinnedFold call sites, and Notes queries directly use workbenchDb()."
   ],
   "verification_limits": "Installed target changelogs and source call-site census establish consumer-action applicability. This review alone does not prove runtime behavior; release checks and the exact candidate artifact are recorded separately. The previous native Notes proof applies to its recorded frozen 0.2.138 tree only."
