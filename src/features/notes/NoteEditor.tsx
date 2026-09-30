@@ -73,6 +73,7 @@ export function NoteEditor({ noteId }: { noteId: string }) {
   const savedRef = useRef<DraftState | null>(null);
   const failedRef = useRef(false);
   const mountedRef = useRef(true);
+  const deletedRef = useRef(false);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -88,6 +89,7 @@ export function NoteEditor({ noteId }: { noteId: string }) {
   // seed effect would otherwise populate draft and then this reset would
   // immediately clobber it — leaving the editor stuck on the skeleton.
   useEffect(() => {
+    deletedRef.current = false;
     draftRef.current = null;
     savedRef.current = null;
     queuedRef.current = null;
@@ -127,11 +129,12 @@ export function NoteEditor({ noteId }: { noteId: string }) {
 
   const persist = useCallback(
     async (snapshot: DraftState) => {
+      if (deletedRef.current) return;
       queuedRef.current = snapshot;
       failedRef.current = false;
       if (inflightRef.current) return inflightRef.current;
       const drain = async () => {
-        while (queuedRef.current) {
+        while (queuedRef.current && !deletedRef.current) {
           const writing = queuedRef.current;
           queuedRef.current = null;
           if (sameDraft(writing, savedRef.current)) {
@@ -152,6 +155,7 @@ export function NoteEditor({ noteId }: { noteId: string }) {
           } catch (error) {
             console.warn('[notes] autosave failed', error);
           }
+          if (deletedRef.current) return;
           const latest = queuedRef.current ?? draftRef.current ?? writing;
           if (!updated) {
             unsavedDrafts.set(noteId, latest);
@@ -217,6 +221,7 @@ export function NoteEditor({ noteId }: { noteId: string }) {
   // Flush pending edits on unmount so a quick switch-and-back doesn't lose typing.
   useEffect(
     () => () => {
+      if (deletedRef.current) return;
       if (saveTimerRef.current) {
         clearTimeout(saveTimerRef.current);
         saveTimerRef.current = null;
@@ -255,6 +260,13 @@ export function NoteEditor({ noteId }: { noteId: string }) {
         setDeleteFailed(true);
         return;
       }
+      deletedRef.current = true;
+      if (saveTimerRef.current) {
+        clearTimeout(saveTimerRef.current);
+        saveTimerRef.current = null;
+      }
+      queuedRef.current = null;
+      unsavedDrafts.delete(noteId);
       queryClient.setQueryData<NoteListItem[]>(['notes', 'list'], (current) =>
         current?.filter((item) => item.id !== noteId),
       );

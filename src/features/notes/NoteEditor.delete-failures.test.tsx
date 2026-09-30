@@ -1,7 +1,7 @@
 import type { Note } from '@/lib/notes/types';
 import { useNotesUiStore } from '@/state/notes';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const api = vi.hoisted(() => ({ get: vi.fn(), update: vi.fn(), delete: vi.fn() }));
@@ -36,12 +36,12 @@ const note: Note = {
 
 function mount() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  render(
+  const view = render(
     <QueryClientProvider client={client}>
       <NoteEditor noteId={noteId} />
     </QueryClientProvider>,
   );
-  return client;
+  return { client, ...view };
 }
 
 async function confirmDelete() {
@@ -55,7 +55,10 @@ beforeEach(() => {
   api.delete.mockReset();
   useNotesUiStore.setState({ selectedNoteId: noteId, viewMode: 'edit' });
 });
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
 
 describe('Notes deletion failure', () => {
   it('keeps the editor open on an unconfirmed delete and retries after another confirmation', async () => {
@@ -79,5 +82,49 @@ describe('Notes deletion failure', () => {
     await confirmDelete();
     expect(await screen.findByText(/Could not confirm deletion/i)).toBeTruthy();
     expect(useNotesUiStore.getState().selectedNoteId).toBe(noteId);
+  });
+
+  it('does not flush a pending draft after confirmed deletion unmounts the editor', async () => {
+    api.delete.mockResolvedValue(true);
+    const view = mount();
+    const body = await screen.findByDisplayValue('Call new patient.');
+    vi.useFakeTimers();
+    fireEvent.change(body, { target: { value: 'Call new patient and confirm insurance.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Delete note' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete', exact: true }));
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(useNotesUiStore.getState().selectedNoteId).toBeNull();
+    view.unmount();
+    await act(async () => {
+      vi.advanceTimersByTime(700);
+      await Promise.resolve();
+    });
+    expect(api.update).not.toHaveBeenCalled();
+  });
+
+  it('keeps a pending draft and its autosave after deletion is unconfirmed', async () => {
+    api.delete.mockResolvedValue(false);
+    mount();
+    const body = await screen.findByDisplayValue('Call new patient.');
+    vi.useFakeTimers();
+    fireEvent.change(body, { target: { value: 'Call new patient and confirm insurance.' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Delete note' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Delete', exact: true }));
+    await act(async () => {
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+    expect(screen.getByDisplayValue('Call new patient and confirm insurance.')).toBeTruthy();
+    await act(async () => {
+      vi.advanceTimersByTime(700);
+      await Promise.resolve();
+    });
+    expect(api.update).toHaveBeenCalledWith(
+      noteId,
+      expect.objectContaining({ content: 'Call new patient and confirm insurance.' }),
+    );
   });
 });
