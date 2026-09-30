@@ -26,6 +26,8 @@ Resource handoff: after merged-lock install passed, D68 peer `24d70fe0` found a 
 
 D68 lifecycle follow-up `56475273` cancels pending/queued saves and clears retained draft only after confirmed deletion. Fresh source peer `/root/notes_lifecycle_final_peer` returned `a21a8d8d`: scoped source accepted; guarded execution, native D67/D68, and the already-in-flight save/delete race remain unverified. Mac pressure recovered to 1; the native escalation still owns the next admitted run. Review-queue operator access independently failed with Invalid API key using existing canonical frontend and aidream secret configurations; no credentials were changed or exposed, and no queue promotion is claimed.
 
+Native escalation `b579df6b` confirmed the retry control works but the real Notes INSERT returns 403 while reads return 200; no policy/org root cause is claimed. `EXT-F-2006` admin cell now fails with D69, and D63 remains unrun. `/root/notes_create_authorization` (Sol medium,20 active minutes) owns D69 root-cause/access diagnosis, no heavy launches until granted. `/root/notes_failure_repair` again owns the sole heavy permit for D67/D68 final checks. Frozen artifact119bb63 remains intact.
+
 The checkpoints below are historical. In particular, earlier disk refusals, build identities, and unapplied-patch claims must not override current evidence. Broad Chat/Pilot work remains deferred after the urgent guest Chat repair. No overall health claim is made.
 
 Current priority (2026-09-27): finish Showcase detect → extract → save → reopen → repeat, per latest owner request. SHOWCASE-PLAN.md and inventory EXT-F-1012 own scope. Broad stabilization remains incomplete; the goal is active.

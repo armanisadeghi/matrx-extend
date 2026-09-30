@@ -22255,12 +22255,13 @@
             "reload"
           ],
           "retest_evidence": {
-            "run": "notes-native-20260930c",
+            "run": "notes-native-escalation-20260930b",
             "mode": "admin",
             "read_failure_and_retry": "pass",
             "create_failure_feedback_and_refresh": "pass",
-            "real_create_retry_to_editor": "unverified",
-            "complete_case": "unverified"
+            "real_create_retry_to_editor": "fail: backend403",
+            "complete_case": "fail",
+            "related_defect": "EXT-D-0069"
           }
         }
       ],
@@ -22275,21 +22276,24 @@
           "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0061",
-            "EXT-D-0062"
+            "EXT-D-0062",
+            "EXT-D-0069"
           ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "admin": {
-          "test_status": "unverified",
+          "test_status": "fail",
           "defect_ids": [
             "EXT-D-0061",
-            "EXT-D-0062"
+            "EXT-D-0062",
+            "EXT-D-0069"
           ],
           "run_ids": [
-            "notes-native-20260930c"
+            "notes-native-20260930c",
+            "notes-native-escalation-20260930b"
           ],
-          "retest_status": "Partial native: D61 failed-read/retry passed; D62 error/refresh passed, real-create recovery unresolved. Other feature cases unverified."
+          "retest_status": "D61 error/retry passed; D62 feedback/refresh passed. Real Notes create POST returned403 (D69), noeditor; other featurecases unverified."
         }
       },
       "inventory_status": "source-complete",
