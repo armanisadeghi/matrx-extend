@@ -149,7 +149,7 @@ jobs:
       # and the scheduled remediation task are what submit.
       - name: Mandate references (non-blocking; scan only in CI)
         continue-on-error: true
-        run: uvx --from matrx-mandate-scan==0.2.2 matrx-mandate-scan check
+        run: uvx --from matrx-mandate-scan@latest matrx-mandate-scan check
 
       - name: Lint
         run: pnpm lint
