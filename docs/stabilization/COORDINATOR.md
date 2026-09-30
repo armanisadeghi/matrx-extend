@@ -20,6 +20,12 @@ Next owned Notes repair: `/root/notes_failure_repair` resumes in Sol medium for 
 
 Native run `notes-native-run-20260930c` was resource-valid: D61 actual failed-read UI/retry recovered; D62 forced-create failure and Refresh passed but the real create retry did not reach the editor; D63 did not run. This is partial evidence, not a pass. Sol exhausted two harness corrections, so bounded `/root/notes_native_escalation` (Astra medium, 15 active minutes, max two native attempts) owns exact retry-boundary diagnosis after runner ownership transfers. It has no heavy permit yet. `/root/notes_failure_repair` owns the sole heavy slot now for merged-lock install, D67/D68 regression checks and final compile; never rebuild the frozen native artifact during this work.
 
+Independent second-batch review: `/root/notes_detail_delete_peer` (Luna medium, fresh seat) owns the two-verdict review of D67/D68 commits `fea4f443` and `b8759320`, with no heavy permit. Guarded merged-lock install `notes-d67-d68-install-20260930a` passed; original-behavior and final Notes checks remain in progress.
+
+Resource handoff: after merged-lock install passed, D68 peer `24d70fe0` found a confirmed post-delete autosave lifecycle gap. Sol is authoring that bounded correction without a heavy permit. Root granted the sole heavy slot to `/root/notes_native_escalation` for its ready frozen-artifact retry diagnosis; return it to the source worker after the native run ends.
+
+D68 lifecycle follow-up `56475273` cancels pending/queued saves and clears retained draft only after confirmed deletion. Fresh source peer `/root/notes_lifecycle_final_peer` returned `a21a8d8d`: scoped source accepted; guarded execution, native D67/D68, and the already-in-flight save/delete race remain unverified. Mac pressure recovered to 1; the native escalation still owns the next admitted run. Review-queue operator access independently failed with Invalid API key using existing canonical frontend and aidream secret configurations; no credentials were changed or exposed, and no queue promotion is claimed.
+
 The checkpoints below are historical. In particular, earlier disk refusals, build identities, and unapplied-patch claims must not override current evidence. Broad Chat/Pilot work remains deferred after the urgent guest Chat repair. No overall health claim is made.
 
 Current priority (2026-09-27): finish Showcase detect → extract → save → reopen → repeat, per latest owner request. SHOWCASE-PLAN.md and inventory EXT-F-1012 own scope. Broad stabilization remains incomplete; the goal is active.
