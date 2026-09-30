@@ -1,0 +1,49 @@
+{
+  "id": "EXT-D-0071",
+  "feature_id": "EXT-F-4130",
+  "title": "Records tool organization filter drifted from the canonical catalog default",
+  "surface": "records tool argument catalog and browser executor",
+  "auth_mode": "signed-in; source and catalog verified, native behavior not exercised",
+  "reproduction": [
+    "Run pnpm catalog:tools:drift:strict against the live tool.definition catalog.",
+    "Inspect records.organization_id and compare the local Zod schema with the live parameter."
+  ],
+  "expected": "Omitted or null organization_id reads across every reachable organization; an explicit id narrows the tool. The catalog and runtime expose the same optional null default.",
+  "actual": "The browser handler used z.string().nullish(), which accepted omitted/null at runtime but serialized as null|string without a default. The live tool.definition parameter uses the established scalar-string/default-null catalog convention, so the release drift gate failed.",
+  "severity": "S3: catalog-contract drift blocks release; a user-visible failure was not demonstrated",
+  "priority": "P1: strict tool catalog parity is a required release gate",
+  "state": "in-verification",
+  "root_cause": "The recent cross-organization records handler added a new parameter without using its existing nullDefault helper. The certified tool.definition row was already consistent with the surrounding records parameters; no database change was needed.",
+  "evidence": [
+    "src/lib/tools/handlers/records.ts",
+    "src/lib/tools/handlers/records-orgs.test.ts",
+    "src/lib/tools/catalog.ts",
+    "src/lib/tools/generated/records-guide.json",
+    "types/tool-catalog.json",
+    "docs/TOOLS.generated.md",
+    "docs/stabilization/resource-journals/records-catalog-md-20260930b.jsonl",
+    "docs/stabilization/resource-journals/records-docs-tools-20260930a.jsonl",
+    "docs/stabilization/resource-journals/records-drift-focused-20260930b.jsonl"
+  ],
+  "verification_status": "Live audit.summary says tool.definition certified=true with zero fails. Strict tool-DB drift passed 82/82, focused records tests passed 10/10, and the required records guide, tool catalog and DB-sourced docs regenerated. Full release checks, independent source review, and native behavior remain pending.",
+  "transition_history": [
+    {
+      "at": "2026-09-30T11:07:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "The release preflight found records.organization_id type and default drift."
+    },
+    {
+      "at": "2026-09-30T11:09:00Z",
+      "from": "open",
+      "to": "in-fix",
+      "reason": "Live DB and catalog serializer review showed the local handler omitted the existing nullDefault convention."
+    },
+    {
+      "at": "2026-09-30T11:12:00Z",
+      "from": "in-fix",
+      "to": "in-verification",
+      "reason": "The local correction passed strict tool-DB drift and focused records tests; release and native verification remain open."
+    }
+  ]
+}

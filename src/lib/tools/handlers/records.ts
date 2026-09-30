@@ -106,7 +106,7 @@ const RecordsArgs = z.object({
    * active organization never narrows what the agent sees — active-org law 2026-09-30); it is
    * only where NEW things (table_propose) are saved.
    */
-  organization_id: z.string().nullish(),
+  organization_id: nullDefault(z.string()),
   availability: nullDefault(unknownObject()),
   blocks: unknownArray().optional(),
   body: z.string().optional(),

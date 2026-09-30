@@ -72,6 +72,13 @@ describe('records tool: sees every organization, active org never narrows', () =
     expect(h.opened).toEqual([ORG_A]);
   });
 
+  it('the catalog null default and an explicit null both keep all organizations visible', async () => {
+    expect(handler.argsSchema.parse({ action: 'table_list' }).organization_id).toBeNull();
+    const out = await run({ action: 'table_list', organization_id: null });
+    expect((out.tables as unknown[]).length).toBe(2);
+    expect(h.opened).toEqual([null]);
+  });
+
   it("record_read opens a record in the record's own organization", async () => {
     const out = await run({ action: 'record_read', record_id: 'rec-b' });
     expect(out).toMatchObject({ ok: true, organization_id: ORG_B });

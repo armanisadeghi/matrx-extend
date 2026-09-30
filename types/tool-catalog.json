@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-30T03:14:28.630Z",
+  "generated_at": "2026-09-30T11:14:30.941Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_chrome_categories",
@@ -6196,6 +6196,10 @@
               "entity_write",
               "guide"
             ]
+          },
+          "organization_id": {
+            "type": "string",
+            "default": null
           },
           "availability": {
             "type": "object",
