@@ -107,7 +107,11 @@ jobs:
             exit 1
           }
           test -f ../aidream/scripts/sync-types.mjs
-          test -f ../aidream/packages/matrx-ai/matrx_ai/guide_for.py
+          # `catalog:records-guide` imports guide_for from matrx-records, not
+          # the retired matrx-ai location. Keep the release source proof at
+          # the exact canonical import seam used by that generator.
+          test -f ../aidream/packages/matrx-records/matrx_records/agent/args.py
+          test -f ../aidream/packages/matrx-records/matrx_records/agent/definition.py
 
       - uses: pnpm/action-setup@v4
 
