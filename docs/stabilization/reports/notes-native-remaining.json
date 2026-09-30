@@ -10,9 +10,15 @@
     "The runner holds an owned autosave before the successful delete and checks that releasing it causes no later autosave dispatch."
   ],
   "evidence": {
-    "source": ["node --check tests/browser/notes-native-acceptance.mjs: pass", "git diff --check -- tests/browser/notes-native-acceptance.mjs: pass"],
+    "source": [
+      "node --check tests/browser/notes-native-acceptance.mjs: pass",
+      "git diff --check -- tests/browser/notes-native-acceptance.mjs: pass"
+    ],
     "native": "unverified; heavy launch is owned by the coordinating lane"
   },
-  "files": ["tests/browser/notes-native-acceptance.mjs", "docs/stabilization/reports/notes-native-remaining.json"],
+  "files": [
+    "tests/browser/notes-native-acceptance.mjs",
+    "docs/stabilization/reports/notes-native-remaining.json"
+  ],
   "questions": []
 }
