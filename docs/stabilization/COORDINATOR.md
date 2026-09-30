@@ -8,6 +8,8 @@ First active repair batch: Notes list and create failure reporting (`EXT-D-0061`
 
 Independent source/evidence reconciliation: `/root/contained_state_reconcile` (Luna medium) owns a report for existing autosave, Files error-state, and saved-capture selection repairs (`EXT-D-0063`, `EXT-D-0064`, `EXT-D-0065`). Their defect records lag current code, so do not reimplement them or close them without native retest. No heavy tests or browser launches in this lane. Next: independent review of Notes changes, then one current-build native acceptance session covering applicable signed-in modes and guest applicability. Inventory remains the coverage source; source tests alone do not certify the UI.
 
+Native acceptance preparation: `/root/notes_native_acceptance` (Sol medium) owns a receipt-bound Notes browser runner and its exact resource allowlist entry, but has no browser/build/test permit while the repair lane runs. It will cover real-admin read/create failure and recovery, then overlapping save/reopen where feasible. Credentials are read privately only at normal sign-in.
+
 The checkpoints below are historical. In particular, earlier disk refusals, build identities, and unapplied-patch claims must not override current evidence. Broad Chat/Pilot work remains deferred after the urgent guest Chat repair. No overall health claim is made.
 
 Current priority (2026-09-27): finish Showcase detect → extract → save → reopen → repeat, per latest owner request. SHOWCASE-PLAN.md and inventory EXT-F-1012 own scope. Broad stabilization remains incomplete; the goal is active.
