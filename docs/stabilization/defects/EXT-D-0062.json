@@ -1,7 +1,9 @@
 {
   "id": "EXT-D-0062",
   "feature_id": "EXT-F-2006",
-  "case_ids": ["EXT-F-2006-T03"],
+  "case_ids": [
+    "EXT-F-2006-T03"
+  ],
   "title": "Failed note creation produces no user-visible result",
   "surface": "Notes side-panel",
   "auth_mode": "member/admin; source-derived, native unverified",
@@ -14,14 +16,18 @@
   "actual": "createNote converts a database error into null; NotesList only changes selection when the result is truthy and renders no error or notice for null.",
   "severity": "S3: create failure is silent in the Notes surface",
   "priority": "P2: user repeats the action or assumes a note was created",
-  "state": "in-fix",
+  "state": "fixed",
   "evidence": [
     "docs/stabilization/reports/notes-files-batch-audit.json",
     "src/lib/notes/queries.ts:85-110",
-    "src/features/notes/NotesList.tsx:69-83"
+    "src/features/notes/NotesList.tsx:69-83",
+    "docs/stabilization/resource-journals/notes-final-owner-tests-20260930b.jsonl",
+    "docs/stabilization/resource-journals/notes-native-compile-20260930a.jsonl",
+    "docs/stabilization/resource-journals/notes-native-devbuild-20260930a.jsonl",
+    "docs/stabilization/reports/notes-final-peer.json"
   ],
-  "verification_status": "Original silent-create path failed a focused consumer guard, and the first correction passed 15/15 tests and compile. Final uncertainty wording, refresh action, and editor-selection ordering await a guarded rerun after resource pressure refused admission; native acceptance pending.",
-  "current_source_truth": "A null or thrown create result now shows an uncertain-result notice with Refresh notes and Retry creating note. A confirmed returned note selects its editor before refreshing the list. This final correction has not yet passed a post-change guarded test or compile.",
+  "verification_status": "Final corrected source passed 11 focused tests across four Notes files, TypeScript compile, and a current development build. Independent source review accepted the uncertain-result wording and recovery controls. Native acceptance remains pending.",
+  "current_source_truth": "Null or thrown create results show an uncertain-result notice with Refresh notes and Retry creating note. Confirmed creation selects the editor before list refresh. Final source checks passed; member/admin native coverage is not yet complete.",
   "transition_history": [
     {
       "at": "2026-09-28T19:51:52.878308+00:00",
@@ -40,6 +46,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Visible create failure and retry source implemented; peer found and corrected misleading certainty and post-insert editor ordering. Final guarded checks refused by unsafe memory pressure before launch and remain outstanding."
+    },
+    {
+      "at": "2026-09-30T08:44:51.386937+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Final corrected source passed focused tests, compile and development build. Native retest remains open."
     }
   ]
 }
