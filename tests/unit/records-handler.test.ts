@@ -10,17 +10,19 @@ import { lookup } from '@/lib/tools/registry';
 import type { ToolContext } from '@/lib/tools/types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { store, openRecordStore, openRecordStores, openSpanningClient } = vi.hoisted(() => ({
+const { store, openRecordStore, recordsClientFor, openSpanningClient } = vi.hoisted(() => ({
   store: {
     tableList: vi.fn(),
     recordWrite: vi.fn(),
+    organizationsOpen: vi.fn(),
+    ownerOrganization: vi.fn(),
   },
   openRecordStore: vi.fn(),
-  openRecordStores: vi.fn(),
+  recordsClientFor: vi.fn(),
   openSpanningClient: vi.fn(),
 }));
 
-vi.mock('@/lib/records/store', () => ({ openRecordStore, openRecordStores, openSpanningClient }));
+vi.mock('@/lib/records/store', () => ({ openRecordStore, recordsClientFor, openSpanningClient }));
 
 function context(): ToolContext {
   return {
@@ -42,10 +44,12 @@ function registeredRecords() {
 beforeEach(() => {
   vi.clearAllMocks();
   openRecordStore.mockResolvedValue({ open: true, client: store });
-  openRecordStores.mockResolvedValue({
-    stores: [{ client: store, organizationId: 'org-harbor-dental' }],
-    closed: [],
+  recordsClientFor.mockResolvedValue(store);
+  store.organizationsOpen.mockResolvedValue({
+    ok: true,
+    data: { open: ['org-harbor-dental'], unavailable: [] },
   });
+  store.ownerOrganization.mockResolvedValue({ ok: true, data: 'org-harbor-dental' });
   openSpanningClient.mockResolvedValue({ client: store, organizationIds: ['org-harbor-dental'] });
   store.tableList.mockResolvedValue({
     ok: true,

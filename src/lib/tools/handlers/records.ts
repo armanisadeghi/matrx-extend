@@ -26,10 +26,10 @@
  */
 
 import {
-  type OpenStore,
+  type SpanningClient,
   openRecordStore,
-  openRecordStores,
   openSpanningClient,
+  recordsClientFor,
 } from '@/lib/records/store';
 import canonicalGuide from '@/lib/tools/generated/records-guide.json';
 import type { ToolHandler, ToolTier } from '@/lib/tools/types';
@@ -235,37 +235,44 @@ function refused(where: string, error: { code: string; message: string; hint?: s
   };
 }
 
+/** One organization that could not answer, and why (the package's own shape). */
+type Unavailable = { organization_id: string; reason: string };
+
 /**
- * The store that OWNS the thing an action names. A table or record opens in its own organization,
- * never the active one (active-org law): a `table_id` is looked up across the stores, a
- * `record_id` is probed with a read. With one store reachable there is nothing to look up.
+ * The client for the organization that OWNS the thing an action names. A table or record opens
+ * in its own organization, never the active one (active-org law): the package looks the owner up
+ * across the person's organizations (`ownerOrganization`). One whose store is off is refused with
+ * its reason rather than reported as "not found".
  */
-async function ownerStore(
-  stores: OpenStore[],
+async function ownerClient(
+  spanning: SpanningClient,
   args: RecordsToolArgs,
-): Promise<{ ok: true; store: OpenStore } | { ok: false; reason: string }> {
-  if (stores.length === 1) return { ok: true, store: stores[0] as OpenStore };
-  if (args.table_id) {
-    for (const store of stores) {
-      const listed = await store.client.tableList();
-      if (listed.ok && listed.data.some((t) => t.id === args.table_id)) return { ok: true, store };
-    }
+  orgArg: string | null,
+  unavailable: Unavailable[],
+): Promise<
+  { ok: true; client: Awaited<ReturnType<typeof recordsClientFor>> } | { ok: false; reason: string }
+> {
+  if (!args.table_id && !args.record_id) {
+    const active = await openRecordStore('agent');
+    return active.open ? { ok: true, client: active.client } : { ok: false, reason: active.reason };
+  }
+  const owner = await spanning.ownerOrganization({
+    table_id: args.table_id ?? null,
+    record_id: args.table_id ? null : (args.record_id ?? null),
+    ...(orgArg ? { organization_id: orgArg } : {}),
+  });
+  if (!owner.ok) return { ok: false, reason: owner.error.message };
+  if (!owner.data) {
     return {
       ok: false,
-      reason: `Table ${args.table_id} was not found in any organization you can reach. Check the id, or pass organization_id.`,
+      reason: args.table_id
+        ? `Table ${args.table_id} was not found in any organization you can reach. Check the id, or pass organization_id.`
+        : `Record ${args.record_id} was not found in any organization you can reach. Check the id, or pass organization_id.`,
     };
   }
-  if (args.record_id) {
-    for (const store of stores) {
-      const read = await store.client.recordRead({ record_id: args.record_id });
-      if (read.ok) return { ok: true, store };
-    }
-    return {
-      ok: false,
-      reason: `Record ${args.record_id} was not found in any organization you can reach. Check the id, or pass organization_id.`,
-    };
-  }
-  return { ok: true, store: stores[0] as OpenStore };
+  const closed = unavailable.find((u) => u.organization_id === owner.data);
+  if (closed) return { ok: false, reason: closed.reason };
+  return { ok: true, client: await recordsClientFor(owner.data, 'agent') };
 }
 
 const records: ToolHandler<RecordsToolArgs, unknown> = {
@@ -307,13 +314,28 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
 
     // Creating a NEW table is new work: it goes to the explicit organization, else the active one.
     if (args.action === 'table_propose') {
-      const opened = orgArg
-        ? await openRecordStores('agent', orgArg).then((r) =>
-            r.stores[0]
-              ? ({ open: true, ...r.stores[0] } as const)
-              : ({ open: false, reason: r.closed[0]?.reason ?? 'Store unavailable.' } as const),
-          )
-        : await openRecordStore('agent');
+      let opened:
+        | {
+            open: true;
+            client: Awaited<ReturnType<typeof recordsClientFor>>;
+            organizationId: string;
+          }
+        | { open: false; reason: string };
+      if (orgArg) {
+        const { client: spanning } = await openSpanningClient('agent');
+        const state = await spanning.organizationsOpen({ organization_id: orgArg });
+        opened = !state.ok
+          ? { open: false, reason: state.error.message }
+          : state.data.open.length === 0
+            ? { open: false, reason: state.data.unavailable[0]?.reason ?? 'Store unavailable.' }
+            : {
+                open: true,
+                client: await recordsClientFor(orgArg, 'agent'),
+                organizationId: orgArg,
+              };
+      } else {
+        opened = await openRecordStore('agent');
+      }
       if (!opened.open) return { ok: false, action: args.action, reason: opened.reason };
       const result = await opened.client.tablePropose({
         name: args.name as string,
@@ -325,24 +347,28 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
     }
 
     // Everything else sees every organization's store (or the one named).
-    const { stores, closed } = await openRecordStores('agent', orgArg);
-    if (stores.length === 0) {
+    const { client: spanning } = await openSpanningClient('agent');
+    const availability = await spanning.organizationsOpen(
+      orgArg ? { organization_id: orgArg } : undefined,
+    );
+    if (!availability.ok) return refused(args.action, availability.error);
+    const { open, unavailable } = availability.data;
+    if (open.length === 0) {
       return {
         ok: false,
         action: args.action,
         reason:
-          closed[0]?.reason ??
+          unavailable[0]?.reason ??
           'No organization is available, and records belong to an organization. Choose one in Settings and try again.',
-        ...(closed.length > 1 ? { unavailable: closed } : {}),
+        ...(unavailable.length > 1 ? { unavailable } : {}),
       };
     }
-    const notes = closed.length > 0 ? { organizations_unavailable: closed } : {};
+    const notes = unavailable.length > 0 ? { organizations_unavailable: unavailable } : {};
 
     switch (args.action) {
       case 'table_list': {
         // The package spans every organization itself; the optional filter narrows it.
-        const { client } = await openSpanningClient('agent');
-        const result = await client.tableList(orgArg ? { organization_id: orgArg } : undefined);
+        const result = await spanning.tableList(orgArg ? { organization_id: orgArg } : undefined);
         if (!result.ok) return refused('table_list', result.error);
         const tables = result.data.map((table) => ({
           id: table.id,
@@ -363,31 +389,19 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
             reason: 'records.metadata_search requires `query`.',
           };
         }
-        const matches: unknown[] = [];
-        let firstRefusal: ReturnType<typeof refused> | null = null;
-        let anyOk = false;
-        for (const { client, organizationId } of stores) {
-          const result = await client.metadataSearch({ text: args.query as string });
-          if (!result.ok) {
-            firstRefusal ??= refused('metadata_search', result.error);
-            continue;
-          }
-          anyOk = true;
-          const data = result.data as unknown;
-          if (Array.isArray(data)) {
-            for (const m of data) {
-              matches.push(
-                m && typeof m === 'object'
-                  ? { ...(m as object), organization_id: organizationId }
-                  : m,
-              );
-            }
-          } else if (data !== null && data !== undefined) {
-            matches.push({ organization_id: organizationId, result: data });
-          }
-        }
-        if (!anyOk && firstRefusal) return firstRefusal;
-        return { ok: true, action: 'metadata_search', matches, ...notes };
+        const result = await spanning.metadataSearch({
+          text: args.query as string,
+          ...(orgArg ? { organization_id: orgArg } : {}),
+        });
+        if (!result.ok) return refused('metadata_search', result.error);
+        return {
+          ok: true,
+          action: 'metadata_search',
+          matches: result.data.matches,
+          ...(result.data.unavailable.length > 0
+            ? { organizations_unavailable: result.data.unavailable }
+            : {}),
+        };
       }
       case 'record_read': {
         if (!args.record_id) {
@@ -399,8 +413,7 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
           };
         }
         // The package opens a record in ITS OWN organization.
-        const { client } = await openSpanningClient('agent');
-        const result = await client.recordRead({
+        const result = await spanning.recordRead({
           record_id: args.record_id as string,
           ...(orgArg ? { organization_id: orgArg } : {}),
         });
@@ -414,9 +427,6 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
         };
       }
       case 'record_aggregate': {
-        const owner = await ownerStore(stores, args);
-        if (!owner.ok) return { ok: false, action: args.action, reason: owner.reason };
-        const { client } = owner.store;
         if (!args.table_id) {
           return {
             ok: false,
@@ -424,21 +434,23 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
             reason: 'records.record_aggregate requires `table_id`.',
           };
         }
-        const result = await client.recordAggregate({
+        // The package runs it in the organization that owns the table; each row names it.
+        const result = await spanning.recordAggregate({
           table_id: args.table_id as string,
+          ...(orgArg ? { organization_id: orgArg } : {}),
           ...(args.group_by ? { groupBy: [args.group_by] } : {}),
           ...(args.measure !== 'count'
-            ? { measures: [{ operation: args.measure, key: args.field_key ?? null }] as never }
+            ? { measures: [{ operation: args.measure, key: args.field_key ?? null }] }
             : {}),
           limit: args.limit,
         });
         if (!result.ok) return refused('record_aggregate', result.error);
-        return { ok: true, action: 'record_aggregate', rows: result.data };
+        return { ok: true, action: 'record_aggregate', rows: result.data, ...notes };
       }
       case 'record_write': {
-        const owner = await ownerStore(stores, args);
+        const owner = await ownerClient(spanning, args, orgArg, unavailable);
         if (!owner.ok) return { ok: false, action: args.action, reason: owner.reason };
-        const { client } = owner.store;
+        const { client } = owner;
         // One verb, two doors, decided by whether the record already exists —
         // the same split the server half makes, so a model writes the same way
         // wherever the turn happens to be running.
@@ -483,9 +495,9 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
         return { ok: true, action: 'record_write', record_id: result.data, wrote: 'create' };
       }
       case 'record_delete': {
-        const owner = await ownerStore(stores, args);
+        const owner = await ownerClient(spanning, args, orgArg, unavailable);
         if (!owner.ok) return { ok: false, action: args.action, reason: owner.reason };
-        const { client } = owner.store;
+        const { client } = owner;
         if (!args.record_id) {
           return {
             ok: false,
@@ -508,9 +520,9 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
         };
       }
       case 'record_history': {
-        const owner = await ownerStore(stores, args);
+        const owner = await ownerClient(spanning, args, orgArg, unavailable);
         if (!owner.ok) return { ok: false, action: args.action, reason: owner.reason };
-        const { client } = owner.store;
+        const { client } = owner;
         if (!args.record_id) {
           return {
             ok: false,
@@ -523,9 +535,9 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
         return { ok: true, action: 'record_history', history: result.data };
       }
       case 'record_restore_version': {
-        const owner = await ownerStore(stores, args);
+        const owner = await ownerClient(spanning, args, orgArg, unavailable);
         if (!owner.ok) return { ok: false, action: args.action, reason: owner.reason };
-        const { client } = owner.store;
+        const { client } = owner;
         if (!args.record_id || args.version === undefined) {
           return {
             ok: false,
@@ -541,9 +553,9 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
         return { ok: true, action: 'record_restore_version', restored: result.data };
       }
       case 'field_propose': {
-        const owner = await ownerStore(stores, args);
+        const owner = await ownerClient(spanning, args, orgArg, unavailable);
         if (!owner.ok) return { ok: false, action: args.action, reason: owner.reason };
-        const { client } = owner.store;
+        const { client } = owner;
         const result = await client.fieldPropose({
           table_id: args.table_id as string,
           name: args.name as string,

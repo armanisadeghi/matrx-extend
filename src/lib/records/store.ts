@@ -171,65 +171,169 @@ export async function openRecordStore(
 }
 
 /**
- * THE PACKAGE'S OWN ACROSS-ORGANIZATIONS CLIENT (`@ai-matrx/records` `config.organizationIds`):
- * `tableList` / `tableRead` / `recordRead` answer for every organization the person belongs to
- * (membership from `mbr_for_user`, never the active org alone) and open a record in its own
- * organization. `organizationId` stays the write destination (the active one, else the first).
+ * The package's across-organizations doors this extension uses, typed locally because the
+ * currently published `@ai-matrx/records` (0.58.117) predates them: `organizationsOpen`,
+ * `ownerOrganization`, and the spanning `metadataSearch` / `recordAggregate` (source:
+ * aidream `apps/shared/records`, commit "metadata search, aggregate and owner lookup span
+ * every organization"). THE SWAP, once that version is published: make `SpanningClient` plain
+ * `RecordsClient` and delete `withSpanningDoors` — nothing else changes.
  */
-export async function openSpanningClient(
-  actor: RecordActor = 'user',
-): Promise<{ client: RecordsClient; organizationIds: string[] }> {
-  const organizationIds = (await listMemberOrganizations('active')).map((o) => o.id);
-  const organizationId = (await getActiveOrganizationId()) ?? organizationIds[0];
-  if (!organizationId) throw new Error('You do not belong to an organization yet.');
-  return {
-    client: await recordsClientFor(organizationId, actor, organizationIds),
-    organizationIds,
-  };
+export interface SpanningDoors {
+  organizationsOpen(args?: { organization_id?: string | null }): Promise<
+    | {
+        ok: true;
+        data: { open: string[]; unavailable: { organization_id: string; reason: string }[] };
+      }
+    | { ok: false; error: RecordsErrorLike }
+  >;
+  ownerOrganization(args: {
+    table_id?: string | null;
+    record_id?: string | null;
+    organization_id?: string | null;
+  }): Promise<{ ok: true; data: string | null } | { ok: false; error: RecordsErrorLike }>;
+  metadataSearch(args: { text: string; organization_id?: string | null }): Promise<
+    | {
+        ok: true;
+        data: {
+          matches: Record<string, unknown>[];
+          organizations_covered: string[];
+          unavailable: { organization_id: string; reason: string }[];
+        };
+      }
+    | { ok: false; error: RecordsErrorLike }
+  >;
+  recordAggregate(args: {
+    table_id: string;
+    organization_id?: string | null;
+    groupBy?: string[];
+    measures?: unknown;
+    limit?: number;
+  }): Promise<{ ok: true; data: unknown[] } | { ok: false; error: RecordsErrorLike }>;
 }
+type RecordsErrorLike = { code: string; message: string; hint?: string };
+export type SpanningClient = Omit<RecordsClient, 'metadataSearch' | 'recordAggregate'> &
+  SpanningDoors;
 
-/** One organization's open store, ready to use. */
-export interface OpenStore {
-  client: RecordsClient;
-  organizationId: string;
+const reasonOf = (e: RecordsErrorLike) => `${e.message}${e.hint ? ` ${e.hint}` : ''}`;
+
+/**
+ * Until the published package carries the doors above, answer them from the ones it has, one
+ * organization's own client at a time (same semantics as the package: unavailable
+ * organizations named with their reason, the owner found among the person's own). When the
+ * client already has them this returns it untouched.
+ */
+function withSpanningDoors(
+  client: RecordsClient,
+  organizationIds: string[],
+  actor: RecordActor,
+): SpanningClient {
+  if (typeof (client as unknown as Partial<SpanningDoors>).organizationsOpen === 'function') {
+    return client as unknown as SpanningClient;
+  }
+  const scope = (filter?: string | null) => (filter ? [filter] : organizationIds);
+  const organizationsOpen: SpanningDoors['organizationsOpen'] = async (args) => {
+    const orgs = scope(args?.organization_id);
+    const answers = await Promise.all(
+      orgs.map(async (id) => ({
+        id,
+        status: await (await recordsClientFor(id, actor)).storeIsOpen(),
+      })),
+    );
+    const open: string[] = [];
+    const unavailable: { organization_id: string; reason: string }[] = [];
+    for (const { id, status } of answers) {
+      if (!status.ok) unavailable.push({ organization_id: id, reason: reasonOf(status.error) });
+      else if (!status.data)
+        unavailable.push({
+          organization_id: id,
+          reason: 'The custom data store is switched off for this organization.',
+        });
+      else open.push(id);
+    }
+    return { ok: true, data: { open, unavailable } };
+  };
+  const ownerOrganization: SpanningDoors['ownerOrganization'] = async (args) => {
+    if (args.table_id) {
+      const read = await client.tableRead({
+        table_id: args.table_id,
+        ...(args.organization_id ? { organization_id: args.organization_id } : {}),
+      });
+      return read.ok ? { ok: true, data: read.data?.organization_id ?? null } : read;
+    }
+    if (args.record_id) {
+      for (const id of scope(args.organization_id)) {
+        const read = await (await recordsClientFor(id, actor)).recordRead({
+          record_id: args.record_id,
+        });
+        if (read.ok) return { ok: true, data: id };
+      }
+    }
+    return { ok: true, data: null };
+  };
+  const metadataSearch: SpanningDoors['metadataSearch'] = async ({ text, organization_id }) => {
+    const state = await organizationsOpen(organization_id ? { organization_id } : undefined);
+    if (!state.ok) return state;
+    const { open, unavailable } = state.data;
+    const matches: Record<string, unknown>[] = [];
+    const covered: string[] = [];
+    let first: RecordsErrorLike | null = null;
+    for (const id of open) {
+      const found = await (await recordsClientFor(id, actor)).metadataSearch({ text });
+      if (!found.ok) {
+        first ??= found.error;
+        unavailable.push({ organization_id: id, reason: reasonOf(found.error) });
+        continue;
+      }
+      covered.push(id);
+      for (const m of found.data as unknown as Record<string, unknown>[]) {
+        matches.push({ ...m, organization_id: id });
+      }
+    }
+    if (covered.length === 0 && first) return { ok: false, error: first };
+    return { ok: true, data: { matches, organizations_covered: covered, unavailable } };
+  };
+  const recordAggregate: SpanningDoors['recordAggregate'] = async ({
+    organization_id,
+    ...rest
+  }) => {
+    const owner = await ownerOrganization({
+      table_id: rest.table_id,
+      ...(organization_id ? { organization_id } : {}),
+    });
+    const target = owner.ok && owner.data ? owner.data : (organization_id ?? null);
+    const home = target ? await recordsClientFor(target, actor) : client;
+    const result = await home.recordAggregate(rest as never);
+    return result.ok
+      ? {
+          ok: true,
+          data: (result.data as unknown[]).map((r) => ({
+            ...(r as object),
+            organization_id: target,
+          })),
+        }
+      : result;
+  };
+  return Object.assign(Object.create(client), {
+    organizationsOpen,
+    ownerOrganization,
+    metadataSearch,
+    recordAggregate,
+  }) as SpanningClient;
 }
 
 /**
- * Every organization's store the person can reach — the READ door for tools and pickers
- * (active-org law 2026-09-30: the active organization never narrows a read). `organizationFilter`
- * is an optional, explicit narrowing (default: all of the person's organizations). Organizations
- * whose store is closed or refused come back in `closed` WITH the sentence, never silently dropped.
- * Writes that create new things still use `openRecordStore` (the active organization).
+ * THE PACKAGE'S OWN ACROSS-ORGANIZATIONS CLIENT (`@ai-matrx/records` `config.organizationIds`):
+ * every read answers for every organization the person belongs to (membership from
+ * `mbr_for_user`, never the active org alone); a table or record opens in its own organization;
+ * `organizationsOpen` names each organization that cannot answer WITH its reason.
+ * `organizationId` stays the write destination (the active one, else the first).
  */
-export async function openRecordStores(
+export async function openSpanningClient(
   actor: RecordActor = 'user',
-  organizationFilter?: string | null,
-): Promise<{ stores: OpenStore[]; closed: { organizationId: string; reason: string }[] }> {
-  const orgIds = organizationFilter
-    ? [organizationFilter]
-    : (await listMemberOrganizations('active')).map((o) => o.id);
-  const stores: OpenStore[] = [];
-  const closed: { organizationId: string; reason: string }[] = [];
-  await Promise.all(
-    orgIds.map(async (organizationId) => {
-      const client = await recordsClientFor(organizationId, actor);
-      const result = await client.storeIsOpen();
-      if (!result.ok) {
-        closed.push({
-          organizationId,
-          reason: `${result.error.message}${result.error.hint ? ` ${result.error.hint}` : ''}`,
-        });
-      } else if (!result.data) {
-        closed.push({
-          organizationId,
-          reason: 'The custom data store is switched off for this organization.',
-        });
-      } else {
-        stores.push({ client, organizationId });
-      }
-    }),
-  );
-  // Stable order: the person's organization order, not completion order.
-  stores.sort((a, b) => orgIds.indexOf(a.organizationId) - orgIds.indexOf(b.organizationId));
-  return { stores, closed };
+): Promise<{ client: SpanningClient; organizationIds: string[] }> {
+  const organizationIds = (await listMemberOrganizations('active')).map((o) => o.id);
+  const organizationId = (await getActiveOrganizationId()) ?? organizationIds[0];
+  if (!organizationId) throw new Error('You do not belong to an organization yet.');
+  const client = await recordsClientFor(organizationId, actor, organizationIds);
+  return { client: withSpanningDoors(client, organizationIds, actor), organizationIds };
 }
