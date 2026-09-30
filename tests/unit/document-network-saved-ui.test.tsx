@@ -202,7 +202,11 @@ it.each([
       if (rejectDetach) throw new Error('Chrome refused debugger detach');
     });
     const sendCommand = vi.fn(async (_target, method, params) => {
-      if (stallCleanup && method === 'Page.removeScriptToEvaluateOnNewDocument')
+      // A prior case may finish its already-owned cleanup after this mock is
+      // installed. Only stall this case's capture after it has registered its
+      // own script; otherwise the prior cleanup would hold the shared lease
+      // and prevent this case from ever reaching setup.
+      if (stallCleanup && registered && method === 'Page.removeScriptToEvaluateOnNewDocument')
         return new Promise<void>((resolve) => {
           h.releases.add(resolve);
         });
