@@ -16,6 +16,8 @@ Final correction review: `/root/notes_final_peer` (Luna medium, fresh seat) owns
 
 Final source checks: root run `notes-final-owner-tests-20260930b` admitted after resource recovery and passed 11 tests across four Notes files. `/root/notes_native_acceptance` now owns the sole heavy permit for compile, current development build, and native execution. `/root/notes_detail_failure_audit` (Luna medium) owns a source-only census of remaining Notes failure paths; no heavy permit or product edits.
 
+Next owned Notes repair: `/root/notes_failure_repair` resumes in Sol medium for `EXT-D-0067` (detail failure/missing data stuck loading) and `EXT-D-0068` (delete failure or zero-row update treated silently). It waits for the current artifact snapshot before edits and has no heavy permit while native acceptance runs. Findings are in `reports/notes-remaining-failure-audit.json`; exact defect records and regression evidence are the worker deliverable. Root owns inventory links.
+
 The checkpoints below are historical. In particular, earlier disk refusals, build identities, and unapplied-patch claims must not override current evidence. Broad Chat/Pilot work remains deferred after the urgent guest Chat repair. No overall health claim is made.
 
 Current priority (2026-09-27): finish Showcase detect → extract → save → reopen → repeat, per latest owner request. SHOWCASE-PLAN.md and inventory EXT-F-1012 own scope. Broad stabilization remains incomplete; the goal is active.
