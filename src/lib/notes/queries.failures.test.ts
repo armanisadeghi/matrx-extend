@@ -12,7 +12,9 @@ describe('Notes read boundary', () => {
     db.workbenchDb.mockReturnValue({
       from: () => ({
         select: () => ({
-          is: () => ({ order: async () => ({ data: null, error: { message: 'Network unavailable' } }) }),
+          is: () => ({
+            order: async () => ({ data: null, error: { message: 'Network unavailable' } }),
+          }),
         }),
       }),
     });

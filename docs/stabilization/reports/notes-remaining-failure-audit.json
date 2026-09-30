@@ -25,5 +25,7 @@
     }
   ],
   "runtime_verdict": "Not runtime exercised; findings are source-level, with deterministic acceptance reproductions specified.",
-  "out_of_scope": ["listMyFolders has no callers in the current Notes flow; its empty-on-error behavior is not reported as a user-visible finding."]
+  "out_of_scope": [
+    "listMyFolders has no callers in the current Notes flow; its empty-on-error behavior is not reported as a user-visible finding."
+  ]
 }

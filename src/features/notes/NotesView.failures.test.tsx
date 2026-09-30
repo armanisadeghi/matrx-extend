@@ -55,5 +55,4 @@ describe('Notes failure recovery', () => {
     expect(await screen.findByText(/No notes yet/i)).toBeTruthy();
     expect(screen.queryByText(/Could not load notes/i)).toBeNull();
   });
-
 });
