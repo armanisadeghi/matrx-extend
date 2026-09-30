@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "lane": "escalation",
+  "status": "confirmed_backend_create_refusal",
+  "native_attempts": 1,
+  "preflight_refusals": 1,
+  "build": {
+    "kind": "local_dev_unpacked",
+    "version": "0.2.138",
+    "treeSha256": "119bb63c0d660fe8177f395af87f539053f847ed6c48de06b2e5bcb01116b26f",
+    "extensionDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev"
+  },
+  "root_cause_boundary": "Trusted Retry creating note click completed. The unmodified real Notes POST returned HTTP 403; the app remained in list with error and retry visible. HTTP status alone does not identify the backend policy or reason.",
+  "hypotheses": [
+    {
+      "hypothesis": "Retry label or trusted pointer targeting prevents submission",
+      "prediction": "Driver failure appears before retry_clicked; no real POST response",
+      "result": "ruled_out: retry_clicked true and POST 403"
+    },
+    {
+      "hypothesis": "Backend refuses real note creation",
+      "prediction": "Real retry POST returns non-2xx and creation error remains visible",
+      "result": "confirmed: POST 403 with visible error"
+    },
+    {
+      "hypothesis": "Successful creation is followed by editor-read failure",
+      "prediction": "POST succeeds but detail GET fails",
+      "result": "ruled_out_at_first_boundary: POST itself is 403"
+    }
+  ],
+  "observations": {
+    "real_admin_ui_signin": true,
+    "organization_ui": {
+      "sectionExpanded": true,
+      "controlCount": 1,
+      "approvedDisplayed": false,
+      "chooseDisplayed": true,
+      "loading": false,
+      "noMembership": false,
+      "needsSignin": false,
+      "actingLabel": true,
+      "organizationError": false
+    },
+    "organization_step": "selecting_approved_option",
+    "organization_selected_through_ui": true,
+    "D61": {
+      "fault_scoped": true,
+      "failed_requests": 4,
+      "visible_error": true,
+      "visible_retry": true,
+      "falsely_empty": false,
+      "recovered_from_real_retry": true
+    },
+    "D62": {
+      "fault_scoped": true,
+      "failed_requests": 1,
+      "visible_error": true,
+      "retry_visible": true,
+      "create_available_again": true,
+      "remains_in_list": true,
+      "refreshed_notes_before_retry": true,
+      "retry_clicked": true
+    },
+    "failure_ui": {
+      "active": true,
+      "empty": false,
+      "error": true,
+      "retry": true,
+      "create": true,
+      "editor": false,
+      "title": false,
+      "draftA": false,
+      "draftB": false,
+      "saved": false,
+      "saving": false,
+      "noteInList": false
+    },
+    "failure_transport": {
+      "responses": [
+        {
+          "method": "GET",
+          "status": 200,
+          "stage": "D61_retry"
+        },
+        {
+          "method": "POST",
+          "status": 403,
+          "stage": "D62_retry_editor"
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "stage": "D62_retry_editor"
+        }
+      ],
+      "failedGet": 4,
+      "failedPost": 1,
+      "heldPatch": 0,
+      "passed": 3,
+      "passedGet": 2,
+      "interceptionFailed": false,
+      "patchPending": false
+    }
+  },
+  "defect_verdicts": {
+    "EXT-D-0061": "Native injected list failure and real retry passed on frozen build.",
+    "EXT-D-0062": "Injected create failure, visible retry, Refresh and trusted retry click passed; actual backend create refused with 403. Acceptance incomplete.",
+    "EXT-D-0063": "Not reached; no create or autosave pass claimed."
+  },
+  "limitations": [
+    "Frozen build source ee61e875; newer D67/D68 and lifecycle fixes were not tested.",
+    "No response bodies, auth headers, storage values, or credentials captured.",
+    "No second native attempt: confirmed product/backend refusal is the assigned stop boundary.",
+    "No test-owned note was observed created; data_scope in native receipt describes intended test data only."
+  ],
+  "files": [
+    "tests/browser/notes-native-acceptance.mjs",
+    "docs/stabilization/runs/notes-native-escalation-20260930b.json",
+    "docs/stabilization/resource-journals/notes-native-escalation-20260930a.jsonl",
+    "docs/stabilization/resource-journals/notes-native-escalation-20260930b.jsonl"
+  ],
+  "next_owner_action": "Investigate why the authenticated, explicitly organization-selected Notes POST is forbidden, then rerun native creation and autosave acceptance against an identified build.",
+  "heavy_permit": "released",
+  "push": "held for root integration checks"
+}

@@ -134,43 +134,54 @@ async function realAdminLogin(page, panel) {
 }
 async function selectTestOrganization(panel, name) {
   await openSection(panel, 'Organization');
-  const state = await evaluate(
-    panel,
-    `(() => {
-    const label = [...document.querySelectorAll('span')].find(s => s.textContent.trim() === 'Acting as');
-    const button = label?.parentElement?.parentElement?.querySelector('button[role="combobox"]');
-    return { displayed: button?.textContent.trim() ?? null, count: button ? 1 : 0 };
+  const readState = () =>
+    evaluate(
+      panel,
+      `(() => {
+    const section = [...document.querySelectorAll('button[aria-expanded]')]
+      .find(b => b.textContent.trim() === 'Organization');
+    const body = section?.parentElement?.nextElementSibling;
+    const label = [...(body?.querySelectorAll('span') ?? [])]
+      .find(s => s.textContent.trim() === 'Acting as');
+    const buttons = [...(label?.parentElement?.parentElement?.querySelectorAll('button[role="combobox"]') ?? [])];
+    const text = body?.textContent ?? '';
+    return { sectionExpanded: section?.getAttribute('aria-expanded') === 'true',
+      controlCount: buttons.length, approvedDisplayed: buttons.length === 1 && buttons[0].textContent.trim() === ${JSON.stringify(name)},
+      chooseDisplayed: buttons.length === 1 && buttons[0].textContent.trim() === 'Choose…',
+      loading: text.includes('Loading…'), noMembership: text.includes('You are not a member of any organization'),
+      needsSignin: text.includes('Sign in to choose'), actingLabel: Boolean(label),
+      organizationError: Boolean(body?.querySelector('.text-destructive')) };
   })()`,
-  );
-  if (state.count !== 1) fail('organization_control_missing');
-  if (state.displayed !== name) {
-    if (state.displayed !== 'Choose…') fail('unexpected_preselected_organization');
+    );
+  const state = await waitFor(
+    'organization_control_or_terminal',
+    readState,
+    (s) => s?.controlCount === 1 || s?.noMembership || s?.organizationError || s?.needsSignin,
+    60_000,
+  ).catch(() => null);
+  report.observations.organization_ui = state ?? (await readState());
+  if (!state || state.controlCount !== 1) fail('organization_control_unavailable');
+  if (!state.approvedDisplayed) {
+    if (!state.chooseDisplayed) fail('unexpected_preselected_organization');
+    report.observations.organization_step = 'opening_acting_as_picker';
+    await click(panel, 'organization', 'Acting as');
+    report.observations.organization_step = 'finding_approved_option';
     await waitFor(
-      'test_org_in_picker',
+      'approved_org_option_in_open_select',
       () =>
         evaluate(
           panel,
           `(() =>
-      [...document.querySelectorAll('[role="dialog"] [role="option"] span.truncate')]
-        .filter(s => s.textContent.trim() === ${JSON.stringify(name)}).length)()`,
+      [...document.querySelectorAll('[role="option"]')]
+        .filter(o => o.textContent.trim() === ${JSON.stringify(name)}).length)()`,
         ),
       (n) => n === 1,
       30_000,
     );
-    await click(panel, 'organization-picker-choice', name);
+    report.observations.organization_step = 'selecting_approved_option';
+    await click(panel, 'option', name);
   }
-  await waitFor(
-    'test_org_selected',
-    () =>
-      evaluate(
-        panel,
-        `(() => {
-    const label = [...document.querySelectorAll('span')].find(s => s.textContent.trim() === 'Acting as');
-    return label?.parentElement?.parentElement?.querySelector('button[role="combobox"]')?.textContent.trim() === ${JSON.stringify(name)};
-  })()`,
-      ),
-    Boolean,
-  );
+  await waitFor('test_org_selected', readState, (s) => s?.approvedDisplayed === true);
   report.observations.organization_selected_through_ui = true;
 }
 function notesState(panel) {
@@ -203,6 +214,20 @@ function armNotesTransport(panel, origin) {
   let passedGet = 0;
   let interceptionFailed = false;
   let pendingPatch = null;
+  const requests = new Map();
+  const responses = [];
+  const offResponse = panel.on('Network.responseReceived', (event) => {
+    const method = requests.get(event.requestId);
+    if (!method) return;
+    responses.push({ method, status: event.response.status, stage });
+    requests.delete(event.requestId);
+  });
+  const offRequest = panel.on('Network.requestWillBeSent', (event) => {
+    const url = new URL(event.request.url);
+    if (url.origin === origin && url.pathname === '/rest/v1/notes' &&
+        ['GET', 'POST', 'PATCH'].includes(event.request.method))
+      requests.set(event.requestId, event.request.method);
+  });
   const off = panel.on('Fetch.requestPaused', (event) => {
     const request = event.request;
     const url = new URL(request.url);
@@ -250,14 +275,17 @@ function armNotesTransport(panel, origin) {
       });
   });
   return {
-    start: () =>
-      panel.send('Fetch.enable', {
+    start: async () => {
+      await panel.send('Network.enable');
+      return panel.send('Fetch.enable', {
         patterns: [{ urlPattern: `${origin}/rest/v1/notes*`, requestStage: 'Request' }],
-      }),
+      });
+    },
     setMode: (next) => {
       mode = next;
     },
     state: () => ({
+      responses: [...responses],
       failedGet,
       failedPost,
       heldPatch,
@@ -278,6 +306,8 @@ function armNotesTransport(panel, origin) {
         await panel.send('Fetch.continueRequest', { requestId: pendingPatch }).catch(() => {});
       await panel.send('Fetch.disable').catch(() => {});
       off();
+      offRequest();
+      offResponse();
     },
   };
 }
@@ -442,7 +472,7 @@ try {
           remains_in_list: !failedCreate.editor,
         };
         transport.setMode('observe');
-        stage = 'D62_retry';
+        stage = 'D62_refresh_click';
         const beforeRefresh = transport.state().passedGet;
         await click(panel, 'button', 'Refresh notes');
         await waitFor(
@@ -452,6 +482,7 @@ try {
           30_000,
         );
         report.observations.D62.refreshed_notes_before_retry = true;
+        stage = 'D62_retry_label';
         const createRetryLabel = await evaluate(
           panel,
           `(() => {
@@ -460,7 +491,10 @@ try {
         })()`,
         );
         if (!createRetryLabel) fail('create_retry_missing');
+        stage = 'D62_retry_click';
         await click(panel, 'button', createRetryLabel);
+        report.observations.D62.retry_clicked = true;
+        stage = 'D62_retry_editor';
         await waitFor(
           'created_note_editor',
           () => notesState(panel),
@@ -546,6 +580,12 @@ try {
           45_000,
         );
         report.observations.D63.reopened_latest_draft = true;
+      } catch (error) {
+        report.observations.failure_ui = await notesState(panel).catch(() => ({ unavailable: true }));
+        report.observations.failure_transport = transport.state();
+        // The driver explicitly exposes content-free categories and geometry.
+        if (error?.driverFailure) report.driver_failure = error.driverFailure;
+        throw error;
       } finally {
         await transport.stop();
       }
