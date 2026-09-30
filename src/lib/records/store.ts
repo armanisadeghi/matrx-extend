@@ -33,7 +33,7 @@
  */
 
 import { STORAGE_KEYS } from '@/config/env';
-import { getActiveOrganizationId } from '@/lib/org/active-org';
+import { getActiveOrganizationId, listMemberOrganizations } from '@/lib/org/active-org';
 import { getAgentAuthoredSupabase, getSupabase } from '@/lib/supabase/client';
 import {
   type RecordsClient,
@@ -165,4 +165,50 @@ export async function openRecordStore(
     client: await recordsClientFor(status.organizationId, actor),
     organizationId: status.organizationId,
   };
+}
+
+/** One organization's open store, ready to use. */
+export interface OpenStore {
+  client: RecordsClient;
+  organizationId: string;
+}
+
+/**
+ * Every organization's store the person can reach — the READ door for tools and pickers
+ * (active-org law 2026-09-30: the active organization never narrows a read). `organizationFilter`
+ * is an optional, explicit narrowing (default: all of the person's organizations). Organizations
+ * whose store is closed or refused come back in `closed` WITH the sentence, never silently dropped.
+ * Writes that create new things still use `openRecordStore` (the active organization).
+ */
+export async function openRecordStores(
+  actor: RecordActor = 'user',
+  organizationFilter?: string | null,
+): Promise<{ stores: OpenStore[]; closed: { organizationId: string; reason: string }[] }> {
+  const orgIds = organizationFilter
+    ? [organizationFilter]
+    : (await listMemberOrganizations()).map((o) => o.id);
+  const stores: OpenStore[] = [];
+  const closed: { organizationId: string; reason: string }[] = [];
+  await Promise.all(
+    orgIds.map(async (organizationId) => {
+      const client = await recordsClientFor(organizationId, actor);
+      const result = await client.storeIsOpen();
+      if (!result.ok) {
+        closed.push({
+          organizationId,
+          reason: `${result.error.message}${result.error.hint ? ` ${result.error.hint}` : ''}`,
+        });
+      } else if (!result.data) {
+        closed.push({
+          organizationId,
+          reason: 'The custom data store is switched off for this organization.',
+        });
+      } else {
+        stores.push({ client, organizationId });
+      }
+    }),
+  );
+  // Stable order: the person's organization order, not completion order.
+  stores.sort((a, b) => orgIds.indexOf(a.organizationId) - orgIds.indexOf(b.organizationId));
+  return { stores, closed };
 }

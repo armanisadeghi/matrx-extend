@@ -22,7 +22,7 @@ const mocks = vi.hoisted(() => {
       { pickup_day: config.table_index === 0 ? 'Friday' : 'Tuesday' },
     ]),
     tableOrganization: vi.fn(),
-    tables: [] as { id: string; table_name: string }[],
+    tables: [] as { id: string; table_name: string; organization_id?: string | null }[],
     releaseCreate: (value: { id: string }) => releaseCreate?.(value),
     clearRelease: () => {
       releaseCreate = undefined;
@@ -33,6 +33,7 @@ const mocks = vi.hoisted(() => {
 vi.mock('@/hooks/use-active-organization', () => ({
   useActiveOrganization: () => ({
     active: { id: mocks.activeOrganizationId, name: 'Test organization' },
+    organizations: [],
   }),
 }));
 vi.mock('@/hooks/use-active-tab', () => ({
@@ -151,6 +152,32 @@ describe('SaveAsPattern organization operation boundary', () => {
     expect(await screen.findByText(/belongs to a different organization/i)).toBeTruthy();
     expect(mocks.savePattern).not.toHaveBeenCalled();
     expect(mocks.appendRows).not.toHaveBeenCalled();
+  });
+});
+
+describe('SaveAsPattern picks across organizations', () => {
+  it('writes an existing dataset in ITS OWN organization, never the active one', async () => {
+    mocks.tables = [
+      {
+        id: 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee',
+        table_name: 'Other org table',
+        organization_id: ORG_B,
+      },
+    ];
+    mocks.tableOrganization.mockResolvedValue(ORG_B);
+    const user = userEvent.setup();
+    render(<SaveAsPattern kind="manual_css" config={{}} rows={[{ title: 'One' }]} />);
+
+    await user.selectOptions(screen.getByRole('combobox'), 'eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee');
+    await user.click(screen.getByRole('button', { name: /^Save$/ }));
+
+    await waitFor(() => expect(mocks.savePattern).toHaveBeenCalledTimes(1));
+    expect(mocks.savePattern).toHaveBeenCalledWith(
+      expect.objectContaining({ organization_id: ORG_B }),
+    );
+    expect(mocks.appendRows).toHaveBeenCalledWith('eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee', ORG_B, [
+      { title: 'One' },
+    ]);
   });
 });
 

@@ -127,6 +127,8 @@ function installSupabaseWriteRecorder(): unknown[] {
       return chain;
     }),
     select: vi.fn(() => chain),
+    eq: vi.fn(() => chain),
+    maybeSingle: vi.fn(async () => ({ data: null, error: null })),
     single: vi.fn(async () => ({ data: { id: FILE_ID }, error: null })),
     auth: {
       getUser: vi.fn(async () => ({ data: { user: { id: FILE_ID } } })),

@@ -1343,13 +1343,39 @@ export interface SaveGuidanceRowPayload {
 }
 
 /**
+ * The organization an EXISTING extension-sync row already lives in, or null for a brand-new one.
+ * An edit of an existing record carries the record's own organization (active-org law
+ * 2026-09-30) — an upsert must never MOVE a row into whichever organization is active.
+ */
+async function existingRowOrganization(
+  table: 'wbx_guidance' | 'wbx_demo',
+  keyColumn: 'id' | 'demo_key',
+  key: string,
+): Promise<string | null> {
+  const { data, error } = await getSupabase()
+    .schema(EXTEND_SCHEMA)
+    .from(table)
+    .select('organization_id')
+    .eq(keyColumn, key)
+    .maybeSingle();
+  if (error) {
+    console.warn('[matrx-extend] could not read the existing row organization', error.message);
+    return null;
+  }
+  const org = (data as { organization_id?: unknown } | null)?.organization_id;
+  return typeof org === 'string' && org ? org : null;
+}
+
+/**
  * Upsert one guidance row keyed by its client id. Actor attribution is stamped
  * server-side; organization identity is required from the initiating request.
  */
 export async function upsertGuidanceRow(p: SaveGuidanceRowPayload): Promise<boolean> {
   let organizationId: string;
   try {
-    organizationId = await requireRequestOrganizationId();
+    const requestOrganizationId = await requireRequestOrganizationId();
+    organizationId =
+      (await existingRowOrganization('wbx_guidance', 'id', p.id)) ?? requestOrganizationId;
   } catch (error) {
     console.warn('[matrx-extend] upsertGuidanceRow refused: missing request organization', error);
     return false;
@@ -1473,7 +1499,9 @@ const DEMO_ROW_COLUMNS =
 export async function upsertDemoRow(p: SaveDemoRowPayload): Promise<boolean> {
   let organizationId: string;
   try {
-    organizationId = await requireRequestOrganizationId();
+    const requestOrganizationId = await requireRequestOrganizationId();
+    organizationId =
+      (await existingRowOrganization('wbx_demo', 'demo_key', p.demo_key)) ?? requestOrganizationId;
   } catch (error) {
     console.warn('[matrx-extend] upsertDemoRow refused: missing request organization', error);
     return false;

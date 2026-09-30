@@ -18,12 +18,14 @@
  * an empty list, never a silent no-op (law 4).
  *
  * WHOSE AUTHORITY. AGT-N-4: the agent has exactly the authority of the person
- * operating it. There is no `organization_id` and no `user_id` argument here on
- * purpose — a model naming whose records to read is the vulnerability that rule
- * closes. Both come from this install's session and its active organization.
+ * operating it. There is no `user_id` argument: the person comes from this install's session.
+ * `organization_id` is an optional NARROWING only (default: every organization the person can
+ * reach — the active organization never narrows what the agent sees, law 2026-09-30); the store
+ * still answers by the person's own access. Only NEW work (table_propose) defaults to the
+ * active organization.
  */
 
-import { openRecordStore } from '@/lib/records/store';
+import { type OpenStore, openRecordStore, openRecordStores } from '@/lib/records/store';
 import canonicalGuide from '@/lib/tools/generated/records-guide.json';
 import type { ToolHandler, ToolTier } from '@/lib/tools/types';
 import { z } from 'zod';
@@ -99,6 +101,12 @@ const trueDefaultObject = () =>
 
 const RecordsArgs = z.object({
   action: z.enum(RECORD_ACTIONS),
+  /**
+   * Optional explicit organization. Absent = every organization the person can reach (the
+   * active organization never narrows what the agent sees — active-org law 2026-09-30); it is
+   * only where NEW things (table_propose) are saved.
+   */
+  organization_id: z.string().nullish(),
   availability: nullDefault(unknownObject()),
   blocks: unknownArray().optional(),
   body: z.string().optional(),
@@ -222,6 +230,39 @@ function refused(where: string, error: { code: string; message: string; hint?: s
   };
 }
 
+/**
+ * The store that OWNS the thing an action names. A table or record opens in its own organization,
+ * never the active one (active-org law): a `table_id` is looked up across the stores, a
+ * `record_id` is probed with a read. With one store reachable there is nothing to look up.
+ */
+async function ownerStore(
+  stores: OpenStore[],
+  args: RecordsToolArgs,
+): Promise<{ ok: true; store: OpenStore } | { ok: false; reason: string }> {
+  if (stores.length === 1) return { ok: true, store: stores[0] as OpenStore };
+  if (args.table_id) {
+    for (const store of stores) {
+      const listed = await store.client.tableList();
+      if (listed.ok && listed.data.some((t) => t.id === args.table_id)) return { ok: true, store };
+    }
+    return {
+      ok: false,
+      reason: `Table ${args.table_id} was not found in any organization you can reach. Check the id, or pass organization_id.`,
+    };
+  }
+  if (args.record_id) {
+    for (const store of stores) {
+      const read = await store.client.recordRead({ record_id: args.record_id });
+      if (read.ok) return { ok: true, store };
+    }
+    return {
+      ok: false,
+      reason: `Record ${args.record_id} was not found in any organization you can reach. Check the id, or pass organization_id.`,
+    };
+  }
+  return { ok: true, store: stores[0] as OpenStore };
+}
+
 const records: ToolHandler<RecordsToolArgs, unknown> = {
   name: 'records',
   tier: 'action',
@@ -257,22 +298,65 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
         code: 'records_action_unavailable_in_chrome_extension',
       };
     }
-    const opened = await openRecordStore('agent');
-    if (!opened.open) return { ok: false, action: args.action, reason: opened.reason };
-    const { client } = opened;
+    const orgArg = args.organization_id?.trim() || null;
+
+    // Creating a NEW table is new work: it goes to the explicit organization, else the active one.
+    if (args.action === 'table_propose') {
+      const opened = orgArg
+        ? await openRecordStores('agent', orgArg).then((r) =>
+            r.stores[0]
+              ? ({ open: true, ...r.stores[0] } as const)
+              : ({ open: false, reason: r.closed[0]?.reason ?? 'Store unavailable.' } as const),
+          )
+        : await openRecordStore('agent');
+      if (!opened.open) return { ok: false, action: args.action, reason: opened.reason };
+      const result = await opened.client.tablePropose({
+        name: args.name as string,
+        description: args.description,
+        spec: args.spec ?? null,
+      } as never);
+      if (!result.ok) return refused('table_propose', result.error);
+      return { ok: true, action: 'table_propose', organization_id: opened.organizationId };
+    }
+
+    // Everything else sees every organization's store (or the one named).
+    const { stores, closed } = await openRecordStores('agent', orgArg);
+    if (stores.length === 0) {
+      return {
+        ok: false,
+        action: args.action,
+        reason:
+          closed[0]?.reason ??
+          'No organization is available, and records belong to an organization. Choose one in Settings and try again.',
+        ...(closed.length > 1 ? { unavailable: closed } : {}),
+      };
+    }
+    const notes = closed.length > 0 ? { organizations_unavailable: closed } : {};
 
     switch (args.action) {
       case 'table_list': {
-        const result = await client.tableList();
-        if (!result.ok) return refused('table_list', result.error);
-        const tables = result.data.slice(0, args.limit).map((table) => ({
-          id: table.id,
-          slug: table.slug,
-          name: table.name,
-          type: table.type,
-          agent_writable: table.agent_writable,
-        }));
-        return { ok: true, action: 'table_list', tables, count: tables.length };
+        const tables: unknown[] = [];
+        let firstRefusal: ReturnType<typeof refused> | null = null;
+        for (const { client, organizationId } of stores) {
+          const result = await client.tableList();
+          if (!result.ok) {
+            firstRefusal ??= refused('table_list', result.error);
+            continue;
+          }
+          for (const table of result.data) {
+            tables.push({
+              id: table.id,
+              slug: table.slug,
+              name: table.name,
+              type: table.type,
+              agent_writable: table.agent_writable,
+              organization_id: organizationId,
+            });
+          }
+        }
+        if (tables.length === 0 && firstRefusal) return firstRefusal;
+        const limited = tables.slice(0, args.limit);
+        return { ok: true, action: 'table_list', tables: limited, count: limited.length, ...notes };
       }
       case 'metadata_search': {
         if (!args.query) {
@@ -282,9 +366,31 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
             reason: 'records.metadata_search requires `query`.',
           };
         }
-        const result = await client.metadataSearch({ text: args.query as string });
-        if (!result.ok) return refused('metadata_search', result.error);
-        return { ok: true, action: 'metadata_search', matches: result.data };
+        const matches: unknown[] = [];
+        let firstRefusal: ReturnType<typeof refused> | null = null;
+        let anyOk = false;
+        for (const { client, organizationId } of stores) {
+          const result = await client.metadataSearch({ text: args.query as string });
+          if (!result.ok) {
+            firstRefusal ??= refused('metadata_search', result.error);
+            continue;
+          }
+          anyOk = true;
+          const data = result.data as unknown;
+          if (Array.isArray(data)) {
+            for (const m of data) {
+              matches.push(
+                m && typeof m === 'object'
+                  ? { ...(m as object), organization_id: organizationId }
+                  : m,
+              );
+            }
+          } else if (data !== null && data !== undefined) {
+            matches.push({ organization_id: organizationId, result: data });
+          }
+        }
+        if (!anyOk && firstRefusal) return firstRefusal;
+        return { ok: true, action: 'metadata_search', matches, ...notes };
       }
       case 'record_read': {
         if (!args.record_id) {
@@ -295,17 +401,29 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
               'The Chrome extension currently reads one record at a time; provide `record_id`.',
           };
         }
-        const result = await client.recordRead({ record_id: args.record_id as string });
-        if (!result.ok) return refused('record_read', result.error);
-        return {
-          ok: true,
-          action: 'record_read',
-          record_id: args.record_id,
-          values: result.data.document,
-          hidden: result.data.hidden,
-        };
+        // A record opens in ITS OWN organization: ask each store until one holds it.
+        let lastRefusal: ReturnType<typeof refused> | null = null;
+        for (const { client, organizationId } of stores) {
+          const result = await client.recordRead({ record_id: args.record_id as string });
+          if (!result.ok) {
+            lastRefusal = refused('record_read', result.error);
+            continue;
+          }
+          return {
+            ok: true,
+            action: 'record_read',
+            record_id: args.record_id,
+            organization_id: organizationId,
+            values: result.data.document,
+            hidden: result.data.hidden,
+          };
+        }
+        return lastRefusal ?? { ok: false, action: 'record_read', reason: 'Record not found.' };
       }
       case 'record_aggregate': {
+        const owner = await ownerStore(stores, args);
+        if (!owner.ok) return { ok: false, action: args.action, reason: owner.reason };
+        const { client } = owner.store;
         if (!args.table_id) {
           return {
             ok: false,
@@ -325,6 +443,9 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
         return { ok: true, action: 'record_aggregate', rows: result.data };
       }
       case 'record_write': {
+        const owner = await ownerStore(stores, args);
+        if (!owner.ok) return { ok: false, action: args.action, reason: owner.reason };
+        const { client } = owner.store;
         // One verb, two doors, decided by whether the record already exists —
         // the same split the server half makes, so a model writes the same way
         // wherever the turn happens to be running.
@@ -369,6 +490,9 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
         return { ok: true, action: 'record_write', record_id: result.data, wrote: 'create' };
       }
       case 'record_delete': {
+        const owner = await ownerStore(stores, args);
+        if (!owner.ok) return { ok: false, action: args.action, reason: owner.reason };
+        const { client } = owner.store;
         if (!args.record_id) {
           return {
             ok: false,
@@ -391,6 +515,9 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
         };
       }
       case 'record_history': {
+        const owner = await ownerStore(stores, args);
+        if (!owner.ok) return { ok: false, action: args.action, reason: owner.reason };
+        const { client } = owner.store;
         if (!args.record_id) {
           return {
             ok: false,
@@ -403,6 +530,9 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
         return { ok: true, action: 'record_history', history: result.data };
       }
       case 'record_restore_version': {
+        const owner = await ownerStore(stores, args);
+        if (!owner.ok) return { ok: false, action: args.action, reason: owner.reason };
+        const { client } = owner.store;
         if (!args.record_id || args.version === undefined) {
           return {
             ok: false,
@@ -418,6 +548,9 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
         return { ok: true, action: 'record_restore_version', restored: result.data };
       }
       case 'field_propose': {
+        const owner = await ownerStore(stores, args);
+        if (!owner.ok) return { ok: false, action: args.action, reason: owner.reason };
+        const { client } = owner.store;
         const result = await client.fieldPropose({
           table_id: args.table_id as string,
           name: args.name as string,
@@ -429,15 +562,6 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
         } as never);
         if (!result.ok) return refused('field_propose', result.error);
         return { ok: true, action: 'field_propose' };
-      }
-      case 'table_propose': {
-        const result = await client.tablePropose({
-          name: args.name as string,
-          description: args.description,
-          spec: args.spec ?? null,
-        } as never);
-        if (!result.ok) return refused('table_propose', result.error);
-        return { ok: true, action: 'table_propose' };
       }
       default:
         return { ok: false, reason: `Unknown records action: ${args.action as string}` };

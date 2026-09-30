@@ -495,7 +495,7 @@ export async function appendRowsToUserTable(
   if (requireOrganizationContext(target.organization_id) !== organizationId) {
     throw new OrganizationContextError(
       'organization_context_mismatch',
-      'The selected dataset belongs to a different organization. Choose a dataset in your active organization.',
+      'The selected dataset belongs to a different organization. Save it from that organization.',
     );
   }
 

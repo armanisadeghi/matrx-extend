@@ -111,7 +111,9 @@ export function SaveAsPattern({
     // active organization; an EXISTING table is written in ITS OWN organization. A later
     // Settings change must not redirect this in-flight dataset create.
     const chosenTable =
-      target !== NEW_TABLE && target !== NO_TABLE ? tables?.find((t) => t.id === target) : undefined;
+      target !== NEW_TABLE && target !== NO_TABLE
+        ? tables?.find((t) => t.id === target)
+        : undefined;
     let operationOrganizationId: string;
     try {
       operationOrganizationId = requireOrganizationContext(

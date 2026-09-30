@@ -92,10 +92,14 @@ export function AddToProjectButton({ url, title, variant = 'inline' }: AddToProj
     if (!url) return;
     setError(null);
     setAdding(topic.id);
-    const r = await addSourceToTopic(topic.id, {
-      url,
-      ...(title != null && { title }),
-    });
+    const r = await addSourceToTopic(
+      topic.id,
+      {
+        url,
+        ...(title != null && { title }),
+      },
+      topic.organization_id,
+    );
     setAdding(null);
     if (!r.ok) {
       setError(r.error);

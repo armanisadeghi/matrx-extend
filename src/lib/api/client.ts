@@ -297,10 +297,18 @@ interface RequestOptions {
   silent?: boolean;
   /** Fail closed unless the actual bearer subject and canonical org still match. */
   expectedActor?: { userId: string; organizationId: string };
+  /**
+   * The organization this call runs in when it is NOT the active one — an existing record's
+   * own organization (active-org law 2026-09-30: new work carries the active org, an existing
+   * record carries its own). Omitted = the active organization.
+   */
+  organizationId?: string;
 }
 
 export interface ApiRequestOptions {
   silent?: boolean;
+  /** See RequestOptions.organizationId. */
+  organizationId?: string;
   expectedActor?: { userId: string; organizationId: string };
   headers?: Record<string, string>;
 }
@@ -707,7 +715,10 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
   try {
     headers = opts.expectedActor
       ? await buildExpectedActorHeaders(opts.expectedActor, opts.headers)
-      : await buildHeaders(opts.headers);
+      : await buildHeaders(
+          opts.headers,
+          opts.organizationId ? { token: null, organizationId: opts.organizationId } : undefined,
+        );
   } catch (err) {
     if (err instanceof SessionNotReadyError) {
       return {
@@ -872,6 +883,7 @@ export async function apiGet<T>(
     ...(opts?.silent !== undefined ? { silent: opts.silent } : {}),
     ...(opts?.expectedActor !== undefined ? { expectedActor: opts.expectedActor } : {}),
     ...(opts?.headers !== undefined ? { headers: opts.headers } : {}),
+    ...(opts?.organizationId !== undefined ? { organizationId: opts.organizationId } : {}),
   });
 }
 
@@ -896,6 +908,7 @@ export async function apiPost<T>(
     ...(opts?.silent !== undefined ? { silent: opts.silent } : {}),
     ...(opts?.expectedActor !== undefined ? { expectedActor: opts.expectedActor } : {}),
     ...(opts?.headers !== undefined ? { headers: opts.headers } : {}),
+    ...(opts?.organizationId !== undefined ? { organizationId: opts.organizationId } : {}),
   });
 }
 
@@ -913,6 +926,7 @@ export async function apiPatch<T>(
     ...(opts?.silent !== undefined ? { silent: opts.silent } : {}),
     ...(opts?.expectedActor !== undefined ? { expectedActor: opts.expectedActor } : {}),
     ...(opts?.headers !== undefined ? { headers: opts.headers } : {}),
+    ...(opts?.organizationId !== undefined ? { organizationId: opts.organizationId } : {}),
   });
 }
 
@@ -930,6 +944,7 @@ export async function apiPut<T>(
     ...(opts?.silent !== undefined ? { silent: opts.silent } : {}),
     ...(opts?.expectedActor !== undefined ? { expectedActor: opts.expectedActor } : {}),
     ...(opts?.headers !== undefined ? { headers: opts.headers } : {}),
+    ...(opts?.organizationId !== undefined ? { organizationId: opts.organizationId } : {}),
   });
 }
 
