@@ -30,6 +30,12 @@
     {
       "at": "2026-09-30T08:49:18Z",
       "from": "open",
+      "to": "triaged",
+      "reason": "Independent source audit traced the error and missing-row branches to a perpetual loading skeleton."
+    },
+    {
+      "at": "2026-09-30T08:49:18Z",
+      "from": "triaged",
       "to": "in-fix",
       "reason": "Sol assigned source and consumer guard repair after native artifact freeze; heavy execution remains leased to native lane."
     }
