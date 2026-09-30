@@ -10,6 +10,10 @@ Independent source/evidence reconciliation: `/root/contained_state_reconcile` (L
 
 Native acceptance preparation: `/root/notes_native_acceptance` (Sol medium) owns a receipt-bound Notes browser runner and its exact resource allowlist entry, but has no browser/build/test permit while the repair lane runs. It will cover real-admin read/create failure and recovery, then overlapping save/reopen where feasible. Credentials are read privately only at normal sign-in.
 
+Independent repair review: `/root/notes_failure_peer` (Luna medium, fresh seat) owns the two-verdict source/evidence review for D61/D62. No heavy permit; native proof remains separate.
+
+Final correction review: `/root/notes_final_peer` (Luna medium, fresh seat) owns the final two-verdict source/evidence check after the initial review caught false certainty in create-error copy. Native runner `a134e82e` is committed. Root now owns the sole heavy permit; the last run was refused before launch for macOS pressure level 2, so final correction tests and native build remain pending. Product commits are held from push until final checks pass.
+
 The checkpoints below are historical. In particular, earlier disk refusals, build identities, and unapplied-patch claims must not override current evidence. Broad Chat/Pilot work remains deferred after the urgent guest Chat repair. No overall health claim is made.
 
 Current priority (2026-09-27): finish Showcase detect → extract → save → reopen → repeat, per latest owner request. SHOWCASE-PLAN.md and inventory EXT-F-1012 own scope. Broad stabilization remains incomplete; the goal is active.
