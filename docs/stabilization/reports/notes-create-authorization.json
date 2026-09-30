@@ -1,6 +1,6 @@
 {
   "id": "notes-create-authorization",
-  "status": "root-cause-proven-repair-unverified",
+  "status": "root-cause-proven-source-verified-native-unverified",
   "defect_id": "EXT-D-0069",
   "native_observation": {
     "build": "0.2.138",
@@ -23,10 +23,21 @@
     "audit_summary_note_folders_certified": true
   },
   "cause": "The extension queried member organization names without excluding archived rows. The closed organization remained selectable because its membership was still active. The database correctly refused the write under its archived organization gate.",
-  "repair": "Filter the shared extension organization lookup on archived_at IS NULL, require an explicit device choice even when one open organization remains, and give native Notes acceptance its own approved active test organization.",
+  "repair": "Filter the shared extension organization lookup on archived_at IS NULL, require an explicit device choice even when one open organization remains, validate a stored choice once per identity/context with a single-flight read, and give native Notes acceptance its own approved active test organization.",
+  "source_verification": {
+    "focused_test_run": "notes-d69-org-test-20260930c",
+    "focused_tests_passed": 11,
+    "compile_run": "notes-d69-compile-20260930a",
+    "development_build_run": "notes-d69-devbuild-20260930a",
+    "development_build_receipt": "test-results/notes-current-devbuild-20260930a.json",
+    "development_build_tree_sha256": "93c7bf7978357d7e93d64658fd65fa4e5e8285eb7e9be303ac3d2d2ea8b277a8"
+  },
+  "limits": [
+    "A remote archive during an already validated execution context remains enforced by the server until a fresh client resolution; no instant remote signal exists here.",
+    "The first held request with no stored choice still enumerates organizations twice; warm requests reuse the validated choice."
+  ],
   "verification_remaining": [
-    "Run focused auth-route test and TypeScript compile under the shared resource guard.",
-    "Build a fresh extension artifact and repeat native Notes create/save/reopen with the active approved organization.",
+    "Repeat native Notes create/save/reopen with the active approved organization using the fresh build receipt.",
     "Exercise picker reopening after an archived stored choice and verify it never silently switches to a remaining organization."
   ],
   "access_decision": "Do not change Notes RLS; archived organizations are intentionally closed."

@@ -62,7 +62,7 @@
 - **Where to test:** Settings → organization picker in a signed-in extension profile that belongs to one archived organization and at least one open organization.
 - **Steps:** select the organization while it is open, archive it through the organization's normal management flow, then reload the side panel. Open Settings and inspect the picker. Repeat with exactly one open organization remaining; create a note only after choosing that open organization.
 - **Expected:** the archived organization is absent from the work picker, the stored choice is cleared, and no remaining organization is selected without a device choice. Notes creation in the chosen open organization succeeds. Archived content remains available through the organization's restore flow.
-- **Verification status:** live Notes 403 and archived membership were confirmed; source guard and fresh native retest are pending for EXT-D-0069.
+- **Verification status:** live Notes 403 and archived membership were confirmed; guarded source tests, compile, and development build passed. Native retest remains pending for EXT-D-0069.
 
 ### Admin sign-in keeps the full sidepanel navigation
 

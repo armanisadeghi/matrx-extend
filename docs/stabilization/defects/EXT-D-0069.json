@@ -22,7 +22,7 @@
     "src/lib/org/active-org.ts",
     "tests/unit/auth-route.test.ts"
   ],
-  "verification_status": "Live cause proven; source guard and native retest pending guarded execution.",
+  "verification_status": "Live cause proven; guarded organization tests passed 11/11, TypeScript compile passed, and fresh development build completed. Independent native retest remains pending.",
   "transition_history": [
     {
       "at": "2026-09-30T09:06:12Z",
@@ -31,10 +31,16 @@
       "reason": "Native Notes retry issued a real authenticated POST that returned 403."
     },
     {
-      "at": "2026-09-30T09:18:00Z",
+      "at": "2026-09-30T09:40:23Z",
       "from": "open",
+      "to": "triaged",
+      "reason": "Recorded the live archived organization gate, active membership, and picker query as the confirmed cause."
+    },
+    {
+      "at": "2026-09-30T09:40:23Z",
+      "from": "triaged",
       "to": "in-fix",
-      "reason": "Live policy, archived organization, and extension organization query isolated the cause."
+      "reason": "Source correction and focused guarded checks completed; native verification remains open."
     }
   ]
 }
