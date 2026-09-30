@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "run_id": "unique-notes-final-native-20260930c",
+  "status": "PASS_BOUNDED_NATIVE",
+  "scope": "Native Chrome sidepanel Notes acceptance for EXT-D-0061/0062/0063/0067/0068 using real admin sign-in and the approved organization selected through the UI. One newly created owned note was used for the autosave and delete flow.",
+  "build": {
+    "source_commit": "067a3bad692e035caeeafecbdb24141cd18fb1e4",
+    "version": "0.2.138",
+    "tree_sha256": "93c7bf7978357d7e93d64658fd65fa4e5e8285eb7e9be303ac3d2d2ea8b277a8",
+    "receipt": "test-results/notes-current-devbuild-20260930a.json",
+    "unchanged_during_run": true
+  },
+  "verdicts": {
+    "userflows": {
+      "status": "PASS_BOUNDED",
+      "passed": [
+        "Real admin UI sign-in and approved organization selection succeeded.",
+        "D61 list transport failure remained visibly failed, did not look empty, and recovered through the real retry.",
+        "D62 create transport failure exposed retry while preserving create access, then recovered through a real create.",
+        "D63 latest autosave draft was saved and restored after reload and reopening.",
+        "D67 detail transport failure and a successful missing-row response remained terminal; a real detail retry restored the editor.",
+        "D68 failed delete preserved the editor and draft; a zero-affected-row response also preserved them and required confirmation for retry.",
+        "Confirmed deletion produced a live 2xx response correlated to the owned note request, the owned note was absent after reload, and no new autosave dispatched after deletion."
+      ],
+      "unverified": [
+        "Original feature and mode breadth outside these five named cases."
+      ]
+    },
+    "quality": {
+      "status": "PASS_BOUNDED",
+      "evidence": [
+        "The owned delete label came from the Fetch interception networkId mapped to the corresponding Network requestId; an interception ID alone was not accepted.",
+        "The correlated owned delete returned HTTP 2xx.",
+        "After releasing the held autosave, the autosave dispatch count did not increase; a live reload then showed the owned note absent.",
+        "The unpacked build identity and tree hash matched before and after the browser run."
+      ],
+      "limitation": "The run verifies this real admin organization and one newly created note; it does not establish broader feature or mode coverage."
+    }
+  },
+  "delete_evidence": {
+    "request_scope": "workbench.notes, owned note id only; identifier omitted",
+    "live_response": "2xx",
+    "autosave_pending_before_confirmation": true,
+    "autosave_dispatch_count_increased_after_confirmation": false,
+    "owned_note_absent_after_live_reload": true
+  },
+  "evidence": {
+    "sanitized_run": "docs/stabilization/runs/notes-final-native-20260930c.json",
+    "resource_journal": "docs/stabilization/resource-journals/unique-notes-final-native-20260930c.jsonl",
+    "private_raw_receipt": "test-results/notes-native-acceptance.json (mode 0600; contains private identifiers)"
+  }
+}
