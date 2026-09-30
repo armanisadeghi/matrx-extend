@@ -335,9 +335,41 @@ CHECKS+=(
     "migrations|300|ERROR|unapplied migrations (or the ledger was unreachable)|pnpm check:migrations|pnpm -s check:migrations:strict"
 )
 $SKIP_CATALOG || CHECKS+=("tool-drift|300|ERROR|tool catalog drifted from the DB (the LLM and the dispatcher disagree)|pnpm catalog:tools:drift|pnpm -s catalog:tools:drift:strict")
-command -v uvx >/dev/null 2>&1 \
-    && CHECKS+=("mandate-references|300|WARNING|the mandate reference scan did not complete — this build is UNMEASURED on the fleet board|pnpm check:mandate-references|pnpm -s check:mandate-references") \
-    || finding "WARNING" "Checks" "uvx is missing, so no mandate references were reported" "install uv (https://astral.sh/uv)"
+
+# mandate-scan-step:begin
+# ── Mandate references: LOUD, and NEVER exit-affecting (ruling D23) ──────────
+# Every Mandate this candidate names, and every place intelligence is reached
+# outside a Mandate, reported with file, symbol and line. It is NOT a row in
+# CHECKS on purpose: run_checks stops the release on any non-zero exit, and a
+# missing uvx, a PyPI outage, a crash inside the install or the 300 s timeout
+# all exit non-zero before the scanner itself (which exits 0 without --strict)
+# ever runs. Until 2026-09-30 that stopped an extend release (verdict defect D).
+# Every path below is a WARNING finding printed at the end; the function always
+# returns 0. Proven by `matrx-mandate-scan wiring`, which runs this block with a
+# failing, timing-out and missing fake scanner and fails loudly if it can block.
+mandate_scan_step() {
+    local out rc count runner=()
+    if ! command -v uvx >/dev/null 2>&1; then
+        finding "WARNING" "Mandates" "uvx is missing, so no mandate references were reported — this build is UNMEASURED on the fleet board" "install uv (https://astral.sh/uv)"
+        return 0
+    fi
+    if command -v timeout >/dev/null 2>&1; then runner=(timeout 300)
+    elif command -v gtimeout >/dev/null 2>&1; then runner=(gtimeout 300); fi
+    out="${JOBS:-${TMPDIR:-/tmp}}/check-mandate-references.out"
+    ( cd "${CHECK_SNAP:-.}" && RECORDS_GUIDE_SOURCE="$(dirname "${CHECK_SNAP:-.}")/aidream" ${runner[@]+"${runner[@]}"} pnpm -s check:mandate-references ) > "$out" 2>&1
+    rc=$?
+    { echo "--- check mandate-references (exit $rc, never blocks) ---"; cat "$out"; } >> "${RELEASE_LOG_FILE:-/dev/null}" 2>/dev/null || true
+    if [[ "$rc" == 124 ]]; then
+        finding "WARNING" "Mandates" "the mandate reference scan timed out after 300 s — ${NEW_TAG:-this candidate} is UNMEASURED on the fleet board; the release continued (D23)" "pnpm check:mandate-references"
+    elif [[ "$rc" != 0 ]]; then
+        finding "WARNING" "Mandates" "the mandate reference scan did not complete (exit $rc) — ${NEW_TAG:-this candidate} is UNMEASURED on the fleet board; the release continued (D23)" "pnpm check:mandate-references"
+    else
+        count="$(sed -n 's/.*\[MANDATE-SCAN\] \([0-9][0-9]*\) finding(s).*/\1/p' "$out" 2>/dev/null | tail -1)"
+        [[ -n "$count" ]] && finding "WARNING" "Mandates" "$count mandate reference finding(s) at ${NEW_TAG:-this candidate} (reported to the fleet board; never blocks)" "pnpm check:mandate-references"
+    fi
+    return 0
+}
+# mandate-scan-step:end
 
 run_checks() {
     local row name secs rc
@@ -400,6 +432,7 @@ while (( RACES < SHIP_PUSH_ATTEMPTS )); do
     JOBS="$(mktemp -d "${TMPDIR:-/tmp}/matrx-extend-release-jobs.XXXXXX")"
     SNAP_ROOTS+=("$JOBS")
     run_checks || hard_stop "mandatory checks failed for $NEW_TAG — nothing was pushed"
+    mandate_scan_step
     STORE_CANDIDATE="$BUILD_SNAP/.output/${PROJECT_NAME}-${NEW_VERSION}-store.zip"
     LOCAL_CANDIDATE="$BUILD_SNAP/.output/${PROJECT_NAME}-${NEW_VERSION}-local.zip"
     if ! build_zips >> "$RELEASE_LOG_FILE" 2>&1; then

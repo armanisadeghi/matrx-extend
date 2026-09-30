@@ -1,5 +1,5 @@
-import { isUuidShape } from '@ai-matrx/kit/uuid';
 import { makeGuidanceId } from '@/lib/guidance/storage';
+import { isUuidShape } from '@ai-matrx/kit/uuid';
 import { describe, expect, it } from 'vitest';
 
 // extend.wbx_guidance.id is a uuid (access ladder T-21, 2026-09-28): the policy generator compares entity ids

@@ -1,5 +1,5 @@
-import { isSafeDestination } from './login-urls';
 import { isUuidShape } from '@ai-matrx/kit/uuid';
+import { isSafeDestination } from './login-urls';
 
 export type PanelSavedLoginSnapshot =
   | {
