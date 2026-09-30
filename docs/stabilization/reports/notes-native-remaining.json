@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "lane": "notes-native-remaining",
-  "status": "source_ready_native_unverified",
+  "status": "runner_interaction_repaired_native_rerun_pending",
   "scope": ["EXT-D-0067", "EXT-D-0068"],
   "changes": [
     "The existing native Notes runner now scopes detail-read and delete faults to the id observed when reopening its own newly created note.",
@@ -11,8 +11,10 @@
   ],
   "evidence": {
     "source": ["node --check tests/browser/notes-native-acceptance.mjs: pass", "git diff --check -- tests/browser/notes-native-acceptance.mjs: pass"],
-    "native": "unverified; heavy launch is owned by the coordinating lane"
+    "native": "notes-final-native-20260930a passed D61, D62, D63, D67, and both injected D68 failure states. It stopped before successful deletion when the runner's single immediate textarea hit test returned editor_control_not_hittable. The blocking element was not recorded, so the cause is not proven. No product failure is inferred.",
+    "correction": "The runner now waits up to ten seconds for an elementFromPoint-confirmed hit on the active Notes control, tests five interior points, and records only content-free occlusion categories if none becomes hittable. Input remains trusted CDP pointer and keyboard events. Native rerun pending."
   },
   "files": ["tests/browser/notes-native-acceptance.mjs", "docs/stabilization/reports/notes-native-remaining.json"],
+  "prior_synthetic_note": "The failed run did not delete its note. Its ignored raw receipt was privately preserved before a rerun at test-results/notes-native-acceptance-20260930a.json (0600). Cleanup must use the Notes UI and match the exact owned id from that receipt to a detail GET before confirming deletion; do not delete a title match alone.",
   "questions": []
 }

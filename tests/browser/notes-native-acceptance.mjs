@@ -30,7 +30,7 @@ const report = {
   build: null,
   observations: {},
   fault_scope: 'owned panel, workbench.notes transport; detail/delete faults restricted to the owned note id',
-  data_scope: 'one newly created Harbor Dental intake handoff note; deleted after verified retry',
+  data_scope: 'one newly created Harbor Dental intake handoff note; delete is verified only after live retry',
 };
 function fail(code) {
   report.failure_code = code;
@@ -380,17 +380,41 @@ function armNotesTransport(panel, origin) {
   };
 }
 async function fillPanelControl(panel, selector, value) {
-  const target = await evaluate(
-    panel,
-    `(() => {
-    const el = document.querySelector(${JSON.stringify(selector)});
-    if (!el || el.disabled) return null;
-    el.scrollIntoView({block:'center'});
-    const r = el.getBoundingClientRect(), x = r.x + r.width / 2, y = r.y + Math.min(r.height / 2, 20);
-    return document.elementFromPoint(x,y) === el ? {x,y} : null;
-  })()`,
-  );
-  if (!target) fail('editor_control_not_hittable');
+  let lastHitSample = null;
+  const target = await waitFor(
+    'editor_control_hittable',
+    async () => {
+      lastHitSample = await evaluate(
+        panel,
+        `(() => {
+        const tab = document.querySelector('button[role="tab"][title="Notes"][data-state="active"]');
+        const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
+        const el = root?.querySelector(${JSON.stringify(selector)});
+        if (!el) return { reason: 'control_absent' };
+        if (el.disabled) return { reason: 'control_disabled' };
+        el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' });
+        const r = el.getBoundingClientRect();
+        const points = [[0.5, 0.5], [0.5, 0.15], [0.5, 0.85], [0.2, 0.5], [0.8, 0.5]];
+        for (const [px, py] of points) {
+          const x = r.left + r.width * px, y = r.top + r.height * py;
+          if (x < 0 || x >= innerWidth || y < 0 || y >= innerHeight) continue;
+          if (el.contains(document.elementFromPoint(x, y))) return { target: { x, y } };
+        }
+        const center = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+        const modal = document.querySelector('[role="alertdialog"][data-state="open"], [role="dialog"][data-state="open"]');
+        return { reason: 'target_occluded', modalOpen: Boolean(modal),
+          centerHitTag: center?.tagName?.toLowerCase() ?? null,
+          hasArea: r.width > 0 && r.height > 0 };
+      })()`,
+      );
+      return lastHitSample;
+    },
+    (sample) => Boolean(sample?.target),
+    10_000,
+  ).then((sample) => sample.target).catch(() => {
+    report.observations.editor_hit_target_failure = lastHitSample;
+    fail('editor_control_not_hittable');
+  });
   await panel.send('Input.dispatchMouseEvent', {
     type: 'mousePressed',
     ...target,
