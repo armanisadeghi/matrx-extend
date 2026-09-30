@@ -46,7 +46,7 @@ function mount() {
 
 async function confirmDelete() {
   fireEvent.click(screen.getByRole('button', { name: 'Delete note' }));
-  fireEvent.click(await screen.findByRole('button', { name: 'Delete', exact: true }));
+  fireEvent.click(await screen.findByRole('button', { name: /^Delete$/ }));
 }
 
 beforeEach(() => {
@@ -70,7 +70,7 @@ describe('Notes deletion failure', () => {
     expect(useNotesUiStore.getState().selectedNoteId).toBe(noteId);
     expect(screen.getByDisplayValue('Call new patient.')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Retry delete' }));
-    fireEvent.click(await screen.findByRole('button', { name: 'Delete', exact: true }));
+    fireEvent.click(await screen.findByRole('button', { name: /^Delete$/ }));
     await waitFor(() => expect(useNotesUiStore.getState().selectedNoteId).toBeNull());
     expect(api.delete).toHaveBeenCalledTimes(2);
   });
@@ -91,7 +91,7 @@ describe('Notes deletion failure', () => {
     vi.useFakeTimers();
     fireEvent.change(body, { target: { value: 'Call new patient and confirm insurance.' } });
     fireEvent.click(screen.getByRole('button', { name: 'Delete note' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Delete', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: /^Delete$/ }));
     await act(async () => {
       await Promise.resolve();
       await Promise.resolve();
@@ -112,7 +112,7 @@ describe('Notes deletion failure', () => {
     vi.useFakeTimers();
     fireEvent.change(body, { target: { value: 'Call new patient and confirm insurance.' } });
     fireEvent.click(screen.getByRole('button', { name: 'Delete note' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Delete', exact: true }));
+    fireEvent.click(screen.getByRole('button', { name: /^Delete$/ }));
     await act(async () => {
       await Promise.resolve();
       await Promise.resolve();
