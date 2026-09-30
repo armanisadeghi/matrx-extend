@@ -34,7 +34,6 @@ import {
   updateVaultFieldValue,
 } from '@/lib/api/routes/vault';
 import { getCurrentUser } from '@/lib/auth/flow';
-import { isRfc9562Uuid } from '@ai-matrx/kit/uuid';
 import { usesNativeTrustedSessionStorage } from '@/lib/browser/detect';
 import { setCaptureAssistance } from '@/lib/credentials/assistance-status';
 import { log } from '@/lib/debug/log';
@@ -45,6 +44,7 @@ import {
   readCaptureLoginsEnabled,
   readCredentialAssistancePresentation,
 } from '@/lib/settings/persisted';
+import { isRfc9562Uuid } from '@ai-matrx/kit/uuid';
 import type { CaptureCandidateWire } from './capture-detector';
 import { addNeverCaptureOrigin, isNeverCaptureOrigin } from './capture-settings';
 import type {
