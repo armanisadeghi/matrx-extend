@@ -1,9 +1,8 @@
 /**
  * Supabase queries for the Notes tab.
  *
- * Same shape conventions as src/lib/agenda/queries.ts — Zod-parse on read,
- * console.warn on error and return safe defaults so the UI never crashes
- * when the user is offline or RLS rejects.
+ * Read failures reject into React Query so the UI can distinguish them from
+ * successful empty results. Writes return null on a failed database response.
  */
 
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
@@ -32,13 +31,16 @@ export async function listMyNotes(): Promise<NoteListItem[]> {
     .order('updated_at', { ascending: false });
   if (error) {
     console.warn('[notes] listMyNotes error', error.message);
-    return [];
+    throw new Error(`Could not load notes: ${error.message}`);
   }
   const out: NoteListItem[] = [];
   for (const row of data ?? []) {
     const parsed = NoteListItemSchema.safeParse(row);
     if (parsed.success) out.push(parsed.data);
-    else console.warn('[notes] list row failed validation', parsed.error.issues);
+    else {
+      console.warn('[notes] list row failed validation', parsed.error.issues);
+      throw new Error('Could not load notes: a returned note had an unexpected shape.');
+    }
   }
   return out;
 }

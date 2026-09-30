@@ -13,7 +13,7 @@
 import { listMyNotes } from '@/lib/notes/queries';
 import { useNotesUiStore } from '@/state/notes';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
-import { Skeleton } from '@ai-matrx/design-system';
+import { Button, Skeleton } from '@ai-matrx/design-system';
 import { useQuery } from '@tanstack/react-query';
 import { NoteEditor } from './NoteEditor';
 import { NotesList } from './NotesList';
@@ -27,6 +27,7 @@ export function NotesView() {
     queryFn: listMyNotes,
     enabled: tab === 'notes',
     staleTime: 30_000,
+    retry: false,
   });
 
   if (notesQuery.isPending && tab === 'notes') {
@@ -43,6 +44,18 @@ export function NotesView() {
 
   if (selectedNoteId) {
     return <NoteEditor key={selectedNoteId} noteId={selectedNoteId} />;
+  }
+
+  if (notesQuery.isError) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-3 p-4 text-center" role="alert">
+        <p className="text-sm font-medium">Could not load notes.</p>
+        <p className="text-xs text-muted-foreground">Check your connection and try again.</p>
+        <Button type="button" size="sm" onClick={() => void notesQuery.refetch()}>
+          Retry loading notes
+        </Button>
+      </div>
+    );
   }
 
   return <NotesList notes={notesQuery.data ?? []} />;

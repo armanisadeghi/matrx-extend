@@ -14,14 +14,15 @@
   "actual": "listMyNotes logs the error and returns []; NotesView receives a successful query result and renders NotesList, which says \u2018No notes yet\u2019 with no error state.",
   "severity": "S3: notes query failure is indistinguishable from a genuinely empty collection",
   "priority": "P1: user cannot tell whether their notes are absent or the read failed",
-  "state": "triaged",
+  "state": "fixed",
   "evidence": [
     "docs/stabilization/reports/notes-files-batch-audit.json",
     "src/lib/notes/queries.ts:28-44",
     "src/features/notes/NotesView.tsx:25-48",
     "src/features/notes/NotesList.tsx:142-147"
   ],
-  "verification_status": "Source-derived reproducible sequence; native and regression verification pending.",
+  "verification_status": "Focused read guard failed on the original source and passed after the source fix; final corrected Notes bundle and native side-panel acceptance remain pending.",
+  "current_source_truth": "listMyNotes now rejects database and malformed-row failures, allowing NotesView to show an explicit error and Retry; a successful empty SELECT still shows the empty state. Selected editor drafts remain accessible while the list query fails.",
   "transition_history": [
     {
       "at": "2026-09-28T19:51:52.878308+00:00",
@@ -34,6 +35,12 @@
       "from": "open",
       "to": "triaged",
       "reason": "Concrete source branch and self-contained reproduction identified; runtime pending."
+    },
+    {
+      "at": "2026-09-30T08:34:54Z",
+      "from": "triaged",
+      "to": "fixed",
+      "reason": "Read boundary and NotesView error/retry source fixed. Red guard proved original failure; focused Notes tests passed 15/15 and compile passed. Native acceptance pending."
     }
   ]
 }
