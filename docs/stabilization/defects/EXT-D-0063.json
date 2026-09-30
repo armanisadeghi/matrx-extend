@@ -1,10 +1,12 @@
 {
   "id": "EXT-D-0063",
   "feature_id": "EXT-F-2007",
-  "case_ids": ["EXT-F-2007-T01"],
+  "case_ids": [
+    "EXT-F-2007-T01"
+  ],
   "title": "Debounced note edits are dropped when a save is already in flight",
   "surface": "Notes editor",
-  "auth_mode": "member/admin; source-derived, native unverified",
+  "auth_mode": "member/admin; current-build native admin scoped evidence, member unverified",
   "reproduction": [
     "Open a note and change its body; allow the 600 ms debounce to start the update request.",
     "Before that request resolves, make a second body change and wait for its 600 ms debounce to expire.",
@@ -18,9 +20,10 @@
   "evidence": [
     "docs/stabilization/reports/notes-files-batch-audit.json",
     "src/features/notes/NoteEditor.tsx:95-114",
-    "src/features/notes/NoteEditor.tsx:118-136"
+    "src/features/notes/NoteEditor.tsx:118-136",
+    "docs/stabilization/reports/notes-live-final-verifier.json"
   ],
-  "verification_status": "Fixed in source; committed focused regression coverage is present but was not executed in this reconciliation. Native side-panel and durable persistence acceptance remain pending.",
+  "verification_status": "Admin current-build native retest pass: overlapping autosave persisted latest draft across reload/reopen. Member mode remains unverified; no full-feature closure.",
   "current_source_truth": "Engineering fix present: persist queues the latest draft while a write is in flight, serially drains queued snapshots, and marks Saved only after the current draft is persisted. The focused regression test covers the deferred first write and confirms the newer draft is stored before Saved. Independent native side-panel and real persistence acceptance remain pending; no test was run in this reconciliation.",
   "native_acceptance_report": "docs/stabilization/reports/contained-state-reconcile-20260930.json",
   "transition_history": [
@@ -48,5 +51,13 @@
       "to": "fixed",
       "reason": "Engineering source correction and focused regression coverage landed in original commit 70aca470; follow-up commit d59c24b3 corrected Saved status when a queued snapshot equals the saved snapshot. Native side-panel and backend persistence acceptance remain pending."
     }
-  ]
+  ],
+  "retest_results": {
+    "admin": {
+      "run_id": "notes-final-native-20260930a",
+      "result": "pass: overlapping autosave persisted latest draft across reload/reopen",
+      "report": "docs/stabilization/reports/notes-live-final-verifier.json",
+      "build_tree": "93c7bf7978357d7e93d64658fd65fa4e5e8285eb7e9be303ac3d2d2ea8b277a8"
+    }
+  }
 }

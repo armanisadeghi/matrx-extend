@@ -1,10 +1,12 @@
 {
   "id": "EXT-D-0061",
   "feature_id": "EXT-F-2006",
-  "case_ids": ["EXT-F-2006-T03"],
+  "case_ids": [
+    "EXT-F-2006-T03"
+  ],
   "title": "Note-list read failure is presented as an empty list",
   "surface": "Notes side-panel",
-  "auth_mode": "member/admin; source-derived, native unverified",
+  "auth_mode": "member/admin; current-build native admin scoped evidence, member unverified",
   "reproduction": [
     "Open Notes while signed in with the selected device organization set.",
     "Make the notes SELECT return a Supabase error (for example, deny the read or make the network unavailable).",
@@ -20,9 +22,10 @@
     "src/lib/notes/queries.ts:28-44",
     "src/features/notes/NotesView.tsx:25-48",
     "src/features/notes/NotesList.tsx:142-147",
-    "docs/stabilization/runs/notes-native-20260930c.json"
+    "docs/stabilization/runs/notes-native-20260930c.json",
+    "docs/stabilization/reports/notes-live-final-verifier.json"
   ],
-  "verification_status": "Final development build 0.2.138 (119bb63c\u2026) passed native admin failed-list/error/retry recovery in run notes-native-20260930c. Member-mode and complete surrounding Notes matrix remain unverified; defect is not closed.",
+  "verification_status": "Admin current-build native retest pass: injected list failure, honest error and real retry recovery. Member mode remains unverified; no full-feature closure.",
   "current_source_truth": "listMyNotes now rejects database and malformed-row failures, allowing NotesView to show an explicit error and Retry; a successful empty SELECT still shows the empty state. Selected editor drafts remain accessible while the list query fails.",
   "transition_history": [
     {
@@ -46,9 +49,10 @@
   ],
   "retest_results": {
     "admin": {
-      "status": "pass",
-      "scope": "Original failed-list reproduction and real retry recovery; no false empty claim",
-      "run": "notes-native-20260930c"
+      "run_id": "notes-final-native-20260930a",
+      "result": "pass: injected list failure, honest error and real retry recovery",
+      "report": "docs/stabilization/reports/notes-live-final-verifier.json",
+      "build_tree": "93c7bf7978357d7e93d64658fd65fa4e5e8285eb7e9be303ac3d2d2ea8b277a8"
     },
     "member": {
       "status": "not-run"

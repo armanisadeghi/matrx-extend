@@ -1,10 +1,12 @@
 {
   "id": "EXT-D-0068",
   "feature_id": "EXT-F-2007",
-  "case_ids": ["EXT-F-2007-T03"],
+  "case_ids": [
+    "EXT-F-2007-T03"
+  ],
   "title": "Unconfirmed note deletion silently closes the editor",
   "surface": "Notes editor",
-  "auth_mode": "member/admin; source-derived, native unverified",
+  "auth_mode": "member/admin; current-build native admin scoped evidence, member unverified",
   "reproduction": [
     "Open a note and confirm Delete.",
     "Make the filtered soft-delete UPDATE return zero affected rows or a transport error.",
@@ -14,13 +16,14 @@
   "actual": "softDeleteNote returned true whenever Supabase reported no error, without checking affected rows. NoteEditor then navigated to the list; false and thrown failures had no visible notice.",
   "severity": "S3: a failed deletion is presented as completed",
   "priority": "P1: a note remains while the user believes it was deleted",
-  "state": "in-fix",
+  "state": "fixed",
   "evidence": [
     "docs/stabilization/reports/notes-remaining-failure-audit.json",
     "src/lib/notes/queries.ts:softDeleteNote",
-    "src/features/notes/NoteEditor.tsx:performDelete"
+    "src/features/notes/NoteEditor.tsx:performDelete",
+    "docs/stabilization/reports/notes-live-final-verifier.json"
   ],
-  "verification_status": "Source correction and deterministic guards authored; guarded red/green runs, compile, and native acceptance pending.",
+  "verification_status": "Admin current-build native retest partial: transport and zero-row delete failure preserve draft; successful delete not reached due driver interaction failure. Member mode remains unverified; no full-feature closure.",
   "transition_history": [
     {
       "at": "2026-09-30T08:55:18Z",
@@ -39,6 +42,20 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol assigned source and consumer guard repair after native artifact freeze."
+    },
+    {
+      "at": "2026-09-30T09:44:53.755635+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source repair reviewed; integrated Notes24 tests, final compile and fresh development build passed. Native scope recorded separately."
     }
-  ]
+  ],
+  "retest_results": {
+    "admin": {
+      "run_id": "notes-final-native-20260930a",
+      "result": "partial: transport and zero-row delete failure preserve draft; successful delete not reached due driver interaction failure",
+      "report": "docs/stabilization/reports/notes-live-final-verifier.json",
+      "build_tree": "93c7bf7978357d7e93d64658fd65fa4e5e8285eb7e9be303ac3d2d2ea8b277a8"
+    }
+  }
 }

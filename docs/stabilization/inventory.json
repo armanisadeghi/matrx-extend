@@ -22332,7 +22332,7 @@
           "retest_status": "not-run"
         },
         "admin": {
-          "test_status": "fail",
+          "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0061",
             "EXT-D-0062",
@@ -22340,9 +22340,15 @@
           ],
           "run_ids": [
             "notes-native-20260930c",
-            "notes-native-escalation-20260930b"
+            "notes-native-escalation-20260930b",
+            "notes-final-native-20260930a"
           ],
-          "retest_status": "D61 error/retry passed; D62 feedback/refresh passed. Real Notes create POST returned403 (D69), noeditor; other featurecases unverified."
+          "retest_status": "partial",
+          "retest_evidence": {
+            "run_id": "notes-final-native-20260930a",
+            "report": "docs/stabilization/reports/notes-live-final-verifier.json",
+            "scope": "D61/D62/D63/D67 admin reproduction passed; D68 failure cases passed, successful delete not reached. Feature remains incomplete."
+          }
         }
       },
       "inventory_status": "source-complete",
@@ -22750,8 +22756,15 @@
             "EXT-D-0067",
             "EXT-D-0068"
           ],
-          "run_ids": [],
-          "retest_status": "D63 fixed-awaiting-native; D67/D68 in-fix, native not-run"
+          "run_ids": [
+            "notes-final-native-20260930a"
+          ],
+          "retest_status": "partial",
+          "retest_evidence": {
+            "run_id": "notes-final-native-20260930a",
+            "report": "docs/stabilization/reports/notes-live-final-verifier.json",
+            "scope": "D61/D62/D63/D67 admin reproduction passed; D68 failure cases passed, successful delete not reached. Feature remains incomplete."
+          }
         }
       },
       "inventory_status": "source-complete",

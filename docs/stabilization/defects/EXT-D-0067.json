@@ -1,10 +1,13 @@
 {
   "id": "EXT-D-0067",
   "feature_id": "EXT-F-2007",
-  "case_ids": ["EXT-F-2007-T04", "EXT-F-2007-T01"],
+  "case_ids": [
+    "EXT-F-2007-T04",
+    "EXT-F-2007-T01"
+  ],
   "title": "Note detail read failure or missing note remains a loading skeleton",
   "surface": "Notes editor",
-  "auth_mode": "member/admin; source-derived, native unverified",
+  "auth_mode": "member/admin; current-build native admin scoped evidence, member unverified",
   "reproduction": [
     "Open a note and make its detail SELECT return a persistent error or a successful zero-row result.",
     "Wait for the detail query to settle."
@@ -13,13 +16,14 @@
   "actual": "getNote returned null for errors and missing rows; NoteEditor rendered a loading skeleton whenever note was null, with no terminal state.",
   "severity": "S3: a note appears stuck and unavailable with no explanation",
   "priority": "P1: the user cannot recover from a failed detail load in the editor",
-  "state": "in-fix",
+  "state": "fixed",
   "evidence": [
     "docs/stabilization/reports/notes-remaining-failure-audit.json",
     "src/lib/notes/queries.ts:getNote",
-    "src/features/notes/NoteEditor.tsx:detailQuery"
+    "src/features/notes/NoteEditor.tsx:detailQuery",
+    "docs/stabilization/reports/notes-live-final-verifier.json"
   ],
-  "verification_status": "Source correction and deterministic guards authored; guarded red/green runs, compile, and native acceptance await the shared resource permit.",
+  "verification_status": "Admin current-build native retest pass: failed detail and missing record offered recovery; real GET restored editor. Member mode remains unverified; no full-feature closure.",
   "transition_history": [
     {
       "at": "2026-09-30T08:49:18Z",
@@ -38,6 +42,20 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol assigned source and consumer guard repair after native artifact freeze; heavy execution remains leased to native lane."
+    },
+    {
+      "at": "2026-09-30T09:44:53.755635+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source repair reviewed; integrated Notes24 tests, final compile and fresh development build passed. Native scope recorded separately."
     }
-  ]
+  ],
+  "retest_results": {
+    "admin": {
+      "run_id": "notes-final-native-20260930a",
+      "result": "pass: failed detail and missing record offered recovery; real GET restored editor",
+      "report": "docs/stabilization/reports/notes-live-final-verifier.json",
+      "build_tree": "93c7bf7978357d7e93d64658fd65fa4e5e8285eb7e9be303ac3d2d2ea8b277a8"
+    }
+  }
 }
