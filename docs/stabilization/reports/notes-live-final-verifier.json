@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "run_id": "notes-final-native-20260930a",
+  "status": "partial_unverified",
+  "build": {
+    "kind": "local_dev_unpacked",
+    "version": "0.2.138",
+    "tree_sha256": "93c7bf7978357d7e93d64658fd65fa4e5e8285eb7e9be303ac3d2d2ea8b277a8"
+  },
+  "two_verdicts": {
+    "live_product_flows": {
+      "verdict": "partial_pass",
+      "passed": {
+        "D61": "Real admin sign-in and explicit test organization; failed Notes list showed retry without false empty state, then real retry recovered.",
+        "D62": "Injected create failure remained honest; Refresh and the real create retry opened an editor.",
+        "D63": "Title saved; overlapping body edits settled to the latest draft; reload and reopen restored that draft.",
+        "D67": "Owned detail transport failure showed Retry and Back; a successful null response showed missing-record state; retry recovered from live GET.",
+        "D68_failed_and_zero_row_delete": "Injected transport failure and zero-row response both retained the editor/draft and offered retry/confirmation."
+      },
+      "unverified": [
+        "D68 successful deletion of the owned synthetic note",
+        "owned note absent after reload",
+        "no autosave dispatch after confirmed deletion"
+      ],
+      "limitation": "Run stopped before the successful-delete sequence because the runner reported editor_control_not_hittable while attempting the pending-autosave setup. No real successful deletion response was observed."
+    },
+    "runner_and_resource": {
+      "verdict": "resource_valid_runner_interaction_failed",
+      "resource_journal_sha256": "17d6dfaf70327e81e60f375e76c24ab6f5049cbacf713aaf93dfc0b1ccf68b8e",
+      "failure_stage": "D68_pending_autosave_delete",
+      "failure_code": "editor_control_not_hittable",
+      "injected_transport_interception_failed": false,
+      "note": "The runner stopped at the first interaction failure; no retry or second browser launch was attempted."
+    }
+  },
+  "resource_journal": "docs/stabilization/resource-journals/notes-final-native-20260930a.jsonl",
+  "synthetic_note_cleanup": "Unresolved: do not infer deletion. The raw local runner output contains the scoped synthetic identity if the owner needs to arrange cleanup; no direct database mutation was performed."
+}
