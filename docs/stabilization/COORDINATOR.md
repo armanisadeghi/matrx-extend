@@ -1,5 +1,25 @@
 # Matrx Extend stabilization: resume here
 
+## Current checkpoint — September 30, 2026: contained-feature stabilization resumed
+
+Arman asked to push ahead on remaining bugs and get the system working. Current source is synchronized through `d6e38fba`; subsequent remote changes must still be reconciled before push. The 0.2.130 guest Chat Store replacement was freshly checked in the publisher dashboard and remains **Pending review**. Do not replace that pending package for unrelated stabilization work.
+
+First active repair batch: Notes list and create failure reporting (`EXT-D-0061`, `EXT-D-0062`). Current source still converts failures into an empty list or null with no corresponding user recovery. Lane `/root/notes_failure_repair` (Sol medium) owns the Notes query/list changes and the sole heavy-test permit; every test/compile uses the existing resource guard. Escalate after two failed fix rounds or 20 minutes, not repeated blind retries.
+
+Independent source/evidence reconciliation: `/root/contained_state_reconcile` (Luna medium) owns a report for existing autosave, Files error-state, and saved-capture selection repairs (`EXT-D-0063`, `EXT-D-0064`, `EXT-D-0065`). Their defect records lag current code, so do not reimplement them or close them without native retest. No heavy tests or browser launches in this lane. Next: independent review of Notes changes, then one current-build native acceptance session covering applicable signed-in modes and guest applicability. Inventory remains the coverage source; source tests alone do not certify the UI.
+
+Native acceptance preparation: `/root/notes_native_acceptance` (Sol medium) owns a receipt-bound Notes browser runner and its exact resource allowlist entry, but has no browser/build/test permit while the repair lane runs. It will cover real-admin read/create failure and recovery, then overlapping save/reopen where feasible. Credentials are read privately only at normal sign-in.
+
+Independent repair review: `/root/notes_failure_peer` (Luna medium, fresh seat) owns the two-verdict source/evidence review for D61/D62. No heavy permit; native proof remains separate.
+
+Final correction review: `/root/notes_final_peer` (Luna medium, fresh seat) owns the final two-verdict source/evidence check after the initial review caught false certainty in create-error copy. Native runner `a134e82e` is committed. Root now owns the sole heavy permit; the last run was refused before launch for macOS pressure level 2, so final correction tests and native build remain pending. Product commits are held from push until final checks pass.
+
+Final source checks: root run `notes-final-owner-tests-20260930b` admitted after resource recovery and passed 11 tests across four Notes files. `/root/notes_native_acceptance` now owns the sole heavy permit for compile, current development build, and native execution. `/root/notes_detail_failure_audit` (Luna medium) owns a source-only census of remaining Notes failure paths; no heavy permit or product edits.
+
+Next owned Notes repair: `/root/notes_failure_repair` resumes in Sol medium for `EXT-D-0067` (detail failure/missing data stuck loading) and `EXT-D-0068` (delete failure or zero-row update treated silently). It waits for the current artifact snapshot before edits and has no heavy permit while native acceptance runs. Findings are in `reports/notes-remaining-failure-audit.json`; exact defect records and regression evidence are the worker deliverable. Root owns inventory links.
+
+The checkpoints below are historical. In particular, earlier disk refusals, build identities, and unapplied-patch claims must not override current evidence. Broad Chat/Pilot work remains deferred after the urgent guest Chat repair. No overall health claim is made.
+
 Current priority (2026-09-27): finish Showcase detect → extract → save → reopen → repeat, per latest owner request. SHOWCASE-PLAN.md and inventory EXT-F-1012 own scope. Broad stabilization remains incomplete; the goal is active.
 
 **Owner ruling (2026-09-27): Showcase UI acceptance uses the built development

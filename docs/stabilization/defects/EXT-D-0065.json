@@ -14,13 +14,15 @@
   "actual": "openCapture has no request generation or selected-ID guard; each resolution calls setSelected, so the slower A response overwrites B.",
   "severity": "S3: delayed detail response can navigate to a stale capture",
   "priority": "P2: user sees the wrong saved Source after selecting another row",
-  "state": "triaged",
+  "state": "fixed",
   "evidence": [
     "docs/stabilization/reports/notes-files-batch-audit.json",
     "src/features/saved-captures/SavedCapturesView.tsx:113-125",
     "src/features/saved-captures/SavedCapturesView.tsx:269-276"
   ],
-  "verification_status": "Source-derived reproducible sequence; native and regression verification pending.",
+  "verification_status": "Fixed in source; committed focused regression coverage is present but was not executed in this reconciliation. Native side-panel race acceptance remains pending.",
+  "current_source_truth": "Engineering fix present: openCapture uses a monotonically increasing request generation and ignores stale success, failure, and loading completions. Focused component regressions resolve B before A and prove the latest selection stays open, including when A fails late. Native side-panel race acceptance remains pending; no test was run in this reconciliation.",
+  "native_acceptance_report": "docs/stabilization/reports/contained-state-reconcile-20260930.json",
   "transition_history": [
     {
       "at": "2026-09-28T19:51:52.878308+00:00",
@@ -33,6 +35,18 @@
       "from": "open",
       "to": "triaged",
       "reason": "Concrete source branch and self-contained reproduction identified; runtime pending."
+    },
+    {
+      "at": "2026-09-28T20:06:34-07:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Original repair commit 2da0ef91 assigned and landed the Saved captures stale-response guard with focused regression coverage."
+    },
+    {
+      "at": "2026-09-28T20:06:34-07:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Current source guards detail-open completion by request generation; delayed older responses cannot replace the latest selection. Native side-panel race acceptance remains pending."
     }
   ]
 }

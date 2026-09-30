@@ -97,6 +97,7 @@
     ["node", "tests/browser/debug-log-export-acceptance.mjs"],
     ["node", "tests/browser/takeover-visible-census.mjs"],
     ["node", "tests/browser/auth-role-failure-acceptance.mjs"],
+    ["node", "tests/browser/notes-native-acceptance.mjs"],
     ["node", "tests/browser/screenshot-capture-acceptance.mjs"],
     ["node", "tests/browser/screenshot-full-page-acceptance.mjs"],
     ["node", "tests/browser/screenshot-gallery-failure-acceptance.mjs"],

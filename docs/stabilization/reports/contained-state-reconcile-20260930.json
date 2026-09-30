@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "audit": "contained-state-source-and-evidence-reconcile-20260930",
+  "method": "Read-only review of current source, committed regression tests, defect records, and the existing browser harness. No tests, builds, or browser sessions were run.",
+  "reviewed_commit": "d6e38fba",
+  "related_fix_commit": "d59c24b3",
+  "findings": [
+    {
+      "defect_id": "EXT-D-0063",
+      "title": "Debounced note edits are dropped when a save is already in flight",
+      "source_correctness": {
+        "verdict": "corrected in current source; no remaining source defect found for the recorded sequence",
+        "evidence": [
+          "src/features/notes/NoteEditor.tsx:125-184 queues every snapshot, drains writes serially, and follows a successful older write with the latest draft before reporting Saved",
+          "src/features/notes/NoteEditor.tsx:206-227 routes debounce, append, and unmount flush through persist",
+          "src/features/notes/NoteEditor.autosave.test.tsx:181-210 holds write A pending, submits B, proves B is next persisted write, and checks Saved only after B resolves"
+        ],
+        "scope_limit": "The broader prior acceptance review also called out note-switch and append races; inspect the complete current test file before treating each as covered. Native UI and durable backend persistence remain unverified."
+      },
+      "evidence_quality": {
+        "verdict": "strong deterministic regression evidence in source, no native evidence",
+        "basis": "The targeted test controls the in-flight response and checks the persisted mock store and Saved indicator; this directly exercises the former failure ordering. Its in-memory store does not prove Supabase persistence or browser lifecycle behavior."
+      },
+      "next_acceptance": [
+        "Use the normal loaded extension side panel and an existing member note; create a distinctive first edit, then a second edit while the first update is pending under network throttling.",
+        "Wait until Saved appears, reload/reopen the note, and verify the second exact text remains. Repeat once by appending from page while the first update is pending.",
+        "Keep the deterministic deferred-update test as the race guard; the existing saved-captures E2E harness does not cover Notes."
+      ],
+      "status_recommendation": "Keep defect open for native acceptance; source correction and regression guard are already present, so do not reimplement."
+    },
+    {
+      "defect_id": "EXT-D-0064",
+      "title": "Files read failure also renders an empty-library or empty-captures claim",
+      "source_correctness": {
+        "verdict": "corrected in current source; stale defect actual",
+        "evidence": [
+          "src/features/files/FilesView.tsx:276-277 renders InventoryLoadError for state=error before the Library empty state",
+          "src/features/files/FilesView.tsx:310-311 renders InventoryLoadError for state=error before the Screenshots empty state",
+          "src/features/files/FilesView.tsx:964-974 gives the error a Retry files action",
+          "src/features/files/FilesView.test.tsx:39-56 covers rejected reads in both tabs, absence of the empty claim, retry, and recovery"
+        ]
+      },
+      "evidence_quality": {
+        "verdict": "strong focused component regression evidence, no native evidence",
+        "basis": "The test forces each query to reject and verifies the active tab shows the failure rather than an empty collection, then verifies retry recovery. It remains a mocked component test."
+      },
+      "next_acceptance": [
+        "In the normal extension side panel, open Files → Library and Files → Screenshots with DevTools network offline and no cached rows.",
+        "Confirm each active tab shows the read error and Retry files without its empty-state claim; restore network and retry, confirming the error clears and the resulting list or empty state is accurate."
+      ],
+      "status_recommendation": "Retain native verification as pending; update the defect actual/state after that acceptance rather than redoing the source fix."
+    },
+    {
+      "defect_id": "EXT-D-0065",
+      "title": "Concurrent saved-capture opens can select a different item than the last click",
+      "source_correctness": {
+        "verdict": "corrected in current source; no remaining source defect found for the recorded ordering",
+        "evidence": [
+          "src/features/saved-captures/SavedCapturesView.tsx:119-137 increments openGeneration and ignores stale success, error, and loading completions",
+          "src/features/saved-captures/SavedCapturesView.test.tsx:130-162 resolves B before A and proves B stays selected",
+          "src/features/saved-captures/SavedCapturesView.test.tsx:164-187 proves an older A failure cannot replace the latest successful B selection"
+        ]
+      },
+      "evidence_quality": {
+        "verdict": "strong deterministic regression evidence in source, partial general native coverage available",
+        "basis": "The deferred-promise component tests force both response orderings and inspect the selected detail. tests/browser/saved-captures-e2e.mjs exercises a real extension save, Saved captures list, detail, original read, and delete, but it does not race two detail opens. No browser evidence was run in this reconciliation."
+      },
+      "next_acceptance": [
+        "Run the existing tests/browser/saved-captures-e2e.mjs on the built extension for ordinary list/detail integration when the existing browser/build lane permits.",
+        "For the reported race itself, keep the deferred-promise regression as the deterministic acceptance; in a native side panel, quickly select two listed Sources and confirm the final detail matches the last click if the environment can delay the first read."
+      ],
+      "status_recommendation": "Keep native integration pending; source fix and race-specific regression tests already exist, so do not duplicate them."
+    }
+  ],
+  "overall": {
+    "source_correctness_verdict": "D63, D64, and D65 recorded source failures are corrected in current HEAD; no product edit is indicated by this review.",
+    "evidence_quality_verdict": "All three have relevant committed component regression tests. These tests are meaningful source-level evidence; none proves the browser side panel or real Supabase persistence. The existing saved-captures browser harness covers ordinary capture/detail flow, not the race.",
+    "remaining_action": "Native acceptance of Notes latest-draft persistence, Files read-error/retry behavior in both tabs, and saved-captures detail selection on the current built extension. Update their stabilization records only after those observations.",
+    "execution": "No builds, tests, or browser sessions were run per assignment."
+  }
+}

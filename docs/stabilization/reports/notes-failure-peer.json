@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "lane": "fresh independent Notes failure source review, Luna medium",
+  "scope": ["EXT-D-0061", "EXT-D-0062"],
+  "source_review": "Read-only review of Notes query and UI consumer control flow. No tests, builds, browser sessions, or code edits were performed.",
+  "verdict_a_product_outcome": {
+    "overall": "PARTIAL_PENDING_FRESH_REVIEW",
+    "criteria": {
+      "D61_failed_read_distinct_from_successful_empty": "SOURCE_PASS: listMyNotes rejects database errors and malformed rows; NotesView renders a dedicated error with Retry; NotesList's empty message is reached only after a successful list query.",
+      "D61_retry_recovery": "SOURCE_PASS: Retry calls React Query refetch; native recovery with real Supabase data is unverified.",
+      "D62_failure_is_visible_and_retryable": "SOURCE_PASS: createNote failure/null or thrown failure is caught; the list remains visible and offers Retry creating note.",
+      "D62_no_misleading_persistence_claim": "INITIAL_FINDING: the reviewed version said 'Nothing was saved' for every null result. createNote also returns null when a response has no data or returned data fails NoteSchema validation, so that wording was not established by the query result and could be false after a committed INSERT. Root reported that the builder changed this copy; this reviewer did not inspect or approve that correction.",
+      "native_behavior": "UNVERIFIED: no installed-extension/browser proof was performed; these are source conclusions only."
+    },
+    "scope_ruling": "The selectedNoteId branch preceding list-query error was examined. Per root's scope ruling, the editor uses an independent detail query and preserving it avoids unmounting a draft; this is not a D61 false-empty reproduction and is not reported as a defect."
+  },
+  "verdict_b_doctrine_quality": {
+    "overall": "PARTIAL_PENDING_FRESH_DIFF_REVIEW",
+    "criteria": {
+      "nothing_fails_silently": "SOURCE_PASS for the basic D61 and D62 failure paths: both now reach user-visible recovery UI in the inspected in-progress source.",
+      "forcing_function_regressions": "NOT_VERIFIED: regression test files were present in the shared working tree, but this reviewer did not run or independently inspect their final committed diff or mutation proof.",
+      "class_coverage_and_reuse": "LIMITED: review followed the sole Notes list consumer of listMyNotes and sole New note consumer of createNote; no sibling createNote consumers exist under src.",
+      "native_acceptance": "OPEN: tests/source are not UI proof."
+    },
+    "review_limits": "The root requested this initial report before the builder's exact SHAs arrived. It is not acceptance of the builder's corrected final source; a fresh final peer must inspect the exact commits and resolve the initial wording finding."
+  },
+  "evidence": [
+    "docs/stabilization/defects/EXT-D-0061.json",
+    "docs/stabilization/defects/EXT-D-0062.json",
+    "src/lib/notes/queries.ts",
+    "src/features/notes/NotesView.tsx",
+    "src/features/notes/NotesList.tsx",
+    "rg -n 'createNote\\(' src --glob '*.{ts,tsx}' showed only the NotesList consumer"
+  ],
+  "open_actions": [
+    "Fresh reviewer must inspect exact builder SHAs and confirm the corrected create-failure wording does not claim an unverified persistence outcome.",
+    "Native acceptance lane must verify failed read versus successful empty read, Retry recovery, failed create, and successful retry using the installed development extension and real signed-in account."
+  ]
+}

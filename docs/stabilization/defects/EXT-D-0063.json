@@ -14,13 +14,15 @@
   "actual": "The second timer calls persist while inflightRef is true; persist returns immediately and discards that snapshot. Completion of the first update marks the earlier snapshot saved and does not schedule a trailing write.",
   "severity": "S2: latest user edits can be lost while the UI reports an earlier snapshot saved",
   "priority": "P1: silent note data loss",
-  "state": "in-fix",
+  "state": "fixed",
   "evidence": [
     "docs/stabilization/reports/notes-files-batch-audit.json",
     "src/features/notes/NoteEditor.tsx:95-114",
     "src/features/notes/NoteEditor.tsx:118-136"
   ],
-  "verification_status": "Source-derived reproducible sequence; native and regression verification pending.",
+  "verification_status": "Fixed in source; committed focused regression coverage is present but was not executed in this reconciliation. Native side-panel and durable persistence acceptance remain pending.",
+  "current_source_truth": "Engineering fix present: persist queues the latest draft while a write is in flight, serially drains queued snapshots, and marks Saved only after the current draft is persisted. The focused regression test covers the deferred first write and confirms the newer draft is stored before Saved. Independent native side-panel and real persistence acceptance remain pending; no test was run in this reconciliation.",
+  "native_acceptance_report": "docs/stabilization/reports/contained-state-reconcile-20260930.json",
   "transition_history": [
     {
       "at": "2026-09-28T19:51:52.878308+00:00",
@@ -39,6 +41,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol assigned latest-draft autosave correction, source-only while build lane owns heavy lease."
+    },
+    {
+      "at": "2026-09-28T13:57:32-07:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Engineering source correction and focused regression coverage landed in original commit 70aca470; follow-up commit d59c24b3 corrected Saved status when a queued snapshot equals the saved snapshot. Native side-panel and backend persistence acceptance remain pending."
     }
   ]
 }

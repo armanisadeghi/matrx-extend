@@ -22085,9 +22085,9 @@
         {
           "id": "EXT-F-2006-C06",
           "label": "Loading/error state",
-          "action": "Observe query loading/error behavior; no manual refresh action is rendered",
+          "action": "Observe loading, successful empty results, and visible load failures with retry",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Loading/error state (Observe query loading/error behavior; no manual refresh action is rendered) on Notes side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Loading/error state (Observe loading, successful empty results, and visible load failures with retry) on Notes side-panel in source-applicable roles; include refusal and reload where state persists."
         },
         {
           "id": "EXT-F-2006-C07",
@@ -22123,11 +22123,27 @@
         },
         {
           "id": "EXT-F-2006-C11",
-          "label": "Retry note list after reopening",
-          "action": "Remount Notes after load failure; no inline retry exists",
+          "label": "Retry loading notes",
+          "action": "Retry the failed list query through the visible recovery button",
+          "source_anchor": "src/features/notes/NotesView.tsx",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Retry loading notes (Retry the failed list query through the visible recovery button) on Notes side-panel in source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2006-C12",
+          "label": "Retry creating note",
+          "action": "Retry creation after visible failure feedback",
           "source_anchor": "src/features/notes/NotesList.tsx",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Retry note list after reopening (Remount Notes after load failure; no inline retry exists) on Notes side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Fail an owned Notes insert, verify honest feedback, restore transport and retry through this button; verify exactly one successful retry opens its editor."
+        },
+        {
+          "id": "EXT-F-2006-C13",
+          "label": "Refresh notes after uncertain creation",
+          "action": "Refresh the list to check whether an uncertain create persisted before retrying",
+          "source_anchor": "src/features/notes/NotesList.tsx",
+          "test_design_status": "unverified",
+          "test_design_item": "After an uncertain create response, refresh the notes list; distinguish a persisted result from a failed read without claiming that nothing was saved."
         }
       ],
       "source_anchors": [
@@ -22214,7 +22230,10 @@
           "title": "Create first note and empty/loading states",
           "control_ids": [
             "EXT-F-2006-C01",
-            "EXT-F-2006-C06"
+            "EXT-F-2006-C06",
+            "EXT-F-2006-C11",
+            "EXT-F-2006-C12",
+            "EXT-F-2006-C13"
           ],
           "modes": [
             "member",
@@ -22531,7 +22550,8 @@
             "admin",
             "reload",
             "network"
-          ]
+          ],
+          "verification_status": "fixed-awaiting-native: EXT-D-0063 source correction and deferred-write regression coverage are present; native latest-draft persistence and real backend acceptance remain pending."
         },
         {
           "id": "EXT-F-2007-T02",
@@ -22607,7 +22627,7 @@
             "EXT-D-0063"
           ],
           "run_ids": [],
-          "retest_status": "not-run"
+          "retest_status": "fixed-awaiting-native: EXT-D-0063"
         },
         "admin": {
           "test_status": "unverified",
@@ -22615,7 +22635,7 @@
             "EXT-D-0063"
           ],
           "run_ids": [],
-          "retest_status": "not-run"
+          "retest_status": "fixed-awaiting-native: EXT-D-0063"
         }
       },
       "inventory_status": "source-complete",
@@ -22929,7 +22949,8 @@
             "admin",
             "reload",
             "network"
-          ]
+          ],
+          "verification_status": "fixed-awaiting-native: EXT-D-0064 source correction and both-tab failure/retry regression coverage are present; native Library and Screenshots acceptance remains pending."
         },
         {
           "id": "EXT-F-2008-T03",
@@ -23005,7 +23026,7 @@
             "EXT-D-0064"
           ],
           "run_ids": [],
-          "retest_status": "not-run"
+          "retest_status": "fixed-awaiting-native: EXT-D-0064"
         },
         "admin": {
           "test_status": "unverified",
@@ -23013,7 +23034,7 @@
             "EXT-D-0064"
           ],
           "run_ids": [],
-          "retest_status": "not-run"
+          "retest_status": "fixed-awaiting-native: EXT-D-0064"
         }
       },
       "inventory_status": "source-complete",
@@ -23432,7 +23453,7 @@
             "admin",
             "reload"
           ],
-          "verification_status": "unverified-after-source-change"
+          "verification_status": "fixed-awaiting-native: EXT-D-0065 source generation guard and race-specific component regressions are present; native side-panel selection acceptance remains pending."
         },
         {
           "id": "EXT-F-2009-T03",
@@ -23666,7 +23687,7 @@
           "run_ids": [
             "incoming-sources-001"
           ],
-          "retest_status": "not-run"
+          "retest_status": "fixed-awaiting-native: EXT-D-0065"
         },
         "admin": {
           "test_status": "unverified",
@@ -23676,7 +23697,7 @@
           "run_ids": [
             "incoming-sources-001"
           ],
-          "retest_status": "not-run"
+          "retest_status": "fixed-awaiting-native: EXT-D-0065"
         }
       },
       "inventory_status": "source-complete",

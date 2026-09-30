@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "lane": "notes-remaining-failure-audit",
+  "date": "2026-09-30",
+  "scope": ["EXT-F-2006", "EXT-F-2007"],
+  "method": "Source trace of Notes read/write controls against current inventory and D61/D62/D63 reports; no runtime fault injection performed in this lane.",
+  "findings": [
+    {
+      "id": "NOTES-REMAINING-01",
+      "feature_case_ids": ["EXT-F-2007-T01"],
+      "controls": ["EXT-F-2007-C01"],
+      "user_impact": "Opening a note during a detail-query error leaves the editor showing skeleton placeholders indefinitely. The only visible exit is Back; there is no error explanation or retry, so the note appears stuck and unavailable.",
+      "source_mechanism": "src/lib/notes/queries.ts:getNote returns null for Supabase errors and missing data. NoteEditor maps null to no note, and its `detailQuery.isPending || !note || !draft` branch renders the loading skeleton without inspecting detailQuery.isError. React Query retries by default, then remains in this branch after retries fail.",
+      "existing_defect_overlap": "Distinct from D61: that repair handles the list query and its error UI. The selected-note branch precedes that list error UI intentionally, while this independent detail query has no terminal error state. Not D62 create or D63 autosave.",
+      "acceptance_reproduction": "Open a listed note, inject a persistent error for the `workbench.notes` SELECT filtered by that note id, and wait for the detail query retries to finish. Expected after repair: an explicit detail-load error with retry and Back; current source remains on skeleton placeholders."
+    },
+    {
+      "id": "NOTES-REMAINING-02",
+      "feature_case_ids": ["EXT-F-2007-T02"],
+      "controls": ["EXT-F-2007-C08"],
+      "user_impact": "A delete whose filtered UPDATE matches zero rows is treated as successful: the editor closes and the note remains in the refreshed list, with no explanation that deletion was not confirmed.",
+      "source_mechanism": "softDeleteNote performs UPDATE ... eq(id) without selecting/counting affected rows and returns true whenever Supabase reports no error. Under RLS, a row hidden from UPDATE can yield a successful zero-row response. NoteEditor.performDelete interprets true as confirmed, invalidates the list, and clears selection.",
+      "existing_defect_overlap": "Distinct from D61/D62/D63. D62 concerns INSERT uncertainty and already avoids claiming persistence; this is a separate UPDATE result that currently claims success by navigating away.",
+      "acceptance_reproduction": "With a note open, configure the Notes UPDATE policy/test seam so the note id matches no updatable row while the request itself succeeds with zero affected rows. Confirm Delete. Expected after repair: remain in a recoverable editor state and show that deletion was not confirmed; current source closes the editor and the note remains listed."
+    }
+  ],
+  "runtime_verdict": "Not runtime exercised; findings are source-level, with deterministic acceptance reproductions specified.",
+  "out_of_scope": ["listMyFolders has no callers in the current Notes flow; its empty-on-error behavior is not reported as a user-visible finding."]
+}
