@@ -221,10 +221,9 @@ describe('the organization this install acts in', () => {
     mocks.store.set(ACTIVE, { id: ORG_A, name: 'Active A' });
     const { getActiveOrganizationId } = await import('@/lib/org/active-org');
 
-    await expect(Promise.all([getActiveOrganizationId(), getActiveOrganizationId()])).resolves.toEqual([
-      ORG_A,
-      ORG_A,
-    ]);
+    await expect(
+      Promise.all([getActiveOrganizationId(), getActiveOrganizationId()]),
+    ).resolves.toEqual([ORG_A, ORG_A]);
     await expect(getActiveOrganizationId()).resolves.toBe(ORG_A);
     expect(mocks.rpc).toHaveBeenCalledTimes(1);
     expect(mocks.orgSelect).toHaveBeenCalledTimes(1);
@@ -234,7 +233,10 @@ describe('the organization this install acts in', () => {
     membershipsFor(ORG_A, ORG_B);
     let finishRead: ((value: unknown) => void) | undefined;
     mocks.orgSelect.mockImplementationOnce(
-      () => new Promise((resolve) => { finishRead = resolve; }),
+      () =>
+        new Promise((resolve) => {
+          finishRead = resolve;
+        }),
     );
     mocks.store.set(ACTIVE, { id: ORG_A, name: 'Active A' });
     const { getActiveOrganizationId } = await import('@/lib/org/active-org');

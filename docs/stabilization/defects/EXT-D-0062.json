@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0062",
   "feature_id": "EXT-F-2006",
-  "case_ids": [
-    "EXT-F-2006-T03"
-  ],
+  "case_ids": ["EXT-F-2006-T03"],
   "title": "Failed note creation produces no user-visible result",
   "surface": "Notes side-panel",
   "auth_mode": "member/admin; current-build native admin scoped evidence, member unverified",

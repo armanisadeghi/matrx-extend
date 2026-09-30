@@ -56,7 +56,8 @@ export interface MemberOrganization {
 }
 
 let validatedSelection: { userId: string; organizationId: string } | null = null;
-let resolutionInFlight: { userId: string; promise: Promise<MemberOrganization | null> } | null = null;
+let resolutionInFlight: { userId: string; promise: Promise<MemberOrganization | null> } | null =
+  null;
 let observingSelection = false;
 let selectionGeneration = 0;
 
@@ -255,7 +256,8 @@ export async function getActiveOrganizationId(): Promise<string | null> {
     stored &&
     validatedSelection?.userId === user.id &&
     validatedSelection.organizationId === stored.id
-  ) return stored.id;
+  )
+    return stored.id;
   const resolved = await resolveForUser(user.id);
   return resolved?.id ?? null;
 }

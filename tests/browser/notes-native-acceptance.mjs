@@ -29,7 +29,8 @@ const report = {
   status: 'unverified',
   build: null,
   observations: {},
-  fault_scope: 'owned panel, workbench.notes transport; detail/delete faults restricted to the owned note id',
+  fault_scope:
+    'owned panel, workbench.notes transport; detail/delete faults restricted to the owned note id',
   data_scope: 'one newly created Harbor Dental intake handoff note; delete is verified only after live retry',
 };
 function fail(code) {
@@ -256,9 +257,14 @@ function armNotesTransport(panel, origin) {
   const offResponse = panel.on('Network.responseReceived', (event) => {
     const tracked = requests.get(event.requestId);
     if (!tracked) return;
-    responses.push({ method: tracked.method, status: event.response.status, stage,
-      ownedDetail: tracked.ownedDetail, ownedDelete: tracked.ownedDelete,
-      injected: tracked.injected });
+    responses.push({
+      method: tracked.method,
+      status: event.response.status,
+      stage,
+      ownedDetail: tracked.ownedDetail,
+      ownedDelete: tracked.ownedDelete,
+      injected: tracked.injected,
+    });
     requests.delete(event.requestId);
   });
   const offRequest = panel.on('Network.requestWillBeSent', (event) => {
@@ -270,9 +276,12 @@ function armNotesTransport(panel, origin) {
     ) {
       const id = /^eq\.([0-9a-f-]{36})$/i.exec(url.searchParams.get('id') ?? '')?.[1] ?? null;
       if (event.request.method === 'GET' && id) detailIds.push(id);
-      requests.set(event.requestId, { method: event.request.method,
+      requests.set(event.requestId, {
+        method: event.request.method,
         ownedDetail: event.request.method === 'GET' && Boolean(ownedNoteId) && id === ownedNoteId,
-        ownedDelete: false, injected: false });
+        ownedDelete: false,
+        injected: false,
+      });
     }
   });
   const off = panel.on('Fetch.requestPaused', (event) => {
@@ -291,10 +300,13 @@ function armNotesTransport(panel, origin) {
       );
     const id = /^eq\.([0-9a-f-]{36})$/i.exec(url.searchParams.get('id') ?? '')?.[1] ?? null;
     const owned = inScope && ownedNoteId && id === ownedNoteId;
-    const deleting = owned && request.method === 'PATCH' && (
-      headers.some(([key, value]) => key === 'prefer' && /(?:^|,)\s*count=exact(?:,|$)/i.test(value)) ||
-      (typeof request.postData === 'string' && /"deleted_at"\s*:/.test(request.postData))
-    );
+    const deleting =
+      owned &&
+      request.method === 'PATCH' &&
+      (headers.some(
+        ([key, value]) => key === 'prefer' && /(?:^|,)\s*count=exact(?:,|$)/i.test(value),
+      ) ||
+        (typeof request.postData === 'string' && /"deleted_at"\s*:/.test(request.postData)));
     const autosaving = owned && request.method === 'PATCH' && !deleting;
     if (autosaving) autosaveDispatches += 1;
     const action =
@@ -304,16 +316,17 @@ function armNotesTransport(panel, origin) {
           ? 'fail_detail'
           : owned && mode === 'missing_detail' && request.method === 'GET'
             ? 'missing_detail'
-        : inScope && mode === 'fail_post' && request.method === 'POST'
-          ? 'fail_post'
-          : deleting && deleteMode === 'fail_delete'
-            ? 'fail_delete'
-            : deleting && deleteMode === 'zero_delete'
-              ? 'zero_delete'
-          : (autosaving || (!ownedNoteId && inScope && request.method === 'PATCH')) &&
-              mode === 'hold_patch' && !pendingPatch
-            ? 'hold_patch'
-            : 'pass';
+            : inScope && mode === 'fail_post' && request.method === 'POST'
+              ? 'fail_post'
+              : deleting && deleteMode === 'fail_delete'
+                ? 'fail_delete'
+                : deleting && deleteMode === 'zero_delete'
+                  ? 'zero_delete'
+                  : (autosaving || (!ownedNoteId && inScope && request.method === 'PATCH')) &&
+                      mode === 'hold_patch' &&
+                      !pendingPatch
+                    ? 'hold_patch'
+                    : 'pass';
     const tracked = trackedRequestForPause(requests, event);
     if (tracked) {
       tracked.ownedDelete = Boolean(deleting);
@@ -328,13 +341,14 @@ function armNotesTransport(panel, origin) {
       ? panel.send('Fetch.failRequest', { requestId: event.requestId, errorReason: 'Failed' })
       : action === 'missing_detail' || action === 'zero_delete'
         ? panel.send('Fetch.fulfillRequest', {
-          requestId: event.requestId,
-          responseCode: action === 'missing_detail' ? 200 : 204,
-          responseHeaders: action === 'missing_detail'
-            ? [{ name: 'content-type', value: 'application/json' }]
-            : [{ name: 'content-range', value: '*/0' }],
-          body: action === 'missing_detail' ? Buffer.from('null').toString('base64') : '',
-        })
+            requestId: event.requestId,
+            responseCode: action === 'missing_detail' ? 200 : 204,
+            responseHeaders:
+              action === 'missing_detail'
+                ? [{ name: 'content-type', value: 'application/json' }]
+                : [{ name: 'content-range', value: '*/0' }],
+            body: action === 'missing_detail' ? Buffer.from('null').toString('base64') : '',
+          })
         : panel.send('Fetch.continueRequest', { requestId: event.requestId });
     void command
       .then(() => {
@@ -363,7 +377,9 @@ function armNotesTransport(panel, origin) {
     setMode: (next) => {
       mode = next;
     },
-    setDeleteMode: (next) => { deleteMode = next; },
+    setDeleteMode: (next) => {
+      deleteMode = next;
+    },
     setOwnedNoteId: (id) => {
       if (!/^[0-9a-f-]{36}$/i.test(id) || !detailIds.includes(id)) fail('owned_note_id_unproven');
       ownedNoteId = id;
@@ -702,21 +718,41 @@ try {
 
         stage = 'D67_failed_detail';
         await click(panel, 'button', 'Back');
-        await waitFor('owned_note_ready_for_detail_fault', () => notesState(panel),
-          (s) => s.noteInList && !s.editor, 30_000);
+        await waitFor(
+          'owned_note_ready_for_detail_fault',
+          () => notesState(panel),
+          (s) => s.noteInList && !s.editor,
+          30_000,
+        );
         transport.setMode('fail_detail');
         await panel.send('Page.reload', { ignoreCache: true });
-        await waitFor('notes_tab_present_for_detail_fault',
-          () => evaluate(panel, `Boolean(document.querySelector('button[role="tab"][title="Notes"]'))`),
-          Boolean, 30_000);
+        await waitFor(
+          'notes_tab_present_for_detail_fault',
+          () =>
+            evaluate(panel, `Boolean(document.querySelector('button[role="tab"][title="Notes"]'))`),
+          Boolean,
+          30_000,
+        );
         if (!(await notesState(panel)).active) await click(panel, 'title', 'Notes');
-        await waitFor('owned_note_list_before_detail_fault', () => notesState(panel),
-          (s) => s.active && s.noteInList, 60_000);
+        await waitFor(
+          'owned_note_list_before_detail_fault',
+          () => notesState(panel),
+          (s) => s.active && s.noteInList,
+          60_000,
+        );
         await clickOwnedNoteRow(panel);
-        await waitFor('owned_detail_transport_failure', transport.state,
-          (s) => s.failedDetail > 0 && !s.interceptionFailed, 30_000);
-        const failedDetailUi = await waitFor('failed_detail_terminal_ui', () => notesState(panel),
-          (s) => s.detailFailure && s.detailRetry && s.back && !s.editor, 30_000);
+        await waitFor(
+          'owned_detail_transport_failure',
+          transport.state,
+          (s) => s.failedDetail > 0 && !s.interceptionFailed,
+          30_000,
+        );
+        const failedDetailUi = await waitFor(
+          'failed_detail_terminal_ui',
+          () => notesState(panel),
+          (s) => s.detailFailure && s.detailRetry && s.back && !s.editor,
+          30_000,
+        );
         report.observations.D67 = {
           injected_transport_failure: transport.state().failedDetail,
           visible_failure: failedDetailUi.detailFailure,
@@ -727,32 +763,58 @@ try {
         stage = 'D67_missing_detail';
         transport.setMode('missing_detail');
         await click(panel, 'button', 'Retry loading note');
-        await waitFor('injected_missing_detail_response', transport.state,
-          (s) => s.missingDetail > 0 && !s.interceptionFailed, 30_000);
-        const missingDetailUi = await waitFor('missing_detail_terminal_ui', () => notesState(panel),
-          (s) => s.missingDetail && s.detailRetry && s.back && !s.editor, 30_000);
+        await waitFor(
+          'injected_missing_detail_response',
+          transport.state,
+          (s) => s.missingDetail > 0 && !s.interceptionFailed,
+          30_000,
+        );
+        const missingDetailUi = await waitFor(
+          'missing_detail_terminal_ui',
+          () => notesState(panel),
+          (s) => s.missingDetail && s.detailRetry && s.back && !s.editor,
+          30_000,
+        );
         report.observations.D67.injected_successful_missing_row = true;
         report.observations.D67.missing_row_terminal = missingDetailUi.missingDetail;
         transport.setMode('observe');
-        const realDetailBefore = transport.state().responses.filter(
-          (r) => r.ownedDetail && !r.injected && r.status === 200).length;
+        const realDetailBefore = transport
+          .state()
+          .responses.filter((r) => r.ownedDetail && !r.injected && r.status === 200).length;
         stage = 'D67_real_recovery';
         await click(panel, 'button', 'Retry loading note');
-        await waitFor('owned_detail_recovered_from_live_service', transport.state,
-          (s) => s.responses.filter((r) => r.ownedDetail && !r.injected && r.status === 200).length > realDetailBefore,
-          45_000);
-        await waitFor('owned_editor_restored', () => notesState(panel),
-          (s) => s.editor && s.title && s.draftB, 45_000);
+        await waitFor(
+          'owned_detail_recovered_from_live_service',
+          transport.state,
+          (s) =>
+            s.responses.filter((r) => r.ownedDetail && !r.injected && r.status === 200).length >
+            realDetailBefore,
+          45_000,
+        );
+        await waitFor(
+          'owned_editor_restored',
+          () => notesState(panel),
+          (s) => s.editor && s.title && s.draftB,
+          45_000,
+        );
         report.observations.D67.recovered_from_real_detail_get = true;
 
         stage = 'D68_transport_failure';
         transport.setDeleteMode('fail_delete');
         await click(panel, 'title', 'Delete note');
         await click(panel, 'button', 'Delete');
-        await waitFor('owned_delete_transport_failure', transport.state,
-          (s) => s.failedDelete > 0 && !s.interceptionFailed, 30_000);
-        const failedDeleteUi = await waitFor('delete_failure_keeps_editor', () => notesState(panel),
-          (s) => s.editor && s.title && s.draftB && s.deleteFailure && s.deleteRetry, 30_000);
+        await waitFor(
+          'owned_delete_transport_failure',
+          transport.state,
+          (s) => s.failedDelete > 0 && !s.interceptionFailed,
+          30_000,
+        );
+        const failedDeleteUi = await waitFor(
+          'delete_failure_keeps_editor',
+          () => notesState(panel),
+          (s) => s.editor && s.title && s.draftB && s.deleteFailure && s.deleteRetry,
+          30_000,
+        );
         report.observations.D68 = {
           injected_transport_failure: transport.state().failedDelete,
           editor_and_draft_preserved: failedDeleteUi.editor && failedDeleteUi.draftB,
@@ -763,10 +825,18 @@ try {
         transport.setDeleteMode('zero_delete');
         await click(panel, 'button', 'Retry delete');
         await click(panel, 'button', 'Delete');
-        await waitFor('injected_zero_row_delete_response', transport.state,
-          (s) => s.zeroDelete > 0 && !s.interceptionFailed, 30_000);
-        const zeroDeleteUi = await waitFor('zero_row_delete_keeps_editor', () => notesState(panel),
-          (s) => s.editor && s.title && s.draftB && s.deleteFailure && s.deleteRetry, 30_000);
+        await waitFor(
+          'injected_zero_row_delete_response',
+          transport.state,
+          (s) => s.zeroDelete > 0 && !s.interceptionFailed,
+          30_000,
+        );
+        const zeroDeleteUi = await waitFor(
+          'zero_row_delete_keeps_editor',
+          () => notesState(panel),
+          (s) => s.editor && s.title && s.draftB && s.deleteFailure && s.deleteRetry,
+          30_000,
+        );
         report.observations.D68.injected_zero_affected_rows = transport.state().zeroDelete;
         report.observations.D68.zero_row_kept_editor = zeroDeleteUi.editor;
         report.observations.D68.retry_requires_confirmation = true;
@@ -775,27 +845,49 @@ try {
         transport.setDeleteMode('observe');
         transport.setMode('hold_patch');
         await fillPanelControl(panel, 'textarea[placeholder^="Start writing"]', draftC);
-        await waitFor('owned_autosave_pending_before_delete', transport.state,
-          (s) => s.patchPending && s.heldPatch >= 2 && !s.interceptionFailed, 30_000);
+        await waitFor(
+          'owned_autosave_pending_before_delete',
+          transport.state,
+          (s) => s.patchPending && s.heldPatch >= 2 && !s.interceptionFailed,
+          30_000,
+        );
         const autosaveDispatchesBeforeDelete = transport.state().autosaveDispatches;
         await click(panel, 'button', 'Retry delete');
         await click(panel, 'button', 'Delete');
-        await waitFor('live_owned_delete_response', transport.state,
-          (s) => s.responses.some((r) => r.ownedDelete && !r.injected && r.status >= 200 && r.status < 300),
-          45_000);
-        await waitFor('owned_note_removed_from_list', () => notesState(panel),
-          (s) => s.active && s.create && !s.editor && !s.noteInList, 45_000);
+        await waitFor(
+          'live_owned_delete_response',
+          transport.state,
+          (s) =>
+            s.responses.some(
+              (r) => r.ownedDelete && !r.injected && r.status >= 200 && r.status < 300,
+            ),
+          45_000,
+        );
+        await waitFor(
+          'owned_note_removed_from_list',
+          () => notesState(panel),
+          (s) => s.active && s.create && !s.editor && !s.noteInList,
+          45_000,
+        );
         await transport.releasePatch();
         await new Promise((resolveWait) => setTimeout(resolveWait, 900));
         if (transport.state().autosaveDispatches !== autosaveDispatchesBeforeDelete)
           fail('autosave_dispatched_after_confirmed_delete');
         await panel.send('Page.reload', { ignoreCache: true });
-        await waitFor('notes_tab_present_after_delete',
-          () => evaluate(panel, `Boolean(document.querySelector('button[role="tab"][title="Notes"]'))`),
-          Boolean, 30_000);
+        await waitFor(
+          'notes_tab_present_after_delete',
+          () =>
+            evaluate(panel, `Boolean(document.querySelector('button[role="tab"][title="Notes"]'))`),
+          Boolean,
+          30_000,
+        );
         if (!(await notesState(panel)).active) await click(panel, 'title', 'Notes');
-        await waitFor('owned_note_absent_after_live_reload', () => notesState(panel),
-          (s) => s.active && s.create && !s.noteInList && !s.editor && !s.error, 60_000);
+        await waitFor(
+          'owned_note_absent_after_live_reload',
+          () => notesState(panel),
+          (s) => s.active && s.create && !s.noteInList && !s.editor && !s.error,
+          60_000,
+        );
         report.observations.D68.real_delete_confirmed_by_live_response = true;
         report.observations.D68.owned_note_absent_after_reload = true;
         report.observations.D68.no_new_autosave_after_delete = true;
