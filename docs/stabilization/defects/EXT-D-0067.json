@@ -1,0 +1,37 @@
+{
+  "id": "EXT-D-0067",
+  "feature_id": "EXT-F-2007",
+  "case_ids": ["EXT-F-2007-T04", "EXT-F-2007-T01"],
+  "title": "Note detail read failure or missing note remains a loading skeleton",
+  "surface": "Notes editor",
+  "auth_mode": "member/admin; source-derived, native unverified",
+  "reproduction": [
+    "Open a note and make its detail SELECT return a persistent error or a successful zero-row result.",
+    "Wait for the detail query to settle."
+  ],
+  "expected": "An error or missing note is stated visibly with Retry and Back. A background refresh error preserves an already open draft.",
+  "actual": "getNote returned null for errors and missing rows; NoteEditor rendered a loading skeleton whenever note was null, with no terminal state.",
+  "severity": "S3: a note appears stuck and unavailable with no explanation",
+  "priority": "P1: the user cannot recover from a failed detail load in the editor",
+  "state": "in-fix",
+  "evidence": [
+    "docs/stabilization/reports/notes-remaining-failure-audit.json",
+    "src/lib/notes/queries.ts:getNote",
+    "src/features/notes/NoteEditor.tsx:detailQuery"
+  ],
+  "verification_status": "Source correction and deterministic guards authored; guarded red/green runs, compile, and native acceptance await the shared resource permit.",
+  "transition_history": [
+    {
+      "at": "2026-09-30T08:49:18Z",
+      "from": null,
+      "to": "open",
+      "reason": "Independent Notes remaining-failure source audit identified the detail read branch."
+    },
+    {
+      "at": "2026-09-30T08:49:18Z",
+      "from": "open",
+      "to": "in-fix",
+      "reason": "Sol assigned source and consumer guard repair after native artifact freeze; heavy execution remains leased to native lane."
+    }
+  ]
+}

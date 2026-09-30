@@ -53,6 +53,7 @@ export function NoteEditor({ noteId }: { noteId: string }) {
     queryKey: ['notes', 'detail', noteId],
     queryFn: () => getNote(noteId),
     staleTime: 30_000,
+    retry: false,
   });
 
   const note = detailQuery.data ?? null;
@@ -252,7 +253,30 @@ export function NoteEditor({ noteId }: { noteId: string }) {
 
   const onBack = () => setSelectedNoteId(null);
 
-  if (detailQuery.isPending || !note || !draft) {
+  if (!note && !draft && !detailQuery.isPending) {
+    return (
+      <div className="flex h-full flex-col">
+        <div className="flex shrink-0 items-center border-b border-border/50 px-3 py-2">
+          <Button size="sm" variant="ghost" className="h-7 gap-1 px-2 text-xs" onClick={onBack}>
+            <ArrowLeft className="size-3.5" /> Back
+          </Button>
+        </div>
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-center" role="alert">
+          <p className="text-sm font-medium">
+            {detailQuery.isError ? 'Could not load this note.' : 'This note is unavailable.'}
+          </p>
+          <p className="text-xs text-muted-foreground">
+            {detailQuery.isError ? 'Please try again.' : 'It may have been deleted or access may have changed.'}
+          </p>
+          <Button type="button" size="sm" onClick={() => void detailQuery.refetch()}>
+            Retry loading note
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (detailQuery.isPending || !draft) {
     return (
       <div className="flex h-full flex-col">
         <div className="flex shrink-0 items-center gap-2 border-b border-border/50 px-3 py-2">
@@ -335,6 +359,15 @@ export function NoteEditor({ noteId }: { noteId: string }) {
         variant="destructive"
         onConfirm={() => void performDelete()}
       />
+
+      {detailQuery.isError && (
+        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-destructive/30 bg-destructive/5 px-3 py-2 text-xs" role="alert">
+          <span>Could not refresh this note. Your open draft is still here.</span>
+          <Button type="button" size="sm" variant="outline" onClick={() => void detailQuery.refetch()}>
+            Retry loading note
+          </Button>
+        </div>
+      )}
 
       <div className="flex shrink-0 flex-col gap-2 border-b border-border/50 px-3 py-2">
         <Input

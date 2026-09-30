@@ -69,14 +69,15 @@ export async function getNote(id: string): Promise<Note | null> {
     .select(FULL_COLUMNS)
     .eq('id', id)
     .maybeSingle();
-  if (error || !data) {
-    if (error) console.warn('[notes] getNote error', error.message);
-    return null;
+  if (error) {
+    console.warn('[notes] getNote error', error.message);
+    throw new Error(`Could not load note: ${error.message}`);
   }
+  if (!data) return null;
   const parsed = NoteSchema.safeParse(data);
   if (!parsed.success) {
     console.warn('[notes] getNote row failed validation', parsed.error.issues);
-    return null;
+    throw new Error('Could not load note: the returned note had an unexpected shape.');
   }
   return parsed.data;
 }

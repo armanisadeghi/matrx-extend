@@ -3447,3 +3447,10 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 - **Where to test:** The signed-in Notes side-panel tab with a selected organization.
 - **Steps:** Deny the notes INSERT, click New note, restore access, and use Retry creating note.
 - **Expected:** A failed or uncertain INSERT never claims creation. Refresh reconciles the list before a retry; Retry opens the newly created note only after the insert succeeds.
+
+### Notes detail read failure (EXT-D-0067, EXT-F-2007-T04)
+
+- **What it does:** The editor distinguishes a failed detail read from a missing note and lets the user retry or return to the list. A failed background refresh leaves an open draft editable.
+- **Where to test:** Signed-in Notes tab with a selected organization and an existing note.
+- **Steps:** Open a note while its detail SELECT fails; retry after restoring access. Repeat with a successful zero-row detail SELECT. While editing a loaded note, make a background detail refresh fail.
+- **Expected:** Failure and missing-note states name the problem and offer Retry loading note plus Back; neither remains a loading skeleton. A background failure shows a notice and preserves the current draft.
