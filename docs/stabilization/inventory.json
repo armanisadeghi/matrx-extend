@@ -46152,6 +46152,45 @@
             "permissions",
             "reload"
           ]
+        },
+        {
+          "id": "EXT-F-4130-T02",
+          "title": "Records organization filter matches canonical catalog and preserves omitted/null semantics",
+          "control_ids": [
+            "EXT-F-4130-C01"
+          ],
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "design_status": "ready",
+          "preconditions": [
+            "Current build/reload receipt and resource permit for native execution.",
+            "Authorized test-owned records in controlled organizations; canonical tool definition available read-only."
+          ],
+          "steps": [
+            "Run strict tool catalog drift check for the current handler and shared definition.",
+            "Invoke controlled records reads with organization omitted, null, then explicit authorized organization.",
+            "Compare returned authorized scope; do not write or change organization memberships."
+          ],
+          "expected": [
+            "Local generated schema uses the existing canonical null-default convention without drift.",
+            "Omitted/null retain existing authorized cross-organization read semantics; explicit organization narrows results.",
+            "No database authorization or write routing is weakened."
+          ],
+          "defect_ids": [
+            "EXT-D-0071"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "Catalog mismatch confirmed; helper repair in progress. No native records-read pass claimed."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Catalog mismatch confirmed; helper repair in progress. No native records-read pass claimed."
+            }
+          }
         }
       ],
       "cells": {
@@ -46163,13 +46202,17 @@
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0071"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0071"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         }
