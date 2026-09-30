@@ -19,6 +19,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/config/backend', () => ({ getBackendUrl: async () => 'https://example.invalid' }));
 
+import { storedMandateKey } from '@/lib/mandates';
 import { applyOrganizationContextHeader } from '@ai-matrx/agents/matrx';
 import { ORGANIZATION_CONTEXT_HEADER } from './client';
 import {
@@ -34,13 +35,13 @@ import {
 describe('AI path versioning is the package policy, and the wire did not move', () => {
   it('promotes the run-start doors to /v2, byte-for-byte as before', () => {
     expect(agentExecutePath('abc-123')).toBe('/v2/ai/agent/abc-123');
-    expect(mandateExecutePath('daily_brief')).toBe('/v2/ai/mandates/daily_brief');
+    expect(mandateExecutePath(storedMandateKey('daily_brief'))).toBe('/v2/ai/mandates/daily_brief');
     expect(CHAT_PATH).toBe('/v2/ai/chat');
   });
 
   it('still percent-encodes the interpolated segment', () => {
     expect(agentExecutePath('a/b c')).toBe('/v2/ai/agent/a%2Fb%20c');
-    expect(mandateExecutePath('a/b')).toBe('/v2/ai/mandates/a%2Fb');
+    expect(mandateExecutePath(storedMandateKey('a/b'))).toBe('/v2/ai/mandates/a%2Fb');
   });
 
   it('leaves every endpoint with no v2 sibling on v1', () => {

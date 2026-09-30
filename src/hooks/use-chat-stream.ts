@@ -19,6 +19,7 @@ import { networkToolArgsForObservation } from '@/lib/credentials/network-urls';
 import { log } from '@/lib/debug/log';
 import { getHighlightsByIds } from '@/lib/highlights/queries';
 import { newId } from '@/lib/id';
+import type { AnyMandateKey } from '@/lib/mandates';
 import { broadcast, on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { defaultChatModelFor } from '@/lib/settings/default-chat-model';
@@ -97,7 +98,7 @@ function resolveAttachedGoogleFileIds(): string[] | null {
 interface SendOptions {
   agentId?: string;
   /** When present, aidream resolves this Mandate instead of treating agentId as a UUID. */
-  mandateKey?: string;
+  mandateKey?: AnyMandateKey;
   agentName?: string;
   conversationId?: string;
   variables?: Record<string, unknown>;

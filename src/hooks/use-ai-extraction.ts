@@ -6,6 +6,7 @@ import { pageCaptureOfferedValues } from '@/lib/data-pattern/page-capture-offer'
 import { parseAgentResponse } from '@/lib/data-pattern/run-interactive';
 import type { ExtractedRow } from '@/lib/data-pattern/types';
 import { newId } from '@/lib/id';
+import type { AnyMandateKey } from '@/lib/mandates';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { createStreamWatchdog } from '@/lib/stream/watchdog';
@@ -27,7 +28,7 @@ interface StreamChunk {
 
 interface ExtractInput {
   agentId: string;
-  mandateKey?: string;
+  mandateKey?: AnyMandateKey;
   description: string;
   outputSchema: object;
 }

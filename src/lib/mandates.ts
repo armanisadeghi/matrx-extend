@@ -15,7 +15,28 @@
  * adapted here and nowhere else.
  */
 
-import { MANDATE_KEYS, type MandateKey } from '@ai-matrx/agents/mandates';
+import { type DynamicMandateKey, MANDATE_KEYS, type MandateKey } from '@ai-matrx/agents/mandates';
+
+/**
+ * What a carrier accepts when the key may be a declared one OR a DB-authored
+ * one (`app.*` / `shortcut.*`, `mandate.definition` origin='user'). Mirrors
+ * matrx-frontend's `features/mandates/mandate-key.ts` — the same name, so the
+ * mandate reference scanner reads a binding of this type as a proven key in
+ * flight (`passthrough`), never an `UNRESOLVED_KEY`.
+ */
+export type AnyMandateKey = MandateKey | DynamicMandateKey;
+
+/**
+ * A KEY THIS CODE DID NOT CHOOSE — a stored `mandate:` ref, a saved config's
+ * `mandate_key` — entering the typed world named for what it is. The SERVER is
+ * the authority on whether it exists (a key declared after this build shipped
+ * is real there and absent here), so this TYPES and never rejects; the server
+ * answers an unknown key with a 404 that names it. Never use it on a key this
+ * repo picks: those go through `MANDATE_KEYS.<id>`.
+ */
+export function storedMandateKey(value: string): AnyMandateKey {
+  return value as AnyMandateKey;
+}
 
 /** Canonical server-resolved target for a brand-new extension chat. */
 export const DEFAULT_CHAT_MANDATE_KEY: MandateKey = MANDATE_KEYS.extend__browser_chat;
@@ -46,10 +67,11 @@ export function isMandateAgentRef(value: string | null | undefined): boolean {
  * authority on what exists. Narrowing here would send a ref naming a mandate
  * declared after this version shipped to the agent door, which fails in a way
  * that names the wrong thing. The vocabulary binds the keys we NAME (above);
- * this is a parse of a ref we stored.
+ * this is a parse of a ref we stored, typed `AnyMandateKey` through the
+ * `storedMandateKey` data door.
  */
-export function mandateKeyFromAgentRef(value: string | null | undefined): string | null {
+export function mandateKeyFromAgentRef(value: string | null | undefined): AnyMandateKey | null {
   if (!isMandateAgentRef(value)) return null;
   const key = value?.slice('mandate:'.length) ?? '';
-  return key.length > 0 ? key : null;
+  return key.length > 0 ? storedMandateKey(key) : null;
 }

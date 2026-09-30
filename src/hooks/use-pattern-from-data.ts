@@ -3,6 +3,7 @@ import { type AgentStartRequest, mandateExecutePath } from '@/lib/api/routes/ai'
 import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
 import { pageCaptureOfferedValues } from '@/lib/data-pattern/page-capture-offer';
 import { newId } from '@/lib/id';
+import type { AnyMandateKey } from '@/lib/mandates';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { createStreamWatchdog } from '@/lib/stream/watchdog';
@@ -37,7 +38,7 @@ export interface PatternFromDataResult {
 }
 
 interface ConvertInput {
-  mandateKey: string;
+  mandateKey: AnyMandateKey;
   userInput: string;
   extractedRows: Record<string, unknown>[];
   pageMetadata?: Record<string, unknown>;

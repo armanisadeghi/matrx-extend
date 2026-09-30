@@ -13,8 +13,9 @@
  */
 
 import { useRequestOrganizationId } from '@/hooks/use-request-organization';
+import { type AnyMandateKey, mandateKeyFromAgentRef } from '@/lib/mandates';
 import { useAuthStore } from '@/state/auth';
-import { type AgentSummary, isMandateAgentId } from '@ai-matrx/agents/catalog';
+import type { AgentSummary } from '@ai-matrx/agents/catalog';
 import type { DefaultRowState } from '@ai-matrx/agents/catalog';
 import { useAgentCatalog, useAgentCatalogState } from '@ai-matrx/agents/catalog/react';
 import { useCallback, useEffect } from 'react';
@@ -31,9 +32,9 @@ export interface SelectedAgentRow {
   resolving: boolean;
 }
 
-export function mandateKeyOf(agentId: string | null | undefined): string | null {
-  if (!agentId || !isMandateAgentId(agentId)) return null;
-  return agentId.slice('mandate:'.length);
+/** The key inside a `mandate:` agent id — the ONE parser lives in `@/lib/mandates`. */
+export function mandateKeyOf(agentId: string | null | undefined): AnyMandateKey | null {
+  return mandateKeyFromAgentRef(agentId);
 }
 
 export function useAgentRow(agentId: string | null | undefined): SelectedAgentRow {

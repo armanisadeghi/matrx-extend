@@ -22,6 +22,7 @@ import {
 } from '@/lib/api/routes/ai';
 import { sanitizeNetworkUrl, transientCredentialFingerprint } from '@/lib/credentials/network-urls';
 import { newId } from '@/lib/id';
+import { storedMandateKey } from '@/lib/mandates';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import type { ExtractionPattern } from '@/lib/supabase/queries';
@@ -129,7 +130,7 @@ export async function runAiExtractPattern(
     throw new Error('This AI pattern is missing its agent or description — re-save it.');
   }
   const endpoint = mandate_key
-    ? mandateExecutePath(mandate_key)
+    ? mandateExecutePath(storedMandateKey(mandate_key))
     : agent_id
       ? agentExecutePath(agent_id)
       : null;
