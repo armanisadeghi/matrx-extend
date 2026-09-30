@@ -22487,6 +22487,14 @@
           "source_anchor": "src/features/notes/NoteEditor.tsx",
           "test_design_status": "unverified",
           "test_design_item": "Verify Preview markdown after autosave (Render saved body as markdown) on Notes editor in source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2007-C27",
+          "label": "Retry loading note",
+          "action": "Retry an initial or background note-detail read failure without discarding an open draft",
+          "source_anchor": "src/features/notes/NoteEditor.tsx",
+          "test_design_status": "unverified",
+          "test_design_item": "Fail the selected-note read, verify terminal error and retry, recover it, then fail a background refresh with a local draft and verify the draft remains editable."
         }
       ],
       "source_anchors": [
@@ -22602,16 +22610,57 @@
             "Signed-in owner of controlled disposable note."
           ],
           "steps": [
-            "Open Delete note; cancel via dialog close/Escape and verify note remains. Reopen, confirm, return to list and refresh."
+            "Open Delete note; cancel via dialog close/Escape and verify note remains. Reopen, confirm, return to list and refresh.",
+            "For an owned test note, make deletion fail and then return a successful response with zero affected rows; verify neither is claimed as confirmed deletion. Restore normal transport and retry."
           ],
           "expected": [
-            "Cancel preserves note; confirm marks it deleted and returns list without it; dialog explains recoverability."
+            "Cancel preserves note; confirm marks it deleted and returns list without it; dialog explains recoverability.",
+            "Unconfirmed deletion keeps a recoverable editor with visible feedback. Only confirmed affected-row deletion returns to the list; surrounding cancel still preserves the note."
           ],
           "dimensions": [
             "member",
             "admin",
             "reload"
+          ],
+          "defect_ids": [
+            "EXT-D-0068"
           ]
+        },
+        {
+          "id": "EXT-F-2007-T04",
+          "title": "Detail-read failure, missing note, and retry",
+          "control_ids": [
+            "EXT-F-2007-C01",
+            "EXT-F-2007-C27"
+          ],
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Current keyed development build receipt, reload extension and page, open native side panel with explicit selected test organization.",
+            "An owned note is available; transport faults affect only its detail read."
+          ],
+          "steps": [
+            "Fail the detail read and wait for completion. Verify visible error rather than indefinite skeletons.",
+            "Restore the read and click Retry loading note; confirm the note opens.",
+            "Repeat with a successful missing-note result.",
+            "Fail a background detail refresh while a local draft exists."
+          ],
+          "expected": [
+            "Failure and unavailable note are terminal, honest states with Back and retry.",
+            "Retry restores the real note; an existing draft survives a failed background refresh."
+          ],
+          "dimensions": [
+            "member",
+            "admin",
+            "error",
+            "reload"
+          ],
+          "defect_ids": [
+            "EXT-D-0067"
+          ],
+          "test_status": "unverified"
         }
       ],
       "cells": {
@@ -22624,18 +22673,22 @@
         "member": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0063"
+            "EXT-D-0063",
+            "EXT-D-0067",
+            "EXT-D-0068"
           ],
           "run_ids": [],
-          "retest_status": "fixed-awaiting-native: EXT-D-0063"
+          "retest_status": "D63 fixed-awaiting-native; D67/D68 in-fix, native not-run"
         },
         "admin": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0063"
+            "EXT-D-0063",
+            "EXT-D-0067",
+            "EXT-D-0068"
           ],
           "run_ids": [],
-          "retest_status": "fixed-awaiting-native: EXT-D-0063"
+          "retest_status": "D63 fixed-awaiting-native; D67/D68 in-fix, native not-run"
         }
       },
       "inventory_status": "source-complete",
