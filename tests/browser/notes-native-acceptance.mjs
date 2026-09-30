@@ -212,6 +212,28 @@ function notesState(panel) {
   })()`,
   );
 }
+function trackedRequestForPause(requests, event) {
+  return event.networkId ? requests.get(event.networkId) ?? null : null;
+}
+if (process.argv.includes('--self-test-correlation')) {
+  const owned = { method: 'PATCH', ownedDelete: false, injected: false };
+  const unrelated = { method: 'PATCH', ownedDelete: false, injected: false };
+  const requests = new Map([['network-owned', owned], ['network-other', unrelated]]);
+  const ownedPause = trackedRequestForPause(requests, {
+    requestId: 'fetch-owned', networkId: 'network-owned',
+  });
+  assert.equal(ownedPause, owned, 'paused owned delete must resolve its Network request');
+  ownedPause.ownedDelete = true;
+  assert.equal(unrelated.ownedDelete, false, 'unrelated PATCH must not inherit owned delete');
+  assert.equal(trackedRequestForPause(requests, {
+    requestId: 'fetch-other', networkId: 'network-other',
+  }), unrelated, 'other PATCH must remain separate');
+  assert.equal(trackedRequestForPause(requests, {
+    requestId: 'fetch-orphan',
+  }), null, 'interception id alone cannot establish a Network response');
+  process.stdout.write('PASS notes_network_correlation\n');
+  process.exit(0);
+}
 function armNotesTransport(panel, origin) {
   let mode = 'observe';
   let deleteMode = 'observe';
@@ -249,7 +271,7 @@ function armNotesTransport(panel, origin) {
       const id = /^eq\.([0-9a-f-]{36})$/i.exec(url.searchParams.get('id') ?? '')?.[1] ?? null;
       if (event.request.method === 'GET' && id) detailIds.push(id);
       requests.set(event.requestId, { method: event.request.method,
-        ownedDetail: event.request.method === 'GET' && id === ownedNoteId,
+        ownedDetail: event.request.method === 'GET' && Boolean(ownedNoteId) && id === ownedNoteId,
         ownedDelete: false, injected: false });
     }
   });
@@ -292,7 +314,7 @@ function armNotesTransport(panel, origin) {
               mode === 'hold_patch' && !pendingPatch
             ? 'hold_patch'
             : 'pass';
-    const tracked = requests.get(event.requestId);
+    const tracked = trackedRequestForPause(requests, event);
     if (tracked) {
       tracked.ownedDelete = Boolean(deleting);
       tracked.injected = action !== 'pass' && action !== 'hold_patch';

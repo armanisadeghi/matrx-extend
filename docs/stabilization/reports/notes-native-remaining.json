@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "lane": "notes-native-remaining",
-  "status": "runner_interaction_repaired_native_rerun_pending",
+  "status": "network_correlation_repaired_native_rerun_pending",
   "scope": ["EXT-D-0067", "EXT-D-0068"],
   "changes": [
     "The existing native Notes runner now scopes detail-read and delete faults to the id observed when reopening its own newly created note.",
@@ -10,11 +10,11 @@
     "The runner holds an owned autosave before the successful delete and checks that releasing it causes no later autosave dispatch."
   ],
   "evidence": {
-    "source": ["node --check tests/browser/notes-native-acceptance.mjs: pass", "git diff --check -- tests/browser/notes-native-acceptance.mjs: pass"],
-    "native": "notes-final-native-20260930a passed D61, D62, D63, D67, and both injected D68 failure states. It stopped before successful deletion when the runner's single immediate textarea hit test returned editor_control_not_hittable. The blocking element was not recorded, so the cause is not proven. No product failure is inferred.",
-    "correction": "The runner now waits up to ten seconds for an elementFromPoint-confirmed hit on the active Notes control, tests five interior points, and records only content-free occlusion categories if none becomes hittable. Input remains trusted CDP pointer and keyboard events. Native rerun pending."
+    "source": ["node --check tests/browser/notes-native-acceptance.mjs: pass", "git diff --check -- tests/browser/notes-native-acceptance.mjs: pass", "node tests/browser/notes-native-acceptance.mjs --self-test-correlation: failed before the correction on distinct Fetch and Network ids, then passed after the correction"],
+    "native": "The first run passed D61, D62, D63, D67, and both injected D68 failure states but stopped at textarea hit testing. The second run passed that hit test and visibly returned to the list without the owned note after a real delete attempt. It stopped while waiting for a Network response classified as the owned delete; the raw receipt recorded PATCH 204 but mislabeled it as unowned. Reload absence and post-delete autosave remain unverified. No product failure is inferred.",
+    "correction": "Fetch.requestPaused uses its own interception requestId. Its networkId corresponds to Network.requestWillBeSent and Network.responseReceived requestId, per the Chrome DevTools Protocol. The runner now joins on networkId and requires a known owned id before labeling detail responses. The successful-delete assertion still requires a 2xx Network response on the exact owned delete PATCH with injected=false. Native rerun pending."
   },
   "files": ["tests/browser/notes-native-acceptance.mjs", "docs/stabilization/reports/notes-native-remaining.json"],
-  "prior_synthetic_note": "The failed run did not delete its note. Its ignored raw receipt was privately preserved before a rerun at test-results/notes-native-acceptance-20260930a.json (0600). Cleanup must use the Notes UI and match the exact owned id from that receipt to a detail GET before confirming deletion; do not delete a title match alone.",
+  "prior_synthetic_note": "Run a did not delete its note; its ignored raw receipt is preserved at test-results/notes-native-acceptance-20260930a.json (0600). Run b visibly removed a different owned note after its delete attempt, but a reload was not reached; its ignored receipt is preserved at test-results/notes-native-acceptance-20260930b.json (0600). Cleanup or verification must use the Notes UI and match each exact owned id from its receipt to a detail GET before confirming deletion; do not delete a title match alone. No direct database mutation was performed.",
   "questions": []
 }
