@@ -22,9 +22,7 @@
         "D68 failed delete preserved the editor and draft; a zero-affected-row response also preserved them and required confirmation for retry.",
         "Confirmed deletion produced a live 2xx response correlated to the owned note request, the owned note was absent after reload, and no new autosave dispatched after deletion."
       ],
-      "unverified": [
-        "Original feature and mode breadth outside these five named cases."
-      ]
+      "unverified": ["Original feature and mode breadth outside these five named cases."]
     },
     "quality": {
       "status": "PASS_BOUNDED",

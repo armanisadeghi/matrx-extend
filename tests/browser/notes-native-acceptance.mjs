@@ -31,7 +31,8 @@ const report = {
   observations: {},
   fault_scope:
     'owned panel, workbench.notes transport; detail/delete faults restricted to the owned note id',
-  data_scope: 'one newly created Harbor Dental intake handoff note; delete is verified only after live retry',
+  data_scope:
+    'one newly created Harbor Dental intake handoff note; delete is verified only after live retry',
 };
 function fail(code) {
   report.failure_code = code;
@@ -214,24 +215,37 @@ function notesState(panel) {
   );
 }
 function trackedRequestForPause(requests, event) {
-  return event.networkId ? requests.get(event.networkId) ?? null : null;
+  return event.networkId ? (requests.get(event.networkId) ?? null) : null;
 }
 if (process.argv.includes('--self-test-correlation')) {
   const owned = { method: 'PATCH', ownedDelete: false, injected: false };
   const unrelated = { method: 'PATCH', ownedDelete: false, injected: false };
-  const requests = new Map([['network-owned', owned], ['network-other', unrelated]]);
+  const requests = new Map([
+    ['network-owned', owned],
+    ['network-other', unrelated],
+  ]);
   const ownedPause = trackedRequestForPause(requests, {
-    requestId: 'fetch-owned', networkId: 'network-owned',
+    requestId: 'fetch-owned',
+    networkId: 'network-owned',
   });
   assert.equal(ownedPause, owned, 'paused owned delete must resolve its Network request');
   ownedPause.ownedDelete = true;
   assert.equal(unrelated.ownedDelete, false, 'unrelated PATCH must not inherit owned delete');
-  assert.equal(trackedRequestForPause(requests, {
-    requestId: 'fetch-other', networkId: 'network-other',
-  }), unrelated, 'other PATCH must remain separate');
-  assert.equal(trackedRequestForPause(requests, {
-    requestId: 'fetch-orphan',
-  }), null, 'interception id alone cannot establish a Network response');
+  assert.equal(
+    trackedRequestForPause(requests, {
+      requestId: 'fetch-other',
+      networkId: 'network-other',
+    }),
+    unrelated,
+    'other PATCH must remain separate',
+  );
+  assert.equal(
+    trackedRequestForPause(requests, {
+      requestId: 'fetch-orphan',
+    }),
+    null,
+    'interception id alone cannot establish a Network response',
+  );
   process.stdout.write('PASS notes_network_correlation\n');
   process.exit(0);
 }
@@ -449,10 +463,12 @@ async function fillPanelControl(panel, selector, value) {
     },
     (sample) => Boolean(sample?.target),
     10_000,
-  ).then((sample) => sample.target).catch(() => {
-    report.observations.editor_hit_target_failure = lastHitSample;
-    fail('editor_control_not_hittable');
-  });
+  )
+    .then((sample) => sample.target)
+    .catch(() => {
+      report.observations.editor_hit_target_failure = lastHitSample;
+      fail('editor_control_not_hittable');
+    });
   await panel.send('Input.dispatchMouseEvent', {
     type: 'mousePressed',
     ...target,

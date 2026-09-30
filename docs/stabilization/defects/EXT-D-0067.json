@@ -1,10 +1,7 @@
 {
   "id": "EXT-D-0067",
   "feature_id": "EXT-F-2007",
-  "case_ids": [
-    "EXT-F-2007-T04",
-    "EXT-F-2007-T01"
-  ],
+  "case_ids": ["EXT-F-2007-T04", "EXT-F-2007-T01"],
   "title": "Note detail read failure or missing note remains a loading skeleton",
   "surface": "Notes editor",
   "auth_mode": "member/admin; current-build native admin scoped evidence, member unverified",

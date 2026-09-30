@@ -1,12 +1,6 @@
 {
   "schema_version": 1,
-  "cases": [
-    "EXT-D-0061",
-    "EXT-D-0062",
-    "EXT-D-0063",
-    "EXT-D-0067",
-    "EXT-D-0068"
-  ],
+  "cases": ["EXT-D-0061", "EXT-D-0062", "EXT-D-0063", "EXT-D-0067", "EXT-D-0068"],
   "status": "unverified",
   "build": {
     "before": {

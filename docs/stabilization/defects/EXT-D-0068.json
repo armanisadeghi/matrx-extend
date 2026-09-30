@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0068",
   "feature_id": "EXT-F-2007",
-  "case_ids": [
-    "EXT-F-2007-T03"
-  ],
+  "case_ids": ["EXT-F-2007-T03"],
   "title": "Unconfirmed note deletion silently closes the editor",
   "surface": "Notes editor",
   "auth_mode": "member/admin; current-build native admin scoped evidence, member unverified",
