@@ -34,6 +34,7 @@
  * reaches the two older RPCs — which the flip turns read-only.
  */
 
+import { listMemberOrganizations } from '@/lib/org/active-org';
 import { recordsClientFor } from '@/lib/records/store';
 import {
   appendStoreRows,
@@ -180,34 +181,55 @@ export interface PickableTable {
 }
 
 /**
- * Every table the Showcase may offer for this organization, each ONCE, from the store its
- * organization's switch says it is written in (`tablesLiveWhere`): while the switch is off an
- * older table and its same-id copy are one table, offered as the older one; after the switch,
- * as the store's. Throws on a refused read, never an empty list.
+ * Every table the Showcase may offer, each ONCE, across ALL of the person's organizations
+ * (active-org law 2026-09-30: the active organization never narrows a read). `organizationFilter`
+ * is an optional, explicit page filter; null/undefined means every organization. Each table
+ * carries its own `organization_id` so a write into it runs in that table's org. Each table is
+ * read from the store its organization's switch says it is written in (`tablesLiveWhere`): while
+ * the switch is off an older table and its same-id copy are one table, offered as the older one;
+ * after the switch, as the store's. Throws on a refused read, never an empty list.
  */
-export async function listPickableTables(organizationId: string): Promise<PickableTable[]> {
-  const org = requireOrganizationContext(organizationId);
-  const client = await recordsClientFor(org, 'user');
-  const store = await storeTables(client);
-  const older = (await listUserTables()).filter((t) => t.organization_id === org);
-  const homes = await tablesLiveWhere(client, [
-    ...store.map((t) => t.id),
-    ...older.map((t) => t.id),
-  ]);
+export async function listPickableTables(
+  organizationFilter?: string | null,
+): Promise<PickableTable[]> {
+  const orgIds = organizationFilter
+    ? [requireOrganizationContext(organizationFilter)]
+    : (await listMemberOrganizations()).map((o) => o.id);
+  const allOlder = await listUserTables();
   const picked = new Map<string, PickableTable>();
-  for (const t of older) {
-    if (homes.get(t.id) === 'older') {
-      picked.set(t.id, {
-        id: t.id,
-        table_name: t.table_name,
-        organization_id: t.organization_id,
-        store: 'older',
-      });
+  const seenOlder = new Set<string>();
+  for (const [index, org] of orgIds.entries()) {
+    const client = await recordsClientFor(org, 'user');
+    const store = await storeTables(client);
+    // Older tables of this org; the first org's client also answers for older tables whose org is
+    // null or not one of the person's memberships, so no table the person can read is dropped.
+    const older = allOlder.filter(
+      (t) =>
+        !seenOlder.has(t.id) &&
+        (t.organization_id === org ||
+          (index === 0 &&
+            !organizationFilter &&
+            (!t.organization_id || !orgIds.includes(t.organization_id)))),
+    );
+    for (const t of older) seenOlder.add(t.id);
+    const homes = await tablesLiveWhere(client, [
+      ...store.map((t) => t.id),
+      ...older.map((t) => t.id),
+    ]);
+    for (const t of older) {
+      if (homes.get(t.id) === 'older') {
+        picked.set(t.id, {
+          id: t.id,
+          table_name: t.table_name,
+          organization_id: t.organization_id,
+          store: 'older',
+        });
+      }
     }
-  }
-  for (const t of store) {
-    if (!picked.has(t.id) && homes.get(t.id) !== 'older')
-      picked.set(t.id, { ...t, store: 'record' });
+    for (const t of store) {
+      if (!picked.has(t.id) && homes.get(t.id) !== 'older')
+        picked.set(t.id, { ...t, store: 'record' });
+    }
   }
   return [...picked.values()];
 }

@@ -74,8 +74,11 @@ export function SaveAsPattern({
   const [savedSummary, setSavedSummary] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
-  const { active: activeOrganization } = useActiveOrganization();
-  const { tables, createTable, appendRows } = useUserTables(activeOrganization?.id);
+  const { active: activeOrganization, organizations } = useActiveOrganization();
+  // The picker lists tables across ALL of the person's organizations (active-org law
+  // 2026-09-30); the active organization is only where a NEW table is created.
+  const { tables, createTable, appendRows } = useUserTables();
+  const orgName = (id: string | null) => organizations.find((o) => o.id === id)?.name ?? null;
 
   // Union across ALL rows — the preview table shows every column, so the
   // created table must too (single-row inference silently dropped columns
@@ -104,11 +107,16 @@ export function SaveAsPattern({
       return;
     }
 
-    // Capture the selected organization at the initiating click. A later
+    // Capture the operation organization at the initiating click. A NEW table is created in the
+    // active organization; an EXISTING table is written in ITS OWN organization. A later
     // Settings change must not redirect this in-flight dataset create.
+    const chosenTable =
+      target !== NEW_TABLE && target !== NO_TABLE ? tables?.find((t) => t.id === target) : undefined;
     let operationOrganizationId: string;
     try {
-      operationOrganizationId = requireOrganizationContext(activeOrganization?.id);
+      operationOrganizationId = requireOrganizationContext(
+        chosenTable?.organization_id ?? activeOrganization?.id,
+      );
     } catch (error) {
       setErr(error instanceof Error ? error.message : String(error));
       return;
@@ -160,7 +168,7 @@ export function SaveAsPattern({
         if (requireOrganizationContext(existingOrganizationId) !== operationOrganizationId) {
           throw new OrganizationContextError(
             'organization_context_mismatch',
-            'The selected dataset belongs to a different organization. Choose a dataset in your active organization.',
+            'The selected dataset belongs to a different organization than the one this save runs in. Pick it again.',
           );
         }
       }
@@ -296,6 +304,7 @@ export function SaveAsPattern({
               {tables?.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.table_name}
+                  {orgName(t.organization_id) ? ` · ${orgName(t.organization_id)}` : ''}
                 </option>
               ))}
             </select>
