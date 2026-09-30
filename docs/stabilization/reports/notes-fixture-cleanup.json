@@ -1,0 +1,10 @@
+{
+  "status": "confirmed",
+  "scope": "Only the two synthetic notes identified by private receipts from native runs A and B on September 30, 2026.",
+  "ownership_checks": "Exact receipt IDs, authorized admin creator, unique test-label pattern, and the recorded run creation window all matched before mutation.",
+  "before": { "owned_matches": 2, "active_matches": 1 },
+  "action": "Soft-deleted the one remaining active owned fixture through the authorized database operator; the other was already deleted.",
+  "after": { "owned_matches": 2, "active_matches": 0 },
+  "verification_limit": "Database readback verifies fixture cleanup only. It is not UI deletion evidence. The independent native run C separately proved the actual UI deletion flow.",
+  "privacy": "Private identifiers and credentials are omitted. No unrelated note was changed."
+}
