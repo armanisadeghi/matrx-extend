@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "report_id": "org-picker-final-peer",
+  "reviewed_commits": [
+    "e34736eac65485ef512f7899234a9eba56906dda",
+    "9e60c47f14c703dcf988f333a68a8a52060de632"
+  ],
+  "A_product_outcome": {
+    "status": "EXPLICITLY_UNVERIFIED",
+    "reason": "This peer review performed source tracing only. No native UI/browser run or heavy verification was authorized, so picker behavior and real request resumption are not claimed as observed."
+  },
+  "B_source_correctness": {
+    "status": "PASS_WITH_BOUNDED_LIMITS",
+    "findings": [
+      "Membership enumeration now filters iam.organizations by archived_at IS NULL; stale stored archived choices consequently fail membership matching and are cleared before request resolution.",
+      "Removing the singleton-membership auto-selection enforces an explicit device choice even when one open organization exists.",
+      "Concurrent initial validations for the same user share one promise. Storage change generation checks prevent a validation already in flight from certifying or clearing a newer local selection; a final identity check prevents a prior user's read from being applied after identity changes.",
+      "Warm requests still read device storage and current identity, while avoiding repeated membership/database reads after successful validation. Remote archive or membership changes are not detected instantly within that execution context; the server remains authoritative and rejects requests that are no longer valid, with revalidation on a later context or explicit local selection change.",
+      "Known P2 efficiency limitation remains: the first no-selection hold performs membership enumeration in resolution and again to distinguish zero memberships from a pending choice."
+    ],
+    "verification": "Reviewed changed resolver, storage change wrapper, and organization hook call paths, plus added unit cases. Tests were not executed under this lane."
+  }
+}
