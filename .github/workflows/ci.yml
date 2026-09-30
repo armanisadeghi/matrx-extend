@@ -55,7 +55,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: AI-Matrix-Engine/aidream
-          ref: ea1db98d9acceed438cd3e476b3de3f8585f90e9
+          ref: 60963c667a1c6f960f5a393104651d1e6f33b9bf
           path: .canonical/aidream
           ssh-key: ${{ secrets.AIDREAM_DEPLOY_KEY }}
           ssh-strict: true
