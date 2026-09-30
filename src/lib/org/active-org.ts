@@ -31,9 +31,7 @@
  * ## Resolution order — three rungs, and the third is a QUESTION
  *
  *   1. This device's stored selection — IF it is still a live membership.
- *   2. Exactly ONE membership → that organization (there is nothing to
- *      choose, so choosing it invents nothing).
- *   3. Otherwise `null`, ON PURPOSE. `null` is not a failure and never
+ *   2. Otherwise `null`, ON PURPOSE. `null` is not a failure and never
  *      becomes one: the request is HELD, `holdForActiveOrganizationId()`
  *      raises the picker, the person sets an organization, and the SAME
  *      request proceeds with it. Never "first", "oldest", "most recent",
@@ -146,7 +144,8 @@ export async function listMemberOrganizations(): Promise<MemberOrganization[]> {
   const { data: orgRows, error: orgError } = await iamDb()
     .from('organizations')
     .select('id,name')
-    .in('id', ids);
+    .in('id', ids)
+    .is('archived_at', null);
   if (orgError) {
     log.error('auth', 'listMemberOrganizations: organization read failed', orgError);
     throw new Error(`Could not read your organizations: ${orgError.message}`);
@@ -188,12 +187,6 @@ export async function resolveActiveOrganization(): Promise<MemberOrganization | 
       organization_id: stored.id,
     });
     await setOne(STORAGE_KEYS.ACTIVE_ORGANIZATION, null);
-  }
-
-  if (organizations.length === 1) {
-    const only = organizations[0] as MemberOrganization;
-    await persistSelection(only);
-    return only;
   }
 
   return null;

@@ -2,9 +2,8 @@
  * Which organization this install acts in.
  *
  * The rules exist to stop ONE failure: a guessed organization writes a user's
- * work into the wrong tenant, silently. So every test here is either "we ask
- * rather than guess" or the positive control that proves the asking isn't
- * just a broken resolver refusing everything.
+ * work into the wrong tenant, silently. So every test here proves the
+ * resolver asks for an explicit device choice and honors it.
  *
  * THE RUNG THAT MUST STAY DEAD (Arman, 2026-09-19). A user-level saved
  * `defaultOrganizationId` preference is a display preference and must never
@@ -58,7 +57,15 @@ const mocks = vi.hoisted(() => {
 vi.mock('@/lib/auth/flow', () => ({ getCurrentUser: mocks.getCurrentUser }));
 vi.mock('@/lib/supabase/client', () => ({ getSupabase: () => ({ rpc: mocks.rpc }) }));
 vi.mock('@/lib/supabase/schemas', () => ({
-  iamDb: () => ({ from: () => ({ select: () => ({ in: mocks.orgSelect }) }) }),
+  iamDb: () => ({
+    from: () => ({
+      select: () => ({
+        in: (...ids: unknown[]) => ({
+          is: (column: string, value: null) => mocks.orgSelect(...ids, column, value),
+        }),
+      }),
+    }),
+  }),
   usersDb: () => ({
     from: () => ({ select: () => ({ eq: () => ({ maybeSingle: mocks.prefsSelect }) }) }),
   }),
@@ -147,13 +154,17 @@ describe('the organization this install acts in', () => {
     expect(mocks.store.get(PICKER_PENDING)).toBeNull();
   });
 
-  it('uses the sole membership with no picker — there is nothing to choose', async () => {
-    // Positive control: a resolver that asked for everything would fail here.
+  it('asks for an explicit choice even when only one organization is open', async () => {
     membershipsFor(ORG_A);
-    const { holdForActiveOrganizationId } = await import('@/lib/org/active-org');
-    await expect(holdForActiveOrganizationId({ timeoutMs: 10 })).resolves.toBe(ORG_A);
-    expect(mocks.broadcast).not.toHaveBeenCalled();
-    expect(mocks.store.get(PICKER_PENDING)).toBeUndefined();
+    const { holdForActiveOrganizationId, setActiveOrganization } = await import(
+      '@/lib/org/active-org'
+    );
+    const held = holdForActiveOrganizationId();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(mocks.store.get(PICKER_PENDING)).toBe(true);
+    expect(mocks.store.get(ACTIVE)).toBeUndefined();
+    await setActiveOrganization(ORG_A);
+    await expect(held).resolves.toBe(ORG_A);
   });
 
   it('drops a stored selection the person has been removed from and asks again', async () => {
@@ -171,6 +182,26 @@ describe('the organization this install acts in', () => {
     const err = await holdForActiveOrganizationId({ timeoutMs: 10 }).catch((e: unknown) => e);
     expect(isOrganizationNotSelectedError(err)).toBe(true);
     // Never silently promoted to one of the memberships it DOES have.
+    expect(mocks.store.get(ACTIVE)).toBeNull();
+  });
+
+  it('excludes archived organizations and clears a stored choice after its organization closes', async () => {
+    const archived = ORG_GONE;
+    membershipsFor(ORG_A, archived);
+    mocks.orgSelect.mockResolvedValueOnce({
+      data: [{ id: ORG_A, name: 'Active A' }],
+      error: null,
+    });
+    mocks.store.set(ACTIVE, { id: archived, name: 'Archived organization' });
+    const { resolveActiveOrganization } = await import('@/lib/org/active-org');
+
+    await expect(resolveActiveOrganization()).resolves.toBeNull();
+    expect(mocks.orgSelect).toHaveBeenCalledWith(
+      'id',
+      expect.arrayContaining([archived]),
+      'archived_at',
+      null,
+    );
     expect(mocks.store.get(ACTIVE)).toBeNull();
   });
 

@@ -1,0 +1,33 @@
+{
+  "id": "notes-create-authorization",
+  "status": "root-cause-proven-repair-unverified",
+  "defect_id": "EXT-D-0069",
+  "native_observation": {
+    "build": "0.2.138",
+    "read_status": 200,
+    "create_status": 403,
+    "postgrest_error_code": "42501",
+    "postgres_error_class": "new row violates row-level security policy for table notes",
+    "authenticated_jwt": true,
+    "selected_organization": "ZZZ APPROVAL-TAIL throwaway a2c8a05f — safe to delete"
+  },
+  "live_database_facts": {
+    "target": "https://db.matrxserver.com",
+    "selected_organization_archived_at": "2026-09-22T17:06:27.046111Z",
+    "selected_organization_membership_status": "active",
+    "selected_organization_in_archived_org_ids": true,
+    "notes_authenticated_insert_grant": true,
+    "notes_restrictive_policy": "org_open_gate",
+    "notes_policy_denies_archived_organizations": true,
+    "audit_summary_notes_certified": false,
+    "audit_summary_note_folders_certified": true
+  },
+  "cause": "The extension queried member organization names without excluding archived rows. The closed organization remained selectable because its membership was still active. The database correctly refused the write under its archived organization gate.",
+  "repair": "Filter the shared extension organization lookup on archived_at IS NULL, require an explicit device choice even when one open organization remains, and give native Notes acceptance its own approved active test organization.",
+  "verification_remaining": [
+    "Run focused auth-route test and TypeScript compile under the shared resource guard.",
+    "Build a fresh extension artifact and repeat native Notes create/save/reopen with the active approved organization.",
+    "Exercise picker reopening after an archived stored choice and verify it never silently switches to a remaining organization."
+  ],
+  "access_decision": "Do not change Notes RLS; archived organizations are intentionally closed."
+}

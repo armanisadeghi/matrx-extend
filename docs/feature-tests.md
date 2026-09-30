@@ -56,6 +56,14 @@
 - **Recovery case:** in an isolated profile, leave a saved account profile but remove its session keys, then reopen Settings. The account shows as signed out, an alert above Settings explains that the saved sign-in could not be restored and offers **Try again**, and admin-only tabs stay hidden. Restoring connectivity and reloading can retry without deleting the saved profile.
 - **Cross-context and role case:** complete sign-in from another extension context, then reopen the side panel; the shown account and admin access follow the verified stored session, even if an older sign-in or sign-out notice arrives afterward. A genuine sign-out clears the stored session and the panel shows a guest. If the admin-role read is temporarily unavailable, the account remains signed in, admin tabs stay hidden, the banner says the role check failed, and **Try again** repeats that check without opening OAuth.
 
+### Archived organizations cannot be chosen for new work
+
+- **What it does:** the organization picker offers only open organizations where the person is a member. A previously selected organization that is later archived is cleared; the panel asks for an explicit replacement.
+- **Where to test:** Settings → organization picker in a signed-in extension profile that belongs to one archived organization and at least one open organization.
+- **Steps:** select the organization while it is open, archive it through the organization's normal management flow, then reload the side panel. Open Settings and inspect the picker. Repeat with exactly one open organization remaining; create a note only after choosing that open organization.
+- **Expected:** the archived organization is absent from the work picker, the stored choice is cleared, and no remaining organization is selected without a device choice. Notes creation in the chosen open organization succeeds. Archived content remains available through the organization's restore flow.
+- **Verification status:** live Notes 403 and archived membership were confirmed; source guard and fresh native retest are pending for EXT-D-0069.
+
 ### Admin sign-in keeps the full sidepanel navigation
 
 - **What it does:** a sidepanel sign-in keeps the verified admin role visible in Settings and the main navigation at the same time, including during its own auth notification.
