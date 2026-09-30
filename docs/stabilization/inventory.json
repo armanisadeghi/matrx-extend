@@ -18286,8 +18286,13 @@
         },
         {
           "id": "EXT-F-1015-C19",
-          "label": "Archived organization exclusion and stale-choice recovery",
-          "action": "Exclude archived memberships; recover a previously selected archived organization by requesting an explicit active choice without silently switching."
+          "label": "Archived organization eligibility and stale-choice recovery",
+          "action": "Archived organizations are not active request targets; a stale stored choice requires explicit active selection. Archived memberships remain discoverable through the archive filter."
+        },
+        {
+          "id": "EXT-F-1015-C20",
+          "label": "Organization archive filter in Settings and required-choice dialog",
+          "action": "Use shared Active only, All and Archived only controls; view archived memberships and restore remedy while preserving actual active organization."
         }
       ],
       "source_anchors": [
@@ -19390,7 +19395,7 @@
         },
         {
           "id": "EXT-F-1015-T40",
-          "title": "Archived organization is excluded and stale selection requires explicit recovery",
+          "title": "Archived organization cannot be a work target and stale choice requires explicit recovery",
           "modes": [
             "member",
             "admin"
@@ -19411,7 +19416,7 @@
             "Explicitly choose an active organization and retry the original operation."
           ],
           "expected": [
-            "Archived organizations are not offered.",
+            "Archived organizations are excluded from active work choices but remain discoverable through the same-surface archive filter.",
             "Stale selection cannot persist as a usable choice; no remaining organization is chosen automatically.",
             "The original operation can resume after explicit valid choice; no memberships has an honest remedy."
           ],
@@ -19426,6 +19431,48 @@
             "admin": {
               "status": "unverified",
               "detail": "Source repair and independent review in progress; previous Notes POST403 demonstrated archived selection."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-1015-T41",
+          "title": "Archive discovery stays separate from active organization selection",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1015-C01",
+            "EXT-F-1015-C09",
+            "EXT-F-1015-C20"
+          ],
+          "preconditions": [
+            "Build synchronized development extension under the guard, record immutable version/tree receipt, reload extension and reopen panel; verify account and role.",
+            "Use authorized membership data containing active and archived organizations; never archive shared organizations for a test."
+          ],
+          "steps": [
+            "In Settings Organization, switch Active only, All and Archived only.",
+            "Verify archived rows show Archived and a restore remedy, while current acting organization stays visible.",
+            "Repeat in the required-choice dialog when no organization is selected.",
+            "Verify changing display filter does not set an organization or resume a held request; explicitly choose an active row."
+          ],
+          "expected": [
+            "Both surfaces use the shared archive filter and show matching rows.",
+            "Archived memberships remain visible on request and cannot masquerade as active work targets.",
+            "Empty filter results, no active memberships and failed reads have distinct honest recovery.",
+            "Held request resumes only after an explicit active choice; archive display never changes request routing."
+          ],
+          "defect_ids": [
+            "EXT-D-0069"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "Archive-discovery source repair in focused verification; exact final native target pending."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Archive-discovery source repair in focused verification; exact final native target pending."
             }
           }
         }
