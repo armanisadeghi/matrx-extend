@@ -1,8 +1,9 @@
 import { parseStrictPrivateJson } from '@/lib/api/client';
 import { localBrowserDocumentId } from '@/lib/api/routes/local-browser-document-id';
+import { isLowercaseUuidShape } from '@ai-matrx/kit/uuid';
 import { z } from 'zod';
 
-const uuid = z.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+const uuid = z.string().refine(isLowercaseUuidShape);
 const safeInteger = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 const nonZeroSafeInteger = z.number().int().min(1).max(Number.MAX_SAFE_INTEGER);
 const grant = z

@@ -34,6 +34,7 @@ import {
   updateVaultFieldValue,
 } from '@/lib/api/routes/vault';
 import { getCurrentUser } from '@/lib/auth/flow';
+import { isRfc9562Uuid } from '@ai-matrx/kit/uuid';
 import { usesNativeTrustedSessionStorage } from '@/lib/browser/detect';
 import { setCaptureAssistance } from '@/lib/credentials/assistance-status';
 import { log } from '@/lib/debug/log';
@@ -65,7 +66,6 @@ const PROMPT_RETRY_DELAYS_MS = [0, 400, 1200, 3000];
 const SESSION_KEY = 'matrx.credentials.capture.pending.v1';
 const SESSION_VERSION = 1;
 const EXPIRY_ALARM = 'matrx.credentials.capture.expiry';
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 type Actor = { userId: string; organizationId: string };
 
 type MutationCommand =
@@ -309,7 +309,7 @@ function validStored(row: unknown): row is StoredCandidate {
     Object.keys(r).some((key) => !keys.includes(key)) ||
     r.version !== SESSION_VERSION ||
     typeof r.id !== 'string' ||
-    !UUID.test(r.id) ||
+    !isRfc9562Uuid(r.id) ||
     !Number.isInteger(r.tabId) ||
     typeof r.origin !== 'string' ||
     typeof r.loginUrl !== 'string' ||
@@ -335,8 +335,8 @@ function validStored(row: unknown): row is StoredCandidate {
     !r.actor ||
     typeof r.actor !== 'object' ||
     !exactKeys(r.actor, ['userId', 'organizationId']) ||
-    !UUID.test(String((r.actor as Record<string, unknown>).userId)) ||
-    !UUID.test(String((r.actor as Record<string, unknown>).organizationId)) ||
+    !isRfc9562Uuid(String((r.actor as Record<string, unknown>).userId)) ||
+    !isRfc9562Uuid(String((r.actor as Record<string, unknown>).organizationId)) ||
     !Number.isFinite(r.createdAt) ||
     !Number.isFinite(r.expiresAt) ||
     (r.expiresAt as number) - (r.createdAt as number) !== CANDIDATE_TTL_MS ||
@@ -363,7 +363,7 @@ function validStored(row: unknown): row is StoredCandidate {
   if (r.stage !== 'password' || !r.password || !r.operation || typeof r.operation !== 'object')
     return false;
   const operation = r.operation as Record<string, unknown>;
-  if (!UUID.test(String(operation.key))) return false;
+  if (!isRfc9562Uuid(String(operation.key))) return false;
   if (operation.kind === 'create_item') {
     const body = operation.body as Record<string, unknown> | null;
     const expected = createBodyFor({
@@ -396,15 +396,15 @@ function validStored(row: unknown): row is StoredCandidate {
   return (
     (operation.kind === 'update_field' &&
       exactKeys(operation, ['kind', 'key', 'itemId', 'fieldId', 'body']) &&
-      UUID.test(String(operation.itemId)) &&
-      UUID.test(String(operation.fieldId)) &&
+      isRfc9562Uuid(String(operation.itemId)) &&
+      isRfc9562Uuid(String(operation.fieldId)) &&
       !!operation.body &&
       typeof operation.body === 'object' &&
       exactKeys(operation.body as object, ['value']) &&
       (operation.body as Record<string, unknown>).value === r.password) ||
     (operation.kind === 'add_field' &&
       exactKeys(operation, ['kind', 'key', 'itemId', 'body']) &&
-      UUID.test(String(operation.itemId)) &&
+      isRfc9562Uuid(String(operation.itemId)) &&
       !!operation.body &&
       typeof operation.body === 'object' &&
       exactKeys(operation.body as object, ['field_key', 'value']) &&

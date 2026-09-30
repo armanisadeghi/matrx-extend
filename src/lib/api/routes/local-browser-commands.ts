@@ -10,6 +10,7 @@ import {
   verificationDigestMatches,
   verificationFields,
 } from '@/lib/desktop/local-browser/local-login-verification';
+import { isLowercaseUuidShape } from '@ai-matrx/kit/uuid';
 import { z } from 'zod';
 import { localBrowserDocumentId } from './local-browser-document-id';
 
@@ -18,7 +19,7 @@ const MAX_COMMAND_BYTES = 16 * 1024;
 const MAX_INJECTION_VALUE_BYTES = 16 * 1024;
 const encoder = new TextEncoder();
 const bytes = (value: string) => encoder.encode(value).byteLength;
-const uuid = z.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+const uuid = z.string().refine(isLowercaseUuidShape);
 const safeMilliseconds = z.number().int().min(1).max(Number.MAX_SAFE_INTEGER);
 const grant = z
   .string()

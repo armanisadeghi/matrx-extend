@@ -1,7 +1,8 @@
 import { type PrivateApiResult, type PrivateExpectedActor, privatePost } from '@/lib/api/client';
+import { isLowercaseUuidShape } from '@ai-matrx/kit/uuid';
 import { z } from 'zod';
 
-const uuid = z.string().regex(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+const uuid = z.string().refine(isLowercaseUuidShape);
 const grant = z
   .string()
   .min(1)

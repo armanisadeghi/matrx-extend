@@ -1,8 +1,7 @@
 import { getSupabase } from '@/lib/supabase/client';
 import type { ScreenshotRow } from '@/lib/supabase/queries';
 import { fetchRecentScreenshots } from '@/lib/supabase/queries';
-
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+import { isRfc9562Uuid } from '@ai-matrx/kit/uuid';
 
 export interface FileInventoryItem {
   id: string;
@@ -88,7 +87,7 @@ function requireString(row: Record<string, unknown>, key: string, context: strin
 
 function requireUuid(row: Record<string, unknown>, key: string, context: string): string {
   const value = requireString(row, key, context);
-  if (!UUID_PATTERN.test(value)) {
+  if (!isRfc9562Uuid(value)) {
     throw new Error(`The file-family service returned invalid ${context}.${key}.`);
   }
   return value;
@@ -105,7 +104,7 @@ function nullableString(row: Record<string, unknown>, key: string, context: stri
 
 function nullableUuid(row: Record<string, unknown>, key: string, context: string): string | null {
   const value = nullableString(row, key, context);
-  if (value !== null && !UUID_PATTERN.test(value)) {
+  if (value !== null && !isRfc9562Uuid(value)) {
     throw new Error(`The file-family service returned invalid ${context}.${key}.`);
   }
   return value;
@@ -131,7 +130,7 @@ export function parseFileInventoryRows(value: unknown): FileInventoryItem[] {
     const name = text(candidate, 'name', 'file_name');
     const path = text(candidate, 'path', 'file_path');
     const updatedAt = text(candidate, 'updated_at');
-    if (!id || !UUID_PATTERN.test(id) || !name || !path || !updatedAt) continue;
+    if (!id || !isRfc9562Uuid(id) || !name || !path || !updatedAt) continue;
     files.push({
       id,
       name,
@@ -275,7 +274,7 @@ export function parseAttachedFileIds(value: unknown): Set<string> {
   const ids = new Set<string>();
   for (const candidate of value) {
     if (!isRecord(candidate)) continue;
-    if (typeof candidate.file_id === 'string' && UUID_PATTERN.test(candidate.file_id)) {
+    if (typeof candidate.file_id === 'string' && isRfc9562Uuid(candidate.file_id)) {
       ids.add(candidate.file_id);
     }
   }

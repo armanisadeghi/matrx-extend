@@ -62,6 +62,24 @@ describe('local browser closed protocol', () => {
       localBrowserResult({ ...result, document: { ...result.document, document_id: '\ud800' } }),
     ).toThrow();
   });
+  it('accepts a lower-case call id and rejects the same id in any other spelling', () => {
+    // Both peers (matrx-local, aidream) match ids by string equality and refuse
+    // a non-canonical spelling, so the extension must refuse it too.
+    const result = {
+      type: 'local_browser.result' as const,
+      version: 1 as const,
+      call_id: '3f2504e0-4f89-41d3-9a0c-0305e82c3301',
+      operation: 'approve' as const,
+      status: 'acknowledged' as const,
+      terminal_receipt: {},
+      document: { url: 'https://example.com/login', document_id: 'A'.repeat(32) },
+    };
+    expect(localBrowserResult(result)).toEqual(result);
+    expect(() =>
+      localBrowserResult({ ...result, call_id: result.call_id.toUpperCase() }),
+    ).toThrow();
+    expect(() => localBrowserResult({ ...result, call_id: `${result.call_id}0` })).toThrow();
+  });
   it('accepts only the exact registration echo for a current request', () => {
     const registration = {
       type: 'local_browser.registration',
