@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-29T22:14:35.287Z",
+  "generated_at": "2026-09-30T00:14:47.911Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_chrome_categories",
@@ -6372,6 +6372,13 @@
           "open_to_crew": {
             "type": "boolean",
             "default": true
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "default": null
           },
           "options_table_id": {
             "type": "string",

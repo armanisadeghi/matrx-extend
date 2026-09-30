@@ -499,6 +499,14 @@
           "required": true,
           "type": "string"
         },
+        "options": {
+          "default": null,
+          "description": "A NEW select/multi_select's choices as words, in order (e.g. [\"To do\", \"In progress\", \"Done\"]); the store makes the Table that holds them. Use this or options_table_id.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
         "options_table_id": {
           "default": null,
           "description": "The table holding the choices of a select/multi_select. Records then store the choice's own word, not that table's row ids.",
@@ -679,7 +687,7 @@
           "type": "string"
         }
       },
-      "how": "A FILE SOMEBODY SENT YOU, IN ONE CALL. When somebody attaches a spreadsheet or a CSV and asks you to pull it in, load it, import it or \"put this in a table\", that is import_propose. Send the rows EXACTLY as the file spells them — do not convert anything, do not guess a type, do not strip a dollar sign or reformat a date. The store works every column out from the values AND from what this organization already has: money keeps its currency, dates become dates, a few repeating words become a dropdown, an address that belongs to somebody here becomes a person, and names that are all records of another table become a pointer at it. Anything it cannot place goes to the approvals inbox as a new column — never dropped:\n{\"action\": \"import_propose\", \"table\": \"Deals\", \"source_name\": \"deals.csv\", \"dedupe_key\": \"deal\", \"rows\": [{\"Deal\": \"Roof job\", \"Amount\": \"$1,250.00\", \"Closes\": \"11/30/2026\", \"Stage\": \"Open\", \"Account\": \"Northwind Trading\"}]}.\nASK FOR TWO THINGS FIRST when the file plainly has them and you cannot tell: which column makes a row the SAME row (dedupe_key — it is what stops a corrected re-import doubling everything), and, for slashed dates, whether the day or the month comes first. Pass table_id instead of table to add to a table that already exists. The answer says how many landed, how many were already there and how many were refused WITH the reason and the row — say those numbers; never report a count you were not given.",
+      "how": "A FILE SOMEBODY SENT YOU, IN ONE CALL. When somebody attaches a spreadsheet or a CSV and asks you to pull it in, load it, import it or \"put this in a table\", that is import_propose. Send the rows EXACTLY as the file spells them — do not convert anything, do not guess a type, do not strip a dollar sign or reformat a date. The store works every column out from the values AND from what this organization already has: money keeps its currency, dates become dates, a few repeating words become a dropdown, an address that belongs to somebody here becomes a person, and names that are all records of another table become a pointer at it. Anything it cannot place goes to the approvals inbox as a new column — never dropped:\n{\"action\": \"import_propose\", \"table\": \"Deals\", \"source_name\": \"deals.csv\", \"dedupe_key\": \"deal\", \"rows\": [{\"Deal\": \"Roof job\", \"Amount\": \"$1,250.00\", \"Closes\": \"11/30/2026\", \"Stage\": \"Open\", \"Account\": \"Northwind Trading\"}]}.\nASK FOR TWO THINGS FIRST when the file plainly has them and you cannot tell: which column makes a row the SAME row (dedupe_key — it is what stops a corrected re-import doubling everything), and, for slashed dates, whether the day or the month comes first. Pass table_id instead of table to add to a table that already exists. THE SAME CALL SAVES ROWS THAT ARE ALREADY IN THE CONVERSATION (Arman, 2026-09-29: one \"Save to a table\" for every shape): a markdown table in an answer, a list or a few bullet points (one row per item — one \"Item\" column, or split at a delimiter every item shares), `Key: value` lines (one row, a column per key), the items of a kind value. Turn what the person pointed at into `rows` keyed by the headings or keys exactly as written, and send them here — never a second table-making route. An existing table whose choice column does not know a word refuses that row by name; say which word and offer to add it. The answer says how many landed, how many were already there and how many were refused WITH the reason and the row — say those numbers; never report a count you were not given.",
       "topic": "import_propose"
     },
     "metadata_search": {
