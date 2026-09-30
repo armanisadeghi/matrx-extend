@@ -1,7 +1,9 @@
 {
   "id": "EXT-D-0063",
   "feature_id": "EXT-F-2007",
-  "case_ids": ["EXT-F-2007-T01"],
+  "case_ids": [
+    "EXT-F-2007-T01"
+  ],
   "title": "Debounced note edits are dropped when a save is already in flight",
   "surface": "Notes editor",
   "auth_mode": "member/admin; current-build native admin scoped evidence, member unverified",
@@ -20,9 +22,10 @@
     "src/features/notes/NoteEditor.tsx:95-114",
     "src/features/notes/NoteEditor.tsx:118-136",
     "docs/stabilization/reports/notes-live-final-verifier.json",
-    "docs/stabilization/reports/notes-delete-final-verify.json"
+    "docs/stabilization/reports/notes-delete-final-verify.json",
+    "docs/stabilization/reports/notes-queue-review.json"
   ],
-  "verification_status": "Admin current-build native reproduction and adjacent runner cases passed independently. Member mode and remaining feature cases unverified; defect not globally closed.",
+  "verification_status": "Independent exact0.2.139 native admin reproduction and adjacent runner cases passed. Member mode and remaining feature cases unverified; defect not globally closed.",
   "current_source_truth": "Latest queued draft persisted across overlapping saves and actual reload/reopen in independent admin native run; member mode remains unverified.",
   "native_acceptance_report": "docs/stabilization/reports/notes-delete-final-verify.json",
   "transition_history": [
@@ -53,10 +56,21 @@
   ],
   "retest_results": {
     "admin": {
-      "run_id": "unique-notes-final-native-20260930c",
-      "result": "pass within original reproduction and adjacent cases exercised by native runner",
-      "report": "docs/stabilization/reports/notes-delete-final-verify.json",
-      "build_tree": "93c7bf7978357d7e93d64658fd65fa4e5e8285eb7e9be303ac3d2d2ea8b277a8"
+      "run_id": "notes-review-139-native-20260930-01",
+      "result": "pass within original reproduction and adjacent cases exercised by native runner; not full feature certification",
+      "report": "docs/stabilization/reports/notes-queue-review.json",
+      "version": "0.2.139",
+      "build_tree": "20bbd42bdb782dbef2616aa0996cf947060b0117d84674de2234f8376971c19f"
     }
-  }
+  },
+  "historical_retest_results": [
+    {
+      "admin": {
+        "run_id": "unique-notes-final-native-20260930c",
+        "result": "pass within original reproduction and adjacent cases exercised by native runner",
+        "report": "docs/stabilization/reports/notes-delete-final-verify.json",
+        "build_tree": "93c7bf7978357d7e93d64658fd65fa4e5e8285eb7e9be303ac3d2d2ea8b277a8"
+      }
+    }
+  ]
 }

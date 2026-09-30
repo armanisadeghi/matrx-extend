@@ -1,7 +1,9 @@
 {
   "id": "EXT-D-0061",
   "feature_id": "EXT-F-2006",
-  "case_ids": ["EXT-F-2006-T03"],
+  "case_ids": [
+    "EXT-F-2006-T03"
+  ],
   "title": "Note-list read failure is presented as an empty list",
   "surface": "Notes side-panel",
   "auth_mode": "member/admin; current-build native admin scoped evidence, member unverified",
@@ -22,9 +24,10 @@
     "src/features/notes/NotesList.tsx:142-147",
     "docs/stabilization/runs/notes-native-20260930c.json",
     "docs/stabilization/reports/notes-live-final-verifier.json",
-    "docs/stabilization/reports/notes-delete-final-verify.json"
+    "docs/stabilization/reports/notes-delete-final-verify.json",
+    "docs/stabilization/reports/notes-queue-review.json"
   ],
-  "verification_status": "Admin current-build native reproduction and adjacent runner cases passed independently. Member mode and remaining feature cases unverified; defect not globally closed.",
+  "verification_status": "Independent exact0.2.139 native admin reproduction and adjacent runner cases passed. Member mode and remaining feature cases unverified; defect not globally closed.",
   "current_source_truth": "listMyNotes now rejects database and malformed-row failures, allowing NotesView to show an explicit error and Retry; a successful empty SELECT still shows the empty state. Selected editor drafts remain accessible while the list query fails.",
   "transition_history": [
     {
@@ -48,13 +51,24 @@
   ],
   "retest_results": {
     "admin": {
-      "run_id": "unique-notes-final-native-20260930c",
-      "result": "pass within original reproduction and adjacent cases exercised by native runner",
-      "report": "docs/stabilization/reports/notes-delete-final-verify.json",
-      "build_tree": "93c7bf7978357d7e93d64658fd65fa4e5e8285eb7e9be303ac3d2d2ea8b277a8"
+      "run_id": "notes-review-139-native-20260930-01",
+      "result": "pass within original reproduction and adjacent cases exercised by native runner; not full feature certification",
+      "report": "docs/stabilization/reports/notes-queue-review.json",
+      "version": "0.2.139",
+      "build_tree": "20bbd42bdb782dbef2616aa0996cf947060b0117d84674de2234f8376971c19f"
     },
     "member": {
       "status": "not-run"
     }
-  }
+  },
+  "historical_retest_results": [
+    {
+      "admin": {
+        "run_id": "unique-notes-final-native-20260930c",
+        "result": "pass within original reproduction and adjacent cases exercised by native runner",
+        "report": "docs/stabilization/reports/notes-delete-final-verify.json",
+        "build_tree": "93c7bf7978357d7e93d64658fd65fa4e5e8285eb7e9be303ac3d2d2ea8b277a8"
+      }
+    }
+  ]
 }

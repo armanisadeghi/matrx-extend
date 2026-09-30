@@ -19499,9 +19499,15 @@
             "EXT-D-0069"
           ],
           "run_ids": [
-            "auth-role-failure-dev093-001"
+            "auth-role-failure-dev093-001",
+            "notes-review-139-archive-ui-20260930-01"
           ],
-          "retest_status": "partial"
+          "retest_status": "partial",
+          "archive_filter_retest": {
+            "report": "docs/stabilization/reports/notes-queue-review.json",
+            "version": "0.2.139",
+            "result": "bounded live filter visibility and archived view-only labels pass; exhaustive archive transitions and held-request dialog remain unverified"
+          }
         }
       },
       "inventory_status": "complete",
@@ -22350,15 +22356,18 @@
             "empty",
             "reload"
           ],
-          "retest_evidence": {
-            "run": "notes-native-escalation-20260930b",
-            "mode": "admin",
-            "read_failure_and_retry": "pass",
-            "create_failure_feedback_and_refresh": "pass",
-            "real_create_retry_to_editor": "fail: backend403",
-            "complete_case": "fail",
-            "related_defect": "EXT-D-0069"
-          }
+          "historical_retest_evidence": [
+            {
+              "run": "notes-native-escalation-20260930b",
+              "mode": "admin",
+              "read_failure_and_retry": "pass",
+              "create_failure_feedback_and_refresh": "pass",
+              "real_create_retry_to_editor": "fail: backend403",
+              "complete_case": "fail",
+              "related_defect": "EXT-D-0069"
+            }
+          ],
+          "verification_status": "Admin failure/retry/create behavior passed on exact139 in notes-review-139-native-20260930-01. Initially empty account and full case/member coverage remain unverified; historical archived-org 403 is retained separately."
         }
       ],
       "cells": {
@@ -22389,13 +22398,15 @@
             "notes-native-20260930c",
             "notes-native-escalation-20260930b",
             "notes-final-native-20260930a",
-            "unique-notes-final-native-20260930c"
+            "unique-notes-final-native-20260930c",
+            "notes-review-139-native-20260930-01"
           ],
           "retest_status": "partial",
           "retest_evidence": {
-            "run_id": "unique-notes-final-native-20260930c",
-            "report": "docs/stabilization/reports/notes-delete-final-verify.json",
-            "scope": "D61/D62/D63/D67/D68 admin original reproduction and surrounding runner cases pass; full feature and member coverage remain unverified."
+            "run_id": "notes-review-139-native-20260930-01",
+            "report": "docs/stabilization/reports/notes-queue-review.json",
+            "version": "0.2.139",
+            "scope": "D61/D62/D63/D67/D68 admin original reproduction and adjacent runner cases pass; full feature and member coverage remain unverified."
           }
         }
       },
@@ -22676,7 +22687,7 @@
             "reload",
             "network"
           ],
-          "verification_status": "fixed-awaiting-native: EXT-D-0063 source correction and deferred-write regression coverage are present; native latest-draft persistence and real backend acceptance remain pending."
+          "verification_status": "Admin overlapping autosave and latest draft persistence after reopen/reload passed on exact139 in notes-review-139-native-20260930-01. Folder/preview/full case and member coverage remain unverified."
         },
         {
           "id": "EXT-F-2007-T02",
@@ -22795,7 +22806,7 @@
             "EXT-D-0068"
           ],
           "run_ids": [],
-          "retest_status": "D63 fixed-awaiting-native; D67/D68 in-fix, native not-run"
+          "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
@@ -22806,13 +22817,15 @@
           ],
           "run_ids": [
             "notes-final-native-20260930a",
-            "unique-notes-final-native-20260930c"
+            "unique-notes-final-native-20260930c",
+            "notes-review-139-native-20260930-01"
           ],
           "retest_status": "partial",
           "retest_evidence": {
-            "run_id": "unique-notes-final-native-20260930c",
-            "report": "docs/stabilization/reports/notes-delete-final-verify.json",
-            "scope": "D61/D62/D63/D67/D68 admin original reproduction and surrounding runner cases pass; full feature and member coverage remain unverified."
+            "run_id": "notes-review-139-native-20260930-01",
+            "report": "docs/stabilization/reports/notes-queue-review.json",
+            "version": "0.2.139",
+            "scope": "D61/D62/D63/D67/D68 admin original reproduction and adjacent runner cases pass; full feature and member coverage remain unverified."
           }
         }
       },
