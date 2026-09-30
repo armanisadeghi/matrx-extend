@@ -22253,7 +22253,15 @@
             "admin",
             "empty",
             "reload"
-          ]
+          ],
+          "retest_evidence": {
+            "run": "notes-native-20260930c",
+            "mode": "admin",
+            "read_failure_and_retry": "pass",
+            "create_failure_feedback_and_refresh": "pass",
+            "real_create_retry_to_editor": "unverified",
+            "complete_case": "unverified"
+          }
         }
       ],
       "cells": {
@@ -22278,8 +22286,10 @@
             "EXT-D-0061",
             "EXT-D-0062"
           ],
-          "run_ids": [],
-          "retest_status": "not-run"
+          "run_ids": [
+            "notes-native-20260930c"
+          ],
+          "retest_status": "Partial native: D61 failed-read/retry passed; D62 error/refresh passed, real-create recovery unresolved. Other feature cases unverified."
         }
       },
       "inventory_status": "source-complete",

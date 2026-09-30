@@ -1,7 +1,9 @@
 {
   "id": "EXT-D-0061",
   "feature_id": "EXT-F-2006",
-  "case_ids": ["EXT-F-2006-T03"],
+  "case_ids": [
+    "EXT-F-2006-T03"
+  ],
   "title": "Note-list read failure is presented as an empty list",
   "surface": "Notes side-panel",
   "auth_mode": "member/admin; source-derived, native unverified",
@@ -19,9 +21,10 @@
     "docs/stabilization/reports/notes-files-batch-audit.json",
     "src/lib/notes/queries.ts:28-44",
     "src/features/notes/NotesView.tsx:25-48",
-    "src/features/notes/NotesList.tsx:142-147"
+    "src/features/notes/NotesList.tsx:142-147",
+    "docs/stabilization/runs/notes-native-20260930c.json"
   ],
-  "verification_status": "Focused read guard failed on the original source and passed after the source fix; final corrected Notes bundle and native side-panel acceptance remain pending.",
+  "verification_status": "Final development build 0.2.138 (119bb63c\u2026) passed native admin failed-list/error/retry recovery in run notes-native-20260930c. Member-mode and complete surrounding Notes matrix remain unverified; defect is not closed.",
   "current_source_truth": "listMyNotes now rejects database and malformed-row failures, allowing NotesView to show an explicit error and Retry; a successful empty SELECT still shows the empty state. Selected editor drafts remain accessible while the list query fails.",
   "transition_history": [
     {
@@ -42,5 +45,15 @@
       "to": "fixed",
       "reason": "Read boundary and NotesView error/retry source fixed. Red guard proved original failure; focused Notes tests passed 15/15 and compile passed. Native acceptance pending."
     }
-  ]
+  ],
+  "retest_results": {
+    "admin": {
+      "status": "pass",
+      "scope": "Original failed-list reproduction and real retry recovery; no false empty claim",
+      "run": "notes-native-20260930c"
+    },
+    "member": {
+      "status": "not-run"
+    }
+  }
 }

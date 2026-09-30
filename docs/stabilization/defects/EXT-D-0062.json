@@ -24,7 +24,8 @@
     "docs/stabilization/resource-journals/notes-final-owner-tests-20260930b.jsonl",
     "docs/stabilization/resource-journals/notes-native-compile-20260930a.jsonl",
     "docs/stabilization/resource-journals/notes-native-devbuild-20260930a.jsonl",
-    "docs/stabilization/reports/notes-final-peer.json"
+    "docs/stabilization/reports/notes-final-peer.json",
+    "docs/stabilization/runs/notes-native-20260930c.json"
   ],
   "verification_status": "Final corrected source passed 11 focused tests across four Notes files, TypeScript compile, and a current development build. Independent source review accepted the uncertain-result wording and recovery controls. Native acceptance remains pending.",
   "current_source_truth": "Null or thrown create results show an uncertain-result notice with Refresh notes and Retry creating note. Confirmed creation selects the editor before list refresh. Final source checks passed; member/admin native coverage is not yet complete.",
@@ -53,5 +54,15 @@
       "to": "fixed",
       "reason": "Final corrected source passed focused tests, compile and development build. Native retest remains open."
     }
-  ]
+  ],
+  "retest_results": {
+    "admin": {
+      "status": "partial",
+      "scope": "Forced create failure shows feedback/retry; Refresh triggers real read. Retry-to-editor boundary unresolved; persistence outcome unknown.",
+      "run": "notes-native-20260930c"
+    },
+    "member": {
+      "status": "not-run"
+    }
+  }
 }
