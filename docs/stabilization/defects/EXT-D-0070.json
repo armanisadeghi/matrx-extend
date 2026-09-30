@@ -13,7 +13,7 @@
   "actual": "fetchDemoRow returned null after console.warn, getDemoOrHydrate also returned null on a thrown repair error, and the callers presented a missing body or missing demo.",
   "severity": "S2: a real saved workflow looks lost when its cloud body cannot be read",
   "priority": "P1: the failure erases the distinction between outage/refusal and absence on replay",
-  "state": "in-verification",
+  "state": "fixed",
   "root_cause": "The demo read helpers answered database errors with success-shaped null or empty arrays; the on-miss repair caught thrown failures and converted them to null again. The sign-in bulk hydrate already has an honest ok:false retry path once the read throws.",
   "evidence": [
     "src/lib/supabase/queries.ts",
@@ -22,9 +22,10 @@
     "tests/unit/demo-cloud-sync.test.ts",
     "docs/stabilization/resource-journals/notes-integration-release-20260930e.jsonl",
     "docs/stabilization/resource-journals/demo-read-focused-20260930a.jsonl",
-    "docs/stabilization/resource-journals/demo-read-compile-20260930a.jsonl"
+    "docs/stabilization/resource-journals/demo-read-compile-20260930a.jsonl",
+    "docs/stabilization/reports/notes-release-integration.json"
   ],
-  "verification_status": "Focused demo tests passed (2 files, 16 tests), compile passed, swallowed-refusals check passed with tighter budgets. Full release checks, independent source review, and native Guidance/tool response verification remain open.",
+  "verification_status": "Focused demo tests passed (2 files, 16 tests), compile passed, swallowed-refusals check passed with tighter budgets. Full release139 checks passed and independent source review accepted the bounded correction. Native verification remains unverified; no closure is claimed.",
   "transition_history": [
     {
       "at": "2026-09-30T10:53:48Z",
@@ -35,14 +36,20 @@
     {
       "at": "2026-09-30T10:59:11Z",
       "from": "open",
+      "to": "triaged",
+      "reason": "Ledger correction: the recorded root-cause/catalog assessment at this timestamp was the triage step; it was omitted from the original history."
+    },
+    {
+      "at": "2026-09-30T10:59:11Z",
+      "from": "triaged",
       "to": "in-fix",
       "reason": "The demo read, on-miss caller, and Guidance preview failure states were traced and a bounded repair started."
     },
     {
       "at": "2026-09-30T11:06:00Z",
       "from": "in-fix",
-      "to": "in-verification",
-      "reason": "The bounded repair passed focused tests, compile, and the swallowed-refusals gate; independent and native verification are still pending."
+      "to": "fixed",
+      "reason": "The bounded repair passed focused tests, compile, and the swallowed-refusals gate; independent and native verification are still pending. Ledger correction: fixed is the prescribed state while retest remains pending; in-verification was a noncanonical label."
     }
   ]
 }
