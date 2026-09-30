@@ -10,15 +10,16 @@ import { lookup } from '@/lib/tools/registry';
 import type { ToolContext } from '@/lib/tools/types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { store, openRecordStore } = vi.hoisted(() => ({
+const { store, openRecordStore, openRecordStores } = vi.hoisted(() => ({
   store: {
     tableList: vi.fn(),
     recordWrite: vi.fn(),
   },
   openRecordStore: vi.fn(),
+  openRecordStores: vi.fn(),
 }));
 
-vi.mock('@/lib/records/store', () => ({ openRecordStore }));
+vi.mock('@/lib/records/store', () => ({ openRecordStore, openRecordStores }));
 
 function context(): ToolContext {
   return {
@@ -40,6 +41,10 @@ function registeredRecords() {
 beforeEach(() => {
   vi.clearAllMocks();
   openRecordStore.mockResolvedValue({ open: true, client: store });
+  openRecordStores.mockResolvedValue({
+    stores: [{ client: store, organizationId: 'org-harbor-dental' }],
+    closed: [],
+  });
   store.tableList.mockResolvedValue({
     ok: true,
     data: [
@@ -133,6 +138,7 @@ describe('registered records schema null defaults', () => {
           id: 'tbl-harbor-dental-patients',
           slug: 'new-patient-intakes',
           name: 'Harbor Dental new-patient intake',
+          organization_id: 'org-harbor-dental',
           type: 'record',
           agent_writable: true,
         },

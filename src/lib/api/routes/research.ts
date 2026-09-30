@@ -430,6 +430,8 @@ export const ResearchTopicSummarySchema = z.object({
   name: z.string(),
   source_count: z.number().int().optional(),
   updated_at: z.string().nullable().optional(),
+  /** The topic's own organization. Optional until the server summary carries it. */
+  organization_id: z.string().uuid().nullable().optional(),
 });
 export type ResearchTopicSummary = z.infer<typeof ResearchTopicSummarySchema>;
 
@@ -454,8 +456,22 @@ export interface AddSourceRequest {
  * Idempotent on (topic_id, url): if a source already exists at this URL in
  * the topic, the server returns the existing row (200), no duplicate.
  */
-export async function addSourceToTopic(topicId: string, body: AddSourceRequest) {
-  return apiPost<ResearchSource>(`/research/topics/${encodeURIComponent(topicId)}/sources`, body);
+export async function addSourceToTopic(
+  topicId: string,
+  body: AddSourceRequest,
+  /**
+   * The topic's OWN organization. Adding to an EXISTING topic runs in that topic's org, never the
+   * active one (active-org law 2026-09-30). Omitted only when the topic list did not carry it; the
+   * server anchors the call to the topic's saved org regardless.
+   */
+  topicOrganizationId?: string | null,
+) {
+  return apiPost<ResearchSource>(
+    `/research/topics/${encodeURIComponent(topicId)}/sources`,
+    body,
+    undefined,
+    topicOrganizationId ? { organizationId: topicOrganizationId } : undefined,
+  );
 }
 
 export const SourceUrlMatchSchema = z.object({
