@@ -130,8 +130,7 @@ export function orderForPickup<T extends { id: string; url: string }>(
  * find. Never a silent no-op, never a stack trace — a sentence that names the
  * likely reason and the next move.
  */
-export function pickupMissWhy(pickup: CapturePickup, organizationName: string | null): string {
+export function pickupMissWhy(pickup: CapturePickup): string {
   const what = pickup.url ?? 'that page';
-  const where = organizationName ? ` in ${organizationName}` : '';
-  return `The web app pointed at ${what}, but it is not waiting${where} any more — it was probably already captured or skipped.`;
+  return `The web app pointed at ${what}, but it is not waiting any more — it was probably already captured or skipped.`;
 }

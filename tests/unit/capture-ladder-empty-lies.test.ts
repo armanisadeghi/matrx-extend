@@ -1,27 +1,10 @@
 /**
- * THE LYING ZERO, AS A GUARD.
+ * The capture tray reads by access, not by the selected organization.
  *
- * The class of defect: **a queue read that returns zero rows for the active
- * organization, while the person has rows in another of their own
- * organizations, must not produce an "empty" UI state that omits the elsewhere
- * count.** That is what actually happened — the web app's tray said "2 pages
- * are waiting for your browser", the extension showed a calm "Nothing needs
- * your browser", and the rows were sitting in two other organizations the same
- * person is a member of.
- *
- * These tests bite on three seams, so deleting any half of the fix turns them
- * red:
- *   1. `countNeedsYouElsewhere()` — that the read exists, uses the person's
- *      OWN memberships, and EXCLUDES the active organization.
- *   2. `queueSentences()` — that an empty active queue with work elsewhere can
- *      never render as a bare nothing, and always names where it looked.
- *   3. `captureTabLabel()` — that the tab's accessible name says it too, and
- *      that the badge number is never inflated by other workspaces' rows.
- *
- * Plus the pointer rules (`orderForPickup`, expiry), because a pointer that
- * silently misses is the same class of lie in a smaller place.
- *
- * PROVEN FAILING-THEN-PASSING — the exact numbers are in this lane's report.
+ * Guards: (1) `listNeedsYou()` sends NO organization filter and needs no selection;
+ * (2) the tray's sentences never hedge about "another workspace" because the list
+ * already spans every organization; (3) the pointer rules (`orderForPickup`, expiry) —
+ * a pointer that silently misses is the same class of lie in a smaller place.
  */
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -51,7 +34,7 @@ import {
   orderForPickup,
   pickupMissWhy,
 } from '@/lib/capture-ladder/pickup';
-import { countNeedsYouElsewhere, listNeedsYou } from '@/lib/capture-ladder/queue';
+import { listNeedsYou } from '@/lib/capture-ladder/queue';
 import { getActiveOrganizationId, listMemberOrganizations } from '@/lib/org/active-org';
 import { mediaDb } from '@/lib/supabase/schemas';
 
@@ -99,100 +82,22 @@ describe('the needs-you list is decided by access, never by the selected organiz
     const calls = stubMediaDb([]);
     await listNeedsYou();
     expect(Object.keys(calls).some((k) => k.startsWith('eq:organization_id'))).toBe(false);
-  });
-
-  it('has nothing "elsewhere" to report, because the list already shows everything', async () => {
-    vi.mocked(getActiveOrganizationId).mockResolvedValue(WORKSPACE);
-    const report = await countNeedsYouElsewhere();
-    expect(report.elsewhere).toEqual([]);
-    expect(report.total).toBe(0);
+    expect(Object.keys(calls).some((k) => k.startsWith('in:organization_id'))).toBe(false);
   });
 });
 
-describe('THE GUARD — an empty queue with work elsewhere is never a bare "nothing"', () => {
-  it('names the workspace it looked in AND the one that holds the pages', () => {
-    const s = queueSentences({
-      itemCount: 0,
-      organizationName: "admin's Workspace",
-      elsewhere: [{ organizationId: AI_MATRX, organizationName: 'AI Matrx', count: 4 }],
-    });
-
-    // The exact failure: an empty state that says only "Nothing needs your
-    // browser" and stops.
-    expect(s.headline).toContain("admin's Workspace");
-    expect(s.emptyLine).toContain("admin's Workspace");
-    expect(s.elsewhereLine).not.toBeNull();
-    expect(s.elsewhereLine).toContain('4 pages');
-    expect(s.elsewhereLine).toContain('AI Matrx');
-    // …and a real control, not just prose.
-    expect(s.switchTo?.organizationId).toBe(AI_MATRX);
-    expect(s.switchLabel).toBe('Switch to AI Matrx');
+describe('the tray sentences never hedge about another workspace', () => {
+  it('an empty list says plainly that nothing needs the browser', () => {
+    const s = queueSentences(0);
+    expect(s.headline).toBe('Nothing needs your browser');
+    expect(s.emptyLine).toContain('Nothing needs your browser');
   });
 
-  it('offers the workspace with the most waiting pages when several hold some', () => {
-    const s = queueSentences({
-      itemCount: 0,
-      organizationName: 'AI Matrx',
-      elsewhere: [
-        { organizationId: WORKSPACE, organizationName: "admin's Workspace", count: 4 },
-        { organizationId: PROBE, organizationName: 'ZZZ G2 Activation Probe', count: 2 },
-      ],
-    });
-    expect(s.elsewhereLine).toBe('6 pages are waiting in 2 of your other workspaces.');
-    expect(s.switchTo?.organizationId).toBe(WORKSPACE);
-  });
-
-  it('keeps the explanation to ONE line — no paragraphs, no second sentence about elsewhere', () => {
-    const s = queueSentences({
-      itemCount: 0,
-      organizationName: 'AI Matrx',
-      elsewhere: [{ organizationId: PROBE, organizationName: 'ZZZ G2 Activation Probe', count: 1 }],
-    });
-    expect(s.elsewhereLine).toBe('1 page is waiting in ZZZ G2 Activation Probe.');
-    expect((s.elsewhereLine ?? '').split('. ').length).toBe(1);
-  });
-
-  it('still says WHERE it looked when there is genuinely nothing anywhere', () => {
-    const s = queueSentences({ itemCount: 0, organizationName: 'AI Matrx', elsewhere: [] });
-    expect(s.headline).toBe('Nothing needs your browser in AI Matrx');
-    expect(s.elsewhereLine).toBeNull();
-    expect(s.switchTo).toBeNull();
-  });
-
-  it('never leaves the workspace blank when none is resolved yet', () => {
-    const s = queueSentences({ itemCount: 0, organizationName: null, elsewhere: [] });
-    expect(s.headline).not.toBe('Nothing needs your browser in ');
-    expect(s.headline).toMatch(/signed in to/);
-  });
-
-  it('says it could not check the other workspaces rather than implying there are none', () => {
-    const s = queueSentences({
-      itemCount: 0,
-      organizationName: 'AI Matrx',
-      elsewhere: [],
-      elsewhereError: 'permission denied',
-    });
-    expect(s.elsewhereProblem).toContain('could not check your other workspaces');
-    expect(s.elsewhereProblem).toContain('permission denied');
-  });
-});
-
-describe('THE GUARD — the tab badge does not read a silent zero', () => {
-  it('says "waiting in another workspace" when the active count is zero', () => {
-    expect(captureTabLabel(0, 4)).toBe(
-      'Nothing needs your browser here — 4 waiting in another workspace',
-    );
-  });
-
-  it('never adds other workspaces into the actionable number', () => {
-    const label = captureTabLabel(2, 4);
-    expect(label).toContain('2 pages need your browser');
-    expect(label).toContain('4 more waiting in another workspace');
-    expect(label).not.toContain('6');
-  });
-
-  it('keeps the accessible tab name when there is nothing anywhere', () => {
-    expect(captureTabLabel(0, 0)).toBe('Pages that need your browser');
+  it('counts pages in the headline and the tab name', () => {
+    expect(queueSentences(1).headline).toBe('1 page need your browser');
+    expect(queueSentences(3).emptyLine).toBeNull();
+    expect(captureTabLabel(2)).toBe('2 pages need your browser');
+    expect(captureTabLabel(0)).toBe('Pages that need your browser');
   });
 });
 
@@ -221,9 +126,8 @@ describe('the pointed-at page goes first, and a miss is said out loud', () => {
     expect(out.matched).toBe(false);
     expect(out.pickedId).toBeNull();
     expect(out.items.map((r) => r.id)).toEqual(['a', 'b', 'c']);
-    const why = pickupMissWhy(pickup, 'AI Matrx');
+    const why = pickupMissWhy(pickup);
     expect(why).toContain('https://example.com/gone');
-    expect(why).toContain('AI Matrx');
   });
 
   it('expires a pointer so a stale one never pins the wrong row forever', () => {

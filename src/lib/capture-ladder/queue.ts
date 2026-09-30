@@ -21,11 +21,7 @@
 
 import { type Handoff, NEEDS_YOU_STATUSES, handoffSchema } from '@/lib/capture-ladder/types';
 import { log } from '@/lib/debug/log';
-import {
-  getActiveOrganizationId,
-  listMemberOrganizations,
-  onActiveOrganizationChange,
-} from '@/lib/org/active-org';
+import { listMemberOrganizations } from '@/lib/org/active-org';
 import { failDbCall } from '@/lib/supabase/db-failure';
 import { mediaDb } from '@/lib/supabase/schemas';
 import { formatDurationMs } from '@ai-matrx/kit/format';
@@ -44,8 +40,9 @@ import {
  */
 const captureHandoffChannel = defineChannelNamespace({
   namespace: 'extend-capture-handoff',
-  parts: ['organizationId'],
-  description: 'media.capture_handoff rows for one organization (extension tray)',
+  parts: [],
+  description:
+    'media.capture_handoff rows the person can access, all organizations (extension tray)',
 });
 
 /** The floor. A socket that is up only ever makes this faster, never optional. */
@@ -103,53 +100,21 @@ export async function countNeedsYou(): Promise<number> {
   return (await listNeedsYou()).length;
 }
 
-/** One of the person's OTHER organizations, and how many pages wait in it. */
-export interface ElsewhereWaiting {
-  organizationId: string;
-  organizationName: string;
-  count: number;
-}
-
-/** What `countNeedsYouElsewhere()` answers: where we looked, and where else there is work. */
-export interface ElsewhereReport {
-  /** The organization this browser is acting in — null when none is selected. */
-  activeOrganizationId: string | null;
-  /** Its name, so the empty state can say WHERE it found nothing. */
-  activeOrganizationName: string | null;
-  /** Other memberships that hold waiting rows, most first. Never includes the active one. */
-  elsewhere: ElsewhereWaiting[];
-  /** Total across `elsewhere`. */
-  total: number;
-}
-
 /**
- * THE LYING ZERO, ANSWERED.
- *
- * `listNeedsYou()` returns rows for ONE organization, and an empty result from
- * it is not the sentence "nothing needs your browser" — it is the much
- * narrower "nothing needs your browser IN THIS WORKSPACE". A person's waiting
- * rows routinely land in several of their own organizations (the web app's
- * tray shouts about the one IT is in), so an empty tray here, rendered as a
- * calm "nothing", is a screen lying about the user's data.
- *
- * This is NOT cross-organization reach: every organization counted comes from
- * the person's OWN `listMemberOrganizations()` and is read under their own
- * RLS. The extension never renders or acts on another organization's rows —
- * it counts them and offers to switch.
+ * Organization names by id, from the person's OWN memberships. The list spans all of
+ * them, so each item wears its organization's name; a name that cannot be resolved
+ * simply shows no label (the row itself is still real).
  */
-export async function countNeedsYouElsewhere(): Promise<ElsewhereReport> {
-  const activeOrganizationId = await getActiveOrganizationId();
-  const organizations = await listMemberOrganizations();
-  const active = organizations.find((o) => o.id === activeOrganizationId) ?? null;
-  const empty: ElsewhereReport = {
-    activeOrganizationId,
-    activeOrganizationName: active?.name ?? null,
-    elsewhere: [],
-    total: 0,
-  };
-  // `listNeedsYou()` now returns rows from every organization the person can access, so
-  // nothing can be waiting "elsewhere" that the list does not already show.
-  return empty;
+async function loadOrganizationNames(): Promise<Record<string, string>> {
+  try {
+    const organizations = await listMemberOrganizations();
+    return Object.fromEntries(organizations.map((o) => [o.id, o.name]));
+  } catch (err) {
+    log.warn('scrape', 'could not read organization names for the capture tray', {
+      message: err instanceof Error ? err.message : String(err),
+    });
+    return {};
+  }
 }
 
 /** What a subscriber is handed on every update. */
@@ -166,21 +131,8 @@ export interface NeedsYouUpdate {
   note: string | null;
   /** Set when the read itself failed; `items` is then the last known list. */
   error: string | null;
-  /**
-   * WHERE this list was read. The empty state names it, because "nothing needs
-   * your browser" without a workspace is the lying zero this surface shipped
-   * with. Null only while nothing is selected yet.
-   */
-  organizationName: string | null;
-  /** The person's OTHER organizations that hold waiting pages. Counted, never rendered as rows. */
-  elsewhere: ElsewhereWaiting[];
-  /** Total waiting outside the active organization. */
-  elsewhereTotal: number;
-  /**
-   * Set when the "and where else?" read itself failed. The tray then says it
-   * could not check rather than implying there is nowhere else (law 4).
-   */
-  elsewhereError: string | null;
+  /** Organization name by id, for the small per-item label. */
+  organizationNames: Record<string, string>;
 }
 
 export interface SubscribeOptions {
@@ -192,9 +144,9 @@ export interface SubscribeOptions {
  * Watch the queue. Calls back immediately with the current list, then on every
  * Postgres change and on every poll tick.
  *
- * Returns an unsubscribe function. Safe to call before an organization is
- * selected: the first read reports the refusal and the poll keeps trying, so
- * the tray recovers by itself once the person picks an organization.
+ * The live channel is ONE person-wide subscription with no organization filter:
+ * Realtime applies the person's own RLS, so pushes arrive for every organization
+ * they belong to, and joining or leaving one needs no re-subscription.
  */
 export function subscribeNeedsYou(
   cb: (update: NeedsYouUpdate) => void,
@@ -204,14 +156,8 @@ export function subscribeNeedsYou(
   let stopped = false;
   let handle: ChannelHandle | null = null;
   let lastItems: Handoff[] = [];
+  let organizationNames: Record<string, string> = {};
   let socketLive = false;
-  let lastElsewhere: ElsewhereReport = {
-    activeOrganizationId: null,
-    activeOrganizationName: null,
-    elsewhere: [],
-    total: 0,
-  };
-  let elsewhereError: string | null = null;
 
   const degradedNote = (): string =>
     'Live updates are not connected right now, so this list refreshes about every ' +
@@ -225,52 +171,25 @@ export function subscribeNeedsYou(
       health: socketLive ? 'live' : 'degraded',
       note: socketLive ? null : degradedNote(),
       error,
-      organizationName: lastElsewhere.activeOrganizationName,
-      elsewhere: lastElsewhere.elsewhere,
-      elsewhereTotal: lastElsewhere.total,
-      elsewhereError,
+      organizationNames,
     });
   };
 
-  /**
-   * The "and where else?" read runs on every refresh, NOT only when the active
-   * list is empty: the badge's accessible name has to be right before anyone
-   * opens the tab, and an empty list is exactly the moment a stale elsewhere
-   * count would mislead.
-   */
-  const refreshElsewhere = (): Promise<void> =>
-    countNeedsYouElsewhere()
-      .then((report) => {
-        lastElsewhere = report;
-        elsewhereError = null;
+  const refresh = (): void => {
+    void Promise.all([listNeedsYou(), loadOrganizationNames()])
+      .then(([items, names]) => {
+        lastItems = items;
+        organizationNames = names;
+        emit(null);
       })
       .catch((err: unknown) => {
-        // Never swallowed into "there is nowhere else" — the view says it could
-        // not check, and keeps the last known counts visible.
-        elsewhereError = err instanceof Error ? err.message : String(err);
+        // `failDbCall` has already announced this to the person and recorded
+        // it. The tray still must stop claiming the last list is current.
+        emit(err instanceof Error ? err.message : String(err));
       });
-
-  const refresh = (): void => {
-    void refreshElsewhere().then(() =>
-      listNeedsYou()
-        .then((items) => {
-          lastItems = items;
-          emit(null);
-        })
-        .catch((err: unknown) => {
-          // `failDbCall` has already announced this to the person and recorded
-          // it. The tray still must stop claiming the last list is current.
-          emit(err instanceof Error ? err.message : String(err));
-        }),
-    );
   };
 
-  /**
-   * Re-open the live subscription against whatever organization is now
-   * active. Extracted because TWO things can change it: the realtime manager
-   * coming or going, and the person switching workspace.
-   */
-  const openForActiveOrganization = (manager: RealtimeManager | null): void => {
+  const open = (manager: RealtimeManager | null): void => {
     if (handle) {
       handle.close();
       handle = null;
@@ -280,60 +199,32 @@ export function subscribeNeedsYou(
       emit(null);
       return;
     }
-    void getActiveOrganizationId().then((organizationId) => {
-      if (stopped || !organizationId) {
-        emit(null);
-        return;
-      }
-      handle = manager.open({
-        topic: captureHandoffChannel.topic({ organizationId }),
-        postgresChanges: [
-          {
-            event: '*',
-            schema: 'media',
-            table: 'capture_handoff',
-            filter: `organization_id=eq.${organizationId}`,
-            rowId: (row) => (typeof row.id === 'string' ? row.id : undefined),
-            fingerprint: (row) => `${String(row.status)}|${String(row.rung)}`,
-            onChange: () => refresh(),
-          },
-        ],
-        // Realtime has no replay. Everything queued while this panel was shut
-        // or the socket was away is gone; re-read rather than trust the screen.
-        onBackfill: () => refresh(),
-        onStatusChange: (status) => {
-          const nowLive = status === 'connected';
-          if (nowLive === socketLive) return;
-          socketLive = nowLive;
-          log.info('scrape', `capture-handoff realtime ${status}`);
-          emit(null);
+    handle = manager.open({
+      topic: captureHandoffChannel.topic(),
+      postgresChanges: [
+        {
+          event: '*',
+          schema: 'media',
+          table: 'capture_handoff',
+          rowId: (row) => (typeof row.id === 'string' ? row.id : undefined),
+          fingerprint: (row) => `${String(row.status)}|${String(row.rung)}`,
+          onChange: () => refresh(),
         },
-      });
+      ],
+      // Realtime has no replay. Everything queued while this panel was shut
+      // or the socket was away is gone; re-read rather than trust the screen.
+      onBackfill: () => refresh(),
+      onStatusChange: (status) => {
+        const nowLive = status === 'connected';
+        if (nowLive === socketLive) return;
+        socketLive = nowLive;
+        log.info('scrape', `capture-handoff realtime ${status}`);
+        emit(null);
+      },
     });
   };
 
-  let currentManager: RealtimeManager | null = null;
-  const stopManagerWatch = onRealtimeManagerChange((manager) => {
-    currentManager = manager;
-    openForActiveOrganization(manager);
-  });
-
-  /**
-   * 🚨 THE SWITCH MUST BE INSTANT. Pressing "Switch to {workspace}" changed
-   * the stored selection immediately and then the screen sat there until the
-   * next poll — up to `pollMs`, eight seconds and more in practice. A control
-   * that has already worked and shows nothing reads as a dead click, which is
-   * worse than no control at all (law 4). The list re-reads the moment the ONE
-   * resolver says the workspace changed, and the live subscription moves to
-   * the new organization's topic with it — a subscription left on the old
-   * topic would have gone quiet for good.
-   */
-  const stopOrganizationWatch = onActiveOrganizationChange(() => {
-    if (stopped) return;
-    openForActiveOrganization(currentManager);
-    refresh();
-  });
-
+  const stopManagerWatch = onRealtimeManagerChange(open);
   const timer = setInterval(refresh, pollMs);
   refresh();
 
@@ -341,7 +232,6 @@ export function subscribeNeedsYou(
     stopped = true;
     clearInterval(timer);
     stopManagerWatch();
-    stopOrganizationWatch();
     if (handle) {
       handle.close();
       handle = null;
