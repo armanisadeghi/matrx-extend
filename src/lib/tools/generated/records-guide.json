@@ -697,11 +697,6 @@
           "description": "How many matches to return at most.",
           "type": "integer"
         },
-        "organization_id": {
-          "default": null,
-          "description": "OPTIONAL FILTER, never needed: this reads across ALL the person's organizations and every row names its own `organization_id`. Pass one of the person's organization ids only to narrow the answer to it.",
-          "type": "string"
-        },
         "query": {
           "description": "Text matched against table and field names and descriptions. This searches STRUCTURE, never rows — use record_read or record_aggregate for data.",
           "required": true,
@@ -867,11 +862,6 @@
           "description": "count | sum | avg | min | max, computed inside the query.",
           "type": "string"
         },
-        "organization_id": {
-          "default": null,
-          "description": "OPTIONAL FILTER, never needed: this reads across ALL the person's organizations and every row names its own `organization_id`. Pass one of the person's organization ids only to narrow the answer to it.",
-          "type": "string"
-        },
         "table_id": {
           "description": "The table to measure.",
           "required": true,
@@ -909,11 +899,6 @@
           "description": "How many versions to read at most (capped at 500).",
           "type": "integer"
         },
-        "organization_id": {
-          "default": null,
-          "description": "OPTIONAL FILTER, never needed: this reads across ALL the person's organizations and every row names its own `organization_id`. Pass one of the person's organization ids only to narrow the answer to it.",
-          "type": "string"
-        },
         "record_id": {
           "description": "The record whose past you want.",
           "required": true,
@@ -939,11 +924,6 @@
           "default": null,
           "description": "Only records whose fields equal these, e.g. {\"region\": \"North\"}. Field key or display label, either works.",
           "type": "object"
-        },
-        "organization_id": {
-          "default": null,
-          "description": "OPTIONAL FILTER, never needed: this reads across ALL the person's organizations and every row names its own `organization_id`. Pass one of the person's organization ids only to narrow the answer to it.",
-          "type": "string"
         },
         "record_id": {
           "default": null,
@@ -1097,11 +1077,6 @@
           "default": 50,
           "description": "How many tables to return at most (capped at 500).",
           "type": "integer"
-        },
-        "organization_id": {
-          "default": null,
-          "description": "OPTIONAL FILTER, never needed: this reads across ALL the person's organizations and every row names its own `organization_id`. Pass one of the person's organization ids only to narrow the answer to it.",
-          "type": "string"
         }
       },
       "how": null,
@@ -1131,11 +1106,6 @@
         "name": {
           "description": "The table's human name, e.g. \"Field Crews\".",
           "required": true,
-          "type": "string"
-        },
-        "organization_id": {
-          "default": null,
-          "description": "Rarely needed — the organization the NEW table is made in, one of the person's own organization ids (table_list names them). Left out, it is made in the organization this run works in. It never moves an existing table.",
           "type": "string"
         },
         "spec": {
