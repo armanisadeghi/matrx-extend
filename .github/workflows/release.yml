@@ -70,6 +70,10 @@ jobs:
             echo "Missing required release secrets: ${missing[*]}" >&2
             exit 1
           fi
+          [[ "$SUPABASE_ACCESS_TOKEN" == sbp_fc* ]] || {
+            echo 'SUPABASE_ACCESS_TOKEN must be a scoped PAT limited to this project with Database Read access; classic/Legacy PATs are refused.' >&2
+            exit 1
+          }
 
       - name: Check out extension main
         uses: actions/checkout@v4
