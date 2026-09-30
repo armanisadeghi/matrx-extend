@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "reviewed_commits": [
+    "fea4f443fe81892f519e894ab83685e48f1f4c1c",
+    "b875932033e0e06caf737c3b3b3d1059b4c9a0d2",
+    "5647527359b84df0d79d2ece22467085c83fa394"
+  ],
+  "reviewer_lane": "fresh independent final verification; zero product authorship",
+  "verdict_a_product_outcome": "PARTIAL",
+  "verdict_b_code_doctrine_test_quality": "PARTIAL",
+  "defects": {
+    "EXT-D-0067": {
+      "source_outcome": "PASS",
+      "evidence": "getNote throws for query/schema errors and returns null only for successful empty reads; NoteEditor renders an error or unavailable state with Retry and Back, and keeps a hydrated draft visible with a refresh-error notice.",
+      "unverified": "No test/build execution or signed-in native Notes flow was performed in this review."
+    },
+    "EXT-D-0068": {
+      "source_outcome": "PASS for reviewed false/error and pending-debounce cases",
+      "evidence": "softDeleteNote requires error-free count === 1. Failure leaves editor, timer, and unsavedDrafts intact and offers Retry. Confirmed success marks deleted before navigation, clears the debounce timer and queued write, deletes unsavedDrafts, and stops later persist/drain/unmount flushes. Commit 56475273 adds a pending-debounce regression case.",
+      "unverified_or_residual": "The added guard has not been run. No case exercises an updateNote request already in flight when deletion confirms; the post-await deleted check blocks further local bookkeeping/queued writes but cannot cancel a request already sent to Supabase."
+    }
+  },
+  "doctrine_quality": {
+    "reuse": "PASS: uses the existing query, editor, React Query, and draft-recovery primitives.",
+    "nothing_silent": "PASS in the reviewed detail and failed-delete branches; user-facing recovery states are present.",
+    "class_guard": "PARTIAL: regression source now covers a pending debounce at successful deletion, but its red/green execution is pending and the in-flight-write timing is untested.",
+    "test_quality": "Source-reviewed only. No tests, compile, browser, or native UI were run by this reviewer."
+  },
+  "unverified": [
+    "Guarded test proof and compile remain pending under the shared resource permit.",
+    "Native signed-in Notes behavior with real data remains unverified.",
+    "Already-started autosave versus delete completion ordering remains untested."
+  ],
+  "recommendation": "The earlier D67/D68 source findings are corrected, including the pending debounce/unmount flush finding. Keep product completion partial until the guarded tests and native acceptance are recorded; assess the already-in-flight update ordering separately if the contract forbids any update completing after confirmed deletion."
+}
