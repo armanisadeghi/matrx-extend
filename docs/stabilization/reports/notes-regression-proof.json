@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "runId": "notes-pre-fix-regression-proof-20260930a",
+  "scope": "EXT-D-0067 read failure and EXT-D-0068 zero-row delete query regressions",
+  "baseline": "Exact blobs from fea4f443^: queries.ts and NoteEditor.tsx; scratch query source cmp-matched the Git blob.",
+  "queryProof": {
+    "run": "notes-pre-fix-regression-20260930d",
+    "files": 2,
+    "tests": 6,
+    "failed": 4,
+    "passed": 2,
+    "intendedFailures": [
+      "getNote database error resolved null instead of rejecting",
+      "getNote malformed row resolved null instead of rejecting",
+      "softDeleteNote count=0 resolved true instead of false",
+      "softDeleteNote count=null resolved true instead of false"
+    ],
+    "journal": "docs/stabilization/resource-journals/notes-pre-fix-regression-20260930d.jsonl"
+  },
+  "uiProof": {
+    "run": "notes-pre-fix-ui-20260930a",
+    "result": "inconclusive",
+    "details": "All four NoteEditor tests failed through test-fixture behavior: expected error copy was absent, pending-save case could not load the mocked note, and Vitest reported an unhandled mocked rejection. This does not establish a product regression signal.",
+    "journal": "docs/stabilization/resource-journals/notes-pre-fix-ui-20260930a.jsonl"
+  },
+  "otherLaunches": "Initial guard refusals are retained in notes-pre-fix-regression-20260930a/b/c journals: existing runner busy, then insufficient /tmp profile disk, then node_modules test exclusion. No test started on those attempts.",
+  "limitations": "The query tests prove regression sensitivity for the exact baseline queries module. The NoteEditor pending-delete behavior remains unproven by this scratch red run. The separate root green suite and compile are not independently revalidated here.",
+  "scratch": "Removed after run; tracked product/test sources were not edited by this lane."
+}
