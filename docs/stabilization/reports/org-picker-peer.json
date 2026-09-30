@@ -1,0 +1,33 @@
+{
+  "commit": "e34736eac65485ef512f7899234a9eba56906dda",
+  "reviewer_lane": "independent-source-review",
+  "verdict_a_product_outcome": {
+    "native_status": "unverified",
+    "finding": "The picker membership query filters archived organizations and the resolver asks for an explicit device choice even with one open membership. However, a previously stored organization bypasses that filtered lookup in getActiveOrganizationId().",
+    "evidence": [
+      "src/lib/org/active-org.ts:listMemberOrganizations filters archived_at IS NULL",
+      "src/lib/org/active-org.ts:getActiveOrganizationId returns stored.id before resolveActiveOrganization",
+      "src/lib/org/active-org.ts:holdForActiveOrganizationId accepts that fast-path id and proceeds"
+    ],
+    "limit": "No test, build, browser, or live database verification was performed in this review."
+  },
+  "verdict_b_quality_and_doctrine": {
+    "status": "needs-fix",
+    "findings": [
+      {
+        "severity": "P1",
+        "title": "Archived stored organization still authorizes normal requests",
+        "detail": "The new archive filter only protects listMemberOrganizations callers. Request paths that call getActiveOrganizationId() return a stored id without membership/archive verification, and holdForActiveOrganizationId() then uses it. An archived selected organization can therefore continue to be sent on API calls and writes unless a UI independently runs resolveActiveOrganization first. This fails the defect's stated requirement to clear a closed prior choice and require a new explicit choice.",
+        "location": "src/lib/org/active-org.ts:getActiveOrganizationId"
+      },
+      {
+        "severity": "P2",
+        "title": "First held request repeats organization enumeration",
+        "detail": "With no stored choice, getActiveOrganizationId() calls resolveActiveOrganization(), which lists memberships; holdForActiveOrganizationId() then calls listMemberOrganizations() again to distinguish no memberships from a pending choice. The new explicit-choice path makes this happen even for a sole open membership. This adds duplicate authenticated RPC/table reads to the first held request, though it does not affect guest behavior.",
+        "location": "src/lib/org/active-org.ts:resolveActiveOrganization and holdForActiveOrganizationId"
+      }
+    ],
+    "guest_auth_assessment": "The shared React hook returns before organization reads when signed out. Authenticated picker reads use the existing canonical membership RPC. No guest RPC regression is apparent from source."
+  },
+  "verification": "Source-only review as requested; no product edits, tests, build, or browser actions."
+}
