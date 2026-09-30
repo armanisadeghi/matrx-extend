@@ -34,12 +34,18 @@ vi.mock('@/lib/supabase/schemas', () => ({
   iamDb: () => ({
     from: () => ({
       select: () => ({
-        in: async () => ({
-          data: harness.memberships.map((id) => ({
-            id,
-            name: id === ORG_A ? 'Acme Recycling' : 'Data Destruction Inc',
-          })),
-          error: null,
+        in: () => ({
+          is: async (column: string, value: unknown) => {
+            if (column !== 'archived_at' || value !== null)
+              throw new Error('Archive filter missing');
+            return {
+              data: harness.memberships.map((id) => ({
+                id,
+                name: id === ORG_A ? 'Acme Recycling' : 'Data Destruction Inc',
+              })),
+              error: null,
+            };
+          },
         }),
       }),
     }),

@@ -52,12 +52,18 @@ vi.mock('@/lib/supabase/schemas', () => ({
   iamDb: () => ({
     from: () => ({
       select: () => ({
-        in: async () => ({
-          data: harness.memberships.map((id) => ({
-            id,
-            name: `Org ${id.slice(0, 4)}`,
-          })),
-          error: null,
+        in: () => ({
+          is: async (column: string, value: unknown) => {
+            if (column !== 'archived_at' || value !== null)
+              throw new Error('Archive filter missing');
+            return {
+              data: harness.memberships.map((id) => ({
+                id,
+                name: `Org ${id.slice(0, 4)}`,
+              })),
+              error: null,
+            };
+          },
         }),
       }),
     }),
@@ -147,17 +153,23 @@ describe('an authenticated request with no organization waits for one', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('never asks when the person has exactly one organization', async () => {
+  it('still waits for an explicit choice when the person has exactly one organization', async () => {
     harness.memberships = [ORG_A];
     const fetchMock = vi.fn(
       async (_url: string, _init?: RequestInit) => new Response('{"ok":true}', { status: 200 }),
     );
     vi.stubGlobal('fetch', fetchMock);
 
-    const result = await apiGet('/agents/list');
+    const pending = apiGet('/agents/list');
+    await settle();
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(harness.store.get('matrx.org.picker-pending')).toBe(true);
+    await setActiveOrganization(ORG_A);
+    const result = await pending;
 
     expect(result.ok).toBe(true);
-    expect(harness.broadcast).not.toHaveBeenCalled();
+    expect(harness.broadcast).toHaveBeenCalledWith('org:picker-requested', {});
     const sent = fetchMock.mock.calls[0]?.[1]?.headers as Record<string, string>;
     expect(sent['X-Organization-Id']).toBe(ORG_A);
   });
