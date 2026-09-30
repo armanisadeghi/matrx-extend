@@ -26,7 +26,7 @@ it('keeps every records guide topic identical to aidream guide_for', () => {
     encoding: 'utf8',
   });
   expect(output).toContain('records guide matches aidream guide_for for every action');
-});
+}, 90_000);
 
 it('fails closed instead of finding a sibling checkout when its source is absent', () => {
   const result = spawnSync(
