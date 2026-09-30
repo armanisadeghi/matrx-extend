@@ -60,7 +60,7 @@ const SITE = {
 } as const;
 
 /**
- * Every handoff waiting on this browser, for the ACTIVE organization only.
+ * Every handoff waiting on this browser, across ALL the person's organizations.
  * `waiting` = rung 3 has not run yet; `needs_drive` = rung 3 ran and failed,
  * and the person is being asked.
  *
@@ -70,14 +70,11 @@ const SITE = {
  * throws instead.
  */
 export async function listNeedsYou(): Promise<Handoff[]> {
-  const organizationId = await getActiveOrganizationId();
-  if (!organizationId) {
-    failDbCall(SITE, { code: 'NO_ORGANIZATION', message: 'no organization selected' });
-  }
+  // Decided by access alone (RLS as the person): every organization the person belongs to,
+  // never narrowed by the selected one. Each row carries its own organization_id.
   const { data, error } = await mediaDb()
     .from('capture_handoff')
     .select('*')
-    .eq('organization_id', organizationId)
     .in('status', [...NEEDS_YOU_STATUSES])
     .is('deleted_at', null)
     .order('created_at', { ascending: true });
@@ -125,13 +122,6 @@ export interface ElsewhereReport {
   total: number;
 }
 
-const ELSEWHERE_SITE = {
-  table: 'media.capture_handoff',
-  operation: 'select',
-  what: 'check whether pages are waiting in your other workspaces',
-  title: 'Could not check your other workspaces',
-} as const;
-
 /**
  * THE LYING ZERO, ANSWERED.
  *
@@ -151,49 +141,15 @@ export async function countNeedsYouElsewhere(): Promise<ElsewhereReport> {
   const activeOrganizationId = await getActiveOrganizationId();
   const organizations = await listMemberOrganizations();
   const active = organizations.find((o) => o.id === activeOrganizationId) ?? null;
-  const others = organizations.filter((o) => o.id !== activeOrganizationId);
   const empty: ElsewhereReport = {
     activeOrganizationId,
     activeOrganizationName: active?.name ?? null,
     elsewhere: [],
     total: 0,
   };
-  if (others.length === 0) return empty;
-
-  const { data, error } = await mediaDb()
-    .from('capture_handoff')
-    .select('organization_id')
-    .in(
-      'organization_id',
-      others.map((o) => o.id),
-    )
-    .in('status', [...NEEDS_YOU_STATUSES])
-    .is('deleted_at', null);
-
-  if (error) failDbCall(ELSEWHERE_SITE, error);
-
-  const counts = new Map<string, number>();
-  for (const raw of data ?? []) {
-    const id = (raw as { organization_id?: unknown }).organization_id;
-    if (typeof id !== 'string') continue;
-    counts.set(id, (counts.get(id) ?? 0) + 1);
-  }
-
-  const elsewhere = others
-    .map((o) => ({
-      organizationId: o.id,
-      organizationName: o.name,
-      count: counts.get(o.id) ?? 0,
-    }))
-    .filter((row) => row.count > 0)
-    .sort((a, b) => b.count - a.count || a.organizationName.localeCompare(b.organizationName));
-
-  return {
-    activeOrganizationId,
-    activeOrganizationName: active?.name ?? null,
-    elsewhere,
-    total: elsewhere.reduce((sum, row) => sum + row.count, 0),
-  };
+  // `listNeedsYou()` now returns rows from every organization the person can access, so
+  // nothing can be waiting "elsewhere" that the list does not already show.
+  return empty;
 }
 
 /** What a subscriber is handed on every update. */

@@ -51,7 +51,7 @@ import {
   orderForPickup,
   pickupMissWhy,
 } from '@/lib/capture-ladder/pickup';
-import { countNeedsYouElsewhere } from '@/lib/capture-ladder/queue';
+import { countNeedsYouElsewhere, listNeedsYou } from '@/lib/capture-ladder/queue';
 import { getActiveOrganizationId, listMemberOrganizations } from '@/lib/org/active-org';
 import { mediaDb } from '@/lib/supabase/schemas';
 
@@ -88,60 +88,24 @@ function stubMediaDb(rows: { organization_id: string }[]) {
   return calls;
 }
 
-describe('countNeedsYouElsewhere — the read that can answer "and where else?"', () => {
+describe('the needs-you list is decided by access, never by the selected organization', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(listMemberOrganizations).mockResolvedValue(MEMBERSHIPS);
   });
 
-  it('counts waiting rows per organization and EXCLUDES the active one', async () => {
-    vi.mocked(getActiveOrganizationId).mockResolvedValue(WORKSPACE);
-    const calls = stubMediaDb([
-      { organization_id: AI_MATRX },
-      { organization_id: PROBE },
-      { organization_id: PROBE },
-      // A row for the ACTIVE organization must never be counted as "elsewhere"
-      // even if the database hands one back.
-      { organization_id: WORKSPACE },
-    ]);
-
-    const report = await countNeedsYouElsewhere();
-
-    expect(report.activeOrganizationId).toBe(WORKSPACE);
-    expect(report.activeOrganizationName).toBe("admin's Workspace");
-    expect(report.elsewhere.map((e) => [e.organizationName, e.count])).toEqual([
-      ['ZZZ G2 Activation Probe', 2],
-      ['AI Matrx', 1],
-    ]);
-    expect(report.total).toBe(3);
-    // Every organization asked about came from the person's OWN memberships —
-    // this is not cross-organization reach.
-    expect(calls['in:organization_id']).toEqual([AI_MATRX, PROBE]);
+  it('reads every organization the person can access — no organization filter, no selection needed', async () => {
+    vi.mocked(getActiveOrganizationId).mockResolvedValue(null);
+    const calls = stubMediaDb([]);
+    await listNeedsYou();
+    expect(Object.keys(calls).some((k) => k.startsWith('eq:organization_id'))).toBe(false);
   });
 
-  it('asks about nothing when the person has exactly one membership', async () => {
-    vi.mocked(getActiveOrganizationId).mockResolvedValue(AI_MATRX);
-    vi.mocked(listMemberOrganizations).mockResolvedValue([MEMBERSHIPS[0] as never]);
-    stubMediaDb([]);
+  it('has nothing "elsewhere" to report, because the list already shows everything', async () => {
+    vi.mocked(getActiveOrganizationId).mockResolvedValue(WORKSPACE);
     const report = await countNeedsYouElsewhere();
     expect(report.elsewhere).toEqual([]);
     expect(report.total).toBe(0);
-    expect(report.activeOrganizationName).toBe('AI Matrx');
-  });
-
-  it('never turns a database refusal into "there is nowhere else"', async () => {
-    vi.mocked(getActiveOrganizationId).mockResolvedValue(WORKSPACE);
-    const builder: Record<string, unknown> = {};
-    Object.assign(builder, {
-      select: () => builder,
-      in: () => builder,
-      is: () => builder,
-      // biome-ignore lint/suspicious/noThenProperty: a PostgrestFilterBuilder IS a thenable — a stand-in for one has to be too.
-      then: (resolve: (v: unknown) => unknown) =>
-        resolve({ data: null, error: { code: '42501', message: 'permission denied' } }),
-    });
-    vi.mocked(mediaDb).mockReturnValue({ from: () => builder } as never);
-    await expect(countNeedsYouElsewhere()).rejects.toThrow(/db refused/);
   });
 });
 

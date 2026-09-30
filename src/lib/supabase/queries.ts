@@ -38,7 +38,6 @@ import {
   sanitizeNetworkPatternFields,
 } from '@/lib/credentials/network-urls';
 import { log } from '@/lib/debug/log';
-import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { canonicalUrl } from '@/lib/sources/canonical';
 import {
   type WriteActor,
@@ -638,34 +637,13 @@ export async function lookupCapturedByUrl(url: string): Promise<CaptureLookup> {
   if (!(await hasSupabaseAccessToken())) return { status: 'none' };
   const identity = canonicalUrl(url);
   if (!identity) return { status: 'none' };
-  // Read-only recognition never raises the workspace picker or performs an
-  // unscoped read: a person may see Sources in several organizations under RLS.
-  let organizationId: string | null;
-  try {
-    organizationId = await getActiveOrganizationId();
-  } catch (err) {
-    log.warn('supabase', 'lookupCapturedByUrl could not read active organization', {
-      message: err instanceof Error ? err.message : String(err),
-    });
-    return {
-      status: 'unknown',
-      reason: 'Could not read your selected organization. Check your connection and try again.',
-    };
-  }
-  if (!organizationId) {
-    return {
-      status: 'unknown',
-      cause: 'organization_unselected',
-      reason:
-        'Choose your organization in the AI Matrx panel to check whether this page is a Source there.',
-    };
-  }
+  // Recognition is decided by access alone (RLS as the person): a page saved in ANY of
+  // the person's organizations is recognised; the selected organization never narrows it.
   const query = docprocDb()
     .from('processed_documents')
     .select('id, canonical_identity, created_at, name')
     .eq('canonical_identity', identity)
     .eq('origin_client', SOURCE_ORIGIN_EXTENSION)
-    .eq('organization_id', organizationId)
     .in('derivation_kind', CAPTURE_DERIVATIONS)
     .is('deleted_at', null);
   let data: unknown[] | null;
@@ -774,12 +752,10 @@ export async function listSavedCaptures(
   } = {},
 ): Promise<SavedCapturePage> {
   const limit = options.limit ?? 40;
-  const organizationId = await requireRequestOrganizationId();
   let query = docprocDb()
     .from('processed_documents')
     .select(SOURCE_SUMMARY_COLUMNS)
     .eq('origin_client', SOURCE_ORIGIN_EXTENSION)
-    .eq('organization_id', organizationId)
     .in('derivation_kind', CAPTURE_DERIVATIONS)
     .is('deleted_at', null)
     .order('created_at', { ascending: false })
@@ -819,12 +795,10 @@ export async function listSavedCaptures(
 }
 
 export async function getSavedCapture(sourceId: string): Promise<SavedCapture | null> {
-  const organizationId = await requireRequestOrganizationId();
   const { data, error } = await docprocDb()
     .from('processed_documents')
     .select(SOURCE_DETAIL_COLUMNS)
     .eq('id', sourceId)
-    .eq('organization_id', organizationId)
     .is('deleted_at', null)
     .maybeSingle();
   if (error) throw new Error(`Could not load saved capture: ${error.message}`);
@@ -861,20 +835,10 @@ export async function deleteSavedCapture(sourceId: string): Promise<void> {
     what: 'delete this saved capture',
     title: 'Saved capture not deleted',
   };
-  let organizationId: string;
-  try {
-    organizationId = await requireRequestOrganizationId();
-  } catch (error) {
-    failDbCall(site, {
-      code: 'no_organization',
-      message: error instanceof Error ? error.message : String(error),
-    });
-  }
   const { data, error } = await docprocDb()
     .from('processed_documents')
     .update({ deleted_at: new Date().toISOString() })
     .eq('id', sourceId)
-    .eq('organization_id', organizationId)
     .is('deleted_at', null)
     .select('id, deleted_at')
     .maybeSingle();
