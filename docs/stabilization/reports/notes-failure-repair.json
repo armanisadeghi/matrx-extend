@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "lane": "notes-failure-repair",
+  "at": "2026-09-30T08:35:00Z",
+  "status": "DONE_WITH_CONCERNS",
+  "defects": {
+    "EXT-D-0061": {
+      "feature_id": "EXT-F-2006",
+      "source_state": "fixed",
+      "commit": "f0d908b0",
+      "cause": "listMyNotes converted Supabase errors to an empty array, so React Query rendered an empty collection.",
+      "behavior": "Database and malformed-row read failures reject; NotesView shows an error with Retry loading notes while successful empty reads retain the empty state."
+    },
+    "EXT-D-0062": {
+      "feature_id": "EXT-F-2006",
+      "source_state": "in-fix pending final guarded checks",
+      "commit": "915870f6",
+      "cause": "createNote returned null on a failed or unconfirmed INSERT, and NotesList did nothing when the result was falsy.",
+      "behavior": "NotesList shows an uncertainty notice with Refresh notes and Retry creating note; a confirmed returned note selects its editor before refreshing the list."
+    }
+  },
+  "red_evidence": {
+    "run_id": "notes-failures-red-20260930a",
+    "journal": "docs/stabilization/resource-journals/notes-failures-red-20260930a.jsonl",
+    "assertions": [
+      "Rejected list read rendered No notes yet instead of Could not load notes.",
+      "Failed create rendered no visible notice.",
+      "listMyNotes resolved [] instead of rejecting on a Supabase error."
+    ]
+  },
+  "green_evidence": {
+    "runs": [
+      "notes-failures-green-20260930a: 15 tests across 4 files passed",
+      "notes-failures-finaltests-20260930a: 15 tests across 5 files passed after test split, before final peer copy correction",
+      "notes-failures-compile-20260930b: TypeScript compile passed"
+    ],
+    "final_attempt": "notes-failures-peercorrected-tests-20260930a refused before launch because RESOURCE_PRESSURE_UNSAFE; no final-source test verdict from this lane."
+  },
+  "remaining": [
+    "Root owns guarded final-source tests and compile after peer correction, followed by independent native acceptance.",
+    "Do not push these commits until final-source checks pass."
+  ],
+  "heavy_permit": "Released; no heavy directory remained at the host lease root after refusal."
+}
