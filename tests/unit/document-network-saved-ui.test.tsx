@@ -10,6 +10,7 @@ const h = vi.hoisted(() => ({
   document: 'original-document',
   url: 'https://calendar.invalid/calendar',
   releases: new Set<() => void>(),
+  nextScriptId: 0,
 }));
 vi.mock('@/lib/messaging/native', () => ({
   on: (kind: string, fn: (p: any) => unknown) => {
@@ -192,6 +193,7 @@ it.each([
       });
     let binding = '';
     let registered = false;
+    let scriptId = '';
     let releaseSetup!: () => void;
     const attach = vi.fn(async () => {});
     const detach = vi.fn(async () => {
@@ -203,10 +205,14 @@ it.each([
     });
     const sendCommand = vi.fn(async (_target, method, params) => {
       // A prior case may finish its already-owned cleanup after this mock is
-      // installed. Only stall this case's capture after it has registered its
-      // own script; otherwise the prior cleanup would hold the shared lease
-      // and prevent this case from ever reaching setup.
-      if (stallCleanup && registered && method === 'Page.removeScriptToEvaluateOnNewDocument')
+      // installed. Chrome gives every registration a distinct identifier, so
+      // only stall removal of this case's own script. Stalling a late prior
+      // removal would hold its shared CDP lease and prevent this case's setup.
+      if (
+        stallCleanup &&
+        method === 'Page.removeScriptToEvaluateOnNewDocument' &&
+        params?.identifier === scriptId
+      )
         return new Promise<void>((resolve) => {
           h.releases.add(resolve);
         });
@@ -223,7 +229,8 @@ it.each([
           h.releases.add(releaseSetup);
         });
         registered = true;
-        return { identifier: 'script' };
+        scriptId = `script-${++h.nextScriptId}`;
+        return { identifier: scriptId };
       }
       if (method === 'Page.reload') {
         expect(registered).toBe(true);
