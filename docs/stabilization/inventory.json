@@ -18283,6 +18283,11 @@
           "label": "Retire organization-required notice after explicit selection",
           "action": "An organization-required notice clears when a device organization is chosen, including a late-arriving stale notice.",
           "source_anchor": "src/components/NoticeHost.tsx"
+        },
+        {
+          "id": "EXT-F-1015-C19",
+          "label": "Archived organization exclusion and stale-choice recovery",
+          "action": "Exclude archived memberships; recover a previously selected archived organization by requesting an explicit active choice without silently switching."
         }
       ],
       "source_anchors": [
@@ -19382,6 +19387,47 @@
           "defect_ids": [
             "EXT-D-0029"
           ]
+        },
+        {
+          "id": "EXT-F-1015-T40",
+          "title": "Archived organization is excluded and stale selection requires explicit recovery",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1015-C03",
+            "EXT-F-1015-C09",
+            "EXT-F-1015-C19"
+          ],
+          "preconditions": [
+            "Build current development extension under resource guard, record immutable source/output receipt, reload extension and reopen panel before testing.",
+            "Use authorized test memberships with an archived organization and an active organization; do not archive shared organizations for this test."
+          ],
+          "steps": [
+            "Open Settings organization selector and inspect available organizations.",
+            "Exercise a previously stored archived selection through a real organization-scoped request.",
+            "Verify recovery with zero, one, and multiple available active memberships.",
+            "Explicitly choose an active organization and retry the original operation."
+          ],
+          "expected": [
+            "Archived organizations are not offered.",
+            "Stale selection cannot persist as a usable choice; no remaining organization is chosen automatically.",
+            "The original operation can resume after explicit valid choice; no memberships has an honest remedy."
+          ],
+          "defect_ids": [
+            "EXT-D-0069"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "Source repair and independent review in progress; previous Notes POST403 demonstrated archived selection."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Source repair and independent review in progress; previous Notes POST403 demonstrated archived selection."
+            }
+          }
         }
       ],
       "cells": {
@@ -19393,14 +19439,17 @@
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0069"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0029"
+            "EXT-D-0029",
+            "EXT-D-0069"
           ],
           "run_ids": [
             "auth-role-failure-dev093-001"
