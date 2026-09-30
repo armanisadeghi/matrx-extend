@@ -22341,13 +22341,14 @@
           "run_ids": [
             "notes-native-20260930c",
             "notes-native-escalation-20260930b",
-            "notes-final-native-20260930a"
+            "notes-final-native-20260930a",
+            "unique-notes-final-native-20260930c"
           ],
           "retest_status": "partial",
           "retest_evidence": {
-            "run_id": "notes-final-native-20260930a",
-            "report": "docs/stabilization/reports/notes-live-final-verifier.json",
-            "scope": "D61/D62/D63/D67 admin reproduction passed; D68 failure cases passed, successful delete not reached. Feature remains incomplete."
+            "run_id": "unique-notes-final-native-20260930c",
+            "report": "docs/stabilization/reports/notes-delete-final-verify.json",
+            "scope": "D61/D62/D63/D67/D68 admin original reproduction and surrounding runner cases pass; full feature and member coverage remain unverified."
           }
         }
       },
@@ -22757,13 +22758,14 @@
             "EXT-D-0068"
           ],
           "run_ids": [
-            "notes-final-native-20260930a"
+            "notes-final-native-20260930a",
+            "unique-notes-final-native-20260930c"
           ],
           "retest_status": "partial",
           "retest_evidence": {
-            "run_id": "notes-final-native-20260930a",
-            "report": "docs/stabilization/reports/notes-live-final-verifier.json",
-            "scope": "D61/D62/D63/D67 admin reproduction passed; D68 failure cases passed, successful delete not reached. Feature remains incomplete."
+            "run_id": "unique-notes-final-native-20260930c",
+            "report": "docs/stabilization/reports/notes-delete-final-verify.json",
+            "scope": "D61/D62/D63/D67/D68 admin original reproduction and surrounding runner cases pass; full feature and member coverage remain unverified."
           }
         }
       },

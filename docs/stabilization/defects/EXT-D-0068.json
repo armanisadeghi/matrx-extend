@@ -1,7 +1,9 @@
 {
   "id": "EXT-D-0068",
   "feature_id": "EXT-F-2007",
-  "case_ids": ["EXT-F-2007-T03"],
+  "case_ids": [
+    "EXT-F-2007-T03"
+  ],
   "title": "Unconfirmed note deletion silently closes the editor",
   "surface": "Notes editor",
   "auth_mode": "member/admin; current-build native admin scoped evidence, member unverified",
@@ -19,9 +21,10 @@
     "docs/stabilization/reports/notes-remaining-failure-audit.json",
     "src/lib/notes/queries.ts:softDeleteNote",
     "src/features/notes/NoteEditor.tsx:performDelete",
-    "docs/stabilization/reports/notes-live-final-verifier.json"
+    "docs/stabilization/reports/notes-live-final-verifier.json",
+    "docs/stabilization/reports/notes-delete-final-verify.json"
   ],
-  "verification_status": "Admin current-build native retest partial: transport and zero-row delete failure preserve draft; successful delete not reached due driver interaction failure. Member mode remains unverified; no full-feature closure.",
+  "verification_status": "Admin current-build native reproduction and adjacent runner cases passed independently. Member mode and remaining feature cases unverified; defect not globally closed.",
   "transition_history": [
     {
       "at": "2026-09-30T08:55:18Z",
@@ -50,9 +53,9 @@
   ],
   "retest_results": {
     "admin": {
-      "run_id": "notes-final-native-20260930a",
-      "result": "partial: transport and zero-row delete failure preserve draft; successful delete not reached due driver interaction failure",
-      "report": "docs/stabilization/reports/notes-live-final-verifier.json",
+      "run_id": "unique-notes-final-native-20260930c",
+      "result": "pass within original reproduction and adjacent cases exercised by native runner",
+      "report": "docs/stabilization/reports/notes-delete-final-verify.json",
       "build_tree": "93c7bf7978357d7e93d64658fd65fa4e5e8285eb7e9be303ac3d2d2ea8b277a8"
     }
   }

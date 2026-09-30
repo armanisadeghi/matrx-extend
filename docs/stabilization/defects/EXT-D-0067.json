@@ -1,7 +1,10 @@
 {
   "id": "EXT-D-0067",
   "feature_id": "EXT-F-2007",
-  "case_ids": ["EXT-F-2007-T04", "EXT-F-2007-T01"],
+  "case_ids": [
+    "EXT-F-2007-T04",
+    "EXT-F-2007-T01"
+  ],
   "title": "Note detail read failure or missing note remains a loading skeleton",
   "surface": "Notes editor",
   "auth_mode": "member/admin; current-build native admin scoped evidence, member unverified",
@@ -18,9 +21,10 @@
     "docs/stabilization/reports/notes-remaining-failure-audit.json",
     "src/lib/notes/queries.ts:getNote",
     "src/features/notes/NoteEditor.tsx:detailQuery",
-    "docs/stabilization/reports/notes-live-final-verifier.json"
+    "docs/stabilization/reports/notes-live-final-verifier.json",
+    "docs/stabilization/reports/notes-delete-final-verify.json"
   ],
-  "verification_status": "Admin current-build native retest pass: failed detail and missing record offered recovery; real GET restored editor. Member mode remains unverified; no full-feature closure.",
+  "verification_status": "Admin current-build native reproduction and adjacent runner cases passed independently. Member mode and remaining feature cases unverified; defect not globally closed.",
   "transition_history": [
     {
       "at": "2026-09-30T08:49:18Z",
@@ -49,9 +53,9 @@
   ],
   "retest_results": {
     "admin": {
-      "run_id": "notes-final-native-20260930a",
-      "result": "pass: failed detail and missing record offered recovery; real GET restored editor",
-      "report": "docs/stabilization/reports/notes-live-final-verifier.json",
+      "run_id": "unique-notes-final-native-20260930c",
+      "result": "pass within original reproduction and adjacent cases exercised by native runner",
+      "report": "docs/stabilization/reports/notes-delete-final-verify.json",
       "build_tree": "93c7bf7978357d7e93d64658fd65fa4e5e8285eb7e9be303ac3d2d2ea8b277a8"
     }
   }

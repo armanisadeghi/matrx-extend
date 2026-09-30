@@ -1,7 +1,9 @@
 {
   "id": "EXT-D-0062",
   "feature_id": "EXT-F-2006",
-  "case_ids": ["EXT-F-2006-T03"],
+  "case_ids": [
+    "EXT-F-2006-T03"
+  ],
   "title": "Failed note creation produces no user-visible result",
   "surface": "Notes side-panel",
   "auth_mode": "member/admin; current-build native admin scoped evidence, member unverified",
@@ -24,9 +26,10 @@
     "docs/stabilization/resource-journals/notes-native-devbuild-20260930a.jsonl",
     "docs/stabilization/reports/notes-final-peer.json",
     "docs/stabilization/runs/notes-native-20260930c.json",
-    "docs/stabilization/reports/notes-live-final-verifier.json"
+    "docs/stabilization/reports/notes-live-final-verifier.json",
+    "docs/stabilization/reports/notes-delete-final-verify.json"
   ],
-  "verification_status": "Admin current-build native retest pass: injected create failure, Refresh and real create retry opened editor. Member mode remains unverified; no full-feature closure.",
+  "verification_status": "Admin current-build native reproduction and adjacent runner cases passed independently. Member mode and remaining feature cases unverified; defect not globally closed.",
   "current_source_truth": "Null or thrown create results show an uncertain-result notice with Refresh notes and Retry creating note. Confirmed creation selects the editor before list refresh. Final source checks passed; member/admin native coverage is not yet complete.",
   "transition_history": [
     {
@@ -56,9 +59,9 @@
   ],
   "retest_results": {
     "admin": {
-      "run_id": "notes-final-native-20260930a",
-      "result": "pass: injected create failure, Refresh and real create retry opened editor",
-      "report": "docs/stabilization/reports/notes-live-final-verifier.json",
+      "run_id": "unique-notes-final-native-20260930c",
+      "result": "pass within original reproduction and adjacent cases exercised by native runner",
+      "report": "docs/stabilization/reports/notes-delete-final-verify.json",
       "build_tree": "93c7bf7978357d7e93d64658fd65fa4e5e8285eb7e9be303ac3d2d2ea8b277a8"
     },
     "member": {

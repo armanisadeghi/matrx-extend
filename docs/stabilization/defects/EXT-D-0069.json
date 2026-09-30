@@ -1,7 +1,9 @@
 {
   "id": "EXT-D-0069",
   "feature_id": "EXT-F-1015",
-  "impacted_feature_ids": ["EXT-F-2006"],
+  "impacted_feature_ids": [
+    "EXT-F-2006"
+  ],
   "title": "Organization picker offers archived organization and Notes create is refused",
   "surface": "Settings organization picker and Notes side-panel",
   "auth_mode": "signed-in admin; native observed",
@@ -14,7 +16,7 @@
   "actual": "The picker offered the archived organization. Notes GET succeeded, but POST returned 403 (PostgREST 42501); the database log says the new row violated the Notes RLS policy.",
   "severity": "S2: a valid-looking organization choice makes all Notes writes fail",
   "priority": "P1: shared organization selection can break writes across features",
-  "state": "in-fix",
+  "state": "fixed",
   "root_cause": "listMemberOrganizations resolves active membership IDs and reads iam.organizations without filtering archived_at. The selected organization is in iam.archived_org_ids(), and workbench.notes has a restrictive org_open_gate policy that correctly refuses its writes.",
   "evidence": [
     "test-results/notes-native-acceptance.json",
@@ -22,7 +24,7 @@
     "src/lib/org/active-org.ts",
     "tests/unit/auth-route.test.ts"
   ],
-  "verification_status": "Live cause proven; guarded organization tests passed 11/11, TypeScript compile passed, and fresh development build completed. Independent native retest remains pending.",
+  "verification_status": "Engineering verified and active organization selection/create passed in native admin run. Archived/stale-choice native matrix and member mode remain unverified.",
   "transition_history": [
     {
       "at": "2026-09-30T09:06:12Z",
@@ -41,6 +43,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Source correction and focused guarded checks completed; native verification remains open."
+    },
+    {
+      "at": "2026-09-30T10:06:49.332742+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Focused11 tests, final compile/build and independent source review passed; native active-org selection/create passed. Stale-choice native matrix remains unverified."
     }
   ]
 }

@@ -1,7 +1,9 @@
 {
   "id": "EXT-D-0063",
   "feature_id": "EXT-F-2007",
-  "case_ids": ["EXT-F-2007-T01"],
+  "case_ids": [
+    "EXT-F-2007-T01"
+  ],
   "title": "Debounced note edits are dropped when a save is already in flight",
   "surface": "Notes editor",
   "auth_mode": "member/admin; current-build native admin scoped evidence, member unverified",
@@ -19,11 +21,12 @@
     "docs/stabilization/reports/notes-files-batch-audit.json",
     "src/features/notes/NoteEditor.tsx:95-114",
     "src/features/notes/NoteEditor.tsx:118-136",
-    "docs/stabilization/reports/notes-live-final-verifier.json"
+    "docs/stabilization/reports/notes-live-final-verifier.json",
+    "docs/stabilization/reports/notes-delete-final-verify.json"
   ],
-  "verification_status": "Admin current-build native retest pass: overlapping autosave persisted latest draft across reload/reopen. Member mode remains unverified; no full-feature closure.",
-  "current_source_truth": "Engineering fix present: persist queues the latest draft while a write is in flight, serially drains queued snapshots, and marks Saved only after the current draft is persisted. The focused regression test covers the deferred first write and confirms the newer draft is stored before Saved. Independent native side-panel and real persistence acceptance remain pending; no test was run in this reconciliation.",
-  "native_acceptance_report": "docs/stabilization/reports/contained-state-reconcile-20260930.json",
+  "verification_status": "Admin current-build native reproduction and adjacent runner cases passed independently. Member mode and remaining feature cases unverified; defect not globally closed.",
+  "current_source_truth": "Latest queued draft persisted across overlapping saves and actual reload/reopen in independent admin native run; member mode remains unverified.",
+  "native_acceptance_report": "docs/stabilization/reports/notes-delete-final-verify.json",
   "transition_history": [
     {
       "at": "2026-09-28T19:51:52.878308+00:00",
@@ -52,9 +55,9 @@
   ],
   "retest_results": {
     "admin": {
-      "run_id": "notes-final-native-20260930a",
-      "result": "pass: overlapping autosave persisted latest draft across reload/reopen",
-      "report": "docs/stabilization/reports/notes-live-final-verifier.json",
+      "run_id": "unique-notes-final-native-20260930c",
+      "result": "pass within original reproduction and adjacent cases exercised by native runner",
+      "report": "docs/stabilization/reports/notes-delete-final-verify.json",
       "build_tree": "93c7bf7978357d7e93d64658fd65fa4e5e8285eb7e9be303ac3d2d2ea8b277a8"
     }
   }
