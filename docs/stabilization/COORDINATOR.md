@@ -1,5 +1,15 @@
 # Matrx Extend stabilization: resume here
 
+## Current checkpoint — September 30, 2026: contained-feature stabilization resumed
+
+Arman asked to push ahead on remaining bugs and get the system working. Current source is synchronized through `d6e38fba`; subsequent remote changes must still be reconciled before push. The 0.2.130 guest Chat Store replacement was freshly checked in the publisher dashboard and remains **Pending review**. Do not replace that pending package for unrelated stabilization work.
+
+First active repair batch: Notes list and create failure reporting (`EXT-D-0061`, `EXT-D-0062`). Current source still converts failures into an empty list or null with no corresponding user recovery. Lane `/root/notes_failure_repair` (Sol medium) owns the Notes query/list changes and the sole heavy-test permit; every test/compile uses the existing resource guard. Escalate after two failed fix rounds or 20 minutes, not repeated blind retries.
+
+Independent source/evidence reconciliation: `/root/contained_state_reconcile` (Luna medium) owns a report for existing autosave, Files error-state, and saved-capture selection repairs (`EXT-D-0063`, `EXT-D-0064`, `EXT-D-0065`). Their defect records lag current code, so do not reimplement them or close them without native retest. No heavy tests or browser launches in this lane. Next: independent review of Notes changes, then one current-build native acceptance session covering applicable signed-in modes and guest applicability. Inventory remains the coverage source; source tests alone do not certify the UI.
+
+The checkpoints below are historical. In particular, earlier disk refusals, build identities, and unapplied-patch claims must not override current evidence. Broad Chat/Pilot work remains deferred after the urgent guest Chat repair. No overall health claim is made.
+
 Current priority (2026-09-27): finish Showcase detect → extract → save → reopen → repeat, per latest owner request. SHOWCASE-PLAN.md and inventory EXT-F-1012 own scope. Broad stabilization remains incomplete; the goal is active.
 
 **Owner ruling (2026-09-27): Showcase UI acceptance uses the built development
