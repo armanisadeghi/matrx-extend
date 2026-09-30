@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "lane": "notes-native-remaining",
+  "status": "source_ready_native_unverified",
+  "scope": ["EXT-D-0067", "EXT-D-0068"],
+  "changes": [
+    "The existing native Notes runner now scopes detail-read and delete faults to the id observed when reopening its own newly created note.",
+    "D67 covers an injected detail transport failure, an injected successful missing-row response, terminal retry and Back controls, and recovery through a real detail GET.",
+    "D68 covers an injected delete transport failure, an injected zero-affected-row response, editor and draft retention, renewed confirmation, a real successful delete, and absence after a live list reload.",
+    "The runner holds an owned autosave before the successful delete and checks that releasing it causes no later autosave dispatch."
+  ],
+  "evidence": {
+    "source": ["node --check tests/browser/notes-native-acceptance.mjs: pass", "git diff --check -- tests/browser/notes-native-acceptance.mjs: pass"],
+    "native": "unverified; heavy launch is owned by the coordinating lane"
+  },
+  "files": ["tests/browser/notes-native-acceptance.mjs", "docs/stabilization/reports/notes-native-remaining.json"],
+  "questions": []
+}
