@@ -1,0 +1,262 @@
+{
+  "schema_version": 1,
+  "cases": [
+    "EXT-D-0061",
+    "EXT-D-0062",
+    "EXT-D-0063",
+    "EXT-D-0067",
+    "EXT-D-0068"
+  ],
+  "status": "unverified",
+  "build": {
+    "before": {
+      "kind": "local_dev_unpacked",
+      "version": "0.2.138",
+      "treeSha256": "93c7bf7978357d7e93d64658fd65fa4e5e8285eb7e9be303ac3d2d2ea8b277a8",
+      "extensionDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev"
+    },
+    "after": null
+  },
+  "observations": {
+    "real_admin_ui_signin": true,
+    "organization_ui": {
+      "sectionExpanded": true,
+      "controlCount": 1,
+      "approvedDisplayed": false,
+      "chooseDisplayed": true,
+      "loading": false,
+      "noMembership": false,
+      "needsSignin": false,
+      "actingLabel": true,
+      "organizationError": false
+    },
+    "organization_step": "selecting_approved_option",
+    "organization_selected_through_ui": true,
+    "D61": {
+      "fault_scoped": true,
+      "failed_requests": 4,
+      "visible_error": true,
+      "visible_retry": true,
+      "falsely_empty": false,
+      "recovered_from_real_retry": true
+    },
+    "D62": {
+      "fault_scoped": true,
+      "failed_requests": 1,
+      "visible_error": true,
+      "retry_visible": true,
+      "create_available_again": true,
+      "remains_in_list": true,
+      "refreshed_notes_before_retry": true,
+      "retry_clicked": true,
+      "recovered_by_real_create": true
+    },
+    "D63": {
+      "first_write_held": true,
+      "latest_draft_visible_while_pending": true,
+      "saved_after_release": true,
+      "reopened_latest_draft": true
+    },
+    "D67": {
+      "injected_transport_failure": 4,
+      "visible_failure": true,
+      "retry_and_back": true,
+      "terminal_without_editor": true,
+      "injected_successful_missing_row": true,
+      "missing_row_terminal": true,
+      "recovered_from_real_detail_get": true
+    },
+    "D68": {
+      "injected_transport_failure": 1,
+      "editor_and_draft_preserved": true,
+      "retry_requires_confirmation": true,
+      "injected_zero_affected_rows": 1,
+      "zero_row_kept_editor": true
+    },
+    "failure_ui": {
+      "active": true,
+      "empty": false,
+      "error": false,
+      "retry": false,
+      "create": true,
+      "editor": false,
+      "title": false,
+      "draftA": false,
+      "draftB": false,
+      "draftC": false,
+      "saved": false,
+      "saving": false,
+      "noteInList": false,
+      "detailFailure": false,
+      "missingDetail": false,
+      "detailRetry": false,
+      "back": false,
+      "deleteFailure": false,
+      "deleteRetry": false
+    },
+    "failure_transport": {
+      "responses": [
+        {
+          "method": "GET",
+          "status": 200,
+          "stage": "D61_retry",
+          "ownedDetail": true,
+          "ownedDelete": false,
+          "injected": false
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "stage": "D62_retry_editor",
+          "ownedDetail": true,
+          "ownedDelete": false,
+          "injected": false
+        },
+        {
+          "method": "POST",
+          "status": 201,
+          "stage": "D62_retry_editor",
+          "ownedDetail": false,
+          "ownedDelete": false,
+          "injected": false
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "stage": "D62_retry_editor",
+          "ownedDetail": false,
+          "ownedDelete": false,
+          "injected": false
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "stage": "D63_seed_owned_note",
+          "ownedDetail": true,
+          "ownedDelete": false,
+          "injected": false
+        },
+        {
+          "method": "PATCH",
+          "status": 200,
+          "stage": "D63_seed_owned_note",
+          "ownedDetail": false,
+          "ownedDelete": false,
+          "injected": false
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "stage": "D63_seed_owned_note",
+          "ownedDetail": true,
+          "ownedDelete": false,
+          "injected": false
+        },
+        {
+          "method": "PATCH",
+          "status": 200,
+          "stage": "D63_seed_owned_note",
+          "ownedDetail": false,
+          "ownedDelete": false,
+          "injected": false
+        },
+        {
+          "method": "PATCH",
+          "status": 200,
+          "stage": "D63_seed_owned_note",
+          "ownedDetail": false,
+          "ownedDelete": false,
+          "injected": false
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "stage": "D63_reopen",
+          "ownedDetail": true,
+          "ownedDelete": false,
+          "injected": false
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "stage": "D63_reopen",
+          "ownedDetail": true,
+          "ownedDelete": false,
+          "injected": false
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "stage": "D63_reopen",
+          "ownedDetail": false,
+          "ownedDelete": false,
+          "injected": false
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "stage": "D67_failed_detail",
+          "ownedDetail": false,
+          "ownedDelete": false,
+          "injected": false
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "stage": "D67_missing_detail",
+          "ownedDetail": true,
+          "ownedDelete": false,
+          "injected": false
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "stage": "D67_real_recovery",
+          "ownedDetail": true,
+          "ownedDelete": false,
+          "injected": false
+        },
+        {
+          "method": "PATCH",
+          "status": 204,
+          "stage": "D68_zero_affected_rows",
+          "ownedDetail": false,
+          "ownedDelete": false,
+          "injected": false
+        },
+        {
+          "method": "PATCH",
+          "status": 204,
+          "stage": "D68_pending_autosave_delete",
+          "ownedDetail": false,
+          "ownedDelete": false,
+          "injected": false
+        },
+        {
+          "method": "GET",
+          "status": 200,
+          "stage": "D68_pending_autosave_delete",
+          "ownedDetail": false,
+          "ownedDelete": false,
+          "injected": false
+        }
+      ],
+      "failedGet": 4,
+      "failedPost": 1,
+      "failedDetail": 4,
+      "missingDetail": 1,
+      "failedDelete": 1,
+      "zeroDelete": 1,
+      "heldPatch": 2,
+      "autosaveDispatches": 1,
+      "passed": 16,
+      "passedGet": 12,
+      "interceptionFailed": false,
+      "patchPending": true
+    }
+  },
+  "fault_scope": "owned panel, workbench.notes transport; detail/delete faults restricted to the owned note id",
+  "data_scope": "one newly created Harbor Dental intake handoff note; delete is verified only after live retry",
+  "failure_stage": "D68_pending_autosave_delete",
+  "failure_code": "stage_operation_failed"
+}

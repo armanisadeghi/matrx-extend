@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "lane": "notes-live-reverify",
+  "run_id": "notes-final-native-20260930b",
+  "source_commit": "a76070101d213ec175c85533a5f392e93121474d",
+  "build": {
+    "version": "0.2.138",
+    "tree_sha256": "93c7bf7978357d7e93d64658fd65fa4e5e8285eb7e9be303ac3d2d2ea8b277a8",
+    "receipt": "test-results/notes-current-devbuild-20260930a.json"
+  },
+  "product_verdict": {
+    "status": "partial_native_pass_deletion_unverified",
+    "passed": [
+      "D61 list transport failure was visible and recovered by real retry",
+      "D62 create transport failure recovered through real create",
+      "D63 latest draft saved and restored on reopen",
+      "D67 detail transport failure and successful missing-row response were terminal and recovered through real detail GET"
+    ],
+    "unverified": [
+      "D68 successful delete scoped to owned note id",
+      "owned note absence after live reload",
+      "no autosave dispatch after confirmed delete"
+    ],
+    "observations": [
+      "real admin UI sign-in succeeded",
+      "private active organization was selected through UI",
+      "UI snapshot after failure showed no editor and the note absent from list"
+    ],
+    "classification": "The UI snapshot does not prove the server deleted the owned note. No product failure is claimed."
+  },
+  "quality_verdict": {
+    "status": "runner_evidence_gap",
+    "details": [
+      "D68 reached the pending-autosave/delete stage with a held PATCH. Recorded PATCH responses were not classified as the owned delete; the wait for a live owned-delete response failed.",
+      "The driver emitted no classified hit-test failure. The existing transport evidence cannot distinguish successful deletion from UI-only disappearance or a misclassified request."
+    ],
+    "source_changes": "None in this lane."
+  },
+  "cleanup": {
+    "status": "unconfirmed",
+    "details": [
+      "The newly created note may have disappeared from the UI list, but deletion was not verified against a successful owned-id DELETE/PATCH response and a subsequent live reload.",
+      "An earlier test-owned note remains preserved in private evidence; neither note was deleted by this verification lane. Do not delete by title alone."
+    ]
+  },
+  "evidence": {
+    "sanitized_run": "docs/stabilization/runs/notes-final-native-20260930b.json",
+    "resource_journal": "docs/stabilization/resource-journals/notes-final-native-20260930b.jsonl",
+    "private_raw_receipt": "test-results/notes-native-acceptance.json (mode 0600; contains private identifiers)"
+  }
+}
