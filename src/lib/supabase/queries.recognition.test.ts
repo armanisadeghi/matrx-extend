@@ -74,42 +74,44 @@ beforeEach(() => {
   state.reads = 0;
 });
 
-describe('lookupCapturedByUrl organization boundary', () => {
+describe('lookupCapturedByUrl RLS access boundary', () => {
   it('a guest has no saved Source and sends no query', async () => {
     state.authenticated = false;
     expect(await lookupCapturedByUrl(URL)).toEqual({ status: 'none' });
     expect(state.reads).toBe(0);
   });
 
-  it('recognises only a Source in the selected organization', async () => {
+  it('recognises the newest RLS-visible Source without narrowing to the selected organization', async () => {
     expect(await lookupCapturedByUrl(URL)).toMatchObject({
       status: 'found',
-      page: { id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa' },
+      page: { id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb' },
     });
-    expect(state.filters).toContainEqual(['organization_id', state.organizationId]);
+    expect(state.filters.some(([column]) => column === 'organization_id')).toBe(false);
 
     state.organizationId = '22222222-2222-4222-8222-222222222222';
     state.filters = [];
-    expect(await lookupCapturedByUrl(URL)).toEqual({ status: 'none' });
-    expect(state.filters).toContainEqual(['organization_id', state.organizationId]);
+    expect(await lookupCapturedByUrl(URL)).toMatchObject({
+      status: 'found',
+      page: { id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb' },
+    });
+    expect(state.filters.some(([column]) => column === 'organization_id')).toBe(false);
   });
 
-  it('reports an unknown result without querying when the device has no selected organization', async () => {
+  it('recognises an RLS-visible Source when the device has no selected organization', async () => {
     state.organizationId = null;
     expect(await lookupCapturedByUrl(URL)).toMatchObject({
-      status: 'unknown',
-      cause: 'organization_unselected',
-      reason: expect.stringMatching(/organization|workspace/i),
+      status: 'found',
+      page: { id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb' },
     });
-    expect(state.reads).toBe(0);
+    expect(state.reads).toBe(1);
   });
 
-  it('reports an unknown result without querying when organization resolution fails', async () => {
+  it('does not resolve the selected organization before recognising an RLS-visible Source', async () => {
     state.organizationError = new Error('membership read failed');
     expect(await lookupCapturedByUrl(URL)).toMatchObject({
-      status: 'unknown',
-      reason: expect.stringMatching(/could not|organization|workspace/i),
+      status: 'found',
+      page: { id: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb' },
     });
-    expect(state.reads).toBe(0);
+    expect(state.reads).toBe(1);
   });
 });
