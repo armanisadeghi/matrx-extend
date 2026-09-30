@@ -9,7 +9,8 @@
  * action's payload and unknown-topic fallback still exactly match the server.
  */
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 
 const ROOT = resolve(import.meta.dirname, '..');
@@ -47,8 +48,22 @@ const generated = execFileSync('uv', ['run', 'python', '-c', PROGRAM], {
 
 if (check) {
   if (!existsSync(OUTPUT) || readFileSync(OUTPUT, 'utf8') !== generated) {
+    const diagnosticDirectory = mkdtempSync(resolve(tmpdir(), 'matrx-records-guide-'));
+    const generatedPath = resolve(diagnosticDirectory, 'records-guide.json');
+    writeFileSync(generatedPath, generated);
+    let difference = '';
+    try {
+      execFileSync('diff', ['--unified=3', '--label', 'checked-in', OUTPUT, '--label', 'generated', generatedPath], {
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
+    } catch (error) {
+      difference = error instanceof Error && 'stdout' in error ? String(error.stdout) : '';
+    } finally {
+      rmSync(diagnosticDirectory, { force: true, recursive: true });
+    }
     throw new Error(
-      'records guide artifact differs from aidream guide_for; run pnpm catalog:records-guide',
+      `records guide artifact differs from aidream guide_for; run pnpm catalog:records-guide\n${difference}`,
     );
   }
   console.log('records guide matches aidream guide_for for every action');
