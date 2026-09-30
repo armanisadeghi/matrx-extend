@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "task_id": "notes-release-integration",
+  "status": "v0.2.139 source release pushed and local keyed bundle installed; native current-artifact review pending",
+  "source_sha": "ae6a3af1680148c0308d6eb285776ddafdb1039b",
+  "tag": "v0.2.139",
+  "version": "0.2.139",
+  "release_run_id": "notes-integration-release-20260930f",
+  "resource_decision": "valid; child exit 0",
+  "source_and_remote": "Release pushed origin/main and tag v0.2.139 to the same candidate SHA; local main fast-forwarded to that commit and was synchronized with origin/main at receipt inspection.",
+  "verified_checks": {
+    "full_unit_suite": "261 files passed, 2 skipped; 1824 tests passed, 5 skipped",
+    "compile_lint_and_build": "Strict release checks and Store/local WXT packaging completed; lint emitted nonblocking warnings.",
+    "tool_catalog": "82/82 advertised browser tools matched the live tool.definition, binding and surfaces; no drift.",
+    "migration_ledger": "15 applied, 0 unapplied, 0 drifted for matrx-extend source.",
+    "archived_items_org_and_swallowed_refusals": "All required strict gates and self-tests passed; swallowed-refusals ratchet stands at 43 known sites with no additions.",
+    "store_package": "Chrome Web Store package validation and approval-risk gate passed; no dev key or forbidden runtime-code path."
+  },
+  "artifacts": {
+    "release_receipt": ".output/release-receipt.json",
+    "local_receipt": "test-results/notes-release139-local-20260930.json",
+    "local_unpacked_dir": ".output/chrome-mv3-dev",
+    "local_tree_sha256": "20bbd42bdb782dbef2616aa0996cf947060b0117d84674de2234f8376971c19f",
+    "local_file_count": 529,
+    "local_zip": ".output/matrx-extend-0.2.139-local.zip",
+    "local_zip_sha256": "57d6c16d8c211a07702e354ebf8b8ab518edd04ac54d68a23c2b10bdaefd5b05",
+    "store_zip": ".output/matrx-extend-0.2.139-store.zip",
+    "store_zip_sha256": "0cfdbe3b05a8f2231f8770c36eeeb9588ee842e7495077154c746fc5cab6e049"
+  },
+  "consumer_catchup": "Installed @ai-matrx/agents 0.19.1, design-system 0.49.44 and records 0.58.113 CHANGELOG consumer actions were reviewed in notes-dependency-catchup.json; no extension call-site migration was required.",
+  "store_submission": "No Chrome Web Store upload or submission was made. Store 0.2.130 was already pending review and remains a separate human/provider state.",
+  "known_limits": [
+    "Earlier bounded admin Notes native pass was on exact 0.2.138 frozen tree 93c7bf; it is not proof for 0.2.139.",
+    "Current 0.2.139 native review must exercise Notes, organization archive discovery and selection, and D70 Guidance/demo-read failure and retry. Member-mode and stale-choice coverage remain separately tracked.",
+    "The nonblocking mandate-reference scan reported 11 findings and could not submit its report because database credentials were absent in that subprocess; this is unmeasured, not a clean scan submission."
+  ],
+  "evidence": [
+    "docs/stabilization/resource-journals/notes-integration-release-20260930f.jsonl",
+    "tmp/release-logs/latest.log",
+    ".output/release-receipt.json",
+    "test-results/notes-release139-local-20260930.json",
+    "docs/stabilization/reports/notes-dependency-catchup.json"
+  ]
+}
