@@ -112,13 +112,27 @@ export function NotesList({ notes }: { notes: NoteListItem[] }) {
       </div>
 
       {createFailed && (
-        <div className="flex shrink-0 flex-col gap-2 border-b border-destructive/30 bg-destructive/5 px-3 py-2 text-xs" role="alert">
+        <div
+          className="flex shrink-0 flex-col gap-2 border-b border-destructive/30 bg-destructive/5 px-3 py-2 text-xs"
+          role="alert"
+        >
           <span>Could not confirm note creation. Refresh your notes before retrying.</span>
           <div className="flex gap-2">
-            <Button type="button" size="sm" variant="outline" onClick={() => void queryClient.invalidateQueries({ queryKey: ['notes', 'list'] })}>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => void queryClient.invalidateQueries({ queryKey: ['notes', 'list'] })}
+            >
               Refresh notes
             </Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => void onCreate()} disabled={creating}>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => void onCreate()}
+              disabled={creating}
+            >
               Retry creating note
             </Button>
           </div>

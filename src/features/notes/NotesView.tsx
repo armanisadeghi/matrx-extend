@@ -48,7 +48,10 @@ export function NotesView() {
 
   if (notesQuery.isError) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-3 p-4 text-center" role="alert">
+      <div
+        className="flex h-full flex-col items-center justify-center gap-3 p-4 text-center"
+        role="alert"
+      >
         <p className="text-sm font-medium">Could not load notes.</p>
         <p className="text-xs text-muted-foreground">Check your connection and try again.</p>
         <Button type="button" size="sm" onClick={() => void notesQuery.refetch()}>
