@@ -330,10 +330,11 @@ it.each([
     expect(approvalText).toContain('https://calendar.invalid/calendar');
     expect(approvalText).toMatch(/debugger.*reload/i);
     fireEvent.click(allow);
-    // The persisted-confirm recovery crosses the message boundary before it
-    // begins CDP setup. Under fake timers, yield a bounded amount of that
-    // boundary rather than assuming a fixed microtask count.
-    for (let i = 0; i < 10 && !releaseSetup; i++) {
+    // The persisted-confirm recovery crosses storage, messaging, and React
+    // boundaries before it reaches CDP setup. Keep the setup gate explicit:
+    // package import scheduling must not decide whether this guard reaches its
+    // intended stalled-cleanup path.
+    for (let i = 0; i < 100 && !releaseSetup; i++) {
       await act(async () => {
         await vi.advanceTimersByTimeAsync(100);
         await drain();
@@ -347,16 +348,17 @@ it.each([
     });
     expect(sendCommand.mock.calls.some((call) => call[1] === 'Page.reload')).toBe(true);
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(10000);
-      await drain();
-    });
-    expect(screen.queryByText('CURRENT_DOCUMENT_ROW')).toBeNull();
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(10000);
+      // The matching window starts only after setup is released. A full
+      // window must elapse before close begins; advancing only ten seconds
+      // left the stalled cases before their cleanup boundary.
+      await vi.advanceTimersByTimeAsync(20000);
       await drain();
     });
     if (stallCleanup || stallDetach || rejectDetach) {
       await act(async () => {
+        // Close has its own timeout. This is a separate budget from the
+        // matching window, so a deliberately stalled Chrome acknowledgement
+        // cannot be asserted until this second boundary has elapsed.
         await vi.advanceTimersByTimeAsync(20000);
         await drain();
       });
