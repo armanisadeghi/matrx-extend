@@ -46735,6 +46735,45 @@
             "permissions",
             "reload"
           ]
+        },
+        {
+          "id": "EXT-F-4134-T02",
+          "title": "Demo read failure is distinct from a missing recording",
+          "control_ids": [
+            "EXT-F-4134-C01"
+          ],
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "design_status": "ready",
+          "preconditions": [
+            "Build/reload exact receipt-bound unpacked extension under the resource guard; reopen panel and affected controlled page.",
+            "Use one authorized test-owned demo on a disposable page; control the demo read failure without changing authentication or unrelated records."
+          ],
+          "steps": [
+            "Invoke the tool for the owned demo when its local body is absent and its database read fails.",
+            "Restore the read and retry with the same identifier.",
+            "Repeat using a genuinely absent identifier and compare feedback."
+          ],
+          "expected": [
+            "Database failure is reported with an actionable retry remedy, never as a missing demo.",
+            "Restoring the service allows the owned demo to load through the normal path.",
+            "A successful empty read still reports genuinely missing recording."
+          ],
+          "defect_ids": [
+            "EXT-D-0070"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "Source-derived failure traced during release checks; bounded repair in progress, no native pass claimed."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Source-derived failure traced during release checks; bounded repair in progress, no native pass claimed."
+            }
+          }
         }
       ],
       "cells": {
@@ -46746,13 +46785,17 @@
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0070"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0070"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         }
@@ -46872,6 +46915,45 @@
             "permissions",
             "reload"
           ]
+        },
+        {
+          "id": "EXT-F-4135-T02",
+          "title": "Demo read failure is distinct from a missing recording",
+          "control_ids": [
+            "EXT-F-4135-C01"
+          ],
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "design_status": "ready",
+          "preconditions": [
+            "Build/reload exact receipt-bound unpacked extension under the resource guard; reopen panel and affected controlled page.",
+            "Use one authorized test-owned demo on a disposable page; control the demo read failure without changing authentication or unrelated records."
+          ],
+          "steps": [
+            "Invoke the tool for the owned demo when its local body is absent and its database read fails.",
+            "Restore the read and retry with the same identifier.",
+            "Repeat using a genuinely absent identifier and compare feedback."
+          ],
+          "expected": [
+            "Database failure is reported with an actionable retry remedy, never as a missing demo.",
+            "Restoring the service allows the owned demo to load through the normal path.",
+            "A successful empty read still reports genuinely missing recording."
+          ],
+          "defect_ids": [
+            "EXT-D-0070"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "Source-derived failure traced during release checks; bounded repair in progress, no native pass claimed."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Source-derived failure traced during release checks; bounded repair in progress, no native pass claimed."
+            }
+          }
         }
       ],
       "cells": {
@@ -46883,13 +46965,17 @@
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0070"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0070"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         }
