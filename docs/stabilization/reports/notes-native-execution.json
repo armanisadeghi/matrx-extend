@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "scope": "Native owned-Chrome acceptance for EXT-D-0061, EXT-D-0062, and EXT-D-0063 on one frozen development extension build",
+  "build": {
+    "source_head_at_receipt": "ee61e8751ea1d419c85a77e166462d05b27a0cf1",
+    "receipt": "test-results/notes-dev-build-20260930a.json",
+    "version": "0.2.138",
+    "tree_sha256": "119bb63c0d660fe8177f395af87f539053f847ed6c48de06b2e5bcb01116b26f",
+    "extension_directory": ".output/chrome-mv3-dev"
+  },
+  "resource_runs": [
+    {
+      "id": "notes-native-compile-20260930a",
+      "decision": "valid",
+      "child_exit_code": 0,
+      "journal_sha256": "e179070e8c37eed04db5ae111bf220c29b3001d919fd2326c99b51039a504c45"
+    },
+    {
+      "id": "notes-native-devbuild-20260930a",
+      "decision": "valid",
+      "child_exit_code": 0,
+      "journal_sha256": "575263e578abf6eeed7d27deac0b37ea0bc1f84a6cdcbd3b5a32d8fe6ca9c914"
+    },
+    {
+      "id": "notes-native-run-20260930a",
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "journal_sha256": "59b0dbad7a73637faed94607bc84f611ba4548415cfd645585dcb8e437a7a003",
+      "stopped_at": "organization_control_missing; immediate lookup occurred before the asynchronous organization control settled"
+    },
+    {
+      "id": "notes-native-run-20260930b",
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "journal_sha256": "5bade9486ff628cc61a204c78db966077724e746bd36cf00dfb02b92bd13fe29",
+      "stopped_at": "organization picker; harness expected a dialog while current Settings exposes an Acting as select"
+    },
+    {
+      "id": "notes-native-run-20260930c",
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "journal_sha256": "c18e1b05c1222ab3275cc529d7562ae1faff7bc63111d98e90aad2c9d68d2634",
+      "sanitized_runner_evidence": "docs/stabilization/runs/notes-native-20260930c.json"
+    }
+  ],
+  "native_results": {
+    "admin_and_organization": "Normal cookie-backed web sign-in reached the authenticated account; extension Settings showed the signed-in admin, and the explicit approved organization was selected through the visible Acting as control.",
+    "EXT-D-0061": "Passed on run c: four scoped workbench.notes GET transport failures produced a visible error with a retry control, never the empty-notes state; the real Retry loading notes control recovered the list.",
+    "EXT-D-0062": "Partial on run c: one scoped workbench.notes POST transport failure produced a visible error, Refresh notes and Retry creating note controls, and retained the list. Refresh notes caused a real notes GET. The runner stopped in the retry stage before observing a created editor. Whether a retry POST was sent and its HTTP result were not measured.",
+    "EXT-D-0063": "Not run: the D62 retry stage stopped before the owned note was available."
+  },
+  "current_verdict": "D61 native behavior verified; D62 retry and D63 remain unverified. Run c's D62 stopping point does not distinguish a missing or unclickable retry control from a backend create refusal or a delayed editor transition.",
+  "safety": "The harness used only an owned browser profile and scoped Notes request interception. It did not inject auth or storage and did not touch user Chrome. The initial failed POST was intercepted before the server; whether the later retry created a note is unmeasured. No credentials, request bodies, response bodies, headers, or raw browser logs are retained.",
+  "next_diagnostic": "A separately authorized native run should record safe scoped retry POST count and HTTP status class plus visible retry-control state after Refresh notes, then distinguish transport failure from UI transition. Do not infer a product defect from the present timeout."
+}

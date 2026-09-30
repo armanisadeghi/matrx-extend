@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "cases": [
+    "EXT-D-0061",
+    "EXT-D-0062",
+    "EXT-D-0063"
+  ],
+  "status": "unverified",
+  "build": {
+    "before": {
+      "kind": "local_dev_unpacked",
+      "version": "0.2.138",
+      "treeSha256": "119bb63c0d660fe8177f395af87f539053f847ed6c48de06b2e5bcb01116b26f",
+      "extensionDir": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev"
+    },
+    "after": null
+  },
+  "observations": {
+    "real_admin_ui_signin": true,
+    "organization_ui": {
+      "sectionExpanded": true,
+      "controlCount": 1,
+      "approvedDisplayed": false,
+      "chooseDisplayed": true,
+      "loading": false,
+      "noMembership": false,
+      "needsSignin": false,
+      "actingLabel": true,
+      "organizationError": false
+    },
+    "organization_step": "selecting_approved_option",
+    "organization_selected_through_ui": true,
+    "D61": {
+      "fault_scoped": true,
+      "failed_requests": 4,
+      "visible_error": true,
+      "visible_retry": true,
+      "falsely_empty": false,
+      "recovered_from_real_retry": true
+    },
+    "D62": {
+      "fault_scoped": true,
+      "failed_requests": 1,
+      "visible_error": true,
+      "retry_visible": true,
+      "create_available_again": true,
+      "remains_in_list": true,
+      "refreshed_notes_before_retry": true
+    }
+  },
+  "fault_scope": "owned panel, workbench.notes GET/POST/PATCH transport only",
+  "data_scope": "one newly created Harbor Dental intake handoff note; preserved for review",
+  "failure_stage": "D62_retry",
+  "failure_code": "stage_operation_failed"
+}
