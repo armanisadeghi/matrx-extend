@@ -94,6 +94,7 @@ async function guestNavigation(panel, targetTitle = null, viewMarker = null) {
         [...(pane?.querySelectorAll('span,h1,h2,button')??[])].some(n=>n.textContent.trim()===viewMarker),
       suspenseFallback:!!pane?.querySelector('svg.animate-spin')&&!pane?.innerText?.trim(),
       chatComponentMounted:!!pane?.querySelector('button[title="New chat"]'),
+      chatComposerMounted:!!pane&&[...pane.querySelectorAll('textarea')].some(n=>{const r=n.getBoundingClientRect();return r.width>0&&r.height>0}),
       chatPaneCount:panes.filter(n=>n.id.toLowerCase().includes('chat')).length,
       guestChatGuidancePresent:[...(pane?.querySelectorAll('span')??[])]
         .some(n=>n.textContent.trim()==='Sign in to choose an agent'),
@@ -103,7 +104,13 @@ async function guestNavigation(panel, targetTitle = null, viewMarker = null) {
   );
 }
 
-function guestViewAccepted(value) {
+// Guests use Chat (it is the default tab, src/state/sidepanel-tab.ts). A settled Chat
+// view must show the real composer; every other view must not mount Chat.
+function guestViewAccepted(value, title) {
+  const chatBranch =
+    title === 'Chat'
+      ? value?.chatComponentMounted && value.chatComposerMounted
+      : !value?.chatComponentMounted && !value?.guestChatGuidancePresent;
   return (
     value?.listCount === 1 &&
     value.targetTabCount === 1 &&
@@ -116,8 +123,7 @@ function guestViewAccepted(value) {
     value.adminAvatarCount === 0 &&
     value.chatTriggerCount === 1 &&
     value.chatTriggerVisible &&
-    !value.chatComponentMounted &&
-    !value.guestChatGuidancePresent &&
+    chatBranch &&
     value.screenshotTriggerCount === 0 &&
     value.screenshotPaneCount === 0 &&
     !value.screenshotContentMounted
@@ -128,7 +134,7 @@ async function selectedGuestView(panel, title, marker = null) {
   return waitFor(
     `guest_${title.toLowerCase()}_selected`,
     () => guestNavigation(panel, title, marker),
-    (value) => guestViewAccepted(value),
+    (value) => guestViewAccepted(value, title),
   );
 }
 
@@ -219,22 +225,22 @@ async function exercise({ page, panel, artifacts }) {
   try {
     await setStoreAssetViewport(panel);
     stage = 'guest_initial_navigation';
-    const initial = await guestNavigation(panel);
+    const initial = await selectedGuestView(panel, 'Chat');
     assert.equal(initial.listCount, 1);
     assert.equal(initial.screenshotTriggerCount, 0);
     assert.equal(initial.screenshotContentMounted, false);
     assert.equal(initial.screenshotPaneCount, 0);
     assert.equal(initial.chatTriggerCount, 1);
     assert.equal(initial.chatTriggerVisible, true);
-    assert.equal(initial.chatComponentMounted, false);
-    assert.equal(initial.guestChatGuidancePresent, false);
+    assert.equal(initial.chatComponentMounted, true);
+    assert.equal(initial.chatComposerMounted, true);
     assert.equal(initial.guestAvatarCount, 1);
     assert.equal(initial.adminAvatarCount, 0);
     report.cases.push({
       id: 'EXT-F-1009-T09',
       status: 'pass',
       expected:
-        'Guest can see Chat, while Screenshots navigation and protected content stay hidden.',
+        'A fresh guest lands on Chat with a usable composer, while Screenshots navigation and protected content stay hidden.',
       actual: initial,
       evidence: 'role-scoped navigation and content booleans',
     });
@@ -245,6 +251,7 @@ async function exercise({ page, panel, artifacts }) {
     };
 
     stage = 'accessible_view_navigation';
+    await click(panel, 'title', 'Scrape');
     const scrape = await selectedGuestView(panel, 'Scrape');
     await click(panel, 'button', 'Capture');
     const capturedScrape = await waitFor(
@@ -328,16 +335,16 @@ async function exercise({ page, panel, artifacts }) {
         (loader) => Boolean(loader && loader !== previousLoader),
         30_000,
       );
-      const reloaded = await selectedGuestView(panel, 'Scrape');
+      const reloaded = await selectedGuestView(panel, 'Chat');
       report.cases.push({
         id: 'EXT-F-1009-T09',
         subcase: 'guest_real_reload',
         status: 'pass',
         expected:
-          'Real guest panel reload returns to Scrape, with Chat available and Screenshots hidden.',
+          'Real guest panel reload returns to Chat with a usable composer, and Screenshots hidden.',
         actual: { newDocument: true, guestView: reloaded },
         evidence:
-          'new loader identity; settled mounted Scrape pane; visible Chat and Screenshots trigger/pane/content absent',
+          'new loader identity; settled Chat pane with mounted composer; Screenshots trigger/pane/content absent',
       });
     } else {
       report.cases.push({
@@ -384,18 +391,18 @@ async function exercise({ page, panel, artifacts }) {
       );
       await click(panel, 'button', 'Sign out');
       stage = 'guest_navigation_recovery_after_signout';
-      const recovered = await selectedGuestView(panel, 'Scrape');
+      const recovered = await selectedGuestView(panel, 'Chat');
       report.cases.push({
         id: 'EXT-F-1009-T09',
         subcase: 'stale_selection_after_real_signout',
         status: 'pass',
-        expected: 'Signing out from selected Screenshots returns to Scrape with Chat available.',
+        expected: 'Signing out from selected Screenshots returns to Chat with a usable composer.',
         actual: {
           adminScreenshotsSelected: selected.targetSelected && selected.linkedPaneVisible,
           guestRecovery: recovered,
         },
         evidence:
-          'same owned profile; real avatar Sign out; settled mounted Scrape pane with visible Chat and Screenshots trigger/pane/content absent',
+          'same owned profile; real avatar Sign out; settled Chat pane with mounted composer; Screenshots trigger/pane/content absent',
       });
     } else {
       report.cases.push({

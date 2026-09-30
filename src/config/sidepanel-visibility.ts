@@ -6,6 +6,10 @@ import type { SidepanelTab } from '@/state/sidepanel-tab';
  * To keep an unfinished feature available for internal testing while hiding
  * it from the public extension, change its value to `admin`. Both the tab
  * trigger and its content are gated from this table.
+ *
+ * An audience is a product decision, never a way to hide a defect: never change a
+ * feature's audience because it is broken — fix the defect. (2026-09-27 Chat was
+ * hidden from guests instead of fixing a server bug; that was wrong.)
  */
 export type SidepanelAudience = 'everyone' | 'signed-in' | 'admin';
 

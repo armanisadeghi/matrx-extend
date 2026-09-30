@@ -57,7 +57,9 @@ Before packaging, inspect `SIDEPANEL_TAB_AUDIENCE`. Features marked `admin`
 may remain available for internal testing but must not appear in public Store
 copy, screenshots, or reviewer steps. Do not scatter one-off visibility checks
 through components; change the typed switchboard so navigation and content are
-gated together.
+gated together. An audience is a product decision, never a way to hide a defect:
+never change a feature's audience because it is broken — fix the defect (on
+2026-09-27 Chat was hidden from guests instead of fixing a server bug).
 
 A change is **Store-material** when it changes or introduces any of these:
 
