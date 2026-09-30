@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "review_queue_id": "c89fdb6a-1531-40bd-8de5-f686eba3fc9e",
+  "conversation_id": "ec7982c0-d2b1-479e-bf38-79fbd2bc0b5e",
+  "reviewer": "notes-queue-review:0.2.139:20260930T1136Z",
+  "decision": "ready_for_human",
+  "scope": "Admin Notes save/recovery flow plus organization-picker archive visibility prerequisite; not exhaustive feature certification or non-admin approval.",
+  "target": {
+    "kind": "local_dev_unpacked",
+    "version": "0.2.139",
+    "tree_sha256": "20bbd42bdb782dbef2616aa0996cf947060b0117d84674de2234f8376971c19f",
+    "extension_path": ".output/chrome-mv3-dev",
+    "release_snapshot_receipt": "test-results/notes-release139-local-20260930.json",
+    "release_source_commit": "ae6a3af1680148c0308d6eb285776ddafdb1039b"
+  },
+  "native_notes_run": {
+    "run_id": "notes-review-139-native-20260930-01",
+    "resource_guard": "notes-review-139-native-20260930-01; finalized valid exit 0",
+    "resource_journal": "docs/stabilization/resource-journals/notes-review-139-native-20260930-01.jsonl",
+    "raw_evidence": "test-results/notes-native-acceptance.json",
+    "raw_evidence_permissions": "0600",
+    "result": "pass",
+    "cases": {
+      "D61": "failed list requests showed an error and retry, not an empty list; real retry recovered",
+      "D62": "failed create showed recovery and preserved availability; real create succeeded",
+      "D63": "latest draft remained visible while save was pending, saved after release, and reopened with latest edits",
+      "D67": "detail transport/missing-row outcomes were terminal and distinguishable; real detail read recovered",
+      "D68": "delete failure retained editor/draft; retry confirmed; live deletion was verified absent after reload, with no new autosave during the observation window"
+    },
+    "admin_authentication": "real admin sign-in in isolated browser; no auth injection",
+    "organization": "approved organization selected through the UI; the raw evidence file contains private test identifiers and was not copied here"
+  },
+  "live_sidepanel_checks": {
+    "surface": "actual Chrome extension sidepanel chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html, loaded from exact target above",
+    "admin_identity": "admin@admin.com visible in sidepanel",
+    "guest_smoke": "before authentication, Chat remained visible/openable and guest UI offered sign-in/sign-up; it was not replaced by a paid/login gate",
+    "archive_filters": {
+      "active_only": "selected; acting-organization status was required and picker showed Choose… until an active organization is chosen",
+      "archived_only": "selected; acting label stated archived organizations are view-only and instructed returning to active organizations to choose where new work goes; archived entries carried Archived · view only",
+      "active_and_archived": "selected; archived entries remained explicitly marked view-only",
+      "archived_selection_or_write": "none"
+    },
+    "archive_ui_resource_journal": "docs/stabilization/resource-journals/notes-review-139-archive-ui-20260930-01.jsonl",
+    "visual_review": "Screenshot captured in the isolated Chrome session at 1200x1275. The three archive-filter tabs form one aligned segmented control, with consistent dimensions and spacing; the acting-organization status is directly below in the same section. No visual defect observed. The screenshot was not persisted as a separate file.",
+    "duplicate_display_names": "Harbor Dental Group appeared among archived entries. The database owner independently confirmed three distinct same-name organization rows (two archived, one active). Name-only UI observation therefore does not identify the active row selected in the native Notes test.",
+    "notes_list": "sidepanel rendered the cross-organization Notes list without requiring an acting-organization selection, consistent with the all-organizations list behavior; no unrelated note was opened or changed"
+  },
+  "limitations": [
+    "The Notes run is admin-only and covers the listed save/recovery and delete paths, not every Notes operation.",
+    "No member/non-admin approval, held-request dialog variant, exhaustive org archive transitions, or full product certification is claimed.",
+    "D70 demo-read labeling verification is a separate release prerequisite and is not part of this Notes row's completed claim.",
+    "The D70 native scenario was not exercised by this review.",
+    "The native Notes test used the approved active organization by exact private configured ID; the sanitized report omits that identifier."
+  ],
+  "source_review": {
+    "archive_discovery_commit": "b7c7cb81",
+    "records_scope_commit": "634e44af",
+    "demo_read_label_commit": "4c14c3fb",
+    "findings": "Independent source review found no issue in the reviewed organization archive discovery/write-path boundary or records null-default scope. Prior cached-selection remote-archive timing limitation remains documented; no instantaneous remote archive detection claim is made."
+  }
+}
