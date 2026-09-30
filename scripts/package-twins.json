@@ -19,7 +19,32 @@
       "name": "isUuidShape",
       "package": "@ai-matrx/kit/uuid",
       "why": "The LAX UUID-shape predicate ('id or slug?'). It moved out of @ai-matrx/associations/core into kit on 2026-09-07 (associations 0.8.0, C28) so a Next.js route handler could reach it without the association store. Four host copies were deleted 2026-09-07; two host re-export doors (features/scopes/{service/associationGuards,utils/slugify}) alias it as `isUuid` for ~20 historical callers.",
-      "allow": []
+      "shapeRule": "uuid",
+      "shapeWhy": "An anchored regex that validates a WHOLE string as one UUID is this capability whatever it is called, or with no name at all. The name lane read GREEN on isUuidShape and isRfc4122Uuid while 2026-09-30's census found 109 non-test matrx-frontend files carrying their own `/^[0-9a-f]{8}-\u2026$/i` under UUID, UUID_RE, UUID_TEXT, RECORD_ID, ENTITY_REF_ID, uuidRegex, or inline in `.test(`. Pattern and its proof: scripts/uuid-shape.mjs. It reads the pattern's STRUCTURE (every spelling of the hex class, `{8}` or repeated classes, `(?:\u2026{4}-){3}`, a wrapping group, regex literals and `new RegExp` strings) and names the CONTRACT in every finding: any-version case-insensitive = isUuidShape, version [1-5] + variant [89ab] = isRfc4122Uuid (one lane, both rows \u2014 strict stays strict), anything else = no kit export yet, which is a kit option and a census entry with that contract as its blocker, never a local copy. An extractor (no ^\u2026$ anchors, a g/m flag), a composite key or route anchored around a UUID, a SQL pattern in a SQL string and a test fixture can never match. `shapeCensus` below is debt, reported every run and ratcheted shrink-only.",
+      "allow": [],
+      "shapeAllow": [],
+      "shapeCensus": [
+        {
+          "file": "src/features/files/data.ts",
+          "reason": "Contract NO kit export carries: version [1-8] + variant [89ab] (RFC 9562: accepts v6/v7/v8, rejects the nil UUID). isUuidShape would widen it (nil, any version) and isRfc4122Uuid would narrow it (rejects v6-v8). Blocked on a kit option for the RFC 9562 predicate; 8 sites across matrx-frontend and matrx-extend need it."
+        },
+        {
+          "file": "src/lib/credentials/capture-candidates.ts",
+          "reason": "Contract NO kit export carries: version [1-8] + variant [89ab] (RFC 9562: accepts v6/v7/v8, rejects the nil UUID). isUuidShape would widen it (nil, any version) and isRfc4122Uuid would narrow it (rejects v6-v8). Blocked on a kit option for the RFC 9562 predicate; 8 sites across matrx-frontend and matrx-extend need it."
+        },
+        {
+          "file": "src/lib/api/routes/local-browser-commands.ts",
+          "reason": "Contract NO kit export carries: any version, LOWER-case only (no i flag) inside a zod .regex on the local-browser wire protocol. isUuidShape would start accepting upper-case ids. Blocked on a kit option (a case-sensitive predicate or a zod schema export); 3 sites share this protocol contract."
+        },
+        {
+          "file": "src/lib/api/routes/local-browser.ts",
+          "reason": "Contract NO kit export carries: any version, LOWER-case only (no i flag) inside a zod .regex on the local-browser wire protocol. isUuidShape would start accepting upper-case ids. Blocked on a kit option (a case-sensitive predicate or a zod schema export); 3 sites share this protocol contract."
+        },
+        {
+          "file": "src/lib/desktop/local-browser/protocol.ts",
+          "reason": "Contract NO kit export carries: any version, LOWER-case only (no i flag) inside a zod .regex on the local-browser wire protocol. isUuidShape would start accepting upper-case ids. Blocked on a kit option (a case-sensitive predicate or a zod schema export); 3 sites share this protocol contract."
+        }
+      ]
     },
     {
       "name": "uniqueChannelTopic",

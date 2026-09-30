@@ -25,6 +25,7 @@
 import { log } from '@/lib/debug/log';
 import type { GuidanceItem } from '@/lib/guidance/types';
 import type { SaveGuidanceRowPayload, WbxGuidanceRow } from '@/lib/supabase/queries';
+import { isUuidShape } from '@ai-matrx/kit/uuid';
 
 const KNOWN_KINDS = new Set<GuidanceItem['kind']>(['note', 'screenshot', 'gif', 'demo_ref']);
 
@@ -135,8 +136,7 @@ export function rowToItem(row: WbxGuidanceRow): GuidanceItem | null {
 
 /** Fire-and-forget upsert of one item to the cloud. Never throws. */
 export async function pushGuidanceToCloud(item: GuidanceItem): Promise<void> {
-  const { isCloudSyncableGuidanceId } = await import('@/lib/guidance/storage');
-  if (!isCloudSyncableGuidanceId(item.id)) {
+  if (!isUuidShape(item.id)) {
     // Created before guidance ids became uuids (2026-09-28): the cloud table only takes uuid ids, so this
     // item stays on this machine. Re-creating it gives it a syncable id.
     log.warn(

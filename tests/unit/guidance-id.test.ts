@@ -1,4 +1,5 @@
-import { isCloudSyncableGuidanceId, makeGuidanceId } from '@/lib/guidance/storage';
+import { isUuidShape } from '@ai-matrx/kit/uuid';
+import { makeGuidanceId } from '@/lib/guidance/storage';
 import { describe, expect, it } from 'vitest';
 
 // extend.wbx_guidance.id is a uuid (access ladder T-21, 2026-09-28): the policy generator compares entity ids
@@ -6,10 +7,10 @@ import { describe, expect, it } from 'vitest';
 describe('guidance ids', () => {
   it('mints uuids the cloud table accepts', () => {
     const id = makeGuidanceId();
-    expect(isCloudSyncableGuidanceId(id)).toBe(true);
+    expect(isUuidShape(id)).toBe(true);
     expect(makeGuidanceId()).not.toBe(id);
   });
   it('recognises the pre-uuid gd_ ids as local-only', () => {
-    expect(isCloudSyncableGuidanceId('gd_mg3k2x_ab12cd')).toBe(false);
+    expect(isUuidShape('gd_mg3k2x_ab12cd')).toBe(false);
   });
 });

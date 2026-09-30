@@ -12,7 +12,6 @@
 
 import { log } from '@/lib/debug/log';
 import type { GuidanceItem, GuidanceSummary } from '@/lib/guidance/types';
-import { isUuidShape } from '@ai-matrx/kit/uuid';
 
 const LIST_KEY = 'matrx.guidance.list';
 const ITEM_PREFIX = 'matrx.guidance.';
@@ -24,15 +23,10 @@ function itemKey(id: string): string {
 /**
  * Generate a unique guidance id. It is the row id of `extend.wbx_guidance`, which is a uuid
  * (every platform entity id is — the access rules compare it with uuid sets), so it is a uuid here too.
- * Items created before 2026-09-28 carry the old `gd_<time>_<rand>` form; see `isCloudSyncableGuidanceId`.
+ * Items created before 2026-09-28 carry the old `gd_<time>_<rand>` form; only a uuid id (`isUuidShape` from `@ai-matrx/kit/uuid`) can become a `wbx_guidance` row; old `gd_…` ids stay on this machine.
  */
 export function makeGuidanceId(): string {
   return crypto.randomUUID();
-}
-
-/** True when the id can be a `wbx_guidance` row id (a uuid). Old `gd_…` ids stay on this machine only. */
-export function isCloudSyncableGuidanceId(id: string): boolean {
-  return isUuidShape(id);
 }
 
 /** Domain-match helper. Memos/guidance on a parent domain apply to subdomains. */
