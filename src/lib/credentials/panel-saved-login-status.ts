@@ -1,4 +1,5 @@
 import { isSafeDestination } from './login-urls';
+import { isUuidShape } from '@ai-matrx/kit/uuid';
 
 export type PanelSavedLoginSnapshot =
   | {
@@ -11,7 +12,6 @@ export type PanelSavedLoginSnapshot =
     }
   | { status: 'none' | 'disabled' | 'loading' | 'unavailable'; itemIds: string[] };
 
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const record = (value: unknown): value is Record<string, unknown> =>
   !!value && typeof value === 'object' && !Array.isArray(value);
 const exactKeys = (value: Record<string, unknown>, keys: string[]) =>
@@ -56,7 +56,7 @@ export function parsePanelSavedLoginStatus(value: unknown): PanelSavedLoginSnaps
   } catch {
     return unavailable;
   }
-  if (!value.itemIds.every((id): id is string => typeof id === 'string' && UUID.test(id)))
+  if (!value.itemIds.every((id): id is string => typeof id === 'string' && isUuidShape(id)))
     return unavailable;
   const ids = new Set(value.itemIds);
   if (ids.size !== value.itemIds.length || value.matches.length !== ids.size) return unavailable;

@@ -12,6 +12,7 @@
 
 import { log } from '@/lib/debug/log';
 import type { GuidanceItem, GuidanceSummary } from '@/lib/guidance/types';
+import { isUuidShape } from '@ai-matrx/kit/uuid';
 
 const LIST_KEY = 'matrx.guidance.list';
 const ITEM_PREFIX = 'matrx.guidance.';
@@ -29,11 +30,9 @@ export function makeGuidanceId(): string {
   return crypto.randomUUID();
 }
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 /** True when the id can be a `wbx_guidance` row id (a uuid). Old `gd_…` ids stay on this machine only. */
 export function isCloudSyncableGuidanceId(id: string): boolean {
-  return UUID_RE.test(id);
+  return isUuidShape(id);
 }
 
 /** Domain-match helper. Memos/guidance on a parent domain apply to subdomains. */

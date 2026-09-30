@@ -23,6 +23,7 @@ import { CHANNELS } from '@/lib/messaging/schemas';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { hasFirefoxSidebarAction, openPanel, panelOpenRemedy } from '@/lib/panel/adapter';
 import { readOfferSavedLoginsEnabled } from '@/lib/settings/persisted';
+import { isUuidShape } from '@ai-matrx/kit/uuid';
 
 /**
  * Service-worker host for the metadata-only inline Vault chooser.
@@ -34,7 +35,6 @@ import { readOfferSavedLoginsEnabled } from '@/lib/settings/persisted';
  */
 
 const OFFER_TTL_MS = 60_000;
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 type QueryResponse =
   | { status: 'ready'; offerId: string; matches: Array<{ item_id: string; display_name: string }> }
@@ -238,7 +238,7 @@ function validPanelPayload(
         /^[0-9a-f]{36}$/.test((payload as { offerId: string }).offerId))) &&
     (!('itemId' in payload) ||
       (typeof (payload as { itemId?: unknown }).itemId === 'string' &&
-        UUID.test((payload as { itemId: string }).itemId)))
+        isUuidShape((payload as { itemId: string }).itemId)))
   );
 }
 function trustedSidepanel(sender: chrome.runtime.MessageSender): boolean {
