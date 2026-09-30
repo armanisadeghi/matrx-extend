@@ -31,7 +31,6 @@ import {
  * were never meant to run. `tool_delegated` is the explicit "your turn" signal.
  */
 
-import { postToolResults } from '@/lib/api/routes/tool-results';
 import { appendReceipt, recordAuditFailure } from '@/lib/audit/log';
 import { PENDING_OUTPUT, type ReceiptOrigin, buildReceipt } from '@/lib/audit/receipt';
 import { readIsAdminFromStorage } from '@/lib/auth/is-admin';
@@ -47,6 +46,7 @@ import {
 } from '@/lib/permissions/optional';
 import { recordToolEvent } from '@/lib/recording/state';
 import { markStreamInactive } from '@/lib/stream/active-runs';
+import { deliverToolResult } from '@/lib/tools/deliver-tool-result';
 import { getToolDescription, primeToolDescriptions } from '@/lib/tools/descriptions';
 import {
   enqueueUndeliveredResult,
@@ -412,15 +412,6 @@ export function startToolDispatcher(opts: DispatchOptions): void {
             true,
             `Tool dispatch crashed: ${message}`,
           );
-          if (delivery.delivered) {
-            broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
-              callId: ctx.callId,
-              conversationId: ctx.conversationId,
-              toolName: handler.name,
-              phase: 'error',
-              message: `Tool dispatch crashed: ${message}`,
-            });
-          }
           broadcastContinuation(delivery.continuation);
         } catch (postErr) {
           log.error(
@@ -501,15 +492,6 @@ export function startToolDispatcher(opts: DispatchOptions): void {
           true,
           `Tool dispatch crashed: ${message}`,
         );
-        if (delivery.delivered) {
-          broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
-            callId: ctx.callId,
-            conversationId: ctx.conversationId,
-            toolName: handler.name,
-            phase: 'error',
-            message: `Tool dispatch crashed: ${message}`,
-          });
-        }
         broadcastContinuation(delivery.continuation);
       } catch (postErr) {
         log.error('sw', `failed to surface cold-resume crash for ${wireName}`, postErr);
@@ -676,22 +658,23 @@ async function postUnknownToolError(
     return;
   }
   const message = `Tool '${toolName}' is not registered in this extension.${hint}`;
-  await postToolResults(conversationId, [
-    {
-      call_id: ctx.callId,
-      tool_name: toolName,
-      output: null,
-      is_error: true,
-      error_message: message,
-    },
-  ]);
-  broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
-    callId: ctx.callId,
-    conversationId: ctx.conversationId,
-    toolName,
-    phase: 'error',
-    message,
+  const { delivered } = await deliverToolResult(conversationId, {
+    call_id: ctx.callId,
+    tool_name: toolName,
+    output: null,
+    is_error: true,
+    error_message: message,
   });
+  // Delivered → deliverToolResult already settled the row with this message.
+  if (!delivered) {
+    broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+      callId: ctx.callId,
+      conversationId,
+      toolName,
+      phase: 'error',
+      message,
+    });
+  }
 }
 
 async function handleCall(
@@ -886,22 +869,14 @@ async function handleCall(
     return fail(failureMessage);
   }
 
+  // postResult settles the row itself: `completed` once the server accepted
+  // the answer, or a terminal delivery error with its remedy when it did not.
   const delivery = await postResult(handler, ctx, result, false, null, Date.now() - startedAt);
-  // postResult emits a terminal delivery error itself. Never overwrite that
-  // with `completed`: doing so both lies to the user and can resume the model
-  // while the original row is still spinning in another assistant bubble.
   if (!delivery.delivered) {
     void emitCompletedReceipt(handler.name, rawArgs, result, false, ctx, startedAt, origin);
     broadcastContinuation(delivery.continuation);
     return;
   }
-  broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
-    callId: ctx.callId,
-    conversationId: ctx.conversationId,
-    toolName: handler.name,
-    phase: 'completed',
-    output: result,
-  });
   // Roadmap item #8 — completed receipt. Fire-and-forget; signing
   // problems get logged but never block the response.
   void emitCompletedReceipt(handler.name, rawArgs, result, true, ctx, startedAt, origin);
@@ -933,15 +908,6 @@ async function finishWithError(
   // The unknown-tool error path doesn't reach this function.
   if (startedAt !== undefined) {
     void emitCompletedReceipt(handler.name, rawArgs, null, false, ctx, startedAt, origin);
-  }
-  if (delivery.delivered) {
-    broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
-      callId: ctx.callId,
-      conversationId: ctx.conversationId,
-      toolName: handler.name,
-      phase: 'error',
-      message,
-    });
   }
   broadcastContinuation(delivery.continuation);
 }
@@ -988,16 +954,16 @@ async function postResult(
     });
     return { delivered: false, continuation: null };
   }
-  const r = await postToolResults(conversationId, [
-    {
-      call_id: ctx.callId,
-      tool_name: handler.name,
-      output,
-      is_error: isError,
-      error_message: errorMessage,
-      ...(durationMs !== null && { duration_ms: durationMs }),
-    },
-  ]);
+  // The funnel posts AND settles the row on acceptance — callers never
+  // broadcast a terminal event for a delivered answer themselves.
+  const { response: r, delivered } = await deliverToolResult(conversationId, {
+    call_id: ctx.callId,
+    tool_name: handler.name,
+    output,
+    is_error: isError,
+    error_message: errorMessage,
+    ...(durationMs !== null && { duration_ms: durationMs }),
+  });
 
   // Failure path — make the user aware. After exhausting retries (5xx /
   // network), or on a hard 4xx, the agent loop is stuck and the user needs to
@@ -1047,7 +1013,7 @@ async function postResult(
 
   // Track the not_found responses too — partial success returns 200 but the
   // call_id we just posted didn't land. Surface it.
-  const callNotFound = Array.isArray(r.data.not_found) && r.data.not_found.includes(ctx.callId);
+  const callNotFound = !delivered;
   if (callNotFound) {
     log.warn(
       'sw',
@@ -1377,7 +1343,9 @@ async function sweepExpiredConfirms(): Promise<void> {
 async function drainUndeliveredResults(): Promise<void> {
   const pending = await takeUndeliveredResults();
   for (const entry of pending) {
-    const r = await postToolResults(entry.conversationId, [entry.result]);
+    // Same funnel as the live path: a replay the server accepts settles the
+    // row the first failure painted as a delivery error.
+    const { response: r } = await deliverToolResult(entry.conversationId, entry.result);
     if (!r.ok) {
       if (r.status === 0 || r.status === 408 || r.status === 429 || r.status >= 500) {
         void enqueueUndeliveredResult({

@@ -318,6 +318,19 @@ Every entry follows this shape:
   unavailable.
 - **Covered by:** `tests/unit/api-stream.test.ts`.
 
+### A browser tool's row settles when its answer is delivered
+- **What it does:** The row of a tool the extension ran turns Done (or Error)
+  the moment the server accepts the answer, including an answer re-sent after
+  an earlier delivery failure.
+- **Where to test:** Side panel → **Chat**, any agent that calls a browser tool.
+- **Steps:** Go offline while the tool runs so its first delivery fails (row
+  shows the network error), come back online, then reload the extension's
+  service worker so the saved answer is re-sent.
+- **Expected:** The agent continues, and the original row changes from the
+  network error to Done. No row keeps spinning or erroring after the agent
+  has moved on.
+- **Covered by:** `src/lib/tools/deliver-tool-result.test.ts`.
+
 ---
 
 ## Agent tools
