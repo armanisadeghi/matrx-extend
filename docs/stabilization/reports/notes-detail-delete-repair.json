@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "lane": "notes-detail-delete-repair",
+  "at": "2026-09-30T09:10:02Z",
+  "status": "IN_FIX_RESOURCE_REFUSED",
+  "scope": ["EXT-D-0067", "EXT-D-0068"],
+  "commits": {
+    "EXT-D-0067": "fea4f443",
+    "EXT-D-0067-triage-history": "3432c2cf",
+    "EXT-D-0068": "b8759320",
+    "EXT-D-0068-lifecycle": "56475273"
+  },
+  "findings": {
+    "EXT-D-0067": "getNote collapsed a failed detail SELECT and a successful missing row to null; NoteEditor treated null as perpetual loading. The query now rejects errors and malformed rows while returning null for a true miss. The editor shows terminal retry/Back states and keeps an open draft visible on background refresh failure.",
+    "EXT-D-0068": "softDeleteNote treated error-free zero-row UPDATE as success. It now requests an exact affected-row count and confirms only count one, without a SELECT of the deleted row. Failure keeps the editor/draft and offers a newly confirmed retry. Confirmed deletion cancels queued autosave and clears its retained draft before editor unmount."
+  },
+  "evidence": {
+    "audit": "docs/stabilization/reports/notes-remaining-failure-audit.json",
+    "dependency_install": "docs/stabilization/resource-journals/notes-d67-d68-install-20260930a.jsonl: frozen install passed; @ai-matrx packages refreshed from merged lock",
+    "guards_authored": [
+      "src/lib/notes/queries.detail-failures.test.ts",
+      "src/features/notes/NoteEditor.detail-failures.test.tsx",
+      "src/lib/notes/queries.delete-failures.test.ts",
+      "src/features/notes/NoteEditor.delete-failures.test.tsx"
+    ],
+    "guarded_tests": "notes-d67-d68-finaltests-20260930a refused before launch: RESOURCE_PRESSURE_UNSAFE and RESOURCE_SWAP_GROWTH at 09:09:26Z. No test verdict or red proof from this lane.",
+    "compile": "Not launched for this source because final test admission found unsafe memory pressure and swap growth.",
+    "native": "Pending a new artifact containing these commits; the frozen 0.2.138 artifact predates them."
+  },
+  "remaining": [
+    "Guarded red/green consumer and query-boundary tests, compile, and focused existing Notes regression tests.",
+    "Independent native acceptance on a rebuilt artifact after engineering validation.",
+    "Push held until final guarded checks pass."
+  ],
+  "heavy_permit": "Released at 09:09:26Z; host lease root has no heavy directory."
+}
