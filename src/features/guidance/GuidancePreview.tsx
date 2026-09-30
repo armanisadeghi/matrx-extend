@@ -234,6 +234,9 @@ function DemoPreview({ item }: { item: Extract<GuidanceItem, { kind: 'demo_ref' 
   // machine that just signed in (or is signed out) can hold the ref without
   // the body. Say so plainly rather than offering a Replay button that fails.
   const [bodyMissing, setBodyMissing] = useState(false);
+  const [bodyLoadError, setBodyLoadError] = useState<string | null>(null);
+  const [bodyLoading, setBodyLoading] = useState(true);
+  const [bodyLoadAttempt, setBodyLoadAttempt] = useState(0);
   const [confirming, setConfirming] = useState(false);
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<string | null>(null);
@@ -241,16 +244,28 @@ function DemoPreview({ item }: { item: Extract<GuidanceItem, { kind: 'demo_ref' 
   useEffect(() => {
     let cancelled = false;
     setBodyMissing(false);
+    setBodyLoadError(null);
+    setBodyLoading(true);
     setDemo(null);
-    void getDemoOrHydrate(item.demo_id).then((d) => {
-      if (cancelled) return;
-      setDemo(d);
-      setBodyMissing(d === null);
-    });
+    void getDemoOrHydrate(item.demo_id)
+      .then((d) => {
+        if (cancelled) return;
+        setDemo(d);
+        setBodyMissing(d === null);
+      })
+      .catch((error: unknown) => {
+        if (!cancelled)
+          setBodyLoadError(
+            error instanceof Error ? error.message : 'Could not load this demo. Try again.',
+          );
+      })
+      .finally(() => {
+        if (!cancelled) setBodyLoading(false);
+      });
     return () => {
       cancelled = true;
     };
-  }, [item.demo_id]);
+  }, [item.demo_id, bodyLoadAttempt]);
 
   const handleReplay = useCallback(async () => {
     if (!demo) return;
@@ -281,7 +296,21 @@ function DemoPreview({ item }: { item: Extract<GuidanceItem, { kind: 'demo_ref' 
           {item.parameter_names.length > 0 && <> · params: {item.parameter_names.join(', ')}</>}
         </div>
       </div>
-      {bodyMissing ? (
+      {bodyLoadError ? (
+        <div className="rounded border border-red-600/40 bg-red-50/40 p-2 text-[11px] dark:bg-red-900/10">
+          <p>{bodyLoadError}</p>
+          <Button
+            size="sm"
+            variant="outline"
+            className="mt-1"
+            onClick={() => setBodyLoadAttempt((n) => n + 1)}
+          >
+            Retry loading demo
+          </Button>
+        </div>
+      ) : bodyLoading ? (
+        <div className="text-[11px] text-muted-foreground">Loading recorded steps…</div>
+      ) : bodyMissing ? (
         <div className="rounded border border-amber-600/40 bg-amber-50/40 p-2 text-[11px] dark:bg-amber-900/10">
           The recorded steps for this demo aren't on this machine. Sign in to sync demos across
           machines, or re-record it here. Replay is unavailable until then.

@@ -26,12 +26,16 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const upsertDemoRow = vi.fn(async (_p: unknown) => true);
 const deleteDemoRow = vi.fn(async (_id: string) => true);
 let cloudRows: WbxDemoRow[] = [];
+let demoReadError: Error | null = null;
 
 vi.mock('@/lib/supabase/queries', () => ({
   upsertDemoRow: (p: unknown) => upsertDemoRow(p),
   deleteDemoRow: (id: string) => deleteDemoRow(id),
   fetchAllDemoRows: async () => cloudRows,
-  fetchDemoRow: async (id: string) => cloudRows.find((r) => r.demo_key === id) ?? null,
+  fetchDemoRow: async (id: string) => {
+    if (demoReadError) throw demoReadError;
+    return cloudRows.find((r) => r.demo_key === id) ?? null;
+  },
 }));
 
 const CREATED = Date.parse('2026-08-09T10:00:00.000Z');
@@ -102,6 +106,7 @@ beforeEach(async () => {
   upsertDemoRow.mockClear();
   deleteDemoRow.mockClear();
   cloudRows = [];
+  demoReadError = null;
   await resetLocalDemos();
 });
 
@@ -231,5 +236,12 @@ describe('on-miss repair', () => {
     expect(await getDemoOrHydrate('demo_nope')).toBeNull();
     cloudRows = [rowFor(makeDemo(), { is_deleted: true })];
     expect(await getDemoOrHydrate('demo_login')).toBeNull();
+  });
+
+  it('distinguishes a failed cloud read from a genuinely missing demo', async () => {
+    const { getDemoOrHydrate } = await import('@/lib/demos/cloud-sync');
+    demoReadError = new Error('Saved demo unavailable: database refused the read. Try again.');
+
+    await expect(getDemoOrHydrate('demo_login')).rejects.toThrow('database refused the read');
   });
 });

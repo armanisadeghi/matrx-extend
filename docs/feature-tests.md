@@ -1097,7 +1097,7 @@ Every entry follows this shape:
   - `describe_demo` on machine B returns the full step list.
   - Deleting the demo on either machine tombstones the row; the other machine drops it on next hydrate.
 - **Edge cases worth poking:**
-  - **Signed out / offline on machine B:** the ref may be present with no body. The Guidance preview must say *"The recorded steps for this demo aren't on this machine…"* instead of offering Replay, and `replay_demo` must return `{ok:false, error:'demo_body_unavailable'}` — distinct from `{error:'demo_not_found'}` for a genuinely bogus id. Verify both codes.
+  - **Signed out / offline on machine B:** the ref may be present with no body. A genuine missing row shows *"The recorded steps for this demo aren't on this machine…"* instead of offering Replay; a database refusal or outage shows a distinct load error and **Retry loading demo**. `describe_demo` and `replay_demo` must surface the read failure with its remedy instead of claiming the demo is missing. Restore access and click Retry; the real body and Replay return. Verify a genuinely bogus id still produces the missing-demo result.
   - **Ref before body:** delete only the local `matrx.demos.<id>` key (keep the guidance ref), reload, open the item → it repairs itself from the cloud (`demo body repaired from cloud id=…`).
   - **Last-write-wins:** re-record/rename the same demo id on machine A; machine B picks up the newer copy on next hydrate. A locally newer demo is never clobbered by an older cloud copy.
   - **Agent-recorded demos** (`record_demo` with no guidance ref) sync too — the hook is at the storage layer.

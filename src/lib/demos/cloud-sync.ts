@@ -12,8 +12,9 @@
  * chrome.storage.local is a fast offline cache. Every local mutation
  * best-effort mirrors to the cloud (see the hooks in storage.ts); on sign-in we
  * hydrate the cache from the cloud, reconciling last-write-wins by `updated_at`.
- * All cloud calls swallow errors — connectivity loss must never break the local
- * demo flow. Imports of the Supabase client and the storage layer are dynamic
+ * Background mirror and sign-in hydrate handle errors locally; on-miss repair
+ * propagates a failed read so a missing demo is never claimed on an outage.
+ * Imports of the Supabase client and the storage layer are dynamic
  * so this module stays cheap for callers that only need the pure mappers.
  *
  * One deliberate difference from guidance: reconciliation compares the CLIENT
@@ -173,6 +174,6 @@ export async function getDemoOrHydrate(id: string): Promise<Demo | null> {
     return demo;
   } catch (err) {
     log.warn('sys', `demo cloud repair failed id=${id}`, err);
-    return null;
+    throw err;
   }
 }

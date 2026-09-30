@@ -1559,9 +1559,15 @@ export async function fetchAllDemoRows(): Promise<WbxDemoRow[]> {
     .select(DEMO_ROW_COLUMNS)
     .order('updated_at', { ascending: false });
   if (error) {
-    if (/relation .* does not exist/i.test(error.message)) return [];
-    console.warn('[matrx-extend] fetchAllDemoRows error', error.message);
-    return [];
+    failDbCall(
+      {
+        table: 'extend.wbx_demo',
+        operation: 'select',
+        what: 'load your saved demos',
+        title: 'Saved demos unavailable',
+      },
+      error,
+    );
   }
   return parseRowsSafe(WbxDemoRowSchema, (data ?? []) as unknown[], 'fetchAllDemoRows').rows;
 }
@@ -1580,11 +1586,28 @@ export async function fetchDemoRow(id: string): Promise<WbxDemoRow | null> {
     .eq('demo_key', id)
     .maybeSingle();
   if (error) {
-    if (/relation .* does not exist/i.test(error.message)) return null;
-    console.warn('[matrx-extend] fetchDemoRow error', error.message);
-    return null;
+    failDbCall(
+      {
+        table: 'extend.wbx_demo',
+        operation: 'select',
+        what: 'load this saved demo',
+        title: 'Saved demo unavailable',
+      },
+      error,
+    );
   }
   if (!data) return null;
   const parsed = WbxDemoRowSchema.safeParse(data);
-  return parsed.success ? parsed.data : null;
+  if (!parsed.success) {
+    failDbCall(
+      {
+        table: 'extend.wbx_demo',
+        operation: 'select',
+        what: 'read this saved demo',
+        title: 'Saved demo unreadable',
+      },
+      { message: 'The saved demo row has an invalid shape.' },
+    );
+  }
+  return parsed.data;
 }
