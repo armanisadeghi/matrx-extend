@@ -25,6 +25,7 @@
       "scripts/money-shape.mjs",
       "scripts/count-shape.mjs",
       "scripts/relative-time-shape.mjs",
+      "scripts/uuid-shape.mjs",
       "scripts/guard-origin.json",
       "scripts/package-twins.json",
       "tests/fixtures/portions/**",
