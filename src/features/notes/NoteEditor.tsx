@@ -292,12 +292,17 @@ export function NoteEditor({ noteId }: { noteId: string }) {
             <ArrowLeft className="size-3.5" /> Back
           </Button>
         </div>
-        <div className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-center" role="alert">
+        <div
+          className="flex flex-1 flex-col items-center justify-center gap-3 p-4 text-center"
+          role="alert"
+        >
           <p className="text-sm font-medium">
             {detailQuery.isError ? 'Could not load this note.' : 'This note is unavailable.'}
           </p>
           <p className="text-xs text-muted-foreground">
-            {detailQuery.isError ? 'Please try again.' : 'It may have been deleted or access may have changed.'}
+            {detailQuery.isError
+              ? 'Please try again.'
+              : 'It may have been deleted or access may have changed.'}
           </p>
           <Button type="button" size="sm" onClick={() => void detailQuery.refetch()}>
             Retry loading note
@@ -394,7 +399,10 @@ export function NoteEditor({ noteId }: { noteId: string }) {
       />
 
       {deleteFailed && (
-        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-destructive/30 bg-destructive/5 px-3 py-2 text-xs" role="alert">
+        <div
+          className="flex shrink-0 items-center justify-between gap-2 border-b border-destructive/30 bg-destructive/5 px-3 py-2 text-xs"
+          role="alert"
+        >
           <span>Could not confirm deletion. This note remains open; check it before retrying.</span>
           <Button type="button" size="sm" variant="outline" onClick={() => setDeleteOpen(true)}>
             Retry delete
@@ -403,9 +411,17 @@ export function NoteEditor({ noteId }: { noteId: string }) {
       )}
 
       {detailQuery.isError && (
-        <div className="flex shrink-0 items-center justify-between gap-2 border-b border-destructive/30 bg-destructive/5 px-3 py-2 text-xs" role="alert">
+        <div
+          className="flex shrink-0 items-center justify-between gap-2 border-b border-destructive/30 bg-destructive/5 px-3 py-2 text-xs"
+          role="alert"
+        >
           <span>Could not refresh this note. Your open draft is still here.</span>
-          <Button type="button" size="sm" variant="outline" onClick={() => void detailQuery.refetch()}>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            onClick={() => void detailQuery.refetch()}
+          >
             Retry loading note
           </Button>
         </div>
