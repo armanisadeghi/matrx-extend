@@ -182,7 +182,9 @@ async function installStreamTrace(panel) {
           run.userRequestCompleted = true;
           events.push({ kind: 'user_request_completed', run: run.ordinal });
         } else if (name === 'end') {
-          run.endReason = typeof data?.reason === 'string' ? data.reason : null;
+          const reason = data?.reason;
+          run.endReason = ['complete', 'error', 'failed', 'cancelled', 'paused',
+            'tool_delegated'].includes(reason) ? reason : 'other';
           events.push({ kind: 'end', run: run.ordinal, reason: run.endReason });
         }
       }
