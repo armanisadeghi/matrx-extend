@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "lane": "independent source-only cleanup readiness verifier; no implementation authorship",
+  "subject": "Commit 3bf1bda8, exact owned Source cleanup readiness",
+  "reviewed_at": "2026-10-01",
+  "scope": {
+    "commit": "3bf1bda81c0b98fdeabc64b37e2771b86894d969",
+    "file": "tests/browser/files-saved-native-acceptance.mjs",
+    "fixture_receipt": "docs/stabilization/reports/saved-capture-fixture-20261001.json",
+    "runtime_or_database_actions": "none"
+  },
+  "verdict_A_runtime_and_spec": {
+    "result": "UNVERIFIED_RUNTIME; READINESS_REPAIR_SUPPORTED_BY_SOURCE",
+    "evidence": "The fixture receipt is status=created and records two distinct Source UUIDs, same fixture run ID and organization, native UI creation, HTTP 201 landing proofs, exact processed_document_id matches, reused_existing=false, new_version_of=null, and pre-save matching rows=0. Commit 3bf1bda8 has not itself been exercised in a cleanup run in this review. Prior failure owned_source_row_not_hittable is a reported historical runtime result, not reproduced here. User-provided context says the author soft-deleted both exact rows by MCP with readback; this is DB cleanup evidence, not proof the native cleanup runner works.",
+    "limits": [
+      "No browser, cleanup runner, UI interaction, or database read/write was performed in this lane.",
+      "The source can support readiness and deletion-scope claims, but only a fresh native cleanup run can establish the row becomes hittable and the UI delete completes."
+    ]
+  },
+  "verdict_B_source_quality": {
+    "result": "PASS_WITH_LOW_RESIDUAL_INPUT_RACE",
+    "basis": "The change replaces a one-shot row lookup with the existing bounded waitFor helper (45 seconds, 100 ms polling). Each sample scopes to Saved captures and exact source title, requires exactly one match, scrolls that row into view, and checks elementFromPoint at the intended click point. Trusted CDP mouse input is sent only after the accepted sample. This directly addresses asynchronous list population behind tab activation. Cleanup still requires admin role, a created/partial-owned fixture receipt, approved organization equality, exact configured source IDs when present, distinct provenance flags and landing ID/identity/org proofs. It reopens the detail and verifies the web-app Source URL ID equals the fixture ID before clicking Delete; it then verifies the named row is absent. I found no arbitrary-row selection or new delete path in this commit.",
+    "findings": [
+      {
+        "severity": "low",
+        "finding": "The row can move or be covered between the accepted DOM hit-test sample and CDP input dispatch; the 45-second wait solves late population, not that narrow post-sample race.",
+        "impact": "A transient layout shift can still produce a timeout or an ineffective click, but the runner does not fall through to a different row because exact-title uniqueness and hit-testing gate dispatch.",
+        "action": "No source change required for this scoped readiness repair. If a native run shows this failure recurring after readiness, capture a fresh hit-test immediately before dispatch or use the established trusted feature-click helper where applicable."
+      }
+    ],
+    "ownership_checks_retained": true,
+    "arbitrary_record_cleanup_path_found": false
+  },
+  "verification": {
+    "source_review": "git show --unified=80 3bf1bda8; inspected cleanupFixturePair, sourceRowClick, waitFor, privateConfig, and committed fixture receipt",
+    "tests_or_browser": "not run by assignment"
+  }
+}
