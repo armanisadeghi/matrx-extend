@@ -266,7 +266,9 @@ export function toContextReceipt(data: ContextReceiptData): ContextReceipt {
         : null,
       clamped: row.clamped ?? false,
       client_sent_excluded: row.client_sent_excluded ?? false,
-      blocked_by: row.blocked_by ?? null,
+      // The package models only "model"; a "self_check" strip shows up in
+      // compareReceipt as an include/delivery difference, so it is not lost.
+      blocked_by: row.blocked_by === 'model' ? 'model' : null,
     })),
   };
 }

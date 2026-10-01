@@ -124,6 +124,8 @@ export interface AgentStartRequest {
    * plain object) — see src/lib/chat/context/request-context.ts.
    */
   context?: RequestContextWire;
+  /** Keys withheld this turn — `withheldKeys` of the rows `context` was built from. */
+  context_withheld?: string[];
   /**
    * Top-level sandbox binding. The server hydrates
    * `ctx.metadata["active_sandbox"]` from this — matrx-ai's fs/shell/git

@@ -30,6 +30,7 @@ import {
   type SavedContextRuleRows,
   buildContextWire,
   resolveContextRow,
+  withheldKeys,
 } from '@ai-matrx/agents/context';
 
 declare const requestContextBrand: unique symbol;
@@ -125,6 +126,12 @@ export interface RequestContext {
   rows: ResolvedContextRow[];
   /** The request body's `context`, or undefined when nothing rides. */
   context: RequestContextWire | undefined;
+  /**
+   * The request body's `context_withheld`: keys this client has a value for
+   * but is not sending (off by the page, the agent or the person's rule), so
+   * the receipt lists rule rows only for keys actually withheld here.
+   */
+  withheld: string[];
 }
 
 /** Rows (with the person's rules) and the request `context` built from them. */
@@ -140,10 +147,25 @@ export function buildRequestContext(
   return {
     rows,
     context: Object.keys(wire).length > 0 ? (wire as unknown as RequestContextWire) : undefined,
+    withheld: withheldKeys(rows),
   };
 }
 
 /** The rows a request was built from, without their values (for the receipt check). */
 export function rowsWithoutValues(rows: readonly ResolvedContextRow[]): ResolvedContextRow[] {
   return rows.map((row) => ({ ...row, value: undefined }));
+}
+
+/**
+ * The two request-body fields one built context contributes — `context` (only
+ * when something rides) and `context_withheld` (always, from the SAME rows).
+ */
+export function contextRequestFields(rc: Pick<RequestContext, 'context' | 'withheld'>): {
+  context?: RequestContextWire;
+  context_withheld: string[];
+} {
+  return {
+    ...(rc.context !== undefined && { context: rc.context }),
+    context_withheld: rc.withheld,
+  };
 }

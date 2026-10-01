@@ -9,7 +9,7 @@ import { streamErrorMessage } from '@/lib/api/stream';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
 import { type ChatRequestContext, buildChatContext } from '@/lib/chat/build-context';
-import { rowsWithoutValues } from '@/lib/chat/context/request-context';
+import { contextRequestFields, rowsWithoutValues } from '@/lib/chat/context/request-context';
 import type { AttachedHighlight } from '@/lib/chat/context/types';
 import { decisionRenderBlock, isDecisionAnswers } from '@/lib/chat/decision-answers';
 import { refreshPageContextBeforeSend } from '@/lib/chat/refresh-page-context';
@@ -833,7 +833,7 @@ export function useChatStream() {
       // Google Docs / Sheets the user attached via the composer's Files chip
       // (sticky until they detach). Resolved once per send, like highlights.
       const attachedGoogleFileIds = resolveAttachedGoogleFileIds();
-      let built: ChatRequestContext = { values: {}, rows: [], context: undefined };
+      let built: ChatRequestContext = { values: {}, rows: [], context: undefined, withheld: [] };
       try {
         built = await buildChatContext({
           user: user
@@ -967,7 +967,7 @@ export function useChatStream() {
         conversation_id: conversationId,
         is_new: isNewConversation,
         variables: opts.variables ?? null,
-        ...(built.context !== undefined && { context: built.context }),
+        ...contextRequestFields(built),
         stream: true,
         store: true,
         source_app: 'matrx-extend',
@@ -1200,7 +1200,7 @@ export function useChatStream() {
       // agent lost page_brief etc. mid-conversation. Same builder as
       // sendMessage (minus the pre-send page refresh — the resume should
       // open fast; the cached capture is current enough).
-      let built: ChatRequestContext = { values: {}, rows: [], context: undefined };
+      let built: ChatRequestContext = { values: {}, rows: [], context: undefined, withheld: [] };
       try {
         const user = useAuthStore.getState().user;
         const desktop = useDesktopStore.getState();
@@ -1221,7 +1221,7 @@ export function useChatStream() {
 
       rememberRunContextRows('chat', runId, rowsWithoutValues(built.rows));
       const body: Record<string, unknown> = {
-        ...(built.context !== undefined && { context: built.context }),
+        ...contextRequestFields(built),
         // Provenance: a resume is ALWAYS client code, never a gesture. It is
         // fired by the STREAM_CONTINUE broadcast after the SW answered a
         // delegated tool call, or by the stall watchdog — nobody clicks it.

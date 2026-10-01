@@ -185,4 +185,56 @@ describe('ContextRulesComposerChip', () => {
       screen.getByRole('button', { name: 'Context: Context' }).getAttribute('data-mismatch'),
     ).toBe('true');
   });
+
+  it('shows the values the server added (attachments, scope seeds) as their own rows', () => {
+    useContextRulesStore.setState({
+      receiptByConversation: {
+        'conv-1': {
+          receipt: {
+            version: 1,
+            surface: null,
+            cap: 50000,
+            model_reads_context: true,
+            rules_error: null,
+            rows: [
+              {
+                key: 'page_full_content',
+                label: 'Page content',
+                surface_key: '_default',
+                origin: 'client',
+                chars: 48000,
+                include: true,
+                max_inline_chars: 200,
+                delivery: 'on_request',
+                decided_by: { include: 'default', max_inline_chars: 'default' },
+                user_rule: null,
+                clamped: false,
+                client_sent_excluded: false,
+                blocked_by: null,
+              },
+              {
+                key: 'project_brief',
+                label: 'Project brief',
+                surface_key: '_default',
+                origin: 'server',
+                chars: 900,
+                include: true,
+                max_inline_chars: 200,
+                delivery: 'on_request',
+                decided_by: { include: 'default', max_inline_chars: 'default' },
+                user_rule: null,
+                clamped: false,
+                client_sent_excluded: false,
+                blocked_by: null,
+              },
+            ],
+          },
+          mismatches: [],
+          receivedAt: 1,
+        },
+      },
+    });
+    render(<ContextRulesComposerChip composer="chat" />);
+    expect(screen.getByRole('button', { name: 'Context: Context' }).textContent).toBe('Context2');
+  });
 });

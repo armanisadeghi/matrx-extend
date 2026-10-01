@@ -7,7 +7,12 @@ import {
   applyReceiptToRows,
 } from '@ai-matrx/agents/context';
 import { describe, expect, it } from 'vitest';
-import { buildRequestContext, contextRowSources, rowsWithoutValues } from './request-context';
+import {
+  buildRequestContext,
+  contextRequestFields,
+  contextRowSources,
+  rowsWithoutValues,
+} from './request-context';
 
 const PAGE_TEXT = 'Lorem ipsum '.repeat(2000);
 
@@ -111,6 +116,17 @@ describe('rows → wire', () => {
     )!;
     expect(page.delivery).toBe('inline');
     expect(page.decided_by.max_inline_chars).toBe('you');
+  });
+
+  it('sends context_withheld from the same rows the wire was built from', () => {
+    const saved = { _default: { page_full_content: { include: false } } };
+    const built = buildRequestContext(VALUES, saved);
+    expect(built.withheld).toEqual(['page_full_content']);
+    const fields = contextRequestFields(built);
+    expect(fields.context_withheld).toEqual(['page_full_content']);
+    expect(fields.context).not.toHaveProperty('page_full_content');
+    // Nothing withheld is still said: an empty list, never an absent field.
+    expect(contextRequestFields(buildRequestContext({}, null))).toEqual({ context_withheld: [] });
   });
 
   it('sends nothing when there is nothing', () => {

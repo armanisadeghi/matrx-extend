@@ -39,7 +39,9 @@ import {
   DEFAULT_INLINE_CAP,
   DEFAULT_SURFACE_KEY,
   applyReceiptToRows,
+  compareReceipt,
   resolveContextRow,
+  systemRowsToResolved,
 } from '@ai-matrx/agents/context';
 import { ContextRulesChip, ContextRulesPanelBody } from '@ai-matrx/agents/context/react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@ai-matrx/design-system';
@@ -126,10 +128,15 @@ export function ContextRulesComposerChip({ composer }: { composer: ContextCompos
   // DISPLAY only: values the server resolves itself (attached files, *_id
   // references) show the size and delivery the latest receipt reported. The
   // receipt check still compares against the unfilled rows each send recorded.
-  const shownRows = useMemo(
-    () => applyReceiptToRows(rows, receiptEntry?.receipt),
-    [rows, receiptEntry],
-  );
+  // Plus every value the SERVER added this turn (attachments, scope seeds…),
+  // so it is visible and can be turned off like any other row.
+  const shownRows = useMemo(() => {
+    const receipt = receiptEntry?.receipt;
+    const filled = applyReceiptToRows(rows, receipt);
+    if (!receipt) return filled;
+    const { systemRows } = compareReceipt(lastSentRows, receipt);
+    return [...filled, ...systemRowsToResolved(systemRows)];
+  }, [rows, lastSentRows, receiptEntry]);
   const mismatches = receiptEntry?.mismatches ?? [];
 
   const onOpenChange = useCallback(

@@ -13,14 +13,20 @@
 import { log } from '@/lib/debug/log';
 import { ensureContextRulesReady, useContextRulesStore } from '@/state/context-rules';
 import { DEFAULT_INLINE_CAP, type ResolvedContextRow } from '@ai-matrx/agents/context';
-import { type RequestContextWire, buildRequestContext } from './request-context';
+import {
+  type RequestContext,
+  type RequestContextWire,
+  buildRequestContext,
+  contextRequestFields,
+} from './request-context';
 import { getContextShape } from './shape-config';
 import type { ContextBuildInputs } from './types';
 import { buildContextV1Flat } from './v1-flat';
 import { buildContextV2Bundled } from './v2-bundled';
 
 export type { ContextBuildInputs };
-export type { RequestContextWire };
+export type { RequestContext, RequestContextWire };
+export { contextRequestFields };
 export { getContextShape, setContextShape, DEFAULT_CONTEXT_SHAPE } from './shape-config';
 export type { ContextShape } from './shape-config';
 
@@ -41,6 +47,8 @@ export interface ChatRequestContext {
   rows: ResolvedContextRow[];
   /** The request body's `context`, or undefined when nothing rides. */
   context: RequestContextWire | undefined;
+  /** The request body's `context_withheld`, from the same rows. */
+  withheld: string[];
 }
 
 /** The inline cap the server last reported for this conversation, else the default. */
@@ -60,12 +68,12 @@ function capFor(conversationId: string | null | undefined): number {
 export async function buildChatContext(inputs: ContextBuildInputs): Promise<ChatRequestContext> {
   await ensureContextRulesReady();
   const values = await buildChatContextValues(inputs);
-  const { rows, context } = buildRequestContext(
+  const { rows, context, withheld } = buildRequestContext(
     values,
     useContextRulesStore.getState().rows,
     capFor(inputs.conversationId),
   );
-  return { values, rows, context };
+  return { values, rows, context, withheld };
 }
 
 /**
@@ -76,13 +84,11 @@ export async function buildChatContext(inputs: ContextBuildInputs): Promise<Chat
  */
 export function requestContextFromValues(
   values: Readonly<Record<string, unknown>>,
-): RequestContextWire | undefined {
-  return buildRequestContext(values, useContextRulesStore.getState().rows).context;
+): RequestContext {
+  return buildRequestContext(values, useContextRulesStore.getState().rows);
 }
 
-/** Spread helper: `{ context }` when there is one, nothing otherwise. */
-export function withContext(
-  context: RequestContextWire | undefined,
-): { context: RequestContextWire } | Record<string, never> {
-  return context !== undefined ? { context } : {};
+/** Spread helper: the `context` + `context_withheld` fields of one built context. */
+export function withContext(rc: RequestContext): ReturnType<typeof contextRequestFields> {
+  return contextRequestFields(rc);
 }
