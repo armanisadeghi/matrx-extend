@@ -1,20 +1,26 @@
 # Matrx Extend stabilization: resume here
 
-## Current checkpoint — October 1, 2026: full audit and next candidate
+## Current checkpoint — October 1, 2026: candidate 173, acceptance still open
 
-Owner request: “Please do a full check on where we stand and update me and then keep testing, fixing and going. COnfirm our latest submission is approved and handle the next submission. Then, check the list of all possible tests to what's done and what is still pending and start making major progress.”
+Owner requested a full status/coverage check, confirmation of Store approval, the next submission, and continued testing and repairs.
 
-Live authenticated Google dashboard confirms **0.2.130 Pending review**, not approved; public listing is still0.2.105. Root recovered account access through saved credentials and Vault authenticator, no human step needed. Preserve the pending urgent guest-Chat replacement. Next package is being prepared and tested; upload follows that review outcome unless a concrete required fix justifies replacement. Canonical Store record updated and pushed in common-docs34e66b567.
+**Store:** authenticated primary dashboard confirms **0.2.130 Pending review**, not approved. Public listing remains **0.2.105**. No upload, cancellation, or submission occurred in this turn. Preserve the pending urgent guest regression replacement while testing the next candidate. Canonical Store record is in common-docs `systems/clients/extension/CHROME-WEB-STORE.md` (pushed through34e66b567).
 
-Source main was4827452b/version0.2.172 at entry, clean and synced; remote tag exists. Disk artifacts were still139, so source version alone is not installed/tested evidence. Independent coverage audit5878be26 reports205features/731cases/1314controls/1198case-mode slots:57historical passes,28partial,125explicitunverified,986withoutresult,1fail,1N/A. No full feature-mode pair is certified.168caseslacksteps,167lackexpectedoutcomes. These are test evidence gaps, not1198productdefects; no health percentage is claimed.
+**Candidate:** normal guarded release produced **0.2.173**, source/tag `d6d6d6b83c937652525f473082ac2f2492c9eabe`; strict gates passed, including1,862 tests (5skipped), compile, package/latest checks,82/82 tool drift and15 applied migrations. Frozen artifact is `/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8`; keyed tree SHA256 `494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064`, Store ZIP SHA256 `1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff`. Reports: `reports/release-readiness-20261001.json`, `reports/candidate-native-20261001.json`. Later main changes do not change this frozen artifact.
 
-Active lanes (flat tree):
-- release_oct01, Sol medium: sole heavy permit through resource watchdog, fresh package and strict gates; initial attempt caught stale installed agents package versuslockfile, frozen install then bounded retry. Root owns dashboard/submission; worker no browser until coordinated.
-- coverage_oct01, Luna medium: independent inventory/evidence audit, then regenerate STATUS/CHECKLIST from canonicalinventory. No heavy tests or product edits.
-- files_acceptance_oct01, Sol medium: prepare receipt-bound actual Files/Saved captures tests (D64/D65 already sourcefixed, do not reimplement); no browser/build/test until release hands over permit. Own scopedrunner/report only.
-- Root owns inventory/checkpoint, sync/push, approval-status and later independent acceptance routing.
+**Acceptance:** exact173 normal signed-in non-admin reviewer Chat passed; independent database check confirmed the tested identity was not an administrator. Guest attempt was inconclusive: the acceptance runner mistook a delegated-tool handoff for a completed answer. EXT-D-0072 repairs that oracle (6f1a2a9f,29160a46), focused checks passed; independent review/native retest remain open. Guest reload and signout-to-guest privacy remain unverified. Candidate is held for acceptance, not ready for submission.
 
-Concurrency cap remains one heavy run, refusal watchdog mandatory, externalTMPDIR/profile; no artifact rebuild while a native run uses it. Escalate after two failed attempts or20active minutes with changed approach. Test guest/member/admin as applicable; no adminidentity as substitute for member. Broad Chat/Pilot remain deferred except Store guest/member regression path. Durable final outcomes below139 are historical, not proof for today's candidate.
+**Coverage:** corrected audit reports205 features,731 cases,1,314 controls and1,160 applicable case-role slots:57 historical passes,28partial,1fail,124explicitunverified,949withoutresult,1N/A. Zero of394full feature-role pairs meet exhaustive case/control evidence.168caseslacksteps,167lackexpectedoutcomes,31lackcontrol links. These are evidence gaps, not product-defect counts; historical passes do not certify173. `reports/coverage-audit-20261001.json`, generated STATUS/CHECKLIST are the reference. Ten concrete read-tool procedure proposals are being independently checked and merged, without marking them tested.
+
+**Files:** D64/D65 source fixes exist, native retest still open. Two guarded attempts authenticated admin and selected the exact active org but stopped before scoped requests. Second attempt identified harness readiness, corrected at1ce998e3; no Files product defect was established. New independent seat verifies readiness before the next attempt. Original worker is terminal, not allowed a blind third retry.
+
+Active flat lanes:
+- `files_fresh_acceptance_oct01`, Sol medium: independent Files runner review and bounded native retest; sole heavy/browser permit. Resolve concurrent Files-runner merge conflict first, root owns merge commit.
+- `guest_oracle_peer_oct01`, Sol medium: independent terminal-oracle review; no heavy/browser permit.
+- `procedure_merge_oct01`, Luna medium: independently validate and merge10 executable tool procedures into inventory, regenerate trackers; no product tests.
+- Root: checkpoint, synchronization, Store status/submission, coordination. Shared main merge in progress with a Files-runner conflict; preserve both sides.
+
+Concurrency cap remains one heavy run, refusing resource watchdog mandatory, external TMPDIR/profile. Escalate after two failed attempts or20 active minutes by changing approach/seat. Never rebuild the frozen artifact during native acceptance. Guest/member/admin remain distinct; broad Chat/Pilot deferred except Store regression protection. No secrets in reports. Every lane returns a durable report and exact commits; root must not end with workers active.
 
 ## Historical checkpoint — September 30, 2026: release 0.2.139 and bounded native checks passed
 
