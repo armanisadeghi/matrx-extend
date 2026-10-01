@@ -5,7 +5,7 @@
    below wins over the package default, regardless of specificity or order.
    Without this line, layer order falls back to first-appearance and the
    package defaults could beat this app's own theme. */
-@layer matrx-design-system-tokens, matrx-design-system;
+@layer matrx-tap-lock, matrx-design-system-tokens, matrx-design-system;
 
 @import "tailwindcss";
 
