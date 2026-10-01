@@ -1,7 +1,11 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
 import { checkContextReceipt, isContextReceiptData, toContextReceipt } from '@/state/context-rules';
-import type { ContextReceipt, ContextReceiptRow } from '@ai-matrx/agents/context';
+import {
+  type ContextReceipt,
+  type ContextReceiptRow,
+  applyReceiptToRows,
+} from '@ai-matrx/agents/context';
 import { describe, expect, it } from 'vitest';
 import { buildRequestContext, contextRowSources, rowsWithoutValues } from './request-context';
 
@@ -49,7 +53,9 @@ function receiptFor(rows: ReturnType<typeof buildRequestContext>['rows']): Conte
           chars: r.chars,
           include: r.include,
           max_inline_chars: r.max_inline_chars,
-          delivery: r.delivery,
+          // A server-resolved row's delivery is the server's to say; the
+          // receipt then reports what it did (on_request for a resolved ref).
+          delivery: r.delivery === 'server' ? 'on_request' : r.delivery,
           decided_by: r.decided_by,
           user_rule: r.userRule,
           origin: r.include ? 'client' : 'rule',
@@ -114,6 +120,28 @@ describe('rows → wire', () => {
   it('strips values from the rows a receipt is checked against', () => {
     const rows = rowsWithoutValues(buildRequestContext(VALUES, null).rows);
     expect(rows.every((r) => r.value === undefined)).toBe(true);
+  });
+});
+
+describe('server-resolved values', () => {
+  const FILE = '3f6c2a51-8b8e-4d0f-9c3a-2f1e7b6d4a10';
+
+  it('ships a *_id reference verbatim with delivery "server"', () => {
+    const { rows, context } = buildRequestContext({ attached_file_id: FILE }, null);
+    expect(rows[0]?.delivery).toBe('server');
+    expect((context as unknown as Record<string, unknown>).attached_file_id).toBe(FILE);
+  });
+
+  it('is not flagged for a delivery the server decided, and is filled for display', () => {
+    const { rows } = buildRequestContext({ attached_file_id: FILE }, null);
+    const actual = receiptFor(rows);
+    actual.rows = actual.rows.map((r) => ({ ...r, chars: 18000, delivery: 'on_request' }));
+    expect(checkContextReceipt(rows, actual)).toEqual([]);
+    const shown = applyReceiptToRows(rows, actual);
+    expect(shown[0]?.chars).toBe(18000);
+    expect(shown[0]?.delivery).toBe('on_request');
+    // The rows a later receipt is checked against stay unfilled.
+    expect(rows[0]?.delivery).toBe('server');
   });
 });
 

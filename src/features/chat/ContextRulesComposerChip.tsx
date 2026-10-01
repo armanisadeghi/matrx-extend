@@ -38,6 +38,7 @@ import { useScrapeStore } from '@/state/scrape';
 import {
   DEFAULT_INLINE_CAP,
   DEFAULT_SURFACE_KEY,
+  applyReceiptToRows,
   resolveContextRow,
 } from '@ai-matrx/agents/context';
 import { ContextRulesChip, ContextRulesPanelBody } from '@ai-matrx/agents/context/react';
@@ -122,6 +123,13 @@ export function ContextRulesComposerChip({ composer }: { composer: ContextCompos
     );
   }, [previewSources, lastSentRows, saved, cap]);
 
+  // DISPLAY only: values the server resolves itself (attached files, *_id
+  // references) show the size and delivery the latest receipt reported. The
+  // receipt check still compares against the unfilled rows each send recorded.
+  const shownRows = useMemo(
+    () => applyReceiptToRows(rows, receiptEntry?.receipt),
+    [rows, receiptEntry],
+  );
   const mismatches = receiptEntry?.mismatches ?? [];
 
   const onOpenChange = useCallback(
@@ -148,7 +156,7 @@ export function ContextRulesComposerChip({ composer }: { composer: ContextCompos
     <>
       <ContextRulesChip
         label="Context"
-        rows={rows}
+        rows={shownRows}
         cap={cap}
         modelReadsContext={receiptEntry?.receipt.model_reads_context !== false}
         onChange={onChange}
@@ -165,7 +173,7 @@ export function ContextRulesComposerChip({ composer }: { composer: ContextCompos
             <DialogTitle>Context</DialogTitle>
           </DialogHeader>
           <ContextRulesPanelBody
-            rows={rows}
+            rows={shownRows}
             cap={cap}
             mismatches={mismatches}
             onChange={onChange}
