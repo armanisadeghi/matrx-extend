@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   automaticLogin: vi.fn(),
   retryMatches: vi.fn(),
   useVault: vi.fn(),
+  getAccessToken: vi.fn(),
   vault: null as Record<string, unknown> | null,
   listeners: new Set<(message: unknown) => void>(),
 }));
@@ -23,11 +24,14 @@ vi.mock('@/hooks/use-active-organization', () => ({
   useActiveOrganization: () => ({ active: mocks.organization }),
 }));
 vi.mock('@/lib/auth/flow', () => ({
-  getAccessToken: async () => null,
+  getAccessToken: mocks.getAccessToken,
   getCurrentUser: async () => mocks.user,
 }));
 vi.mock('@/lib/org/active-org', () => ({
   getActiveOrganizationId: async () => mocks.organization.id,
+}));
+vi.mock('@/features/vault/FillDeviceSetupCard', () => ({
+  FillDeviceSetupCard: () => null,
 }));
 vi.mock('@/features/vault/useVault', () => ({
   useVault: (...args: unknown[]) => {
@@ -85,6 +89,7 @@ beforeEach(() => {
   mocks.automaticLogin.mockReset();
   mocks.retryMatches.mockReset();
   mocks.useVault.mockReset();
+  mocks.getAccessToken.mockReset().mockResolvedValue(null);
   mocks.vault = {
     auth: 'ready',
     loading: false,
@@ -145,6 +150,7 @@ describe('VaultView focused child-frame projection', () => {
     expect(screen.getAllByRole('button', { name: 'Fill' })).toHaveLength(2);
     expect(screen.queryByRole('button', { name: 'Sign in' })).toBeNull();
     expect(mocks.automaticLogin).not.toHaveBeenCalled();
+    expect(mocks.getAccessToken).not.toHaveBeenCalled();
   });
 
   it.each([
