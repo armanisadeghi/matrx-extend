@@ -1,0 +1,15 @@
+{
+  "lane": "independent test/source peer Luna medium",
+  "status": "DONE_WITH_CONCERNS",
+  "subject": "tests/browser/files-saved-native-acceptance.mjs",
+  "verdict_A_real_user_outcomes": "PARTIAL: exact receipt/tree is checked, real panel UI and scoped reads are exercised, but D65 late-failure does not prove the second B detail request completed before A fails. Existing B detail can satisfy detailB immediately; seenB counts Fetch.continueRequest acknowledgment, not response completion. See proveLastClick/interceptSourceDetail and sourceListState.",
+  "verdict_B_quality_safety": "REFUSE_ACCEPTANCE: D65 failure-path oracle can false-pass. Partial status also exits zero (only unverified exits nonzero), including when source pair is absent. Reads are scoped; no arbitrary data writes or cleanup; no auth injection; report omits credentials, tokens, response bodies, and raw exceptions.",
+  "identity": "Receipt-bound artifact and hash checks use native-sidepanel harness; exact extension/profile ownership is delegated to it.",
+  "data_scope": "Configured IDs/titles are distinct and require test_owned=true, but that flag is a config assertion, not independently verified ownership. UI visibility under selected org bounds reads; no mutation observed.",
+  "D64": "Source-level oracle injects failures into each real inventory request, checks visible retryable error/no false-empty, then observes a successful retry request and cleared error. Runtime remains unexecuted.",
+  "D65": "First stale-success iteration can show B only after its detail fetch; repeated late-failure iteration starts with B still selected, so prior detail can mask a stalled/failed second B fetch.",
+  "first_launch": "Not safe as acceptance evidence until D65 proves current B completion/selection after each click and every non-complete status exits nonzero. No destructive write risk found.",
+  "execution": "Static review only; browser/test runner not launched. Current report says not-started and sources remain unverified.",
+  "required_fix": "Observe a completed successful B network response after the second B click (and require a post-click state transition); clear or otherwise distinguish prior B detail. Make partial/unverified reports nonzero.",
+  "limits": "No runtime result, owner identity, or backend source ownership independently verified."
+}
