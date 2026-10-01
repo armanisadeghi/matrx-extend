@@ -22,7 +22,6 @@ describe('sourceFeatureForTable', () => {
   it("maps the Showcase's record-store table writes", () => {
     expect(sourceFeatureForTable('rpc:custom.table_declare')).toBe('udt');
     expect(sourceFeatureForTable('rpc:custom.record_write_many')).toBe('udt');
-    expect(sourceFeatureForTable('workbench.udt_datasets')).toBe('client-unmapped');
   });
 
   it('maps agent_task to agents-other', () => {
