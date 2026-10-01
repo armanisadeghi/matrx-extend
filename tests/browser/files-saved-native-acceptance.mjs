@@ -985,9 +985,11 @@ async function sourceListState(panel, a, b) {
 
 async function sourceRowClick(panel, source) {
   const selector = 'article > button';
-  const point = await evaluate(
-    panel,
-    `(() => {
+  // Saved captures loads its rows after the tab activates. Wait for the exact
+  // row to become clickable before dispatching input; keep the one-row proof.
+  const point = await waitFor(
+    'owned_source_row_hittable',
+    () => evaluate(panel, `(() => {
     const tab = document.querySelector('button[role="tab"][title="Saved captures"]');
     const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
     const rows = [...(root?.querySelectorAll(${JSON.stringify(selector)}) ?? [])]
@@ -997,7 +999,9 @@ async function sourceRowClick(panel, source) {
     const rect = row.getBoundingClientRect(), x = rect.x + rect.width / 2,
       y = rect.y + Math.min(14, rect.height / 2), hit = document.elementFromPoint(x,y);
     return { count: 1, x, y, hittable: hit === row || row.contains(hit) };
-  })()`,
+  })()`),
+    (state) => state?.count === 1 && state.hittable === true,
+    45_000,
   );
   if (point?.count !== 1 || !point.hittable) fail('owned_source_row_not_hittable');
   await panel.send('Input.dispatchMouseEvent', {
