@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "task_id": "guest-oracle-final-20261001",
+  "lane": "fresh independent source verification; zero product authorship",
+  "status": "DONE_WITH_CONCERNS",
+  "reviewed_commits": ["6f1a2a9f", "29160a46", "53c5c523"],
+  "verdict_a_live_outcome": {
+    "result": "UNVERIFIED",
+    "scope": "Exact 0.2.173 Store candidate, fresh guest first page-grounded Chat answer and signed-out answer after a real panel reload",
+    "evidence": "Source review only. The previous native candidate run stopped at an intermediate Reasoning/Finding bubble. No fresh native receipt for the repaired oracle or post-reload turn was available to this reviewer, and this lane did not launch the guarded native browser run.",
+    "required_next_step": "Run the exact frozen candidate under the sole native resource permit, then inspect the first and post-reload terminal assistant replies and receipt before marking live acceptance."
+  },
+  "prior_findings": [
+    {
+      "id": "GUEST-ORACLE-01",
+      "result": "ADDRESSED_IN_SOURCE",
+      "evidence": "tests/browser/guest-chat-completion-oracle.mjs records failed/cancelled user_request outcomes and classifies them as terminal_error before considering end.reason=complete. The collector-seam test feeds failed completion, complete end, done and matching rendered text, then expects terminal_error. aidream/services/ai_execution/ai_task.py emits that failed completion followed by default send_end().",
+      "limit": "Focused tests and live stream behavior are separate evidence; the builder's focused run was still in progress at this review."
+    },
+    {
+      "id": "GUEST-ORACLE-02",
+      "result": "ADDRESSED_IN_SOURCE",
+      "evidence": "The collector carries numeric errorStatus. An uncoded 409 classifies awaiting_tool_resume, and the multi-run seam test proceeds from delegated run through uncoded 409 to a successful final resume. src/lib/api/stream.ts forwards only resume_conflict as a named 409, while use-chat-stream.ts leaves uncoded 409 pending in the UI.",
+      "limit": "The stream adapter still cannot distinguish outstanding_delegated_calls from not_resumable when both arrive as uncoded 409. With no later continuation the oracle times out, which is an unverified live outcome rather than a false pass."
+    }
+  ],
+  "verdict_b_code_quality": {
+    "result": "FAIL_IMPORTANT",
+    "findings": [
+      {
+        "id": "GUEST-ORACLE-03",
+        "severity": "important",
+        "title": "Opening acceptance accepts the workflow stages in the wrong order",
+        "evidence": "tests/browser/guest-chat-store-acceptance.mjs asks for the three stages 'in order' (FIRST_QUESTION), but observe.answerMatchesPublicStages and classifyGuestTurn each only check that all terms occur somewhere. The final opening assertion checks those two unordered predicates.",
+        "source_reproduction": "Given a completed, rendered reply '<unpredictable opening code>: Use, Understand, Capture', both unordered term checks are true and the runner accepts terminal_answer, although the fixture says 'Capture, Understand, Use'. This is source reasoning, not a native observation.",
+        "required_repair": "Make the opening answer oracle verify the ordered stages in the assistant's rendered answer, while retaining the unpredictable code requirement; add a distinct wrong-order forcing input."
+      },
+      {
+        "id": "GUEST-ORACLE-04",
+        "severity": "important",
+        "title": "Explicit rendered error can count as a successful guest answer",
+        "evidence": "tests/browser/guest-chat-store-acceptance.mjs computes terminalAnswerError from /^\\s*Error\\s*:/ at observe line 108, but neither the opening nor post-reload success assertion checks it. classifyGuestTurn only checks stream error metadata, a generic errorNotice and the required text terms.",
+        "source_reproduction": "A successful stream whose new rendered assistant reply reads 'Error: page read failed. <opening code> Capture Understand Use' is accepted as terminal_answer and passes the opening assertion. A comparable post-reload error with the follow-up code and fixture heading also passes. This is source reasoning, not a native observation.",
+        "required_repair": "Reject terminalAnswerError in both acceptance assertions or incorporate the same explicit-error rule into the shared terminal classifier; prove with an error-text forcing input that also contains all required terms."
+      }
+    ],
+    "positive_source_checks": [
+      "The trace listener installs before each send and observes safe run metadata through the same runtime broadcasts consumed by the side panel.",
+      "The assistant text extractor selects Markdown children of the ChatView assistant row, excluding reasoning and tool rows.",
+      "Each turn requires a new rendered Copy reply count after its own stream run; delegated runs stay pending until continuation."
+    ],
+    "resource_limit": "No test or native browser job was launched by this independent reviewer; focused tests were assigned to a separate worker and the sole native permit had not been granted."
+  },
+  "next_actions": [
+    "Repair GUEST-ORACLE-03 and -04 at the acceptance seam and run the focused guard through admitted resource ownership.",
+    "Independently re-review the repair, then run one receipt-bound native guest test of the exact frozen 0.2.173 candidate and inspect both completed answers."
+  ]
+}
