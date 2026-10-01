@@ -23,7 +23,6 @@ agent -> Needs Arman) with ` — <question> — <what was checked> — <who>` ad
 Its files stay as they are.
 
 ## Held files
-- _conflicts/2026-10-01-092833/tests/browser/files-saved-native-acceptance.mjs.held — LOCAL latest 2026-10-01 09:28; GITHUB latest 2026-10-01 09:27; LOCAL lacks 17 of GITHUB's 18 new lines; GITHUB lacks 172 of LOCAL's 173 new lines; recover: git show 1594e4f881:'tests/browser/files-saved-native-acceptance.mjs' / 7cd4471c72:'tests/browser/files-saved-native-acceptance.mjs'
 
 ## Needs a manager
 
