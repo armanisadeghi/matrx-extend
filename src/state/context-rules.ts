@@ -29,13 +29,13 @@ import { useAuthStore } from '@/state/auth';
 import { pushNotice } from '@/state/notices';
 import {
   CONTEXT_RULES_FEATURE,
-  compareReceipt,
   type ContextReceipt,
   type ContextReceiptMismatch,
   type ContextRowSource,
   type ResolvedContextRow,
   type SavedContextRule,
   type SavedContextRuleRows,
+  compareReceipt,
 } from '@ai-matrx/agents/context';
 import type { ContextReceiptData } from '@gen/stream-events';
 import { create } from 'zustand';
@@ -145,18 +145,16 @@ function queueRowWrite(surfaceKey: string): Promise<void> {
           }
           throw err;
         }
-        const { error } = await usersDb()
-          .from('user_surface_state')
-          .upsert(
-            {
-              user_id: currentUserId(),
-              organization_id: organizationId,
-              feature: CONTEXT_RULES_FEATURE,
-              surface_key: surfaceKey,
-              state: latest,
-            },
-            { onConflict: 'user_id,feature,surface_key' },
-          );
+        const { error } = await usersDb().from('user_surface_state').upsert(
+          {
+            user_id: currentUserId(),
+            organization_id: organizationId,
+            feature: CONTEXT_RULES_FEATURE,
+            surface_key: surfaceKey,
+            state: latest,
+          },
+          { onConflict: 'user_id,feature,surface_key' },
+        );
         if (error) {
           void recordDbFailure(
             {
@@ -279,7 +277,12 @@ export function checkContextReceipt(
     }
   }
   if (receipt.rules_error) {
-    mismatches.push({ key: '*', field: 'user_rule', expected: 'read', actual: receipt.rules_error });
+    mismatches.push({
+      key: '*',
+      field: 'user_rule',
+      expected: 'read',
+      actual: receipt.rules_error,
+    });
   }
   return mismatches;
 }
@@ -351,7 +354,10 @@ async function fileContextTruthMismatch(
       p_source_app: 'matrx-extend',
       p_source_feature: 'agents-other',
       p_source: 'chrome-extension',
-      p_message: `Context sent differently than shown (${mismatches.length}): ${summary}`.slice(0, 2000),
+      p_message: `Context sent differently than shown (${mismatches.length}): ${summary}`.slice(
+        0,
+        2000,
+      ),
       p_code: 'context_truth_mismatch',
       p_route: 'chat',
       p_context: {

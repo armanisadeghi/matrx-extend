@@ -32,6 +32,7 @@
  */
 
 import { apiDelete, apiGet, apiPatch, apiPost } from '@/lib/api/client';
+import type { RequestContextWire } from '@/lib/chat/context/request-context';
 import { type AnyMandateKey, mandateKeyFromAgentRef } from '@/lib/mandates';
 import { MATRX_AI_API_VERSION_DEFAULT, applyAiApiVersion } from '@ai-matrx/agents/matrx';
 
@@ -117,8 +118,12 @@ export interface AgentStartRequest {
    */
   client?: AgentClientEnvelope;
   custom_tools?: Record<string, unknown>[];
-  /** Model-facing context (page markdown, SEO, links, etc.). Distinct from `client.state`. */
-  context?: Record<string, unknown>;
+  /**
+   * Model-facing context (page markdown, SEO, links, etc.). Distinct from
+   * `client.state`. ONLY from `buildChatContext` (the branded type refuses a
+   * plain object) — see src/lib/chat/context/request-context.ts.
+   */
+  context?: RequestContextWire;
   /**
    * Top-level sandbox binding. The server hydrates
    * `ctx.metadata["active_sandbox"]` from this — matrx-ai's fs/shell/git

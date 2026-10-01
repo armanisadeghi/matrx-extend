@@ -75,7 +75,7 @@ export interface BuildBrowserDomStateOpts {
    * `chrome.tabs.query` so this state and the `context` body reference
    * the SAME Tab. The chat path always passes this — only legacy
    * callers should rely on the internal fallback query. See
-   * docs/REQUEST_PAYLOAD_CONTRACT.md §1.
+   * /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §1.
    */
   activeTab?: chrome.tabs.Tab | null;
   /**

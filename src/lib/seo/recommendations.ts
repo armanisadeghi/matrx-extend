@@ -17,6 +17,7 @@
  */
 
 import type { AgentStartRequest } from '@/lib/api/routes/ai';
+import { requestContextFromValues, withContext } from '@/lib/chat/context';
 import type { SeoAudit } from '@/lib/seo/audit';
 
 /**
@@ -60,14 +61,16 @@ export function buildSeoRecommendationsRequest(
     conversation_id: conversationId,
     is_new: true,
     store: false,
-    context: {
-      page_seo_audit: audit,
-      page_brief: {
-        url: audit.url,
-        title: audit.title.value,
-        lang: audit.lang,
-      },
-    },
+    ...withContext(
+      requestContextFromValues({
+        page_seo_audit: audit,
+        page_brief: {
+          url: audit.url,
+          title: audit.title.value,
+          lang: audit.lang,
+        },
+      }),
+    ),
     source_app: 'matrx-extend',
     source_feature: 'seo-recommendations',
     // No `client` capability envelope on purpose: everything the model needs

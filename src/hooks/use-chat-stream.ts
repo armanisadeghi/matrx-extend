@@ -8,7 +8,8 @@ import { conversationResumePath } from '@/lib/api/routes/tool-results';
 import { streamErrorMessage } from '@/lib/api/stream';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
-import { buildChatContext } from '@/lib/chat/build-context';
+import { type ChatRequestContext, buildChatContext } from '@/lib/chat/build-context';
+import { rowsWithoutValues } from '@/lib/chat/context/request-context';
 import type { AttachedHighlight } from '@/lib/chat/context/types';
 import { decisionRenderBlock, isDecisionAnswers } from '@/lib/chat/decision-answers';
 import { refreshPageContextBeforeSend } from '@/lib/chat/refresh-page-context';
@@ -37,6 +38,11 @@ import { projectAdminFlagsToRequest, useAdminFlagsStore } from '@/state/admin-fl
 import { useAuthStore } from '@/state/auth';
 import { useAutoScrapeStore } from '@/state/auto-scrape';
 import { type ChatMessage, type ToolPartCall, useChatStore } from '@/state/chat';
+import {
+  isContextReceiptData,
+  recordContextReceipt,
+  rememberRunContextRows,
+} from '@/state/context-rules';
 import { useDesktopStore } from '@/state/desktop';
 import { useGoogleFilesStore } from '@/state/google-files';
 import { useHighlightStore } from '@/state/highlights';
@@ -51,7 +57,7 @@ import { useCallback, useEffect } from 'react';
  * compact shape the `highlights` context key expects. Returns null when the
  * tray is empty so the context builder omits the key entirely.
  */
-async function resolveAttachedHighlights(): Promise<AttachedHighlight[] | null> {
+export async function resolveAttachedHighlights(): Promise<AttachedHighlight[] | null> {
   const ids = useHighlightStore.getState().attachedIds;
   if (ids.length === 0) return null;
   const rows = await getHighlightsByIds(ids);
@@ -90,7 +96,7 @@ async function resolveAttachedHighlights(): Promise<AttachedHighlight[] | null> 
  * re-queried: the chip refreshes the registry every time it opens, and the
  * server drops any id that is no longer a registered resource.
  */
-function resolveAttachedGoogleFileIds(): string[] | null {
+export function resolveAttachedGoogleFileIds(): string[] | null {
   const ids = useGoogleFilesStore.getState().attachedIds;
   return ids.length > 0 ? ids : null;
 }
@@ -603,6 +609,14 @@ function ensureStreamListeners(): void {
         const state = (chunk.payload.data as { state?: unknown } | undefined)?.state;
         if (state === 'stopped') useChatStore.getState().closeReasoning(target);
         log.info('stream', `reasoning: ${String(state)}`, chunk.payload.data);
+      } else if (chunk.payload.eventName === 'data' && isContextReceiptData(chunk.payload.data)) {
+        // RULES.md §5–6: what the server did with this turn's context,
+        // checked against the rows the request was built from.
+        recordContextReceipt(
+          chunk.runId,
+          useChatStore.getState().selectedConversationId,
+          chunk.payload.data,
+        );
       } else if (chunk.payload.eventName === 'data' && isDecisionAnswers(chunk.payload.data)) {
         // A decision turn is ONE typed `decision_answers` data event and no
         // text. Logging it (the generic branch below) left an empty bubble
@@ -819,9 +833,9 @@ export function useChatStream() {
       // Google Docs / Sheets the user attached via the composer's Files chip
       // (sticky until they detach). Resolved once per send, like highlights.
       const attachedGoogleFileIds = resolveAttachedGoogleFileIds();
-      let context: Record<string, unknown> = {};
+      let built: ChatRequestContext = { values: {}, rows: [], context: undefined };
       try {
-        context = await buildChatContext({
+        built = await buildChatContext({
           user: user
             ? {
                 id: user.id,
@@ -837,12 +851,15 @@ export function useChatStream() {
           highlights: attachedHighlights,
           googleFileIds: attachedGoogleFileIds,
         });
-        log.info('stream', `built context (${Object.keys(context).length} keys)`, {
-          keys: Object.keys(context).sort(),
+        log.info('stream', `built context (${built.rows.length} values)`, {
+          keys: Object.keys(built.context ?? {}).sort(),
+          off: built.rows.filter((r) => !r.include).map((r) => r.key),
         });
       } catch (err) {
         log.warn('stream', 'buildChatContext failed; sending without context', err);
       }
+      // The rows this request is built from — the receipt is checked against them.
+      rememberRunContextRows(runId, rowsWithoutValues(built.rows));
 
       // Read once at send time so the latched mode follows the run, even if the
       // user toggles the chip mid-stream.
@@ -890,7 +907,8 @@ export function useChatStream() {
       // freshly-built context's page_brief so the browser-dom builder
       // doesn't re-query Chrome OR re-fetch the page lang. Both payloads
       // now reference the same Tab and same lang.
-      const briefLang = (context.page_brief as { lang?: string | null } | undefined)?.lang ?? null;
+      const briefLang =
+        (built.values.page_brief as { lang?: string | null } | undefined)?.lang ?? null;
       const browserDomState = await buildBrowserDomState({
         surface,
         agentId: opts.agentId,
@@ -949,7 +967,7 @@ export function useChatStream() {
         conversation_id: conversationId,
         is_new: isNewConversation,
         variables: opts.variables ?? null,
-        context,
+        ...(built.context !== undefined && { context: built.context }),
         stream: true,
         store: true,
         source_app: 'matrx-extend',
@@ -1182,13 +1200,13 @@ export function useChatStream() {
       // agent lost page_brief etc. mid-conversation. Same builder as
       // sendMessage (minus the pre-send page refresh — the resume should
       // open fast; the cached capture is current enough).
-      let context: Record<string, unknown> = {};
+      let built: ChatRequestContext = { values: {}, rows: [], context: undefined };
       try {
         const user = useAuthStore.getState().user;
         const desktop = useDesktopStore.getState();
         const manualScrape = useScrapeStore.getState().current;
         const autoScrape = useAutoScrapeStore.getState().current;
-        context = await buildChatContext({
+        built = await buildChatContext({
           user: user ? { id: user.id, email: user.email, full_name: user.full_name ?? null } : null,
           desktopTransport: desktop.transport,
           scrape: manualScrape,
@@ -1201,8 +1219,9 @@ export function useChatStream() {
         log.warn('stream', 'buildChatContext failed for resume; resuming without context', err);
       }
 
+      rememberRunContextRows(runId, rowsWithoutValues(built.rows));
       const body: Record<string, unknown> = {
-        context,
+        ...(built.context !== undefined && { context: built.context }),
         // Provenance: a resume is ALWAYS client code, never a gesture. It is
         // fired by the STREAM_CONTINUE broadcast after the SW answered a
         // delegated tool call, or by the stall watchdog — nobody clicks it.

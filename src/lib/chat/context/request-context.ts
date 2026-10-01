@@ -22,14 +22,14 @@
  */
 
 import {
-  DEFAULT_INLINE_CAP,
-  DEFAULT_SURFACE_KEY,
-  buildContextWire,
-  resolveContextRow,
   type ContextRowOrigin,
   type ContextRowSource,
+  DEFAULT_INLINE_CAP,
+  DEFAULT_SURFACE_KEY,
   type ResolvedContextRow,
   type SavedContextRuleRows,
+  buildContextWire,
+  resolveContextRow,
 } from '@ai-matrx/agents/context';
 
 declare const requestContextBrand: unique symbol;

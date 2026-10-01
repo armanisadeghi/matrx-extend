@@ -23,7 +23,8 @@ import {
 import { conversationResumePath } from '@/lib/api/routes/tool-results';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
-import { buildChatContext } from '@/lib/chat/build-context';
+import { type ChatRequestContext, buildChatContext } from '@/lib/chat/build-context';
+import { rowsWithoutValues } from '@/lib/chat/context/request-context';
 import { decisionRenderBlock, isDecisionAnswers } from '@/lib/chat/decision-answers';
 import { refreshPageContextBeforeSend } from '@/lib/chat/refresh-page-context';
 import { progressFromWire } from '@/lib/chat/tool-progress';
@@ -43,6 +44,11 @@ import { projectAdminFlagsToRequest, useAdminFlagsStore } from '@/state/admin-fl
 import { useAuthStore } from '@/state/auth';
 import { useAutoScrapeStore } from '@/state/auto-scrape';
 import type { ChatMessage, ToolPartCall } from '@/state/chat';
+import {
+  isContextReceiptData,
+  recordContextReceipt,
+  rememberRunContextRows,
+} from '@/state/context-rules';
 import { useDesktopStore } from '@/state/desktop';
 import { usePilotStore } from '@/state/pilot';
 import { usePilotChatStore } from '@/state/pilot-chat';
@@ -304,6 +310,12 @@ export function usePilotChatStream() {
               chunk.payload.data,
             );
           }
+        } else if (chunk.payload.eventName === 'data' && isContextReceiptData(chunk.payload.data)) {
+          recordContextReceipt(
+            chunk.runId,
+            usePilotChatStore.getState().selectedConversationId,
+            chunk.payload.data,
+          );
         } else if (chunk.payload.eventName === 'data' && isDecisionAnswers(chunk.payload.data)) {
           // A decision turn is ONE typed `decision_answers` data event and no
           // text. Logging it (the generic branch below) left an empty bubble
@@ -417,9 +429,9 @@ export function usePilotChatStream() {
       // One tab query per send; both payloads reference the same Tab.
       // See /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §1.
       const activeTab = await resolveActiveTab();
-      let context: Record<string, unknown> = {};
+      let built: ChatRequestContext = { values: {}, rows: [], context: undefined };
       try {
-        context = await buildChatContext({
+        built = await buildChatContext({
           user: user
             ? {
                 id: user.id,
@@ -436,6 +448,7 @@ export function usePilotChatStream() {
       } catch (err) {
         log.warn('pilot-stream', 'buildChatContext failed', err);
       }
+      rememberRunContextRows(runId, rowsWithoutValues(built.rows));
 
       const permissionMode = usePilotChatStore.getState().getPermissionMode(opts.agentId);
 
@@ -449,7 +462,8 @@ export function usePilotChatStream() {
         usePilotStore.getState().setConversationId(conversationId);
       }
       const loadedCategories = useActiveToolsStore.getState().getLoaded(conversationId);
-      const briefLang = (context.page_brief as { lang?: string | null } | undefined)?.lang ?? null;
+      const briefLang =
+        (built.values.page_brief as { lang?: string | null } | undefined)?.lang ?? null;
       const browserDomState = await buildBrowserDomState({
         surface: 'pilot',
         agentId: opts.agentId,
@@ -487,7 +501,7 @@ export function usePilotChatStream() {
         conversation_id: conversationId,
         is_new: isNewConversation,
         variables: opts.variables ?? null,
-        context,
+        ...(built.context !== undefined && { context: built.context }),
         stream: true,
         store: true,
         source_app: 'matrx-extend',
@@ -630,10 +644,10 @@ export function usePilotChatStream() {
       // Re-send the deferred-context bundle — a resumed loop has no context
       // objects otherwise (ctx_get → "No context objects are available").
       // Same rationale as useChatStream.resumeRun.
-      let context: Record<string, unknown> = {};
+      let built: ChatRequestContext = { values: {}, rows: [], context: undefined };
       try {
         const user = useAuthStore.getState().user;
-        context = await buildChatContext({
+        built = await buildChatContext({
           user: user ? { id: user.id, email: user.email, full_name: user.full_name ?? null } : null,
           desktopTransport: useDesktopStore.getState().transport,
           scrape: useScrapeStore.getState().current,
@@ -650,8 +664,9 @@ export function usePilotChatStream() {
         );
       }
 
+      rememberRunContextRows(runId, rowsWithoutValues(built.rows));
       const body: Record<string, unknown> = {
-        context,
+        ...(built.context !== undefined && { context: built.context }),
         // Provenance: a resume is ALWAYS client code (STREAM_CONTINUE after a
         // delegated tool answer, or the stall watchdog) — never a gesture.
         initiation: 'auto' satisfies RequestInitiation,

@@ -20,6 +20,7 @@ import {
   agentExecutePath,
   mandateExecutePath,
 } from '@/lib/api/routes/ai';
+import { requestContextFromValues, withContext } from '@/lib/chat/context';
 import { sanitizeNetworkUrl, transientCredentialFingerprint } from '@/lib/credentials/network-urls';
 import { newId } from '@/lib/id';
 import { storedMandateKey } from '@/lib/mandates';
@@ -169,7 +170,7 @@ export async function runAiExtractPattern(
           })
         : {}),
     },
-    context: { page_title: captured.title },
+    ...withContext(requestContextFromValues({ page_title: captured.title })),
     stream: true,
     store: false,
     source_app: 'matrx-extend',

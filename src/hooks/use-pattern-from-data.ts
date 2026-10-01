@@ -1,5 +1,6 @@
 import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { type AgentStartRequest, mandateExecutePath } from '@/lib/api/routes/ai';
+import { requestContextFromValues, withContext } from '@/lib/chat/context';
 import { probeFirstRowInPage } from '@/lib/data-pattern/modes/list-pattern';
 import { pageCaptureOfferedValues } from '@/lib/data-pattern/page-capture-offer';
 import { newId } from '@/lib/id';
@@ -304,7 +305,7 @@ export function usePatternFromData() {
             tabId: tab.id,
           }),
         },
-        context: { page_title: tab.title ?? '' },
+        ...withContext(requestContextFromValues({ page_title: tab.title ?? '' })),
         stream: true,
         store: false,
         source_app: 'matrx-extend',

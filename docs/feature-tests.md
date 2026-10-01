@@ -318,6 +318,24 @@ Every entry follows this shape:
   unavailable.
 - **Covered by:** `tests/unit/api-stream.test.ts`.
 
+### Context chip — what the next turn sends, and the person's rules
+- **What it does:** The composer's **Context** chip lists every value the next
+  turn carries (page content, page brief, highlights, you, extension…) with
+  its size, and lets the person turn a value off or set its inline limit. The
+  rule is saved to the same per-person store the web app and the server use,
+  so it holds on every device and every turn. After each turn the chip turns
+  amber if the server delivered differently than the chip showed.
+- **Where to test:** Side panel → **Chat**, signed in, on a long article page.
+- **Steps:** Open the chip; turn **Page content** off; send "summarize this
+  page". Open the chip again and reset all; send again.
+- **Expected:** First send: the request has no `page_full_content` and the
+  agent says it cannot see the article body; the chip stays its normal color.
+  Second send: the value rides again. The same rule appears in the web app's
+  context chip for the same account. A mismatch (chip amber) files
+  `context_truth_mismatch`.
+- **Covered by:** `src/lib/chat/context/request-context.test.ts`,
+  `tests/unit/context-rules-chip.test.tsx`; the live receipt needs a real turn.
+
 ### A browser tool's row settles when its answer is delivered
 - **What it does:** The row of a tool the extension ran turns Done (or Error)
   the moment the server accepts the answer, including an answer re-sent after

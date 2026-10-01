@@ -1,6 +1,7 @@
 import { isCurrentPageIdentity, useActiveTab } from '@/hooks/use-active-tab';
 import { type ExtractionSource, sourceFromUrl } from '@/hooks/use-extraction';
 import { type AgentStartRequest, agentExecutePath, mandateExecutePath } from '@/lib/api/routes/ai';
+import { requestContextFromValues, withContext } from '@/lib/chat/context';
 import { aiExtractCapturePage } from '@/lib/data-pattern/modes/ai-extract';
 import { pageCaptureOfferedValues } from '@/lib/data-pattern/page-capture-offer';
 import { parseAgentResponse } from '@/lib/data-pattern/run-interactive';
@@ -192,7 +193,7 @@ export function useAiExtraction() {
               })
             : {}),
         },
-        context: { page_title: captured.title },
+        ...withContext(requestContextFromValues({ page_title: captured.title })),
         stream: true,
         store: false,
         source_app: 'matrx-extend',

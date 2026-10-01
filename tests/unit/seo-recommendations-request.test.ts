@@ -49,7 +49,9 @@ describe('buildSeoRecommendationsRequest', () => {
   it('ships the WHOLE audit object under page_seo_audit, untrimmed', () => {
     const audit = sampleAudit();
     const req = buildSeoRecommendationsRequest(audit, 'fixed-id');
-    const sent = (req.context as { page_seo_audit: unknown }).page_seo_audit;
+    // Through the one context door: the value rides as the envelope's content.
+    const sent = (req.context as unknown as { page_seo_audit: { content: unknown } }).page_seo_audit
+      .content;
     // Identity, not a reshaped subset — every key the auditor produced.
     expect(sent).toEqual(audit);
     expect(Object.keys(sent as object).sort()).toEqual(Object.keys(audit).sort());

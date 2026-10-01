@@ -210,7 +210,8 @@ async function runChild(args: RunChildArgs): Promise<SubRunOutcome> {
     ...buildParallelStartContract(args.organizationId),
     user_input: args.subPrompt,
     variables: null,
-    context: {},
+    // No `context`: a sub-run carries none (it reads its tab through tools).
+    // A request context only ever comes from buildChatContext / requestContextFromValues.
     stream: true,
     source_app: 'matrx-extend',
     source_feature: 'parallel-tab',

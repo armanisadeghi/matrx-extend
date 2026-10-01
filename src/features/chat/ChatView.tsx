@@ -6,6 +6,7 @@ import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
 import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
 import { AgentCaptureCredentialCard } from '@/features/chat/AgentCaptureCredentialCard';
 import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
+import { ContextRulesComposerChip } from '@/features/chat/ContextRulesComposerChip';
 import { CopyConversationButton } from '@/features/chat/CopyConversationButton';
 import { GoogleFileAttachmentChip } from '@/features/chat/GoogleFileAttachmentChip';
 import { HighlightAttachmentChip } from '@/features/chat/HighlightAttachmentChip';
@@ -1519,6 +1520,7 @@ function Composer({
         <div className="flex items-center gap-1 px-2 pb-2 pt-1">
           <ComposerSettingsChip />
           <GoogleFileAttachmentChip />
+          <ContextRulesComposerChip />
 
           <div className="ml-auto flex items-center gap-1">
             <button

@@ -14,4 +14,9 @@ export {
   setContextShape,
   DEFAULT_CONTEXT_SHAPE,
 } from './context';
-export type { ContextBuildInputs, ContextShape } from './context';
+export type {
+  ChatRequestContext,
+  ContextBuildInputs,
+  ContextShape,
+  RequestContextWire,
+} from './context';
