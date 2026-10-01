@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { classifyGuestTurn } from './guest-chat-completion-oracle.mjs';
+import { classifyGuestTurn, createGuestStreamCollector } from './guest-chat-completion-oracle.mjs';
 
 const expectedTerms = ['C82F4A', 'Capture', 'Understand', 'Use'];
 const suspended = {
@@ -45,4 +45,65 @@ test('stream errors remain terminal even without answer text', () => {
   assert.equal(classifyGuestTurn({ runs: [{ ...suspended, delegated: false, error: true }],
     assistantText: '', replyCount: 0, expectedTerms, errorNotice: false }),
   'terminal_error');
+});
+
+function streamMessage(runId, type, payload = {}) {
+  return { __matrx: true, kind: 'stream:chunk',
+    payload: { runId, type, payload } };
+}
+
+function streamEvent(runId, eventName, data) {
+  return streamMessage(runId, 'event', { eventName, data });
+}
+
+test('collector keeps failed user-request completion terminal even after end complete', () => {
+  let replies = 0;
+  const collector = createGuestStreamCollector({ replyCount: () => replies, now: () => 1000 });
+  collector.accept(streamMessage('failed-run', 'text', { content: 'C82F4A Capture Understand Use' }));
+  collector.accept(streamEvent('failed-run', 'completion',
+    { operation: 'user_request', status: 'failed' }));
+  collector.accept(streamEvent('failed-run', 'end', { reason: 'complete' }));
+  collector.accept(streamMessage('failed-run', 'done'));
+  replies = 1;
+  const { runs, events } = collector.snapshot();
+  assert.equal(runs[0].userRequestOutcome, 'failed');
+  assert.equal(events.some((event) => event.kind === 'user_request_failed'), true);
+  assert.equal(classifyGuestTurn({ runs, assistantText: 'C82F4A Capture Understand Use',
+    replyCount: replies, expectedTerms, errorNotice: false, now: 2000 }), 'terminal_error');
+});
+
+test('collector accepts successful completion with a real new assistant reply', () => {
+  let replies = 0;
+  const collector = createGuestStreamCollector({ replyCount: () => replies, now: () => 1000 });
+  collector.accept(streamEvent('successful-run', 'completion',
+    { operation: 'user_request', status: 'success' }));
+  collector.accept(streamEvent('successful-run', 'end', { reason: 'complete' }));
+  collector.accept(streamMessage('successful-run', 'done'));
+  replies = 1;
+  assert.equal(classifyGuestTurn({ runs: collector.snapshot().runs,
+    assistantText: 'C82F4A Capture, Understand, Use.', replyCount: replies,
+    expectedTerms, errorNotice: false, now: 2000 }), 'terminal_answer');
+});
+
+test('uncoded 409 remains pending while another delegated tool resolves', () => {
+  let replies = 0;
+  const collector = createGuestStreamCollector({ replyCount: () => replies, now: () => 1000 });
+  collector.accept(streamEvent('initial-run', 'tool_event', { event: 'tool_delegated' }));
+  collector.accept(streamMessage('initial-run', 'done'));
+  replies = 1;
+  collector.accept({ __matrx: true, kind: 'stream:continue', payload: {} });
+  collector.accept(streamMessage('premature-resume', 'error', { status: 409 }));
+  collector.accept(streamMessage('premature-resume', 'done'));
+  assert.equal(classifyGuestTurn({ runs: collector.snapshot().runs, assistantText: '',
+    replyCount: replies, expectedTerms, errorNotice: false, now: 2000 }),
+  'awaiting_tool_resume');
+  collector.accept({ __matrx: true, kind: 'stream:continue', payload: {} });
+  collector.accept(streamEvent('final-resume', 'completion',
+    { operation: 'user_request', status: 'success' }));
+  collector.accept(streamEvent('final-resume', 'end', { reason: 'complete' }));
+  collector.accept(streamMessage('final-resume', 'done'));
+  replies = 2;
+  assert.equal(classifyGuestTurn({ runs: collector.snapshot().runs,
+    assistantText: 'C82F4A Capture, Understand, Use.', replyCount: replies,
+    expectedTerms, errorNotice: false, now: 2000 }), 'terminal_answer');
 });

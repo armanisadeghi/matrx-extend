@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
-import { classifyGuestTurn } from './guest-chat-completion-oracle.mjs';
+import { classifyGuestTurn, createGuestStreamCollector } from './guest-chat-completion-oracle.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const RECEIPT = resolve(
@@ -121,79 +121,15 @@ async function observe(panel, expected = {}) {
 async function installStreamTrace(panel) {
   const installed = await evaluate(panel, `(() => {
     window.__guestChatStreamTrace?.stop();
-    const runs = new Map();
-    const order = [];
-    const events = [];
-    let continuations = 0;
-    const runFor = (id) => {
-      if (typeof id !== 'string') return null;
-      if (!runs.has(id)) {
-        const run = { ordinal: order.length + 1, done: false, delegated: false,
-          error: false, errorCode: null, endReason: null,
-          userRequestCompleted: false, textChunks: 0,
-          startReplyCount: document.querySelectorAll('button[title="Copy reply"]').length,
-          doneAt: null };
-        runs.set(id, run);
-        order.push(id);
-      }
-      return runs.get(id);
-    };
-    const listener = (message) => {
-      if (message?.__matrx !== true) return;
-      const kind = message.kind;
-      if (kind === 'stream:continue') {
-        continuations += 1;
-        events.push({ kind: 'continue', afterRun: order.length });
-        return;
-      }
-      if (kind !== 'stream:chunk' && kind !== 'stream:opened') return;
-      const payload = message.payload ?? {};
-      const run = runFor(payload.runId);
-      if (!run) return;
-      if (kind === 'stream:opened') {
-        events.push({ kind: 'opened', run: run.ordinal });
-      } else if (payload.type === 'done') {
-        run.done = true;
-        run.doneAt = Date.now();
-        events.push({ kind: 'done', run: run.ordinal });
-      } else if (payload.type === 'error') {
-        run.error = true;
-        const code = payload.payload?.code;
-        run.errorCode = ['resume_conflict', 'outstanding_delegated_calls',
-          'not_resumable'].includes(code) ? code : null;
-        events.push({ kind: 'error', run: run.ordinal,
-          status: Number.isInteger(payload.payload?.status) ? payload.payload.status : null,
-          code: run.errorCode });
-      } else if (payload.type === 'text') {
-        run.textChunks += 1;
-      } else if (payload.type === 'event') {
-        const name = payload.payload?.eventName;
-        const data = payload.payload?.data;
-        if (name === 'tool_event' && data?.event === 'tool_delegated') {
-          run.delegated = true;
-          events.push({ kind: 'tool_delegated', run: run.ordinal });
-        } else if (name === 'record_update' &&
-          /(?:^|\\.)user_request$/.test(String(data?.table ?? '')) &&
-          data?.status === 'completed') {
-          run.userRequestCompleted = true;
-          events.push({ kind: 'user_request_completed', run: run.ordinal });
-        } else if (name === 'completion' && data?.operation === 'user_request' &&
-          data?.status === 'success') {
-          run.userRequestCompleted = true;
-          events.push({ kind: 'user_request_completed', run: run.ordinal });
-        } else if (name === 'end') {
-          const reason = data?.reason;
-          run.endReason = ['complete', 'error', 'failed', 'cancelled', 'paused',
-            'tool_delegated'].includes(reason) ? reason : 'other';
-          events.push({ kind: 'end', run: run.ordinal, reason: run.endReason });
-        }
-      }
-      if (events.length > 100) events.shift();
-    };
+    const makeCollector = (${createGuestStreamCollector.toString()});
+    const collector = makeCollector({
+      replyCount: () => document.querySelectorAll('button[title="Copy reply"]').length,
+      now: Date.now,
+    });
+    const listener = (message) => collector.accept(message);
     chrome.runtime.onMessage.addListener(listener);
     window.__guestChatStreamTrace = {
-      snapshot: () => ({ runs: order.map((id) => ({ ...runs.get(id) })),
-        continuations, events: [...events] }),
+      snapshot: () => collector.snapshot(),
       stop: () => chrome.runtime.onMessage.removeListener(listener),
     };
     return true;

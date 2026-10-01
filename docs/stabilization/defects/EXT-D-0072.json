@@ -26,11 +26,13 @@
     "tests/browser/guest-chat-completion-oracle.mjs",
     "tests/browser/guest-chat-completion-oracle.test.mjs"
   ],
-  "verification_status": "Source and captured UI prove the old predicate's false terminal. Five focused oracle tests pass, including a reproduction of the old predicate. Native rerun and independent review are pending; no product-side guest Chat defect is claimed from the old run.",
+  "verification_status": "Source and captured UI prove the old predicate's false terminal. Initial focused oracle tests passed 5/5. Independent review found two important collector/classifier gaps; round-one source repair now records failed user-request completions and treats uncoded 409 as pending. Added collector-seam tests have syntax checks but await guarded test admission. Fresh independent review and native rerun are pending; no product-side guest Chat defect is claimed from the old run.",
   "transition_history": [
     { "at": "2026-10-01T16:28:54Z", "from": null, "to": "open", "reason": "Candidate 0.2.173 stopped on a tool-only-looking intermediate panel state." },
     { "at": "2026-10-01T16:28:54Z", "from": "open", "to": "triaged", "reason": "Captured UI and source show that Copy reply and absent Stop are not terminal-turn signals across delegated tools." },
     { "at": "2026-10-01T16:28:54Z", "from": "triaged", "to": "in-fix", "reason": "The runner was assigned a bounded terminal-state and assistant-text oracle repair." },
-    { "at": "2026-10-01T16:28:54Z", "from": "in-fix", "to": "fixed", "reason": "The runner now records safe stream lifecycle metadata and waits for terminal answer text; focused tests pass. Independent native retest remains open." }
+    { "at": "2026-10-01T16:28:54Z", "from": "in-fix", "to": "fixed", "reason": "The runner now records safe stream lifecycle metadata and waits for terminal answer text; focused tests pass. Independent native retest remains open." },
+    { "at": "2026-10-01T16:38:35Z", "from": "fixed", "to": "in-fix", "reason": "Independent source review found failed-completion false pass and uncoded-409 false error in the terminal oracle." },
+    { "at": "2026-10-01T16:38:35Z", "from": "in-fix", "to": "fixed", "reason": "Collector-seam repair records failed completions and uncoded 409; syntax checks pass. Guarded focused execution, fresh review, and native retest remain pending." }
   ]
 }
