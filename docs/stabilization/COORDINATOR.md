@@ -1,6 +1,22 @@
 # Matrx Extend stabilization: resume here
 
-## Current checkpoint — September 30, 2026: release 0.2.139 and bounded native checks passed
+## Current checkpoint — October 1, 2026: full audit and next candidate
+
+Owner request: “Please do a full check on where we stand and update me and then keep testing, fixing and going. COnfirm our latest submission is approved and handle the next submission. Then, check the list of all possible tests to what's done and what is still pending and start making major progress.”
+
+Live authenticated Google dashboard confirms **0.2.130 Pending review**, not approved; public listing is still0.2.105. Root recovered account access through saved credentials and Vault authenticator, no human step needed. Preserve the pending urgent guest-Chat replacement. Next package is being prepared and tested; upload follows that review outcome unless a concrete required fix justifies replacement. Canonical Store record updated and pushed in common-docs34e66b567.
+
+Source main was4827452b/version0.2.172 at entry, clean and synced; remote tag exists. Disk artifacts were still139, so source version alone is not installed/tested evidence. Independent coverage audit5878be26 reports205features/731cases/1314controls/1198case-mode slots:57historical passes,28partial,125explicitunverified,986withoutresult,1fail,1N/A. No full feature-mode pair is certified.168caseslacksteps,167lackexpectedoutcomes. These are test evidence gaps, not1198productdefects; no health percentage is claimed.
+
+Active lanes (flat tree):
+- release_oct01, Sol medium: sole heavy permit through resource watchdog, fresh package and strict gates; initial attempt caught stale installed agents package versuslockfile, frozen install then bounded retry. Root owns dashboard/submission; worker no browser until coordinated.
+- coverage_oct01, Luna medium: independent inventory/evidence audit, then regenerate STATUS/CHECKLIST from canonicalinventory. No heavy tests or product edits.
+- files_acceptance_oct01, Sol medium: prepare receipt-bound actual Files/Saved captures tests (D64/D65 already sourcefixed, do not reimplement); no browser/build/test until release hands over permit. Own scopedrunner/report only.
+- Root owns inventory/checkpoint, sync/push, approval-status and later independent acceptance routing.
+
+Concurrency cap remains one heavy run, refusal watchdog mandatory, externalTMPDIR/profile; no artifact rebuild while a native run uses it. Escalate after two failed attempts or20active minutes with changed approach. Test guest/member/admin as applicable; no adminidentity as substitute for member. Broad Chat/Pilot remain deferred except Store guest/member regression path. Durable final outcomes below139 are historical, not proof for today's candidate.
+
+## Historical checkpoint — September 30, 2026: release 0.2.139 and bounded native checks passed
 
 Version **0.2.139** is committed, tagged and pushed at `ae6a3af1680148c0308d6eb285776ddafdb1039b`; release evidence is pushed in `d7bebd0f`. All strict release gates passed: 1,824 tests passed (five skipped), compile/build, 82/82 tool definitions, 15 applied migrations with zero unapplied/drifted, and Store package validation. This is a source/package release, **not a Chrome Web Store upload**. The prior 0.2.130 submission was pending review when checked earlier this turn; current provider status has not been rechecked.
 
