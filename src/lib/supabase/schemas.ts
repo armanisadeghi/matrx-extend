@@ -114,6 +114,12 @@ export const TABLE_SCHEMA = {
   // users.user_preferences — the durable, cross-device default-organization
   // preference the web app writes. Read-only from this client.
   user_preferences: 'users',
+  // users.user_surface_state — the person's saved context rules (feature
+  // `context_rules`, one row per surface key), the SAME rows the web app writes
+  // and the server reads every turn. Upsert on (user_id, feature, surface_key)
+  // with an explicit organization_id. Contract: common-docs
+  // systems/scopes-context/context-delivery/RULES.md §3.
+  user_surface_state: 'users',
 } as const;
 
 export type ExtensionTable = keyof typeof TABLE_SCHEMA;
