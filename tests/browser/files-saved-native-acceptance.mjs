@@ -264,20 +264,28 @@ async function proveFilesFailure(panel, transport, tab, mode) {
   stage = `D64_${mode}_failure`;
   const before = transport.read().failed;
   transport.setMode(mode);
+  report.observations[`D64_${mode}_substage`] = 'switch_tab';
   if (mode === 'screenshots') await trustedFeatureClick(panel, 'Files', 'button[role="tab"]', 'Screenshots');
+  report.observations[`D64_${mode}_substage`] = 'refresh_click';
   await click(panel, 'title', 'Refresh files');
+  report.observations[`D64_${mode}_substage`] = 'scoped_read_failure';
   await waitFor('scoped_files_request_failed', transport.read,
     (s) => s.failed > before && !s.interceptionError, 30_000);
+  report.observations[`D64_${mode}_substage`] = 'visible_error';
   const failed = await waitFor('visible_files_failure', () => filesState(panel),
     (s) => s.active && s.selected?.startsWith(tab) && s.error && s.retry && !s.falseEmpty, 30_000);
   transport.setMode('none');
   stage = `D64_${mode}_retry`;
   const successBefore = transport.read().succeeded[mode];
+  report.observations[`D64_${mode}_substage`] = 'retry_click';
   await trustedFeatureClick(panel, 'Files', 'button', 'Retry files');
+  report.observations[`D64_${mode}_substage`] = 'successful_retry_read';
   await waitFor('files_real_read_succeeded', transport.read,
     (s) => s.succeeded[mode] > successBefore && !s.interceptionError, 45_000);
+  report.observations[`D64_${mode}_substage`] = 'visible_recovery';
   const recovered = await waitFor('files_retry_recovered', () => filesState(panel),
     (s) => s.active && s.selected?.startsWith(tab) && !s.error && !s.retry && !s.loading, 45_000);
+  report.observations[`D64_${mode}_substage`] = 'complete';
   return { request_failure_observed: true, visible_error: failed.error,
     visible_retry: failed.retry, false_empty_claim: failed.falseEmpty,
     recovered_from_real_retry: !recovered.error, successful_read_observed: true };
@@ -464,6 +472,17 @@ async function main() {
         report.observations.files_screenshots = await proveFilesFailure(panel, filesTransport, 'Screenshots', 'screenshots');
         if (filesTransport.read().interceptionError) fail('files_interception_failed');
         report.cases.D64 = 'pass';
+      } catch (error) {
+        report.observations.D64_failure_diagnostic = {
+          substage: stage.includes('screenshots')
+            ? report.observations.D64_screenshots_substage ?? null
+            : report.observations.D64_library_substage ?? null,
+          transport: filesTransport.read(),
+          ui: await filesState(panel).catch(() => null),
+          pointer_code: error?.driverFailure?.code ?? null,
+          wait_code: /^(scoped_files_request_failed|visible_files_failure|files_real_read_succeeded|files_retry_recovered|files_ready)_not_observed/.exec(error?.message ?? '')?.[1] ?? null,
+        };
+        throw error;
       } finally {
         await filesTransport.stop();
       }
