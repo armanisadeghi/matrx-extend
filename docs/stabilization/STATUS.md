@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-01 17:20 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-01. 205 features · 733 cases · 1316 controls · 73 linked defect records.
+Generated 2026-10-01 17:33 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-01. 205 features · 733 cases · 1316 controls · 73 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1164** — Pass: 58 · Partial: 29 · Fail: 1 · Unverified: 1075 · N/A: 1.
-Unverified splits into **125 explicitly marked unverified** and **950 with no result record**.
+Applicable case-by-role slots: **1164** — Pass: 58 · Partial: 31 · Fail: 1 · Unverified: 1073 · N/A: 1.
+Unverified splits into **124 explicitly marked unverified** and **949 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -16,7 +16,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | Tab or surface | Features | Guest cases | Member cases | Admin cases | All-role case slots | Active defects |
 | --- | ---: | --- | --- | --- | --- | ---: |
 | [Development installation](#development-installation) | 1 | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 2, partial 0, fail 0, unverified 13, n/a 0 | 0 |
-| [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 7, partial 0, fail 0, unverified 15, n/a 0 | 1 |
+| [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 7, partial 1, fail 0, unverified 14, n/a 0 | 1 |
 | [Release infrastructure](#release-infrastructure) | 1 | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 24, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 0, fail 0, unverified 14, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
@@ -42,7 +42,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Notes side-panel](#notes-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 3 |
 | [Notes editor](#notes-editor) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 3 |
 | [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 5, n/a 0 | 0 |
-| [Saved captures side-panel](#saved-captures-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 14, n/a 0 | 1 |
+| [Saved captures side-panel](#saved-captures-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 13, n/a 0 | 0 |
 | [Capture side-panel](#capture-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Vault side-panel](#vault-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 0 |
 | [Tools/manual runner](#toolsmanual-runner) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 0 |
@@ -59,7 +59,7 @@ Role counts include only case-role combinations listed in each case. The all-rol
 
 **Release:** 0.2.173 at `d6d6d6b83c937652525f473082ac2f2492c9eabe`. Exact 0.2.173 candidate was created from verified origin/main/tag; strict release gates passed (1862 tests passed, 5 skipped; compile/typecheck, tool DB drift, migrations, package checks and Store package/risk gates passed). This is a candidate, not a Chrome Web Store submission; 0.2.130 remains pending review.
 **Local artifact:** Frozen 0.2.173 keyed tree SHA256 494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064; Store ZIP SHA256 1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff. Candidate receipt/hash verified; no personal Chrome runtime claim.
-**Native evidence:** Exact173: fresh guest page-grounded first answer and post-panel-reload follow-up PASS, report docs/stabilization/reports/guest-grounding-peer-20261001.json. Earlier signed-in non-admin Chat PASS, candidate-native-20261001.json. Admin Files both-tab read-error/Retry recovery PASS, files-fresh-acceptance-20261001.json. Earlier injected-marker miss remains unexplained; signout privacy and exhaustive feature/mode coverage remain unverified. Candidate not uploaded;130 still pending Google review.
+**Native evidence:** Exact173: guest grounded first answer and post-panel-reload followup PASS; signed-in non-admin Chat PASS; admin Files Library/Screenshots read-error and Retry recovery PASS; admin Saved captures D65 late-success and late-failure selection race PASS. See guest-grounding-peer, candidate-native, files-fresh-acceptance and saved-capture-escalation-verify reports. Earlier guest marker miss unexplained; signout privacy, member Files/Saved, full controls and Chat/Pilot breadth remain unverified. Candidate173 not uploaded;130 still pending Google review.
 These current-build checks supplement the inventory matrix; they do not promote unobserved cases or certify whole features.
 
 ## Development installation
@@ -96,7 +96,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Resource admission and owned job lifecycle (EXT-F-0002)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 8. **Controls:** 8.
+**Role status:** guest: Unverified · member: Unverified · admin: Partial. **Cases:** 8. **Controls:** 8.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0073
 
@@ -111,7 +111,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-0002-T05 Manual browser stop confirmation | Unverified | Unverified | Unverified | EXT-F-0002-C05 |
 | EXT-F-0002-T06 Durable browser resource event and terminal proof | Pass | Pass | Pass | EXT-F-0002-C06 |
 | EXT-F-0002-T07 Native Chat acceptance distinguishes tool progress from terminal answer | Pass | Unverified | Unverified | EXT-F-0002-C07 |
-| EXT-F-0002-T08 Native fixture failure is actionable without exposing sensitive data | N/A | N/A | Unverified | EXT-F-0002-C08 |
+| EXT-F-0002-T08 Native fixture failure is actionable without exposing sensitive data | N/A | N/A | Partial | EXT-F-0002-C08 |
 
 **Recorded case details and evidence:**
 
@@ -153,8 +153,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: showcase-structured-journal-retest-20260928, ['docs/stabilization/reports/showcase-structured-journal-retest.json', 'docs/stabilization/reports/native-guard-finalize-peer.json']
 - EXT-F-0002-T07 · guest: Pass. Oracle-only: four tool resumptions observed before actual completion; wrong terminal content rejected. Ten surrounding helper/collector cases passed. Not a Chat product pass.
   Evidence / build / date recorded: guest-acceptance-final-native-20261001-001, docs/stabilization/reports/guest-acceptance-final-20261001.json
-- EXT-F-0002-T08 · admin: Unverified.
-  Evidence / build / date recorded: docs/stabilization/reports/saved-capture-stall-20261001.json
+- EXT-F-0002-T08 · admin: Partial. Native A readiness observed zero then one visible/enabled Capture target; successful create completed. New safe exception metadata branches were source reviewed but not forced through native failure.
+  Evidence / build / date recorded: saved-capture-escalation-create-20261001-01, docs/stabilization/reports/saved-capture-escalation-verify-20261001.json
 
 **Other remaining work:** Concrete procedure and evidence required before executing each control.
 
@@ -1327,22 +1327,27 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Search and manage saved captures (EXT-F-2009)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 8. **Controls:** 39.
+**Role status:** guest: N/A · member: Unverified · admin: Partial. **Cases:** 8. **Controls:** 39.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0065
+**Next:** Add cases for 9 uncovered control(s), then verify them in the extension.
 
-**Linked defects:** [EXT-D-0065](defects/EXT-D-0065.json) (fixed)
+**Linked defects:** [EXT-D-0065](defects/EXT-D-0065.json) (retest-pass)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-2009-T01 Guest cannot open saved captures | N/A | N/A | N/A | EXT-F-2009-C01 |
-| EXT-F-2009-T02 Find and open saved capture | N/A | Unverified | Unverified | EXT-F-2009-C01, EXT-F-2009-C02, EXT-F-2009-C03, EXT-F-2009-C04, EXT-F-2009-C05 |
+| EXT-F-2009-T02 Find and open saved capture | N/A | Unverified | Partial | EXT-F-2009-C01, EXT-F-2009-C02, EXT-F-2009-C03, EXT-F-2009-C04, EXT-F-2009-C05 |
 | EXT-F-2009-T03 Edit Source text and inspect original and structured representations | N/A | Unverified | Unverified | EXT-F-2009-C11, EXT-F-2009-C14, EXT-F-2009-C15, EXT-F-2009-C16, EXT-F-2009-C17, EXT-F-2009-C18, EXT-F-2009-C19, EXT-F-2009-C27, EXT-F-2009-C28, EXT-F-2009-C29, EXT-F-2009-C30, EXT-F-2009-C32, EXT-F-2009-C33 |
 | EXT-F-2009-T04 Delete capture and recover from detail errors | N/A | Unverified | Unverified | EXT-F-2009-C06, EXT-F-2009-C07, EXT-F-2009-C08, EXT-F-2009-C09, EXT-F-2009-C10, EXT-F-2009-C20 |
 | EXT-F-2009-T05 Open Source in web app and inspect source host and original file | N/A | Unverified | Unverified | EXT-F-2009-C31, EXT-F-2009-C35, EXT-F-2009-C36 |
 | EXT-F-2009-T06 Unreadable saved captures are disclosed and retryable | N/A | Unverified | Unverified | EXT-F-2009-C01, EXT-F-2009-C37 |
 | EXT-F-2009-T07 Show Source author identity with unreadable-name fallback | N/A | Unverified | Unverified | EXT-F-2009-C38 |
 | EXT-F-2009-T08 Organization-wide Source deletion is confirmed and visible to another member | N/A | Unverified | Unverified | EXT-F-2009-C06, EXT-F-2009-C39 |
+
+**Recorded case details and evidence:**
+
+- EXT-F-2009-T02 · admin: Partial. Frozen173 admin: receipt-backed A/B rows; B remained selected after A completed late with success and with failure. Other T02 controls/dimensions untested.
+  Evidence / build / date recorded: saved-capture-escalation-d65-20261001-01, docs/stabilization/reports/saved-capture-escalation-verify-20261001.json
 
 **Controls without a mapped case:** EXT-F-2009-C12 Edit title; EXT-F-2009-C13 Edit description; EXT-F-2009-C21 Copy capture Markdown; EXT-F-2009-C22 Copy capture Plain text; EXT-F-2009-C23 Copy capture Page URL; EXT-F-2009-C24 Copy capture For AI agent; EXT-F-2009-C25 Copy capture Full JSON admin option; EXT-F-2009-C26 Copy capture Full JSON for AI admin option; EXT-F-2009-C34 Inspect saved versus kept Source status
 

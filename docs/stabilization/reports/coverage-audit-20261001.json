@@ -1384,7 +1384,7 @@
     "release_commit": "d6d6d6b83c937652525f473082ac2f2492c9eabe",
     "release_claim": "Exact 0.2.173 candidate was created from verified origin/main/tag; strict release gates passed (1862 tests passed, 5 skipped; compile/typecheck, tool DB drift, migrations, package checks and Store package/risk gates passed). This is a candidate, not a Chrome Web Store submission; 0.2.130 remains pending review.",
     "local_artifact": "Frozen 0.2.173 keyed tree SHA256 494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064; Store ZIP SHA256 1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff. Candidate receipt/hash verified; no personal Chrome runtime claim.",
-    "native_notes": "Exact173: fresh guest page-grounded first answer and post-panel-reload follow-up PASS, report docs/stabilization/reports/guest-grounding-peer-20261001.json. Earlier signed-in non-admin Chat PASS, candidate-native-20261001.json. Admin Files both-tab read-error/Retry recovery PASS, files-fresh-acceptance-20261001.json. Earlier injected-marker miss remains unexplained; signout privacy and exhaustive feature/mode coverage remain unverified. Candidate not uploaded;130 still pending Google review.",
+    "native_notes": "Exact173: guest grounded first answer and post-panel-reload followup PASS; signed-in non-admin Chat PASS; admin Files Library/Screenshots read-error and Retry recovery PASS; admin Saved captures D65 late-success and late-failure selection race PASS. See guest-grounding-peer, candidate-native, files-fresh-acceptance and saved-capture-escalation-verify reports. Earlier guest marker miss unexplained; signout privacy, member Files/Saved, full controls and Chat/Pilot breadth remain unverified. Candidate173 not uploaded;130 still pending Google review.",
     "supersession": "This current-artifact checkpoint supersedes the 0.2.139 release metadata; all 0.2.139 case receipts and historical results remain bound to their original build. Aggregate coverage totals below remain the dated audit snapshot, not a refreshed current inventory census."
   },
   "major_gaps_and_next_actions": [
@@ -1403,14 +1403,14 @@
     {
       "priority": "P1",
       "scope": "Current install and native breadth",
-      "gap": "0.2.139 release gates passed and isolated extension artifact is recorded, but personal Chrome reload is explicitly unverified; broad guest/member/admin sidepanel/content-script/service-worker/offscreen passes are absent.",
+      "gap": "Strict exact0.2.173 release gates and frozen artifact pass. Guest Chat grounding/reload, signed-in non-admin Chat, admin Files error/Retry and admin Saved captures selection race have narrow native passes. Personal Chrome reload, broad guest/member/admin sidepanel/content-script/service-worker/offscreen coverage and signout privacy remain unverified.",
       "next": "Bind native runs to current artifact receipt, real user surface and persona; preserve admission guard."
     },
     {
       "priority": "P1",
       "scope": "Notes, Files, Saved captures",
-      "gap": "Notes D61/D62/D63/D67/D68 have scoped exact139 admin native verification; feature/member breadth remains open. D64 Files and D65 saved-capture race are source-fixed with focused regression coverage but no native acceptance in current reconciliation.",
-      "next": "Do not reimplement Notes or D64/D65 source fixes; run remaining current-build native cases and update statuses only for observed outcomes."
+      "gap": "Notes D61/D62/D63/D67/D68 have scoped exact139 admin native verification; feature/member breadth remains open. On exact173, D64 Files admin read-error/Retry passed for Library and Screenshots, and D65 Saved captures admin last-click race passed for late success and late failure. Member behavior, full search/pagination/edit/delete controls and full feature cases remain unverified.",
+      "next": "Run the remaining current-build member and admin controls; do not count the exact-ID backend test-fixture cleanup as Saved captures UI deletion coverage."
     },
     {
       "priority": "P1",
@@ -1426,7 +1426,7 @@
     },
     {
       "priority": "P2",
-      "scope": "D69\u2013D71 latest batch",
+      "scope": "D69–D71 latest batch",
       "gap": "D69 archived org visibility is bounded native-verified, but archived/stale choice and held-request paths remain open. D70 Guidance read-error/retry and D71 records cross-org runtime scope are source/release-verified; current native behavior remains unverified.",
       "next": "Use the current checkpoint/report to run only the unverified paths."
     },

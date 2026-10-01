@@ -19,10 +19,12 @@
   "state": "fixed",
   "evidence": [
     "docs/stabilization/reports/saved-capture-provenance-peer-20261001.json",
-    "docs/stabilization/reports/saved-capture-stall-20261001.json"
+    "docs/stabilization/reports/saved-capture-stall-20261001.json",
+    "docs/stabilization/reports/saved-capture-escalation-verify-20261001.json",
+    "docs/stabilization/reports/cleanup-readiness-peer-20261001.json"
   ],
   "fix_commit": "7aa69a1c",
-  "verification_status": "Syntax/format checks passed; fresh independent source review and one guarded native attempt pending. Historical underlying fixture cause remains unknown.",
+  "verification_status": "Independent source review ACCEPT and guarded native fixture create passed with observed zero-to-one Capture readiness. New safe exception metadata branches were not exercised by a native failure; historical two failures remain unexplained. Cleanup row-readiness repair 3bf1bda8 is syntax checked and separate peer source review PASS but no corrected cleanup runner native execution.",
   "transition_history": [
     {
       "at": "2026-10-01T17:20:53.325982+00:00",

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "created",
+  "status": "cleaned-via-exact-id-soft-delete",
   "build": {
     "version": "0.2.173",
     "tree_sha256": "494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064"
@@ -48,7 +48,7 @@
       "created_via": "native Scrape Capture and Save UI"
     }
   ],
-  "cleanup": "Delete only the exact Source IDs recorded here through Saved captures UI after D65 retest.",
+  "cleanup": "Exact-ID canonical soft delete in docproc.processed_documents after native UI cleanup stopped before any deletion; UI deletion control remains unverified.",
   "capture_readiness": {
     "A": {
       "before": {
@@ -87,5 +87,17 @@
       }
     }
   },
-  "saved_captures_list_visible": true
+  "saved_captures_list_visible": true,
+  "deleted_source_ids": [
+    "4dd5911b-d4d0-4673-9a7c-15fe4c70efdd",
+    "2bf1a5fc-7af0-4245-bfba-e264d3e5e866"
+  ],
+  "cleanup_evidence": {
+    "method": "Supabase MCP execute_sql, matching id + organization_id + canonical_identity + source_kind + origin_client + capture_method + deleted_at IS NULL",
+    "deleted_at": "2026-10-01T17:31:25.741588+00:00",
+    "readback": "both exact IDs retain the matching organization and identity and have deleted_at set",
+    "ui_cleanup_attempt": "saved-capture-escalation-cleanup-20261001-01: owned_source_row_not_hittable before any delete",
+    "ui_delete_coverage": "unverified",
+    "source_fix_commit": "3bf1bda8"
+  }
 }
