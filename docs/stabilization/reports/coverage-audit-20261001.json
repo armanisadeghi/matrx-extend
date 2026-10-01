@@ -1,0 +1,1460 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-10-01",
+  "audit_kind": "read_only_stabilization_coverage_reconcile",
+  "reviewed_head": "4827452b140a22928d01656a8f830b017d1f92ad",
+  "inventory": {
+    "path": "docs/stabilization/inventory.json",
+    "updated_at": "2026-09-29T18:27:38.241098Z",
+    "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+    "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
+    "scope_complete": false,
+    "features": 205,
+    "cases": 731,
+    "controls": 1314,
+    "case_control_mapping_mentions": 1137,
+    "unmapped_controls": 423,
+    "unmapped_control_examples": [
+      {
+        "feature_id": "EXT-F-2001",
+        "surface": "Tasks side-panel",
+        "control_id": "EXT-F-2001-C53",
+        "label": "Select all projects"
+      },
+      {
+        "feature_id": "EXT-F-2001",
+        "surface": "Tasks side-panel",
+        "control_id": "EXT-F-2001-C54",
+        "label": "Select all domains"
+      },
+      {
+        "feature_id": "EXT-F-2001",
+        "surface": "Tasks side-panel",
+        "control_id": "EXT-F-2001-C55",
+        "label": "Choose queue sort option"
+      },
+      {
+        "feature_id": "EXT-F-2002",
+        "surface": "Tasks capture flow",
+        "control_id": "EXT-F-2002-C01",
+        "label": "Capture L1/L2 item"
+      },
+      {
+        "feature_id": "EXT-F-2002",
+        "surface": "Tasks capture flow",
+        "control_id": "EXT-F-2002-C02",
+        "label": "Level 3 user-gated capture"
+      },
+      {
+        "feature_id": "EXT-F-2002",
+        "surface": "Tasks capture flow",
+        "control_id": "EXT-F-2002-C03",
+        "label": "Expect thin content"
+      },
+      {
+        "feature_id": "EXT-F-2002",
+        "surface": "Tasks capture flow",
+        "control_id": "EXT-F-2002-C04",
+        "label": "Cancel overlay"
+      },
+      {
+        "feature_id": "EXT-F-2002",
+        "surface": "Tasks capture flow",
+        "control_id": "EXT-F-2002-C05",
+        "label": "Retry capture"
+      },
+      {
+        "feature_id": "EXT-F-2002",
+        "surface": "Tasks capture flow",
+        "control_id": "EXT-F-2002-C06",
+        "label": "Verdict buttons accept/gated/dead-link/retry"
+      },
+      {
+        "feature_id": "EXT-F-2002",
+        "surface": "Tasks capture flow",
+        "control_id": "EXT-F-2002-C08",
+        "label": "Open capture-level picker"
+      },
+      {
+        "feature_id": "EXT-F-2002",
+        "surface": "Tasks capture flow",
+        "control_id": "EXT-F-2002-C09",
+        "label": "Submit paste-only source text"
+      },
+      {
+        "feature_id": "EXT-F-2002",
+        "surface": "Tasks capture flow",
+        "control_id": "EXT-F-2002-C10",
+        "label": "Cancel paste-only editor"
+      },
+      {
+        "feature_id": "EXT-F-2002",
+        "surface": "Tasks capture flow",
+        "control_id": "EXT-F-2002-C11",
+        "label": "Continue browser-gated capture"
+      },
+      {
+        "feature_id": "EXT-F-2002",
+        "surface": "Tasks capture flow",
+        "control_id": "EXT-F-2002-C12",
+        "label": "Open source after capture"
+      },
+      {
+        "feature_id": "EXT-F-2002",
+        "surface": "Tasks capture flow",
+        "control_id": "EXT-F-2002-C13",
+        "label": "Retry failed source"
+      },
+      {
+        "feature_id": "EXT-F-2002",
+        "surface": "Tasks capture flow",
+        "control_id": "EXT-F-2002-C14",
+        "label": "Select capture verdict accept as is"
+      },
+      {
+        "feature_id": "EXT-F-2002",
+        "surface": "Tasks capture flow",
+        "control_id": "EXT-F-2002-C15",
+        "label": "Select capture verdict gated"
+      },
+      {
+        "feature_id": "EXT-F-2002",
+        "surface": "Tasks capture flow",
+        "control_id": "EXT-F-2002-C16",
+        "label": "Select capture verdict dead link"
+      },
+      {
+        "feature_id": "EXT-F-2002",
+        "surface": "Tasks capture flow",
+        "control_id": "EXT-F-2002-C17",
+        "label": "Select capture verdict retry"
+      },
+      {
+        "feature_id": "EXT-F-2004",
+        "surface": "Agenda side-panel",
+        "control_id": "EXT-F-2004-C31",
+        "label": "Choose one-shot trigger"
+      },
+      {
+        "feature_id": "EXT-F-2004",
+        "surface": "Agenda side-panel",
+        "control_id": "EXT-F-2004-C32",
+        "label": "Choose interval trigger"
+      },
+      {
+        "feature_id": "EXT-F-2004",
+        "surface": "Agenda side-panel",
+        "control_id": "EXT-F-2004-C33",
+        "label": "Choose heartbeat trigger"
+      },
+      {
+        "feature_id": "EXT-F-2004",
+        "surface": "Agenda side-panel",
+        "control_id": "EXT-F-2004-C34",
+        "label": "Choose cron trigger"
+      },
+      {
+        "feature_id": "EXT-F-2004",
+        "surface": "Agenda side-panel",
+        "control_id": "EXT-F-2004-C35",
+        "label": "Choose context-match trigger"
+      },
+      {
+        "feature_id": "EXT-F-2004",
+        "surface": "Agenda side-panel",
+        "control_id": "EXT-F-2004-C36",
+        "label": "Choose Ask auth mode"
+      },
+      {
+        "feature_id": "EXT-F-2004",
+        "surface": "Agenda side-panel",
+        "control_id": "EXT-F-2004-C37",
+        "label": "Choose Auto auth mode"
+      },
+      {
+        "feature_id": "EXT-F-2004",
+        "surface": "Agenda side-panel",
+        "control_id": "EXT-F-2004-C38",
+        "label": "Choose Any surface"
+      },
+      {
+        "feature_id": "EXT-F-2004",
+        "surface": "Agenda side-panel",
+        "control_id": "EXT-F-2004-C39",
+        "label": "Choose Chrome extension surface"
+      },
+      {
+        "feature_id": "EXT-F-2004",
+        "surface": "Agenda side-panel",
+        "control_id": "EXT-F-2004-C40",
+        "label": "Choose Desktop surface"
+      },
+      {
+        "feature_id": "EXT-F-2004",
+        "surface": "Agenda side-panel",
+        "control_id": "EXT-F-2004-C41",
+        "label": "Choose Web surface"
+      },
+      {
+        "feature_id": "EXT-F-2004",
+        "surface": "Agenda side-panel",
+        "control_id": "EXT-F-2004-C42",
+        "label": "Choose Mobile surface"
+      },
+      {
+        "feature_id": "EXT-F-2004",
+        "surface": "Agenda side-panel",
+        "control_id": "EXT-F-2004-C43",
+        "label": "Choose Sandbox surface"
+      },
+      {
+        "feature_id": "EXT-F-2004",
+        "surface": "Agenda side-panel",
+        "control_id": "EXT-F-2004-C44",
+        "label": "Observe invalid cron expression"
+      },
+      {
+        "feature_id": "EXT-F-2004",
+        "surface": "Agenda side-panel",
+        "control_id": "EXT-F-2004-C45",
+        "label": "Observe missing context-match condition"
+      },
+      {
+        "feature_id": "EXT-F-2004",
+        "surface": "Agenda side-panel",
+        "control_id": "EXT-F-2004-C46",
+        "label": "Observe new task loading/empty state"
+      }
+    ],
+    "applicable_case_mode_slots": 1198,
+    "case_results": {
+      "unverified": 125,
+      "no-result": 986,
+      "pass": 57,
+      "not-applicable": 1,
+      "partial": 28,
+      "fail": 1
+    },
+    "by_mode": {
+      "guest": {
+        "unverified": 26,
+        "pass": 24,
+        "no-result": 105,
+        "not-applicable": 1,
+        "fail": 1
+      },
+      "member": {
+        "no-result": 400,
+        "unverified": 26,
+        "pass": 10
+      },
+      "admin": {
+        "no-result": 481,
+        "pass": 23,
+        "unverified": 73,
+        "partial": 28
+      }
+    },
+    "feature_role_pairs_fully_verified": {
+      "guest": 0,
+      "member": 0,
+      "admin": 0
+    },
+    "feature_role_pairs_applicable": 394
+  },
+  "procedure_gaps": {
+    "cases_missing_steps": 168,
+    "cases_missing_expected_outcomes": 167,
+    "cases_missing_control_links": 31,
+    "missing_steps_examples": [
+      {
+        "feature_id": "EXT-F-4001",
+        "case_id": "EXT-F-4001-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4002",
+        "case_id": "EXT-F-4002-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4003",
+        "case_id": "EXT-F-4003-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4004",
+        "case_id": "EXT-F-4004-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4005",
+        "case_id": "EXT-F-4005-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4006",
+        "case_id": "EXT-F-4006-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4007",
+        "case_id": "EXT-F-4007-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4008",
+        "case_id": "EXT-F-4008-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4009",
+        "case_id": "EXT-F-4009-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4010",
+        "case_id": "EXT-F-4010-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4011",
+        "case_id": "EXT-F-4011-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4012",
+        "case_id": "EXT-F-4012-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4013",
+        "case_id": "EXT-F-4013-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4014",
+        "case_id": "EXT-F-4014-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4015",
+        "case_id": "EXT-F-4015-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4016",
+        "case_id": "EXT-F-4016-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4017",
+        "case_id": "EXT-F-4017-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4018",
+        "case_id": "EXT-F-4018-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4019",
+        "case_id": "EXT-F-4019-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4020",
+        "case_id": "EXT-F-4020-T01",
+        "surface": "Tools / registered executor"
+      }
+    ],
+    "missing_expected_examples": [
+      {
+        "feature_id": "EXT-F-4001",
+        "case_id": "EXT-F-4001-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4002",
+        "case_id": "EXT-F-4002-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4003",
+        "case_id": "EXT-F-4003-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4004",
+        "case_id": "EXT-F-4004-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4005",
+        "case_id": "EXT-F-4005-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4006",
+        "case_id": "EXT-F-4006-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4007",
+        "case_id": "EXT-F-4007-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4008",
+        "case_id": "EXT-F-4008-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4009",
+        "case_id": "EXT-F-4009-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4010",
+        "case_id": "EXT-F-4010-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4011",
+        "case_id": "EXT-F-4011-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4012",
+        "case_id": "EXT-F-4012-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4013",
+        "case_id": "EXT-F-4013-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4014",
+        "case_id": "EXT-F-4014-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4015",
+        "case_id": "EXT-F-4015-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4016",
+        "case_id": "EXT-F-4016-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4017",
+        "case_id": "EXT-F-4017-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4018",
+        "case_id": "EXT-F-4018-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4019",
+        "case_id": "EXT-F-4019-T01",
+        "surface": "Tools / registered executor"
+      },
+      {
+        "feature_id": "EXT-F-4020",
+        "case_id": "EXT-F-4020-T01",
+        "surface": "Tools / registered executor"
+      }
+    ],
+    "missing_control_examples": [
+      {
+        "feature_id": "EXT-F-0003",
+        "case_id": "EXT-F-0003-T07",
+        "surface": "Release infrastructure"
+      },
+      {
+        "feature_id": "EXT-F-0003",
+        "case_id": "EXT-F-0003-T10",
+        "surface": "Release infrastructure"
+      },
+      {
+        "feature_id": "EXT-F-1015",
+        "case_id": "EXT-F-1015-T39",
+        "surface": "Profile/auth/org picker"
+      },
+      {
+        "feature_id": "EXT-F-2002",
+        "case_id": "EXT-F-2002-T01",
+        "surface": "Tasks capture flow"
+      },
+      {
+        "feature_id": "EXT-F-2011",
+        "case_id": "EXT-F-2011-T01",
+        "surface": "Vault side-panel"
+      },
+      {
+        "feature_id": "EXT-F-2011",
+        "case_id": "EXT-F-2011-T02",
+        "surface": "Vault side-panel"
+      },
+      {
+        "feature_id": "EXT-F-2011",
+        "case_id": "EXT-F-2011-T03",
+        "surface": "Vault side-panel"
+      },
+      {
+        "feature_id": "EXT-F-2011",
+        "case_id": "EXT-F-2011-T04",
+        "surface": "Vault side-panel"
+      },
+      {
+        "feature_id": "EXT-F-2011",
+        "case_id": "EXT-F-2011-T05",
+        "surface": "Vault side-panel"
+      },
+      {
+        "feature_id": "EXT-F-2012",
+        "case_id": "EXT-F-2012-T01",
+        "surface": "Tools/manual runner"
+      },
+      {
+        "feature_id": "EXT-F-2012",
+        "case_id": "EXT-F-2012-T02",
+        "surface": "Tools/manual runner"
+      },
+      {
+        "feature_id": "EXT-F-2012",
+        "case_id": "EXT-F-2012-T03",
+        "surface": "Tools/manual runner"
+      },
+      {
+        "feature_id": "EXT-F-2013",
+        "case_id": "EXT-F-2013-T01",
+        "surface": "Chat (deferred wave D)"
+      },
+      {
+        "feature_id": "EXT-F-2013",
+        "case_id": "EXT-F-2013-T02",
+        "surface": "Chat (deferred wave D)"
+      },
+      {
+        "feature_id": "EXT-F-2013",
+        "case_id": "EXT-F-2013-T03",
+        "surface": "Chat (deferred wave D)"
+      },
+      {
+        "feature_id": "EXT-F-2013",
+        "case_id": "EXT-F-2013-T04",
+        "surface": "Chat (deferred wave D)"
+      },
+      {
+        "feature_id": "EXT-F-2014",
+        "case_id": "EXT-F-2014-T01",
+        "surface": "Pilot (deferred wave D)"
+      },
+      {
+        "feature_id": "EXT-F-2014",
+        "case_id": "EXT-F-2014-T02",
+        "surface": "Pilot (deferred wave D)"
+      },
+      {
+        "feature_id": "EXT-F-2015",
+        "case_id": "EXT-F-2015-T01",
+        "surface": "Tools Smart tests"
+      },
+      {
+        "feature_id": "EXT-F-2015",
+        "case_id": "EXT-F-2015-T02",
+        "surface": "Tools Smart tests"
+      }
+    ]
+  },
+  "surface_coverage": {
+    "Agenda side-panel": {
+      "features": 1,
+      "cases": 7,
+      "controls": 48,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 6
+        },
+        "admin": {
+          "no-result": 6
+        }
+      }
+    },
+    "Capture side-panel": {
+      "features": 1,
+      "cases": 4,
+      "controls": 20,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 3
+        },
+        "admin": {
+          "no-result": 3
+        }
+      }
+    },
+    "Chat (deferred wave D)": {
+      "features": 1,
+      "cases": 10,
+      "controls": 136,
+      "by_mode": {
+        "guest": {
+          "no-result": 3,
+          "unverified": 3,
+          "fail": 1
+        },
+        "member": {
+          "no-result": 4,
+          "unverified": 4
+        },
+        "admin": {
+          "no-result": 4,
+          "unverified": 4
+        }
+      }
+    },
+    "Content-page overlays / context menus / commands": {
+      "features": 1,
+      "cases": 19,
+      "controls": 19,
+      "by_mode": {
+        "guest": {
+          "no-result": 19
+        },
+        "member": {
+          "no-result": 19
+        },
+        "admin": {
+          "no-result": 19
+        }
+      }
+    },
+    "Data side-panel": {
+      "features": 1,
+      "cases": 4,
+      "controls": 31,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 3
+        },
+        "admin": {
+          "no-result": 2,
+          "partial": 1
+        }
+      }
+    },
+    "Debug bridges": {
+      "features": 1,
+      "cases": 30,
+      "controls": 30,
+      "by_mode": {
+        "guest": {
+          "no-result": 2
+        },
+        "member": {
+          "no-result": 2
+        },
+        "admin": {
+          "no-result": 28
+        }
+      }
+    },
+    "Debug log": {
+      "features": 1,
+      "cases": 53,
+      "controls": 53,
+      "by_mode": {
+        "guest": {
+          "no-result": 2
+        },
+        "member": {
+          "no-result": 2
+        },
+        "admin": {
+          "no-result": 20,
+          "unverified": 26,
+          "pass": 4,
+          "partial": 1
+        }
+      }
+    },
+    "Development installation": {
+      "features": 1,
+      "cases": 5,
+      "controls": 5,
+      "by_mode": {
+        "guest": {
+          "unverified": 1,
+          "pass": 1,
+          "no-result": 3
+        },
+        "member": {
+          "no-result": 4,
+          "unverified": 1
+        },
+        "admin": {
+          "no-result": 4,
+          "pass": 1
+        }
+      }
+    },
+    "Files side-panel": {
+      "features": 1,
+      "cases": 4,
+      "controls": 28,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 3
+        },
+        "admin": {
+          "no-result": 3
+        }
+      }
+    },
+    "Guidance": {
+      "features": 1,
+      "cases": 24,
+      "controls": 24,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 23
+        },
+        "admin": {
+          "no-result": 23
+        }
+      }
+    },
+    "Highlights": {
+      "features": 1,
+      "cases": 21,
+      "controls": 21,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 20
+        },
+        "admin": {
+          "no-result": 20
+        }
+      }
+    },
+    "Keyboard commands": {
+      "features": 1,
+      "cases": 1,
+      "controls": 1,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 1
+        },
+        "admin": {
+          "no-result": 1
+        }
+      }
+    },
+    "Lists side-panel": {
+      "features": 1,
+      "cases": 6,
+      "controls": 36,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 5
+        },
+        "admin": {
+          "no-result": 5
+        }
+      }
+    },
+    "Navigation / shell": {
+      "features": 1,
+      "cases": 15,
+      "controls": 5,
+      "by_mode": {
+        "guest": {
+          "no-result": 4,
+          "pass": 1
+        },
+        "member": {
+          "no-result": 5
+        },
+        "admin": {
+          "unverified": 1,
+          "no-result": 4
+        }
+      }
+    },
+    "Notes editor": {
+      "features": 1,
+      "cases": 4,
+      "controls": 27,
+      "by_mode": {
+        "guest": {},
+        "member": {
+          "no-result": 4
+        },
+        "admin": {
+          "no-result": 4
+        }
+      }
+    },
+    "Notes side-panel": {
+      "features": 1,
+      "cases": 3,
+      "controls": 13,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 2
+        },
+        "admin": {
+          "no-result": 2
+        }
+      }
+    },
+    "Pilot (deferred wave D)": {
+      "features": 1,
+      "cases": 5,
+      "controls": 59,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 1
+        },
+        "admin": {
+          "no-result": 2,
+          "unverified": 3
+        }
+      }
+    },
+    "Popup / options / mic permission": {
+      "features": 1,
+      "cases": 20,
+      "controls": 6,
+      "by_mode": {
+        "guest": {
+          "no-result": 6
+        },
+        "member": {
+          "no-result": 7
+        },
+        "admin": {
+          "no-result": 7
+        }
+      }
+    },
+    "Profile": {
+      "features": 1,
+      "cases": 28,
+      "controls": 17,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 16
+        },
+        "admin": {
+          "no-result": 16
+        }
+      }
+    },
+    "Profile/auth/org picker": {
+      "features": 1,
+      "cases": 41,
+      "controls": 20,
+      "by_mode": {
+        "guest": {
+          "no-result": 9,
+          "unverified": 1
+        },
+        "member": {
+          "no-result": 14,
+          "unverified": 4
+        },
+        "admin": {
+          "no-result": 13,
+          "unverified": 5
+        }
+      }
+    },
+    "Release infrastructure": {
+      "features": 1,
+      "cases": 10,
+      "controls": 6,
+      "by_mode": {
+        "guest": {
+          "pass": 8,
+          "no-result": 2
+        },
+        "member": {
+          "pass": 8,
+          "no-result": 2
+        },
+        "admin": {
+          "pass": 8,
+          "no-result": 2
+        }
+      }
+    },
+    "SEO": {
+      "features": 1,
+      "cases": 14,
+      "controls": 14,
+      "by_mode": {
+        "guest": {
+          "unverified": 5,
+          "no-result": 9
+        },
+        "member": {
+          "no-result": 14
+        },
+        "admin": {
+          "no-result": 14
+        }
+      }
+    },
+    "Saved captures side-panel": {
+      "features": 1,
+      "cases": 8,
+      "controls": 39,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 5,
+          "unverified": 2
+        },
+        "admin": {
+          "no-result": 5,
+          "unverified": 2
+        }
+      }
+    },
+    "Scrape": {
+      "features": 1,
+      "cases": 31,
+      "controls": 33,
+      "by_mode": {
+        "guest": {
+          "unverified": 5,
+          "no-result": 20,
+          "pass": 1
+        },
+        "member": {
+          "no-result": 26,
+          "unverified": 5
+        },
+        "admin": {
+          "no-result": 26,
+          "unverified": 5
+        }
+      }
+    },
+    "Screenshots": {
+      "features": 1,
+      "cases": 9,
+      "controls": 9,
+      "by_mode": {
+        "guest": {
+          "unverified": 1
+        },
+        "member": {
+          "no-result": 8
+        },
+        "admin": {
+          "unverified": 8
+        }
+      }
+    },
+    "Settings": {
+      "features": 1,
+      "cases": 72,
+      "controls": 31,
+      "by_mode": {
+        "guest": {
+          "pass": 11,
+          "unverified": 6,
+          "no-result": 4,
+          "not-applicable": 1
+        },
+        "member": {
+          "no-result": 22
+        },
+        "admin": {
+          "pass": 7,
+          "no-result": 16,
+          "unverified": 6
+        }
+      }
+    },
+    "Showcase": {
+      "features": 1,
+      "cases": 59,
+      "controls": 49,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 1
+        },
+        "admin": {
+          "no-result": 28,
+          "partial": 26,
+          "unverified": 3,
+          "pass": 1
+        }
+      }
+    },
+    "Tasks capture flow": {
+      "features": 1,
+      "cases": 1,
+      "controls": 16,
+      "by_mode": {
+        "guest": {},
+        "member": {
+          "no-result": 1
+        },
+        "admin": {
+          "no-result": 1
+        }
+      }
+    },
+    "Tasks side-panel": {
+      "features": 1,
+      "cases": 7,
+      "controls": 55,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 6
+        },
+        "admin": {
+          "no-result": 6
+        }
+      }
+    },
+    "Testing infrastructure": {
+      "features": 1,
+      "cases": 6,
+      "controls": 6,
+      "by_mode": {
+        "guest": {
+          "unverified": 4,
+          "pass": 2
+        },
+        "member": {
+          "unverified": 4,
+          "pass": 2
+        },
+        "admin": {
+          "unverified": 4,
+          "pass": 2
+        }
+      }
+    },
+    "Token broker": {
+      "features": 1,
+      "cases": 11,
+      "controls": 11,
+      "by_mode": {
+        "guest": {
+          "no-result": 2
+        },
+        "member": {
+          "no-result": 2
+        },
+        "admin": {
+          "no-result": 9
+        }
+      }
+    },
+    "Tools / registered executor": {
+      "features": 169,
+      "cases": 173,
+      "controls": 293,
+      "by_mode": {
+        "guest": {},
+        "member": {
+          "no-result": 150,
+          "unverified": 4
+        },
+        "admin": {
+          "no-result": 169,
+          "unverified": 4
+        }
+      }
+    },
+    "Tools Recorder": {
+      "features": 1,
+      "cases": 5,
+      "controls": 18,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 4
+        },
+        "admin": {
+          "no-result": 4
+        }
+      }
+    },
+    "Tools Smart tests": {
+      "features": 1,
+      "cases": 5,
+      "controls": 26,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 4
+        },
+        "admin": {
+          "no-result": 4
+        }
+      }
+    },
+    "Tools/manual runner": {
+      "features": 1,
+      "cases": 3,
+      "controls": 35,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 2
+        },
+        "admin": {
+          "no-result": 2
+        }
+      }
+    },
+    "Vault password generator": {
+      "features": 1,
+      "cases": 4,
+      "controls": 22,
+      "by_mode": {
+        "guest": {
+          "no-result": 1
+        },
+        "member": {
+          "no-result": 3
+        },
+        "admin": {
+          "no-result": 3
+        }
+      }
+    },
+    "Vault side-panel": {
+      "features": 1,
+      "cases": 9,
+      "controls": 52,
+      "by_mode": {
+        "guest": {
+          "no-result": 2
+        },
+        "member": {
+          "no-result": 6,
+          "unverified": 2
+        },
+        "admin": {
+          "no-result": 6,
+          "unverified": 2
+        }
+      }
+    }
+  },
+  "defects": {
+    "records": 71,
+    "by_state": {
+      "closed": 44,
+      "fixed": 21,
+      "open": 1,
+      "in-fix": 4,
+      "retest-pass": 1
+    },
+    "nonclosed": [
+      {
+        "id": "EXT-D-0022",
+        "state": "fixed",
+        "title": null,
+        "verification_status": null
+      },
+      {
+        "id": "EXT-D-0024",
+        "state": "open",
+        "title": null,
+        "verification_status": null
+      },
+      {
+        "id": "EXT-D-0036",
+        "state": "fixed",
+        "title": null,
+        "verification_status": null
+      },
+      {
+        "id": "EXT-D-0038",
+        "state": "fixed",
+        "title": null,
+        "verification_status": null
+      },
+      {
+        "id": "EXT-D-0040",
+        "state": "fixed",
+        "title": null,
+        "verification_status": null
+      },
+      {
+        "id": "EXT-D-0041",
+        "state": "fixed",
+        "title": null,
+        "verification_status": "original focused-green-2-of-2 and combined compile passed; identity follow-up guarded red 2-of-4 then green 4-of-4; final combined compile/build and independent installed-extension replay pending"
+      },
+      {
+        "id": "EXT-D-0042",
+        "state": "in-fix",
+        "title": null,
+        "verification_status": "Original focused19/19 green; combined D41+D42 compile passed at16:33:55Z. Helper-only focused rerun and independent UI still pending."
+      },
+      {
+        "id": "EXT-D-0043",
+        "state": "fixed",
+        "title": null,
+        "verification_status": null
+      },
+      {
+        "id": "EXT-D-0044",
+        "state": "fixed",
+        "title": null,
+        "verification_status": "Engineering checks and independent source review passed. Installed .109 owned List recipe reopened and reran249rows; explicit off-route run remained available, returned honest no-match and retained prior verified health. Native in-flight navigation, sibling callers, full-row audit and same-URL document reload identity remain unverified; no closure."
+      },
+      {
+        "id": "EXT-D-0046",
+        "state": "fixed",
+        "title": null,
+        "verification_status": "Engineering fix: guarded six-file focused suite passed 28/28 after frozen install, and TypeScript compile passed. Independent installed public-page T56 acceptance remains open; no native D46 verification has run."
+      },
+      {
+        "id": "EXT-D-0047",
+        "state": "in-fix",
+        "title": null,
+        "verification_status": "Current independentevidencepeer e7a67bcd confirms initialrequest timing and documentidentity controlled regressions (including meaningful identitymutation), plus bounded installed initialHN capture and saved10row replay on8b0f8adc/9ea6687b. Delayed matching prior-document response with higher old sequence is still nativeUNVERIFIED; T57 and original D47 closure remain incomplete. No current runtime was run by evidencepeer."
+      },
+      {
+        "id": "EXT-D-0048",
+        "state": "fixed",
+        "title": null,
+        "verification_status": "Guarded D48 red: showcase-d48-red-001 and showcase-d48-boundary-red-002; chat consumer red showcase-d48-chat-red-001. Guarded green: showcase-d48-chat-green-001 (13 files/56 tests), showcase-d48-manual-green-001 (1/1), showcase-d48-utility-final-001 (4/4). Compile showcase-d48-compile-final-001 exit 0; catalog showcase-d48-catalog-001 exit 0 with only generated timestamps. Installed Chrome/network save and replay remain unverified. Installed run showcase-installed-d48-network-001 on rebuilt .109 source de819649 confirms known/unknown masking controls and normal public GET save/reopen/replay. Synthetic canary matcher was restored before save; credential-bearing persistence, rotation, ambiguity and Debug/chat live proof remain unverified. State stays fixed."
+      },
+      {
+        "id": "EXT-D-0054",
+        "state": "fixed",
+        "title": "TSV copy changes cell values and structure",
+        "verification_status": "Fixed, partial native acceptance. Gutenberg TSV preserves 719594-character field including 5613 newlines and 104 tabs under strict parsing. AFI native quote-bearing cells pasted correctly into Google Sheets as 101 rows including headers by 6 columns; three exact quote-bearing cells inspected. Quote-bearing headers remain unverified natively; Data quote-case and multiline spreadsheet paste remain open."
+      },
+      {
+        "id": "EXT-D-0057",
+        "state": "fixed",
+        "title": "Prepare synthesizes success when no execution report returns",
+        "verification_status": "Fixed, awaiting native retest. Guarded9tests/compile/build pass; source and test correction independently reviewed; original-code red proof retained. Artifact a8670bf7 not yet reloaded in Chrome."
+      },
+      {
+        "id": "EXT-D-0058",
+        "state": "in-fix",
+        "title": "Prepare retry retains stale success and late results",
+        "verification_status": "Candidate and correction78041e16 independently reviewed3d01fcf1. Reset and overlapping older-rejection assertions now pass; guarded combined D57/D58 18tests pass, prior guarded compile passes. Integrated build refused CPU_HIGH_LOAD_BUSY before launch; no new artifact. Remains in-fix pending build/native. SameURL identity tracked D59."
+      },
+      {
+        "id": "EXT-D-0059",
+        "state": "in-fix",
+        "title": "Same-URL reload lacks document identity for page-result invalidation",
+        "verification_status": "Picker productc17eb2c7 exactdocumenttarget/trustedsenderguard sourceaccepted03cbd7f1. Escalationfixture1457a283 corrected stale D43 navigation and exercises real lateDone; 29/29passed before finaltype-only mockcorrection. Compilefailed then typedtransportfixed unverified atcap. Fixture sourcepeer0cc4ac46 accepted lifecycle assertions. Next freshguardedtests/compile/build required; native/fullD59 stillopen."
+      },
+      {
+        "id": "EXT-D-0061",
+        "state": "fixed",
+        "title": "Note-list read failure is presented as an empty list",
+        "verification_status": "Independent exact0.2.139 native admin reproduction and adjacent runner cases passed. Member mode and remaining feature cases unverified; defect not globally closed."
+      },
+      {
+        "id": "EXT-D-0062",
+        "state": "fixed",
+        "title": "Failed note creation produces no user-visible result",
+        "verification_status": "Independent exact0.2.139 native admin reproduction and adjacent runner cases passed. Member mode and remaining feature cases unverified; defect not globally closed."
+      },
+      {
+        "id": "EXT-D-0063",
+        "state": "fixed",
+        "title": "Debounced note edits are dropped when a save is already in flight",
+        "verification_status": "Independent exact0.2.139 native admin reproduction and adjacent runner cases passed. Member mode and remaining feature cases unverified; defect not globally closed."
+      },
+      {
+        "id": "EXT-D-0064",
+        "state": "fixed",
+        "title": "Files read failure also renders an empty-library or empty-captures claim",
+        "verification_status": "Fixed in source; committed focused regression coverage is present but was not executed in this reconciliation. Native side-panel acceptance remains pending."
+      },
+      {
+        "id": "EXT-D-0065",
+        "state": "fixed",
+        "title": "Concurrent saved-capture opens can select a different item than the last click",
+        "verification_status": "Fixed in source; committed focused regression coverage is present but was not executed in this reconciliation. Native side-panel race acceptance remains pending."
+      },
+      {
+        "id": "EXT-D-0066",
+        "state": "retest-pass",
+        "title": null,
+        "verification_status": "Retest passes scoped to guest Chat availability/page-grounded first and post-reload answers and signed-in non-admin Chat completion on the 0.2.130 receipt-matched candidate. Reviewer presubmit 003 identity was verified by live database fingerprint match and absence of an admin assignment; the original sanitized runner field observed_role_category=absent is preserved as raw run output. The 0.2.130 ZIP was submitted and is Pending review, not yet public-verified. Keep defect open until published behavior is confirmed and the native signed-in-to-guest privacy transition is exercised. Broader Chat coverage remains unverified."
+      },
+      {
+        "id": "EXT-D-0067",
+        "state": "fixed",
+        "title": "Note detail read failure or missing note remains a loading skeleton",
+        "verification_status": "Independent exact0.2.139 native admin reproduction and adjacent runner cases passed. Member mode and remaining feature cases unverified; defect not globally closed."
+      },
+      {
+        "id": "EXT-D-0068",
+        "state": "fixed",
+        "title": "Unconfirmed note deletion silently closes the editor",
+        "verification_status": "Independent exact0.2.139 native admin reproduction and adjacent runner cases passed. Member mode and remaining feature cases unverified; defect not globally closed."
+      },
+      {
+        "id": "EXT-D-0069",
+        "state": "fixed",
+        "title": "Organization picker offers archived organization and Notes create is refused",
+        "verification_status": "Engineering verified and active organization selection/create passed in native admin run. Archived/stale-choice native matrix and member mode remain unverified."
+      },
+      {
+        "id": "EXT-D-0070",
+        "state": "fixed",
+        "title": "Saved-demo cloud read failure is reported as a missing demo",
+        "verification_status": "Focused demo tests passed (2 files, 16 tests), compile passed, swallowed-refusals check passed with tighter budgets. Full release139 checks passed and independent source review accepted the bounded correction. Native verification remains unverified; no closure is claimed."
+      },
+      {
+        "id": "EXT-D-0071",
+        "state": "fixed",
+        "title": "Records tool organization filter drifted from the canonical catalog default",
+        "verification_status": "Live audit.summary says tool.definition certified=true with zero fails. Strict tool-DB drift passed 82/82, focused records tests passed 10/10, and the required records guide, tool catalog and DB-sourced docs regenerated. Full release139 checks passed and independent source review accepted the bounded correction. Native verification remains unverified; no closure is claimed."
+      }
+    ]
+  },
+  "current_verified_checkpoint": {
+    "source_release": "0.2.139",
+    "release_commit": "ae6a3af1680148c0308d6eb285776ddafdb1039b",
+    "release_evidence_commit": "d7bebd0f",
+    "release_claim": "strict release gates passed: 1824 tests (5 skipped), compile/build, 82/82 tool definitions, migrations, Store package validation; no Chrome Web Store submission claim",
+    "local_artifact": "0.2.139 tree SHA256 20bbd42bdb782dbef2616aa0996cf947060b0117d84674de2234f8376971c19f; personal Chrome runtime reload not verified",
+    "native_notes": "independent exact-0.2.139 native run passed admin D61/D62/D63/D67/D68 plus adjacent cases; report docs/stabilization/reports/notes-queue-review.json; UI archive filter check also passed boundedly",
+    "supersession": "This is newer than docs/stabilization/STATUS.md and CHECKLIST.md coverage totals; use inventory + current coordinator/reports, not Sep 28 totals."
+  },
+  "major_gaps_and_next_actions": [
+    {
+      "priority": "P1",
+      "scope": "Coverage model / all contained surfaces",
+      "gap": "0 of 394 applicable feature-role pairs meet the inventory full-verification rule. Results: 57 pass, 125 explicitly unverified, 28 partial, 1 fail, 1 not-applicable, and 986 slots with no result record. Pass means historical case evidence, not automatically current-build evidence.",
+      "next": "Continue recording bounded runs by exact build and role; do not infer whole-feature health from a repaired defect or scoped pass."
+    },
+    {
+      "priority": "P1",
+      "scope": "Executable test procedures",
+      "gap": "168 cases lack steps, 167 lack expected outcomes, 31 lack control links. 173 registered-executor cases across the Tools surface alone include 167 missing procedures / expectations; current source inventory is not execution-ready there.",
+      "next": "Design each missing case from the live advertised tool contract and safe real fixtures before execution."
+    },
+    {
+      "priority": "P1",
+      "scope": "Current install and native breadth",
+      "gap": "0.2.139 release gates passed and isolated extension artifact is recorded, but personal Chrome reload is explicitly unverified; broad guest/member/admin sidepanel/content-script/service-worker/offscreen passes are absent.",
+      "next": "Bind native runs to current artifact receipt, real user surface and persona; preserve admission guard."
+    },
+    {
+      "priority": "P1",
+      "scope": "Notes, Files, Saved captures",
+      "gap": "Notes D61/D62/D63/D67/D68 have scoped exact139 admin native verification; feature/member breadth remains open. D64 Files and D65 saved-capture race are source-fixed with focused regression coverage but no native acceptance in current reconciliation.",
+      "next": "Do not reimplement Notes or D64/D65 source fixes; run remaining current-build native cases and update statuses only for observed outcomes."
+    },
+    {
+      "priority": "P1",
+      "scope": "Showcase / data / document identity",
+      "gap": "Showcase has 59 cases: admin 1 pass, 26 partial, 3 unverified, 28 no-result; D54 is fixed with partial native dimensions, while D42/D47/D58/D59 remain among the active in-fix defect records, with build/native or shared document-identity consumer gaps documented.",
+      "next": "Resume from their latest defect reports/checkpoint; avoid using historical artifact a8670bf7 as proof for newer corrections."
+    },
+    {
+      "priority": "P1",
+      "scope": "Registered tools",
+      "gap": "173 tool cases (154 member, 173 admin); only 4 slots in each role have explicit unverified records, the rest have no results. Procedures are substantially missing; current DB catalog parity 82/82 does not prove tool runtime behavior.",
+      "next": "Reconcile live roster; make procedures executable, then positive/refusal/permission/result-rendering checks with real data."
+    },
+    {
+      "priority": "P2",
+      "scope": "D69–D71 latest batch",
+      "gap": "D69 archived org visibility is bounded native-verified, but archived/stale choice and held-request paths remain open. D70 Guidance read-error/retry and D71 records cross-org runtime scope are source/release-verified; current native behavior remains unverified.",
+      "next": "Use the current checkpoint/report to run only the unverified paths."
+    },
+    {
+      "priority": "P2",
+      "scope": "Chat/Pilot",
+      "gap": "Wave D inventory includes 10 Chat and 5 Pilot cases; systematic coverage remains deferred. Incidental guest availability is not full Chat acceptance.",
+      "next": "Keep systematic Chat/Pilot behind contained-surface and case-procedure readiness; retain guest smoke as regression guard."
+    }
+  ],
+  "methodology": {
+    "source_of_truth": "inventory.json features/cases/results and defect JSON state fields; report receipts/coordinator used to reconcile newer evidence",
+    "classification": "case-mode status is counted only when that mode is listed on the case; missing results are no-result; feature-role full requires every applicable case pass and every feature control linked to a case",
+    "actions": "No product edits, tests, builds, browser launches, or external writes were performed."
+  },
+  "evidence_paths": [
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/COORDINATOR.md",
+    "docs/stabilization/STATUS.md",
+    "docs/stabilization/CHECKLIST.md",
+    "docs/stabilization/reports/notes-queue-review.json",
+    "docs/stabilization/reports/contained-state-reconcile-20260930.json",
+    "docs/stabilization/reports/document-identity-partial-peer.json",
+    "docs/stabilization/reports/prepare-corrected-verification.json",
+    "docs/stabilization/defects/EXT-D-0064.json",
+    "docs/stabilization/defects/EXT-D-0065.json",
+    "docs/stabilization/defects/EXT-D-0058.json",
+    "docs/stabilization/defects/EXT-D-0059.json",
+    "docs/stabilization/defects/EXT-D-0071.json"
+  ]
+}
