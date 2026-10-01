@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "task_id": "guest-grounding-peer-20261001",
+  "lane": "independent source review and bounded native verification",
+  "reviewed_commits": [
+    "657e0eac755f62d406a86dc914c05f47b27fd851",
+    "1f7071ee5b378040fdb927c057777fcf9858dc66"
+  ],
+  "verdict_b_source_quality": {
+    "result": "ACCEPTABLE_WITH_DIAGNOSTIC_LIMIT",
+    "evidence": [
+      "The collector retains allowlisted tool names, phases, coarse target classification, and booleans for fixture marker presence in completed results; snapshots omit call IDs, arguments, raw outputs, URLs, and marker values.",
+      "The runner samples fixture readability and URL, active tab identity, and per-run assigned-tab identity at terminal. Mid-turn identity sampling is diagnostic only and cannot alter the answer verdict.",
+      "The acceptance questions, required answer content, terminal classifier, and answer assertions are unchanged. Fixture reinsertion remains limited to the pre-send check; there is no reinsertion during tool execution.",
+      "The follow-up commit preserves a failed identity probe as null/unavailable, so instrumentation failure does not turn a valid answer into an acceptance failure."
+    ],
+    "limits": [
+      "The target label assigned_tab_or_non_tab_tool is intrinsically ambiguous for tools without explicit tab_id. Terminal per-run assigned-tab storage and the completed page-read result marker provide the useful attribution when available.",
+      "Tool-boundary identity snapshots are sampled by the polling loop after timeline events arrive; they are not atomic observations at handler entry. Use completed result marker booleans and terminal assigned-tab data as stronger evidence."
+    ],
+    "privacy_review": "No raw page data, tool arguments/results, URLs, IDs, or marker values are emitted by the diagnostic snapshot/report projection."
+  },
+  "verdict_a": {
+    "result": "FROZEN_0.2.173_GUEST_GROUNDING_AND_RELOAD_PASS",
+    "evidence": {
+      "candidate": "0.2.173",
+      "tree_sha256": "494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064",
+      "receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/release-receipt-frozen.json",
+      "native_run_id": "guest-grounding-peer-native-20261001-001",
+      "native_resource_journal": "docs/stabilization/resource-journals/guest-grounding-peer-native-20261001-001.jsonl",
+      "native_journal_sha256": "bd2201cddade194d31500e0fd3696079931b5a42da662ac0098e2c876e7f48d8",
+      "acceptance_receipt": "test-results/guest-chat-store-7f23e064-5a4a-40be-a50a-87c135caf389.json",
+      "acceptance_receipt_sha256": "e684e380dafa60f77c54f359231547c6428204c21f492ea1eba8a17199e316af",
+      "observed": "A fresh signed-out guest answered the opening question with the unpredictable article code and all three requested stages in order. After a real side-panel reload, the guest answered the follow-up with its unpredictable code and fixture heading. The completed context tool event contained all expected marker classes as booleans; terminal identity confirmed the assigned tab matched the fixture tab. Artifact hash remained unchanged."
+    },
+    "limits": "This is one successful native acceptance run against the frozen Store candidate. The diagnostic identifies the server tool as context and confirms result markers and terminal assigned-tab identity; it does not expose a per-tool explicit target ID."
+  },
+  "resource_admission": {
+    "status": "BOTH_RUNS_VALID",
+    "focused_guard": {
+      "run_id": "guest-grounding-peer-focused-20261001-001",
+      "result": "11 passed",
+      "journal": "docs/stabilization/resource-journals/guest-grounding-peer-focused-20261001-001.jsonl",
+      "journal_sha256": "7d2c5f341246cfbc838d2ec3a6908bef6b07e337e0ddf424792a1b1d03d4e491"
+    },
+    "native_attempt": "guest-grounding-peer-native-20261001-001; admitted, healthy watch, child exit 0, final decision valid"
+  },
+  "open_items": [
+    "The native report's fixture was reinstalled after panel reload before the follow-up question; the opening question used the already installed fixture without pre-send reinsertion.",
+    "The per-event identity probe is sampled by the runner poll; it should be read as diagnostic context, not an atomic tool-handler-entry trace."
+  ]
+}

@@ -1,12 +1,8 @@
 {
   "id": "EXT-D-0072",
   "feature_id": "EXT-F-0002",
-  "case_ids": [
-    "EXT-F-0002-T07"
-  ],
-  "impacted_case_ids": [
-    "EXT-F-2013-T10"
-  ],
+  "case_ids": ["EXT-F-0002-T07"],
+  "impacted_case_ids": ["EXT-F-2013-T10"],
   "title": "Guest Chat acceptance mistakes a delegated-tool handoff for a completed answer",
   "surface": "Native side-panel acceptance runner",
   "auth_mode": "guest",

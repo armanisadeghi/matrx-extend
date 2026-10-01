@@ -88,7 +88,8 @@ async function privateConfig() {
         source.landing_proof?.pre_save_matching_rows !== 0 ||
         source.landing_proof?.requested_identity !== source.url ||
         source.landing_proof?.requested_organization_id !== value.approved_organization_id
-      ) fail(`${key}_ownership_unproven`);
+      )
+        fail(`${key}_ownership_unproven`);
     }
     if (value.source_a.id === value.source_b.id || value.source_a.title === value.source_b.title)
       fail('source_pair_not_distinct');
@@ -97,7 +98,9 @@ async function privateConfig() {
 }
 
 async function existingSourceCount(panel, origin, publishableKey, organizationId, identity) {
-  const result = await evaluate(panel, `(async () => {
+  const result = await evaluate(
+    panel,
+    `(async () => {
     const token = (await chrome.storage.local.get('matrx.auth.accessToken'))['matrx.auth.accessToken'];
     if (!token) return { error: 'no_session' };
     const query = new URL(${JSON.stringify(`${origin}/rest/v1/processed_documents`)});
@@ -111,7 +114,8 @@ async function existingSourceCount(panel, origin, publishableKey, organizationId
     if (!response.ok) return { error: 'read_refused', status: response.status };
     const rows = await response.json();
     return { count: Array.isArray(rows) ? rows.length : null };
-  })()`);
+  })()`,
+  );
   if (result?.count !== 0) fail('fixture_identity_not_proven_absent');
   return result.count;
 }
@@ -123,7 +127,11 @@ function captureLandingReceipt(panel, origin, identity, organizationId) {
   let settled = false;
   const off = panel.on('Fetch.requestPaused', (event) => {
     const url = new URL(event.request.url);
-    if (url.origin !== origin || url.pathname !== '/sources/land' || event.request.method !== 'POST') {
+    if (
+      url.origin !== origin ||
+      url.pathname !== '/sources/land' ||
+      event.request.method !== 'POST'
+    ) {
       void panel.send('Fetch.continueRequest', { requestId: event.requestId }).catch(() => {
         error = 'unrelated_request_resume_failed';
       });
@@ -132,16 +140,19 @@ function captureLandingReceipt(panel, origin, identity, organizationId) {
     seen++;
     void (async () => {
       try {
-        const postData = event.request.postData ?? (
-          event.networkId
-            ? (await panel.send('Network.getRequestPostData', { requestId: event.networkId })).postData
-            : null
-        );
+        const postData =
+          event.request.postData ??
+          (event.networkId
+            ? (await panel.send('Network.getRequestPostData', { requestId: event.networkId }))
+                .postData
+            : null);
         const request = JSON.parse(postData ?? '{}');
         const { body, base64Encoded } = await panel.send('Fetch.getResponseBody', {
           requestId: event.requestId,
         });
-        const landed = JSON.parse(base64Encoded ? Buffer.from(body, 'base64').toString('utf8') : body);
+        const landed = JSON.parse(
+          base64Encoded ? Buffer.from(body, 'base64').toString('utf8') : body,
+        );
         receipt = {
           http_status: event.responseStatusCode,
           requested_identity: request.canonical_identity,
@@ -154,13 +165,15 @@ function captureLandingReceipt(panel, origin, identity, organizationId) {
         };
         if (
           seen !== 1 ||
-          receipt.http_status < 200 || receipt.http_status >= 300 ||
+          receipt.http_status < 200 ||
+          receipt.http_status >= 300 ||
           receipt.requested_identity !== identity ||
           receipt.requested_organization_id !== organizationId ||
           !UUID.test(receipt.processed_document_id) ||
           receipt.reused_existing !== false ||
           landed.new_version_of != null
-        ) error = 'landing_not_new_exact_source';
+        )
+          error = 'landing_not_new_exact_source';
       } catch {
         error = 'landing_receipt_unreadable';
       } finally {
@@ -187,7 +200,16 @@ function captureLandingReceipt(panel, origin, identity, organizationId) {
 }
 
 // These are public demo/reference pages; the runner never rewrites their content.
-async function createDemoSource(page, panel, variant, runId, fixture, saveReceipt, origin, publishableKey) {
+async function createDemoSource(
+  page,
+  panel,
+  variant,
+  runId,
+  fixture,
+  saveReceipt,
+  origin,
+  publishableKey,
+) {
   stage = `fixture_${variant}`;
   const candidate = new URL(DEMO_PAGES[variant]);
   candidate.searchParams.set('matrx_fixture', `${runId}-${variant}`);
@@ -203,11 +225,15 @@ async function createDemoSource(page, panel, variant, runId, fixture, saveReceip
   await click(panel, 'button-text', 'Capture');
   await waitFor(
     'fixture_capture_ready',
-    () => evaluate(panel, `(() => {
+    () =>
+      evaluate(
+        panel,
+        `(() => {
       const tab = document.querySelector('button[role="tab"][title="Scrape"]');
       const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
       return [...(root?.querySelectorAll('button') ?? [])].some(b => b.textContent.trim() === 'Save');
-    })()`),
+    })()`,
+      ),
     Boolean,
     45_000,
   );
@@ -216,15 +242,20 @@ async function createDemoSource(page, panel, variant, runId, fixture, saveReceip
   try {
     await click(panel, 'button-text', 'Save');
     const captured = await waitFor(
-      'fixture_landing_receipt', landing.read,
+      'fixture_landing_receipt',
+      landing.read,
       (state) => state.settled === true,
       60_000,
     );
     if (captured.receipt) {
       const source = {
         id: captured.receipt.processed_document_id,
-        title, url, created_at: captured.receipt.captured_at,
-        run_id: runId, test_owned: captured.error === null, landing_proof: captured.receipt,
+        title,
+        url,
+        created_at: captured.receipt.captured_at,
+        run_id: runId,
+        test_owned: captured.error === null,
+        landing_proof: captured.receipt,
         created_via: 'native Scrape Capture and Save UI',
       };
       fixture.sources.push(source);
@@ -236,12 +267,16 @@ async function createDemoSource(page, panel, variant, runId, fixture, saveReceip
   }
   await waitFor(
     'fixture_source_saved',
-    () => evaluate(panel, `(() => {
+    () =>
+      evaluate(
+        panel,
+        `(() => {
       const tab = document.querySelector('button[role="tab"][title="Scrape"]');
       const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
       return [...(root?.querySelectorAll('button') ?? [])].some(b =>
         b.textContent.trim() === 'Open this Source (opens in the web app)');
-    })()`),
+    })()`,
+      ),
     Boolean,
     60_000,
   );
@@ -258,27 +293,34 @@ async function createDemoSource(page, panel, variant, runId, fixture, saveReceip
     sourceUrl.protocol !== 'https:' ||
     !['aimatrx.com', 'www.aimatrx.com'].includes(sourceUrl.hostname) ||
     !UUID.test(id)
-  ) fail('fixture_source_link_invalid');
+  )
+    fail('fixture_source_link_invalid');
   const source = fixture.sources.at(-1);
   if (source.id !== id) fail('fixture_ui_link_landing_id_mismatch');
   return source;
 }
 
 async function createFixturePair(page, panel, config, build, origin, publishableKey) {
-  if (ROLE !== 'admin' || config.source_a || config.source_b) fail('fixture_requires_empty_admin_pair');
-  const backend = await evaluate(panel, `(async () => {
+  if (ROLE !== 'admin' || config.source_a || config.source_b)
+    fail('fixture_requires_empty_admin_pair');
+  const backend = await evaluate(
+    panel,
+    `(async () => {
     const saved = await chrome.storage.local.get(['matrx.backend.env', 'matrx.backend.urlOverride']);
     return { env: saved['matrx.backend.env'] ?? null,
       override: saved['matrx.backend.urlOverride'] ?? null };
-  })()`);
+  })()`,
+  );
   if (backend.env !== null && backend.env !== 'prod') fail('fixture_backend_not_production');
-  if (backend.override !== null && backend.override !== '') fail('fixture_backend_override_present');
+  if (backend.override !== null && backend.override !== '')
+    fail('fixture_backend_override_present');
   const previous = JSON.parse(await readFile(FIXTURE_OUTPUT, 'utf8'));
   if (
     previous.sources?.length &&
     (previous.status !== 'cleaned' ||
       previous.sources.some((source) => !previous.deleted_source_ids?.includes(source.id)))
-  ) fail('fixture_prior_sources_require_review');
+  )
+    fail('fixture_prior_sources_require_review');
   const runId = `saved-capture-fixture-${randomUUID()}`;
   const fixture = {
     schema_version: 1,
@@ -288,13 +330,24 @@ async function createFixturePair(page, panel, config, build, origin, publishable
     run_id: runId,
     source_scope: 'two test-owned public demo/reference pages saved through native Scrape UI',
     sources: [],
-    cleanup: 'Delete only the exact Source IDs recorded here through Saved captures UI after D65 retest.',
+    cleanup:
+      'Delete only the exact Source IDs recorded here through Saved captures UI after D65 retest.',
   };
-  const saveReceipt = async () => writeFile(FIXTURE_OUTPUT, `${JSON.stringify(fixture, null, 2)}\n`);
+  const saveReceipt = async () =>
+    writeFile(FIXTURE_OUTPUT, `${JSON.stringify(fixture, null, 2)}\n`);
   await saveReceipt();
   try {
     for (const variant of ['A', 'B']) {
-      await createDemoSource(page, panel, variant, runId, fixture, saveReceipt, origin, publishableKey);
+      await createDemoSource(
+        page,
+        panel,
+        variant,
+        runId,
+        fixture,
+        saveReceipt,
+        origin,
+        publishableKey,
+      );
     }
     if (fixture.sources[0].id === fixture.sources[1].id) fail('fixture_ids_not_distinct');
     await click(panel, 'title', 'Saved captures');
@@ -329,16 +382,19 @@ async function cleanupFixturePair(page, panel, config) {
     (config.source_a && fixture.sources[0].id !== config.source_a.id) ||
     (config.source_b && fixture.sources[1]?.id !== config.source_b.id) ||
     (fixture.status === 'created' && (!config.source_a || !config.source_b)) ||
-    fixture.sources.some((source) =>
-      source.test_owned !== true ||
-      source.run_id !== fixture.run_id ||
-      source.landing_proof?.processed_document_id !== source.id ||
-      source.landing_proof?.pre_save_matching_rows !== 0 ||
-      source.landing_proof?.reused_existing !== false ||
-      source.landing_proof?.new_version_of !== null ||
-      source.landing_proof?.requested_organization_id !== fixture.organization_id ||
-      source.landing_proof?.requested_identity !== source.url)
-  ) fail('cleanup_provenance_mismatch');
+    fixture.sources.some(
+      (source) =>
+        source.test_owned !== true ||
+        source.run_id !== fixture.run_id ||
+        source.landing_proof?.processed_document_id !== source.id ||
+        source.landing_proof?.pre_save_matching_rows !== 0 ||
+        source.landing_proof?.reused_existing !== false ||
+        source.landing_proof?.new_version_of !== null ||
+        source.landing_proof?.requested_organization_id !== fixture.organization_id ||
+        source.landing_proof?.requested_identity !== source.url,
+    )
+  )
+    fail('cleanup_provenance_mismatch');
   fixture.deleted_source_ids ??= [];
   await click(panel, 'title', 'Saved captures');
   for (const source of fixture.sources) {
@@ -347,11 +403,15 @@ async function cleanupFixturePair(page, panel, config) {
     await sourceRowClick(panel, source);
     await waitFor(
       'cleanup_source_detail_visible',
-      () => evaluate(panel, `(() => {
+      () =>
+        evaluate(
+          panel,
+          `(() => {
         const tab = document.querySelector('button[role="tab"][title="Saved captures"]');
         const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
         return root?.querySelector('header .font-semibold')?.textContent.trim();
-      })()`),
+      })()`,
+        ),
       (title) => title === source.title,
       30_000,
     );
@@ -361,7 +421,9 @@ async function cleanupFixturePair(page, panel, config) {
     await sourcePage.waitForURL((target) => target.pathname.startsWith('/knowledge/sources/'), {
       timeout: 15_000,
     });
-    const actualId = /^\/knowledge\/sources\/([0-9a-f-]{36})$/i.exec(new URL(sourcePage.url()).pathname)?.[1];
+    const actualId = /^\/knowledge\/sources\/([0-9a-f-]{36})$/i.exec(
+      new URL(sourcePage.url()).pathname,
+    )?.[1];
     await sourcePage.close();
     if (actualId !== source.id) fail('cleanup_detail_id_mismatch');
     await trustedFeatureClick(panel, 'Saved captures', 'button', 'Back to saved captures');
@@ -369,12 +431,16 @@ async function cleanupFixturePair(page, panel, config) {
     await click(panel, 'button-text', 'Delete');
     await waitFor(
       'cleanup_exact_source_absent',
-      () => evaluate(panel, `(() => {
+      () =>
+        evaluate(
+          panel,
+          `(() => {
         const tab = document.querySelector('button[role="tab"][title="Saved captures"]');
         const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
         return [...(root?.querySelectorAll('article > button') ?? [])]
           .some(row => row.querySelector('.font-medium')?.textContent.trim() === ${JSON.stringify(source.title)});
-      })()`),
+      })()`,
+        ),
       (visible) => visible === false,
       30_000,
     );
@@ -707,7 +773,10 @@ function interceptSourceDetail(panel, origin, sourceA, sourceB) {
     if (requestId === bNetworkId && bSuccessfulResponse) bCompleted = true;
   });
   const offFailed = panel.on('Network.loadingFailed', ({ requestId }) => {
-    if (requestId === aNetworkId) { aSettled = true; aFailed = true; }
+    if (requestId === aNetworkId) {
+      aSettled = true;
+      aFailed = true;
+    }
     if (requestId === bNetworkId) interceptionError = true;
   });
   const off = panel.on('Fetch.requestPaused', (event) => {
@@ -1061,7 +1130,9 @@ async function main() {
   if (hashReleaseTree(build.extensionDir) !== build.treeSha256) fail('build_changed_during_run');
   report.status = FIXTURE_MODE
     ? `fixture-${FIXTURE_MODE === 'create' ? 'created' : 'cleaned'}`
-    : report.cases.D64 === 'pass' && report.cases.D65 === 'pass' ? 'bounded-pass' : 'partial';
+    : report.cases.D64 === 'pass' && report.cases.D65 === 'pass'
+      ? 'bounded-pass'
+      : 'partial';
 }
 
 try {
@@ -1077,5 +1148,6 @@ try {
   process.stdout.write(
     `${report.status.toUpperCase()} files_saved_native ${report.failure_code ?? ''}\n`,
   );
-  if (!['bounded-pass', 'fixture-created', 'fixture-cleaned'].includes(report.status)) process.exitCode = 1;
+  if (!['bounded-pass', 'fixture-created', 'fixture-cleaned'].includes(report.status))
+    process.exitCode = 1;
 }
