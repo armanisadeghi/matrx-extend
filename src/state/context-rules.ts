@@ -40,6 +40,9 @@ import {
 import type { ContextReceiptData } from '@gen/stream-events';
 import { create } from 'zustand';
 
+/** The extension's composers — each has its own chip, preview and last-sent rows. */
+export type ContextComposer = 'chat' | 'pilot';
+
 export interface ReceiptEntry {
   receipt: ContextReceipt;
   mismatches: ContextReceiptMismatch[];
@@ -52,26 +55,24 @@ interface ContextRulesState {
   loaded: boolean;
   /** The last read failed — the chip says so instead of reading as "no rules". */
   loadFailed: boolean;
-  /** The values the chip previews for the next turn (read when it opens). */
-  previewSources: ContextRowSource[] | null;
-  previewing: boolean;
+  /** The values each composer's chip previews for its next turn (read when it opens). */
+  previewSourcesByComposer: Partial<Record<ContextComposer, ContextRowSource[]>>;
   /** Rows each run's request was built from (values stripped), by run id. */
   expectedByRun: Record<string, ResolvedContextRow[]>;
   /** The last receipt per conversation. */
   receiptByConversation: Record<string, ReceiptEntry>;
-  /** The rows the LAST send used (values stripped) — shown until a preview is read. */
-  lastSentRows: ResolvedContextRow[];
+  /** The rows each composer's LAST send used (values stripped) — shown until a preview is read. */
+  lastSentRowsByComposer: Partial<Record<ContextComposer, ResolvedContextRow[]>>;
 }
 
 export const useContextRulesStore = create<ContextRulesState>(() => ({
   rows: {},
   loaded: false,
   loadFailed: false,
-  previewSources: null,
-  previewing: false,
+  previewSourcesByComposer: {},
   expectedByRun: {},
   receiptByConversation: {},
-  lastSentRows: [],
+  lastSentRowsByComposer: {},
 }));
 
 // ── Load ────────────────────────────────────────────────────────────────────
@@ -87,7 +88,9 @@ export function loadContextRules(force = false): Promise<void> {
       const { data, error } = await usersDb()
         .from('user_surface_state')
         .select('surface_key, state')
-        .eq('feature', CONTEXT_RULES_FEATURE);
+        .eq('feature', CONTEXT_RULES_FEATURE)
+        // The server reads only live rows (deleted_at IS NULL); so does the chip.
+        .is('deleted_at', null);
       if (error) {
         void recordDbFailure(
           {
@@ -152,6 +155,9 @@ function queueRowWrite(surfaceKey: string): Promise<void> {
             feature: CONTEXT_RULES_FEATURE,
             surface_key: surfaceKey,
             state: latest,
+            // An archived row for this key would swallow the upsert and the
+            // server (which reads live rows only) would never see the rule.
+            deleted_at: null,
           },
           { onConflict: 'user_id,feature,surface_key' },
         );
@@ -219,10 +225,14 @@ export function resetContextRules(surfaceKey: string): Promise<void> {
 // ── Per-turn rows and the receipt ───────────────────────────────────────────
 
 /** Record the rows a run's request was built from (values already stripped). */
-export function rememberRunContextRows(runId: string, rows: ResolvedContextRow[]): void {
+export function rememberRunContextRows(
+  composer: ContextComposer,
+  runId: string,
+  rows: ResolvedContextRow[],
+): void {
   useContextRulesStore.setState((s) => ({
     expectedByRun: { ...s.expectedByRun, [runId]: rows },
-    lastSentRows: rows,
+    lastSentRowsByComposer: { ...s.lastSentRowsByComposer, [composer]: rows },
   }));
 }
 

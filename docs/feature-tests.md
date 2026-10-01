@@ -325,7 +325,8 @@ Every entry follows this shape:
   rule is saved to the same per-person store the web app and the server use,
   so it holds on every device and every turn. After each turn the chip turns
   amber if the server delivered differently than the chip showed.
-- **Where to test:** Side panel → **Chat**, signed in, on a long article page.
+- **Where to test:** Side panel → **Chat** and **Pilot** (each composer has its own
+  chip, last send and receipt), signed in, on a long article page.
 - **Steps:** Open the chip; turn **Page content** off; send "summarize this
   page". Open the chip again and reset all; send again.
 - **Expected:** First send: the request has no `page_full_content` and the

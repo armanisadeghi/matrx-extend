@@ -448,7 +448,7 @@ export function usePilotChatStream() {
       } catch (err) {
         log.warn('pilot-stream', 'buildChatContext failed', err);
       }
-      rememberRunContextRows(runId, rowsWithoutValues(built.rows));
+      rememberRunContextRows('pilot', runId, rowsWithoutValues(built.rows));
 
       const permissionMode = usePilotChatStore.getState().getPermissionMode(opts.agentId);
 
@@ -664,7 +664,7 @@ export function usePilotChatStream() {
         );
       }
 
-      rememberRunContextRows(runId, rowsWithoutValues(built.rows));
+      rememberRunContextRows('pilot', runId, rowsWithoutValues(built.rows));
       const body: Record<string, unknown> = {
         ...(built.context !== undefined && { context: built.context }),
         // Provenance: a resume is ALWAYS client code (STREAM_CONTINUE after a

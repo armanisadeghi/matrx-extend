@@ -13,7 +13,7 @@ vi.mock('@/lib/supabase/schemas', () => ({
       if (table !== 'user_surface_state') throw new Error(`unexpected table ${table}`);
       return {
         upsert,
-        select: () => ({ eq: select }),
+        select: () => ({ eq: () => ({ is: select }) }),
       };
     },
   }),
@@ -38,6 +38,7 @@ import {
   saveContextRule,
   useContextRulesStore,
 } from '@/state/context-rules';
+import { usePilotChatStore } from '@/state/pilot-chat';
 import { resolveContextRow } from '@ai-matrx/agents/context';
 
 const PAGE_ROW = resolveContextRow(
@@ -71,6 +72,7 @@ describe('context rules: the person’s one home', () => {
         feature: 'context_rules',
         surface_key: '_default',
         state: { page_full_content: { include: false } },
+        deleted_at: null,
       },
       { onConflict: 'user_id,feature,surface_key' },
     );
@@ -102,16 +104,17 @@ describe('ContextRulesComposerChip', () => {
   beforeEach(() => {
     useAuthStore.setState({ user: null } as never);
     useChatStore.setState({ selectedConversationId: 'conv-1' } as never);
+    usePilotChatStore.setState({ selectedConversationId: 'pilot-1' } as never);
     useContextRulesStore.setState({
       rows: {},
-      previewSources: null,
-      lastSentRows: [PAGE_ROW],
+      previewSourcesByComposer: {},
+      lastSentRowsByComposer: { chat: [PAGE_ROW] },
       receiptByConversation: {},
     });
   });
 
   it('shows the values the last send carried', () => {
-    render(<ContextRulesComposerChip />);
+    render(<ContextRulesComposerChip composer="chat" />);
     const face = screen.getByRole('button', { name: 'Context: Context' });
     // The face: label + how many values ride (sizes are in the popover table).
     expect(face.textContent).toBe('Context1');
@@ -137,7 +140,47 @@ describe('ContextRulesComposerChip', () => {
         },
       },
     });
-    render(<ContextRulesComposerChip />);
+    render(<ContextRulesComposerChip composer="chat" />);
+    expect(
+      screen.getByRole('button', { name: 'Context: Context' }).getAttribute('data-mismatch'),
+    ).toBe('true');
+  });
+
+  it("Pilot shows its own last send and its own receipt, never the Assistant chat's", () => {
+    useContextRulesStore.setState({
+      lastSentRowsByComposer: {
+        chat: [PAGE_ROW],
+        pilot: [PAGE_ROW, { ...PAGE_ROW, key: 'page_brief' }],
+      },
+      receiptByConversation: {
+        'conv-1': {
+          receipt: {
+            version: 1,
+            surface: null,
+            cap: 50000,
+            model_reads_context: true,
+            rules_error: null,
+            rows: [],
+          },
+          mismatches: [
+            { key: 'page_full_content', field: 'missing', expected: true, actual: null },
+          ],
+          receivedAt: 1,
+        },
+      },
+    });
+    render(<ContextRulesComposerChip composer="pilot" />);
+    const face = screen.getByRole('button', { name: 'Context: Context' });
+    expect(face.textContent).toBe('Context2');
+    expect(face.getAttribute('data-mismatch')).toBeNull();
+    cleanup();
+    useContextRulesStore.setState((st) => ({
+      receiptByConversation: {
+        ...st.receiptByConversation,
+        'pilot-1': st.receiptByConversation['conv-1']!,
+      },
+    }));
+    render(<ContextRulesComposerChip composer="pilot" />);
     expect(
       screen.getByRole('button', { name: 'Context: Context' }).getAttribute('data-mismatch'),
     ).toBe('true');

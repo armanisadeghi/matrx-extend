@@ -859,7 +859,7 @@ export function useChatStream() {
         log.warn('stream', 'buildChatContext failed; sending without context', err);
       }
       // The rows this request is built from — the receipt is checked against them.
-      rememberRunContextRows(runId, rowsWithoutValues(built.rows));
+      rememberRunContextRows('chat', runId, rowsWithoutValues(built.rows));
 
       // Read once at send time so the latched mode follows the run, even if the
       // user toggles the chip mid-stream.
@@ -1219,7 +1219,7 @@ export function useChatStream() {
         log.warn('stream', 'buildChatContext failed for resume; resuming without context', err);
       }
 
-      rememberRunContextRows(runId, rowsWithoutValues(built.rows));
+      rememberRunContextRows('chat', runId, rowsWithoutValues(built.rows));
       const body: Record<string, unknown> = {
         ...(built.context !== undefined && { context: built.context }),
         // Provenance: a resume is ALWAYS client code, never a gesture. It is

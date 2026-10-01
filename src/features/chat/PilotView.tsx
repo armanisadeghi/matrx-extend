@@ -68,6 +68,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BreathingOrb } from './BreathingOrb';
+import { ContextRulesComposerChip } from './ContextRulesComposerChip';
 import { chatMarkdownRegistry } from './markdown-registry';
 
 const PILOT_SUGGESTIONS = [
@@ -870,6 +871,7 @@ function Composer({
           }}
         />
         <div className="flex items-center gap-1 px-2 pb-2 pt-1">
+          <ContextRulesComposerChip composer="pilot" />
           <div className="ml-auto flex items-center gap-1">
             {isStreaming ? (
               <button

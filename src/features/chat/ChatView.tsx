@@ -1520,7 +1520,7 @@ function Composer({
         <div className="flex items-center gap-1 px-2 pb-2 pt-1">
           <ComposerSettingsChip />
           <GoogleFileAttachmentChip />
-          <ContextRulesComposerChip />
+          <ContextRulesComposerChip composer="chat" />
 
           <div className="ml-auto flex items-center gap-1">
             <button

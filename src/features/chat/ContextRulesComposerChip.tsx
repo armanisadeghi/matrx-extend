@@ -26,12 +26,14 @@ import { useAuthStore } from '@/state/auth';
 import { useAutoScrapeStore } from '@/state/auto-scrape';
 import { useChatStore } from '@/state/chat';
 import {
+  type ContextComposer,
   loadContextRules,
   resetContextRules,
   saveContextRule,
   useContextRulesStore,
 } from '@/state/context-rules';
 import { useDesktopStore } from '@/state/desktop';
+import { usePilotChatStore } from '@/state/pilot-chat';
 import { useScrapeStore } from '@/state/scrape';
 import {
   DEFAULT_INLINE_CAP,
@@ -42,10 +44,15 @@ import { ContextRulesChip, ContextRulesPanelBody } from '@ai-matrx/agents/contex
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@ai-matrx/design-system';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-/** Read every value the next turn would carry — the send path's own builder. */
-async function readPreviewSources(conversationId: string | null): Promise<void> {
-  const store = useContextRulesStore;
-  store.setState({ previewing: true });
+/**
+ * Read every value the next turn would carry — the send path's own builder,
+ * with the same inputs that composer's send passes (Pilot attaches no
+ * highlights or Google files).
+ */
+async function readPreviewSources(
+  composer: ContextComposer,
+  conversationId: string | null,
+): Promise<void> {
   try {
     const user = useAuthStore.getState().user;
     const values = await buildChatContextValues({
@@ -55,22 +62,32 @@ async function readPreviewSources(conversationId: string | null): Promise<void> 
       autoScrape: useAutoScrapeStore.getState().current,
       activeTab: await resolveActiveTab(),
       conversationId,
-      highlights: await resolveAttachedHighlights(),
-      googleFileIds: resolveAttachedGoogleFileIds(),
+      ...(composer === 'chat' && {
+        highlights: await resolveAttachedHighlights(),
+        googleFileIds: resolveAttachedGoogleFileIds(),
+      }),
     });
-    store.setState({ previewSources: contextRowSources(values).sources });
+    useContextRulesStore.setState((s) => ({
+      previewSourcesByComposer: {
+        ...s.previewSourcesByComposer,
+        [composer]: contextRowSources(values).sources,
+      },
+    }));
   } catch (err) {
     log.warn('stream', 'context preview read failed', err);
-  } finally {
-    store.setState({ previewing: false });
   }
 }
 
-export function ContextRulesComposerChip() {
-  const conversationId = useChatStore((s) => s.selectedConversationId);
+const NO_ROWS: never[] = [];
+
+/** The chip for one composer: `chat` (Assistant) or `pilot`. */
+export function ContextRulesComposerChip({ composer }: { composer: ContextComposer }) {
+  const chatConversationId = useChatStore((s) => s.selectedConversationId);
+  const pilotConversationId = usePilotChatStore((s) => s.selectedConversationId);
+  const conversationId = composer === 'pilot' ? pilotConversationId : chatConversationId;
   const saved = useContextRulesStore((s) => s.rows);
-  const previewSources = useContextRulesStore((s) => s.previewSources);
-  const lastSentRows = useContextRulesStore((s) => s.lastSentRows);
+  const previewSources = useContextRulesStore((s) => s.previewSourcesByComposer[composer]);
+  const lastSentRows = useContextRulesStore((s) => s.lastSentRowsByComposer[composer] ?? NO_ROWS);
   const receiptEntry = useContextRulesStore((s) =>
     conversationId ? s.receiptByConversation[conversationId] : undefined,
   );
@@ -111,9 +128,9 @@ export function ContextRulesComposerChip() {
     (open: boolean) => {
       if (!open) return;
       void loadContextRules();
-      void readPreviewSources(conversationId);
+      void readPreviewSources(composer, conversationId);
     },
-    [conversationId],
+    [composer, conversationId],
   );
 
   const onChange = useCallback(
