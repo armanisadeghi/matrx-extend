@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "lane": "independent source/native verifier; zero runner authorship",
+  "subject": "EXT-D-0065 Saved captures last-click race on frozen 0.2.173",
+  "reviewed_at": "2026-10-01",
+  "subject_commit": "5cd121a2",
+  "frozen_receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/release-receipt-frozen.json",
+  "expected_tree_sha256": "494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064",
+  "source_review": {
+    "result": "STOP_BEFORE_BROWSER_LAUNCH",
+    "critical_finding": "The fixture assigns test_owned=true to a Source ID obtained from a Save UI link, but does not prove that Save created that row. It uses fixed public example.com and IANA URLs. The landing contract exposes reused_existing and new_version_of, and Scrape explicitly says a repeat save keeps the same page as one Source. A returned ID can therefore name a pre-existing organization Source. The cleanup path would soft-delete that exact ID from the organization even though the fixture did not create it. Exact ID matching in cleanup proves row identity, not ownership.",
+    "critical_evidence": [
+      "tests/browser/files-saved-native-acceptance.mjs:34 fixed demo URLs",
+      "tests/browser/files-saved-native-acceptance.mjs:90-141 Save UI link becomes test_owned=true without a baseline or landing-new proof",
+      "src/lib/api/routes/sources.ts:74-75 landing response distinguishes reused_existing/new_version_of",
+      "src/features/scrape/ScrapeView.tsx:330 same page is kept as one Source",
+      "tests/browser/files-saved-native-acceptance.mjs:189-241 cleanup soft-deletes the asserted-owned IDs",
+      "src/lib/supabase/queries.ts:827-846 deleteSavedCapture sets deleted_at"
+    ],
+    "partial_creation_risk": "After Save lands, the runner waits for and clicks a web-app Source link before it records the ID. If link discovery or tab navigation fails after landing, fixture.sources remains empty for that row. The catch records only a stage and requires later exact-ID review, but the report contains no ID to review. No safe exact-owned cleanup is then possible from its evidence alone.",
+    "partial_creation_evidence": [
+      "tests/browser/files-saved-native-acceptance.mjs:113-141 ID extracted only after Save and link navigation",
+      "tests/browser/files-saved-native-acceptance.mjs:161-164 fixture report appended only after createDemoSource returns",
+      "tests/browser/files-saved-native-acceptance.mjs:182-186 partial catch has no recovery ID"
+    ],
+    "oracle_limit": "D65 checks B's title after A network settlement and two animation frames. The assertion can succeed before a late A response has completed its JavaScript continuation and React commit; it does not itself prove B remains selected after all A handling. This is a quality risk to fix before claiming the race is guarded.",
+    "oracle_evidence": "tests/browser/files-saved-native-acceptance.mjs:706-741",
+    "safe_next_step": "Use unique, run-specific page identities and establish an absent pre-save baseline for both in the selected organization, then prove the landing returned new rows and durably record each exact ID at the earliest successful boundary. Restrict cleanup to IDs with that provenance. Strengthen D65 to observe a settled UI after A's full handling, including the late-failure path. Re-review source before browser admission."
+  },
+  "verdict_A_actual_runtime": {
+    "result": "UNVERIFIED",
+    "EXT-D-0065": "No fixture creation, D65 race, or cleanup was run. Source safety review stopped before launch.",
+    "EXT-D-0064": "Prior independent report records admin D64 pass on 0.2.173; this verifier did not rerun it.",
+    "guest": "Prior independent report records guest tab absence on 0.2.173; this verifier did not rerun it.",
+    "resource": "No resource guard invoked, no browser profile launched, no new journal, no Source rows created or deleted by this lane."
+  },
+  "verdict_B_runner_quality": {
+    "result": "FAIL",
+    "reason": "Fixture provenance is insufficient for safe cleanup, partial-save recovery can lose the exact ID, and the D65 post-settlement oracle can pass before the stale response's UI effect. A green native run under this runner would not by itself prove safe fixture ownership or the full last-click outcome."
+  },
+  "prior_evidence": "docs/stabilization/reports/files-fresh-acceptance-20261001.json",
+  "private_config": "test-results/files-saved-private-config.json was inspected only for mode and pair presence: 0600, approved organization configured, source_a and source_b absent. No secret or identifier value was printed.",
+  "attempts_used": 0,
+  "next_action_owner": "Fixture implementer repairs source and obtains independent source re-review; only then use the sole heavy/browser permit for guarded create, D65, and exact-owned cleanup."
+}
