@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "scope": "fresh owned guest profile; unpredictable page fixture; real Chat answer and post-reload guest follow-up",
+  "status": "unverified",
+  "build": {
+    "version": "0.2.173",
+    "tree_sha256": "494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064",
+    "receipt_kind": "release"
+  },
+  "guest": {
+    "fresh": true,
+    "chat_visible": true,
+    "after_reload": false,
+    "fixture_reinstalled_before_first_send": false
+  },
+  "chat": null,
+  "screenshot": null,
+  "followup_screenshot": null,
+  "failure_stage": "real_guest_answer",
+  "failure_code": "assertionerror",
+  "failure_reason": "real guest answer must contain the page-specific code and workflow stages",
+  "stage_progress": [
+    "owned_profile",
+    "fresh_guest",
+    "public_demo_page",
+    "page_specific_fixture",
+    "guest_chat_open",
+    "guest_question",
+    "real_guest_answer"
+  ],
+  "guest_ai_requests": [],
+  "failure_observation": {
+    "guestAccount": true,
+    "accessTokenAbsent": true,
+    "profileAbsent": true,
+    "organizationAbsent": true,
+    "chatVisible": true,
+    "chatSelected": true,
+    "paneVisible": true,
+    "composerVisible": true,
+    "composerLength": 0,
+    "sendEnabled": false,
+    "streaming": false,
+    "replyCount": 2,
+    "answerContainsNonce": false,
+    "answerContainsFixtureHeading": false,
+    "answerMatchesPublicStages": false,
+    "answerIsRefusal": false,
+    "terminalAnswerError": false,
+    "interruptionNotice": false,
+    "errorNotice": false,
+    "latestAssistantReply": "Reasoning\nFinding text",
+    "visibleAlerts": []
+  },
+  "failure_screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-xuI4F5/guest-chat-failure.png"
+}

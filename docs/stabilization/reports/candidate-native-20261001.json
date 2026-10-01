@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "lane": "independent native acceptance / Sol medium / no product authorship",
+  "candidate": {
+    "version": "0.2.173",
+    "source_sha": "d6d6d6b83c937652525f473082ac2f2492c9eabe",
+    "tree_sha256": "494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064",
+    "release_receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/release-receipt-frozen.json",
+    "keyed_tree": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/chrome-mv3-keyed",
+    "native_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "live_acceptance_verdict": {
+    "guest": "UNVERIFIED",
+    "guest_observation": "Fresh guest profile had Chat visible and no stored access token, account profile, or selected organization. The real first turn reached a page-text tool state, but the snapshot contained only Reasoning and Finding text, without the page-specific code, workflow stages, visible error, or refusal. The runner stopped before observing any later terminal answer. Signed-out reload and second page-grounded answer were not reached.",
+    "guest_failure_stage": "real_guest_answer",
+    "guest_result": "docs/stabilization/runs/candidate-native-guest-20261001-001.json",
+    "signed_in_non_admin": "PASS_SCOPED",
+    "signed_in_observation": "Normal reviewer web sign-in and extension OAuth completed in a fresh owned Chrome-for-Testing profile. The selected organization was visible. The real Chat answer on the public demo page named Capture, Understand, and Use with a completed reply and clean Context result.",
+    "reviewer_identity": "The runner's UI role category was absent, so its permissive non-admin predicate alone is insufficient. A fresh read-only Supabase query matched the runner's 16-hex SHA-256 email fingerprint to exactly one auth.users row and zero admin.admins assignments; no email or credential was returned.",
+    "signed_in_result": "docs/stabilization/runs/candidate-native-reviewer-20261001-001.json",
+    "signed_in_to_guest_privacy": "UNVERIFIED: the existing reviewer runner closes its owned profile after the answer and does not sign out or inspect the guest state.",
+    "overall": "HOLD_EXACT_CANDIDATE_ACCEPTANCE: signed-in non-admin Chat passed; guest completion, guest reload, and identity-transition privacy remain unverified. This report does not authorize replacing the pending Store submission."
+  },
+  "evidence_quality_verdict": {
+    "guest": "INCONCLUSIVE: the runner counted two Copy reply matches and !streaming, then treated the tool-only-looking UI as terminal. The screenshot and sanitized text lack the required answer. No panel-network request was observed because the request watcher is attached to the panel while the stream may run in offscreen; an empty request array cannot prove no server call. A second identical run would not resolve this oracle ambiguity. Capture a terminal stream state or final assistant text before retry.",
+    "signed_in": "PASS_SCOPED_WITH_LIMITS: source/result/screenshot and a valid guarded journal agree on a real answer and exact release tree. The answer checks the three public page terms but uses no unpredictable page nonce. Non-admin identity depends on the independent live database lookup because the UI role label is absent. No post-answer artifact rehash or sign-out transition is in this runner.",
+    "artifact_integrity": "The native harness checked the frozen release receipt, keyed-tree hash and Store ZIP before each launch. The guest runner did not reach its post-run rehash; the reviewer runner has no post-run rehash. Both report the expected version/tree/extension ID.",
+    "resource": "Both jobs were admitted through the sole heavy-job guard with healthy watch samples. Guest child exited 1, reviewer child exited 0; both guards finalized and released their leases."
+  },
+  "next_actions": [
+    "Diagnose the guest first-turn boundary with a terminal-state and final-assistant-text oracle; preserve the page nonce and real service. A new run should distinguish an in-progress tool row from a completed tool-only response.",
+    "Exercise a real signed-in reviewer sign-out and verify the restored guest cannot see the signed-in conversation, draft, agent choice or other account context; include a reload.",
+    "Reassess this exact candidate only after those native results and pending 0.2.130 Store review state are reconciled."
+  ],
+  "evidence": [
+    "docs/stabilization/resource-journals/candidate-native-guest-20261001-001.jsonl",
+    "docs/stabilization/resource-journals/candidate-native-reviewer-20261001-001.jsonl",
+    "test-results/native-sidepanel-qa-xuI4F5/guest-chat-failure.png",
+    "test-results/native-sidepanel-qa-RqQBKo/reviewer-chat-result.png",
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    "tests/browser/reviewer-chat-store-acceptance.mjs"
+  ]
+}

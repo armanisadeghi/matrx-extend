@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "scope": "fresh owned Chrome-for-Testing profile; real non-admin login; native signed-in Chat",
+  "status": "pass",
+  "build": {
+    "version": "0.2.173",
+    "tree_sha256": "494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064",
+    "receipt_kind": "release",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "account": {
+    "reviewer_fingerprint": "3d6137db6c081c07",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "observed_role_category": "absent",
+    "sign_out_visible": true,
+    "default_organization_selected": true,
+    "organization_picker_available": true,
+    "storage_shape": {
+      "accessTokenPresent": true,
+      "profilePresent": true,
+      "activeOrganizationPresent": false
+    }
+  },
+  "chat": {
+    "visible": true,
+    "question_fingerprint": "3461006324ce0420",
+    "accepted": true,
+    "completed_real_answer": true,
+    "completed_reply_count": 1,
+    "answer_names_capture_understand_use": true,
+    "demo_route": "https://www.aimatrx.com/matrx-extend-demo"
+  },
+  "screenshots": {
+    "before": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-RqQBKo/reviewer-chat-before.png",
+    "action": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-RqQBKo/reviewer-chat-action.png",
+    "result": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-RqQBKo/reviewer-chat-result.png",
+    "store_candidate_640x400": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-RqQBKo/reviewer-chat-store-640x400.png"
+  },
+  "failure_stage": null
+}
