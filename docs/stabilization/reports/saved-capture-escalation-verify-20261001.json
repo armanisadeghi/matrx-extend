@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "lane": "independent frozen-source and native verifier; no runner authorship",
+  "subject": "EXT-D-0073 / EXT-F-0002-T08 Saved capture readiness diagnostics and D65",
+  "reviewed_at": "2026-10-01",
+  "frozen_subject": {
+    "commit": "7aa69a1c",
+    "release_version": "0.2.173",
+    "tree_sha256": "494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064"
+  },
+  "verdict_B_runner_quality": {
+    "source": "ACCEPT",
+    "basis": "The diagnostic delta records fixed operation steps, an allowlisted exception name, known local runner/driver stack locations, and allowlisted pointer-driver fields. It does not retain exception messages, URLs, DOM text, credentials, or arbitrary stack frames. The readiness sample scopes to the active Scrape tab and the stable titled Capture control, then waits for one visible enabled target. The zero-row identity baseline, exact new-landing proof, durable receipt, UI-link ID comparison, and exact-ID cleanup guards remain intact.",
+    "runtime": "The new diagnostics separated the corrected run's immediate readiness state from its post-barrier state. The fixture-A immediate sample had zero Capture targets; after the barrier it had exactly one visible enabled target. Fixture B was already ready. The runner also emitted a bounded cleanup failure code and exact stage instead of an unclassified failure.",
+    "historical_cause": "UNPROVEN. The readiness race was observed on the corrected path and the corrected create succeeded, but the two earlier runs did not retain evidence showing that this was their failure cause."
+  },
+  "verdict_A_real_ui": {
+    "fixture_create": "PASS: one guarded attempt created two Sources through the native Scrape UI on frozen 0.2.173.",
+    "ownership": "PASS: both had zero matching pre-save rows, exact organization and identity in the landing receipt, reused_existing=false, new_version_of=null, receipt-backed IDs, and matching native Source UI link IDs.",
+    "list_readiness": "PASS: after creation, the Saved captures list showed both exact receipt-backed Sources.",
+    "D64_D65": "PASS: a separate guarded normal acceptance reported guest, D64, and D65 all pass against those exact configured Sources.",
+    "cleanup": "INCOMPLETE: a separate admitted guarded cleanup stopped at owned_source_row_not_hittable for the first exact Source ID. No ID was marked deleted and no deletion occurred. Both test-owned Sources remain recorded; one non-retried cleanup attempt is required after a safe diagnosis/correction."
+  },
+  "resource_runs": [
+    {
+      "run_id": "saved-capture-escalation-create-20261001-01",
+      "journal": "docs/stabilization/resource-journals/saved-capture-escalation-create-20261001-01.jsonl",
+      "journal_sha256": "8eff4abf823374c5bc1e06a65e0a7009c0bbc8ff626b6e47eb2e48c4202169aa",
+      "result": "admitted; child exit 0; resourceInvalid=false"
+    },
+    {
+      "run_id": "saved-capture-escalation-d65-20261001-01",
+      "journal": "docs/stabilization/resource-journals/saved-capture-escalation-d65-20261001-01.jsonl",
+      "journal_sha256": "bdaee7ed663bc2c101840d28576d66ccd86a87d8492d9331e58bbd180300db75",
+      "result": "admitted; guest, D64, D65 pass; child exit 0; resourceInvalid=false"
+    },
+    {
+      "run_id": "saved-capture-escalation-cleanup-20261001-01",
+      "journal": "docs/stabilization/resource-journals/saved-capture-escalation-cleanup-20261001-01.jsonl",
+      "journal_sha256": "bfd190cd8dbab12025a5066ee21b3473cb583200da062ef68160403e91137599",
+      "result": "admitted; child exit 1; resourceInvalid=false; safe stop at owned_source_row_not_hittable"
+    }
+  ],
+  "owned_sources": {
+    "fixture_receipt": "docs/stabilization/reports/saved-capture-fixture-20261001.json",
+    "status": "created",
+    "deleted_source_ids": [],
+    "cleanup_failure_stage": "cleanup_4dd5911b-d4d0-4673-9a7c-15fe4c70efdd",
+    "failure_code": "owned_source_row_not_hittable",
+    "remaining_work": "Both receipt-backed owned Sources remain. Do not infer deletion from D65 success; resolve the exact-row hit failure and perform a separately guarded cleanup."
+  },
+  "safe_observations": {
+    "fixture_A_capture_before": {
+      "active": true,
+      "captureTargetCount": 0,
+      "visibleCaptureTargetCount": 0,
+      "enabled": false,
+      "globalCaptureTextCount": 0,
+      "globalVisibleCaptureTextCount": 0
+    },
+    "fixture_A_capture_after": {
+      "active": true,
+      "captureTargetCount": 1,
+      "visibleCaptureTargetCount": 1,
+      "enabled": true,
+      "globalCaptureTextCount": 1,
+      "globalVisibleCaptureTextCount": 1
+    },
+    "fixture_B_capture_before_and_after": {
+      "active": true,
+      "captureTargetCount": 1,
+      "visibleCaptureTargetCount": 1,
+      "enabled": true,
+      "globalCaptureTextCount": 1,
+      "globalVisibleCaptureTextCount": 1
+    },
+    "cleanup_pointer_observation": "No driverFailure fields were exposed by the cleanup failure; only owned_source_row_not_hittable at the exact source-ID stage was recorded."
+  },
+  "validation": {
+    "node_syntax": "pass",
+    "native_create_attempts": 1,
+    "normal_acceptance_attempts": 1,
+    "cleanup_attempts": 1,
+    "blind_retries": 0
+  }
+}

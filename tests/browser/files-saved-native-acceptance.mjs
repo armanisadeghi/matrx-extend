@@ -41,6 +41,7 @@ const OUTPUT = join(REPO, 'test-results/files-saved-native-acceptance.json');
 const FIXTURE_OUTPUT = join(REPO, 'docs/stabilization/reports/saved-capture-fixture-20261001.json');
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 let stage = 'preflight';
+let fixtureStep = null;
 const report = {
   schema_version: 1,
   status: 'unverified',
@@ -57,6 +58,93 @@ function fail(code) {
   report.failure_stage = stage;
   report.failure_code = code;
   throw new Error(`files_saved_native_${code}`);
+}
+
+// Content-free diagnostics only: never retain exception messages, remote URLs,
+// DOM text, credentials, or arbitrary browser stack frames.
+function safeFixtureFailure(error) {
+  const names = [
+    'Error',
+    'TypeError',
+    'ReferenceError',
+    'SyntaxError',
+    'RangeError',
+    'TimeoutError',
+  ];
+  const codes = [
+    'pointer_initial_evaluation_failed',
+    'pointer_page_sample_failed',
+    'pointer_target_not_unique',
+    'pointer_followup_evaluation_failed',
+    'pointer_stable_hit_not_observed',
+    'pointer_press_dispatch_failed',
+    'pointer_release_dispatch_failed',
+  ];
+  const driver = error?.driverFailure;
+  const driverFailure = driver
+    ? {
+        code: codes.includes(driver.code) ? driver.code : 'unknown',
+        matchedTargetCount: Number.isInteger(driver.matchedTargetCount)
+          ? driver.matchedTargetCount
+          : null,
+        visibleMatchCount: Number.isInteger(driver.visibleMatchCount)
+          ? driver.visibleMatchCount
+          : null,
+        hitTarget: driver.hitTarget === true,
+        targetDisabled: typeof driver.targetDisabled === 'boolean' ? driver.targetDisabled : null,
+        animating: driver.animating === true,
+        stableSamples: Number.isInteger(driver.stableSamples) ? driver.stableSamples : null,
+      }
+    : null;
+  const frames = [];
+  for (const line of String(error?.stack ?? '')
+    .split('\n')
+    .slice(1)) {
+    // Only known local runner/driver/harness locations, excluding function names.
+    const match =
+      /\/(files-saved-native-acceptance|settings-panel-driver|native-sidepanel-qa-harness)\.mjs:(\d+):(\d+)\)?$/.exec(
+        line,
+      );
+    if (match)
+      frames.push({
+        file: `tests/browser/${match[1]}.mjs`,
+        line: Number(match[2]),
+        column: Number(match[3]),
+      });
+  }
+  return {
+    step: fixtureStep,
+    error_name: names.includes(error?.name) ? error.name : 'unknown',
+    stack_frames: frames,
+    driverFailure,
+  };
+}
+
+async function scrapeCaptureReadiness(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+    const tab = document.querySelector('button[role="tab"][title="Scrape"][data-state="active"]');
+    const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
+    const buttons = [...(root?.querySelectorAll('button[title="Capture the page exactly as it is right now"]') ?? [])];
+    const visible = (el) => {
+      const r = el.getBoundingClientRect(), style = getComputedStyle(el);
+      return r.width > 0 && r.height > 0 && style.display !== 'none' &&
+        style.visibility !== 'hidden' && !el.closest('[inert]');
+    };
+    const visibleButtons = buttons.filter(visible);
+    return {
+      active: Boolean(tab && root?.matches('[role="tabpanel"][data-state="active"]')),
+      captureTargetCount: buttons.length,
+      visibleCaptureTargetCount: visibleButtons.length,
+      enabled: visibleButtons.length === 1 && !visibleButtons[0].disabled,
+      globalCaptureTextCount: [...document.querySelectorAll('button')]
+        .filter(el => el.textContent.trim() === 'Capture').length,
+      globalVisibleCaptureTextCount: [...document.querySelectorAll('button')]
+        .filter(el => el.textContent.trim() === 'Capture' && visible(el)).length,
+    };
+  })()`,
+  );
 }
 
 async function privateConfig() {
@@ -214,15 +302,40 @@ async function createDemoSource(
   const candidate = new URL(DEMO_PAGES[variant]);
   candidate.searchParams.set('matrx_fixture', `${runId}-${variant}`);
   const url = candidate.href;
+  fixtureStep = 'public_page_navigation';
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
   if (page.url() !== url) fail('fixture_public_page_redirected');
+  fixtureStep = 'public_page_identity';
   const title = await page.title();
   if (!title.trim()) fail('fixture_public_page_title_missing');
   const identity = url;
+  fixtureStep = 'pre_save_identity_absent';
   await existingSourceCount(panel, origin, publishableKey, fixture.organization_id, identity);
+  fixtureStep = 'public_page_foreground';
   await page.bringToFront();
+  fixtureStep = 'open_scrape';
   await click(panel, 'title', 'Scrape');
-  await click(panel, 'button-text', 'Capture');
+  fixtureStep = 'capture_readiness_before';
+  const readiness = { before: await scrapeCaptureReadiness(panel), after: null };
+  report.observations[`fixture_${variant}_capture_readiness`] = readiness;
+  fixture.capture_readiness ??= {};
+  fixture.capture_readiness[variant] = readiness;
+  fixtureStep = 'capture_control_ready';
+  // Scrape is lazy-loaded behind Suspense. Observe its mounted, enabled
+  // control before asking the trusted driver to resolve a pointer target.
+  readiness.after = await waitFor(
+    'fixture_capture_control_ready',
+    () => scrapeCaptureReadiness(panel),
+    (state) =>
+      state?.active === true &&
+      state.captureTargetCount === 1 &&
+      state.visibleCaptureTargetCount === 1 &&
+      state.enabled === true,
+    45_000,
+  );
+  fixtureStep = 'capture_click';
+  await click(panel, 'title', 'Capture the page exactly as it is right now');
+  fixtureStep = 'capture_result_ready';
   await waitFor(
     'fixture_capture_ready',
     () =>
@@ -238,9 +351,12 @@ async function createDemoSource(
     45_000,
   );
   const landing = captureLandingReceipt(panel, LANDING_ORIGIN, identity, fixture.organization_id);
+  fixtureStep = 'landing_receipt_listener';
   await landing.start();
   try {
+    fixtureStep = 'save_click';
     await click(panel, 'button-text', 'Save');
+    fixtureStep = 'landing_receipt_wait';
     const captured = await waitFor(
       'fixture_landing_receipt',
       landing.read,
@@ -259,12 +375,14 @@ async function createDemoSource(
         created_via: 'native Scrape Capture and Save UI',
       };
       fixture.sources.push(source);
+      fixtureStep = 'landing_receipt_persist';
       await saveReceipt();
     }
     if (captured.error) fail(captured.error);
   } finally {
     await landing.stop();
   }
+  fixtureStep = 'saved_source_ui_ready';
   await waitFor(
     'fixture_source_saved',
     () =>
@@ -280,9 +398,11 @@ async function createDemoSource(
     Boolean,
     60_000,
   );
+  fixtureStep = 'saved_source_link_open';
   const opened = page.context().waitForEvent('page', { timeout: 15_000 });
   await click(panel, 'button-text', 'Open this Source (opens in the web app)');
   const sourcePage = await opened;
+  fixtureStep = 'saved_source_link_identity';
   await sourcePage.waitForURL((target) => target.pathname.startsWith('/knowledge/sources/'), {
     timeout: 15_000,
   });
@@ -367,6 +487,7 @@ async function createFixturePair(page, panel, config, build, origin, publishable
   } catch (error) {
     fixture.status = 'partial_requires_exact_id_review';
     fixture.failure_stage = stage;
+    fixture.failure_diagnostic = safeFixtureFailure(error);
     await saveReceipt();
     throw error;
   }
@@ -864,9 +985,11 @@ async function sourceListState(panel, a, b) {
 
 async function sourceRowClick(panel, source) {
   const selector = 'article > button';
-  const point = await evaluate(
-    panel,
-    `(() => {
+  // Saved captures loads its rows after the tab activates. Wait for the exact
+  // row to become clickable before dispatching input; keep the one-row proof.
+  const point = await waitFor(
+    'owned_source_row_hittable',
+    () => evaluate(panel, `(() => {
     const tab = document.querySelector('button[role="tab"][title="Saved captures"]');
     const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
     const rows = [...(root?.querySelectorAll(${JSON.stringify(selector)}) ?? [])]
@@ -876,7 +999,9 @@ async function sourceRowClick(panel, source) {
     const rect = row.getBoundingClientRect(), x = rect.x + rect.width / 2,
       y = rect.y + Math.min(14, rect.height / 2), hit = document.elementFromPoint(x,y);
     return { count: 1, x, y, hittable: hit === row || row.contains(hit) };
-  })()`,
+  })()`),
+    (state) => state?.count === 1 && state.hittable === true,
+    45_000,
   );
   if (point?.count !== 1 || !point.hittable) fail('owned_source_row_not_hittable');
   await panel.send('Input.dispatchMouseEvent', {
@@ -1142,6 +1267,7 @@ try {
     ? error.message.slice('files_saved_native_'.length)
     : 'unclassified_runtime_failure';
   report.failure_stage ??= stage;
+  if (fixtureStep !== null) report.failure_diagnostic = safeFixtureFailure(error);
 } finally {
   await mkdir(join(REPO, 'test-results'), { recursive: true, mode: 0o700 });
   await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });

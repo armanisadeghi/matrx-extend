@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "lane": "fresh independent source/native verifier; zero runner authorship",
+  "subject": "EXT-D-0065 Saved captures fixture provenance and last-click race on frozen 0.2.173",
+  "reviewed_at": "2026-10-01",
+  "subject_commits": ["cfc3a5f5", "2da7b55a"],
+  "frozen_tree_sha256": "494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064",
+  "source_verdict": {
+    "result": "SAFETY_REPAIR_ACCEPTED_WITH_RUNTIME_LIMIT",
+    "basis": "The server canonicalizes web identity with query parameters preserved, serializes concurrent landings by organization and identity, and returns reused_existing=false with new_version_of=null for a new document. The runner requires an absent organization-scoped identity baseline, checks that landing response and exact ID, persists the receipt before UI-link navigation, and cleanup refuses missing or mismatched proof. No path found that permits deleting a reused or unproven user Source.",
+    "limit": "A process loss between committed landing and durable local receipt can leave a test-owned row without an exact cleanup ID. The unique run identity makes read-only recovery possible, but the runner itself does not perform that recovery. The race oracle observes A network terminal, one task turn and two paints; this is a bounded UI observation, not an independent React handler completion signal."
+  },
+  "native_runs": [
+    {
+      "run_id": "saved-provenance-create-20261001-1007",
+      "journal_sha256": "c39ec5a7b729a4904d501b0a8f78046971dc4390c910bf1738ee130738312f06",
+      "resource": "admitted; child_failed; resourceInvalid=false",
+      "run_marker": "saved-capture-fixture-f841379e-b8a2-4b1b-8fa9-3d4578831d6f",
+      "result": "guest pass, real web sign-in and exact organization selection; fixture_A unclassified_runtime_failure; zero Source receipts",
+      "read_only_orphan_query": "Zero docproc.processed_documents rows in the approved organization with canonical_identity containing this exact run marker."
+    },
+    {
+      "run_id": "saved-provenance-create-20261001-1011",
+      "journal_sha256": "d5dc6c27db9a25444848549d1c769ffb612a90c5c01ff38879b431c220426572",
+      "resource": "admitted; child_failed; resourceInvalid=false",
+      "run_marker": "saved-capture-fixture-3b45492f-175e-4a76-bcfd-7eb7228a8cbe",
+      "result": "guest pass, real web sign-in and exact organization selection; fixture_A unclassified_runtime_failure; zero Source receipts",
+      "read_only_orphan_query": "Zero docproc.processed_documents rows in the approved organization with canonical_identity containing this exact run marker."
+    }
+  ],
+  "preflight": {
+    "run_id": "saved-provenance-preflight-20261001",
+    "journal_sha256": "abc815786534b2814b7ddef5b56f6f0765fe5c76d5a36ca9cabc85521313e58e",
+    "result": "admitted; valid; resourceInvalid=false"
+  },
+  "verdict_A_real_UI": "UNVERIFIED: no pair created, no D65 race or cleanup run; D64 not rerun. Guest absence passed in both admitted create attempts.",
+  "verdict_B_runner_quality": "FAIL_RUNTIME_DIAGNOSTIC: the broad fixture_A and unclassified failure discard safe per-await stage, driver code and stack location. Two identical attempts cannot identify whether page navigation, scoped baseline, Scrape readiness, Capture click or landing observer failed. No third launch is justified without a diagnostic correction.",
+  "cleanup": "No Source rows existed for either exact run identity in the approved organization at post-run read-only checks; no delete was attempted.",
+  "attempts_used": 2,
+  "next_action_owner": "Fresh runner-diagnosis lane owns a diagnostic-only correction; source/native verifier is terminal at the two-attempt cap."
+}

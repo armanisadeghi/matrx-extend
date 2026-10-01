@@ -1,0 +1,54 @@
+{
+  "id": "EXT-D-0073",
+  "feature_id": "EXT-F-0002",
+  "case_ids": [
+    "EXT-F-0002-T08"
+  ],
+  "title": "Files fixture failures discard operation and safe exception diagnostics",
+  "surface": "Native Files/Saved captures acceptance infrastructure",
+  "auth_mode": "admin fixture setup; not a product authorization defect",
+  "reproduction": [
+    "Use exact frozen0.2.173 and the private approved admin config with the guarded files-saved-native-acceptance runner in fixture create mode.",
+    "When a native pointer/transport/navigation operation throws without going through fail(code), inspect the runner catch and persisted failure report.",
+    "The old catch maps every such exception to unclassified_runtime_failure and retains only broad fixture_A, discarding the existing driverFailure and operation boundary. Two admitted runs1007 and1011 demonstrate this output."
+  ],
+  "expected": "Persist a fixed operation label and safe allowlisted exception/driver/stack metadata sufficient to route the failure, without raw error messages, page data or credentials.",
+  "actual": "Both admitted fixture attempts retained fixture_A/unclassified_runtime_failure; exact failed operation could not be reconstructed.",
+  "severity": "S3: diagnostic loss forces repeated setup attempts and prevents reliable triage",
+  "priority": "P1: restore observable fixture execution before further D65 testing",
+  "state": "fixed",
+  "evidence": [
+    "docs/stabilization/reports/saved-capture-provenance-peer-20261001.json",
+    "docs/stabilization/reports/saved-capture-stall-20261001.json",
+    "docs/stabilization/reports/saved-capture-escalation-verify-20261001.json",
+    "docs/stabilization/reports/cleanup-readiness-peer-20261001.json"
+  ],
+  "fix_commit": "7aa69a1c",
+  "verification_status": "Independent source review ACCEPT and guarded native fixture create passed with observed zero-to-one Capture readiness. New safe exception metadata branches were not exercised by a native failure; historical two failures remain unexplained. Cleanup row-readiness repair 3bf1bda8 is syntax checked and separate peer source review PASS but no corrected cleanup runner native execution.",
+  "transition_history": [
+    {
+      "at": "2026-10-01T17:20:53.325982+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Two runtime reports lost the same diagnostic fields."
+    },
+    {
+      "at": "2026-10-01T17:20:53.325982+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Old top-level catch deterministically discards non-fail(code) exception metadata."
+    },
+    {
+      "at": "2026-10-01T17:20:53.325982+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded Astra escalation assigned diagnostics and actual Scrape readiness."
+    },
+    {
+      "at": "2026-10-01T17:20:53.325982+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "7aa69a1c records allowlisted operation/exception metadata and before/after readiness; native verification pending."
+    }
+  ]
+}

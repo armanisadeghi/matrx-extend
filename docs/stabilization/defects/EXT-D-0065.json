@@ -1,28 +1,31 @@
 {
   "id": "EXT-D-0065",
   "feature_id": "EXT-F-2009",
-  "case_ids": ["EXT-F-2009-T02"],
+  "case_ids": [
+    "EXT-F-2009-T02"
+  ],
   "title": "Concurrent saved-capture opens can select a different item than the last click",
   "surface": "Saved captures side-panel",
-  "auth_mode": "member/admin; source-derived, native unverified",
+  "auth_mode": "member/admin; admin native passed, member unverified",
   "reproduction": [
-    "From a list with two Sources, click Source A, then click Source B before A\u2019s getSavedCapture request returns.",
-    "Arrange for B\u2019s request to return first and A\u2019s request to return last.",
+    "From a list with two Sources, click Source A, then click Source B before A’s getSavedCapture request returns.",
+    "Arrange for B’s request to return first and A’s request to return last.",
     "Observe the detail selected after both requests complete."
   ],
   "expected": "The detail view corresponds to the most recent row selection, Source B.",
   "actual": "openCapture has no request generation or selected-ID guard; each resolution calls setSelected, so the slower A response overwrites B.",
   "severity": "S3: delayed detail response can navigate to a stale capture",
   "priority": "P2: user sees the wrong saved Source after selecting another row",
-  "state": "fixed",
+  "state": "retest-pass",
   "evidence": [
     "docs/stabilization/reports/notes-files-batch-audit.json",
     "src/features/saved-captures/SavedCapturesView.tsx:113-125",
-    "src/features/saved-captures/SavedCapturesView.tsx:269-276"
+    "src/features/saved-captures/SavedCapturesView.tsx:269-276",
+    "docs/stabilization/reports/saved-capture-escalation-verify-20261001.json"
   ],
-  "verification_status": "Fixed in source; committed focused regression coverage is present but was not executed in this reconciliation. Native side-panel race acceptance remains pending.",
-  "current_source_truth": "Engineering fix present: openCapture uses a monotonically increasing request generation and ignores stale success, failure, and loading completions. Focused component regressions resolve B before A and prove the latest selection stays open, including when A fails late. Native side-panel race acceptance remains pending; no test was run in this reconciliation.",
-  "native_acceptance_report": "docs/stabilization/reports/contained-state-reconcile-20260930.json",
+  "verification_status": "Exact frozen0.2.173 admin native: two receipt-backed real Sources; B remained visible after late A success and late A failure. Guarded run exited0 and resourceInvalid=false. Member retest and broader saved-capture controls remain open.",
+  "current_source_truth": "Generation guard ignores stale success, failure and loading completions. Focused regression coverage and independent exact173 admin native race retest pass. This does not certify member or full feature breadth.",
+  "native_acceptance_report": "docs/stabilization/reports/saved-capture-escalation-verify-20261001.json",
   "transition_history": [
     {
       "at": "2026-09-28T19:51:52.878308+00:00",
@@ -47,6 +50,12 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Current source guards detail-open completion by request generation; delayed older responses cannot replace the latest selection. Native side-panel race acceptance remains pending."
+    },
+    {
+      "at": "2026-10-01T17:27:00+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent guarded frozen0.2.173 native admin race test passed both late-success and late-failure cases with two exact receipt-backed Sources; member remains unverified."
     }
   ]
 }

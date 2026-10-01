@@ -17,5 +17,7 @@
     "One earlier synthetic-marker miss is not root-caused; later instrumented run passed.",
     "Signout-to-guest privacy unverified.",
     "No exhaustive Chat/Pilot or overall feature-health certification."
-  ]
+  ],
+  "last_store_check_at": "2026-10-01T17:31:04Z",
+  "last_store_check": "Authenticated primary Store status refreshed: Pending review. No cancel/upload/submission."
 }
