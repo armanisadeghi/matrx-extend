@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
+import { classifyGuestTurn } from './guest-chat-completion-oracle.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const RECEIPT = resolve(
@@ -67,7 +68,9 @@ async function observe(panel, expected = {}) {
       const pane = chat ? document.getElementById(chat.getAttribute('aria-controls') ?? '') : null;
       const active = pane?.getAttribute('data-state') === 'active' && visible(pane);
       const replies = active ? [...pane.querySelectorAll('button[title="Copy reply"]')]
-        .map((button) => button.closest('div.group.space-y-2')?.innerText ?? '') : [];
+        .map((button) => [...(button.closest('div.group.space-y-2')
+          ?.querySelectorAll(':scope > div.min-w-0.text-foreground') ?? [])]
+          .map((part) => part.innerText ?? '').join('\\n')) : [];
       const latestReply = replies.at(-1) ?? '';
       const visibleAlerts = active
         ? [...pane.querySelectorAll('[role="alert"]')].filter(visible)
@@ -92,6 +95,7 @@ async function observe(panel, expected = {}) {
         sendEnabled: active && [...pane.querySelectorAll('button[title="Send"]')]
           .some((button) => visible(button) && !button.disabled),
         streaming: active && Boolean(pane.querySelector('button[title="Stop"]')),
+        streamTrace: window.__guestChatStreamTrace?.snapshot() ?? null,
         replyCount: replies.length,
         answerContainsNonce: Boolean(${JSON.stringify(expected.nonce ?? null)}) &&
           latestReply.includes(${JSON.stringify(expected.nonce ?? '')}),
@@ -112,6 +116,115 @@ async function observe(panel, expected = {}) {
       }));
     })()`,
   );
+}
+
+async function installStreamTrace(panel) {
+  const installed = await evaluate(panel, `(() => {
+    window.__guestChatStreamTrace?.stop();
+    const runs = new Map();
+    const order = [];
+    const events = [];
+    let continuations = 0;
+    const runFor = (id) => {
+      if (typeof id !== 'string') return null;
+      if (!runs.has(id)) {
+        const run = { ordinal: order.length + 1, done: false, delegated: false,
+          error: false, errorCode: null, endReason: null,
+          userRequestCompleted: false, textChunks: 0,
+          startReplyCount: document.querySelectorAll('button[title="Copy reply"]').length,
+          doneAt: null };
+        runs.set(id, run);
+        order.push(id);
+      }
+      return runs.get(id);
+    };
+    const listener = (message) => {
+      if (message?.__matrx !== true) return;
+      const kind = message.kind;
+      if (kind === 'stream:continue') {
+        continuations += 1;
+        events.push({ kind: 'continue', afterRun: order.length });
+        return;
+      }
+      if (kind !== 'stream:chunk' && kind !== 'stream:opened') return;
+      const payload = message.payload ?? {};
+      const run = runFor(payload.runId);
+      if (!run) return;
+      if (kind === 'stream:opened') {
+        events.push({ kind: 'opened', run: run.ordinal });
+      } else if (payload.type === 'done') {
+        run.done = true;
+        run.doneAt = Date.now();
+        events.push({ kind: 'done', run: run.ordinal });
+      } else if (payload.type === 'error') {
+        run.error = true;
+        const code = payload.payload?.code;
+        run.errorCode = ['resume_conflict', 'outstanding_delegated_calls',
+          'not_resumable'].includes(code) ? code : null;
+        events.push({ kind: 'error', run: run.ordinal,
+          status: Number.isInteger(payload.payload?.status) ? payload.payload.status : null,
+          code: run.errorCode });
+      } else if (payload.type === 'text') {
+        run.textChunks += 1;
+      } else if (payload.type === 'event') {
+        const name = payload.payload?.eventName;
+        const data = payload.payload?.data;
+        if (name === 'tool_event' && data?.event === 'tool_delegated') {
+          run.delegated = true;
+          events.push({ kind: 'tool_delegated', run: run.ordinal });
+        } else if (name === 'record_update' &&
+          /(?:^|\\.)user_request$/.test(String(data?.table ?? '')) &&
+          data?.status === 'completed') {
+          run.userRequestCompleted = true;
+          events.push({ kind: 'user_request_completed', run: run.ordinal });
+        } else if (name === 'completion' && data?.operation === 'user_request' &&
+          data?.status === 'success') {
+          run.userRequestCompleted = true;
+          events.push({ kind: 'user_request_completed', run: run.ordinal });
+        } else if (name === 'end') {
+          run.endReason = typeof data?.reason === 'string' ? data.reason : null;
+          events.push({ kind: 'end', run: run.ordinal, reason: run.endReason });
+        }
+      }
+      if (events.length > 100) events.shift();
+    };
+    chrome.runtime.onMessage.addListener(listener);
+    window.__guestChatStreamTrace = {
+      snapshot: () => ({ runs: order.map((id) => ({ ...runs.get(id) })),
+        continuations, events: [...events] }),
+      stop: () => chrome.runtime.onMessage.removeListener(listener),
+    };
+    return true;
+  })()`);
+  assert.equal(installed, true, 'guest stream trace installed before send');
+}
+
+async function waitForTerminalAnswer(panel, expected) {
+  let last = null;
+  const timeline = [];
+  const deadline = Date.now() + 180_000;
+  while (Date.now() < deadline) {
+    const state = await observe(panel, { ...expected, diagnostics: true });
+    const answerTerms = expected.fixtureHeading
+      ? [expected.nonce, expected.fixtureHeading]
+      : [expected.nonce, ...REQUIRED_ANSWER_TERMS];
+    const verdict = classifyGuestTurn({
+      runs: state.streamTrace?.runs ?? [],
+      assistantText: state.latestReplyText ?? '',
+      replyCount: state.replyCount,
+      expectedTerms: answerTerms,
+      errorNotice: state.errorNotice,
+    });
+    const previous = timeline.at(-1);
+    if (!previous || previous.verdict !== verdict || previous.runCount !== state.streamTrace?.runs.length) {
+      timeline.push({ verdict, runCount: state.streamTrace?.runs.length ?? 0,
+        replyCount: state.replyCount, streaming: state.streaming });
+    }
+    last = { state, verdict, timeline };
+    if (verdict.startsWith('terminal_')) return last;
+    await new Promise((resolveWait) => setTimeout(resolveWait, 100));
+  }
+  return { ...last, verdict: 'terminal_not_observed' };
 }
 
 async function watchGuestAiRequests(panel) {
@@ -343,6 +456,7 @@ function diagnosticState(state, fixture) {
     errorNotice: state.errorNotice,
     latestAssistantReply: safeVisibleText(state.latestReplyText, fixture),
     visibleAlerts: (state.visibleAlertTexts ?? []).map((text) => safeVisibleText(text, fixture)),
+    streamTrace: state.streamTrace,
   };
 }
 
@@ -417,6 +531,7 @@ try {
 
         markStage('guest_question');
         networkWatch = await watchGuestAiRequests(panel);
+        await installStreamTrace(panel);
         const fixtureSurvivedOpen = await readableFixturePresent(web, fixture);
         if (!fixtureSurvivedOpen) {
           await installPageFixture(web, fixture);
@@ -432,16 +547,16 @@ try {
         await submitQuestion(panel, FIRST_QUESTION, 'opening_question');
 
         markStage('real_guest_answer');
-        const answered = await waitFor(
-          'real_guest_answer_with_page_nonce',
-          () => observe(panel, { nonce: fixture.openingCode, diagnostics: true }),
-          (state) =>
-            state?.errorNotice || (state?.replyCount > before.replyCount && !state.streaming),
-          180_000,
+        const openingTurn = await waitForTerminalAnswer(
+          panel, { nonce: fixture.openingCode },
         );
+        const answered = openingTurn.state;
+        report.opening_turn_verdict = openingTurn.verdict;
+        report.opening_turn_timeline = openingTurn.timeline;
         report.failure_observation = diagnosticState(answered, fixture);
         report.guest_ai_requests = networkWatch.snapshot();
         assert.ok(
+          openingTurn.verdict === 'terminal_answer' &&
           answered.answerContainsNonce &&
             answered.answerMatchesPublicStages &&
             !answered.answerIsRefusal &&
@@ -494,6 +609,7 @@ try {
           30_000,
         );
         markStage('guest_followup_question');
+        await installStreamTrace(panel);
         networkWatch.arm('post_reload_new_conversation');
         const fixtureSurvivedReload = await readableFixturePresent(web, fixture);
         if (!fixtureSurvivedReload) {
@@ -509,22 +625,16 @@ try {
         await submitQuestion(panel, FOLLOWUP_QUESTION, 'followup_question');
 
         markStage('real_guest_followup_answer');
-        const followup = await waitFor(
-          'real_guest_followup_answer_with_page_nonce',
-          () =>
-            observe(panel, {
-              nonce: fixture.followupCode,
-              fixtureHeading: fixture.title,
-              diagnostics: true,
-            }),
-          (state) =>
-            state?.errorNotice ||
-            (state?.replyCount > beforeFollowup.replyCount && !state.streaming),
-          180_000,
+        const followupTurn = await waitForTerminalAnswer(
+          panel, { nonce: fixture.followupCode, fixtureHeading: fixture.title },
         );
+        const followup = followupTurn.state;
+        report.followup_turn_verdict = followupTurn.verdict;
+        report.followup_turn_timeline = followupTurn.timeline;
         report.failure_observation = diagnosticState(followup, fixture);
         report.guest_ai_requests = networkWatch.snapshot();
         assert.ok(
+          followupTurn.verdict === 'terminal_answer' &&
           followup.answerContainsNonce &&
             followup.answerContainsFixtureHeading &&
             !followup.answerIsRefusal &&

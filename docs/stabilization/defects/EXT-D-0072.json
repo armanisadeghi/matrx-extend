@@ -1,0 +1,36 @@
+{
+  "id": "EXT-D-0072",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T07"],
+  "impacted_case_ids": ["EXT-F-2013-T10"],
+  "title": "Guest Chat acceptance mistakes a delegated-tool handoff for a completed answer",
+  "surface": "Native side-panel acceptance runner",
+  "auth_mode": "guest",
+  "reproduction": [
+    "Run the receipt-bound guest Chat test against the public demo page with its unpredictable page codes.",
+    "Observe the panel after the page-text tool suspends the first stream and before the resumed assistant answers.",
+    "The old predicate accepts replyCount greater than its initial value with no Stop button even though the visible text is only Reasoning and Finding text."
+  ],
+  "expected": "The runner observes a real terminal stream state and tests the answer-producing assistant text for the page-only code and workflow stages. A terminal wrong or empty answer fails; a delegated-tool pause remains in progress.",
+  "actual": "On exact candidate 0.2.173 the runner stopped at two Copy reply matches and no Stop button. Its captured screenshot and text contained no required answer. The guest product outcome remains unverified by that run.",
+  "severity": "S3: false native acceptance failure leaves guest completion inconclusive",
+  "priority": "P1: exact candidate acceptance is held on this result",
+  "state": "fixed",
+  "root_cause": "ChatView finalizes an assistant bubble and renders Copy reply when a client-delegated tool ends its stream. WIRE_CONTRACT section 5 requires a later tool_results and resume stream for the final answer. The runner treated a finalized bubble and idle Stop button as terminal turn completion.",
+  "sibling_census": "The same original predicate guarded both opening and post-reload guest answers in this runner; both now use the same terminal oracle. Other native Chat runners require separate review before reusing this test helper.",
+  "evidence": [
+    "docs/stabilization/runs/candidate-native-guest-20261001-001.json",
+    "docs/stabilization/reports/candidate-native-20261001.json",
+    "test-results/native-sidepanel-qa-xuI4F5/guest-chat-failure.png",
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    "tests/browser/guest-chat-completion-oracle.mjs",
+    "tests/browser/guest-chat-completion-oracle.test.mjs"
+  ],
+  "verification_status": "Source and captured UI prove the old predicate's false terminal. Five focused oracle tests pass, including a reproduction of the old predicate. Native rerun and independent review are pending; no product-side guest Chat defect is claimed from the old run.",
+  "transition_history": [
+    { "at": "2026-10-01T16:28:54Z", "from": null, "to": "open", "reason": "Candidate 0.2.173 stopped on a tool-only-looking intermediate panel state." },
+    { "at": "2026-10-01T16:28:54Z", "from": "open", "to": "triaged", "reason": "Captured UI and source show that Copy reply and absent Stop are not terminal-turn signals across delegated tools." },
+    { "at": "2026-10-01T16:28:54Z", "from": "triaged", "to": "in-fix", "reason": "The runner was assigned a bounded terminal-state and assistant-text oracle repair." },
+    { "at": "2026-10-01T16:28:54Z", "from": "in-fix", "to": "fixed", "reason": "The runner now records safe stream lifecycle metadata and waits for terminal answer text; focused tests pass. Independent native retest remains open." }
+  ]
+}

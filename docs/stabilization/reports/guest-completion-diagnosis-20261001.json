@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "guest-completion-diagnose-20261001",
+  "lane": "Sol medium diagnosis and acceptance repair",
+  "status": "source_repair_ready_for_independent_review_and_native_retest",
+  "feature_ids": ["EXT-F-0002", "EXT-F-2013"],
+  "defect_ids": ["EXT-D-0072"],
+  "candidate": { "version": "0.2.173", "source_sha": "d6d6d6b83c937652525f473082ac2f2492c9eabe" },
+  "observation": "The exact candidate's fresh guest run reached a page-text tool state. The old runner saw two Copy reply matches and no Stop button, but the screenshot contained only Reasoning and Finding text. It did not observe the final answer, guest reload, or follow-up.",
+  "confirmed_cause": "The acceptance predicate treated one finalized assistant bubble as completion of the whole turn. A delegated client tool intentionally ends its current stream and resumes after tool_results; ChatView can render Copy reply and no Stop button in that gap.",
+  "product_verdict": "unverified: the old capture cannot distinguish eventual success from a failed tool resume or terminal wrong answer",
+  "repair": "The runner now records only safe run ordinals, event names, allowlisted error codes, completion states, and text-chunk counts from panel stream broadcasts. It waits for terminal stream completion, reads the assistant's rendered Markdown text without reasoning/tool rows, and classifies terminal wrong, empty, error, and correct answers separately. The opening and post-reload turns use the same oracle.",
+  "validation": {
+    "focused_tests": "5 passed; includes the exact old-predicate false stop, terminal wrong answer, correct nonce-grounded answer, render gap, and terminal error",
+    "syntax": "node --check passed for both changed runner and oracle",
+    "native_retest": "pending sole heavy-job lane",
+    "independent_review": "pending root dispatch"
+  },
+  "limitations": [
+    "The prior panel CDP network watcher is attached to the side panel, while fetch runs in offscreen; empty guest_ai_requests is not evidence that no request was sent.",
+    "The new trace has not yet been exercised on an owned Chrome profile and must be independently reviewed before interpreting a new candidate result.",
+    "No product code was changed and no 0.2.173 acceptance pass is claimed."
+  ],
+  "evidence": [
+    "docs/stabilization/runs/candidate-native-guest-20261001-001.json",
+    "docs/stabilization/reports/candidate-native-20261001.json",
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    "tests/browser/guest-chat-completion-oracle.mjs",
+    "tests/browser/guest-chat-completion-oracle.test.mjs"
+  ]
+}
