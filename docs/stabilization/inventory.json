@@ -23167,7 +23167,15 @@
             "reload",
             "network"
           ],
-          "verification_status": "fixed-awaiting-native: EXT-D-0064 source correction and both-tab failure/retry regression coverage are present; native Library and Screenshots acceptance remains pending."
+          "verification_status": "Admin native read-failure/retry passed on exact173 for both tabs; search and member behavior remain unverified.",
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "files-fresh-acceptance-20261001-002",
+              "evidence": "docs/stabilization/reports/files-fresh-acceptance-20261001.json",
+              "detail": "Exact173 admin: failed reads show error/Retry without false-empty claim; both tabs recover after successful read. Search and other full-case actions untested."
+            }
+          }
         },
         {
           "id": "EXT-F-2008-T03",
@@ -23246,12 +23254,14 @@
           "retest_status": "fixed-awaiting-native: EXT-D-0064"
         },
         "admin": {
-          "test_status": "unverified",
+          "test_status": "partial",
           "defect_ids": [
             "EXT-D-0064"
           ],
-          "run_ids": [],
-          "retest_status": "fixed-awaiting-native: EXT-D-0064"
+          "run_ids": [
+            "files-fresh-acceptance-20261001-002"
+          ],
+          "retest_status": "EXT-D-0064 admin native retest-pass; broader controls unverified"
         }
       },
       "inventory_status": "source-complete",

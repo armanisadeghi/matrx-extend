@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-01 16:37 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-01. 205 features · 732 cases · 1314 controls · 72 linked defect records.
+Generated 2026-10-01 16:40 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-01. 205 features · 732 cases · 1314 controls · 72 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1163** — Pass: 57 · Partial: 28 · Fail: 1 · Unverified: 1076 · N/A: 1.
-Unverified splits into **124 explicitly marked unverified** and **952 with no result record**.
+Applicable case-by-role slots: **1163** — Pass: 57 · Partial: 29 · Fail: 1 · Unverified: 1075 · N/A: 1.
+Unverified splits into **124 explicitly marked unverified** and **951 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 32 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -41,7 +41,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Data side-panel](#data-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 6, n/a 0 | 1 |
 | [Notes side-panel](#notes-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 3 |
 | [Notes editor](#notes-editor) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 3 |
-| [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 1 |
+| [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 5, n/a 0 | 0 |
 | [Saved captures side-panel](#saved-captures-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 14, n/a 0 | 1 |
 | [Capture side-panel](#capture-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Vault side-panel](#vault-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 0 |
@@ -1295,18 +1295,23 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Browse files and saved captures (EXT-F-2008)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 4. **Controls:** 28.
+**Role status:** guest: N/A · member: Unverified · admin: Partial. **Cases:** 4. **Controls:** 28.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0064
+**Next:** Add cases for 13 uncovered control(s), then verify them in the extension.
 
-**Linked defects:** [EXT-D-0064](defects/EXT-D-0064.json) (fixed)
+**Linked defects:** [EXT-D-0064](defects/EXT-D-0064.json) (retest-pass)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-2008-T01 Guest cannot open Files | N/A | N/A | N/A | EXT-F-2008-C01 |
-| EXT-F-2008-T02 Search library and screenshots | N/A | Unverified | Unverified | EXT-F-2008-C01, EXT-F-2008-C03, EXT-F-2008-C04, EXT-F-2008-C05, EXT-F-2008-C02 |
+| EXT-F-2008-T02 Search library and screenshots | N/A | Unverified | Partial | EXT-F-2008-C01, EXT-F-2008-C03, EXT-F-2008-C04, EXT-F-2008-C05, EXT-F-2008-C02 |
 | EXT-F-2008-T03 Open and attach file/screenshot | N/A | Unverified | Unverified | EXT-F-2008-C06, EXT-F-2008-C08, EXT-F-2008-C09, EXT-F-2008-C11 |
 | EXT-F-2008-T04 Inspect family navigation and pagination | N/A | Unverified | Unverified | EXT-F-2008-C07, EXT-F-2008-C10, EXT-F-2008-C12, EXT-F-2008-C13, EXT-F-2008-C14, EXT-F-2008-C15 |
+
+**Recorded case details and evidence:**
+
+- EXT-F-2008-T02 · admin: Partial. Exact173 admin: failed reads show error/Retry without false-empty claim; both tabs recover after successful read. Search and other full-case actions untested.
+  Evidence / build / date recorded: files-fresh-acceptance-20261001-002, docs/stabilization/reports/files-fresh-acceptance-20261001.json
 
 **Controls without a mapped case:** EXT-F-2008-C16 Inspect binary ancestry graph; EXT-F-2008-C17 Page backward through binary ancestry; EXT-F-2008-C18 Page forward through binary ancestry; EXT-F-2008-C19 Inspect processed-result graph; EXT-F-2008-C20 Page backward through processed ancestry; EXT-F-2008-C21 Page forward through processed ancestry; EXT-F-2008-C22 Inspect representation badges; EXT-F-2008-C23 Inspect capability badges; EXT-F-2008-C24 Observe family empty state; EXT-F-2008-C25 Observe attachment failure; EXT-F-2008-C26 Observe no active conversation gate; EXT-F-2008-C27 Detach file from current chat; EXT-F-2008-C28 Detach screenshot from current chat
 
