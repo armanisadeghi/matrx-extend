@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "status": "source_prepared_native_run_pending",
+  "subject": "EXT-D-0065 test-owned Source pair",
+  "fixture_runner": "tests/browser/files-saved-native-acceptance.mjs",
+  "fixture_mode": "FILES_SAVED_FIXTURE_MODE=create",
+  "creation_path": "Owned native Chrome profile; real web and extension sign-in; approved organization selected in Settings; public example.com and IANA reserved-domain pages captured and saved through Scrape; exact Source IDs read from the resulting Open this Source UI links; both titles confirmed in Saved captures.",
+  "private_config": "test-results/files-saved-private-config.json (0600; Source IDs are added only after both UI saves and list confirmation)",
+  "source_ids": [],
+  "cleanup_scope": "After the D65 retest, FILES_SAVED_FIXTURE_MODE=cleanup opens each Saved captures detail, checks its web-app Source link against the recorded ID, then deletes that exact row through the UI. Partial creation requires review of exact IDs in this report before cleanup.",
+  "native_result": "unverified; guest verifier currently owns browser resources"
+}

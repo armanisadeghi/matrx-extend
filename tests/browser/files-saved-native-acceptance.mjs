@@ -9,6 +9,9 @@
  * FILES_SAVED_EXPECTED_TREE_SHA256=<root-provided-sha256> \
  * FILES_SAVED_PRIVATE_CONFIG=/absolute/private-config.json \
  * node tests/browser/files-saved-native-acceptance.mjs
+ * Set FILES_SAVED_FIXTURE_MODE=create with the same receipt/config to save two
+ * owned demo Sources first. After D65, set FILES_SAVED_FIXTURE_MODE=cleanup to
+ * delete only that pair, checking each detail's Source link against its ID.
  */
 import { lstat, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
@@ -25,9 +28,15 @@ const RECEIPT = RELEASE_RECEIPT ?? LOCAL_DEV_RECEIPT;
 const EXPECTED_TREE_SHA256 = process.env.FILES_SAVED_EXPECTED_TREE_SHA256;
 const CONFIG = process.env.FILES_SAVED_PRIVATE_CONFIG;
 const ROLE = process.env.FILES_SAVED_ROLE ?? 'admin';
+const FIXTURE_MODE = process.env.FILES_SAVED_FIXTURE_MODE ?? null;
 const ADMIN_ENV = join(homedir(), 'code/aidream/.env');
 const WEB_ORIGIN = 'https://www.aimatrx.com';
+const DEMO_PAGES = {
+  A: 'https://example.com/',
+  B: 'https://www.iana.org/domains/reserved',
+};
 const OUTPUT = join(REPO, 'test-results/files-saved-native-acceptance.json');
+const FIXTURE_OUTPUT = join(REPO, 'docs/stabilization/reports/saved-capture-fixture-20261001.json');
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 let stage = 'preflight';
 const report = {
@@ -75,6 +84,166 @@ async function privateConfig() {
       fail('source_pair_not_distinct');
   }
   return value;
+}
+
+// These are public demo/reference pages; the runner never rewrites their content.
+async function createDemoSource(page, panel, variant) {
+  stage = `fixture_${variant}`;
+  const url = DEMO_PAGES[variant];
+  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+  const title = await page.title();
+  if (!title.trim()) fail('fixture_public_page_title_missing');
+  await page.bringToFront();
+  await click(panel, 'title', 'Scrape');
+  await click(panel, 'button-text', 'Capture');
+  await waitFor(
+    'fixture_capture_ready',
+    () => evaluate(panel, `(() => {
+      const tab = document.querySelector('button[role="tab"][title="Scrape"]');
+      const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
+      return [...(root?.querySelectorAll('button') ?? [])].some(b => b.textContent.trim() === 'Save');
+    })()`),
+    Boolean,
+    45_000,
+  );
+  await click(panel, 'button-text', 'Save');
+  await waitFor(
+    'fixture_source_saved',
+    () => evaluate(panel, `(() => {
+      const tab = document.querySelector('button[role="tab"][title="Scrape"]');
+      const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
+      return [...(root?.querySelectorAll('button') ?? [])].some(b =>
+        b.textContent.trim() === 'Open this Source (opens in the web app)');
+    })()`),
+    Boolean,
+    60_000,
+  );
+  const opened = page.context().waitForEvent('page', { timeout: 15_000 });
+  await click(panel, 'button-text', 'Open this Source (opens in the web app)');
+  const sourcePage = await opened;
+  await sourcePage.waitForURL((target) => target.pathname.startsWith('/knowledge/sources/'), {
+    timeout: 15_000,
+  });
+  const sourceUrl = new URL(sourcePage.url());
+  const id = /^\/knowledge\/sources\/([0-9a-f-]{36})$/i.exec(sourceUrl.pathname)?.[1];
+  await sourcePage.close();
+  if (
+    sourceUrl.protocol !== 'https:' ||
+    !['aimatrx.com', 'www.aimatrx.com'].includes(sourceUrl.hostname) ||
+    !UUID.test(id)
+  ) fail('fixture_source_link_invalid');
+  return {
+    id,
+    title,
+    url,
+    created_at: new Date().toISOString(),
+    test_owned: true,
+    created_via: 'native Scrape Capture and Save UI',
+  };
+}
+
+async function createFixturePair(page, panel, config, build) {
+  if (ROLE !== 'admin' || config.source_a || config.source_b) fail('fixture_requires_empty_admin_pair');
+  const stamp = Date.now();
+  const fixture = {
+    schema_version: 1,
+    status: 'creating',
+    build: { version: build.version, tree_sha256: build.treeSha256 },
+    organization_id: config.approved_organization_id,
+    run_id: `saved-capture-fixture-${stamp}`,
+    source_scope: 'two test-owned public demo/reference pages saved through native Scrape UI',
+    sources: [],
+    cleanup: 'Delete only the exact Source IDs recorded here through Saved captures UI after D65 retest.',
+  };
+  const saveReceipt = async () => writeFile(FIXTURE_OUTPUT, `${JSON.stringify(fixture, null, 2)}\n`);
+  await saveReceipt();
+  try {
+    for (const variant of ['A', 'B']) {
+      const source = await createDemoSource(page, panel, variant);
+      fixture.sources.push(source);
+      await saveReceipt();
+    }
+    if (fixture.sources[0].id === fixture.sources[1].id) fail('fixture_ids_not_distinct');
+    await click(panel, 'title', 'Saved captures');
+    await waitFor(
+      'fixture_pair_visible_in_saved_captures',
+      () => sourceListState(panel, fixture.sources[0], fixture.sources[1]),
+      (state) => state.active && state.hasA && state.hasB,
+      45_000,
+    );
+    fixture.saved_captures_list_visible = true;
+    config.source_a = fixture.sources[0];
+    config.source_b = fixture.sources[1];
+    await writeFile(CONFIG, `${JSON.stringify(config, null, 2)}\n`, { mode: 0o600 });
+    fixture.status = 'created';
+    await saveReceipt();
+    report.observations.fixture = 'created_via_native_scrape_ui';
+  } catch (error) {
+    fixture.status = 'partial_requires_exact_id_review';
+    fixture.failure_stage = stage;
+    await saveReceipt();
+    throw error;
+  }
+}
+
+async function cleanupFixturePair(page, panel, config) {
+  if (ROLE !== 'admin' || !config.source_a || !config.source_b)
+    fail('cleanup_requires_configured_admin_pair');
+  const fixture = JSON.parse(await readFile(FIXTURE_OUTPUT, 'utf8'));
+  if (
+    fixture.status !== 'created' ||
+    fixture.organization_id !== config.approved_organization_id ||
+    fixture.sources?.length !== 2 ||
+    fixture.sources[0].id !== config.source_a.id ||
+    fixture.sources[1].id !== config.source_b.id
+  ) fail('cleanup_provenance_mismatch');
+  fixture.deleted_source_ids = [];
+  await click(panel, 'title', 'Saved captures');
+  for (const source of fixture.sources) {
+    stage = `cleanup_${source.id}`;
+    await sourceRowClick(panel, source);
+    await waitFor(
+      'cleanup_source_detail_visible',
+      () => evaluate(panel, `(() => {
+        const tab = document.querySelector('button[role="tab"][title="Saved captures"]');
+        const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
+        return root?.querySelector('header .font-semibold')?.textContent.trim();
+      })()`),
+      (title) => title === source.title,
+      30_000,
+    );
+    const opened = page.context().waitForEvent('page', { timeout: 15_000 });
+    await click(panel, 'title', 'Opens this Source in the AI Matrx web app');
+    const sourcePage = await opened;
+    await sourcePage.waitForURL((target) => target.pathname.startsWith('/knowledge/sources/'), {
+      timeout: 15_000,
+    });
+    const actualId = /^\/knowledge\/sources\/([0-9a-f-]{36})$/i.exec(new URL(sourcePage.url()).pathname)?.[1];
+    await sourcePage.close();
+    if (actualId !== source.id) fail('cleanup_detail_id_mismatch');
+    await trustedFeatureClick(panel, 'Saved captures', 'button', 'Back to saved captures');
+    await click(panel, 'button-text', `Delete ${source.title}`);
+    await click(panel, 'button-text', 'Delete');
+    await waitFor(
+      'cleanup_exact_source_absent',
+      () => evaluate(panel, `(() => {
+        const tab = document.querySelector('button[role="tab"][title="Saved captures"]');
+        const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
+        return [...(root?.querySelectorAll('article > button') ?? [])]
+          .some(row => row.querySelector('.font-medium')?.textContent.trim() === ${JSON.stringify(source.title)});
+      })()`),
+      (visible) => visible === false,
+      30_000,
+    );
+    fixture.deleted_source_ids.push(source.id);
+    await writeFile(FIXTURE_OUTPUT, `${JSON.stringify(fixture, null, 2)}\n`);
+  }
+  fixture.status = 'cleaned';
+  await writeFile(FIXTURE_OUTPUT, `${JSON.stringify(fixture, null, 2)}\n`);
+  delete config.source_a;
+  delete config.source_b;
+  await writeFile(CONFIG, `${JSON.stringify(config, null, 2)}\n`, { mode: 0o600 });
+  report.observations.fixture = 'exact_pair_deleted_via_native_saved_captures_ui';
 }
 
 async function buildIdentity() {
@@ -580,6 +749,8 @@ async function proveLastClick(panel, origin, a, b, lateFailure) {
 }
 
 async function main() {
+  if (FIXTURE_MODE !== null && !['create', 'cleanup'].includes(FIXTURE_MODE))
+    fail('unsupported_fixture_mode');
   const config = await privateConfig();
   const build = await buildIdentity();
   report.build = { version: build.version, treeSha256: build.treeSha256 };
@@ -635,6 +806,14 @@ async function main() {
         config.approved_organization_name,
         config.approved_organization_id,
       );
+      if (FIXTURE_MODE === 'create') {
+        await createFixturePair(page, panel, config, build);
+        return;
+      }
+      if (FIXTURE_MODE === 'cleanup') {
+        await cleanupFixturePair(page, panel, config);
+        return;
+      }
       stage = 'D64';
       const filesTransport = interceptFiles(panel, origin);
       await filesTransport.start();
@@ -717,8 +896,9 @@ async function main() {
     },
   });
   if (hashReleaseTree(build.extensionDir) !== build.treeSha256) fail('build_changed_during_run');
-  report.status =
-    report.cases.D64 === 'pass' && report.cases.D65 === 'pass' ? 'bounded-pass' : 'partial';
+  report.status = FIXTURE_MODE
+    ? `fixture-${FIXTURE_MODE === 'create' ? 'created' : 'cleaned'}`
+    : report.cases.D64 === 'pass' && report.cases.D65 === 'pass' ? 'bounded-pass' : 'partial';
 }
 
 try {
@@ -734,5 +914,5 @@ try {
   process.stdout.write(
     `${report.status.toUpperCase()} files_saved_native ${report.failure_code ?? ''}\n`,
   );
-  if (report.status !== 'bounded-pass') process.exitCode = 1;
+  if (!['bounded-pass', 'fixture-created', 'fixture-cleaned'].includes(report.status)) process.exitCode = 1;
 }
