@@ -7,6 +7,7 @@ const h = vi.hoisted(() => ({
   post: vi.fn(),
   admin: true,
   group: -1,
+  tabId: 37,
   document: 'original-document',
   url: 'https://calendar.invalid/calendar',
   releases: new Set<() => void>(),
@@ -89,7 +90,7 @@ vi.mock('@/lib/api/routes/tool-results', () => ({
 vi.mock('@/lib/recording/state', () => ({ recordToolEvent: vi.fn() }));
 vi.mock('@/hooks/use-active-tab', () => ({
   useActiveTab: () => ({
-    id: 37,
+    id: h.tabId,
     url: h.url,
     title: 'Calendar',
     documentId: h.document,
@@ -129,14 +130,20 @@ afterEach(async () => {
   vi.clearAllMocks();
 });
 it.each([
-  ['responsive cleanup', false, false, false],
-  ['rejected owned debugger detach', false, false, true],
-  ['stalled hook removal', true, false, false],
-  ['stalled owned debugger detach', false, true, false],
+  ['responsive cleanup', 37, false, false, false],
+  ['rejected owned debugger detach', 38, false, false, true],
+  ['stalled hook removal', 39, true, false, false],
+  ['stalled owned debugger detach', 40, false, true, false],
 ])(
   'saved UI handles %s after a full window without showing old-document rows',
-  async (_name, stallCleanup, stallDetach, rejectDetach) => {
+  async (_name, tabId, stallCleanup, stallDetach, rejectDetach) => {
     vi.useFakeTimers();
+    // CDP client ownership is intentionally process-scoped by tab. Each
+    // parameterized case replaces its Chrome boundary, so reuse of tab 37
+    // would make a late release from an earlier case observe the next case's
+    // mock rather than its own. Production runs keep their Chrome boundary;
+    // the harness needs an isolated tab identity per lifecycle.
+    h.tabId = tabId;
     let stored: Record<string, unknown> = {};
     Object.assign(chrome.storage, {
       session: {
@@ -185,7 +192,7 @@ it.each([
     });
     const events = new Set<(source: object, method: string, params: object) => void>();
     const emit = (method: string, params: object) => {
-      for (const fn of events) fn({ tabId: 37 }, method, params);
+      for (const fn of events) fn({ tabId }, method, params);
     };
     const context = (id: number, uniqueId: string) =>
       emit('Runtime.executionContextCreated', {
@@ -279,7 +286,7 @@ it.each([
         },
         onDetach: { addListener: vi.fn(), removeListener: vi.fn() },
       },
-      tabs: { get: async () => ({ id: 37, groupId: 1, url: h.url }) },
+      tabs: { get: async () => ({ id: tabId, groupId: 1, url: h.url }) },
       scripting: {
         executeScript: async (details: { args?: unknown[] }) => {
           const hookCall = details.args?.length === 2;
@@ -371,7 +378,7 @@ it.each([
     if (rejectDetach) {
       detach.mockResolvedValue(undefined);
       const client = await import('@/lib/cdp/client');
-      await client.detach(37);
+      await client.detach(tabId);
     }
   },
 );
