@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "lane": "release_oct01",
+  "status": "CANDIDATE_PACKAGED_AWAITING_EXACT_ARTIFACT_UI_ACCEPTANCE_AND_STORE_REVIEW",
+  "observed_at_utc": "2026-10-01T16:14:13Z",
+  "store_state": {
+    "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "published_version": "0.2.105",
+    "pending_review_version": "0.2.130",
+    "provenance": "Canonical CHROME-WEB-STORE.md and authenticated primary dashboard read by release coordinator on 2026-10-01; this lane did not use Store UI.",
+    "action": "Preserve the pending 0.2.130 guest Chat correction. Do not upload or cancel it merely for later source changes."
+  },
+  "candidate": {
+    "version": "0.2.173",
+    "source_sha": "d6d6d6b83c937652525f473082ac2f2492c9eabe",
+    "tag": "v0.2.173",
+    "origin_main_and_tag_verified": true,
+    "source_parent": "00d082095",
+    "store_zip_sha256": "1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff",
+    "local_zip_sha256": "88d22fd06ca34893a65fbaec5c8670a27c9a7f1058be2e79129a824b06ca0fa3",
+    "keyed_tree_sha256": "494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064",
+    "keyed_tree_file_count": 541,
+    "lockfile_sha256": "9c570755420db520829d9105c6e7dd5e757616000d0ea3c23d5121ec8baffa1d",
+    "frozen_directory": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8",
+    "frozen_store_zip": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/matrx-extend-0.2.173-store.zip",
+    "frozen_keyed_tree": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/chrome-mv3-keyed",
+    "frozen_receipts": [
+      "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/release-receipt-original.json",
+      "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/release-receipt-frozen.json"
+    ],
+    "frozen_hashes_recomputed": true
+  },
+  "release_execution": {
+    "first_run": "store-candidate-20261001-001",
+    "first_run_result": "Guard valid; failed before candidate creation because installed @ai-matrx/agents 0.19.1 lacked ./context required by committed source and lockfile 0.21.36.",
+    "repair_run": "store-candidate-install-20261001-001",
+    "repair": "Guarded pnpm install --frozen-lockfile --ignore-scripts synchronized installed packages to the committed lockfile.",
+    "successful_run": "store-candidate-20261001-002",
+    "successful_run_result": "Guard valid, child exit 0, release pushed exact source/tag and promoted both local unpacked paths.",
+    "strict_gates": {
+      "matrx_packages": "10 packages installed at npm latest, exactly once; declared latest",
+      "typecheck": "passed",
+      "lint": "passed with nonblocking warnings",
+      "unit": "265 files passed, 2 skipped; 1862 tests passed, 5 skipped",
+      "schema_routing": "passed",
+      "package_twins": "passed with 5 censused pre-existing debt items",
+      "canonical_pickers_archived_items_org_default_swallowed_refusals": "passed, including required self-tests",
+      "migrations": "15 applied, 0 unapplied, 0 drifted",
+      "tool_db_drift": "82 advertised tools match live definition/binding/surface defaults",
+      "store_package": "passed; no dev key or toolbar popup",
+      "store_risk": "passed; emitted manifest policy surface matches published 0.2.105; no forbidden runtime-code path"
+    },
+    "nonblocking_finding": "Mandate scan reports 2 unmeasured repository-identity findings; report was not submitted because database credentials were absent in the isolated release snapshot."
+  },
+  "store_change_assessment": {
+    "since_submitted_0_2_130": "Source changes include Notes failure and deletion handling, person-wide organization reads, archived-organization discovery, records package doors, Pilot/Chat context-rule chips and request receipts, and tool-result delivery. Sidepanel audience values are unchanged; only its explanatory comment changed.",
+    "manifest_policy_surface": "Identical to approved 0.2.105 by emitted-artifact risk gate.",
+    "listing_and_reviewer_copy": "Must be checked against actual 0.2.173 public behavior before any later replacement submission; current 0.2.130 review must finish or receive actionable feedback first.",
+    "provisional_classification": "No new manifest-policy category detected; product-copy and reviewer-path classification awaits exact-artifact UI acceptance."
+  },
+  "remaining_actions": [
+    "Independent native guest acceptance on the frozen 0.2.173 keyed tree, including a real page-grounded Chat answer and signed-out reload.",
+    "Independent signed-in non-admin acceptance on the same frozen tree, including a real Chat answer and sign-out-to-guest privacy transition; do not use an admin session as substitute.",
+    "Reconcile visible behavior, listing text, screenshots and reviewer instructions before replacing any Store submission.",
+    "Check Google result for pending 0.2.130 and the public listing; only then choose whether 0.2.173 or a newer exact candidate is needed."
+  ],
+  "evidence": [
+    "docs/stabilization/resource-journals/store-candidate-20261001-001.jsonl",
+    "docs/stabilization/resource-journals/store-candidate-install-20261001-001.jsonl",
+    "docs/stabilization/resource-journals/store-candidate-20261001-002.jsonl",
+    "tmp/release-logs/latest.log",
+    ".output/release-receipt.json"
+  ]
+}
