@@ -43,25 +43,41 @@ export function createGuestStreamCollector({
       if (kind === 'tool:timeline-event') {
         const payload = message.payload ?? {};
         const call = toolCalls.get(payload.callId);
-        const name = typeof payload.toolName === 'string' && /^[a-z][a-z0-9_]{0,79}$/.test(payload.toolName)
-          ? payload.toolName : call?.name ?? 'unknown';
+        const name =
+          typeof payload.toolName === 'string' && /^[a-z][a-z0-9_]{0,79}$/.test(payload.toolName)
+            ? payload.toolName
+            : (call?.name ?? 'unknown');
         if (!['started', 'completed', 'error'].includes(payload.phase)) return;
-        const explicitTabId = payload.phase === 'started' && payload.args?.tab_id != null
-          ? Number(payload.args.tab_id) : null;
-        if (payload.phase === 'started' && call) call.explicitTabId = Number.isInteger(explicitTabId) ? explicitTabId : null;
-        const targetTabId = call?.explicitTabId ?? (Number.isInteger(explicitTabId) ? explicitTabId : null);
+        const explicitTabId =
+          payload.phase === 'started' && payload.args?.tab_id != null
+            ? Number(payload.args.tab_id)
+            : null;
+        if (payload.phase === 'started' && call)
+          call.explicitTabId = Number.isInteger(explicitTabId) ? explicitTabId : null;
+        const targetTabId =
+          call?.explicitTabId ?? (Number.isInteger(explicitTabId) ? explicitTabId : null);
         const hasResult = payload.phase === 'completed' && payload.output !== undefined;
         const result = hasResult ? JSON.stringify(payload.output) : '';
         const resultUrl = payload.output?.url;
         toolEvents.push({
           name,
           phase: payload.phase,
-          target: targetTabId == null ? 'assigned_tab_or_non_tab_tool' :
-            targetTabId === fixtureTabId ? 'fixture_tab' : 'different_tab',
+          target:
+            targetTabId == null
+              ? 'assigned_tab_or_non_tab_tool'
+              : targetTabId === fixtureTabId
+                ? 'fixture_tab'
+                : 'different_tab',
           resultUrlMatchesFixture: typeof resultUrl === 'string' ? resultUrl === fixtureUrl : null,
-          resultContainsOpeningCode: hasResult ? Boolean(markers[0] && result.includes(markers[0])) : null,
-          resultContainsFollowupCode: hasResult ? Boolean(markers[1] && result.includes(markers[1])) : null,
-          resultContainsFixtureHeading: hasResult ? Boolean(markers[2] && result.includes(markers[2])) : null,
+          resultContainsOpeningCode: hasResult
+            ? Boolean(markers[0] && result.includes(markers[0]))
+            : null,
+          resultContainsFollowupCode: hasResult
+            ? Boolean(markers[1] && result.includes(markers[1]))
+            : null,
+          resultContainsFixtureHeading: hasResult
+            ? Boolean(markers[2] && result.includes(markers[2]))
+            : null,
         });
         return;
       }
@@ -97,18 +113,24 @@ export function createGuestStreamCollector({
       } else if (payload.type === 'event') {
         const name = payload.payload?.eventName;
         const data = payload.payload?.data;
-        if (name === 'tool_event' && ['tool_delegated', 'tool_started', 'tool_completed', 'tool_failed'].includes(data?.event)) {
+        if (
+          name === 'tool_event' &&
+          ['tool_delegated', 'tool_started', 'tool_completed', 'tool_failed'].includes(data?.event)
+        ) {
           if (data.event === 'tool_delegated') run.delegated = true;
           const toolName = data?.tool_name;
           const callId = data?.call_id;
-          const safeName = typeof toolName === 'string' && /^[a-z][a-z0-9_]{0,79}$/.test(toolName)
-            ? toolName : 'unknown';
+          const safeName =
+            typeof toolName === 'string' && /^[a-z][a-z0-9_]{0,79}$/.test(toolName)
+              ? toolName
+              : 'unknown';
           if (typeof callId === 'string' && typeof toolName === 'string') {
             toolCalls.set(callId, { name: safeName, explicitTabId: null });
           }
-          const streamedOutput = data.event === 'tool_completed'
-            ? data?.data?.result ?? data?.data?.output ?? data?.output
-            : undefined;
+          const streamedOutput =
+            data.event === 'tool_completed'
+              ? (data?.data?.result ?? data?.data?.output ?? data?.output)
+              : undefined;
           const hasStreamedOutput = streamedOutput !== undefined;
           const result = hasStreamedOutput ? JSON.stringify(streamedOutput) : '';
           const resultUrl = streamedOutput?.url;
@@ -116,10 +138,17 @@ export function createGuestStreamCollector({
             name: safeName,
             phase: data.event,
             target: 'server_event_target_unobserved',
-            resultUrlMatchesFixture: typeof resultUrl === 'string' ? resultUrl === fixtureUrl : null,
-            resultContainsOpeningCode: hasStreamedOutput ? Boolean(markers[0] && result.includes(markers[0])) : null,
-            resultContainsFollowupCode: hasStreamedOutput ? Boolean(markers[1] && result.includes(markers[1])) : null,
-            resultContainsFixtureHeading: hasStreamedOutput ? Boolean(markers[2] && result.includes(markers[2])) : null,
+            resultUrlMatchesFixture:
+              typeof resultUrl === 'string' ? resultUrl === fixtureUrl : null,
+            resultContainsOpeningCode: hasStreamedOutput
+              ? Boolean(markers[0] && result.includes(markers[0]))
+              : null,
+            resultContainsFollowupCode: hasStreamedOutput
+              ? Boolean(markers[1] && result.includes(markers[1]))
+              : null,
+            resultContainsFixtureHeading: hasStreamedOutput
+              ? Boolean(markers[2] && result.includes(markers[2]))
+              : null,
           });
           add({ kind: data.event, run: run.ordinal });
         } else if (
@@ -158,9 +187,16 @@ export function createGuestStreamCollector({
       }
     },
     snapshot() {
-      return { runs: order.map((id) => ({ ...runs.get(id) })), continuations, events: [...events], toolEvents: [...toolEvents] };
+      return {
+        runs: order.map((id) => ({ ...runs.get(id) })),
+        continuations,
+        events: [...events],
+        toolEvents: [...toolEvents],
+      };
     },
-    runIds() { return [...order]; },
+    runIds() {
+      return [...order];
+    },
   };
 }
 

@@ -98,23 +98,31 @@ async function createDemoSource(page, panel, variant) {
   await click(panel, 'button-text', 'Capture');
   await waitFor(
     'fixture_capture_ready',
-    () => evaluate(panel, `(() => {
+    () =>
+      evaluate(
+        panel,
+        `(() => {
       const tab = document.querySelector('button[role="tab"][title="Scrape"]');
       const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
       return [...(root?.querySelectorAll('button') ?? [])].some(b => b.textContent.trim() === 'Save');
-    })()`),
+    })()`,
+      ),
     Boolean,
     45_000,
   );
   await click(panel, 'button-text', 'Save');
   await waitFor(
     'fixture_source_saved',
-    () => evaluate(panel, `(() => {
+    () =>
+      evaluate(
+        panel,
+        `(() => {
       const tab = document.querySelector('button[role="tab"][title="Scrape"]');
       const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
       return [...(root?.querySelectorAll('button') ?? [])].some(b =>
         b.textContent.trim() === 'Open this Source (opens in the web app)');
-    })()`),
+    })()`,
+      ),
     Boolean,
     60_000,
   );
@@ -131,7 +139,8 @@ async function createDemoSource(page, panel, variant) {
     sourceUrl.protocol !== 'https:' ||
     !['aimatrx.com', 'www.aimatrx.com'].includes(sourceUrl.hostname) ||
     !UUID.test(id)
-  ) fail('fixture_source_link_invalid');
+  )
+    fail('fixture_source_link_invalid');
   return {
     id,
     title,
@@ -143,7 +152,8 @@ async function createDemoSource(page, panel, variant) {
 }
 
 async function createFixturePair(page, panel, config, build) {
-  if (ROLE !== 'admin' || config.source_a || config.source_b) fail('fixture_requires_empty_admin_pair');
+  if (ROLE !== 'admin' || config.source_a || config.source_b)
+    fail('fixture_requires_empty_admin_pair');
   const stamp = Date.now();
   const fixture = {
     schema_version: 1,
@@ -153,9 +163,11 @@ async function createFixturePair(page, panel, config, build) {
     run_id: `saved-capture-fixture-${stamp}`,
     source_scope: 'two test-owned public demo/reference pages saved through native Scrape UI',
     sources: [],
-    cleanup: 'Delete only the exact Source IDs recorded here through Saved captures UI after D65 retest.',
+    cleanup:
+      'Delete only the exact Source IDs recorded here through Saved captures UI after D65 retest.',
   };
-  const saveReceipt = async () => writeFile(FIXTURE_OUTPUT, `${JSON.stringify(fixture, null, 2)}\n`);
+  const saveReceipt = async () =>
+    writeFile(FIXTURE_OUTPUT, `${JSON.stringify(fixture, null, 2)}\n`);
   await saveReceipt();
   try {
     for (const variant of ['A', 'B']) {
@@ -196,7 +208,8 @@ async function cleanupFixturePair(page, panel, config) {
     fixture.sources?.length !== 2 ||
     fixture.sources[0].id !== config.source_a.id ||
     fixture.sources[1].id !== config.source_b.id
-  ) fail('cleanup_provenance_mismatch');
+  )
+    fail('cleanup_provenance_mismatch');
   fixture.deleted_source_ids = [];
   await click(panel, 'title', 'Saved captures');
   for (const source of fixture.sources) {
@@ -204,11 +217,15 @@ async function cleanupFixturePair(page, panel, config) {
     await sourceRowClick(panel, source);
     await waitFor(
       'cleanup_source_detail_visible',
-      () => evaluate(panel, `(() => {
+      () =>
+        evaluate(
+          panel,
+          `(() => {
         const tab = document.querySelector('button[role="tab"][title="Saved captures"]');
         const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
         return root?.querySelector('header .font-semibold')?.textContent.trim();
-      })()`),
+      })()`,
+        ),
       (title) => title === source.title,
       30_000,
     );
@@ -218,7 +235,9 @@ async function cleanupFixturePair(page, panel, config) {
     await sourcePage.waitForURL((target) => target.pathname.startsWith('/knowledge/sources/'), {
       timeout: 15_000,
     });
-    const actualId = /^\/knowledge\/sources\/([0-9a-f-]{36})$/i.exec(new URL(sourcePage.url()).pathname)?.[1];
+    const actualId = /^\/knowledge\/sources\/([0-9a-f-]{36})$/i.exec(
+      new URL(sourcePage.url()).pathname,
+    )?.[1];
     await sourcePage.close();
     if (actualId !== source.id) fail('cleanup_detail_id_mismatch');
     await trustedFeatureClick(panel, 'Saved captures', 'button', 'Back to saved captures');
@@ -226,12 +245,16 @@ async function cleanupFixturePair(page, panel, config) {
     await click(panel, 'button-text', 'Delete');
     await waitFor(
       'cleanup_exact_source_absent',
-      () => evaluate(panel, `(() => {
+      () =>
+        evaluate(
+          panel,
+          `(() => {
         const tab = document.querySelector('button[role="tab"][title="Saved captures"]');
         const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
         return [...(root?.querySelectorAll('article > button') ?? [])]
           .some(row => row.querySelector('.font-medium')?.textContent.trim() === ${JSON.stringify(source.title)});
-      })()`),
+      })()`,
+        ),
       (visible) => visible === false,
       30_000,
     );
@@ -898,7 +921,9 @@ async function main() {
   if (hashReleaseTree(build.extensionDir) !== build.treeSha256) fail('build_changed_during_run');
   report.status = FIXTURE_MODE
     ? `fixture-${FIXTURE_MODE === 'create' ? 'created' : 'cleaned'}`
-    : report.cases.D64 === 'pass' && report.cases.D65 === 'pass' ? 'bounded-pass' : 'partial';
+    : report.cases.D64 === 'pass' && report.cases.D65 === 'pass'
+      ? 'bounded-pass'
+      : 'partial';
 }
 
 try {
@@ -914,5 +939,6 @@ try {
   process.stdout.write(
     `${report.status.toUpperCase()} files_saved_native ${report.failure_code ?? ''}\n`,
   );
-  if (!['bounded-pass', 'fixture-created', 'fixture-cleaned'].includes(report.status)) process.exitCode = 1;
+  if (!['bounded-pass', 'fixture-created', 'fixture-cleaned'].includes(report.status))
+    process.exitCode = 1;
 }

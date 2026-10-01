@@ -360,8 +360,10 @@ async function fixtureIdentitySnapshot(attachWorker, page, fixture, fixtureTabId
         returnByValue: true,
       });
       const assignedIds = assignment.result?.value;
-      assignedTabMatchesFixture = Array.isArray(assignedIds) && assignedIds.length > 0
-        ? assignedIds.every((id) => id === fixtureTabId) : null;
+      assignedTabMatchesFixture =
+        Array.isArray(assignedIds) && assignedIds.length > 0
+          ? assignedIds.every((id) => id === fixtureTabId)
+          : null;
     }
     return {
       ...base,
@@ -420,7 +422,11 @@ async function requireActiveFixtureTab(attachWorker, page, fixture) {
       awaitPromise: true,
       returnByValue: true,
     });
-    assert.equal(result.result?.value?.url, page.url(), 'the nonce fixture tab must be active at send');
+    assert.equal(
+      result.result?.value?.url,
+      page.url(),
+      'the nonce fixture tab must be active at send',
+    );
     assert.ok(Number.isInteger(result.result?.value?.id), 'fixture tab id must exist');
     return result.result.value.id;
   } finally {
@@ -575,10 +581,8 @@ try {
         await submitQuestion(panel, FIRST_QUESTION, 'opening_question');
 
         markStage('real_guest_answer');
-        const openingTurn = await waitForTerminalAnswer(
-          panel,
-          { nonce: fixture.openingCode },
-          () => fixtureIdentitySnapshot(attachWorker, web, fixture, fixtureTabId),
+        const openingTurn = await waitForTerminalAnswer(panel, { nonce: fixture.openingCode }, () =>
+          fixtureIdentitySnapshot(attachWorker, web, fixture, fixtureTabId),
         );
         report.grounding_diagnostics.opening = {
           toolEvents: openingTurn.state.streamTrace?.toolEvents ?? [],
@@ -672,7 +676,13 @@ try {
         report.grounding_diagnostics.followup = {
           toolEvents: followupTurn.state.streamTrace?.toolEvents ?? [],
           toolBoundaryChecks: followupTurn.toolBoundaryChecks,
-          terminal: await fixtureIdentitySnapshot(attachWorker, web, fixture, followupFixtureTabId, panel),
+          terminal: await fixtureIdentitySnapshot(
+            attachWorker,
+            web,
+            fixture,
+            followupFixtureTabId,
+            panel,
+          ),
         };
         const followup = followupTurn.state;
         report.followup_turn_verdict = followupTurn.verdict;
