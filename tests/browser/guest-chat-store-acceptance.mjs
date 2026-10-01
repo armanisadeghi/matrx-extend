@@ -6,9 +6,9 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { classifyGuestTurn, createGuestStreamCollector } from './guest-chat-completion-oracle.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
-import { classifyGuestTurn, createGuestStreamCollector } from './guest-chat-completion-oracle.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const RECEIPT = resolve(
@@ -119,7 +119,9 @@ async function observe(panel, expected = {}) {
 }
 
 async function installStreamTrace(panel) {
-  const installed = await evaluate(panel, `(() => {
+  const installed = await evaluate(
+    panel,
+    `(() => {
     window.__guestChatStreamTrace?.stop();
     const makeCollector = (${createGuestStreamCollector.toString()});
     const collector = makeCollector({
@@ -133,7 +135,8 @@ async function installStreamTrace(panel) {
       stop: () => chrome.runtime.onMessage.removeListener(listener),
     };
     return true;
-  })()`);
+  })()`,
+  );
   assert.equal(installed, true, 'guest stream trace installed before send');
 }
 
@@ -154,9 +157,17 @@ async function waitForTerminalAnswer(panel, expected) {
       errorNotice: state.errorNotice,
     });
     const previous = timeline.at(-1);
-    if (!previous || previous.verdict !== verdict || previous.runCount !== state.streamTrace?.runs.length) {
-      timeline.push({ verdict, runCount: state.streamTrace?.runs.length ?? 0,
-        replyCount: state.replyCount, streaming: state.streaming });
+    if (
+      !previous ||
+      previous.verdict !== verdict ||
+      previous.runCount !== state.streamTrace?.runs.length
+    ) {
+      timeline.push({
+        verdict,
+        runCount: state.streamTrace?.runs.length ?? 0,
+        replyCount: state.replyCount,
+        streaming: state.streaming,
+      });
     }
     last = { state, verdict, timeline };
     if (verdict.startsWith('terminal_')) return last;
@@ -485,9 +496,7 @@ try {
         await submitQuestion(panel, FIRST_QUESTION, 'opening_question');
 
         markStage('real_guest_answer');
-        const openingTurn = await waitForTerminalAnswer(
-          panel, { nonce: fixture.openingCode },
-        );
+        const openingTurn = await waitForTerminalAnswer(panel, { nonce: fixture.openingCode });
         const answered = openingTurn.state;
         report.opening_turn_verdict = openingTurn.verdict;
         report.opening_turn_timeline = openingTurn.timeline;
@@ -495,7 +504,7 @@ try {
         report.guest_ai_requests = networkWatch.snapshot();
         assert.ok(
           openingTurn.verdict === 'terminal_answer' &&
-          answered.answerContainsNonce &&
+            answered.answerContainsNonce &&
             answered.answerMatchesPublicStages &&
             !answered.answerIsRefusal &&
             !answered.errorNotice,
@@ -563,9 +572,10 @@ try {
         await submitQuestion(panel, FOLLOWUP_QUESTION, 'followup_question');
 
         markStage('real_guest_followup_answer');
-        const followupTurn = await waitForTerminalAnswer(
-          panel, { nonce: fixture.followupCode, fixtureHeading: fixture.title },
-        );
+        const followupTurn = await waitForTerminalAnswer(panel, {
+          nonce: fixture.followupCode,
+          fixtureHeading: fixture.title,
+        });
         const followup = followupTurn.state;
         report.followup_turn_verdict = followupTurn.verdict;
         report.followup_turn_timeline = followupTurn.timeline;
@@ -573,7 +583,7 @@ try {
         report.guest_ai_requests = networkWatch.snapshot();
         assert.ok(
           followupTurn.verdict === 'terminal_answer' &&
-          followup.answerContainsNonce &&
+            followup.answerContainsNonce &&
             followup.answerContainsFixtureHeading &&
             !followup.answerIsRefusal &&
             !followup.errorNotice,

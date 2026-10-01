@@ -49,20 +49,13 @@
       "live_catalog_match": {
         "tier": "read",
         "admin_only": false,
-        "required_permissions": [
-          "activeTab"
-        ],
+        "required_permissions": ["activeTab"],
         "required_optional_permissions": []
       },
       "case_patch": {
         "title": "Manual read: active tab metadata on owned fixture",
-        "control_ids": [
-          "EXT-F-4025-C01"
-        ],
-        "modes": [
-          "member",
-          "admin"
-        ],
+        "control_ids": ["EXT-F-4025-C01"],
+        "modes": ["member", "admin"],
         "design_status": "procedure-ready-unverified",
         "preconditions": [
           "Complete shared build/reload cycle and synthetic fixture preconditions; fixture tab stays active when opening Tools."
@@ -76,11 +69,7 @@
           "One inline object is returned with tab_id, window_id, url, title, status, pinned, incognito, and fav_icon_url fields (nullable browser metadata is acceptable).",
           "tab_id matches the active fixture tab; title is 'Matrx tool read fixture'; url is the fixture URL; no mutation or new tab occurs."
         ],
-        "dimensions": [
-          "valid-input",
-          "permissions",
-          "reload"
-        ],
+        "dimensions": ["valid-input", "permissions", "reload"],
         "data_ownership": "Browser metadata for the operator-owned synthetic fixture tab only."
       },
       "control_patch": {
@@ -96,21 +85,13 @@
       "live_catalog_match": {
         "tier": "read",
         "admin_only": false,
-        "required_permissions": [
-          "activeTab",
-          "scripting"
-        ],
+        "required_permissions": ["activeTab", "scripting"],
         "required_optional_permissions": []
       },
       "case_patch": {
         "title": "Manual read: selected synthetic fixture text",
-        "control_ids": [
-          "EXT-F-4026-C01"
-        ],
-        "modes": [
-          "member",
-          "admin"
-        ],
+        "control_ids": ["EXT-F-4026-C01"],
+        "modes": ["member", "admin"],
         "design_status": "procedure-ready-unverified",
         "preconditions": [
           "Complete shared build/reload cycle; select exactly 'READFIX-A7Q2' in the owned fixture before opening or returning focus to Tools."
@@ -124,11 +105,7 @@
           "Output has text='READFIX-A7Q2', selected=true, and range_count greater than 0.",
           "The read leaves the page selection intact and performs no click, navigation, or page edit."
         ],
-        "dimensions": [
-          "valid-input",
-          "permissions",
-          "reload"
-        ],
+        "dimensions": ["valid-input", "permissions", "reload"],
         "data_ownership": "A deliberately selected nonce on the operator-owned synthetic page."
       },
       "control_patch": {
@@ -144,21 +121,13 @@
       "live_catalog_match": {
         "tier": "read",
         "admin_only": false,
-        "required_permissions": [
-          "activeTab",
-          "scripting"
-        ],
+        "required_permissions": ["activeTab", "scripting"],
         "required_optional_permissions": []
       },
       "case_patch": {
         "title": "Manual read: bounded text from owned fixture",
-        "control_ids": [
-          "EXT-F-4024-C01"
-        ],
-        "modes": [
-          "member",
-          "admin"
-        ],
+        "control_ids": ["EXT-F-4024-C01"],
+        "modes": ["member", "admin"],
         "design_status": "procedure-ready-unverified",
         "preconditions": [
           "Complete shared build/reload cycle; ordinary readable local fixture tab remains active."
@@ -172,11 +141,7 @@
           "Output contains the fixture's visible synthetic text, including 'Matrx tool read fixture' and 'READFIX-A7Q2', and is bounded to at most 2000 characters per the argument.",
           "The page URL, title, and DOM remain unchanged."
         ],
-        "dimensions": [
-          "valid-input",
-          "permissions",
-          "reload"
-        ],
+        "dimensions": ["valid-input", "permissions", "reload"],
         "data_ownership": "Visible synthetic text from the operator-owned local fixture only."
       },
       "control_patch": {
@@ -192,21 +157,13 @@
       "live_catalog_match": {
         "tier": "read",
         "admin_only": false,
-        "required_permissions": [
-          "activeTab",
-          "scripting"
-        ],
+        "required_permissions": ["activeTab", "scripting"],
         "required_optional_permissions": []
       },
       "case_patch": {
         "title": "Manual read: find exact nonce on owned fixture",
-        "control_ids": [
-          "EXT-F-4030-C01"
-        ],
-        "modes": [
-          "member",
-          "admin"
-        ],
+        "control_ids": ["EXT-F-4030-C01"],
+        "modes": ["member", "admin"],
         "design_status": "procedure-ready-unverified",
         "preconditions": [
           "Complete shared build/reload cycle; fixture contains one visible exact text node READFIX-A7Q2."
@@ -220,11 +177,7 @@
           "count is 1; matches contains one exact text='READFIX-A7Q2' with a non-empty selector and a context containing the marker.",
           "No page content or browser state changes."
         ],
-        "dimensions": [
-          "valid-input",
-          "permissions",
-          "reload"
-        ],
+        "dimensions": ["valid-input", "permissions", "reload"],
         "data_ownership": "A unique synthetic nonce on the operator-owned local fixture only."
       },
       "control_patch": {
@@ -240,21 +193,13 @@
       "live_catalog_match": {
         "tier": "read",
         "admin_only": false,
-        "required_permissions": [
-          "activeTab",
-          "scripting"
-        ],
+        "required_permissions": ["activeTab", "scripting"],
         "required_optional_permissions": []
       },
       "case_patch": {
         "title": "Manual read: filter same-origin fixture link",
-        "control_ids": [
-          "EXT-F-4031-C01"
-        ],
-        "modes": [
-          "member",
-          "admin"
-        ],
+        "control_ids": ["EXT-F-4031-C01"],
+        "modes": ["member", "admin"],
         "design_status": "procedure-ready-unverified",
         "preconditions": [
           "Complete shared build/reload cycle; fixture has exactly one anchor with text 'Fixture local link' and path /tool-procedure/local-link on its own origin."
@@ -268,11 +213,7 @@
           "count is 1 and links contains the exact local fixture link text and same-origin href; total is at least 1.",
           "No link is followed and no browser navigation occurs."
         ],
-        "dimensions": [
-          "valid-input",
-          "permissions",
-          "reload"
-        ],
+        "dimensions": ["valid-input", "permissions", "reload"],
         "data_ownership": "One synthetic same-origin link on the operator-owned local fixture."
       },
       "control_patch": {
@@ -288,21 +229,13 @@
       "live_catalog_match": {
         "tier": "read",
         "admin_only": false,
-        "required_permissions": [
-          "activeTab",
-          "scripting"
-        ],
+        "required_permissions": ["activeTab", "scripting"],
         "required_optional_permissions": []
       },
       "case_patch": {
         "title": "Manual read: computed style for owned fixture element",
-        "control_ids": [
-          "EXT-F-4032-C01"
-        ],
-        "modes": [
-          "member",
-          "admin"
-        ],
+        "control_ids": ["EXT-F-4032-C01"],
+        "modes": ["member", "admin"],
         "design_status": "procedure-ready-unverified",
         "preconditions": [
           "Complete shared build/reload cycle; #procedure-card is visible and has fixed computed display:block and color rgb(1, 2, 3)."
@@ -316,11 +249,7 @@
           "ok=true, tag='div', styles.display='block', and styles.color='rgb(1, 2, 3)'; rectangle has positive width and height.",
           "No style or layout is modified by the tool."
         ],
-        "dimensions": [
-          "valid-input",
-          "permissions",
-          "reload"
-        ],
+        "dimensions": ["valid-input", "permissions", "reload"],
         "data_ownership": "Computed CSS and geometry of a synthetic element on the operator-owned fixture."
       },
       "control_patch": {
@@ -336,21 +265,13 @@
       "live_catalog_match": {
         "tier": "read",
         "admin_only": false,
-        "required_permissions": [
-          "activeTab",
-          "scripting"
-        ],
+        "required_permissions": ["activeTab", "scripting"],
         "required_optional_permissions": []
       },
       "case_patch": {
         "title": "Manual read: identify element at recorded fixture coordinate",
-        "control_ids": [
-          "EXT-F-4033-C01"
-        ],
-        "modes": [
-          "member",
-          "admin"
-        ],
+        "control_ids": ["EXT-F-4033-C01"],
+        "modes": ["member", "admin"],
         "design_status": "procedure-ready-unverified",
         "preconditions": [
           "Complete shared build/reload cycle; #procedure-point is visible, inert, unobscured, and its viewport center coordinate was recorded before opening Tools."
@@ -364,11 +285,7 @@
           "The returned descriptor identifies the fixture's #procedure-point element (or its documented closest-element representation) at the supplied viewport coordinate.",
           "No click, scroll, focus, or page mutation occurs. If the recorded coordinate no longer hits the fixture element, mark precondition drift and stop."
         ],
-        "dimensions": [
-          "valid-input",
-          "permissions",
-          "reload"
-        ],
+        "dimensions": ["valid-input", "permissions", "reload"],
         "data_ownership": "An operator-measured coordinate over an inert synthetic fixture div."
       },
       "control_patch": {
@@ -384,21 +301,13 @@
       "live_catalog_match": {
         "tier": "read",
         "admin_only": false,
-        "required_permissions": [
-          "activeTab",
-          "scripting"
-        ],
+        "required_permissions": ["activeTab", "scripting"],
         "required_optional_permissions": []
       },
       "case_patch": {
         "title": "Manual read: inspect synthetic fixture card",
-        "control_ids": [
-          "EXT-F-4034-C01"
-        ],
-        "modes": [
-          "member",
-          "admin"
-        ],
+        "control_ids": ["EXT-F-4034-C01"],
+        "modes": ["member", "admin"],
         "design_status": "procedure-ready-unverified",
         "preconditions": [
           "Complete shared build/reload cycle; #procedure-card exists exactly once on the owned fixture."
@@ -412,11 +321,7 @@
           "The snapshot identifies one div with id procedure-card and a non-empty ancestor chain; its geometry is non-zero.",
           "The tool returns inspection data only and leaves DOM and styles unchanged."
         ],
-        "dimensions": [
-          "valid-input",
-          "permissions",
-          "reload"
-        ],
+        "dimensions": ["valid-input", "permissions", "reload"],
         "data_ownership": "One explicitly identified synthetic div on the operator-owned fixture."
       },
       "control_patch": {
@@ -432,21 +337,13 @@
       "live_catalog_match": {
         "tier": "read",
         "admin_only": false,
-        "required_permissions": [
-          "activeTab",
-          "scripting"
-        ],
+        "required_permissions": ["activeTab", "scripting"],
         "required_optional_permissions": []
       },
       "case_patch": {
         "title": "Manual read: query exact fixture card and id attribute",
-        "control_ids": [
-          "EXT-F-4029-C01"
-        ],
-        "modes": [
-          "member",
-          "admin"
-        ],
+        "control_ids": ["EXT-F-4029-C01"],
+        "modes": ["member", "admin"],
         "design_status": "procedure-ready-unverified",
         "preconditions": [
           "Complete shared build/reload cycle; the fixture contains exactly one #procedure-card div."
@@ -460,11 +357,7 @@
           "total is 1; returned first row has index 0, tag='div', attrs.id='procedure-card', and attrs.data-case='READFIX-A7Q2'.",
           "No DOM content is changed."
         ],
-        "dimensions": [
-          "valid-input",
-          "permissions",
-          "reload"
-        ],
+        "dimensions": ["valid-input", "permissions", "reload"],
         "data_ownership": "Selector and attributes for the one synthetic fixture card only."
       },
       "control_patch": {
@@ -480,21 +373,13 @@
       "live_catalog_match": {
         "tier": "read",
         "admin_only": false,
-        "required_permissions": [
-          "activeTab",
-          "scripting"
-        ],
+        "required_permissions": ["activeTab", "scripting"],
         "required_optional_permissions": []
       },
       "case_patch": {
         "title": "Manual read: synthetic form discovery and secret redaction",
-        "control_ids": [
-          "EXT-F-4044-C01"
-        ],
-        "modes": [
-          "member",
-          "admin"
-        ],
+        "control_ids": ["EXT-F-4044-C01"],
+        "modes": ["member", "admin"],
         "design_status": "procedure-ready-unverified",
         "preconditions": [
           "Complete shared build/reload cycle; fixture form contains only synthetic-query and synthetic-secret-DO-NOT-REPORT; there is no submit handler."
@@ -508,12 +393,7 @@
           "One form is returned and identifies fixture-query as a text input with synthetic-query; the password field is present but marked/masked and its value is never emitted.",
           "No submit, input change, autofill, or network action occurs. Any appearance of the password sentinel is a security failure: stop and preserve only redacted evidence."
         ],
-        "dimensions": [
-          "valid-input",
-          "sensitive-field-redaction",
-          "permissions",
-          "reload"
-        ],
+        "dimensions": ["valid-input", "sensitive-field-redaction", "permissions", "reload"],
         "data_ownership": "Operator-authored synthetic form values only; the password sentinel must remain absent from evidence."
       },
       "control_patch": {
