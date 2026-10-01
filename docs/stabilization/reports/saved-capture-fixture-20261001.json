@@ -1,12 +1,24 @@
 {
   "schema_version": 1,
-  "status": "source_prepared_native_run_pending",
+  "status": "safety_repair_prepared_native_run_pending",
   "subject": "EXT-D-0065 test-owned Source pair",
   "fixture_runner": "tests/browser/files-saved-native-acceptance.mjs",
   "fixture_mode": "FILES_SAVED_FIXTURE_MODE=create",
-  "creation_path": "Owned native Chrome profile; real web and extension sign-in; approved organization selected in Settings; public example.com and IANA reserved-domain pages captured and saved through Scrape; exact Source IDs read from the resulting Open this Source UI links; both titles confirmed in Saved captures.",
+  "creation_path": "Owned native Chrome profile; real web and extension sign-in; approved organization selected in Settings; run-unique public example.com and IANA page URLs captured and saved through Scrape. A pre-save organization-scoped Source read must find zero matching canonical identities. The POST /sources/land response must say reused_existing=false and new_version_of=null with an exact Source ID, durably recorded before UI-link navigation. The UI link and Saved captures titles are checked afterward.",
   "private_config": "test-results/files-saved-private-config.json (0600; Source IDs are added only after both UI saves and list confirmation)",
   "source_ids": [],
-  "cleanup_scope": "After the D65 retest, FILES_SAVED_FIXTURE_MODE=cleanup opens each Saved captures detail, checks its web-app Source link against the recorded ID, then deletes that exact row through the UI. Partial creation requires review of exact IDs in this report before cleanup.",
+  "safety_repair": {
+    "fixed_url_reuse": "Each public URL now carries a random per-run fixture identity. Both sites returned HTTP 200 without dropping the query in a read-only probe. The server canonical_url implementation preserves query strings; the runner checks the actual landing request identity and refuses reused_existing or new_version_of responses.",
+    "pre_save_baseline": "The native panel makes an organization-scoped, read-only Source query for the exact canonical identity and requires zero rows before Save. The existing signed-in session is used inside the panel; no token is exported or injected.",
+    "partial_receipt": "A response-stage CDP observer records the exact landing ID and new-row decision to the fixture report before following the UI link. A missing or ambiguous response leaves creation unverified and cleanup refused. A partial run never overwrites unresolved Source IDs on a later create attempt.",
+    "cleanup_gate": "Cleanup checks run, organization, URL, zero-row baseline, landing decision, and exact ID, then confirms the Saved captures detail link ID before UI delete. The code refuses ambiguous or reused rows."
+  },
+  "D65_oracle_repair": "A release now requires the actual A network terminal event with the expected success or failure result. B must remain visible at that boundary, after the queued task turn, and across two browser paints before the final UI check. This is a bounded event-order observation; the private React handler has no independent completion signal, so live verification remains necessary.",
+  "runtime_assumptions_unverified": [
+    "The extension's response-stage CDP target exposes the POST /sources/land body and response in this frozen native build.",
+    "The signed-in panel can make the scoped pre-save Source read under live RLS.",
+    "Scrape Save can extract nonempty portions from both public HTML pages and Saved captures lists their titles uniquely."
+  ],
+  "cleanup_scope": "After the D65 retest, FILES_SAVED_FIXTURE_MODE=cleanup requires each recorded ID's zero-row baseline, new-row landing receipt, run identity, URL, and organization to match. It then opens each Saved captures detail, checks its web-app Source link against the recorded ID, and deletes that exact row through the UI. Partial creation requires review of exact receipts in this report before cleanup.",
   "native_result": "unverified; guest verifier currently owns browser resources"
 }
