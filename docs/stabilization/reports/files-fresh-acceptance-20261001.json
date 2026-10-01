@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "lane": "fresh independent native verifier",
+  "subject_build": {
+    "version": "0.2.173",
+    "tree_sha256": "494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064",
+    "frozen_receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/release-receipt-frozen.json"
+  },
+  "verdict_A_live_behavior": {
+    "result": "PARTIAL",
+    "guest": "PASS: Files and Saved captures tabs absent before and after reload in a fresh owned native profile.",
+    "EXT-D-0064": "PASS: Admin signed in through the real web and extension UI, selected the exact approved organization through the UI, and on both Library and Screenshots a scoped read failed, the visible Files error and enabled Retry appeared without a false empty claim, then Retry completed a successful real read and recovered the view.",
+    "EXT-D-0065": "UNVERIFIED: The private 0600 config has no two test-owned Source records. The runner correctly stopped after D64 with partial status and nonzero exit; no A/B last-click race was exercised.",
+    "member": "UNVERIFIED: No member identity was used in this run.",
+    "broader_controls": "UNVERIFIED: The run covers the focused D64 behavior and guest tab absence, not all Files and Saved Captures controls."
+  },
+  "verdict_B_runner_quality": {
+    "result": "PASS_WITH_LIMITS",
+    "readiness": "The merged runner waits for the Files heading, one visible Refresh control, active nested Library tab, and settled loading state before the first Refresh click. Attempt 002 passed that gate and exercised both tab requests.",
+    "D64_oracle": "Each tab required an intercepted scoped request failure, visible error and Retry without false empty text, then a 2xx read after Retry and a settled recovered pane. This reached real product behavior on the frozen build.",
+    "D65_oracle": "Source review shows a fresh list before each iteration, held A, completed 2xx B and visible B before A release, followed by A settlement and B retention. Its behavior remains untested in this run because the owned pair is absent.",
+    "safety": "The runner uses an owned temporary Chrome profile and receipt/tree hash binding. It did not create, change, or delete Source rows. Credentials were loaded privately and are absent from reports and guard journals.",
+    "limitation": "The runner labels Source ownership from private config rather than independently verifying provenance; this did not affect the D64-only execution."
+  },
+  "attempts": [
+    {
+      "run_id": "files-fresh-acceptance-20261001-001",
+      "journal": "docs/stabilization/resource-journals/files-fresh-acceptance-20261001-001.jsonl",
+      "resource_decision": "admitted, child_failed, resourceInvalid=false, clean final decision",
+      "result": "Preflight stopped before browser launch: Playwright was not installed in this repo and the documented host runtime paths were omitted. Guest, D64, and D65 unverified."
+    },
+    {
+      "run_id": "files-fresh-acceptance-20261001-002",
+      "journal": "docs/stabilization/resource-journals/files-fresh-acceptance-20261001-002.jsonl",
+      "resource_decision": "admitted, one healthy watch, child_failed only for partial status, resourceInvalid=false, clean final decision",
+      "result": "Native frozen-build result: guest pass, D64 pass on Library and Screenshots, D65 unverified for missing owned Source pair. The runner exited 1 by design for partial coverage."
+    }
+  ],
+  "next_action": "Create or identify two distinct test-owned Sources through the real Scrape Save UI, record their exact IDs and titles in the private 0600 config, then run a newly permitted D65 native acceptance. Do not mark D65 passed from source review or from D64."
+}
