@@ -1,30 +1,80 @@
-# Stabilization checklist (derived)
+# Stabilization checklist
 
-> Updated after D22 run 011 and guarded Debug export run 002. The frozen lockfile install, compile, and development build passed on source HEAD `36fa88fb`; the `.85` local artifact tree is `f35f13418d84d75e49819ca3a6be044a4fd01303d34e3db450f364780d05f8ff`. Incoming lockfile changes and release commit `4767ed43` (source 0.2.86) landed afterward and have not been installed or rebuilt. Focused D22 regressions passed 62 tests with 1 explicit skip. Native acceptance remains unverified. `inventory.json` and defect records remain authoritative.
+Generated 2026-10-01 16:14 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-09-29T18:27:38.241098Z.
 
-## Coverage
+## Current truth
 
-- [x] Inventory contains 205 features and 693 cases.
-- [ ] Case coverage remains incomplete: 1142 mode-specific slots, including 1 not-applicable result; 53 recorded pass, 76 explicit unverified, and 1012 slots without a result record (unverified coverage).
-- [ ] Acceptance: the 62 focused unit tests do not count as inventory case passes; no current `.85` D22 native case pass is recorded. Run 011 on `.85` enumerated 98 accessible picker choices and read 98 organization-scoped lists, each HTTP 200 and exhausted after one page. Seven public-eligible pages were probed: one HTTP 500, five HTTP 404, and one redirect did not satisfy the runner's exact-URL rule. The child exited unverified before positive recognition.
-- [ ] The four explicit 0.2.79 Debug passes (EXT-F-1005-T14/T15/T17/T22) remain historical, not 0.2.85 retests.
-- [ ] Debug export/verbose: run 001 used a separate runner outside the guard's owned child and is excluded from accepted coverage. Proper guarded run 002 exited unverified at `debug_open` before T16 or T18 case observations. Neither run promotes inventory coverage; diagnose the real opening error before another guarded attempt.
+- Scope: 205 feature records, 731 cases, 1314 controls, 1160 applicable case-role slots.
+- Case results: pass 57, partial 28, fail 1, unverified 1073, n/a 1; 124 explicitly unverified and 949 with no result record. Missing results count as unverified, including later-wave surfaces.
+- Fully verified feature-role pairs: 0/394 under the rule that every applicable case passes and every control maps to a case.
+- Procedure gaps: 168 missing steps; 167 missing expected outcomes; 31 missing control links.
+- Defect states: closed 44, retest-pass 1, fixed 21, in-fix 4, open 1. A fixed or closed defect is not a feature-level UI pass.
 
-## Defects
+## Current-build evidence
 
-- [x] 22 defects are explicitly closed.
-- [ ] EXT-D-0022 is `fixed` and awaiting retest; it is not closed. No other defect is currently open, in-fix, or fixed-awaiting-retest.
+- **Release 0.2.139:** strict release gates passed: 1824 tests (5 skipped), compile/build, 82/82 tool definitions, migrations, Store package validation; no Chrome Web Store submission claim
+- **Artifact:** 0.2.139 tree SHA256 20bbd42bdb782dbef2616aa0996cf947060b0117d84674de2234f8376971c19f; personal Chrome runtime reload not verified
+- **Scoped native acceptance:** independent exact-0.2.139 native run passed admin D61/D62/D63/D67/D68 plus adjacent cases; report docs/stabilization/reports/notes-queue-review.json; UI archive filter check also passed boundedly
+- These receipts establish only the named checks on the named artifact. Other inventory passes keep their recorded historical build boundary.
 
-### EXT-D-0022 - native retest pending
+## Inventory freshness review
 
-Independent state audit `reports/d22-state-audit.json` supports recording the engineering repair as fixed after the scoped-query, stale-result, actor-boundary, queue-order, and refusal repairs and their focused green receipts. Run 011 has independently checked hashes and bounded list/candidate counts (`reports/d22-readonly011-peer.json`), but found no candidate meeting the exact-URL healthy-fixture rule within its observed 98 accessible workspaces. The redirect may be benign URL normalization; it is not a global absence claim. Keep `ui_retest` pending and do not mark EXT-F-1007-T26 passed.
+Since inventory source `528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b`, **209 `src/` paths changed** through `d6d6d6b83c937652525f473082ac2f2492c9eabe`. A direct path-anchor comparison matched 25 and left 184 without an exact inventory anchor.
+A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
-**Next:** Audit the redirect candidate against the app's canonical URL behavior, then seek a qualifying existing fixture through a bounded read-only retest on a receipt-bound build. Preserve the exact-URL Source identity and UI predicates unless independently justified. Keep URLs/IDs private and send no Save input.
+## Next test priorities
 
-**Build boundary:** Reinstall the newly merged lockfile, recheck types, and rebuild under resource guard before claiming a current merged-tree native result. The existing `.85` artifact and D22/Debug receipts remain valid evidence only for their earlier tree.
+- **Coverage model / all contained surfaces** — 0 of 394 applicable feature-role pairs meet the full-verification rule. The inventory records 57 pass, 124 explicit unverified, 28 partial, 1 fail, 1 not applicable, and 949 slots with no result. A pass retains its original build boundary. Next: Continue recording bounded runs by exact build and role; do not infer whole-feature health from a repaired defect or scoped pass.
+- **Executable test procedures** — 168 cases lack steps, 167 lack expected outcomes, and 31 lack control links. The registered-executor surface has 173 cases; its live catalog parity does not prove runtime behavior. Next: Design each missing case from the live advertised tool contract and safe real fixtures before execution.
+- **Current install and native breadth** — 0.2.139 release gates passed and isolated extension artifact is recorded, but personal Chrome reload is explicitly unverified; broad guest/member/admin sidepanel/content-script/service-worker/offscreen passes are absent. Next: Bind native runs to current artifact receipt, real user surface and persona; preserve admission guard.
+- **Notes, Files, Saved captures** — Notes D61/D62/D63/D67/D68 have scoped exact139 admin native verification; feature/member breadth remains open. D64 Files and D65 saved-capture race are source-fixed with focused regression coverage but no native acceptance in current reconciliation. Next: Do not reimplement Notes or D64/D65 source fixes; run remaining current-build native cases and update statuses only for observed outcomes.
+- **Showcase / data / document identity** — Showcase has 59 cases: admin 1 pass, 26 partial, 3 unverified, 28 no-result; D54 is fixed with partial native dimensions, while D42/D47/D58/D59 remain among the active in-fix defect records, with build/native or shared document-identity consumer gaps documented. Next: Resume from their latest defect reports/checkpoint; avoid using historical artifact a8670bf7 as proof for newer corrections.
+- **Registered tools** — 173 registered-executor cases (154 member and 173 admin slots); 4 slots per role are explicitly unverified and the rest have no result. Procedures are substantially missing; current database catalog parity does not prove tool runtime behavior. Next: Reconcile live roster; make procedures executable, then positive/refusal/permission/result-rendering checks with real data.
+- **D69–D71 latest batch** — D69 archived org visibility is bounded native-verified, but archived/stale choice and held-request paths remain open. D70 Guidance read-error/retry and D71 records cross-org runtime scope are source/release-verified; current native behavior remains unverified. Next: Use the current checkpoint/report to run only the unverified paths.
+- **Chat/Pilot** — Wave D inventory includes 10 Chat and 5 Pilot cases; systematic coverage remains deferred. Incidental guest availability is not full Chat acceptance. Next: Keep systematic Chat/Pilot behind contained-surface and case-procedure readiness; retain guest smoke as regression guard.
 
-**Still unverified:** actual positive Source/Open identity agreement across workspaces, stale-response rejection, service-failure/recovery, and late in-flight Save. The read-only runner cannot prove late Save. Preserve the reserved Save checkpoint exactly; do not read, advance, reset, reinitialize, retry, capture, or Save.
+## Per-surface case totals
 
-## Status definitions
+Pass and partial counts are recorded results; unverified includes explicit unverified and no-result slots. These are case-role slots, not whole-feature certifications.
 
-`pass` is the inventory's recorded case result with its original evidence and build boundary; it is not a current-build pass by default. An explicit `unverified` result and an applicable slot with no result object are both pending coverage. Defect `fixed` means engineering work is present and retest remains; only an explicit `closed` defect record is closed.
+| Surface | Features | Pass | Partial | Fail | Unverified | N/A |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Development installation | 1 | 2 | 0 | 0 | 13 | 0 |
+| Testing infrastructure | 1 | 6 | 0 | 0 | 12 | 0 |
+| Release infrastructure | 1 | 24 | 0 | 0 | 6 | 0 |
+| Navigation / shell | 1 | 1 | 0 | 0 | 14 | 0 |
+| Popup / options / mic permission | 1 | 0 | 0 | 0 | 20 | 0 |
+| Settings | 1 | 18 | 0 | 0 | 54 | 1 |
+| Profile | 1 | 0 | 0 | 0 | 32 | 0 |
+| Debug log | 1 | 4 | 1 | 0 | 46 | 0 |
+| Debug bridges | 1 | 0 | 0 | 0 | 28 | 0 |
+| Scrape | 1 | 1 | 0 | 0 | 87 | 0 |
+| SEO | 1 | 0 | 0 | 0 | 42 | 0 |
+| Screenshots | 1 | 0 | 0 | 0 | 16 | 0 |
+| Highlights | 1 | 0 | 0 | 0 | 40 | 0 |
+| Guidance | 1 | 0 | 0 | 0 | 46 | 0 |
+| Showcase | 1 | 1 | 26 | 0 | 31 | 0 |
+| Token broker | 1 | 0 | 0 | 0 | 9 | 0 |
+| Content-page overlays / context menus / commands | 1 | 0 | 0 | 0 | 57 | 0 |
+| Profile/auth/org picker | 1 | 0 | 0 | 0 | 46 | 0 |
+| Keyboard commands | 1 | 0 | 0 | 0 | 0 | 0 |
+| Tasks side-panel | 1 | 0 | 0 | 0 | 12 | 0 |
+| Tasks capture flow | 1 | 0 | 0 | 0 | 2 | 0 |
+| Lists side-panel | 1 | 0 | 0 | 0 | 10 | 0 |
+| Agenda side-panel | 1 | 0 | 0 | 0 | 12 | 0 |
+| Data side-panel | 1 | 0 | 1 | 0 | 6 | 0 |
+| Notes side-panel | 1 | 0 | 0 | 0 | 4 | 0 |
+| Notes editor | 1 | 0 | 0 | 0 | 8 | 0 |
+| Files side-panel | 1 | 0 | 0 | 0 | 6 | 0 |
+| Saved captures side-panel | 1 | 0 | 0 | 0 | 14 | 0 |
+| Capture side-panel | 1 | 0 | 0 | 0 | 6 | 0 |
+| Vault side-panel | 1 | 0 | 0 | 0 | 16 | 0 |
+| Tools/manual runner | 1 | 0 | 0 | 0 | 4 | 0 |
+| Chat (deferred wave D) | 1 | 0 | 0 | 1 | 22 | 0 |
+| Pilot (deferred wave D) | 1 | 0 | 0 | 0 | 5 | 0 |
+| Tools Smart tests | 1 | 0 | 0 | 0 | 8 | 0 |
+| Tools Recorder | 1 | 0 | 0 | 0 | 8 | 0 |
+| Vault password generator | 1 | 0 | 0 | 0 | 6 | 0 |
+| Tools / registered executor | 169 | 0 | 0 | 0 | 325 | 0 |
+
+See [STATUS.md](STATUS.md) for case-level statuses, recorded evidence, linked defects, and surface details.

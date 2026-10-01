@@ -226,10 +226,10 @@
         "label": "Observe new task loading/empty state"
       }
     ],
-    "applicable_case_mode_slots": 1198,
+    "applicable_case_mode_slots": 1160,
     "case_results": {
-      "unverified": 125,
-      "no-result": 986,
+      "unverified": 124,
+      "no-result": 949,
       "pass": 57,
       "not-applicable": 1,
       "partial": 28,
@@ -237,19 +237,19 @@
     },
     "by_mode": {
       "guest": {
-        "unverified": 26,
+        "unverified": 25,
         "pass": 24,
-        "no-result": 105,
+        "no-result": 80,
         "not-applicable": 1,
         "fail": 1
       },
       "member": {
-        "no-result": 400,
+        "no-result": 390,
         "unverified": 26,
         "pass": 10
       },
       "admin": {
-        "no-result": 481,
+        "no-result": 479,
         "pass": 23,
         "unverified": 73,
         "partial": 28
@@ -260,7 +260,8 @@
       "member": 0,
       "admin": 0
     },
-    "feature_role_pairs_applicable": 394
+    "feature_role_pairs_applicable": 394,
+    "note": "Only cases whose feature applicability is true for the case mode are included. 38 case-mode pairings are excluded because feature applicability says the role is not applicable."
   },
   "procedure_gaps": {
     "cases_missing_steps": 168,
@@ -1391,7 +1392,7 @@
     {
       "priority": "P1",
       "scope": "Coverage model / all contained surfaces",
-      "gap": "0 of 394 applicable feature-role pairs meet the inventory full-verification rule. Results: 57 pass, 125 explicitly unverified, 28 partial, 1 fail, 1 not-applicable, and 986 slots with no result record. Pass means historical case evidence, not automatically current-build evidence.",
+      "gap": "0 of 394 applicable feature-role pairs meet the full-verification rule. The inventory has 1,160 applicable case-role slots: 57 pass, 124 explicitly unverified, 28 partial, 1 fail, 1 not-applicable, and 949 slots with no result record. Pass means historical or bounded evidence, not automatically current-build acceptance.",
       "next": "Continue recording bounded runs by exact build and role; do not infer whole-feature health from a repaired defect or scoped pass."
     },
     {
@@ -1421,7 +1422,7 @@
     {
       "priority": "P1",
       "scope": "Registered tools",
-      "gap": "173 tool cases (154 member, 173 admin); only 4 slots in each role have explicit unverified records, the rest have no results. Procedures are substantially missing; current DB catalog parity 82/82 does not prove tool runtime behavior.",
+      "gap": "173 registered-executor cases (154 member and 173 admin slots); 4 slots per role are explicitly unverified and the rest have no result. Procedures are substantially missing; current database catalog parity does not prove tool runtime behavior.",
       "next": "Reconcile live roster; make procedures executable, then positive/refusal/permission/result-rendering checks with real data."
     },
     {
@@ -1456,5 +1457,65 @@
     "docs/stabilization/defects/EXT-D-0058.json",
     "docs/stabilization/defects/EXT-D-0059.json",
     "docs/stabilization/defects/EXT-D-0071.json"
-  ]
+  ],
+  "source_delta_since_inventory": {
+    "inventory_source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+    "reviewed_head": "d6d6d6b83c937652525f473082ac2f2492c9eabe",
+    "changed_src_files": 209,
+    "exact_anchor_matches": 25,
+    "without_direct_anchor": 184,
+    "unmatched_path_examples": [
+      "src/components/AddToProjectButton.tsx",
+      "src/components/AuthGate.tsx",
+      "src/components/CopyMenu.tsx",
+      "src/components/MarkdownView.tsx",
+      "src/components/PageIdentityNotice.tsx",
+      "src/components/PermissionPromptModal.tsx",
+      "src/components/kinds/RenderBlockView.tsx",
+      "src/components/kinds/StructuredValue.tsx",
+      "src/components/kinds/render-block.test.tsx",
+      "src/components/ui/json-tree.tsx",
+      "src/config/env.ts",
+      "src/config/sidepanel-visibility.ts",
+      "src/entrypoints/background.ts",
+      "src/entrypoints/data-picker.content.ts",
+      "src/entrypoints/diagnose-picker.content.ts",
+      "src/entrypoints/highlighter.content.ts",
+      "src/entrypoints/list-picker.content.ts",
+      "src/features/capture-ladder/NeedsYourBrowserView.tsx",
+      "src/features/capture-ladder/queue-sentences.ts",
+      "src/features/capture-ladder/use-needs-you-count.ts",
+      "src/features/chat/AgentApprovalCard.tsx",
+      "src/features/chat/ContextRulesComposerChip.tsx",
+      "src/features/chat/PilotView.tsx",
+      "src/features/data/DataView.tsx",
+      "src/features/files/FilesView.test.tsx",
+      "src/features/files/FilesView.tsx",
+      "src/features/files/data.ts",
+      "src/features/guidance/GuidancePreview.tsx",
+      "src/features/highlights/HighlightView.tsx",
+      "src/features/notes/NoteEditor.autosave.test.tsx",
+      "src/features/notes/NoteEditor.delete-failures.test.tsx",
+      "src/features/notes/NoteEditor.detail-failures.test.tsx",
+      "src/features/notes/NoteEditor.tsx",
+      "src/features/notes/NotesList.create-failures.test.tsx",
+      "src/features/notes/NotesList.tsx",
+      "src/features/notes/NotesView.failures.test.tsx",
+      "src/features/notes/NotesView.tsx",
+      "src/features/org/OrganizationPickerDialog.tsx",
+      "src/features/saved-captures/SavedCapturesView.test.tsx",
+      "src/features/scrape/DiagnoseCard.tsx",
+      "src/features/screenshots/ScreenshotsView.tsx",
+      "src/features/seo/AiRecommendations.tsx",
+      "src/features/settings/SettingsView.about.test.tsx",
+      "src/features/showcase/SavedReplayApprovalHost.tsx",
+      "src/features/showcase/ShowcaseView.tsx",
+      "src/features/showcase/components/ResultPreview.tsx",
+      "src/features/showcase/components/SaveAsPattern.tsx",
+      "src/features/showcase/tabs/AiExtractTab.tsx",
+      "src/features/showcase/tabs/DoctorTab.tsx",
+      "src/features/showcase/tabs/FrameworkTab.tsx"
+    ],
+    "interpretation": "A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior."
+  }
 }

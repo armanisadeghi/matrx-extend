@@ -1,52 +1,66 @@
 # Extension stabilization status
 
-Generated 2026-09-28 19:31 UTC from inventory.json and defects/*.json. Inventory updated 2026-09-28. 205 features · 724 cases · 1309 controls · 60 linked defect records.
+Generated 2026-10-01 16:14 UTC from inventory.json and defects/*.json. Inventory updated 2026-09-29T18:27:38.241098Z. 205 features · 731 cases · 1314 controls · 71 linked defect records.
 
-A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. A fixed or closed defect does not itself prove native behavior.
+A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
+
+## Current coverage snapshot
+
+Applicable case-by-role slots: **1160** — Pass: 57 · Partial: 28 · Fail: 1 · Unverified: 1073 · N/A: 1.
+Unverified splits into **124 explicitly marked unverified** and **949 with no result record**.
+Full feature-role pairs: **0/394**. Procedure gaps: 168 cases without steps, 167 without expected outcomes, 31 without control links.
+A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
 ## Tab and surface overview
 
-| Tab or surface | Feature records | Guest cases | Member cases | Admin cases | Active defects |
-| --- | ---: | --- | --- | --- | ---: |
-| [Development installation](#development-installation) | 1 | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 |
-| [Testing infrastructure](#testing-infrastructure) | 1 | 2 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 |
-| [Release infrastructure](#release-infrastructure) | 1 | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 |
-| [Navigation / shell](#navigation--shell) | 1 | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 |
-| [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 |
-| [Settings](#settings) | 1 | 11 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 7 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 0 |
-| [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 |
-| [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | 0 |
-| [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | 0 |
-| [Scrape](#scrape) | 1 | 1 pass · 0 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 2 |
-| [SEO](#seo) | 1 | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 |
-| [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 3 |
-| [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 1 |
-| [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 |
-| [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 26 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 12 |
-| [Token broker](#token-broker) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 |
-| [Content-page overlays / context menus / commands](#content-page-overlays--context-menus--commands) | 1 | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 |
-| [Profile/auth/org picker](#profileauthorg-picker) | 1 | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 |
-| [Keyboard commands](#keyboard-commands) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 |
-| [Tasks side-panel](#tasks-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 |
-| [Tasks capture flow](#tasks-capture-flow) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 |
-| [Lists side-panel](#lists-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 |
-| [Agenda side-panel](#agenda-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 |
-| [Data side-panel](#data-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 1 |
-| [Notes side-panel](#notes-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 |
-| [Notes editor](#notes-editor) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 |
-| [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 |
-| [Saved captures side-panel](#saved-captures-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 |
-| [Capture side-panel](#capture-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 |
-| [Vault side-panel](#vault-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 |
-| [Tools/manual runner](#toolsmanual-runner) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 |
-| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 0 pass · 0 partial · 0 fail · 3 unverified · 3 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 4 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 4 deferred; 0/1 full | 0 |
-| [Pilot (deferred wave D)](#pilot-deferred-wave-d) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 2 deferred; 0/1 full | 1 |
-| [Tools Smart tests](#tools-smart-tests) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 |
-| [Tools Recorder](#tools-recorder) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 |
-| [Vault password generator](#vault-password-generator) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 |
-| [Tools / registered executor](#tools--registered-executor) | 169 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 150 unverified · 0 deferred; 0/149 full | 0 pass · 0 partial · 0 fail · 169 unverified · 0 deferred; 0/168 full | 0 |
+| Tab or surface | Features | Guest cases | Member cases | Admin cases | All-role case slots | Active defects |
+| --- | ---: | --- | --- | --- | --- | ---: |
+| [Development installation](#development-installation) | 1 | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 2, partial 0, fail 0, unverified 13, n/a 0 | 0 |
+| [Testing infrastructure](#testing-infrastructure) | 1 | 2 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 6, partial 0, fail 0, unverified 12, n/a 0 | 0 |
+| [Release infrastructure](#release-infrastructure) | 1 | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 24, partial 0, fail 0, unverified 6, n/a 0 | 0 |
+| [Navigation / shell](#navigation--shell) | 1 | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 0, fail 0, unverified 14, n/a 0 | 0 |
+| [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
+| [Settings](#settings) | 1 | 11 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 7 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | pass 18, partial 0, fail 0, unverified 54, n/a 1 | 0 |
+| [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 32, n/a 0 | 0 |
+| [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
+| [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 0 |
+| [Scrape](#scrape) | 1 | 1 pass · 0 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 1, partial 0, fail 0, unverified 87, n/a 0 | 2 |
+| [SEO](#seo) | 1 | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 42, n/a 0 | 0 |
+| [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 3 |
+| [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
+| [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 0 |
+| [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 26 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 1, partial 26, fail 0, unverified 31, n/a 0 | 12 |
+| [Token broker](#token-broker) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 9, n/a 0 | 0 |
+| [Content-page overlays / context menus / commands](#content-page-overlays--context-menus--commands) | 1 | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 57, n/a 0 | 0 |
+| [Profile/auth/org picker](#profileauthorg-picker) | 1 | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
+| [Keyboard commands](#keyboard-commands) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | pass 0, partial 0, fail 0, unverified 0, n/a 0 | 0 |
+| [Tasks side-panel](#tasks-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 0 |
+| [Tasks capture flow](#tasks-capture-flow) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 2, n/a 0 | 0 |
+| [Lists side-panel](#lists-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 10, n/a 0 | 0 |
+| [Agenda side-panel](#agenda-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 0 |
+| [Data side-panel](#data-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 6, n/a 0 | 1 |
+| [Notes side-panel](#notes-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 3 |
+| [Notes editor](#notes-editor) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 3 |
+| [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 1 |
+| [Saved captures side-panel](#saved-captures-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 14, n/a 0 | 1 |
+| [Capture side-panel](#capture-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
+| [Vault side-panel](#vault-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 0 |
+| [Tools/manual runner](#toolsmanual-runner) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 0 |
+| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 0 pass · 0 partial · 1 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 1, unverified 22, n/a 0 | 0 |
+| [Pilot (deferred wave D)](#pilot-deferred-wave-d) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 5, n/a 0 | 1 |
+| [Tools Smart tests](#tools-smart-tests) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
+| [Tools Recorder](#tools-recorder) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
+| [Vault password generator](#vault-password-generator) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
+| [Tools / registered executor](#tools--registered-executor) | 169 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 153 unverified · 0 deferred; 0/149 full | 0 pass · 0 partial · 0 fail · 172 unverified · 0 deferred; 0/168 full | pass 0, partial 0, fail 0, unverified 325, n/a 0 | 2 |
 
-Counts exclude N/A feature-role combinations from each denominator. Open each feature for cases, evidence, defects, and next action.
+Role counts include only case-role combinations listed in each case. The all-role column includes every applicable recorded or unrecorded slot. Open each feature for case evidence, defects, and next action.
+
+## Current artifact and bounded acceptance
+
+**Release:** 0.2.139 at `ae6a3af1680148c0308d6eb285776ddafdb1039b`. strict release gates passed: 1824 tests (5 skipped), compile/build, 82/82 tool definitions, migrations, Store package validation; no Chrome Web Store submission claim
+**Local artifact:** 0.2.139 tree SHA256 20bbd42bdb782dbef2616aa0996cf947060b0117d84674de2234f8376971c19f; personal Chrome runtime reload not verified
+**Native evidence:** independent exact-0.2.139 native run passed admin D61/D62/D63/D67/D68 plus adjacent cases; report docs/stabilization/reports/notes-queue-review.json; UI archive filter check also passed boundedly
+These current-build checks supplement the inventory matrix; they do not promote unobserved cases or certify whole features.
 
 ## Development installation
 
@@ -1054,11 +1068,11 @@ Counts exclude N/A feature-role combinations from each denominator. Open each fe
 
 ### Authentication and active organization selection (EXT-F-1015)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 39. **Controls:** 18.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 41. **Controls:** 20.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0069
 
-**Linked defects:** [EXT-D-0029](defects/EXT-D-0029.json) (closed)
+**Linked defects:** [EXT-D-0029](defects/EXT-D-0029.json) (closed), [EXT-D-0069](defects/EXT-D-0069.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1101,6 +1115,8 @@ Counts exclude N/A feature-role combinations from each denominator. Open each fe
 | EXT-F-1015-T37 Safari sign-in cancellation and callback failures remain recoverable | Unverified | N/A | N/A | EXT-F-1015-C14, EXT-F-1015-C16, EXT-F-1015-C17 |
 | EXT-F-1015-T38 Organization-required notice retires after selection | N/A | Unverified | Unverified | EXT-F-1015-C18 |
 | EXT-F-1015-T39 Persisted admin gate across contexts and storage outages | Unverified | Unverified | Unverified | No control mapped |
+| EXT-F-1015-T40 Archived organization cannot be a work target and stale choice requires explicit recovery | N/A | Unverified | Unverified | EXT-F-1015-C03, EXT-F-1015-C09, EXT-F-1015-C19 |
+| EXT-F-1015-T41 Archive discovery stays separate from active organization selection | N/A | Unverified | Unverified | EXT-F-1015-C01, EXT-F-1015-C09, EXT-F-1015-C20 |
 
 **Recorded case details and evidence:**
 
@@ -1235,17 +1251,19 @@ Counts exclude N/A feature-role combinations from each denominator. Open each fe
 
 ### Find and create notes (EXT-F-2006)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 3. **Controls:** 11.
+**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 3. **Controls:** 13.
 
-**Next:** Add cases for 5 uncovered control(s), then verify them in the extension.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0061, EXT-D-0062, EXT-D-0069
+
+**Linked defects:** [EXT-D-0061](defects/EXT-D-0061.json) (fixed), [EXT-D-0062](defects/EXT-D-0062.json) (fixed), [EXT-D-0069](defects/EXT-D-0069.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-2006-T01 Guest cannot open Notes | N/A | N/A | N/A | EXT-F-2006-C01 |
 | EXT-F-2006-T02 Find notes by search and folder | N/A | Unverified | Unverified | EXT-F-2006-C02, EXT-F-2006-C03, EXT-F-2006-C04, EXT-F-2006-C05 |
-| EXT-F-2006-T03 Create first note and empty/loading states | N/A | Unverified | Unverified | EXT-F-2006-C01, EXT-F-2006-C06 |
+| EXT-F-2006-T03 Create first note and empty/loading states | N/A | Unverified | Unverified | EXT-F-2006-C01, EXT-F-2006-C06, EXT-F-2006-C11, EXT-F-2006-C12, EXT-F-2006-C13 |
 
-**Controls without a mapped case:** EXT-F-2006-C07 Select all folders; EXT-F-2006-C08 Select named folder; EXT-F-2006-C09 Clear notes search; EXT-F-2006-C10 Choose note in selector; EXT-F-2006-C11 Retry note list after reopening
+**Controls without a mapped case:** EXT-F-2006-C07 Select all folders; EXT-F-2006-C08 Select named folder; EXT-F-2006-C09 Clear notes search; EXT-F-2006-C10 Choose note in selector
 
 **Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.
 
@@ -1254,15 +1272,18 @@ Counts exclude N/A feature-role combinations from each denominator. Open each fe
 
 ### Edit, preview, organize, and delete a note (EXT-F-2007)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 3. **Controls:** 26.
+**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 4. **Controls:** 27.
 
-**Next:** Add cases for 10 uncovered control(s), then verify them in the extension.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0063, EXT-D-0067, EXT-D-0068
+
+**Linked defects:** [EXT-D-0063](defects/EXT-D-0063.json) (fixed), [EXT-D-0067](defects/EXT-D-0067.json) (fixed), [EXT-D-0068](defects/EXT-D-0068.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-2007-T01 Edit, preview, and autosave note fields | N/A | Unverified | Unverified | EXT-F-2007-C02, EXT-F-2007-C03, EXT-F-2007-C04, EXT-F-2007-C05, EXT-F-2007-C06 |
 | EXT-F-2007-T02 Append each active-page content type | N/A | Unverified | Unverified | EXT-F-2007-C10, EXT-F-2007-C11, EXT-F-2007-C12, EXT-F-2007-C13, EXT-F-2007-C14, EXT-F-2007-C15, EXT-F-2007-C16 |
 | EXT-F-2007-T03 Delete note and cancel confirmation | N/A | Unverified | Unverified | EXT-F-2007-C07, EXT-F-2007-C09, EXT-F-2007-C08, EXT-F-2007-C01 |
+| EXT-F-2007-T04 Detail-read failure, missing note, and retry | N/A | Unverified | Unverified | EXT-F-2007-C01, EXT-F-2007-C27 |
 
 **Controls without a mapped case:** EXT-F-2007-C17 Open append-from-page menu; EXT-F-2007-C18 Close append-from-page menu; EXT-F-2007-C19 Append page URL and title; EXT-F-2007-C20 Append selected page text; EXT-F-2007-C21 Append readable page text; EXT-F-2007-C22 Append page links; EXT-F-2007-C23 Append page metadata; EXT-F-2007-C24 Append from restricted page; EXT-F-2007-C25 Edit note folder to no folder; EXT-F-2007-C26 Preview markdown after autosave
 
@@ -1275,7 +1296,9 @@ Counts exclude N/A feature-role combinations from each denominator. Open each fe
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 4. **Controls:** 28.
 
-**Next:** Add cases for 13 uncovered control(s), then verify them in the extension.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0064
+
+**Linked defects:** [EXT-D-0064](defects/EXT-D-0064.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1295,7 +1318,9 @@ Counts exclude N/A feature-role combinations from each denominator. Open each fe
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 8. **Controls:** 39.
 
-**Next:** Add cases for 9 uncovered control(s), then verify them in the extension.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0065
+
+**Linked defects:** [EXT-D-0065](defects/EXT-D-0065.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1383,23 +1408,30 @@ Counts exclude N/A feature-role combinations from each denominator. Open each fe
 
 ### Use assistant chat and conversation controls (EXT-F-2013)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 9. **Controls:** 136.
+**Role status:** guest: Fail · member: Unverified · admin: Unverified. **Cases:** 10. **Controls:** 136.
 
-**Next:** Add cases for 129 uncovered control(s), then verify them in the extension.
+**Next:** Add cases for 127 uncovered control(s), then verify them in the extension.
+
+**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-2013-T01 Chat conversation navigation and modes | Deferred | Deferred | Deferred | No control mapped |
-| EXT-F-2013-T02 Composer and active run controls | Deferred | Deferred | Deferred | No control mapped |
-| EXT-F-2013-T03 Chat attachments and exports | N/A | Deferred | Deferred | No control mapped |
-| EXT-F-2013-T04 Interactive agent cards and tool receipt | N/A | Deferred | Deferred | No control mapped |
-| EXT-F-2013-T05 Guest banner sign-in and sign-up actions | Deferred | N/A | N/A | EXT-F-2013-C132, EXT-F-2013-C133 |
+| EXT-F-2013-T01 Chat conversation navigation and modes | Unverified | Unverified | Unverified | No control mapped |
+| EXT-F-2013-T02 Composer and active run controls | Unverified | Unverified | Unverified | No control mapped |
+| EXT-F-2013-T03 Chat attachments and exports | N/A | Unverified | Unverified | No control mapped |
+| EXT-F-2013-T04 Interactive agent cards and tool receipt | N/A | Unverified | Unverified | No control mapped |
+| EXT-F-2013-T05 Guest banner sign-in and sign-up actions | Unverified | N/A | N/A | EXT-F-2013-C132, EXT-F-2013-C133 |
 | EXT-F-2013-T06 Reply read-aloud follows current platform voice preference | Unverified | Unverified | Unverified | EXT-F-2013-C102, EXT-F-2013-C103 |
 | EXT-F-2013-T07 Send explicit page Source status in Chat context | N/A | Unverified | Unverified | EXT-F-2013-C134 |
 | EXT-F-2013-T08 Apply account default model when no extension model is selected | Unverified | Unverified | Unverified | EXT-F-2013-C135 |
 | EXT-F-2013-T09 Render typed decision answer in Chat live stream and conversation history | Unverified | Unverified | Unverified | EXT-F-2013-C136 |
+| EXT-F-2013-T10 Public guest Chat sends page-grounded answers before and after reload | Fail | N/A | N/A | EXT-F-2013-C08, EXT-F-2013-C10 |
 
-**Controls without a mapped case:** EXT-F-2013-C01 Retry loading / dismiss error; EXT-F-2013-C02 Refresh agents; EXT-F-2013-C03 New chat; EXT-F-2013-C04 History popover / refresh / select; EXT-F-2013-C05 Task panel chip; EXT-F-2013-C06 Ask/Act permission mode popover; EXT-F-2013-C07 Conversation customization popover; EXT-F-2013-C08 Composer draft; EXT-F-2013-C09 Microphone; EXT-F-2013-C10 Send / stop / interrupt; EXT-F-2013-C11 Suggestion chip; EXT-F-2013-C12 Copy message/reply/conversation; EXT-F-2013-C13 Agent approval/ask-user cards; EXT-F-2013-C14 Gmail review card; EXT-F-2013-C15 Tool receipt dialog; EXT-F-2013-C16 Variable panel; EXT-F-2013-C17 Attachment chips; EXT-F-2013-C18 Select agent from dropdown; EXT-F-2013-C19 Select language; EXT-F-2013-C20 Choose Ask permission mode; EXT-F-2013-C21 Choose Act permission mode; EXT-F-2013-C22 Open history; EXT-F-2013-C23 Retry history load; EXT-F-2013-C24 Choose history conversation; EXT-F-2013-C25 Choose Your default model; EXT-F-2013-C26 Choose model preset; EXT-F-2013-C27 Toggle auto page capture; EXT-F-2013-C28 Toggle deep capture; EXT-F-2013-C29 Press Enter to send; EXT-F-2013-C30 Press Shift Enter for newline; EXT-F-2013-C31 Queue message while streaming; EXT-F-2013-C32 Interrupt and send now; EXT-F-2013-C33 Stop current stream; EXT-F-2013-C34 Dismiss voice error; EXT-F-2013-C35 Start microphone capture; EXT-F-2013-C36 Stop microphone capture; EXT-F-2013-C37 Open Google files picker; EXT-F-2013-C38 Attach one Google file; EXT-F-2013-C39 Detach all Google files; EXT-F-2013-C40 Retry Google file list; EXT-F-2013-C41 Open compute target picker; EXT-F-2013-C42 Refresh compute targets; EXT-F-2013-C43 Bind compute target; EXT-F-2013-C44 Detach compute target; EXT-F-2013-C45 Open install local flow; EXT-F-2013-C46 Open create sandbox flow; EXT-F-2013-C47 Open copy conversation options; EXT-F-2013-C48 Toggle copy user messages; EXT-F-2013-C49 Toggle copy assistant messages; EXT-F-2013-C50 Toggle copy agent info; EXT-F-2013-C51 Toggle copy thinking; EXT-F-2013-C52 Toggle copy tool calls; EXT-F-2013-C53 Toggle copy full tool results; EXT-F-2013-C54 Toggle copy AI instructions; EXT-F-2013-C55 Copy entire conversation; EXT-F-2013-C56 Copy individual reply Markdown; EXT-F-2013-C57 Copy individual reply plain text; EXT-F-2013-C58 Copy individual reply for AI; EXT-F-2013-C59 Approve action card; EXT-F-2013-C60 Deny action card; EXT-F-2013-C61 Supply approval text input; EXT-F-2013-C62 Answer ask-user text; EXT-F-2013-C63 Choose ask-user single option; EXT-F-2013-C64 Choose ask-user multiple options; EXT-F-2013-C65 Confirm ask-user yes; EXT-F-2013-C66 Confirm ask-user no; EXT-F-2013-C67 Choose ask-user Other; EXT-F-2013-C68 Write message instead; EXT-F-2013-C69 Add extra instructions; EXT-F-2013-C70 Cancel ask-user card; EXT-F-2013-C71 Send Gmail review card; EXT-F-2013-C72 Decline Gmail review card; EXT-F-2013-C73 Dismiss Gmail review card; EXT-F-2013-C74 Open tool receipt; EXT-F-2013-C75 Copy receipt JSON; EXT-F-2013-C76 Copy receipt JWS; EXT-F-2013-C77 Queue message edit; EXT-F-2013-C78 Queue message save edit; EXT-F-2013-C79 Queue message cancel edit; EXT-F-2013-C80 Queue message remove; EXT-F-2013-C81 Queue message interrupt current run; EXT-F-2013-C82 Expand tool timeline row; EXT-F-2013-C83 Copy tool result; EXT-F-2013-C84 Open agent variables panel; EXT-F-2013-C85 Edit agent text variable; EXT-F-2013-C86 Edit agent multiline variable; EXT-F-2013-C87 Observe required variable gap; EXT-F-2013-C88 Open attached highlight; EXT-F-2013-C89 Clear attached highlight; EXT-F-2013-C90 Enter credential fields on capture card; EXT-F-2013-C91 Save credential and continue; EXT-F-2013-C92 Cancel credential capture; EXT-F-2013-C93 Dismiss expired credential card; EXT-F-2013-C94 Retry failed credential save; EXT-F-2013-C95 Open queued message edit; EXT-F-2013-C96 Cancel queued message; EXT-F-2013-C97 Save queued message edit; EXT-F-2013-C98 Choose notify action; EXT-F-2013-C99 Choose notify Other; EXT-F-2013-C100 Choose secret answer; EXT-F-2013-C101 Choose action choice; EXT-F-2013-C104 Agent picker search; EXT-F-2013-C105 Agent picker clear search; EXT-F-2013-C106 Agent picker Mine tab; EXT-F-2013-C107 Agent picker Shared tab; EXT-F-2013-C108 Agent picker All tab; EXT-F-2013-C109 Agent picker Public tab; EXT-F-2013-C110 Agent picker Sort menu; EXT-F-2013-C111 Agent picker choose sort; EXT-F-2013-C112 Agent picker favorites filter; EXT-F-2013-C113 Agent picker archive filter; EXT-F-2013-C114 Agent picker category filter; EXT-F-2013-C115 Agent picker category search; EXT-F-2013-C116 Agent picker select category; EXT-F-2013-C117 Agent picker clear categories; EXT-F-2013-C118 Agent picker tags filter; EXT-F-2013-C119 Agent picker tag search; EXT-F-2013-C120 Agent picker select tag; EXT-F-2013-C121 Agent picker clear tags; EXT-F-2013-C122 Agent picker reset filters; EXT-F-2013-C123 Agent picker select row; EXT-F-2013-C124 Agent picker favorite toggle; EXT-F-2013-C125 Agent picker show details; EXT-F-2013-C126 Agent picker detail select; EXT-F-2013-C127 Agent picker detail sneak peek; EXT-F-2013-C128 Agent picker detail open chat; EXT-F-2013-C129 Agent picker detail open new tab; EXT-F-2013-C130 Agent picker dismiss default drift; EXT-F-2013-C131 Agent picker retry default row
+**Recorded case details and evidence:**
+
+- EXT-F-2013-T10 · guest: Fail. Public 0.2.105 remains failing. Candidate 0.2.130 native005 passes fresh guest page-grounded answer and new conversation after panel reload; live account-to-guest privacy transition remains unverified. See docs/stabilization/runs/guest-chat-native-005.json.
+
+**Controls without a mapped case:** EXT-F-2013-C01 Retry loading / dismiss error; EXT-F-2013-C02 Refresh agents; EXT-F-2013-C03 New chat; EXT-F-2013-C04 History popover / refresh / select; EXT-F-2013-C05 Task panel chip; EXT-F-2013-C06 Ask/Act permission mode popover; EXT-F-2013-C07 Conversation customization popover; EXT-F-2013-C09 Microphone; EXT-F-2013-C11 Suggestion chip; EXT-F-2013-C12 Copy message/reply/conversation; EXT-F-2013-C13 Agent approval/ask-user cards; EXT-F-2013-C14 Gmail review card; EXT-F-2013-C15 Tool receipt dialog; EXT-F-2013-C16 Variable panel; EXT-F-2013-C17 Attachment chips; EXT-F-2013-C18 Select agent from dropdown; EXT-F-2013-C19 Select language; EXT-F-2013-C20 Choose Ask permission mode; EXT-F-2013-C21 Choose Act permission mode; EXT-F-2013-C22 Open history; EXT-F-2013-C23 Retry history load; EXT-F-2013-C24 Choose history conversation; EXT-F-2013-C25 Choose Your default model; EXT-F-2013-C26 Choose model preset; EXT-F-2013-C27 Toggle auto page capture; EXT-F-2013-C28 Toggle deep capture; EXT-F-2013-C29 Press Enter to send; EXT-F-2013-C30 Press Shift Enter for newline; EXT-F-2013-C31 Queue message while streaming; EXT-F-2013-C32 Interrupt and send now; EXT-F-2013-C33 Stop current stream; EXT-F-2013-C34 Dismiss voice error; EXT-F-2013-C35 Start microphone capture; EXT-F-2013-C36 Stop microphone capture; EXT-F-2013-C37 Open Google files picker; EXT-F-2013-C38 Attach one Google file; EXT-F-2013-C39 Detach all Google files; EXT-F-2013-C40 Retry Google file list; EXT-F-2013-C41 Open compute target picker; EXT-F-2013-C42 Refresh compute targets; EXT-F-2013-C43 Bind compute target; EXT-F-2013-C44 Detach compute target; EXT-F-2013-C45 Open install local flow; EXT-F-2013-C46 Open create sandbox flow; EXT-F-2013-C47 Open copy conversation options; EXT-F-2013-C48 Toggle copy user messages; EXT-F-2013-C49 Toggle copy assistant messages; EXT-F-2013-C50 Toggle copy agent info; EXT-F-2013-C51 Toggle copy thinking; EXT-F-2013-C52 Toggle copy tool calls; EXT-F-2013-C53 Toggle copy full tool results; EXT-F-2013-C54 Toggle copy AI instructions; EXT-F-2013-C55 Copy entire conversation; EXT-F-2013-C56 Copy individual reply Markdown; EXT-F-2013-C57 Copy individual reply plain text; EXT-F-2013-C58 Copy individual reply for AI; EXT-F-2013-C59 Approve action card; EXT-F-2013-C60 Deny action card; EXT-F-2013-C61 Supply approval text input; EXT-F-2013-C62 Answer ask-user text; EXT-F-2013-C63 Choose ask-user single option; EXT-F-2013-C64 Choose ask-user multiple options; EXT-F-2013-C65 Confirm ask-user yes; EXT-F-2013-C66 Confirm ask-user no; EXT-F-2013-C67 Choose ask-user Other; EXT-F-2013-C68 Write message instead; EXT-F-2013-C69 Add extra instructions; EXT-F-2013-C70 Cancel ask-user card; EXT-F-2013-C71 Send Gmail review card; EXT-F-2013-C72 Decline Gmail review card; EXT-F-2013-C73 Dismiss Gmail review card; EXT-F-2013-C74 Open tool receipt; EXT-F-2013-C75 Copy receipt JSON; EXT-F-2013-C76 Copy receipt JWS; EXT-F-2013-C77 Queue message edit; EXT-F-2013-C78 Queue message save edit; EXT-F-2013-C79 Queue message cancel edit; EXT-F-2013-C80 Queue message remove; EXT-F-2013-C81 Queue message interrupt current run; EXT-F-2013-C82 Expand tool timeline row; EXT-F-2013-C83 Copy tool result; EXT-F-2013-C84 Open agent variables panel; EXT-F-2013-C85 Edit agent text variable; EXT-F-2013-C86 Edit agent multiline variable; EXT-F-2013-C87 Observe required variable gap; EXT-F-2013-C88 Open attached highlight; EXT-F-2013-C89 Clear attached highlight; EXT-F-2013-C90 Enter credential fields on capture card; EXT-F-2013-C91 Save credential and continue; EXT-F-2013-C92 Cancel credential capture; EXT-F-2013-C93 Dismiss expired credential card; EXT-F-2013-C94 Retry failed credential save; EXT-F-2013-C95 Open queued message edit; EXT-F-2013-C96 Cancel queued message; EXT-F-2013-C97 Save queued message edit; EXT-F-2013-C98 Choose notify action; EXT-F-2013-C99 Choose notify Other; EXT-F-2013-C100 Choose secret answer; EXT-F-2013-C101 Choose action choice; EXT-F-2013-C104 Agent picker search; EXT-F-2013-C105 Agent picker clear search; EXT-F-2013-C106 Agent picker Mine tab; EXT-F-2013-C107 Agent picker Shared tab; EXT-F-2013-C108 Agent picker All tab; EXT-F-2013-C109 Agent picker Public tab; EXT-F-2013-C110 Agent picker Sort menu; EXT-F-2013-C111 Agent picker choose sort; EXT-F-2013-C112 Agent picker favorites filter; EXT-F-2013-C113 Agent picker archive filter; EXT-F-2013-C114 Agent picker category filter; EXT-F-2013-C115 Agent picker category search; EXT-F-2013-C116 Agent picker select category; EXT-F-2013-C117 Agent picker clear categories; EXT-F-2013-C118 Agent picker tags filter; EXT-F-2013-C119 Agent picker tag search; EXT-F-2013-C120 Agent picker select tag; EXT-F-2013-C121 Agent picker clear tags; EXT-F-2013-C122 Agent picker reset filters; EXT-F-2013-C123 Agent picker select row; EXT-F-2013-C124 Agent picker favorite toggle; EXT-F-2013-C125 Agent picker show details; EXT-F-2013-C126 Agent picker detail select; EXT-F-2013-C127 Agent picker detail sneak peek; EXT-F-2013-C128 Agent picker detail open chat; EXT-F-2013-C129 Agent picker detail open new tab; EXT-F-2013-C130 Agent picker dismiss default drift; EXT-F-2013-C131 Agent picker retry default row
 
 **Other remaining work:** Execution is deferred to wave D. Source control inventory does not claim chat/provider behavior; run all applicable persona cases after non-Chat/Pilot completion gate.; Agent picker implementation was read from the shared @ai-matrx/agents source checkout; installed package version and live menu behavior require runtime reconciliation.; Public tab label and unavailable Sneak Peek were reconciled from shared package 0.13.10 and host props; still verify picker at wave D.; Generated stream-events contract delta through b3bed1ab adds cutover payloads, HostedToolPart and message flags. Wave D stream/history acceptance must cover them; type generation is not runtime proof. See takeover-inventory-reconciled.json generated_contract_accounting.
 
@@ -1416,8 +1448,8 @@ Counts exclude N/A feature-role combinations from each denominator. Open each fe
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-2014-T01 Pilot admin gate and session lifecycle | N/A | N/A | Deferred | No control mapped |
-| EXT-F-2014-T02 Pilot conversation and interactive cards | N/A | N/A | Deferred | No control mapped |
+| EXT-F-2014-T01 Pilot admin gate and session lifecycle | N/A | N/A | Unverified | No control mapped |
+| EXT-F-2014-T02 Pilot conversation and interactive cards | N/A | N/A | Unverified | No control mapped |
 | EXT-F-2014-T03 Pilot receives page Source status and truthful local-browser terminal outcomes | N/A | N/A | Unverified | EXT-F-2014-C60 |
 | EXT-F-2014-T04 Render typed decision answer in Pilot live stream and conversation history | N/A | N/A | Unverified | EXT-F-2014-C61 |
 | EXT-F-2014-T05 Pilot stays in its assigned tabs and preserves context when user switches tabs | N/A | N/A | Unverified | EXT-F-2014-C62 |
@@ -3173,13 +3205,16 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 ### records (EXT-F-4130)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 1. **Controls:** 25.
+**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 2. **Controls:** 25.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0071
+
+**Linked defects:** [EXT-D-0071](defects/EXT-D-0071.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-4130-T01 Controlled manual execution: records | N/A | Unverified | Unverified | EXT-F-4130-C01, EXT-F-4130-C02, EXT-F-4130-C03, EXT-F-4130-C04, EXT-F-4130-C05, EXT-F-4130-C06, EXT-F-4130-C07, EXT-F-4130-C08, EXT-F-4130-C09, EXT-F-4130-C10, EXT-F-4130-C11, EXT-F-4130-C12, EXT-F-4130-C13, EXT-F-4130-C14, EXT-F-4130-C15, EXT-F-4130-C16, EXT-F-4130-C17, EXT-F-4130-C18, EXT-F-4130-C19, EXT-F-4130-C20, EXT-F-4130-C21, EXT-F-4130-C22, EXT-F-4130-C23, EXT-F-4130-C24, EXT-F-4130-C25 |
+| EXT-F-4130-T02 Records organization filter matches canonical catalog and preserves omitted/null semantics | N/A | Unverified | Unverified | EXT-F-4130-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -3225,26 +3260,32 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 ### describe_demo (EXT-F-4134)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 1. **Controls:** 1.
+**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 2. **Controls:** 1.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0070
+
+**Linked defects:** [EXT-D-0070](defects/EXT-D-0070.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-4134-T01 Controlled manual execution: describe_demo | N/A | Unverified | Unverified | EXT-F-4134-C01 |
+| EXT-F-4134-T02 Demo read failure is distinct from a missing recording | N/A | Unverified | Unverified | EXT-F-4134-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### replay_demo (EXT-F-4135)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 1. **Controls:** 1.
+**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 2. **Controls:** 1.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0070
+
+**Linked defects:** [EXT-D-0070](defects/EXT-D-0070.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-4135-T01 Controlled manual execution: replay_demo | N/A | Unverified | Unverified | EXT-F-4135-C01 |
+| EXT-F-4135-T02 Demo read failure is distinct from a missing recording | N/A | Unverified | Unverified | EXT-F-4135-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
