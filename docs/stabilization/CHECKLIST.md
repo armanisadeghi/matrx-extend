@@ -1,13 +1,13 @@
 # Stabilization checklist
 
-Generated 2026-10-01 16:40 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-10-01.
+Generated 2026-10-01 16:47 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-10-01.
 
 ## Current truth
 
-- Scope: 205 feature records, 732 cases, 1314 controls, 1163 applicable case-role slots.
+- Scope: 205 feature records, 732 cases, 1315 controls, 1163 applicable case-role slots.
 - Case results: pass 57, partial 29, fail 1, unverified 1075, n/a 1; 124 explicitly unverified and 951 with no result record. Missing results count as unverified, including later-wave surfaces.
 - Fully verified feature-role pairs: 0/394 under the rule that every applicable case passes and every control maps to a case.
-- Procedure gaps: 158 missing steps; 157 missing expected outcomes; 32 missing control links.
+- Procedure gaps: 158 missing steps; 157 missing expected outcomes; 31 missing control links.
 - Defect states: closed 44, retest-pass 2, fixed 21, in-fix 4, open 1. A fixed or closed defect is not a feature-level UI pass.
 
 ## Current-build evidence
@@ -19,13 +19,13 @@ Generated 2026-10-01 16:40 UTC from inventory.json, defect records, and the curr
 
 ## Inventory freshness review
 
-Since inventory source `528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b`, **209 `src/` paths changed** through `53c5c523c98c7fa95b42725eaae946760c19934c`. A direct path-anchor comparison matched 25 and left 184 without an exact inventory anchor.
+Since inventory source `528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b`, **209 `src/` paths changed** through `aac6032964af79ea3b68db499532a0fb056f6f2c`. A direct path-anchor comparison matched 25 and left 184 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities
 
 - **Coverage model / all contained surfaces** — 0 of 394 applicable feature-role pairs meet the full-verification rule. The inventory records 57 pass, 124 explicit unverified, 29 partial, 1 fail, 1 not applicable, and 951 slots with no result. A pass retains its original build boundary. Next: Continue recording bounded runs by exact build and role; do not infer whole-feature health from a repaired defect or scoped pass.
-- **Executable test procedures** — 158 cases lack steps, 157 lack expected outcomes, and 32 lack control links. The registered-executor surface has 173 cases; its live catalog parity does not prove runtime behavior. Next: Design each missing case from the live advertised tool contract and safe real fixtures before execution.
+- **Executable test procedures** — 158 cases lack steps, 157 lack expected outcomes, and 31 lack control links. The registered-executor surface has 173 cases; its live catalog parity does not prove runtime behavior. Next: Design each missing case from the live advertised tool contract and safe real fixtures before execution.
 - **Current install and native breadth** — 0.2.139 release gates passed and isolated extension artifact is recorded, but personal Chrome reload is explicitly unverified; broad guest/member/admin sidepanel/content-script/service-worker/offscreen passes are absent. Next: Bind native runs to current artifact receipt, real user surface and persona; preserve admission guard.
 - **Notes, Files, Saved captures** — Notes D61/D62/D63/D67/D68 have scoped exact139 admin native verification; feature/member breadth remains open. D64 Files and D65 saved-capture race are source-fixed with focused regression coverage but no native acceptance in current reconciliation. Next: Do not reimplement Notes or D64/D65 source fixes; run remaining current-build native cases and update statuses only for observed outcomes.
 - **Showcase / data / document identity** — Showcase has 59 cases: admin 1 pass, 26 partial, 3 unverified, 28 no-result; D54 is fixed with partial native dimensions, while D42/D47/D58/D59 remain among the active in-fix defect records, with build/native or shared document-identity consumer gaps documented. Next: Resume from their latest defect reports/checkpoint; avoid using historical artifact a8670bf7 as proof for newer corrections.

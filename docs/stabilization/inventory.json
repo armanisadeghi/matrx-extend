@@ -386,6 +386,11 @@
           "id": "EXT-F-0002-C06",
           "label": "Recover browser resource evidence after guard exit",
           "action": "Read durable exact-run journal independent of stdout/session"
+        },
+        {
+          "id": "EXT-F-0002-C07",
+          "label": "Classify native Chat turn completion",
+          "action": "Distinguish delegated tool handoff, terminal failure, wrong answer and successful page-grounded answer"
         }
       ],
       "source_anchors": [
@@ -808,7 +813,9 @@
         {
           "id": "EXT-F-0002-T07",
           "title": "Native Chat acceptance distinguishes tool progress from terminal answer",
-          "control_ids": [],
+          "control_ids": [
+            "EXT-F-0002-C07"
+          ],
           "modes": [
             "guest",
             "member",
@@ -829,7 +836,7 @@
           "defect_ids": [
             "EXT-D-0072"
           ],
-          "verification_status": "in-diagnosis: observed guest173 runner stopped on tool rows; product result remains inconclusive pending boundary investigation."
+          "verification_status": "Source repaired through aac60329 and independently reviewed; final guarded checks and exact173 guest native rerun pending."
         }
       ],
       "cells": {

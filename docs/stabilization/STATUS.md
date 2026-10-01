@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-01 16:40 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-01. 205 features · 732 cases · 1314 controls · 72 linked defect records.
+Generated 2026-10-01 16:47 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-01. 205 features · 732 cases · 1315 controls · 72 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -8,7 +8,7 @@ A feature is fully verified for a role only when every applicable case explicitl
 
 Applicable case-by-role slots: **1163** — Pass: 57 · Partial: 29 · Fail: 1 · Unverified: 1075 · N/A: 1.
 Unverified splits into **124 explicitly marked unverified** and **951 with no result record**.
-Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 32 without control links.
+Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
 ## Tab and surface overview
@@ -96,7 +96,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Resource admission and owned job lifecycle (EXT-F-0002)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 7. **Controls:** 6.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 7. **Controls:** 7.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0072
 
@@ -110,7 +110,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-0002-T04 Lease held through owned-work cleanup | Unverified | Unverified | Unverified | EXT-F-0002-C04 |
 | EXT-F-0002-T05 Manual browser stop confirmation | Unverified | Unverified | Unverified | EXT-F-0002-C05 |
 | EXT-F-0002-T06 Durable browser resource event and terminal proof | Pass | Pass | Pass | EXT-F-0002-C06 |
-| EXT-F-0002-T07 Native Chat acceptance distinguishes tool progress from terminal answer | Unverified | Unverified | Unverified | No control mapped |
+| EXT-F-0002-T07 Native Chat acceptance distinguishes tool progress from terminal answer | Unverified | Unverified | Unverified | EXT-F-0002-C07 |
 
 **Recorded case details and evidence:**
 
