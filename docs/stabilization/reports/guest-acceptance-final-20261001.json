@@ -21,6 +21,12 @@
     ],
     "limit": "The 10 focused oracle cases passed under valid resource admission. The live run proved the oracle rejected a wrong answer, but the fixture's persistence during tool execution is unmeasured, so a failed answer cannot yet be assigned to the product."
   },
+  "defect_oracle_scope": {
+    "id": "EXT-D-0072",
+    "result": "REPAIR_VERIFIED_FOR_ORIGINAL_EARLY_STOP_REPRODUCTION",
+    "evidence": "The original runner stopped after an intermediate delegated-tool bubble with two Copy reply matches. This native attempt continued across four delegated-tool resumptions and five stream runs, then classified the final completed rendered answer terminal_wrong_answer. The focused guard passed all 10 cases, including delegated handoff, failed completion, uncoded 409, wrong stage order, and an explicit Error reply echoing expected terms.",
+    "boundary": "This certifies the narrow oracle repair against the observed early-stop pattern. It does not certify the guest Chat product, the injected fixture's persistence during tool execution, or the post-reload turn."
+  },
   "prior_findings": [
     {
       "id": "GUEST-ORACLE-01",
