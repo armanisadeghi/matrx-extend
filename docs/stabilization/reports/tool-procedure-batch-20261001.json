@@ -1,0 +1,538 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-case-procedure-patch",
+  "task_id": "inventory-tools",
+  "patch_id": "tool-procedure-batch-20261001",
+  "source": {
+    "canonical_advertised_catalog": "types/tool-catalog.json",
+    "catalog_generated_at": "2026-10-01T16:17:36.267Z",
+    "catalog_tool_count": 169,
+    "manual_runner": "src/features/tools/ToolsView.tsx",
+    "runner_contract": "Search canonical catalog, expand a tool, edit JSON args, click Run; schema validation precedes direct handler.run; the manual path passes permissionMode=act and assignedTabId=null, skips dispatcher permission/approval gates, and renders output/error inline. It is not evidence for advertised-agent dispatch or Ask/Act gating.",
+    "source_inventory": "docs/stabilization/reports/inventory-tools.json",
+    "scope": "Static procedure design only. No build, browser, tool, database, or external action was run."
+  },
+  "shared_setup": {
+    "build_reload_cycle": [
+      "Run pnpm dev from the exact checkout and wait for the WXT build to report ready; record the build commit and extension version in the execution receipt.",
+      "Reload the unpacked extension once from chrome://extensions, close and reopen the side panel, and confirm the Tools tab renders the current catalog before beginning. If the build reports an error or the tool is absent from the canonical filter, stop and record a setup failure; do not use a stale build.",
+      "After each extension reload, return to the same synthetic fixture tab and re-check its title and fixture marker before using Run. Manual runs target the currently focused browser tab."
+    ],
+    "fixture": {
+      "ownership": "Operator-owned local test page and synthetic data only; no customer, third-party, authenticated, or production page. The operator creates and owns the page and may close it after the run.",
+      "required_page_contract": "A locally served or otherwise operator-controlled ordinary http(s) page (not chrome://, extension://, or a restricted URL) with title 'Matrx tool read fixture'; visible text marker 'READFIX-A7Q2'; one visible element #procedure-card with data-case=READFIX-A7Q2 with computed display:block and color rgb(1, 2, 3); one link whose visible text is 'Fixture local link' and href path is /tool-procedure/local-link on the same origin; a visible inert div #procedure-point with a known center coordinate recorded before opening the side panel; and #procedure-form containing a text input name=fixture-query value=synthetic-query plus a password input value=synthetic-secret-DO-NOT-REPORT. No submit handler or network side effect is attached. The fixture page must be served from an ordinary operator-owned localhost http(s) origin where the extension has access; no remote page is an acceptable substitute.",
+      "preconditions": [
+        "The fixture page is active in a normal browser tab, and the operator has verified the title, marker, element IDs, link target, computed style, input values, and center coordinate using the page they own.",
+        "The active tab's origin and displayed page contain no personal or sensitive data beyond the synthetic password sentinel; do not include output containing the sentinel in evidence.",
+        "Required manifest permissions listed by the tool's catalog entry are present. These ten selected entries have no optional permission requirement in the catalog snapshot; if a source/catalog mismatch appears, stop and reconcile before dispatch.",
+        "The person running this procedure is signed in as a member or admin because the Tools side-panel surface requires sign-in. Guest is an access-denial check on the parent Tools feature, not an applicable execution mode for these cases."
+      ]
+    },
+    "manual_controls": [
+      "Tools side-panel tab → Catalog (default surface filter Canonical).",
+      "Search field accepts exact registered tool name; matching row expands to show input schema, required permissions, JSON argument editor, Run, Reset args, and inline output/error.",
+      "Run is user-initiated direct handler execution and bypasses dispatcher approval/permission gates. These cases establish handler behavior only; never use this path to claim Ask/Act authorization coverage.",
+      "Reset args restores generated sample JSON; use it only to recover the visible baseline before moving to the next tool."
+    ],
+    "auth_modes": {
+      "member": "Applicable for all ten non-admin entries; signed-in member can use the signed-in Tools surface. Record membership role and organization only if visible in the standard account UI; do not change org settings for this procedure.",
+      "admin": "Applicable for all ten non-admin entries; repeat the same safe fixture procedure as admin to detect role-specific surface differences.",
+      "guest": "Not applicable to invocation. Verify guest cannot access signed-in Tools only if already in the guest profile; do not sign out or alter account state as part of this batch."
+    },
+    "safe_stop": "If the active tab changes, the fixture marker is absent, a restricted URL is active, an optional permission prompt appears, sensitive content is visible, or output indicates a mutation/network operation, stop without retrying and record the observed state."
+  },
+  "feature_patches": [
+    {
+      "feature_id": "EXT-F-4025",
+      "tool_name": "get_active_tab",
+      "case_id": "EXT-F-4025-T01",
+      "live_catalog_match": {
+        "tier": "read",
+        "admin_only": false,
+        "required_permissions": [
+          "activeTab"
+        ],
+        "required_optional_permissions": []
+      },
+      "case_patch": {
+        "title": "Manual read: active tab metadata on owned fixture",
+        "control_ids": [
+          "EXT-F-4025-C01"
+        ],
+        "modes": [
+          "member",
+          "admin"
+        ],
+        "design_status": "procedure-ready-unverified",
+        "preconditions": [
+          "Complete shared build/reload cycle and synthetic fixture preconditions; fixture tab stays active when opening Tools."
+        ],
+        "steps": [
+          "In Tools → Catalog, leave Surface=Canonical and Tier=all; search get_active_tab and expand the exact canonical row.",
+          "Confirm the displayed schema has no required arguments and required permission activeTab; leave the default {} in the JSON editor.",
+          "Click Run once. Record the inline output and compare tab_id/title/url/status to the active synthetic fixture tab's browser tab and address bar. Do not copy the full URL if it contains anything beyond the local fixture origin/path."
+        ],
+        "expected": [
+          "One inline object is returned with tab_id, window_id, url, title, status, pinned, incognito, and fav_icon_url fields (nullable browser metadata is acceptable).",
+          "tab_id matches the active fixture tab; title is 'Matrx tool read fixture'; url is the fixture URL; no mutation or new tab occurs."
+        ],
+        "dimensions": [
+          "valid-input",
+          "permissions",
+          "reload"
+        ],
+        "data_ownership": "Browser metadata for the operator-owned synthetic fixture tab only."
+      },
+      "control_patch": {
+        "id": "EXT-F-4025-C01",
+        "label": "Run get_active_tab on owned synthetic fixture",
+        "action": "Open the exact canonical tool row in Tools → Catalog and run {} against the active synthetic fixture tab; compare returned tab metadata to the browser tab."
+      }
+    },
+    {
+      "feature_id": "EXT-F-4026",
+      "tool_name": "get_page_selection",
+      "case_id": "EXT-F-4026-T01",
+      "live_catalog_match": {
+        "tier": "read",
+        "admin_only": false,
+        "required_permissions": [
+          "activeTab",
+          "scripting"
+        ],
+        "required_optional_permissions": []
+      },
+      "case_patch": {
+        "title": "Manual read: selected synthetic fixture text",
+        "control_ids": [
+          "EXT-F-4026-C01"
+        ],
+        "modes": [
+          "member",
+          "admin"
+        ],
+        "design_status": "procedure-ready-unverified",
+        "preconditions": [
+          "Complete shared build/reload cycle; select exactly 'READFIX-A7Q2' in the owned fixture before opening or returning focus to Tools."
+        ],
+        "steps": [
+          "Search get_page_selection in canonical Catalog and expand the row.",
+          "Confirm no required arguments and activeTab+scripting permissions; use {}.",
+          "Click Run once and inspect inline output. Afterward, return to the fixture and verify the page text and URL are unchanged."
+        ],
+        "expected": [
+          "Output has text='READFIX-A7Q2', selected=true, and range_count greater than 0.",
+          "The read leaves the page selection intact and performs no click, navigation, or page edit."
+        ],
+        "dimensions": [
+          "valid-input",
+          "permissions",
+          "reload"
+        ],
+        "data_ownership": "A deliberately selected nonce on the operator-owned synthetic page."
+      },
+      "control_patch": {
+        "id": "EXT-F-4026-C01",
+        "label": "Run get_page_selection on owned synthetic fixture",
+        "action": "Select the fixture nonce, open this canonical tool, and run {} to inspect selection state."
+      }
+    },
+    {
+      "feature_id": "EXT-F-4024",
+      "tool_name": "get_page_text",
+      "case_id": "EXT-F-4024-T01",
+      "live_catalog_match": {
+        "tier": "read",
+        "admin_only": false,
+        "required_permissions": [
+          "activeTab",
+          "scripting"
+        ],
+        "required_optional_permissions": []
+      },
+      "case_patch": {
+        "title": "Manual read: bounded text from owned fixture",
+        "control_ids": [
+          "EXT-F-4024-C01"
+        ],
+        "modes": [
+          "member",
+          "admin"
+        ],
+        "design_status": "procedure-ready-unverified",
+        "preconditions": [
+          "Complete shared build/reload cycle; ordinary readable local fixture tab remains active."
+        ],
+        "steps": [
+          "Search get_page_text and expand the canonical row; verify args schema and activeTab+scripting permissions.",
+          "Enter {\"max_chars\":2000} and click Run once.",
+          "Inspect inline output for the exact fixture title and READFIX-A7Q2 marker; do not paste unredacted output into shared logs."
+        ],
+        "expected": [
+          "Output contains the fixture's visible synthetic text, including 'Matrx tool read fixture' and 'READFIX-A7Q2', and is bounded to at most 2000 characters per the argument.",
+          "The page URL, title, and DOM remain unchanged."
+        ],
+        "dimensions": [
+          "valid-input",
+          "permissions",
+          "reload"
+        ],
+        "data_ownership": "Visible synthetic text from the operator-owned local fixture only."
+      },
+      "control_patch": {
+        "id": "EXT-F-4024-C01",
+        "label": "Run get_page_text on owned synthetic fixture",
+        "action": "Open this canonical tool and run a 2000-character bounded read on the active fixture page."
+      }
+    },
+    {
+      "feature_id": "EXT-F-4030",
+      "tool_name": "find_text_on_page",
+      "case_id": "EXT-F-4030-T01",
+      "live_catalog_match": {
+        "tier": "read",
+        "admin_only": false,
+        "required_permissions": [
+          "activeTab",
+          "scripting"
+        ],
+        "required_optional_permissions": []
+      },
+      "case_patch": {
+        "title": "Manual read: find exact nonce on owned fixture",
+        "control_ids": [
+          "EXT-F-4030-C01"
+        ],
+        "modes": [
+          "member",
+          "admin"
+        ],
+        "design_status": "procedure-ready-unverified",
+        "preconditions": [
+          "Complete shared build/reload cycle; fixture contains one visible exact text node READFIX-A7Q2."
+        ],
+        "steps": [
+          "Search find_text_on_page and expand the canonical row; verify query is required and permissions are activeTab+scripting.",
+          "Enter {\"query\":\"READFIX-A7Q2\",\"case_sensitive\":true,\"limit\":5} and click Run once.",
+          "Inspect count and matches in the inline result."
+        ],
+        "expected": [
+          "count is 1; matches contains one exact text='READFIX-A7Q2' with a non-empty selector and a context containing the marker.",
+          "No page content or browser state changes."
+        ],
+        "dimensions": [
+          "valid-input",
+          "permissions",
+          "reload"
+        ],
+        "data_ownership": "A unique synthetic nonce on the operator-owned local fixture only."
+      },
+      "control_patch": {
+        "id": "EXT-F-4030-C01",
+        "label": "Run find_text_on_page on owned synthetic fixture",
+        "action": "Open this canonical tool and search for the fixture nonce with case-sensitive matching."
+      }
+    },
+    {
+      "feature_id": "EXT-F-4031",
+      "tool_name": "get_page_links",
+      "case_id": "EXT-F-4031-T01",
+      "live_catalog_match": {
+        "tier": "read",
+        "admin_only": false,
+        "required_permissions": [
+          "activeTab",
+          "scripting"
+        ],
+        "required_optional_permissions": []
+      },
+      "case_patch": {
+        "title": "Manual read: filter same-origin fixture link",
+        "control_ids": [
+          "EXT-F-4031-C01"
+        ],
+        "modes": [
+          "member",
+          "admin"
+        ],
+        "design_status": "procedure-ready-unverified",
+        "preconditions": [
+          "Complete shared build/reload cycle; fixture has exactly one anchor with text 'Fixture local link' and path /tool-procedure/local-link on its own origin."
+        ],
+        "steps": [
+          "Search get_page_links, expand the canonical row, and verify activeTab+scripting permissions.",
+          "Enter {\"href_contains\":\"/tool-procedure/local-link\",\"text_contains\":\"Fixture local link\",\"same_origin_only\":true,\"limit\":5} and click Run once.",
+          "Inspect the returned count, total, and links array."
+        ],
+        "expected": [
+          "count is 1 and links contains the exact local fixture link text and same-origin href; total is at least 1.",
+          "No link is followed and no browser navigation occurs."
+        ],
+        "dimensions": [
+          "valid-input",
+          "permissions",
+          "reload"
+        ],
+        "data_ownership": "One synthetic same-origin link on the operator-owned local fixture."
+      },
+      "control_patch": {
+        "id": "EXT-F-4031-C01",
+        "label": "Run get_page_links on owned synthetic fixture",
+        "action": "Open this canonical tool and filter the fixture link by same-origin href path and exact visible label."
+      }
+    },
+    {
+      "feature_id": "EXT-F-4032",
+      "tool_name": "get_computed_style",
+      "case_id": "EXT-F-4032-T01",
+      "live_catalog_match": {
+        "tier": "read",
+        "admin_only": false,
+        "required_permissions": [
+          "activeTab",
+          "scripting"
+        ],
+        "required_optional_permissions": []
+      },
+      "case_patch": {
+        "title": "Manual read: computed style for owned fixture element",
+        "control_ids": [
+          "EXT-F-4032-C01"
+        ],
+        "modes": [
+          "member",
+          "admin"
+        ],
+        "design_status": "procedure-ready-unverified",
+        "preconditions": [
+          "Complete shared build/reload cycle; #procedure-card is visible and has fixed computed display:block and color rgb(1, 2, 3)."
+        ],
+        "steps": [
+          "Search get_computed_style, expand the canonical row, and verify required selector and activeTab+scripting permissions.",
+          "Enter {\"selector\":\"#procedure-card\",\"properties\":[\"display\",\"color\"]} and click Run once.",
+          "Inspect the inline result's ok, tag, styles, and rectangle."
+        ],
+        "expected": [
+          "ok=true, tag='div', styles.display='block', and styles.color='rgb(1, 2, 3)'; rectangle has positive width and height.",
+          "No style or layout is modified by the tool."
+        ],
+        "dimensions": [
+          "valid-input",
+          "permissions",
+          "reload"
+        ],
+        "data_ownership": "Computed CSS and geometry of a synthetic element on the operator-owned fixture."
+      },
+      "control_patch": {
+        "id": "EXT-F-4032-C01",
+        "label": "Run get_computed_style on owned synthetic fixture",
+        "action": "Open this canonical tool and read display/color on #procedure-card."
+      }
+    },
+    {
+      "feature_id": "EXT-F-4033",
+      "tool_name": "get_element_at_point",
+      "case_id": "EXT-F-4033-T01",
+      "live_catalog_match": {
+        "tier": "read",
+        "admin_only": false,
+        "required_permissions": [
+          "activeTab",
+          "scripting"
+        ],
+        "required_optional_permissions": []
+      },
+      "case_patch": {
+        "title": "Manual read: identify element at recorded fixture coordinate",
+        "control_ids": [
+          "EXT-F-4033-C01"
+        ],
+        "modes": [
+          "member",
+          "admin"
+        ],
+        "design_status": "procedure-ready-unverified",
+        "preconditions": [
+          "Complete shared build/reload cycle; #procedure-point is visible, inert, unobscured, and its viewport center coordinate was recorded before opening Tools."
+        ],
+        "steps": [
+          "Search get_element_at_point and expand the canonical row; verify x and y are required numbers and activeTab+scripting are present.",
+          "Enter the previously recorded integer viewport-center coordinates as {\"x\":X,\"y\":Y} (replace X/Y with the observed numbers; never guess) and click Run once.",
+          "Inspect the returned element descriptor. Do not click the page target."
+        ],
+        "expected": [
+          "The returned descriptor identifies the fixture's #procedure-point element (or its documented closest-element representation) at the supplied viewport coordinate.",
+          "No click, scroll, focus, or page mutation occurs. If the recorded coordinate no longer hits the fixture element, mark precondition drift and stop."
+        ],
+        "dimensions": [
+          "valid-input",
+          "permissions",
+          "reload"
+        ],
+        "data_ownership": "An operator-measured coordinate over an inert synthetic fixture div."
+      },
+      "control_patch": {
+        "id": "EXT-F-4033-C01",
+        "label": "Run get_element_at_point on owned synthetic fixture",
+        "action": "Open this canonical tool and inspect the operator-recorded center coordinate over #procedure-point."
+      }
+    },
+    {
+      "feature_id": "EXT-F-4034",
+      "tool_name": "inspect_element",
+      "case_id": "EXT-F-4034-T01",
+      "live_catalog_match": {
+        "tier": "read",
+        "admin_only": false,
+        "required_permissions": [
+          "activeTab",
+          "scripting"
+        ],
+        "required_optional_permissions": []
+      },
+      "case_patch": {
+        "title": "Manual read: inspect synthetic fixture card",
+        "control_ids": [
+          "EXT-F-4034-C01"
+        ],
+        "modes": [
+          "member",
+          "admin"
+        ],
+        "design_status": "procedure-ready-unverified",
+        "preconditions": [
+          "Complete shared build/reload cycle; #procedure-card exists exactly once on the owned fixture."
+        ],
+        "steps": [
+          "Search inspect_element and expand the canonical row; verify required selector and activeTab+scripting permissions.",
+          "Enter {\"selector\":\"#procedure-card\"} and click Run once.",
+          "Inspect the element snapshot, ancestor chain, attributes, and rectangle in inline output."
+        ],
+        "expected": [
+          "The snapshot identifies one div with id procedure-card and a non-empty ancestor chain; its geometry is non-zero.",
+          "The tool returns inspection data only and leaves DOM and styles unchanged."
+        ],
+        "dimensions": [
+          "valid-input",
+          "permissions",
+          "reload"
+        ],
+        "data_ownership": "One explicitly identified synthetic div on the operator-owned fixture."
+      },
+      "control_patch": {
+        "id": "EXT-F-4034-C01",
+        "label": "Run inspect_element on owned synthetic fixture",
+        "action": "Open this canonical tool and inspect #procedure-card."
+      }
+    },
+    {
+      "feature_id": "EXT-F-4029",
+      "tool_name": "query_elements",
+      "case_id": "EXT-F-4029-T01",
+      "live_catalog_match": {
+        "tier": "read",
+        "admin_only": false,
+        "required_permissions": [
+          "activeTab",
+          "scripting"
+        ],
+        "required_optional_permissions": []
+      },
+      "case_patch": {
+        "title": "Manual read: query exact fixture card and id attribute",
+        "control_ids": [
+          "EXT-F-4029-C01"
+        ],
+        "modes": [
+          "member",
+          "admin"
+        ],
+        "design_status": "procedure-ready-unverified",
+        "preconditions": [
+          "Complete shared build/reload cycle; the fixture contains exactly one #procedure-card div."
+        ],
+        "steps": [
+          "Search query_elements, expand the canonical row, and verify required selector plus activeTab+scripting permissions.",
+          "Enter {\"selector\":\"#procedure-card\",\"attributes\":[\"id\",\"data-case\"],\"limit\":5} and click Run once.",
+          "Inspect total and returned rows."
+        ],
+        "expected": [
+          "total is 1; returned first row has index 0, tag='div', attrs.id='procedure-card', and attrs.data-case='READFIX-A7Q2'.",
+          "No DOM content is changed."
+        ],
+        "dimensions": [
+          "valid-input",
+          "permissions",
+          "reload"
+        ],
+        "data_ownership": "Selector and attributes for the one synthetic fixture card only."
+      },
+      "control_patch": {
+        "id": "EXT-F-4029-C01",
+        "label": "Run query_elements on owned synthetic fixture",
+        "action": "Open this canonical tool and query #procedure-card attributes."
+      }
+    },
+    {
+      "feature_id": "EXT-F-4044",
+      "tool_name": "get_form_fields",
+      "case_id": "EXT-F-4044-T01",
+      "live_catalog_match": {
+        "tier": "read",
+        "admin_only": false,
+        "required_permissions": [
+          "activeTab",
+          "scripting"
+        ],
+        "required_optional_permissions": []
+      },
+      "case_patch": {
+        "title": "Manual read: synthetic form discovery and secret redaction",
+        "control_ids": [
+          "EXT-F-4044-C01"
+        ],
+        "modes": [
+          "member",
+          "admin"
+        ],
+        "design_status": "procedure-ready-unverified",
+        "preconditions": [
+          "Complete shared build/reload cycle; fixture form contains only synthetic-query and synthetic-secret-DO-NOT-REPORT; there is no submit handler."
+        ],
+        "steps": [
+          "Search get_form_fields, expand the canonical row, and verify activeTab+scripting permissions.",
+          "Enter {\"selector\":\"#procedure-form\"} and click Run once.",
+          "Inspect output only for field count/names/types and masking metadata. Verify that the literal password sentinel 'synthetic-secret-DO-NOT-REPORT' is absent from visible output and any saved receipt; do not copy raw output."
+        ],
+        "expected": [
+          "One form is returned and identifies fixture-query as a text input with synthetic-query; the password field is present but marked/masked and its value is never emitted.",
+          "No submit, input change, autofill, or network action occurs. Any appearance of the password sentinel is a security failure: stop and preserve only redacted evidence."
+        ],
+        "dimensions": [
+          "valid-input",
+          "sensitive-field-redaction",
+          "permissions",
+          "reload"
+        ],
+        "data_ownership": "Operator-authored synthetic form values only; the password sentinel must remain absent from evidence."
+      },
+      "control_patch": {
+        "id": "EXT-F-4044-C01",
+        "label": "Run get_form_fields on owned synthetic fixture",
+        "action": "Open this canonical tool and discover #procedure-form, confirming the synthetic password stays masked."
+      }
+    }
+  ],
+  "reconciliation": {
+    "retired_or_duplicate_ids_introduced": [],
+    "notes": [
+      "All ten feature IDs and case IDs above already exist in the source inventory and match names in the 2026-10-01 generated catalog snapshot; this patch adds no feature IDs and does not rename retired/duplicate entries.",
+      "Selected tools are tier=read and non-admin in the catalog snapshot. Their Tools manual-run path skips the actual dispatcher permission gate, so the procedures explicitly verify declared permission presence and make no claim about normal agent authorization.",
+      "Every case remains unverified until run from the member/admin seat against the owned fixture after the exact build/reload cycle."
+    ],
+    "unresolved_gaps": [
+      "These procedures do not cover advertised agent calls through Chat/Pilot, dispatcher Ask/Act approvals, guest denial, or per-tool missing-permission refusal; manual runner does not exercise those contracts.",
+      "This batch covers ten straightforward read tools only. Other read-tier tools can expose browser history, bookmarks, downloads, screenshots, cookies, memory, server data, or arbitrary page content and need a separate data-scope/ownership review before selecting fixtures."
+    ]
+  }
+}
