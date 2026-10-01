@@ -16,7 +16,7 @@
     ],
     "records": "For each observed tool event, actual allowlisted tool name and phase, explicit tab-target classification when available, fixture URL match when returned, and booleans for opening code, follow-up code, and fixture heading in a tool result. The runner also samples readable fixture presence, page URL, and active tab identity during the turn, then samples those plus persisted assigned-tab identity at terminal.",
     "privacy": "The report retains no raw tool arguments, tool results, page text, URLs, call IDs, run IDs, or marker values. Markers are held only in the runner and panel memory for boolean comparisons.",
-    "behavior": "The two questions, required answer terms, terminal classifier, and content assertions remain unchanged. The fixture is not reinserted during tool execution."
+    "behavior": "The two questions, required answer terms, terminal classifier, and content assertions remain unchanged. The fixture is not reinserted during tool execution. An unavailable identity probe is recorded as unavailable and does not change the answer verdict."
   },
   "source_checks": {
     "result": "Diagnostic only; not resource-admitted verification",

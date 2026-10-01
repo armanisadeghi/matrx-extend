@@ -334,8 +334,10 @@ async function readableFixturePresent(page, fixture) {
 async function fixtureIdentitySnapshot(attachWorker, page, fixture, fixtureTabId, panel = null) {
   const readable = await readableFixturePresent(page, fixture).catch(() => false);
   const pageUrlMatches = page.url() === `${WEB_ORIGIN}${DEMO_PATH}#${fixture.fragment}`;
-  const worker = await attachWorker();
+  const base = { readableMarkerPresent: readable, pageUrlMatches };
+  let worker = null;
   try {
+    worker = await attachWorker();
     const response = await worker.send('Runtime.evaluate', {
       expression: `new Promise((resolve) => chrome.tabs.query(
         { active: true, lastFocusedWindow: true },
@@ -362,14 +364,21 @@ async function fixtureIdentitySnapshot(attachWorker, page, fixture, fixtureTabId
         ? assignedIds.every((id) => id === fixtureTabId) : null;
     }
     return {
-      readableMarkerPresent: readable,
-      pageUrlMatches,
+      ...base,
       activeTabMatchesFixture: active.id === fixtureTabId,
       activeUrlMatchesFixture: active.url === `${WEB_ORIGIN}${DEMO_PATH}#${fixture.fragment}`,
       assignedTabMatchesFixture,
     };
+  } catch {
+    return {
+      ...base,
+      activeTabMatchesFixture: null,
+      activeUrlMatchesFixture: null,
+      assignedTabMatchesFixture: null,
+      identityProbeAvailable: false,
+    };
   } finally {
-    await worker.detach();
+    await worker?.detach().catch(() => {});
   }
 }
 
