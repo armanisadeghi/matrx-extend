@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "task_id": "guest-oracle-peer-20261001",
+  "lane": "independent source verification; zero product authorship",
+  "status": "DONE_WITH_CONCERNS",
+  "reviewed_commits": ["6f1a2a9f", "29160a46"],
+  "verdict_a_actual_outcome": {
+    "result": "UNVERIFIED",
+    "scope": "Exact Store guest first answer and signed-out answer after a real panel reload",
+    "evidence": "The previous native run candidate-native-guest-20261001-001 stopped on an intermediate Reasoning/Finding bubble before the first answer. This review did not launch the guarded native runner; the sole heavy-job permit belonged to another lane. There is no new native receipt for the changed oracle or post-reload path.",
+    "source_assessment": "The changed runner installs a stream listener before both sends, distinguishes tool_delegated from done, extracts assistant Markdown separately from reasoning/tool rows, requires fresh reply count, and checks the unpredictable code plus requested terms. These are useful source corrections, but they do not establish a live result."
+  },
+  "verdict_b_doctrine_quality": {
+    "result": "FAIL_IMPORTANT",
+    "findings": [
+      {
+        "id": "GUEST-ORACLE-01",
+        "severity": "important",
+        "title": "Failed user-request completion can be accepted as a successful answer",
+        "evidence": [
+          "tests/browser/guest-chat-store-acceptance.mjs:175-188 records only completion.status=success, then records end.reason=complete",
+          "tests/browser/guest-chat-completion-oracle.mjs:12-23 accepts end.reason=complete with matching text even when a completion event reported failure",
+          "/Volumes/Samsung2TB/code/aidream/aidream/services/ai_execution/ai_task.py:713-742 emits completion status=failed; lines 613-615 then call send_end() with default reason=complete"
+        ],
+        "impact": "A real failed terminal run whose rendered text happens to contain the fixture code and requested terms can produce terminal_answer and a false Store acceptance pass. The source guard has no failed-completion case.",
+        "minimal_source_reproduction": "Wire sequence: completion {operation:'user_request',status:'failed'}, end {reason:'complete'}, done; one new assistant reply reads 'C82F4A Capture Understand Use'. The collector discards the failed completion. classifyGuestTurn({runs:[{done:true,delegated:false,error:false,endReason:'complete',userRequestCompleted:false,startReplyCount:0,doneAt:0}],assistantText:'C82F4A Capture Understand Use',replyCount:1,expectedTerms:['C82F4A','Capture','Understand','Use'],errorNotice:false}) returns terminal_answer by lines 13-23. This is a source-derived reproduction, not an executed native observation.",
+        "required_repair": "Record user_request completion success and failure per run, reject failure before considering end.reason, and prove both outcomes with distinct forcing inputs."
+      },
+      {
+        "id": "GUEST-ORACLE-02",
+        "severity": "important",
+        "title": "Benign outstanding-delegated 409 is classified as terminal error",
+        "evidence": [
+          "tests/browser/guest-chat-completion-oracle.mjs:5-7 expects errorCode=outstanding_delegated_calls to keep waiting",
+          "src/lib/api/stream.ts:254-255 forwards only resume_conflict as an error code",
+          "src/hooks/use-chat-stream.ts:657-703 treats a 409 on resume as a non-rendered pending-tool state",
+          "tests/browser/guest-chat-store-acceptance.mjs:159-166 marks the uncoded 409 as error"
+        ],
+        "impact": "A resume attempted while another delegated call is unanswered gets an error chunk and done. The oracle returns terminal_error before a later tool result can resume the turn, yielding a false acceptance failure.",
+        "minimal_source_reproduction": "Wire sequence: stream:chunk {type:'error',payload:{status:409}} then done for a pending delegated call. The collector stores error=true,errorCode=null. classifyGuestTurn({runs:[{done:true,delegated:false,error:true,errorCode:null,endReason:null,startReplyCount:1,doneAt:0}],assistantText:'',replyCount:1,expectedTerms:['C82F4A'],errorNotice:false}) returns terminal_error at line 7, despite the client's 409 branch leaving pending cards active. This is a source-derived reproduction, not an executed native observation.",
+        "required_repair": "Carry the 409 status into the oracle and distinguish the retryable/pending protocol state from terminal failure; test a multi-tool suspended sequence through the runner seam."
+      }
+    ],
+    "test_quality": "The five pure-helper cases include delegated handoff, wrong text, correct text, render gap, and generic error. They do not exercise the stream-message collector, failed completion, or the benign 409 path. The correct/wrong cases share a handcrafted completion shape with end.reason=complete; no captured live wire fixture or runtime observation validates this shape end to end.",
+    "resource_limit": "No node tests or browser run were launched: stabilization policy requires guarded admission for test commands and the parent assigned the sole heavy permit elsewhere."
+  },
+  "next_actions": [
+    "Repair both oracle findings without changing product behavior.",
+    "Run a focused guard through admitted resource ownership, including the failed-completion and pending-409 sequences.",
+    "Run the exact frozen candidate in a fresh guarded native guest profile and require both first and post-reload answers before claiming acceptance."
+  ]
+}
