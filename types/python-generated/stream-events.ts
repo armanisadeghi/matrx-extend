@@ -537,6 +537,7 @@ export interface ContextReceiptRow {
   user_rule?: ContextRule | null;
   clamped?: boolean;
   client_sent_excluded?: boolean;
+  blocked_by?: "model" | null;
 }
 
 export interface ContextRule {
@@ -549,6 +550,7 @@ export interface ContextReceiptData {
   version?: 1;
   surface?: string | null;
   cap: number;
+  model_reads_context?: boolean;
   rows?: ContextReceiptRow[];
   rules_error?: string | null;
 }
