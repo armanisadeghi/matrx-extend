@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "task_id": "guest-acceptance-final-20261001",
+  "lane": "fresh independent source and native acceptance verification; zero product authorship",
+  "status": "NATIVE_FIRST_ANSWER_FAILED_CAUSE_UNDETERMINED",
+  "reviewed_head": "f4a0c511",
+  "verdict_a_exact_store_outcome": {
+    "result": "FAIL_AT_FIRST_ANSWER; POST_RELOAD_UNVERIFIED",
+    "scope": "Frozen 0.2.173 candidate, fresh signed-out Chat answer grounded in the active page, then a second signed-out answer after a real side-panel reload",
+    "evidence": "Guarded native attempt guest-acceptance-final-native-20261001-001 used the frozen 0.2.173 release receipt/tree 494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064 and a fresh owned guest profile. The final run had user_request success, end complete, done, and a fresh rendered assistant reply, but the oracle returned terminal_wrong_answer: the reply listed the public workflow stages in order while explicitly reporting that it could not find the injected opening code. The runner stopped before reload. The resource journal ended valid with child exit 1; this is an acceptance failure, not resource invalidity.",
+    "cause_limit": "The runner verified the injected code was visible in the primary article, present in a readable-text clone, and on the active tab immediately before send. It did not verify that the fixture survived until the page-read tool executed or until the final answer. It also did not retain safe per-tool target and marker-presence metadata. This receipt cannot distinguish a product grounding defect from fixture removal or a stale/different page snapshot.",
+    "remaining_proof": "Instrument the runner to record fixture presence throughout the turn and safe tool name/target/marker-presence metadata, then retry the exact frozen candidate under resource admission. The post-reload answer remains untested."
+  },
+  "verdict_b_source_quality": {
+    "result": "ACCEPTABLE_FALSE_PASS_GUARD; NEGATIVE_DIAGNOSIS_GAP",
+    "evidence": [
+      "The stream listener is installed before each send. It records run-specific done, delegated, error, user_request completion, and end metadata from the runtime messages consumed by Chat.",
+      "The oracle requires a terminal success outcome, a fresh rendered assistant reply after that run began, the unpredictable page code, and the terms requested of that turn. A delegated or uncoded 409 run remains pending for a later continuation.",
+      "The first answer must give Capture, Understand, Use in order. Both turns reject a leading rendered Error: reply, visible error notice, and refusal even when required fixture text is echoed.",
+      "The runner checks a fresh guest state, active fixture tab, readable page fixture, real panel loader change on reload, signed-out state after reload, and an independently grounded follow-up answer."
+    ],
+    "limit": "The 10 focused oracle cases passed under valid resource admission. The live run proved the oracle rejected a wrong answer, but the fixture's persistence during tool execution is unmeasured, so a failed answer cannot yet be assigned to the product."
+  },
+  "prior_findings": [
+    {
+      "id": "GUEST-ORACLE-01",
+      "result": "ADDRESSED_IN_SOURCE",
+      "evidence": "A failed or cancelled user_request completion is recorded per run and classified terminal_error before end.reason=complete can imply success; the collector-seam test feeds the contradictory wire sequence."
+    },
+    {
+      "id": "GUEST-ORACLE-02",
+      "result": "ADDRESSED_IN_SOURCE",
+      "evidence": "Numeric errorStatus is retained. An uncoded 409 classifies awaiting_tool_resume and the test follows the delegated run through the 409 to a final successful resume."
+    },
+    {
+      "id": "GUEST-ORACLE-03",
+      "result": "ADDRESSED_IN_SOURCE",
+      "evidence": "The opening classifier receives orderedTerms and the final assertion requires answerStagesInOrder; the focused guard includes distinct reverse-order and correct-order answers."
+    },
+    {
+      "id": "GUEST-ORACLE-04",
+      "result": "ADDRESSED_IN_SOURCE",
+      "evidence": "A leading rendered Error: reply sets terminalAnswerError, which the classifier rejects and both opening and post-reload assertions also reject; the focused guard gives an Error: answer containing every other required term."
+    }
+  ],
+  "focused_guard": {
+    "run_id": "guest-acceptance-final-focused-20261001-001",
+    "journal": "docs/stabilization/resource-journals/guest-acceptance-final-focused-20261001-001.jsonl",
+    "journal_sha256": "923e257823337de00f2454644f489c3b6457ccd442da6f43071465babef1d1b9",
+    "result": "valid resource decision, child exit 0, 10 tests passed"
+  },
+  "native_attempts": [
+    {
+      "run_id": "guest-acceptance-final-native-20261001-001",
+      "journal": "docs/stabilization/resource-journals/guest-acceptance-final-native-20261001-001.jsonl",
+      "journal_sha256": "541626d80943999bbda40e4e8e010f2e73bdb5f5230d513a075c3f81b7acd98c",
+      "receipt": "test-results/guest-chat-store-1b78049f-508c-4043-94f5-20a950815f1b.json",
+      "receipt_sha256": "9765dc74a0fbd1a2da690a160437aa8ba69dec706879056d2aae6faa97917927",
+      "resource_decision": "valid; child_failed exit 1",
+      "failure_stage": "real_guest_answer",
+      "opening_turn_verdict": "terminal_wrong_answer",
+      "stream_summary": "Five stream runs, four continuations, final run terminal success on wire with a new rendered reply; no stream error or visible alert.",
+      "answer_summary": "The rendered answer listed the public Capture, Understand, Use stages in order but denied finding the injected opening code.",
+      "guest_state": "Account badge visible; access token, user profile, and active organization absent.",
+      "fixture_evidence": "Visible primary article, readable-text clone, and assigned active tab were verified before the first send; no after-send persistence observation was captured.",
+      "post_reload": "not reached"
+    }
+  ],
+  "resource_note": "Both fresh admissions were healthy and finalized. The previous round-two guard refusal was separate and launched no child.",
+  "next_action": "Preserve the failed native receipt and add non-sensitive fixture persistence plus tool-target diagnostics before a bounded second native attempt. Do not claim Store guest Chat acceptance or open a product defect on this evidence alone."
+}
