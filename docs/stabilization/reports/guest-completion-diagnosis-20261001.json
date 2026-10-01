@@ -2,19 +2,19 @@
   "schema_version": 1,
   "task_id": "guest-completion-diagnose-20261001",
   "lane": "Sol medium diagnosis and acceptance repair",
-  "status": "peer_round1_source_repair_ready_for_fresh_review",
+  "status": "peer_round2_source_repair_ready_for_guard_and_fresh_review",
   "feature_ids": ["EXT-F-0002", "EXT-F-2013"],
   "defect_ids": ["EXT-D-0072"],
   "candidate": { "version": "0.2.173", "source_sha": "d6d6d6b83c937652525f473082ac2f2492c9eabe" },
   "observation": "The exact candidate's fresh guest run reached a page-text tool state. The old runner saw two Copy reply matches and no Stop button, but the screenshot contained only Reasoning and Finding text. It did not observe the final answer, guest reload, or follow-up.",
   "confirmed_cause": "The acceptance predicate treated one finalized assistant bubble as completion of the whole turn. A delegated client tool intentionally ends its current stream and resumes after tool_results; ChatView can render Copy reply and no Stop button in that gap.",
   "product_verdict": "unverified: the old capture cannot distinguish eventual success from a failed tool resume or terminal wrong answer",
-  "repair": "The runner now records only safe run ordinals, event names, allowlisted error codes, status codes, completion outcomes, and text-chunk counts from panel stream broadcasts. It waits for terminal stream completion, reads the assistant's rendered Markdown text without reasoning/tool rows, and classifies terminal wrong, empty, error, and correct answers separately. Failed user-request completion takes priority over end reason complete; an uncoded resume 409 remains pending. The opening and post-reload turns use the same oracle.",
+  "repair": "The runner records only safe run ordinals, event names, allowlisted error codes, status codes, completion outcomes, and text-chunk counts from panel stream broadcasts. It waits for terminal stream completion, reads the assistant's rendered Markdown text without reasoning/tool rows, and classifies terminal wrong, empty, error, and correct answers separately. Failed user-request completion takes priority over end reason complete; an uncoded resume 409 remains pending. Round two rejects rendered Error replies on both turns and requires Capture, Understand, Use in order on the opening turn.",
   "validation": {
-    "focused_tests": "Initial five cases passed. Collector-seam tests for failed completion, successful completion, and multi-tool uncoded 409 were added after peer review; execution awaits guarded test admission.",
+    "focused_tests": "Eight of eight round-one cases passed under valid guarded run guest-oracle-focused-20261001-001. Round-two cases for an Error reply echoing all required terms and reverse stage order are added. Guarded run guest-oracle-focused-20261001-002 was refused before child launch for unsafe pressure and swap growth; new cases have no execution verdict.",
     "syntax": "node --check passed for runner, oracle, and test file after round-one repair",
     "native_retest": "pending sole heavy-job lane",
-    "independent_review": "first source review found important gaps; fresh review of round-one repair pending"
+    "independent_review": "second source review confirmed first two gaps addressed but found unordered-stage and rendered-Error false passes; fresh review of round-two repair pending"
   },
   "limitations": [
     "The prior panel CDP network watcher is attached to the side panel, while fetch runs in offscreen; empty guest_ai_requests is not evidence that no request was sent.",
@@ -27,6 +27,8 @@
     "docs/stabilization/reports/candidate-native-20261001.json",
     "tests/browser/guest-chat-store-acceptance.mjs",
     "tests/browser/guest-chat-completion-oracle.mjs",
-    "tests/browser/guest-chat-completion-oracle.test.mjs"
+    "tests/browser/guest-chat-completion-oracle.test.mjs",
+    "docs/stabilization/resource-journals/guest-oracle-focused-20261001-001.jsonl",
+    "docs/stabilization/resource-journals/guest-oracle-focused-20261001-002.jsonl"
   ]
 }

@@ -158,6 +158,33 @@ test('collector accepts successful completion with a real new assistant reply', 
   );
 });
 
+test('completed Error reply cannot pass by echoing the fixture code and stages', () => {
+  const collector = createGuestStreamCollector({ replyCount: () => 0, now: () => 1000 });
+  collector.accept(streamEvent('error-text-run', 'completion',
+    { operation: 'user_request', status: 'success' }));
+  collector.accept(streamEvent('error-text-run', 'end', { reason: 'complete' }));
+  collector.accept(streamMessage('error-text-run', 'done'));
+  const answer = 'Error: failed to read C82F4A. Capture, Understand, Use.';
+  assert.equal(classifyGuestTurn({ runs: collector.snapshot().runs,
+    assistantText: answer, replyCount: 1, expectedTerms,
+    orderedTerms: ['Capture', 'Understand', 'Use'], errorNotice: false,
+    terminalAnswerError: /^\s*Error\s*:/i.test(answer), now: 2000 }), 'terminal_error');
+});
+
+test('opening answer must list the page stages in order', () => {
+  const collector = createGuestStreamCollector({ replyCount: () => 0, now: () => 1000 });
+  collector.accept(streamEvent('ordered-run', 'completion',
+    { operation: 'user_request', status: 'success' }));
+  collector.accept(streamEvent('ordered-run', 'end', { reason: 'complete' }));
+  collector.accept(streamMessage('ordered-run', 'done'));
+  const common = { runs: collector.snapshot().runs, replyCount: 1, expectedTerms,
+    orderedTerms: ['Capture', 'Understand', 'Use'], errorNotice: false, now: 2000 };
+  assert.equal(classifyGuestTurn({ ...common,
+    assistantText: 'C82F4A: Use, Understand, Capture.' }), 'terminal_wrong_answer');
+  assert.equal(classifyGuestTurn({ ...common,
+    assistantText: 'C82F4A: Capture, Understand, Use.' }), 'terminal_answer');
+});
+
 test('uncoded 409 remains pending while another delegated tool resolves', () => {
   let replies = 0;
   const collector = createGuestStreamCollector({ replyCount: () => replies, now: () => 1000 });

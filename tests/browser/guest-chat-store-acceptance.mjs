@@ -103,6 +103,9 @@ async function observe(panel, expected = {}) {
           latestReply.includes(${JSON.stringify(expected.fixtureHeading ?? '')}),
         answerMatchesPublicStages: ${JSON.stringify(REQUIRED_ANSWER_TERMS)}
           .every((term) => latestReply.includes(term)),
+        answerStagesInOrder: ${JSON.stringify(REQUIRED_ANSWER_TERMS)}
+          .every((term, index, terms) => index === 0 ||
+            latestReply.indexOf(terms[index - 1]) < latestReply.indexOf(term)),
         answerIsRefusal: /(?:authentication (?:is )?required|you (?:must|need to) (?:sign.?in|log.?in|authenticate)|(?:sign.?in|log.?in) (?:to|before) (?:use|ask|send|continue)|upgrade|subscribe|payment required|unauthori[sz]ed|forbidden|\\b401\\b|\\b403\\b)/i
           .test(latestReply),
         terminalAnswerError: /^\s*Error\s*:/i.test(latestReply),
@@ -154,7 +157,9 @@ async function waitForTerminalAnswer(panel, expected) {
       assistantText: state.latestReplyText ?? '',
       replyCount: state.replyCount,
       expectedTerms: answerTerms,
+      orderedTerms: expected.fixtureHeading ? [] : REQUIRED_ANSWER_TERMS,
       errorNotice: state.errorNotice,
+      terminalAnswerError: state.terminalAnswerError,
     });
     const previous = timeline.at(-1);
     if (
@@ -399,6 +404,7 @@ function diagnosticState(state, fixture) {
     answerContainsNonce: state.answerContainsNonce,
     answerContainsFixtureHeading: state.answerContainsFixtureHeading,
     answerMatchesPublicStages: state.answerMatchesPublicStages,
+    answerStagesInOrder: state.answerStagesInOrder,
     answerIsRefusal: state.answerIsRefusal,
     terminalAnswerError: state.terminalAnswerError,
     interruptionNotice: state.interruptionNotice,
@@ -506,7 +512,9 @@ try {
           openingTurn.verdict === 'terminal_answer' &&
             answered.answerContainsNonce &&
             answered.answerMatchesPublicStages &&
+            answered.answerStagesInOrder &&
             !answered.answerIsRefusal &&
+            !answered.terminalAnswerError &&
             !answered.errorNotice,
           'real guest answer must contain the page-specific code and workflow stages',
         );
@@ -517,7 +525,9 @@ try {
           completed_reply_count: answered.replyCount,
           answer_contains_unpredictable_page_code: answered.answerContainsNonce,
           answer_names_page_stages: answered.answerMatchesPublicStages,
-          no_login_paywall_or_error: !answered.answerIsRefusal && !answered.errorNotice,
+          answer_stages_in_order: answered.answerStagesInOrder,
+          no_login_paywall_or_error:
+            !answered.answerIsRefusal && !answered.terminalAnswerError && !answered.errorNotice,
           followup_completed_after_reload: false,
         };
         report.screenshot = await capture(panel, join(artifacts, 'guest-chat-real-answer.png'));
@@ -586,6 +596,7 @@ try {
             followup.answerContainsNonce &&
             followup.answerContainsFixtureHeading &&
             !followup.answerIsRefusal &&
+            !followup.terminalAnswerError &&
             !followup.errorNotice,
           'new guest conversation after reload must ground in the page fixture',
         );

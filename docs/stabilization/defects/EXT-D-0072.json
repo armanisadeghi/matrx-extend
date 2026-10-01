@@ -24,45 +24,19 @@
     "test-results/native-sidepanel-qa-xuI4F5/guest-chat-failure.png",
     "tests/browser/guest-chat-store-acceptance.mjs",
     "tests/browser/guest-chat-completion-oracle.mjs",
-    "tests/browser/guest-chat-completion-oracle.test.mjs"
+    "tests/browser/guest-chat-completion-oracle.test.mjs",
+    "docs/stabilization/resource-journals/guest-oracle-focused-20261001-001.jsonl",
+    "docs/stabilization/resource-journals/guest-oracle-focused-20261001-002.jsonl"
   ],
-  "verification_status": "Source and captured UI prove the old predicate's false terminal. Initial focused oracle tests passed 5/5. Independent review found two important collector/classifier gaps; round-one source repair now records failed user-request completions and treats uncoded 409 as pending. Added collector-seam tests have syntax checks but await guarded test admission. Fresh independent review and native rerun are pending; no product-side guest Chat defect is claimed from the old run.",
+  "verification_status": "Source and captured UI prove the old predicate's false terminal. Round-one collector repair passed 8/8 focused tests under valid guarded run guest-oracle-focused-20261001-001. Fresh review found unordered-stage and explicit-error false passes; round-two source repair rejects both and adds forcing cases. Round-two guarded run guest-oracle-focused-20261001-002 was refused before launch for unsafe pressure and swap growth, so the new cases remain unexecuted. Fresh review and native rerun remain pending; no product-side guest Chat defect is claimed from the old run.",
   "transition_history": [
-    {
-      "at": "2026-10-01T16:28:54Z",
-      "from": null,
-      "to": "open",
-      "reason": "Candidate 0.2.173 stopped on a tool-only-looking intermediate panel state."
-    },
-    {
-      "at": "2026-10-01T16:28:54Z",
-      "from": "open",
-      "to": "triaged",
-      "reason": "Captured UI and source show that Copy reply and absent Stop are not terminal-turn signals across delegated tools."
-    },
-    {
-      "at": "2026-10-01T16:28:54Z",
-      "from": "triaged",
-      "to": "in-fix",
-      "reason": "The runner was assigned a bounded terminal-state and assistant-text oracle repair."
-    },
-    {
-      "at": "2026-10-01T16:28:54Z",
-      "from": "in-fix",
-      "to": "fixed",
-      "reason": "The runner now records safe stream lifecycle metadata and waits for terminal answer text; focused tests pass. Independent native retest remains open."
-    },
-    {
-      "at": "2026-10-01T16:38:35Z",
-      "from": "fixed",
-      "to": "in-fix",
-      "reason": "Independent source review found failed-completion false pass and uncoded-409 false error in the terminal oracle."
-    },
-    {
-      "at": "2026-10-01T16:38:35Z",
-      "from": "in-fix",
-      "to": "fixed",
-      "reason": "Collector-seam repair records failed completions and uncoded 409; syntax checks pass. Guarded focused execution, fresh review, and native retest remain pending."
-    }
+    { "at": "2026-10-01T16:28:54Z", "from": null, "to": "open", "reason": "Candidate 0.2.173 stopped on a tool-only-looking intermediate panel state." },
+    { "at": "2026-10-01T16:28:54Z", "from": "open", "to": "triaged", "reason": "Captured UI and source show that Copy reply and absent Stop are not terminal-turn signals across delegated tools." },
+    { "at": "2026-10-01T16:28:54Z", "from": "triaged", "to": "in-fix", "reason": "The runner was assigned a bounded terminal-state and assistant-text oracle repair." },
+    { "at": "2026-10-01T16:28:54Z", "from": "in-fix", "to": "fixed", "reason": "The runner now records safe stream lifecycle metadata and waits for terminal answer text; focused tests pass. Independent native retest remains open." },
+    { "at": "2026-10-01T16:38:35Z", "from": "fixed", "to": "in-fix", "reason": "Independent source review found failed-completion false pass and uncoded-409 false error in the terminal oracle." },
+    { "at": "2026-10-01T16:38:35Z", "from": "in-fix", "to": "fixed", "reason": "Collector-seam repair records failed completions and uncoded 409; guarded focused tests later passed 8/8. Fresh review and native retest remain pending." },
+    { "at": "2026-10-01T16:43:52Z", "from": "fixed", "to": "in-fix", "reason": "Fresh independent source review found wrong-stage-order and rendered-Error false passes." },
+    { "at": "2026-10-01T16:43:52Z", "from": "in-fix", "to": "fixed", "reason": "Shared classifier and both guest acceptance assertions now reject rendered errors; opening answer requires the documented stage order. Guarded focused execution and native retest remain pending." }
   ]
 }

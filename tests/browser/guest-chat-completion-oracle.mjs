@@ -114,7 +114,9 @@ export function classifyGuestTurn({
   assistantText,
   replyCount,
   expectedTerms,
+  orderedTerms = [],
   errorNotice,
+  terminalAnswerError = false,
   now = Date.now(),
 }) {
   const latest = runs.at(-1);
@@ -138,7 +140,15 @@ export function classifyGuestTurn({
   if (replyCount <= latest.startReplyCount && now - latest.doneAt < 700)
     return 'rendering_terminal';
   if (replyCount <= latest.startReplyCount || !assistantText.trim()) return 'terminal_empty_answer';
-  return expectedTerms.every((term) => assistantText.includes(term))
+  if (terminalAnswerError) return 'terminal_error';
+  let after = -1;
+  const inOrder = orderedTerms.every((term) => {
+    const position = assistantText.indexOf(term, after + 1);
+    if (position < 0) return false;
+    after = position + term.length - 1;
+    return true;
+  });
+  return inOrder && expectedTerms.every((term) => assistantText.includes(term))
     ? 'terminal_answer'
     : 'terminal_wrong_answer';
 }
