@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "lane": "files-saved-native-acceptance-20261001",
+  "source_commit_at_preflight": "5878be26",
+  "status": "runner-prepared-awaiting-independent-source-review-and-native-permit",
+  "scope": ["EXT-F-2008", "EXT-F-2009"],
+  "priority_defects": ["EXT-D-0064", "EXT-D-0065"],
+  "preflight": {
+    "D64": "Source and focused component guard already render retryable read error before the Files Library and Screenshots empty states. Native acceptance is pending.",
+    "D65": "Source and focused component guards already ignore stale success, failure, and loading completions for earlier Source selections. Native race acceptance is pending.",
+    "existing_browser_coverage": "saved-captures-e2e.mjs covers real save/list/detail/original/delete but does not bind to the shared local-dev receipt or force the A/B race; native-sidepanel-qa-harness.mjs provides receipt and owned-process binding.",
+    "role_applicability": "Guest: tabs absent. Member and admin: Files and Saved captures controls applicable; member needs an existing authorized non-admin identity."
+  },
+  "planned_native_order": [
+    "Bind exact build version and tree SHA to a local-dev receipt; launch only through the owned native sidepanel harness after resource permit.",
+    "Observe signed-out guest absence of Files and Saved captures, including reload.",
+    "Sign in through the real web and extension UI, select an approved existing test organization through the picker, and confirm the displayed identity and selected organization.",
+    "For D64, induce a real Files read rejection on the two scoped inventory requests, inspect each active tab for visible error and Retry files without a false empty claim, restore transport, click Retry, and verify an actual completed read and resulting rows or honest empty state.",
+    "For D65, use two distinct test-owned Sources, hold A's detail request, click B, let B settle, release A, and assert the detail remains B. Repeat with A failing late; verify refresh/back and exact Source identity.",
+    "After the focused defect cases, walk remaining applicable controls in EXT-F-2008 and EXT-F-2009 against real authorized rows, recording each control result or a precise unverified reason; delete only data created by this lane and verify cleanup."
+  ],
+  "execution": {
+    "build_receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/release-receipt-frozen.json",
+    "expected_tree_sha256": "494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064",
+    "native_run": "not-started",
+    "test_runner": "tests/browser/files-saved-native-acceptance.mjs",
+    "runner_scope": "D64 both tabs and D65 A/B selection race; remaining controls follow after focused acceptance",
+    "test_owned_source_pair": "not-yet-configured; D64 can run independently",
+    "member_identity": "not-yet-confirmed",
+    "guest": "unverified",
+    "member": "unverified",
+    "admin": "unverified",
+    "D64": "unverified",
+    "D65": "unverified"
+  },
+  "limitations": [
+    "No build, test, or browser launch was performed in preflight.",
+    "No product defect or closure is claimed from source reading or component tests alone."
+  ]
+}
