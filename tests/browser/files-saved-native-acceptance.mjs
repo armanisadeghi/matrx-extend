@@ -53,12 +53,21 @@ async function privateConfig() {
   const stat = await lstat(CONFIG).catch(() => fail('private_config_missing'));
   if (!stat.isFile() || (stat.mode & 0o777) !== 0o600) fail('private_config_mode');
   const value = JSON.parse(await readFile(CONFIG, 'utf8'));
-  if (typeof value.approved_organization_name !== 'string' || !value.approved_organization_name.trim() ||
-      !UUID.test(value.approved_organization_id)) fail('approved_organization_identity_missing');
+  if (
+    typeof value.approved_organization_name !== 'string' ||
+    !value.approved_organization_name.trim() ||
+    !UUID.test(value.approved_organization_id)
+  )
+    fail('approved_organization_identity_missing');
   if (value.source_a || value.source_b) {
     for (const key of ['source_a', 'source_b']) {
       const source = value[key];
-      if (!source || !UUID.test(source.id) || typeof source.title !== 'string' || !source.title.trim())
+      if (
+        !source ||
+        !UUID.test(source.id) ||
+        typeof source.title !== 'string' ||
+        !source.title.trim()
+      )
         fail(`${key}_not_configured`);
       if (source.test_owned !== true) fail(`${key}_ownership_unproven`);
     }
@@ -79,13 +88,19 @@ async function buildIdentity() {
     extensionDir = receipt.extensionDir;
   } else {
     extensionDir = receipt.destinationPath;
-    if (receipt.publishState !== 'pushed' ||
+    if (
+      receipt.publishState !== 'pushed' ||
       !Array.isArray(receipt.destinationPaths) ||
       !receipt.destinationPaths.includes(extensionDir) ||
-      typeof receipt.storeZip?.path !== 'string') fail('frozen_release_receipt_refused');
+      typeof receipt.storeZip?.path !== 'string'
+    )
+      fail('frozen_release_receipt_refused');
   }
-  if (receipt.treeSha256 !== EXPECTED_TREE_SHA256 ||
-    hashReleaseTree(extensionDir) !== EXPECTED_TREE_SHA256) fail('build_hash_mismatch');
+  if (
+    receipt.treeSha256 !== EXPECTED_TREE_SHA256 ||
+    hashReleaseTree(extensionDir) !== EXPECTED_TREE_SHA256
+  )
+    fail('build_hash_mismatch');
   return { version: receipt.version, treeSha256: receipt.treeSha256, extensionDir };
 }
 
@@ -145,24 +160,35 @@ async function webSignIn(page, config) {
 
 async function selectOrganization(panel, name, expectedId) {
   await openSection(panel, 'Organization');
-  const state = () => evaluate(panel, `(() => {
+  const state = () =>
+    evaluate(
+      panel,
+      `(() => {
     const section = [...document.querySelectorAll('button[aria-expanded]')]
       .find(b => b.textContent.trim() === 'Organization');
     const body = section?.parentElement?.nextElementSibling;
     const label = [...(body?.querySelectorAll('span') ?? [])].find(s => s.textContent.trim() === 'Acting as');
     const controls = [...(label?.parentElement?.parentElement?.querySelectorAll('button[role="combobox"]') ?? [])];
     return { count: controls.length, display: controls[0]?.textContent.trim() ?? null };
-  })()`);
-  const selectedId = () => evaluate(panel, `(async () => {
+  })()`,
+    );
+  const selectedId = () =>
+    evaluate(
+      panel,
+      `(async () => {
     const record = await chrome.storage.local.get('matrx.org.active');
     return record['matrx.org.active']?.id ?? null;
-  })()`);
+  })()`,
+    );
   const before = await waitFor('organization_control', state, (s) => s?.count === 1, 60_000);
   if (before.display !== name) {
     if (before.display !== 'Choose…') fail('unexpected_preselected_organization');
     await click(panel, 'organization', 'Acting as');
-    const matches = await evaluate(panel, `(() => [...document.querySelectorAll('[role="option"]')]
-      .filter(o => o.textContent.trim() === ${JSON.stringify(name)}).length)()`);
+    const matches = await evaluate(
+      panel,
+      `(() => [...document.querySelectorAll('[role="option"]')]
+      .filter(o => o.textContent.trim() === ${JSON.stringify(name)}).length)()`,
+    );
     if (matches !== 1) fail('approved_organization_option_missing');
     await click(panel, 'option', name);
   }
@@ -173,7 +199,9 @@ async function selectOrganization(panel, name, expectedId) {
 }
 
 async function trustedFeatureClick(panel, featureTitle, selector, text) {
-  const point = await evaluate(panel, `(() => {
+  const point = await evaluate(
+    panel,
+    `(() => {
     const tab = document.querySelector('button[role="tab"][title=${JSON.stringify(featureTitle)}]');
     const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
     const matches = [...(root?.querySelectorAll(${JSON.stringify(selector)}) ?? [])]
@@ -185,18 +213,29 @@ async function trustedFeatureClick(panel, featureTitle, selector, text) {
     const rect = target.getBoundingClientRect(), x = rect.x + rect.width / 2,
       y = rect.y + rect.height / 2, hit = document.elementFromPoint(x,y);
     return { count: 1, x, y, hittable: !target.disabled && (hit === target || target.contains(hit)) };
-  })()`);
+  })()`,
+  );
   if (point?.count !== 1 || !point.hittable) fail('target_not_unique_or_hittable');
   await panel.send('Input.dispatchMouseEvent', {
-    type: 'mousePressed', x: point.x, y: point.y, button: 'left', clickCount: 1,
+    type: 'mousePressed',
+    x: point.x,
+    y: point.y,
+    button: 'left',
+    clickCount: 1,
   });
   await panel.send('Input.dispatchMouseEvent', {
-    type: 'mouseReleased', x: point.x, y: point.y, button: 'left', clickCount: 1,
+    type: 'mouseReleased',
+    x: point.x,
+    y: point.y,
+    button: 'left',
+    clickCount: 1,
   });
 }
 
 async function filesState(panel) {
-  return evaluate(panel, `(() => {
+  return evaluate(
+    panel,
+    `(() => {
     const tab = document.querySelector('button[role="tab"][title="Files"]');
     const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
     const inner = [...(root?.querySelectorAll('button[role="tab"]') ?? [])];
@@ -210,7 +249,8 @@ async function filesState(panel) {
       falseEmpty: text.includes('No library files yet') || text.includes('No captures yet'),
       loading: Boolean(activePane?.querySelector('.animate-spin')),
       rowCount: activePane?.querySelectorAll('div.divide-y > *, div.grid > *').length ?? 0 };
-  })()`);
+  })()`,
+  );
 }
 
 function interceptFiles(panel, origin) {
@@ -220,10 +260,14 @@ function interceptFiles(panel, origin) {
   let interceptionError = false;
   const requests = new Map();
   const succeeded = { library: 0, screenshots: 0 };
-  const kindOf = (url) => url.origin === origin
-    ? url.pathname === '/rest/v1/rpc/get_user_file_tree' ? 'library'
-      : url.pathname === '/rest/v1/wbx_screenshot' ? 'screenshots' : null
-    : null;
+  const kindOf = (url) =>
+    url.origin === origin
+      ? url.pathname === '/rest/v1/rpc/get_user_file_tree'
+        ? 'library'
+        : url.pathname === '/rest/v1/wbx_screenshot'
+          ? 'screenshots'
+          : null
+      : null;
   const offRequest = panel.on('Network.requestWillBeSent', (event) => {
     const kind = kindOf(new URL(event.request.url));
     if (kind) requests.set(event.requestId, kind);
@@ -240,22 +284,35 @@ function interceptFiles(panel, origin) {
     const command = scoped
       ? panel.send('Fetch.failRequest', { requestId: event.requestId, errorReason: 'Failed' })
       : panel.send('Fetch.continueRequest', { requestId: event.requestId });
-    void command.then(() => { if (scoped) failed++; else continued++; })
-      .catch(() => { interceptionError = true; });
+    void command
+      .then(() => {
+        if (scoped) failed++;
+        else continued++;
+      })
+      .catch(() => {
+        interceptionError = true;
+      });
   });
   return {
     start: async () => {
       await panel.send('Network.enable');
-      await panel.send('Fetch.enable', { patterns: [
-        { urlPattern: `${origin}/rest/v1/rpc/get_user_file_tree*`, requestStage: 'Request' },
-        { urlPattern: `${origin}/rest/v1/wbx_screenshot*`, requestStage: 'Request' },
-      ] });
+      await panel.send('Fetch.enable', {
+        patterns: [
+          { urlPattern: `${origin}/rest/v1/rpc/get_user_file_tree*`, requestStage: 'Request' },
+          { urlPattern: `${origin}/rest/v1/wbx_screenshot*`, requestStage: 'Request' },
+        ],
+      });
     },
-    setMode: (value) => { mode = value; },
+    setMode: (value) => {
+      mode = value;
+    },
     read: () => ({ failed, continued, succeeded: { ...succeeded }, interceptionError }),
     stop: async () => {
       await panel.send('Fetch.disable').catch(() => {});
-      off(); offRequest(); offResponse(); offFailed();
+      off();
+      offRequest();
+      offResponse();
+      offFailed();
     },
   };
 }
@@ -264,23 +321,45 @@ async function proveFilesFailure(panel, transport, tab, mode) {
   stage = `D64_${mode}_failure`;
   const before = transport.read().failed;
   transport.setMode(mode);
-  if (mode === 'screenshots') await trustedFeatureClick(panel, 'Files', 'button[role="tab"]', 'Screenshots');
+  if (mode === 'screenshots')
+    await trustedFeatureClick(panel, 'Files', 'button[role="tab"]', 'Screenshots');
   await click(panel, 'title', 'Refresh files');
-  await waitFor('scoped_files_request_failed', transport.read,
-    (s) => s.failed > before && !s.interceptionError, 30_000);
-  const failed = await waitFor('visible_files_failure', () => filesState(panel),
-    (s) => s.active && s.selected?.startsWith(tab) && s.error && s.retry && !s.falseEmpty, 30_000);
+  await waitFor(
+    'scoped_files_request_failed',
+    transport.read,
+    (s) => s.failed > before && !s.interceptionError,
+    30_000,
+  );
+  const failed = await waitFor(
+    'visible_files_failure',
+    () => filesState(panel),
+    (s) => s.active && s.selected?.startsWith(tab) && s.error && s.retry && !s.falseEmpty,
+    30_000,
+  );
   transport.setMode('none');
   stage = `D64_${mode}_retry`;
   const successBefore = transport.read().succeeded[mode];
   await trustedFeatureClick(panel, 'Files', 'button', 'Retry files');
-  await waitFor('files_real_read_succeeded', transport.read,
-    (s) => s.succeeded[mode] > successBefore && !s.interceptionError, 45_000);
-  const recovered = await waitFor('files_retry_recovered', () => filesState(panel),
-    (s) => s.active && s.selected?.startsWith(tab) && !s.error && !s.retry && !s.loading, 45_000);
-  return { request_failure_observed: true, visible_error: failed.error,
-    visible_retry: failed.retry, false_empty_claim: failed.falseEmpty,
-    recovered_from_real_retry: !recovered.error, successful_read_observed: true };
+  await waitFor(
+    'files_real_read_succeeded',
+    transport.read,
+    (s) => s.succeeded[mode] > successBefore && !s.interceptionError,
+    45_000,
+  );
+  const recovered = await waitFor(
+    'files_retry_recovered',
+    () => filesState(panel),
+    (s) => s.active && s.selected?.startsWith(tab) && !s.error && !s.retry && !s.loading,
+    45_000,
+  );
+  return {
+    request_failure_observed: true,
+    visible_error: failed.error,
+    visible_retry: failed.retry,
+    false_empty_claim: failed.falseEmpty,
+    recovered_from_real_retry: !recovered.error,
+    successful_read_observed: true,
+  };
 }
 
 function interceptSourceDetail(panel, origin, sourceA, sourceB) {
@@ -307,7 +386,9 @@ function interceptSourceDetail(panel, origin, sourceA, sourceB) {
   const off = panel.on('Fetch.requestPaused', (event) => {
     const url = new URL(event.request.url);
     const id = /^eq\.([0-9a-f-]{36})$/i.exec(url.searchParams.get('id') ?? '')?.[1];
-    const inScope = url.origin === origin && url.pathname === '/rest/v1/processed_documents' &&
+    const inScope =
+      url.origin === origin &&
+      url.pathname === '/rest/v1/processed_documents' &&
       event.request.method === 'GET';
     if (inScope && id === sourceA.id && !pendingA) {
       pendingA = event.requestId;
@@ -320,34 +401,56 @@ function interceptSourceDetail(panel, origin, sourceA, sourceB) {
       if (!bNetworkId) interceptionError = true;
     }
     const command = panel.send('Fetch.continueRequest', { requestId: event.requestId });
-    void command.then(() => { if (inScope && id === sourceB.id) seenB++; })
-      .catch(() => { interceptionError = true; });
+    void command
+      .then(() => {
+        if (inScope && id === sourceB.id) seenB++;
+      })
+      .catch(() => {
+        interceptionError = true;
+      });
   });
   return {
     start: async () => {
       await panel.send('Network.enable');
       await panel.send('Fetch.enable', {
-        patterns: [{ urlPattern: `${origin}/rest/v1/processed_documents*`, requestStage: 'Request' }],
+        patterns: [
+          { urlPattern: `${origin}/rest/v1/processed_documents*`, requestStage: 'Request' },
+        ],
       });
     },
-    read: () => ({ pendingA: Boolean(pendingA), aSettled, seenB,
-      bSuccessfulResponse, bCompleted, interceptionError }),
+    read: () => ({
+      pendingA: Boolean(pendingA),
+      aSettled,
+      seenB,
+      bSuccessfulResponse,
+      bCompleted,
+      interceptionError,
+    }),
     releaseA: async (failRequest = false) => {
       if (!pendingA) fail('source_a_request_not_held');
-      const id = pendingA; pendingA = null;
-      await panel.send(failRequest ? 'Fetch.failRequest' : 'Fetch.continueRequest',
-        failRequest ? { requestId: id, errorReason: 'Failed' } : { requestId: id });
+      const id = pendingA;
+      pendingA = null;
+      await panel.send(
+        failRequest ? 'Fetch.failRequest' : 'Fetch.continueRequest',
+        failRequest ? { requestId: id, errorReason: 'Failed' } : { requestId: id },
+      );
     },
     stop: async () => {
-      if (pendingA) await panel.send('Fetch.continueRequest', { requestId: pendingA }).catch(() => {});
+      if (pendingA)
+        await panel.send('Fetch.continueRequest', { requestId: pendingA }).catch(() => {});
       await panel.send('Fetch.disable').catch(() => {});
-      off(); offResponse(); offFinished(); offFailed();
+      off();
+      offResponse();
+      offFinished();
+      offFailed();
     },
   };
 }
 
 async function sourceListState(panel, a, b) {
-  return evaluate(panel, `(() => {
+  return evaluate(
+    panel,
+    `(() => {
     const tab = document.querySelector('button[role="tab"][title="Saved captures"]');
     const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
     const rows = [...(root?.querySelectorAll('article > button') ?? [])];
@@ -357,12 +460,15 @@ async function sourceListState(panel, a, b) {
       hasB: names.filter(n => n === ${JSON.stringify(b.title)}).length === 1,
       detailB: root?.querySelector('header .font-semibold')?.textContent.trim() === ${JSON.stringify(b.title)},
       listVisible: rows.length > 0 };
-  })()`);
+  })()`,
+  );
 }
 
 async function sourceRowClick(panel, source) {
   const selector = 'article > button';
-  const point = await evaluate(panel, `(() => {
+  const point = await evaluate(
+    panel,
+    `(() => {
     const tab = document.querySelector('button[role="tab"][title="Saved captures"]');
     const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
     const rows = [...(root?.querySelectorAll(${JSON.stringify(selector)}) ?? [])]
@@ -372,49 +478,91 @@ async function sourceRowClick(panel, source) {
     const rect = row.getBoundingClientRect(), x = rect.x + rect.width / 2,
       y = rect.y + Math.min(14, rect.height / 2), hit = document.elementFromPoint(x,y);
     return { count: 1, x, y, hittable: hit === row || row.contains(hit) };
-  })()`);
+  })()`,
+  );
   if (point?.count !== 1 || !point.hittable) fail('owned_source_row_not_hittable');
   await panel.send('Input.dispatchMouseEvent', {
-    type: 'mousePressed', x: point.x, y: point.y, button: 'left', clickCount: 1,
+    type: 'mousePressed',
+    x: point.x,
+    y: point.y,
+    button: 'left',
+    clickCount: 1,
   });
   await panel.send('Input.dispatchMouseEvent', {
-    type: 'mouseReleased', x: point.x, y: point.y, button: 'left', clickCount: 1,
+    type: 'mouseReleased',
+    x: point.x,
+    y: point.y,
+    button: 'left',
+    clickCount: 1,
   });
 }
 
 async function proveLastClick(panel, origin, a, b, lateFailure) {
   const beforeClick = await sourceListState(panel, a, b);
-  if (!beforeClick.active || !beforeClick.listVisible || !beforeClick.hasA ||
-      !beforeClick.hasB || beforeClick.detailB) fail('fresh_source_list_not_ready');
+  if (
+    !beforeClick.active ||
+    !beforeClick.listVisible ||
+    !beforeClick.hasA ||
+    !beforeClick.hasB ||
+    beforeClick.detailB
+  )
+    fail('fresh_source_list_not_ready');
   const transport = interceptSourceDetail(panel, origin, a, b);
   await transport.start();
   try {
     await sourceRowClick(panel, a);
-    await waitFor('source_a_request_held', transport.read,
-      (s) => s.pendingA && !s.interceptionError, 30_000);
+    await waitFor(
+      'source_a_request_held',
+      transport.read,
+      (s) => s.pendingA && !s.interceptionError,
+      30_000,
+    );
     const afterA = await sourceListState(panel, a, b);
     if (!afterA.listVisible || afterA.detailB) fail('source_a_hold_not_list_state');
     await sourceRowClick(panel, b);
-    await waitFor('source_b_request_completed', transport.read,
+    await waitFor(
+      'source_b_request_completed',
+      transport.read,
       (s) => s.seenB > 0 && s.bSuccessfulResponse && s.bCompleted && !s.interceptionError,
-      30_000);
-    await waitFor('source_b_detail_visible', () => sourceListState(panel, a, b),
-      (s) => s.active && s.detailB, 30_000);
+      30_000,
+    );
+    await waitFor(
+      'source_b_detail_visible',
+      () => sourceListState(panel, a, b),
+      (s) => s.active && s.detailB,
+      30_000,
+    );
     await transport.releaseA(lateFailure);
-    await waitFor('source_a_request_settled', transport.read,
-      (s) => s.aSettled && !s.interceptionError, 30_000);
+    await waitFor(
+      'source_a_request_settled',
+      transport.read,
+      (s) => s.aSettled && !s.interceptionError,
+      30_000,
+    );
     // Let the settled fetch completion and its React update cross two paints.
-    await evaluate(panel, `(async () => {
+    await evaluate(
+      panel,
+      `(async () => {
       await new Promise(resolve => requestAnimationFrame(resolve));
       await new Promise(resolve => requestAnimationFrame(resolve));
       return true;
-    })()`);
-    const after = await waitFor('source_b_stays_selected', () => sourceListState(panel, a, b),
-      (s) => s.active && s.detailB, 15_000);
+    })()`,
+    );
+    const after = await waitFor(
+      'source_b_stays_selected',
+      () => sourceListState(panel, a, b),
+      (s) => s.active && s.detailB,
+      15_000,
+    );
     if (!after.detailB) fail('last_clicked_source_replaced');
-    return { fresh_list_before_click: true, a_held: true,
-      b_detail_request_completed_2xx: true, b_visible_before_a: true,
-      b_visible_after_a: true, a_late_failure: lateFailure };
+    return {
+      fresh_list_before_click: true,
+      a_held: true,
+      b_detail_request_completed_2xx: true,
+      b_visible_before_a: true,
+      b_visible_after_a: true,
+      a_late_failure: lateFailure,
+    };
   } finally {
     await transport.stop();
   }
@@ -434,34 +582,71 @@ async function main() {
     ...(LOCAL_DEV_RECEIPT ? { localDevReceiptPath: RECEIPT } : { releaseReceiptPath: RECEIPT }),
     exercisePanel: async ({ page, panel }) => {
       stage = 'guest';
-      const absent = await evaluate(panel, `(() => ({ files: !document.querySelector('button[role="tab"][title="Files"]'),
-        saved: !document.querySelector('button[role="tab"][title="Saved captures"]') }))()`);
+      const absent = await evaluate(
+        panel,
+        `(() => ({ files: !document.querySelector('button[role="tab"][title="Files"]'),
+        saved: !document.querySelector('button[role="tab"][title="Saved captures"]') }))()`,
+      );
       if (!absent.files || !absent.saved) fail('guest_tabs_present');
       await panel.send('Page.reload', { ignoreCache: true });
-      await waitFor('guest_tabs_still_absent', () => evaluate(panel, `(() => ({
+      await waitFor(
+        'guest_tabs_still_absent',
+        () =>
+          evaluate(
+            panel,
+            `(() => ({
         ready: document.readyState === 'complete',
         files: !document.querySelector('button[role="tab"][title="Files"]'),
-        saved: !document.querySelector('button[role="tab"][title="Saved captures"]') }))()`),
-      (s) => s.ready && s.files && s.saved, 30_000);
+        saved: !document.querySelector('button[role="tab"][title="Saved captures"]') }))()`,
+          ),
+        (s) => s.ready && s.files && s.saved,
+        30_000,
+      );
       report.cases.guest = 'pass';
       stage = 'real_signin';
       await webSignIn(page, config);
       await click(panel, 'title', 'Settings');
       await openSection(panel, 'Account');
       await click(panel, 'button', 'Sign in');
-      await waitFor('extension_account_signed_in', () => evaluate(panel, `(() =>
-        [...document.querySelectorAll('button')].some(b => b.textContent.trim() === 'Sign out'))()`),
-      Boolean, 90_000);
-      await selectOrganization(panel, config.approved_organization_name,
-        config.approved_organization_id);
+      await waitFor(
+        'extension_account_signed_in',
+        () =>
+          evaluate(
+            panel,
+            `(() =>
+        [...document.querySelectorAll('button')].some(b => b.textContent.trim() === 'Sign out'))()`,
+          ),
+        Boolean,
+        90_000,
+      );
+      await selectOrganization(
+        panel,
+        config.approved_organization_name,
+        config.approved_organization_id,
+      );
       stage = 'D64';
       const filesTransport = interceptFiles(panel, origin);
       await filesTransport.start();
       try {
         await click(panel, 'title', 'Files');
-        await waitFor('files_ready', () => filesState(panel), (s) => s.active && !s.loading, 45_000);
-        report.observations.files_library = await proveFilesFailure(panel, filesTransport, 'Library', 'library');
-        report.observations.files_screenshots = await proveFilesFailure(panel, filesTransport, 'Screenshots', 'screenshots');
+        await waitFor(
+          'files_ready',
+          () => filesState(panel),
+          (s) => s.active && !s.loading,
+          45_000,
+        );
+        report.observations.files_library = await proveFilesFailure(
+          panel,
+          filesTransport,
+          'Library',
+          'library',
+        );
+        report.observations.files_screenshots = await proveFilesFailure(
+          panel,
+          filesTransport,
+          'Screenshots',
+          'screenshots',
+        );
         if (filesTransport.read().interceptionError) fail('files_interception_failed');
         report.cases.D64 = 'pass';
       } finally {
@@ -473,22 +658,42 @@ async function main() {
       }
       stage = 'D65_list';
       await click(panel, 'title', 'Saved captures');
-      await waitFor('configured_test_sources_visible', () => sourceListState(panel, config.source_a, config.source_b),
-        (s) => s.active && s.hasA && s.hasB, 45_000);
+      await waitFor(
+        'configured_test_sources_visible',
+        () => sourceListState(panel, config.source_a, config.source_b),
+        (s) => s.active && s.hasA && s.hasB,
+        45_000,
+      );
       report.observations.source_pair_visible = true;
       stage = 'D65_stale_success';
-      report.observations.source_stale_success = await proveLastClick(panel, origin, config.source_a, config.source_b, false);
+      report.observations.source_stale_success = await proveLastClick(
+        panel,
+        origin,
+        config.source_a,
+        config.source_b,
+        false,
+      );
       await trustedFeatureClick(panel, 'Saved captures', 'button', 'Back to saved captures');
-      await waitFor('source_list_returned', () => sourceListState(panel, config.source_a, config.source_b),
-        (s) => s.listVisible && s.hasA && s.hasB, 45_000);
+      await waitFor(
+        'source_list_returned',
+        () => sourceListState(panel, config.source_a, config.source_b),
+        (s) => s.listVisible && s.hasA && s.hasB,
+        45_000,
+      );
       stage = 'D65_stale_failure';
-      report.observations.source_stale_failure = await proveLastClick(panel, origin, config.source_a, config.source_b, true);
+      report.observations.source_stale_failure = await proveLastClick(
+        panel,
+        origin,
+        config.source_a,
+        config.source_b,
+        true,
+      );
       report.cases.D65 = 'pass';
     },
   });
   if (hashReleaseTree(build.extensionDir) !== build.treeSha256) fail('build_changed_during_run');
-  report.status = report.cases.D64 === 'pass' && report.cases.D65 === 'pass'
-    ? 'bounded-pass' : 'partial';
+  report.status =
+    report.cases.D64 === 'pass' && report.cases.D65 === 'pass' ? 'bounded-pass' : 'partial';
 }
 
 try {
@@ -501,6 +706,8 @@ try {
 } finally {
   await mkdir(join(REPO, 'test-results'), { recursive: true, mode: 0o700 });
   await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
-  process.stdout.write(`${report.status.toUpperCase()} files_saved_native ${report.failure_code ?? ''}\n`);
+  process.stdout.write(
+    `${report.status.toUpperCase()} files_saved_native ${report.failure_code ?? ''}\n`,
+  );
   if (report.status !== 'bounded-pass') process.exitCode = 1;
 }
