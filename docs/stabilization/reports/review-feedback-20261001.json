@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-01",
+  "scope": {
+    "review_queue_id": "c89fdb6a-1531-40bd-8de5-f686eba3fc9e",
+    "campaign_agent_label": "matrx-extend-stabilization",
+    "database": "AI Matrx (brsgrqvjdzwihsvnfqkf), read-only Supabase MCP",
+    "queries": [
+      "Exact review row plus rows under the stabilization label with actionable feedback statuses",
+      "All review rows under the stabilization label (limit 50)",
+      "Exact row conversation messages in communication.dm_messages"
+    ]
+  },
+  "review_row": {
+    "title": "Notes saving and recovery fixes",
+    "url": "chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html",
+    "status": "ready_for_human",
+    "feedback": null,
+    "feedback_at": null,
+    "conversation_id": "ec7982c0-d2b1-479e-bf38-79fbd2bc0b5e",
+    "assignment": {
+      "owner": "notes-queue-review:0.2.139:20260930T1136Z",
+      "state": "awaiting_review",
+      "claimed_at": "2026-09-30T11:38:05.6562+00:00"
+    }
+  },
+  "conversation": {
+    "message_count_observed": 3,
+    "latest_at": "2026-09-30T11:48:46.537953+00:00",
+    "latest_message": "Independent live admin verification passed for the scoped Notes and organization archive-filter checks; limitations are recorded in notes-queue-review.json.",
+    "owner_authored_feedback_observed": false,
+    "unresolved_owner_feedback": false
+  },
+  "matching_campaign_rows": {
+    "count": 1,
+    "ids": ["c89fdb6a-1531-40bd-8de5-f686eba3fc9e"],
+    "actionable_feedback_rows": 0
+  },
+  "current_truth": "No unresolved owner feedback is recorded for this row or any matching row under the matrx-extend-stabilization label. The Notes review is ready for Arman, not approved or archived. Its scoped PASS and unverified feature areas remain as recorded in docs/stabilization/reports/notes-queue-review.json; this read does not establish that Arman has seen or acted on it.",
+  "limitations": [
+    "Read-only inspection only; no queue or conversation rows were changed.",
+    "The separate matrx-frontend checkout required by the admin-query fallback is absent from the available workspace paths; Supabase MCP returned the exact queue row and exact conversation messages on the configured AI Matrx project.",
+    "No other organizations, queue conversations, or unrelated review rows were queried."
+  ]
+}
