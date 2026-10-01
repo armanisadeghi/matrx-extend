@@ -29,7 +29,7 @@
  * 1. `extend.*` and `workbench.notes` / `workbench.note_folders` have NO
  *    `user_id` column anymore — ownership is `created_by`. Filter on that.
  *    (`scheduler.sch_task` / `sch_run` / `sch_trigger`, `admin.admins`,
- *    `users.user_form_profile`, and `workbench.udt_*` DID keep `user_id` —
+ *    and `users.user_form_profile` DID keep `user_id` —
  *    this is NOT a blanket rename. Check the table before you filter.)
  *
  *    Two tables have neither, and both are load-bearing exceptions:
@@ -70,11 +70,9 @@ export const TABLE_SCHEMA = {
   sch_run: 'scheduler',
   sch_trigger: 'scheduler',
   sch_agent_task: 'scheduler',
-  // workbench — notes + user-defined tables
+  // workbench — notes
   notes: 'workbench',
   note_folders: 'workbench',
-  udt_datasets: 'workbench',
-  udt_dataset_fields: 'workbench',
   // chat — conversation history hydration
   conversation: 'chat',
   message: 'chat',
@@ -130,7 +128,7 @@ export const extendDb = () => getSupabase().schema('extend');
 /** `scheduler` — sch_* scheduling spine. Ownership: `user_id` (kept). */
 export const schedulerDb = () => getSupabase().schema('scheduler');
 
-/** `workbench` — notes (`created_by`) + udt_* (`user_id`). Mind the difference. */
+/** `workbench` — notes (`created_by`). */
 export const workbenchDb = () => getSupabase().schema('workbench');
 
 /**

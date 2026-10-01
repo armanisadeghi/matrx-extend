@@ -7,7 +7,6 @@ const T_B = '22222222-2222-4222-8222-222222222222';
 
 const h = vi.hoisted(() => ({
   clientOrgs: [] as string[],
-  older: [] as Record<string, unknown>[],
   storeByOrg: new Map<string, { id: string; table_name: string; organization_id: string }[]>(),
 }));
 
@@ -26,30 +25,14 @@ vi.mock('@/lib/records/store', () => ({
 }));
 vi.mock('@/lib/records/tables', () => ({
   storeTables: async (client: { org: string }) => h.storeByOrg.get(client.org) ?? [],
-  tablesLiveWhere: async (_c: unknown, ids: string[]) =>
-    new Map(ids.map((id) => [id, 'record' as const])),
-  tableLivesWhere: async () => 'record',
-  tablesLiveIn: async () => 'record',
   declareStoreTable: vi.fn(),
   appendStoreRows: vi.fn(),
 }));
-vi.mock('@/lib/supabase/client', () => ({ getSupabase: () => ({}) }));
-vi.mock('@/lib/supabase/schemas', () => ({
-  workbenchDb: () => ({
-    from: () => ({
-      select: () => ({
-        order: () => ({ order: async () => ({ data: h.older, error: null }) }),
-      }),
-    }),
-  }),
-}));
-
 import { listPickableTables } from './user-tables';
 
 describe('listPickableTables: the active organization never narrows the picker', () => {
   beforeEach(() => {
     h.clientOrgs = [];
-    h.older = [];
     h.storeByOrg = new Map([
       [ORG_A, [{ id: T_A, table_name: 'Alpha', organization_id: ORG_A }]],
       [ORG_B, [{ id: T_B, table_name: 'Beta', organization_id: ORG_B }]],

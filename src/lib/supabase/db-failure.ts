@@ -207,12 +207,7 @@ export function sourceFeatureForTable(table: string): string {
     case 'media.capture_handoff':
     case 'extend.wbx_highlight':
       return 'web-capture';
-    case 'workbench.udt_datasets':
-    case 'workbench.udt_dataset_fields':
-    case 'rpc:append_rows_to_user_table':
-    case 'rpc:create_user_table_with_fields':
-    // The same Showcase save, once the organization's tables live in the record store
-    // (lane INTEG-CLIENTS, CUTOVER-PLAN E3).
+    // The Showcase's table saves (lane INTEG-CLIENTS, CUTOVER-PLAN E3).
     case 'rpc:custom.table_declare':
     case 'rpc:custom.record_write_many':
       return 'udt';

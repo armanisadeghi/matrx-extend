@@ -1,21 +1,12 @@
 /**
- * THE EXTENSION'S TABLES, BY WHERE THEY LIVE (lane INTEG-CLIENTS, CUTOVER-PLAN rev 3 E1/E2).
+ * THE EXTENSION'S TABLES, in the record store (lane INTEG-CLIENTS, CUTOVER-PLAN rev 3 E1/E2).
  *
  * The Showcase saves scraped rows into a table — a new one ("Create new from these
- * fields…") or one the person already keeps. Until 2026-09-23 both went straight to the
- * older store (`create_user_table_with_fields`, `append_rows_to_user_table`), so for an
- * organization whose tables had MOVED into the record store a new table was born where
- * its screens no longer look, and an append wrote into the moved table's archived older
- * copy and reported success. After the flip both would write into tables nobody can see.
+ * fields…") or one the person already keeps. Every answer comes from the database, through
+ * `@ai-matrx/records/core`:
  *
- * Every answer here comes from the database, through `@ai-matrx/records/core`:
- *
- *   tablesLiveIn(org)   `platform.knob_resolve('data_tables','older_tables_moved', org)` —
- *                       written TRUE by the mover per organization, and for everyone at the
- *                       flip. A read that fails THROWS with the reason: a table made in the
- *                       wrong store is worse than a table not made.
  *   storeTables(client) the organization's record-store Tables (`tableList`), so the picker
- *                       offers them and an append knows its target is a store table.
+ *                       offers them.
  *   declareStoreTable   ONE `table_declare` carrying every column: the store makes the Table
  *                       and its Field records in one statement (LIMITS-FIX 2026-09-21), so a
  *                       table is never half made. Its Home is a record in the person kernel
@@ -29,14 +20,7 @@
  * `@ai-matrx/records/core`. Until it exists this file composes the same three doors.
  */
 
-import { platformDb } from '@/lib/supabase/schemas';
 import type { RecordsClient } from '@ai-matrx/records/core';
-
-/** The knob the mover writes when an organization's tables move (aidream movers/move.py). */
-export const OLDER_TABLES_MOVED_KNOB = {
-  feature: 'data_tables',
-  key: 'older_tables_moved',
-} as const;
 
 /** A store refusal, carried as an Error so the UI's existing catch paths print it. */
 export class RecordStoreTableError extends Error {
@@ -50,68 +34,6 @@ export class RecordStoreTableError extends Error {
 
 function refusal(error: { message: string; hint?: string | null }): RecordStoreTableError {
   return new RecordStoreTableError(error.message, error.hint ?? undefined);
-}
-
-/** Where this organization's tables live: the record store once they moved, else the older store. */
-export async function tablesLiveIn(organizationId: string): Promise<'record' | 'older'> {
-  const { data, error } = await platformDb().rpc('knob_resolve', {
-    p_feature: OLDER_TABLES_MOVED_KNOB.feature,
-    p_key: OLDER_TABLES_MOVED_KNOB.key,
-    p_organization_id: organizationId,
-  });
-  if (error) {
-    throw new RecordStoreTableError(
-      'Could not read where this organization keeps its tables, so nothing was saved — saving into the wrong place would hide it from your screens. Try again.',
-      error.message,
-    );
-  }
-  return data === true || data === 'true' ? 'record' : 'older';
-}
-
-/**
- * WHERE EACH OF THESE TABLES IS READ AND WRITTEN (lane WHERE-LIVES-SWITCH, census row X1).
- *
- * The store's one answer, `custom.where_tables_live`, read from the organization's Data tables
- * switch — never "does the store hold a Table with this id?". COPY mode copied every older table
- * into the store under the SAME id and left the older table live until the owner presses the
- * switch, so asking for the copy's existence sent the Showcase's appends into the copy while the
- * owner kept working in the older table. "older": write the older table (its copy is read-only
- * and the store refuses a write to it). "record": the store. A refused read THROWS: saving into
- * the wrong place would hide the rows from the owner's screens.
- */
-export async function tablesLiveWhere(
-  client: RecordsClient,
-  tableIds: readonly string[],
-): Promise<Map<string, 'record' | 'older'>> {
-  const ids = [...new Set(tableIds.filter(Boolean))];
-  const homes = new Map<string, 'record' | 'older'>();
-  if (ids.length === 0) return homes;
-  const answered = await client.tablesLiveWhere({ table_ids: ids });
-  if (!answered.ok) {
-    throw new RecordStoreTableError(
-      'Could not read where this table lives, so nothing was saved — saving into the wrong place would hide it from your screens. Try again.',
-      answered.error.message,
-    );
-  }
-  for (const row of answered.data) {
-    homes.set(row.table_id, row.lives_in);
-  }
-  return homes;
-}
-
-/** Where one table is read and written; throws when the store did not say. */
-export async function tableLivesWhere(
-  client: RecordsClient,
-  tableId: string,
-): Promise<'record' | 'older'> {
-  const home = (await tablesLiveWhere(client, [tableId])).get(tableId);
-  if (!home) {
-    throw new RecordStoreTableError(
-      'Could not read where this table lives, so nothing was saved. Try again.',
-      'custom.where_tables_live gave no answer for this table.',
-    );
-  }
-  return home;
 }
 
 export interface StoreTableSummary {
@@ -129,7 +51,7 @@ export async function storeTables(client: RecordsClient): Promise<StoreTableSumm
     .map((t) => ({ id: t.id, table_name: t.name, organization_id: t.organization_id }));
 }
 
-/** The older storage words the Showcase infers → the store's word for the column. */
+/** The value kinds the Showcase infers → the store's word for the column. */
 function storeTypeFor(dataType: string | undefined): { type: string; multi?: boolean } {
   switch (dataType) {
     case 'number':
@@ -230,7 +152,7 @@ export async function declareStoreTable(
 
 /**
  * Append rows (already keyed by the table's own column keys) to a store Table. Keys the
- * Table has no column for are DROPPED AND NAMED — the older door dropped them silently.
+ * Table has no column for are DROPPED AND NAMED.
  */
 export async function appendStoreRows(
   client: RecordsClient,

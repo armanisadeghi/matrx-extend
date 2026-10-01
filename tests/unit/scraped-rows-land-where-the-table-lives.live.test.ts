@@ -1,19 +1,14 @@
 // @vitest-environment node
 /**
- * LIVE, DEV CLONE ONLY. SCRAPED ROWS LAND IN THE STORE THEIR TABLE LIVES IN
+ * LIVE, DEV CLONE ONLY. SCRAPED ROWS LAND IN THE RECORD STORE
  * (lane INTEG-CLIENTS, CUTOVER-PLAN rev 3 rows E1 + E2).
  *
- * The real use case: Rincon Plumbing (admin's Workspace on the clone — its tables were moved
- * into the record store by OLD-TABLES-4) scrapes a supplier's price page in the Showcase and
+ * The real use case: Rincon Plumbing (admin's Workspace on the clone) scrapes a supplier's price page in the Showcase and
  * presses "Save as pattern" with "+ Create new from these fields…", then the next day appends
  * two scraped rows into the "Parts on order" table it already keeps.
  *
- * RED before the repoint: `createUserTableFromSchema` called `create_user_table_with_fields`
- * (a `workbench.udt_datasets` row the organization's screens no longer read) and
- * `appendRowsToUserTable` called `append_rows_to_user_table` on the moved table's ARCHIVED
- * older copy. GREEN after: a record-store Table with its columns, rows written through
- * `record_write_many`, the archived older copy untouched, and the picker offering the moved
- * table once.
+ * Expected: a record-store Table with its columns, rows written through `record_write_many`,
+ * and the picker offering each table once.
  *
  * Needs GRID_PORT_SUPABASE_URL + GRID_PORT_SUPABASE_PUBLISHABLE_KEY (refused unless it is the
  * clone) and AI_ADMIN_USERNAME / AI_ADMIN_PASSWORD (read from ../aidream/.env). Skipped,
@@ -44,7 +39,7 @@ const KEY = process.env.GRID_PORT_SUPABASE_PUBLISHABLE_KEY ?? '';
 const EMAIL = process.env.AI_ADMIN_USERNAME ?? aidreamEnv.AI_ADMIN_USERNAME ?? '';
 const PASSWORD = process.env.AI_ADMIN_PASSWORD ?? aidreamEnv.AI_ADMIN_PASSWORD ?? '';
 const CLONE_REF = 'jxhgzalwckuarngvsdyq';
-const ORG = '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f'; // admin's Workspace — moved on the clone
+const ORG = '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f'; // admin's Workspace on the clone
 const PARTS_ON_ORDER = '00d6e9a2-45c4-4e45-af46-431bccb3c51a';
 const READY = Boolean(URL_ && KEY && EMAIL && PASSWORD);
 
@@ -66,16 +61,6 @@ if (!READY) {
   console.warn(
     '[scraped-rows-land-where-the-table-lives] SKIPPED: set GRID_PORT_SUPABASE_URL and GRID_PORT_SUPABASE_PUBLISHABLE_KEY (the dev clone) to run it.',
   );
-}
-
-async function olderRowCount(tableId: string): Promise<number> {
-  const { count, error } = await holder.client
-    .schema('workbench')
-    .from('udt_dataset_rows')
-    .select('id', { count: 'exact', head: true })
-    .eq('table_id', tableId);
-  if (error) throw new Error(error.message);
-  return count ?? 0;
 }
 
 async function storeRecords(
@@ -139,15 +124,8 @@ describeLive('scraped rows land in the store their table lives in', () => {
     });
     made.push(created.id);
 
-    // RED before the repoint: this id was a workbench.udt_datasets row.
-    const older = await holder.client
-      .schema('workbench')
-      .from('udt_datasets')
-      .select('id')
-      .eq('id', created.id);
-    expect(older.data ?? []).toHaveLength(0);
     const picked = await listPickableTables(ORG);
-    expect(picked.find((t) => t.id === created.id)).toMatchObject({ store: 'record' });
+    expect(picked.find((t) => t.id === created.id)).toMatchObject({ organization_id: ORG });
 
     const appended = await appendRowsToUserTable(created.id, ORG, scraped);
     expect(appended.inserted).toBe(2);
@@ -160,15 +138,13 @@ describeLive('scraped rows land in the store their table lives in', () => {
     made.push(...rows.map((r) => r.id));
   });
 
-  it('appending scraped rows to a moved table writes the store, never the archived older copy', async () => {
-    const olderBefore = await olderRowCount(PARTS_ON_ORDER);
+  it('appending scraped rows to a table the organization keeps writes the store', async () => {
     const storeBefore = new Set((await storeRecords(PARTS_ON_ORDER)).map((r) => r.id));
     const result = await appendRowsToUserTable(PARTS_ON_ORDER, ORG, [
       { Part: 'Rinnai RE180iN tankless heater', Supplier: 'Ferguson Ventura', Qty: 1 },
       { Part: 'Oatey 3 in no-hub coupling', Supplier: 'Ewing Oxnard', Qty: 6 },
     ]);
     expect(result.inserted).toBe(2);
-    expect(await olderRowCount(PARTS_ON_ORDER)).toBe(olderBefore);
     const added = (await storeRecords(PARTS_ON_ORDER)).filter((r) => !storeBefore.has(r.id));
     expect(added.map((r) => r.document.part).sort()).toEqual([
       'Oatey 3 in no-hub coupling',
@@ -177,10 +153,9 @@ describeLive('scraped rows land in the store their table lives in', () => {
     made.push(...added.map((r) => r.id));
   });
 
-  it('the picker offers the moved table once, from the store', async () => {
+  it('the picker offers the table once', async () => {
     const picked = await listPickableTables(ORG);
     const parts = picked.filter((t) => t.id === PARTS_ON_ORDER);
     expect(parts).toHaveLength(1);
-    expect(parts[0]?.store).toBe('record');
   });
 });

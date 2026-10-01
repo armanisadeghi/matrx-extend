@@ -19,11 +19,10 @@ describe('sourceFeatureForTable', () => {
     expect(sourceFeatureForTable('extend.wbx_highlight')).toBe('web-capture');
   });
 
-  it('maps udt tables and rpcs', () => {
-    expect(sourceFeatureForTable('workbench.udt_datasets')).toBe('udt');
-    expect(sourceFeatureForTable('workbench.udt_dataset_fields')).toBe('udt');
-    expect(sourceFeatureForTable('rpc:append_rows_to_user_table')).toBe('udt');
-    expect(sourceFeatureForTable('rpc:create_user_table_with_fields')).toBe('udt');
+  it("maps the Showcase's record-store table writes", () => {
+    expect(sourceFeatureForTable('rpc:custom.table_declare')).toBe('udt');
+    expect(sourceFeatureForTable('rpc:custom.record_write_many')).toBe('udt');
+    expect(sourceFeatureForTable('workbench.udt_datasets')).toBe('client-unmapped');
   });
 
   it('maps agent_task to agents-other', () => {

@@ -1,60 +1,19 @@
 /**
- * Direct Supabase queries against the user-defined dynamic-table system
- * ("UDT" — user-defined data types). Tables (renamed 2026-04-30):
- *   - udt_datasets        (table definitions, was `user_tables`)
- *   - udt_dataset_fields  (schema per table, was `table_fields`)
- *   - udt_dataset_rows    (rows as JSONB keyed by field_name, was `table_data`)
- *
- * These tables already exist in the Matrx Supabase project — the extension
- * does NOT create them. RLS + cascade triggers handle ownership and
- * is_public inheritance server-side.
- *
- * Used by the Structured-Data Showcase to let the user save extracted rows
- * straight into a user-defined knowledge-base dataset.
- *
- * Note on RPC names: the create + append RPCs (`create_user_table_with_fields`,
- * `append_rows_to_user_table`) kept their pre-rename names by design — the
- * server-side migration only renamed tables, not RPC signatures. So the
- * function calls below still work post-rename.
- *
- * udt_v2_backbone (live on Matrx Main 2026-05-29): the server gained workbook
- * grouping (`udt_workbooks`) and an append-only row-version audit log
- * (`udt_dataset_row_versions`). Both are transparent to this file — our two
- * RPCs are unchanged, and the new BEFORE-validate trigger defaults to
- * 'permissive' (a passthrough). Every append we send now also logs a version
- * row, attributed to the user's `auth.uid()` since we write with the user JWT.
- * The four RPCs we do NOT use (batch_update_rows_in_user_table,
- * remove_column_from_user_table, create_new_user_table, create_new_user_table_wrapper)
- * are slated for removal — do not start calling them.
- *
- * 🚨 BY WHERE THE TABLE LIVES (lane INTEG-CLIENTS, 2026-09-23, CUTOVER-PLAN E1). Every export
- * below that makes, finds or writes a table asks FIRST where its organization keeps tables
- * (`@/lib/records/tables`): a moved organization's new table is declared in the record store,
- * a record-store table is appended to through `record_write_many`, and only an older table
- * reaches the two older RPCs — which the flip turns read-only.
+ * The Showcase's tables: list the record-store Tables a person may save into, make a new one
+ * from the extracted rows' columns, and append rows to one. Every call goes through the record
+ * store (`@/lib/records/tables` over `@ai-matrx/records/core`); every table lives there since the
+ * final switch.
  */
 
 import { listMemberOrganizations } from '@/lib/org/active-org';
 import { recordsClientFor } from '@/lib/records/store';
-import {
-  appendStoreRows,
-  declareStoreTable,
-  storeTables,
-  tableLivesWhere,
-  tablesLiveIn,
-  tablesLiveWhere,
-} from '@/lib/records/tables';
-import { getSupabase } from '@/lib/supabase/client';
-import { type DbCallSite, failDbCall, recordDbFailure } from '@/lib/supabase/db-failure';
-import { workbenchDb } from '@/lib/supabase/schemas';
-import { OrganizationContextError, requireOrganizationContext } from '@ai-matrx/agents/matrx';
-import { z } from 'zod';
+import { appendStoreRows, declareStoreTable, storeTables } from '@/lib/records/tables';
+import { type DbCallSite, recordDbFailure } from '@/lib/supabase/db-failure';
+import { requireOrganizationContext } from '@ai-matrx/agents/matrx';
 
 /**
- * Mirrors the Postgres ENUM `public.field_data_type`. Authoritative source is
- * `select unnest(enum_range(null::field_data_type))` — the RPC
- * `list_field_data_types()` returns the same values if you ever need them at
- * runtime. Update this list when new enum values are added.
+ * The value kinds the Showcase infers from extracted rows; `declareStoreTable` maps each to
+ * the record store's own column type.
  */
 export const USER_TABLE_DATA_TYPES = [
   'string',
@@ -69,8 +28,7 @@ export const USER_TABLE_DATA_TYPES = [
 export type UserTableDataType = (typeof USER_TABLE_DATA_TYPES)[number];
 
 /**
- * Slugify an arbitrary string into a snake_case identifier matching the
- * `udt_dataset_fields.field_name` CHECK constraint: `^[a-z][a-z0-9_]*$`.
+ * Slugify an arbitrary string into a snake_case column key: `^[a-z][a-z0-9_]*$`.
  * Examples:
  *   "@type"        → "type"
  *   "URL"          → "url"
@@ -95,66 +53,6 @@ export function toSnakeCaseFieldName(raw: string): string {
 }
 
 /**
- * Mirrors workbench.udt_datasets (renamed from user_tables 2026-04-30; the
- * table is in schema `workbench`, not `public` — corrected 2026-09-11 from
- * the data-doctrine discovery atlas §3.4 O-7, which found this comment
- * contradicted by this file's own client). Column
- * names were intentionally NOT renamed — `table_name`, `is_public`, etc.
- * stay as-is so RPC bodies and existing client code keep working.
- */
-export const UserTableSchema = z.object({
-  id: z.string().uuid(),
-  table_name: z.string(),
-  description: z.string().nullable(),
-  user_id: z.string().uuid(),
-  is_public: z.boolean(),
-  version: z.number().int().nullable(),
-  organization_id: z.string().uuid().nullable(),
-  project_id: z.string().uuid().nullable(),
-  task_id: z.string().uuid().nullable(),
-  created_at: z.string(),
-  updated_at: z.string().nullable(),
-});
-export type UserTable = z.infer<typeof UserTableSchema>;
-
-export const TableFieldSchema = z.object({
-  id: z.string().uuid(),
-  table_id: z.string().uuid(),
-  field_name: z.string(),
-  data_type: z.string(),
-  field_order: z.number().int(),
-  validation_rules: z.unknown().nullable(),
-});
-export type TableField = z.infer<typeof TableFieldSchema>;
-
-/**
- * List the user's datasets.
- *
- * Throws `DbFailureError` when the read fails — including when the relation is
- * missing. Returning `[]` there was the worst possible answer: "you have no
- * datasets" is a sentence about the user's data, and the database never said
- * it. An empty array from this function now means exactly one thing: the user
- * has no datasets.
- */
-export async function listUserTables(): Promise<UserTable[]> {
-  const site: DbCallSite = {
-    table: 'workbench.udt_datasets',
-    operation: 'select',
-    what: 'load your datasets',
-    title: 'Datasets could not be loaded',
-  };
-  const { data, error } = await workbenchDb()
-    .from('udt_datasets')
-    .select(
-      'id, table_name, description, user_id, is_public, version, organization_id, project_id, task_id, created_at, updated_at',
-    )
-    .order('updated_at', { ascending: false, nullsFirst: false })
-    .order('created_at', { ascending: false });
-  if (error) failDbCall(site, error);
-  return z.array(UserTableSchema).parse(data ?? []);
-}
-
-/**
  * A record-store refusal keeps the STORE's own sentence ("SKU takes a date, and WAT-0009 is
  * not one") — the generic `failDbCall` words would hide what to fix — and is still recorded
  * durably in the platform's client-error store, like every other refused write here.
@@ -172,22 +70,19 @@ async function recordedStoreCall<T>(site: DbCallSite, call: () => Promise<T>): P
   }
 }
 
-/** One table the Showcase may save into, from whichever store holds it. */
+/** One table the Showcase may save into. */
 export interface PickableTable {
   id: string;
   table_name: string;
   organization_id: string | null;
-  store: 'record' | 'older';
 }
 
 /**
- * Every table the Showcase may offer, each ONCE, across ALL of the person's organizations
- * (active-org law 2026-09-30: the active organization never narrows a read). `organizationFilter`
- * is an optional, explicit page filter; null/undefined means every organization. Each table
- * carries its own `organization_id` so a write into it runs in that table's org. Each table is
- * read from the store its organization's switch says it is written in (`tablesLiveWhere`): while
- * the switch is off an older table and its same-id copy are one table, offered as the older one;
- * after the switch, as the store's. Throws on a refused read, never an empty list.
+ * Every record-store Table the Showcase may offer, each ONCE, across ALL of the person's
+ * organizations (active-org law 2026-09-30: the active organization never narrows a read).
+ * `organizationFilter` is an optional, explicit page filter; null/undefined means every
+ * organization. Each table carries its own `organization_id` so a write into it runs in that
+ * table's org. Throws on a refused read, never an empty list.
  */
 export async function listPickableTables(
   organizationFilter?: string | null,
@@ -195,63 +90,28 @@ export async function listPickableTables(
   const orgIds = organizationFilter
     ? [requireOrganizationContext(organizationFilter)]
     : (await listMemberOrganizations('active')).map((o) => o.id);
-  const allOlder = await listUserTables();
   const picked = new Map<string, PickableTable>();
-  const seenOlder = new Set<string>();
-  for (const [index, org] of orgIds.entries()) {
+  for (const org of orgIds) {
     const client = await recordsClientFor(org, 'user');
-    const store = await storeTables(client);
-    // Older tables of this org; the first org's client also answers for older tables whose org is
-    // null or not one of the person's memberships, so no table the person can read is dropped.
-    const older = allOlder.filter(
-      (t) =>
-        !seenOlder.has(t.id) &&
-        (t.organization_id === org ||
-          (index === 0 &&
-            !organizationFilter &&
-            (!t.organization_id || !orgIds.includes(t.organization_id)))),
-    );
-    for (const t of older) seenOlder.add(t.id);
-    const homes = await tablesLiveWhere(client, [
-      ...store.map((t) => t.id),
-      ...older.map((t) => t.id),
-    ]);
-    for (const t of older) {
-      if (homes.get(t.id) === 'older') {
-        picked.set(t.id, {
-          id: t.id,
-          table_name: t.table_name,
-          organization_id: t.organization_id,
-          store: 'older',
-        });
-      }
-    }
-    for (const t of store) {
-      if (!picked.has(t.id) && homes.get(t.id) !== 'older')
-        picked.set(t.id, { ...t, store: 'record' });
+    for (const t of await storeTables(client)) {
+      if (!picked.has(t.id)) picked.set(t.id, t);
     }
   }
   return [...picked.values()];
 }
 
-/**
- * The column keys a table holds, from whichever store holds it — for the Showcase's "N columns
- * had no match" note before an append.
- */
+/** The column keys a table holds — for the Showcase's "N columns had no match" note before an append. */
 export async function tableColumnKeys(tableId: string, organizationId: string): Promise<string[]> {
   const org = requireOrganizationContext(organizationId);
   const client = await recordsClientFor(org, 'user');
-  if ((await tableLivesWhere(client, tableId)) === 'record') {
-    const fields = await client.fields({ table_id: tableId });
-    if (!fields.ok) throw new Error(fields.error.message);
-    return fields.data.map((f) => f.key);
-  }
-  return (await getUserTableSchema(tableId)).map((f) => f.field_name);
+  const fields = await client.fields({ table_id: tableId });
+  if (!fields.ok) throw new Error(fields.error.message);
+  return fields.data.map((f) => f.key);
 }
 
 /**
- * The organization a table belongs to, from whichever store holds it — the Showcase proves
- * it matches the operation's organization before any linked write.
+ * The organization a table belongs to — the Showcase proves it matches the operation's
+ * organization before any linked write. `null` when the store holds no such Table.
  */
 export async function tableOrganization(
   tableId: string,
@@ -259,127 +119,51 @@ export async function tableOrganization(
 ): Promise<string | null> {
   const org = requireOrganizationContext(organizationId);
   const client = await recordsClientFor(org, 'user');
-  if ((await tableLivesWhere(client, tableId)) === 'record') return org;
-  return (await getUserTable(tableId)).organization_id;
-}
-
-export async function getUserTableSchema(tableId: string): Promise<TableField[]> {
-  const site: DbCallSite = {
-    table: 'workbench.udt_dataset_fields',
-    operation: 'select',
-    what: "load this dataset's columns",
-    title: 'Dataset columns could not be loaded',
-  };
-  const { data, error } = await workbenchDb()
-    .from('udt_dataset_fields')
-    .select('id, table_id, field_name, data_type, field_order, validation_rules')
-    .eq('table_id', tableId)
-    .order('field_order', { ascending: true });
-  if (error) failDbCall(site, error);
-  return z.array(TableFieldSchema).parse(data ?? []);
-}
-
-/**
- * Read the selected dataset's organization at the beginning of an operation.
- * An append RPC does not accept an organization argument, so callers must
- * prove its persisted parent is in the same immutable operation organization
- * before creating a linked pattern or appending rows.
- */
-export async function getUserTable(tableId: string): Promise<UserTable> {
-  const site: DbCallSite = {
-    table: 'workbench.udt_datasets',
-    operation: 'select',
-    what: 'load this dataset',
-    title: 'Dataset could not be loaded',
-  };
-  const { data, error } = await workbenchDb()
-    .from('udt_datasets')
-    .select(
-      'id, table_name, description, user_id, is_public, version, organization_id, project_id, task_id, created_at, updated_at',
-    )
-    .eq('id', tableId)
-    .maybeSingle();
-  if (error || !data) failDbCall(site, error);
-  return UserTableSchema.parse(data);
+  const table = await client.tableRead({ table_id: tableId });
+  if (!table.ok) throw new Error(table.error.message);
+  return table.data?.organization_id ?? null;
 }
 
 export interface CreateUserTableInput {
-  /** Maps to `udt_datasets.table_name`. */
   table_name: string;
   description?: string;
-  is_public?: boolean;
   /** Immutable organization captured when the create action begins. */
   organization_id: string;
-  project_id?: string | null;
-  task_id?: string | null;
   fields: {
     field_name: string;
     display_name: string;
     data_type?: UserTableDataType;
     field_order: number;
-    is_required?: boolean;
   }[];
 }
 
-/**
- * Atomic create via the `create_user_table_with_fields` RPC. Inserts the
- * udt_datasets row plus all udt_dataset_fields rows in one transaction; the
- * RPC runs as security_invoker so RLS still applies and `auth.uid()` stamps
- * the owner server-side. RPC name kept as-is post-rename — the server only
- * renamed tables, not function signatures.
- */
+/** Make a record-store Table and every one of its columns in one declaration. */
 export async function createUserTableFromSchema(
   input: CreateUserTableInput,
 ): Promise<{ id: string }> {
-  const site: DbCallSite = {
-    table: 'rpc:create_user_table_with_fields',
-    operation: 'rpc',
-    what: 'create this dataset',
-    title: 'Dataset not created',
-  };
   // The request kernel is the sole UUID parser/normalizer. Keep its canonical
   // OrganizationContextError intact so every direct-write boundary agrees.
   const organizationId = requireOrganizationContext(input.organization_id);
-  if ((await tablesLiveIn(organizationId)) === 'record') {
-    const client = await recordsClientFor(organizationId, 'user');
-    const storeSite: DbCallSite = {
-      table: 'rpc:custom.table_declare',
-      operation: 'rpc',
-      what: 'create this table',
-      title: 'Table not created',
-    };
-    const id = await recordedStoreCall(storeSite, () =>
-      declareStoreTable(client, {
-        name: input.table_name,
-        ...(input.description !== undefined && { description: input.description }),
-        fields: input.fields.map((f) => ({
-          field_name: toSnakeCaseFieldName(f.field_name),
-          display_name: f.display_name || f.field_name,
-          ...(f.data_type !== undefined && { data_type: f.data_type }),
-          field_order: f.field_order,
-        })),
-      }),
-    );
-    return { id };
-  }
-  const c = getSupabase();
-  const { data, error } = await c.rpc('create_user_table_with_fields', {
-    p_table_name: input.table_name,
-    p_description: input.description ?? null,
-    p_is_public: input.is_public ?? false,
-    p_organization_id: organizationId,
-    p_project_id: input.project_id ?? null,
-    p_task_id: input.task_id ?? null,
-    p_fields: input.fields.map((f) => ({
-      field_name: toSnakeCaseFieldName(f.field_name),
-      display_name: f.display_name || f.field_name,
-      data_type: f.data_type ?? 'string',
-      field_order: f.field_order,
-      is_required: f.is_required ?? false,
-    })),
-  });
-  if (error || typeof data !== 'string' || data.length === 0) failDbCall(site, error);
-  return { id: data as string };
+  const client = await recordsClientFor(organizationId, 'user');
+  const site: DbCallSite = {
+    table: 'rpc:custom.table_declare',
+    operation: 'rpc',
+    what: 'create this table',
+    title: 'Table not created',
+  };
+  const id = await recordedStoreCall(site, () =>
+    declareStoreTable(client, {
+      name: input.table_name,
+      ...(input.description !== undefined && { description: input.description }),
+      fields: input.fields.map((f) => ({
+        field_name: toSnakeCaseFieldName(f.field_name),
+        display_name: f.display_name || f.field_name,
+        ...(f.data_type !== undefined && { data_type: f.data_type }),
+        field_order: f.field_order,
+      })),
+    }),
+  );
+  return { id };
 }
 
 /**
@@ -426,81 +210,22 @@ export function buildFieldNameMap(rawKeys: Iterable<string>): Map<string, string
 }
 
 /**
- * Append rows to a dataset via the `append_rows_to_user_table` RPC. The RPC
- * stamps user_id from auth.uid() and silently drops keys that don't match a
- * declared field_name on the target dataset. RPC name kept post-rename.
- *
- * Keys are mapped via ONE map built from the union of all rows' keys, so
- * collision suffixes line up with what `inferSchemaFromRows` produced at
- * table-creation time.
+ * Append rows to a record-store Table through `record_write_many`. Keys are mapped via ONE map
+ * built from the union of all rows' keys, so collision suffixes line up with what
+ * `inferSchemaFromRows` produced at table-creation time.
  */
 export async function appendRowsToUserTable(
   tableId: string,
   operationOrganizationId: string,
   rows: Record<string, unknown>[],
 ): Promise<{ inserted: number }> {
-  const site: DbCallSite = {
-    table: 'rpc:append_rows_to_user_table',
-    operation: 'rpc',
-    what: 'add these rows to your dataset',
-    title: 'Rows not added to the dataset',
-  };
   // Validate first, including for the empty-row no-op. A required operation
   // context is never optional merely because this invocation has no rows.
   const organizationId = requireOrganizationContext(operationOrganizationId);
   if (rows.length === 0) return { inserted: 0 };
-
-  // A record-store table (born there, or moved there with the same id) is written through the
-  // store's own door; the older RPC would write the moved table's archived copy.
   const client = await recordsClientFor(organizationId, 'user');
-  if ((await tableLivesWhere(client, tableId)) === 'record') {
-    const keyMap = buildFieldNameMap(unionRowKeys(rows));
-    const mapped = rows.map((r) => {
-      const out: Record<string, unknown> = {};
-      for (const k of Object.keys(r)) {
-        const field = keyMap.get(k);
-        if (field) out[field] = r[k];
-      }
-      return out;
-    });
-    const storeSite: DbCallSite = {
-      table: 'rpc:custom.record_write_many',
-      operation: 'rpc',
-      what: 'add these rows to your table',
-      title: 'Rows not added to the table',
-    };
-    const written = await recordedStoreCall(storeSite, () =>
-      appendStoreRows(client, tableId, mapped),
-    );
-    return { inserted: written.inserted };
-  }
-
-  // This is defense in depth until the append RPC itself accepts and locks the
-  // operation organization. The read prevents a stale or direct caller from
-  // targeting an already-persisted dataset in another organization. It cannot
-  // close a concurrent parent move; the prepared RPC contract does that in one
-  // transaction.
-  const { data: target, error: targetError } = await workbenchDb()
-    .from('udt_datasets')
-    .select('organization_id')
-    .eq('id', tableId)
-    .maybeSingle();
-  if (targetError || !target) failDbCall(site, targetError);
-  if (!target.organization_id) {
-    throw new OrganizationContextError(
-      'organization_context_required',
-      'This dataset has no organization. Choose a different dataset or create a new one.',
-    );
-  }
-  if (requireOrganizationContext(target.organization_id) !== organizationId) {
-    throw new OrganizationContextError(
-      'organization_context_mismatch',
-      'The selected dataset belongs to a different organization. Save it from that organization.',
-    );
-  }
-
   const keyMap = buildFieldNameMap(unionRowKeys(rows));
-  const cleanedRows = rows.map((r) => {
+  const mapped = rows.map((r) => {
     const out: Record<string, unknown> = {};
     for (const k of Object.keys(r)) {
       const field = keyMap.get(k);
@@ -508,17 +233,14 @@ export async function appendRowsToUserTable(
     }
     return out;
   });
-
-  const c = getSupabase();
-  const { data, error } = await c.rpc('append_rows_to_user_table', {
-    p_table_id: tableId,
-    p_rows: cleanedRows,
-  });
-  // The RPC is `RETURNS integer`. Anything else means it did not run the way we
-  // think it does — reporting `0 inserted` there is the same swallow this seam
-  // removes, so it fails like its sibling `createUserTableFromSchema`.
-  if (error || typeof data !== 'number') failDbCall(site, error);
-  return { inserted: data };
+  const site: DbCallSite = {
+    table: 'rpc:custom.record_write_many',
+    operation: 'rpc',
+    what: 'add these rows to your table',
+    title: 'Rows not added to the table',
+  };
+  const written = await recordedStoreCall(site, () => appendStoreRows(client, tableId, mapped));
+  return { inserted: written.inserted };
 }
 
 /**

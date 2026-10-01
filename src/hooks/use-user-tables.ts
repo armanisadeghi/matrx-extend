@@ -8,8 +8,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 
 /**
- * The tables the Showcase may save into — record-store Tables and the person's unmoved older
- * datasets (lane INTEG-CLIENTS), across ALL of the person's organizations. `organizationFilter`
+ * The record-store Tables the Showcase may save into, across ALL of the person's organizations. `organizationFilter`
  * is an optional explicit page filter (default: all organizations); it is never the active org.
  */
 export function useUserTables(organizationFilter?: string | null) {
@@ -33,8 +32,7 @@ export function useUserTables(organizationFilter?: string | null) {
     void refresh();
   }, [refresh]);
 
-  // Both writers THROW `DbFailureError` on a refused write (after telling the
-  // user and recording it) — they never resolve to a success-shaped null. The
+  // Both writers THROW on a refused write (after recording it) — they never resolve to a success-shaped null. The
   // caller decides what to render; it must not treat "no error" as "saved"
   // without awaiting these.
   const createTable = useCallback(

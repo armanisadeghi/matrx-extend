@@ -15,7 +15,7 @@
  *  1. A call to an RPC that creates an org-scoped row with no parent to
  *     inherit from passes `p_organization_id`. The list below is those RPCs'
  *     LIVE signatures (read 2026-09-26 from pg_proc: each takes
- *     `p_organization_id`, and the first two raise `organization_required`
+ *     `p_organization_id`, and both raise `organization_required`
  *     when it is NULL). Add a new one here when the extension starts calling it.
  *  2. Every function that does a Supabase `.insert(` / `.upsert(` mentions the
  *     organization it is writing into (`organization_id` / `organizationId`),
@@ -29,11 +29,7 @@ import { describe, expect, it } from 'vitest';
 const REPO = join(__dirname, '..', '..');
 const SRC = join(REPO, 'src');
 
-const RPCS_THAT_NEED_AN_ORGANIZATION = new Set([
-  'create_agent_task',
-  'edu_import_deck',
-  'create_user_table_with_fields',
-]);
+const RPCS_THAT_NEED_AN_ORGANIZATION = new Set(['create_agent_task', 'edu_import_deck']);
 
 /** `file:function` → why the write carries no organization. */
 const NO_ORGANIZATION_COLUMN: Record<string, string> = {};
@@ -143,7 +139,7 @@ describe('org-scoped writes name their organization', () => {
 
   it('finds the write sites it is meant to guard', () => {
     // If these collapse, the scan stopped guarding anything.
-    expect(rpc.length).toBeGreaterThanOrEqual(3);
+    expect(rpc.length).toBeGreaterThanOrEqual(2);
     expect(writes.length).toBeGreaterThanOrEqual(8);
   });
 

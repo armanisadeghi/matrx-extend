@@ -20,7 +20,6 @@
 import { clearHighlightsForUrl, createHighlight, deleteHighlight } from '@/lib/highlights/queries';
 import { classifyDbFailure, isDbFailureError, userMessageFor } from '@/lib/supabase/db-failure';
 import { deleteSavedCapture } from '@/lib/supabase/queries';
-import { appendRowsToUserTable, listUserTables } from '@/lib/supabase/user-tables';
 import { useNoticeStore } from '@/state/notices';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -50,12 +49,6 @@ vi.mock('@/lib/api/routes/auth', () => ({
   requireRequestOrganizationId: mocks.requireRequestOrganizationId,
 }));
 vi.mock('@/lib/supabase/client', () => ({ getSupabase: mocks.getSupabase }));
-// This seam drives the older-store append refusal. The cutover choice itself is
-// covered by user-tables.test and the records client; keep this case on the
-// intended older arm so it reaches the malformed row-count response below.
-vi.mock('@/lib/records/tables', () => ({
-  tableLivesWhere: async () => 'older',
-}));
 vi.mock('@/lib/telemetry/external-reporting', () => ({
   mayReportExternalTelemetry: mocks.mayReportExternalTelemetry,
 }));
@@ -77,14 +70,6 @@ const SOURCE_ID = '44444444-4444-4444-8444-444444444444';
 const RLS_REFUSAL = {
   code: '42501',
   message: 'new row violates row-level security policy for table "processed_documents"',
-  details: null,
-  hint: null,
-};
-
-/** The exact envelope PostgREST returns when the relation is not there. */
-const MISSING_RELATION = {
-  code: '42P01',
-  message: 'relation "workbench.udt_datasets" does not exist',
   details: null,
   hint: null,
 };
@@ -214,32 +199,6 @@ describe('a refused write is never swallowed', () => {
   });
 });
 
-describe('a failed dataset read is never an empty list', () => {
-  it('listUserTables: "relation does not exist" throws and notices, instead of []', async () => {
-    mocks.workbenchDb.mockReturnValue(builder({ data: null, error: MISSING_RELATION }));
-    mocks.getSupabase.mockReturnValue(builder({ data: null, error: null }));
-
-    const result = await listUserTables().then(
-      (v) => ({ resolved: v }),
-      (e) => ({ thrown: e }),
-    );
-    expect('thrown' in result).toBe(true);
-    expect('resolved' in result).toBe(false); // never `[]`
-    expect((result as { thrown: unknown }).thrown).toMatchObject({ kind: 'missing_relation' });
-
-    const notice = lastNotice();
-    expect(notice?.title).toBe('Datasets could not be loaded');
-    expect(notice?.message).toContain('AI Matrx could not load your datasets');
-    // A read must NOT claim "nothing was saved", and must say this is not an
-    // empty result — that is the exact lie this whole seam exists to stop.
-    expect(notice?.message).toContain('this is NOT an empty result');
-    expect(notice?.message).not.toContain('Nothing was saved');
-
-    await vi.waitFor(() => expect(mocks.rpc).toHaveBeenCalled());
-    expect((mocks.rpc.mock.calls[0] as [string, Record<string, unknown>])[1].p_code).toBe('42P01');
-  });
-});
-
 describe('the error door itself can fail — and says so', () => {
   it('a log_client_error that records nothing (null id) is reported loudly, not swallowed', async () => {
     // The live RPC returns NULL without inserting when it cannot resolve an
@@ -297,22 +256,6 @@ describe('clearing highlights tells "nothing to clear" apart from "refused"', ()
       kind: 'refused',
     });
     expect(lastNotice()?.title).toBe('Highlights not cleared');
-  });
-});
-
-describe('appendRowsToUserTable has no success-shaped fallback', () => {
-  it('an RPC answer that is not a row count fails instead of reporting 0 inserted', async () => {
-    mocks.workbenchDb.mockReturnValue(builder({ data: { organization_id: ORG_ID }, error: null }));
-    mocks.getSupabase.mockReturnValue(builder({ data: null, error: null }));
-    mocks.rpc.mockResolvedValue({ data: null, error: null });
-    await expect(
-      appendRowsToUserTable(
-        '11111111-1111-4111-8111-111111111111',
-        '22222222-2222-4222-8222-222222222222',
-        [{ a: 1 }],
-      ),
-    ).rejects.toSatisfy(isDbFailureError);
-    expect(lastNotice()?.title).toBe('Rows not added to the dataset');
   });
 });
 
