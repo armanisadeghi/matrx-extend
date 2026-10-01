@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-01 17:06 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-01. 205 features · 732 cases · 1315 controls · 72 linked defect records.
+Generated 2026-10-01 17:20 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-01. 205 features · 733 cases · 1316 controls · 73 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1163** — Pass: 58 · Partial: 29 · Fail: 1 · Unverified: 1074 · N/A: 1.
-Unverified splits into **124 explicitly marked unverified** and **950 with no result record**.
+Applicable case-by-role slots: **1164** — Pass: 58 · Partial: 29 · Fail: 1 · Unverified: 1075 · N/A: 1.
+Unverified splits into **125 explicitly marked unverified** and **950 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -16,7 +16,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | Tab or surface | Features | Guest cases | Member cases | Admin cases | All-role case slots | Active defects |
 | --- | ---: | --- | --- | --- | --- | ---: |
 | [Development installation](#development-installation) | 1 | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 2, partial 0, fail 0, unverified 13, n/a 0 | 0 |
-| [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 7, partial 0, fail 0, unverified 14, n/a 0 | 0 |
+| [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 7, partial 0, fail 0, unverified 15, n/a 0 | 1 |
 | [Release infrastructure](#release-infrastructure) | 1 | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 24, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 0, fail 0, unverified 14, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
@@ -96,11 +96,11 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Resource admission and owned job lifecycle (EXT-F-0002)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 7. **Controls:** 7.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 8. **Controls:** 8.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0073
 
-**Linked defects:** [EXT-D-0025](defects/EXT-D-0025.json) (closed), [EXT-D-0051](defects/EXT-D-0051.json) (closed), [EXT-D-0056](defects/EXT-D-0056.json) (closed), [EXT-D-0060](defects/EXT-D-0060.json) (closed), [EXT-D-0072](defects/EXT-D-0072.json) (closed)
+**Linked defects:** [EXT-D-0025](defects/EXT-D-0025.json) (closed), [EXT-D-0051](defects/EXT-D-0051.json) (closed), [EXT-D-0056](defects/EXT-D-0056.json) (closed), [EXT-D-0060](defects/EXT-D-0060.json) (closed), [EXT-D-0072](defects/EXT-D-0072.json) (closed), [EXT-D-0073](defects/EXT-D-0073.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -111,6 +111,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-0002-T05 Manual browser stop confirmation | Unverified | Unverified | Unverified | EXT-F-0002-C05 |
 | EXT-F-0002-T06 Durable browser resource event and terminal proof | Pass | Pass | Pass | EXT-F-0002-C06 |
 | EXT-F-0002-T07 Native Chat acceptance distinguishes tool progress from terminal answer | Pass | Unverified | Unverified | EXT-F-0002-C07 |
+| EXT-F-0002-T08 Native fixture failure is actionable without exposing sensitive data | N/A | N/A | Unverified | EXT-F-0002-C08 |
 
 **Recorded case details and evidence:**
 
@@ -152,6 +153,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: showcase-structured-journal-retest-20260928, ['docs/stabilization/reports/showcase-structured-journal-retest.json', 'docs/stabilization/reports/native-guard-finalize-peer.json']
 - EXT-F-0002-T07 · guest: Pass. Oracle-only: four tool resumptions observed before actual completion; wrong terminal content rejected. Ten surrounding helper/collector cases passed. Not a Chat product pass.
   Evidence / build / date recorded: guest-acceptance-final-native-20261001-001, docs/stabilization/reports/guest-acceptance-final-20261001.json
+- EXT-F-0002-T08 · admin: Unverified.
+  Evidence / build / date recorded: docs/stabilization/reports/saved-capture-stall-20261001.json
 
 **Other remaining work:** Concrete procedure and evidence required before executing each control.
 

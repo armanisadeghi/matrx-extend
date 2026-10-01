@@ -391,6 +391,11 @@
           "id": "EXT-F-0002-C07",
           "label": "Classify native Chat turn completion",
           "action": "Distinguish delegated tool handoff, terminal failure, wrong answer and successful page-grounded answer"
+        },
+        {
+          "id": "EXT-F-0002-C08",
+          "label": "Preserve safe failed-operation diagnostics",
+          "action": "Persist known operation and allowlisted error metadata without raw error or credential data"
         }
       ],
       "source_anchors": [
@@ -845,6 +850,36 @@
               "detail": "Oracle-only: four tool resumptions observed before actual completion; wrong terminal content rejected. Ten surrounding helper/collector cases passed. Not a Chat product pass."
             }
           }
+        },
+        {
+          "id": "EXT-F-0002-T08",
+          "title": "Native fixture failure is actionable without exposing sensitive data",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0002-C08"
+          ],
+          "preconditions": [
+            "Receipt-bound isolated native fixture setup under resource guard; only new test-owned records may be created."
+          ],
+          "steps": [
+            "Exercise fixture setup across page navigation, identity read, lazy pane readiness and native Capture/Save.",
+            "Inspect a failure receipt for its precise fixed operation and safe exception/driver metadata; verify no raw messages, credentials or page content are persisted."
+          ],
+          "expected": [
+            "Failure preserves exact safe operation instead of only fixture_A; successful readiness records before/after counts.",
+            "No cleanup without exact new-row ownership proof; no generic failure is marked as a product pass."
+          ],
+          "defect_ids": [
+            "EXT-D-0073"
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "evidence": "docs/stabilization/reports/saved-capture-stall-20261001.json"
+            }
+          }
         }
       ],
       "cells": {
@@ -873,7 +908,8 @@
           "defect_ids": [
             "EXT-D-0025",
             "EXT-D-0051",
-            "EXT-D-0056"
+            "EXT-D-0056",
+            "EXT-D-0073"
           ],
           "run_ids": [],
           "retest_status": "partial: EXT-D-0025 and EXT-D-0051 passed; remaining infrastructure cases unverified"
