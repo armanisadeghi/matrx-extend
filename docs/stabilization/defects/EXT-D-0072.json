@@ -1,8 +1,12 @@
 {
   "id": "EXT-D-0072",
   "feature_id": "EXT-F-0002",
-  "case_ids": ["EXT-F-0002-T07"],
-  "impacted_case_ids": ["EXT-F-2013-T10"],
+  "case_ids": [
+    "EXT-F-0002-T07"
+  ],
+  "impacted_case_ids": [
+    "EXT-F-2013-T10"
+  ],
   "title": "Guest Chat acceptance mistakes a delegated-tool handoff for a completed answer",
   "surface": "Native side-panel acceptance runner",
   "auth_mode": "guest",
@@ -15,7 +19,7 @@
   "actual": "On exact candidate 0.2.173 the runner stopped at two Copy reply matches and no Stop button. Its captured screenshot and text contained no required answer. The guest product outcome remains unverified by that run.",
   "severity": "S3: false native acceptance failure leaves guest completion inconclusive",
   "priority": "P1: exact candidate acceptance is held on this result",
-  "state": "fixed",
+  "state": "closed",
   "root_cause": "ChatView finalizes an assistant bubble and renders Copy reply when a client-delegated tool ends its stream. WIRE_CONTRACT section 5 requires a later tool_results and resume stream for the final answer. The runner treated a finalized bubble and idle Stop button as terminal turn completion.",
   "sibling_census": "The same original predicate guarded both opening and post-reload guest answers in this runner; both now use the same terminal oracle. Other native Chat runners require separate review before reusing this test helper.",
   "evidence": [
@@ -26,9 +30,10 @@
     "tests/browser/guest-chat-completion-oracle.mjs",
     "tests/browser/guest-chat-completion-oracle.test.mjs",
     "docs/stabilization/resource-journals/guest-oracle-focused-20261001-001.jsonl",
-    "docs/stabilization/resource-journals/guest-oracle-focused-20261001-002.jsonl"
+    "docs/stabilization/resource-journals/guest-oracle-focused-20261001-002.jsonl",
+    "docs/stabilization/reports/guest-acceptance-final-20261001.json"
   ],
-  "verification_status": "Source and captured UI prove the old predicate's false terminal. Round-one collector repair passed 8/8 focused tests under valid guarded run guest-oracle-focused-20261001-001. Fresh review found unordered-stage and explicit-error false passes; round-two source repair rejects both and adds forcing cases. Round-two guarded run guest-oracle-focused-20261001-002 was refused before launch for unsafe pressure and swap growth, so the new cases remain unexecuted. Fresh review and native rerun remain pending; no product-side guest Chat defect is claimed from the old run.",
+  "verification_status": "Scoped infrastructure repair independently verified: 10 focused checks passed and exact173 native did not stop on delegated tool handoff. It reported the final answer missing the injected code; that product-versus-fixture cause remains open. Closing D72 does not certify guest Chat.",
   "transition_history": [
     {
       "at": "2026-10-01T16:28:54Z",
@@ -77,6 +82,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Shared classifier and both guest acceptance assertions now reject rendered errors; opening answer requires the documented stage order. Guarded focused execution and native retest remain pending."
+    },
+    {
+      "at": "2026-10-01T16:54:50.505242+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent 10-case guard passed; exact173 native continued four tool resumptions rather than stopping early, then correctly reported terminal_wrong_answer."
+    },
+    {
+      "at": "2026-10-01T16:54:50.505242+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original acceptance-oracle defect no longer reproduces and surrounding failure/success cases pass. Guest product acceptance remains failed/inconclusive in cause, not certified."
     }
   ]
 }

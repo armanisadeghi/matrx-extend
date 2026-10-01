@@ -836,7 +836,15 @@
           "defect_ids": [
             "EXT-D-0072"
           ],
-          "verification_status": "Source repaired through aac60329 and independently reviewed; final guarded checks and exact173 guest native rerun pending."
+          "verification_status": "D72 closed with independent oracle proof; guest product content acceptance remains unresolved.",
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "guest-acceptance-final-native-20261001-001",
+              "evidence": "docs/stabilization/reports/guest-acceptance-final-20261001.json",
+              "detail": "Oracle-only: four tool resumptions observed before actual completion; wrong terminal content rejected. Ten surrounding helper/collector cases passed. Not a Chat product pass."
+            }
+          }
         }
       ],
       "cells": {
