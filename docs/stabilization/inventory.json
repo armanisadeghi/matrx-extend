@@ -27115,10 +27115,16 @@
           "results": {
             "guest": {
               "status": "fail",
-              "detail": "Public 0.2.105 remains failing. Candidate 0.2.130 native005 passes fresh guest page-grounded answer and new conversation after panel reload; live account-to-guest privacy transition remains unverified. See docs/stabilization/runs/guest-chat-native-005.json.",
+              "detail": "Published0.2.105 remains the failing Store baseline;0.2.130 pending review. Exact candidate0.2.173 independently passed fresh guest opening and post-panel-reload page-grounded answers on Oct1. Earlier candidate marker miss remains unexplained; live signout privacy remains unverified.",
               "defect_ids": [
                 "EXT-D-0066"
-              ]
+              ],
+              "candidate_result": {
+                "version": "0.2.173",
+                "status": "pass",
+                "run_id": "guest-grounding-peer-native-20261001-001",
+                "evidence": "docs/stabilization/reports/guest-grounding-peer-20261001.json"
+              }
             }
           }
         }
@@ -27129,8 +27135,10 @@
           "defect_ids": [
             "EXT-D-0066"
           ],
-          "run_ids": [],
-          "retest_status": "not-run"
+          "run_ids": [
+            "guest-grounding-peer-native-20261001-001"
+          ],
+          "retest_status": "candidate173 guest first/reload pass; published105 fail; signout privacy unverified"
         },
         "member": {
           "test_status": "unverified",

@@ -1,6 +1,6 @@
 # Stabilization checklist
 
-Generated 2026-10-01 16:54 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-10-01.
+Generated 2026-10-01 17:06 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-10-01.
 
 ## Current truth
 
@@ -14,12 +14,12 @@ Generated 2026-10-01 16:54 UTC from inventory.json, defect records, and the curr
 
 - **Release 0.2.173:** Exact 0.2.173 candidate was created from verified origin/main/tag; strict release gates passed (1862 tests passed, 5 skipped; compile/typecheck, tool DB drift, migrations, package checks and Store package/risk gates passed). This is a candidate, not a Chrome Web Store submission; 0.2.130 remains pending review.
 - **Artifact:** Frozen 0.2.173 keyed tree SHA256 494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064; Store ZIP SHA256 1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff. Candidate receipt/hash verified; no personal Chrome runtime claim.
-- **Scoped native acceptance:** Candidate-native acceptance: signed-in non-admin Chat PASS_SCOPED on exact 0.2.173; guest UNVERIFIED because the run stopped at a tool-only-looking in-progress state before terminal answer evidence. Guest reload and signed-in-to-guest privacy transition remain unverified. Overall exact-candidate acceptance is HOLD; see docs/stabilization/reports/candidate-native-20261001.json.
+- **Scoped native acceptance:** Exact173: fresh guest page-grounded first answer and post-panel-reload follow-up PASS, report docs/stabilization/reports/guest-grounding-peer-20261001.json. Earlier signed-in non-admin Chat PASS, candidate-native-20261001.json. Admin Files both-tab read-error/Retry recovery PASS, files-fresh-acceptance-20261001.json. Earlier injected-marker miss remains unexplained; signout privacy and exhaustive feature/mode coverage remain unverified. Candidate not uploaded;130 still pending Google review.
 - These receipts establish only the named checks on the named artifact. Other inventory passes keep their recorded historical build boundary.
 
 ## Inventory freshness review
 
-Since inventory source `528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b`, **209 `src/` paths changed** through `5cd121a2424e84cb81e2962152bdb9f3344d0f89`. A direct path-anchor comparison matched 25 and left 184 without an exact inventory anchor.
+Since inventory source `528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b`, **209 `src/` paths changed** through `2da7b55aa1515733a139b59cae26849bdc343758`. A direct path-anchor comparison matched 25 and left 184 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities

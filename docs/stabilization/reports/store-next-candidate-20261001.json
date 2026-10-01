@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "status": "prepared_not_uploaded_current_submission_pending_review",
+  "primary_item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "published_version": "0.2.105",
+  "pending_version": "0.2.130",
+  "candidate_version": "0.2.173",
+  "candidate_source": "d6d6d6b83c937652525f473082ac2f2492c9eabe",
+  "store_zip": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/matrx-extend-0.2.173-store.zip",
+  "store_zip_sha256": "1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff",
+  "receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/release-receipt-frozen.json",
+  "release_checks": "1862 passed,5 skipped; strict release gates passed",
+  "guest_acceptance": "docs/stabilization/reports/guest-grounding-peer-20261001.json",
+  "non_admin_acceptance": "docs/stabilization/reports/candidate-native-20261001.json",
+  "submission_action": "No cancellation, upload or submission this turn. Preserve urgent130 review; next upload follows Google review outcome unless concrete required fix necessitates replacement.",
+  "limits": [
+    "One earlier synthetic-marker miss is not root-caused; later instrumented run passed.",
+    "Signout-to-guest privacy unverified.",
+    "No exhaustive Chat/Pilot or overall feature-health certification."
+  ]
+}
