@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "lane": "fresh independent verifier Luna medium",
+  "subject_commit": "19d4d019c871c9a485cb9acd42816a14d4e8c4c4",
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_A_user_outcome_proof": {
+    "result": "PARTIAL",
+    "finding": "The revised runner now has a credible source-level oracle for both D65 iterations, but no UI or product outcome was verified in this lane. It was explicitly prohibited to run the browser or tests. The report stays honest about that limitation and the D64/D65 cases remain unverified until a permitted native run completes.",
+    "evidence": [
+      "Each D65 iteration creates a fresh interceptor after confirming the saved-capture list is visible and B detail is not already shown.",
+      "After the second B click, the runner waits for a B request continuation, a 2xx response, Network.loadingFinished, and visible B detail before releasing A.",
+      "After releasing A, it waits for A to settle and checks B after two animation frames."
+    ],
+    "remaining_limits": [
+      "The source runner is not evidence that the production UI passes; native execution remains unverified.",
+      "The runner covers the planned D64/D65 acceptance slice, not every EXT-F-2008/EXT-F-2009 control or every guest/member/admin role."
+    ]
+  },
+  "verdict_B_test_safety_quality": {
+    "result": "PASS_WITH_CONCERN",
+    "prior_findings": [
+      {
+        "finding": "D65 late-failure iteration could be satisfied by previously visible B detail and did not prove B's current request completed.",
+        "disposition": "ADDRESSED",
+        "evidence": "The current iteration begins with B detail absent; after the B click it requires a continued B request, a 2xx response and loadingFinished, then observes B visible before releasing A."
+      },
+      {
+        "finding": "Partial/unverified output could exit successfully.",
+        "disposition": "ADDRESSED",
+        "evidence": "The runner only leaves process.exitCode at zero for bounded-pass; partial and unverified statuses exit nonzero."
+      }
+    ],
+    "additional_findings": [
+      {
+        "finding": "Configured Sources are called test-owned based on a private-config boolean; the runner does not independently verify their ownership or test provenance.",
+        "disposition": "NOT_ADDRESSED",
+        "severity": "MINOR",
+        "evidence": "privateConfig() requires source.test_owned === true, then the runner checks visibility and performs read-only detail requests. No create, update, delete, or cleanup request is issued."
+      }
+    ],
+    "safety_observations": [
+      "Build identity binds a release or local-dev receipt to the expected tree SHA-256, and the native harness verifies the exact extension artifact and owned browser/profile.",
+      "Sign-in uses the real web and extension UI; credentials are not injected into browser storage or emitted in the JSON report. Runtime exceptions are reduced to a generic code, and deliberate failures use fixed codes.",
+      "D64 and D65 use scoped GET reads and transport failures; the runner contains no arbitrary data mutation or deletion."
+    ]
+  },
+  "execution": {
+    "mode": "static source review only",
+    "browser_or_test_runner_launched": false,
+    "heavy_launch_performed": false,
+    "independent_runtime_outcome": "unverified"
+  },
+  "first_launch_verdict": "The repaired D65 oracle and non-complete exit behavior are ready for a permitted first native run. Treat that run as unverified acceptance evidence until it produces bounded-pass; source review alone does not establish the UI outcomes."
+}
