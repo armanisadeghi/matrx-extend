@@ -53,8 +53,8 @@ async function privateConfig() {
   const stat = await lstat(CONFIG).catch(() => fail('private_config_missing'));
   if (!stat.isFile() || (stat.mode & 0o777) !== 0o600) fail('private_config_mode');
   const value = JSON.parse(await readFile(CONFIG, 'utf8'));
-  if (typeof value.approved_organization_name !== 'string' || !value.approved_organization_name.trim())
-    fail('approved_organization_missing');
+  if (typeof value.approved_organization_name !== 'string' || !value.approved_organization_name.trim() ||
+      !UUID.test(value.approved_organization_id)) fail('approved_organization_identity_missing');
   if (value.source_a || value.source_b) {
     for (const key of ['source_a', 'source_b']) {
       const source = value[key];
@@ -143,7 +143,7 @@ async function webSignIn(page, config) {
   }
 }
 
-async function selectOrganization(panel, name) {
+async function selectOrganization(panel, name, expectedId) {
   await openSection(panel, 'Organization');
   const state = () => evaluate(panel, `(() => {
     const section = [...document.querySelectorAll('button[aria-expanded]')]
@@ -152,6 +152,10 @@ async function selectOrganization(panel, name) {
     const label = [...(body?.querySelectorAll('span') ?? [])].find(s => s.textContent.trim() === 'Acting as');
     const controls = [...(label?.parentElement?.parentElement?.querySelectorAll('button[role="combobox"]') ?? [])];
     return { count: controls.length, display: controls[0]?.textContent.trim() ?? null };
+  })()`);
+  const selectedId = () => evaluate(panel, `(async () => {
+    const record = await chrome.storage.local.get('matrx.org.active');
+    return record['matrx.org.active']?.id ?? null;
   })()`);
   const before = await waitFor('organization_control', state, (s) => s?.count === 1, 60_000);
   if (before.display !== name) {
@@ -163,7 +167,9 @@ async function selectOrganization(panel, name) {
     await click(panel, 'option', name);
   }
   await waitFor('organization_selected', state, (s) => s?.count === 1 && s.display === name);
+  await waitFor('exact_organization_id_selected', selectedId, (id) => id === expectedId);
   report.observations.organization_selected_by_ui = true;
+  report.observations.exact_active_organization_id_confirmed = true;
 }
 
 async function trustedFeatureClick(panel, featureTitle, selector, text) {
@@ -446,7 +452,8 @@ async function main() {
       await waitFor('extension_account_signed_in', () => evaluate(panel, `(() =>
         [...document.querySelectorAll('button')].some(b => b.textContent.trim() === 'Sign out'))()`),
       Boolean, 90_000);
-      await selectOrganization(panel, config.approved_organization_name);
+      await selectOrganization(panel, config.approved_organization_name,
+        config.approved_organization_id);
       stage = 'D64';
       const filesTransport = interceptFiles(panel, origin);
       await filesTransport.start();

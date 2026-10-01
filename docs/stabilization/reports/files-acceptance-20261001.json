@@ -2,7 +2,7 @@
   "schema_version": 1,
   "lane": "files-saved-native-acceptance-20261001",
   "source_commit_at_preflight": "5878be26",
-  "status": "runner-prepared-awaiting-independent-source-review-and-native-permit",
+  "status": "runner-peer-reviewed-native-permit-granted",
   "scope": ["EXT-F-2008", "EXT-F-2009"],
   "priority_defects": ["EXT-D-0064", "EXT-D-0065"],
   "preflight": {
@@ -10,6 +10,13 @@
     "D65": "Source and focused component guards already ignore stale success, failure, and loading completions for earlier Source selections. Native race acceptance is pending.",
     "existing_browser_coverage": "saved-captures-e2e.mjs covers real save/list/detail/original/delete but does not bind to the shared local-dev receipt or force the A/B race; native-sidepanel-qa-harness.mjs provides receipt and owned-process binding.",
     "role_applicability": "Guest: tabs absent. Member and admin: Files and Saved captures controls applicable; member needs an existing authorized non-admin identity."
+  },
+  "active_organization_preflight": {
+    "read_only_supabase_check": "The current Notes test organization name maps to one open organization with an active admin membership and one archived duplicate. The runner uses the exact open ID after UI selection.",
+    "exact_open_organization_id": "11f4e747-c13a-49c7-81a3-66e6391f8a9b",
+    "private_config_path": "test-results/files-saved-private-config.json",
+    "private_config_mode": "0600",
+    "name_only_selection": "refused by exact stored-ID assertion"
   },
   "planned_native_order": [
     "Bind exact build version and tree SHA to a local-dev receipt; launch only through the owned native sidepanel harness after resource permit.",
@@ -25,7 +32,7 @@
     "native_run": "not-started",
     "test_runner": "tests/browser/files-saved-native-acceptance.mjs",
     "runner_scope": "D64 both tabs and D65 A/B selection race; remaining controls follow after focused acceptance",
-    "test_owned_source_pair": "not-yet-configured; D64 can run independently",
+    "test_owned_source_pair": "not-yet-configured; D64 can run independently and incomplete D65 exits nonzero",
     "member_identity": "not-yet-confirmed",
     "guest": "unverified",
     "member": "unverified",
