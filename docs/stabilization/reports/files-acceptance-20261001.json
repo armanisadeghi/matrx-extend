@@ -2,7 +2,7 @@
   "schema_version": 1,
   "lane": "files-saved-native-acceptance-20261001",
   "source_commit_at_preflight": "5878be26",
-  "status": "runner-peer-reviewed-native-permit-granted",
+  "status": "runner-readiness-corrected-awaiting-fresh-independent-native-run",
   "scope": ["EXT-F-2008", "EXT-F-2009"],
   "priority_defects": ["EXT-D-0064", "EXT-D-0065"],
   "preflight": {
@@ -29,19 +29,37 @@
   "execution": {
     "build_receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/release-receipt-frozen.json",
     "expected_tree_sha256": "494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064",
-    "native_run": "not-started",
+    "native_run": "two admitted attempts ended before a Files request; no D64 or D65 product verdict",
     "test_runner": "tests/browser/files-saved-native-acceptance.mjs",
     "runner_scope": "D64 both tabs and D65 A/B selection race; remaining controls follow after focused acceptance",
     "test_owned_source_pair": "not-yet-configured; D64 can run independently and incomplete D65 exits nonzero",
     "member_identity": "not-yet-confirmed",
-    "guest": "unverified",
+    "guest": "passed in both owned native runs on frozen 0.2.173",
     "member": "unverified",
     "admin": "unverified",
     "D64": "unverified",
     "D65": "unverified"
   },
+  "native_attempts": [
+    {
+      "run_id": "files-saved-native-20261001-001",
+      "journal": "docs/stabilization/resource-journals/files-saved-native-20261001-001.jsonl",
+      "guard": "admitted; child failed; final decision clean",
+      "observed": "Guest Files and Saved captures tabs absent; real admin web sign-in and extension sign-in passed; exact open organization ID selected through UI.",
+      "terminal": "D64 Library stage stopped before a request with an unclassified runner failure. D64 and D65 unverified."
+    },
+    {
+      "run_id": "files-saved-native-20261001-002",
+      "journal": "docs/stabilization/resource-journals/files-saved-native-20261001-002.jsonl",
+      "guard": "admitted; child failed; final decision clean",
+      "observed": "The same guest, admin sign-in, and exact organization checks passed. Files outer tab was active while its nested tab and Refresh control were not yet mounted.",
+      "terminal": "Refresh click refused with pointer_target_not_unique; zero scoped requests intercepted. This is runner readiness, not an established Files product failure. D64 and D65 unverified."
+    }
+  ],
+  "runner_correction": "Files readiness now requires the Files heading, exactly one visible Refresh files control, and the active nested Library tab before any Refresh click. This correction has not received a fresh native run.",
   "limitations": [
-    "No build, test, or browser launch was performed in preflight.",
-    "No product defect or closure is claimed from source reading or component tests alone."
+    "The two admitted native attempts verified only guest absence and admin sign-in/organization prerequisites before the Files readiness error.",
+    "D64 and D65 remain unverified; no product bug or closure is claimed from the runner failure.",
+    "The two-attempt cap was reached. Fresh independent execution needs a new coordinated resource permit."
   ]
 }

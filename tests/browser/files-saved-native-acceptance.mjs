@@ -201,10 +201,13 @@ async function filesState(panel) {
     const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
     const inner = [...(root?.querySelectorAll('button[role="tab"]') ?? [])];
     const selected = inner.find(b => b.getAttribute('data-state') === 'active');
+    const refresh = [...(root?.querySelectorAll('button[title="Refresh files"]') ?? [])]
+      .filter(b => b.getBoundingClientRect().width > 0 && b.getBoundingClientRect().height > 0);
     const activePane = [...(root?.querySelectorAll('[role="tabpanel"]') ?? [])]
       .find(el => el.getAttribute('data-state') === 'active');
     const text = activePane?.textContent ?? '';
     return { active: tab?.getAttribute('data-state') === 'active', selected: selected?.textContent.trim() ?? null,
+      viewReady: root?.querySelector('h1')?.textContent.trim() === 'Files' && refresh.length === 1,
       error: text.includes('Files could not be loaded'), retry: [...(activePane?.querySelectorAll('button') ?? [])]
         .some(b => b.textContent.trim() === 'Retry files'),
       falseEmpty: text.includes('No library files yet') || text.includes('No captures yet'),
@@ -467,7 +470,9 @@ async function main() {
       await filesTransport.start();
       try {
         await click(panel, 'title', 'Files');
-        await waitFor('files_ready', () => filesState(panel), (s) => s.active && !s.loading, 45_000);
+        await waitFor('files_ready', () => filesState(panel),
+          (s) => s.active && s.viewReady && s.selected?.startsWith('Library') && !s.loading,
+          45_000);
         report.observations.files_library = await proveFilesFailure(panel, filesTransport, 'Library', 'library');
         report.observations.files_screenshots = await proveFilesFailure(panel, filesTransport, 'Screenshots', 'screenshots');
         if (filesTransport.read().interceptionError) fail('files_interception_failed');
