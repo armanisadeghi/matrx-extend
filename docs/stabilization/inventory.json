@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-09-29T18:27:38.241098Z",
+  "updated_at": "2026-10-01",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -804,6 +804,32 @@
               "detail": "Auth-independent infrastructure: D51 closed. Subsequent real Chrome run durable20healthy watches/stop/final exit0; independent writer/refusal/close tests and contained-path checks pass. No claim other infrastructure cases pass."
             }
           }
+        },
+        {
+          "id": "EXT-F-0002-T07",
+          "title": "Native Chat acceptance distinguishes tool progress from terminal answer",
+          "control_ids": [],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Receipt-bound current unpacked build; isolated profile; resource admission valid."
+          ],
+          "steps": [
+            "Submit a page-grounded question through the actual sidepanel. Observe interim reasoning/tool-only rows and completion state.",
+            "Assert no completed-answer verdict from tool rows alone. Require terminal run evidence plus actual assistant text and verify original page-grounding assertions.",
+            "Repeat after panel reload where required by guest acceptance."
+          ],
+          "expected": [
+            "Interim tool activity does not terminate acceptance early or count as an assistant answer.",
+            "A stalled or failed run returns a distinct bounded failure with safe diagnostic evidence; a genuine terminal answer must meet content assertions."
+          ],
+          "defect_ids": [
+            "EXT-D-0072"
+          ],
+          "verification_status": "in-diagnosis: observed guest173 runner stopped on tool rows; product result remains inconclusive pending boundary investigation."
         }
       ],
       "cells": {
@@ -31491,8 +31517,8 @@
       "controls": [
         {
           "id": "EXT-F-4024-C01",
-          "label": "Invoke get_page_text",
-          "action": "Run through manual tool executor with valid, controlled inputs"
+          "label": "Run get_page_text on owned synthetic fixture",
+          "action": "Open this canonical tool and run a 2000-character bounded read on the active fixture page."
         }
       ],
       "source_anchors": [
@@ -31545,7 +31571,7 @@
       "inventory_status": "source-listed-pending-reconciliation",
       "missing_items": [],
       "readiness_gaps": [
-        "Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required",
+        "Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -31565,7 +31591,7 @@
       "cases": [
         {
           "id": "EXT-F-4024-T01",
-          "title": "Controlled manual execution: get_page_text",
+          "title": "Manual read: bounded text from owned fixture",
           "control_ids": [
             "EXT-F-4024-C01"
           ],
@@ -31573,19 +31599,25 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "procedure-ready-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Complete shared build/reload cycle; ordinary readable local fixture tab remains active. See shared setup and fixture contract in docs/stabilization/reports/tool-procedure-batch-20261001.json."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Search get_page_text and expand the canonical row; verify args schema and activeTab+scripting permissions.",
+            "Enter {\"max_chars\":2000} and click Run once.",
+            "Inspect inline output for the exact fixture title and READFIX-A7Q2 marker; do not paste unredacted output into shared logs."
+          ],
+          "expected": [
+            "Output title is 'Matrx tool read fixture'; output text contains the visible synthetic marker READFIX-A7Q2 and is bounded to at most 2000 characters per max_chars.",
+            "The page URL, title, and DOM remain unchanged."
+          ],
           "dimensions": [
             "valid-input",
-            "invalid-input",
             "permissions",
             "reload"
-          ]
+          ],
+          "data_ownership": "Visible synthetic text from the operator-owned local fixture only."
         }
       ],
       "cells": {
@@ -31619,8 +31651,8 @@
       "controls": [
         {
           "id": "EXT-F-4025-C01",
-          "label": "Invoke get_active_tab",
-          "action": "Run through manual tool executor with valid, controlled inputs"
+          "label": "Run get_active_tab on owned synthetic fixture",
+          "action": "Open the exact canonical tool row in Tools \u2192 Catalog and run {} against the active synthetic fixture tab; compare returned tab metadata to the browser tab."
         }
       ],
       "source_anchors": [
@@ -31655,7 +31687,7 @@
       "inventory_status": "source-listed-pending-reconciliation",
       "missing_items": [],
       "readiness_gaps": [
-        "Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required",
+        "Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -31675,7 +31707,7 @@
       "cases": [
         {
           "id": "EXT-F-4025-T01",
-          "title": "Controlled manual execution: get_active_tab",
+          "title": "Manual read: active tab metadata on owned fixture",
           "control_ids": [
             "EXT-F-4025-C01"
           ],
@@ -31683,19 +31715,25 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "procedure-ready-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Complete shared build/reload cycle and synthetic fixture preconditions; fixture tab stays active when opening Tools. See shared setup and fixture contract in docs/stabilization/reports/tool-procedure-batch-20261001.json."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "In Tools \u2192 Catalog, leave Surface=Canonical and Tier=all; search get_active_tab and expand the exact canonical row.",
+            "Confirm the displayed schema has no required arguments and required permission activeTab; leave the default {} in the JSON editor.",
+            "Click Run once. Record the inline output and compare tab_id/title/url/status to the active synthetic fixture tab's browser tab and address bar. Do not copy the full URL if it contains anything beyond the local fixture origin/path."
+          ],
+          "expected": [
+            "One inline object is returned with tab_id, window_id, url, title, status, pinned, incognito, and fav_icon_url fields (nullable browser metadata is acceptable).",
+            "tab_id matches the active fixture tab; title is 'Matrx tool read fixture'; url is the fixture URL; no mutation or new tab occurs."
+          ],
           "dimensions": [
             "valid-input",
-            "invalid-input",
             "permissions",
             "reload"
-          ]
+          ],
+          "data_ownership": "Browser metadata for the operator-owned synthetic fixture tab only."
         }
       ],
       "cells": {
@@ -31729,8 +31767,8 @@
       "controls": [
         {
           "id": "EXT-F-4026-C01",
-          "label": "Invoke get_page_selection",
-          "action": "Run through manual tool executor with valid, controlled inputs"
+          "label": "Run get_page_selection on owned synthetic fixture",
+          "action": "Select the fixture nonce, open this canonical tool, and run {} to inspect selection state."
         }
       ],
       "source_anchors": [
@@ -31773,7 +31811,7 @@
       "inventory_status": "source-listed-pending-reconciliation",
       "missing_items": [],
       "readiness_gaps": [
-        "Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required",
+        "Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -31793,7 +31831,7 @@
       "cases": [
         {
           "id": "EXT-F-4026-T01",
-          "title": "Controlled manual execution: get_page_selection",
+          "title": "Manual read: selected synthetic fixture text",
           "control_ids": [
             "EXT-F-4026-C01"
           ],
@@ -31801,19 +31839,25 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "procedure-ready-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Complete shared build/reload cycle; select exactly 'READFIX-A7Q2' in the owned fixture before opening or returning focus to Tools. See shared setup and fixture contract in docs/stabilization/reports/tool-procedure-batch-20261001.json."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Search get_page_selection in canonical Catalog and expand the row.",
+            "Confirm no required arguments and activeTab+scripting permissions; use {}.",
+            "Click Run once and inspect inline output. Afterward, return to the fixture and verify the page text and URL are unchanged."
+          ],
+          "expected": [
+            "Output has text='READFIX-A7Q2', selected=true, and range_count greater than 0.",
+            "The read leaves the page selection intact and performs no click, navigation, or page edit."
+          ],
           "dimensions": [
             "valid-input",
-            "invalid-input",
             "permissions",
             "reload"
-          ]
+          ],
+          "data_ownership": "A deliberately selected nonce on the operator-owned synthetic page."
         }
       ],
       "cells": {
@@ -32149,8 +32193,8 @@
       "controls": [
         {
           "id": "EXT-F-4029-C01",
-          "label": "Invoke query_elements",
-          "action": "Run through manual tool executor with valid, controlled inputs"
+          "label": "Run query_elements on owned synthetic fixture",
+          "action": "Open this canonical tool and query #procedure-card attributes."
         }
       ],
       "source_anchors": [
@@ -32212,7 +32256,7 @@
       "inventory_status": "source-listed-pending-reconciliation",
       "missing_items": [],
       "readiness_gaps": [
-        "Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required",
+        "Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -32232,7 +32276,7 @@
       "cases": [
         {
           "id": "EXT-F-4029-T01",
-          "title": "Controlled manual execution: query_elements",
+          "title": "Manual read: query exact fixture card and id attribute",
           "control_ids": [
             "EXT-F-4029-C01"
           ],
@@ -32240,19 +32284,25 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "procedure-ready-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Complete shared build/reload cycle; the fixture contains exactly one #procedure-card div. See shared setup and fixture contract in docs/stabilization/reports/tool-procedure-batch-20261001.json."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Search query_elements, expand the canonical row, and verify required selector plus activeTab+scripting permissions.",
+            "Enter {\"selector\":\"#procedure-card\",\"attributes\":[\"id\",\"data-case\"],\"limit\":5} and click Run once.",
+            "Inspect total and returned rows."
+          ],
+          "expected": [
+            "total is 1; returned first row has index 0, tag='div', attrs.id='procedure-card', and attrs.data-case='READFIX-A7Q2'.",
+            "No DOM content is changed."
+          ],
           "dimensions": [
             "valid-input",
-            "invalid-input",
             "permissions",
             "reload"
-          ]
+          ],
+          "data_ownership": "Selector and attributes for the one synthetic fixture card only."
         }
       ],
       "cells": {
@@ -32286,8 +32336,8 @@
       "controls": [
         {
           "id": "EXT-F-4030-C01",
-          "label": "Invoke find_text_on_page",
-          "action": "Run through manual tool executor with valid, controlled inputs"
+          "label": "Run find_text_on_page on owned synthetic fixture",
+          "action": "Open this canonical tool and search for the fixture nonce with case-sensitive matching."
         }
       ],
       "source_anchors": [
@@ -32360,7 +32410,7 @@
       "inventory_status": "source-listed-pending-reconciliation",
       "missing_items": [],
       "readiness_gaps": [
-        "Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required",
+        "Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -32380,7 +32430,7 @@
       "cases": [
         {
           "id": "EXT-F-4030-T01",
-          "title": "Controlled manual execution: find_text_on_page",
+          "title": "Manual read: find exact nonce on owned fixture",
           "control_ids": [
             "EXT-F-4030-C01"
           ],
@@ -32388,19 +32438,25 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "procedure-ready-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Complete shared build/reload cycle; fixture contains one visible exact text node READFIX-A7Q2. See shared setup and fixture contract in docs/stabilization/reports/tool-procedure-batch-20261001.json."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Search find_text_on_page and expand the canonical row; verify query is required and permissions are activeTab+scripting.",
+            "Enter {\"query\":\"READFIX-A7Q2\",\"case_sensitive\":true,\"limit\":5} and click Run once.",
+            "Inspect count and matches in the inline result."
+          ],
+          "expected": [
+            "count is 1; matches contains one exact text='READFIX-A7Q2' with a non-empty selector and a context containing the marker.",
+            "No page content or browser state changes."
+          ],
           "dimensions": [
             "valid-input",
-            "invalid-input",
             "permissions",
             "reload"
-          ]
+          ],
+          "data_ownership": "A unique synthetic nonce on the operator-owned local fixture only."
         }
       ],
       "cells": {
@@ -32434,8 +32490,8 @@
       "controls": [
         {
           "id": "EXT-F-4031-C01",
-          "label": "Invoke get_page_links",
-          "action": "Run through manual tool executor with valid, controlled inputs"
+          "label": "Run get_page_links on owned synthetic fixture",
+          "action": "Open this canonical tool and filter the fixture link by same-origin href path and exact visible label."
         }
       ],
       "source_anchors": [
@@ -32495,7 +32551,7 @@
       "inventory_status": "source-listed-pending-reconciliation",
       "missing_items": [],
       "readiness_gaps": [
-        "Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required",
+        "Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -32515,7 +32571,7 @@
       "cases": [
         {
           "id": "EXT-F-4031-T01",
-          "title": "Controlled manual execution: get_page_links",
+          "title": "Manual read: filter same-origin fixture link",
           "control_ids": [
             "EXT-F-4031-C01"
           ],
@@ -32523,19 +32579,25 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "procedure-ready-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Complete shared build/reload cycle; fixture has exactly one anchor with text 'Fixture local link' and path /tool-procedure/local-link on its own origin. See shared setup and fixture contract in docs/stabilization/reports/tool-procedure-batch-20261001.json."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Search get_page_links, expand the canonical row, and verify activeTab+scripting permissions.",
+            "Enter {\"href_contains\":\"/tool-procedure/local-link\",\"text_contains\":\"Fixture local link\",\"same_origin_only\":true,\"limit\":5} and click Run once.",
+            "Inspect the returned count, total, and links array."
+          ],
+          "expected": [
+            "count is 1 and links contains the exact local fixture link text and same-origin href; total is at least 1.",
+            "No link is followed and no browser navigation occurs."
+          ],
           "dimensions": [
             "valid-input",
-            "invalid-input",
             "permissions",
             "reload"
-          ]
+          ],
+          "data_ownership": "One synthetic same-origin link on the operator-owned local fixture."
         }
       ],
       "cells": {
@@ -32569,8 +32631,8 @@
       "controls": [
         {
           "id": "EXT-F-4032-C01",
-          "label": "Invoke get_computed_style",
-          "action": "Run through manual tool executor with valid, controlled inputs"
+          "label": "Run get_computed_style on owned synthetic fixture",
+          "action": "Open this canonical tool and read display/color on #procedure-card."
         }
       ],
       "source_anchors": [
@@ -32626,7 +32688,7 @@
       "inventory_status": "source-listed-pending-reconciliation",
       "missing_items": [],
       "readiness_gaps": [
-        "Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required",
+        "Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -32646,7 +32708,7 @@
       "cases": [
         {
           "id": "EXT-F-4032-T01",
-          "title": "Controlled manual execution: get_computed_style",
+          "title": "Manual read: computed style for owned fixture element",
           "control_ids": [
             "EXT-F-4032-C01"
           ],
@@ -32654,19 +32716,25 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "procedure-ready-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Complete shared build/reload cycle; #procedure-card is visible and has fixed computed display:block and color rgb(1, 2, 3). See shared setup and fixture contract in docs/stabilization/reports/tool-procedure-batch-20261001.json."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Search get_computed_style, expand the canonical row, and verify required selector and activeTab+scripting permissions.",
+            "Enter {\"selector\":\"#procedure-card\",\"properties\":[\"display\",\"color\"]} and click Run once.",
+            "Inspect the inline result's ok, tag, styles, and rectangle."
+          ],
+          "expected": [
+            "ok=true, tag='div', styles.display='block', and styles.color='rgb(1, 2, 3)'; rectangle has positive width and height.",
+            "No style or layout is modified by the tool."
+          ],
           "dimensions": [
             "valid-input",
-            "invalid-input",
             "permissions",
             "reload"
-          ]
+          ],
+          "data_ownership": "Computed CSS and geometry of a synthetic element on the operator-owned fixture."
         }
       ],
       "cells": {
@@ -32700,8 +32768,8 @@
       "controls": [
         {
           "id": "EXT-F-4033-C01",
-          "label": "Invoke get_element_at_point",
-          "action": "Run through manual tool executor with valid, controlled inputs"
+          "label": "Run get_element_at_point on owned synthetic fixture",
+          "action": "Open this canonical tool and inspect the operator-recorded center coordinate over #procedure-point."
         }
       ],
       "source_anchors": [
@@ -32754,7 +32822,7 @@
       "inventory_status": "source-listed-pending-reconciliation",
       "missing_items": [],
       "readiness_gaps": [
-        "Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required",
+        "Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -32774,7 +32842,7 @@
       "cases": [
         {
           "id": "EXT-F-4033-T01",
-          "title": "Controlled manual execution: get_element_at_point",
+          "title": "Manual read: identify element at recorded fixture coordinate",
           "control_ids": [
             "EXT-F-4033-C01"
           ],
@@ -32782,19 +32850,25 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "procedure-ready-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Complete shared build/reload cycle; #procedure-point is visible, inert, unobscured, and its viewport center coordinate was recorded before opening Tools. See shared setup and fixture contract in docs/stabilization/reports/tool-procedure-batch-20261001.json."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Search get_element_at_point and expand the canonical row; verify x and y are required numbers and activeTab+scripting are present.",
+            "Enter the previously recorded integer viewport-center coordinates as {\"x\":X,\"y\":Y} (replace X/Y with the observed numbers; never guess) and click Run once.",
+            "Inspect the returned element descriptor. Do not click the page target."
+          ],
+          "expected": [
+            "The returned descriptor identifies the fixture's #procedure-point element (or its documented closest-element representation) at the supplied viewport coordinate.",
+            "No click, scroll, focus, or page mutation occurs. If the recorded coordinate no longer hits the fixture element, mark precondition drift and stop."
+          ],
           "dimensions": [
             "valid-input",
-            "invalid-input",
             "permissions",
             "reload"
-          ]
+          ],
+          "data_ownership": "An operator-measured coordinate over an inert synthetic fixture div."
         }
       ],
       "cells": {
@@ -32828,8 +32902,8 @@
       "controls": [
         {
           "id": "EXT-F-4034-C01",
-          "label": "Invoke inspect_element",
-          "action": "Run through manual tool executor with valid, controlled inputs"
+          "label": "Run inspect_element on owned synthetic fixture",
+          "action": "Open this canonical tool and inspect #procedure-card."
         }
       ],
       "source_anchors": [
@@ -32879,7 +32953,7 @@
       "inventory_status": "source-listed-pending-reconciliation",
       "missing_items": [],
       "readiness_gaps": [
-        "Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required",
+        "Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -32899,7 +32973,7 @@
       "cases": [
         {
           "id": "EXT-F-4034-T01",
-          "title": "Controlled manual execution: inspect_element",
+          "title": "Manual read: inspect synthetic fixture card",
           "control_ids": [
             "EXT-F-4034-C01"
           ],
@@ -32907,19 +32981,25 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "procedure-ready-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Complete shared build/reload cycle; #procedure-card exists exactly once on the owned fixture. See shared setup and fixture contract in docs/stabilization/reports/tool-procedure-batch-20261001.json."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Search inspect_element and expand the canonical row; verify required selector and activeTab+scripting permissions.",
+            "Enter {\"selector\":\"#procedure-card\"} and click Run once.",
+            "Inspect the element snapshot, ancestor chain, attributes, and rectangle in inline output."
+          ],
+          "expected": [
+            "The snapshot identifies one div with attrs.id=procedure-card and non-zero geometry; its ancestor chain is returned and may be empty if the fixture element is a direct child of body.",
+            "The tool returns inspection data only and leaves DOM and styles unchanged."
+          ],
           "dimensions": [
             "valid-input",
-            "invalid-input",
             "permissions",
             "reload"
-          ]
+          ],
+          "data_ownership": "One explicitly identified synthetic div on the operator-owned fixture."
         }
       ],
       "cells": {
@@ -34058,8 +34138,8 @@
       "controls": [
         {
           "id": "EXT-F-4044-C01",
-          "label": "Invoke get_form_fields",
-          "action": "Run through manual tool executor with valid, controlled inputs"
+          "label": "Run get_form_fields on owned synthetic fixture",
+          "action": "Open this canonical tool and discover #procedure-form, confirming the synthetic password stays masked."
         }
       ],
       "source_anchors": [
@@ -34106,7 +34186,7 @@
       "inventory_status": "source-listed-pending-reconciliation",
       "missing_items": [],
       "readiness_gaps": [
-        "Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required",
+        "Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.",
         "Confirm current catalog against imported source registry before source inventory signoff"
       ],
       "applicability": {
@@ -34126,7 +34206,7 @@
       "cases": [
         {
           "id": "EXT-F-4044-T01",
-          "title": "Controlled manual execution: get_form_fields",
+          "title": "Manual read: synthetic form discovery and secret redaction",
           "control_ids": [
             "EXT-F-4044-C01"
           ],
@@ -34134,19 +34214,26 @@
             "member",
             "admin"
           ],
-          "design_status": "needed",
+          "design_status": "procedure-ready-unverified",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Complete shared build/reload cycle; fixture form contains only synthetic-query and synthetic-secret-DO-NOT-REPORT; there is no submit handler. See shared setup and fixture contract in docs/stabilization/reports/tool-procedure-batch-20261001.json."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Search get_form_fields, expand the canonical row, and verify activeTab+scripting permissions.",
+            "Enter {\"selector\":\"#procedure-form\"} and click Run once.",
+            "Inspect output only for field count/names/types and masking metadata. Verify that the literal password sentinel 'synthetic-secret-DO-NOT-REPORT' is absent from visible output and any saved receipt; do not copy raw output."
+          ],
+          "expected": [
+            "One form is returned and identifies fixture-query as a text input with synthetic-query; the password field is present but marked/masked and its value is never emitted.",
+            "No submit, input change, autofill, or network action occurs. Any appearance of the password sentinel is a security failure: stop and preserve only redacted evidence."
+          ],
           "dimensions": [
             "valid-input",
-            "invalid-input",
+            "sensitive-field-redaction",
             "permissions",
             "reload"
-          ]
+          ],
+          "data_ownership": "Operator-authored synthetic form values only; the password sentinel must remain absent from evidence."
         }
       ],
       "cells": {

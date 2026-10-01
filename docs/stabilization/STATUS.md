@@ -1,14 +1,14 @@
 # Extension stabilization status
 
-Generated 2026-10-01 16:14 UTC from inventory.json and defects/*.json. Inventory updated 2026-09-29T18:27:38.241098Z. 205 features · 731 cases · 1314 controls · 71 linked defect records.
+Generated 2026-10-01 16:37 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-01. 205 features · 732 cases · 1314 controls · 72 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1160** — Pass: 57 · Partial: 28 · Fail: 1 · Unverified: 1073 · N/A: 1.
-Unverified splits into **124 explicitly marked unverified** and **949 with no result record**.
-Full feature-role pairs: **0/394**. Procedure gaps: 168 cases without steps, 167 without expected outcomes, 31 without control links.
+Applicable case-by-role slots: **1163** — Pass: 57 · Partial: 28 · Fail: 1 · Unverified: 1076 · N/A: 1.
+Unverified splits into **124 explicitly marked unverified** and **952 with no result record**.
+Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 32 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
 ## Tab and surface overview
@@ -16,7 +16,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | Tab or surface | Features | Guest cases | Member cases | Admin cases | All-role case slots | Active defects |
 | --- | ---: | --- | --- | --- | --- | ---: |
 | [Development installation](#development-installation) | 1 | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 2, partial 0, fail 0, unverified 13, n/a 0 | 0 |
-| [Testing infrastructure](#testing-infrastructure) | 1 | 2 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 6, partial 0, fail 0, unverified 12, n/a 0 | 0 |
+| [Testing infrastructure](#testing-infrastructure) | 1 | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 6, partial 0, fail 0, unverified 15, n/a 0 | 1 |
 | [Release infrastructure](#release-infrastructure) | 1 | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 24, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 0, fail 0, unverified 14, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
@@ -57,9 +57,9 @@ Role counts include only case-role combinations listed in each case. The all-rol
 
 ## Current artifact and bounded acceptance
 
-**Release:** 0.2.139 at `ae6a3af1680148c0308d6eb285776ddafdb1039b`. strict release gates passed: 1824 tests (5 skipped), compile/build, 82/82 tool definitions, migrations, Store package validation; no Chrome Web Store submission claim
-**Local artifact:** 0.2.139 tree SHA256 20bbd42bdb782dbef2616aa0996cf947060b0117d84674de2234f8376971c19f; personal Chrome runtime reload not verified
-**Native evidence:** independent exact-0.2.139 native run passed admin D61/D62/D63/D67/D68 plus adjacent cases; report docs/stabilization/reports/notes-queue-review.json; UI archive filter check also passed boundedly
+**Release:** 0.2.173 at `d6d6d6b83c937652525f473082ac2f2492c9eabe`. Exact 0.2.173 candidate was created from verified origin/main/tag; strict release gates passed (1862 tests passed, 5 skipped; compile/typecheck, tool DB drift, migrations, package checks and Store package/risk gates passed). This is a candidate, not a Chrome Web Store submission; 0.2.130 remains pending review.
+**Local artifact:** Frozen 0.2.173 keyed tree SHA256 494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064; Store ZIP SHA256 1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff. Candidate receipt/hash verified; no personal Chrome runtime claim.
+**Native evidence:** Candidate-native acceptance: signed-in non-admin Chat PASS_SCOPED on exact 0.2.173; guest UNVERIFIED because the run stopped at a tool-only-looking in-progress state before terminal answer evidence. Guest reload and signed-in-to-guest privacy transition remain unverified. Overall exact-candidate acceptance is HOLD; see docs/stabilization/reports/candidate-native-20261001.json.
 These current-build checks supplement the inventory matrix; they do not promote unobserved cases or certify whole features.
 
 ## Development installation
@@ -96,11 +96,11 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Resource admission and owned job lifecycle (EXT-F-0002)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 6. **Controls:** 6.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 7. **Controls:** 6.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0072
 
-**Linked defects:** [EXT-D-0025](defects/EXT-D-0025.json) (closed), [EXT-D-0051](defects/EXT-D-0051.json) (closed), [EXT-D-0056](defects/EXT-D-0056.json) (closed), [EXT-D-0060](defects/EXT-D-0060.json) (closed)
+**Linked defects:** [EXT-D-0025](defects/EXT-D-0025.json) (closed), [EXT-D-0051](defects/EXT-D-0051.json) (closed), [EXT-D-0056](defects/EXT-D-0056.json) (closed), [EXT-D-0060](defects/EXT-D-0060.json) (closed), [EXT-D-0072](defects/EXT-D-0072.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -110,6 +110,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-0002-T04 Lease held through owned-work cleanup | Unverified | Unverified | Unverified | EXT-F-0002-C04 |
 | EXT-F-0002-T05 Manual browser stop confirmation | Unverified | Unverified | Unverified | EXT-F-0002-C05 |
 | EXT-F-0002-T06 Durable browser resource event and terminal proof | Pass | Pass | Pass | EXT-F-0002-C06 |
+| EXT-F-0002-T07 Native Chat acceptance distinguishes tool progress from terminal answer | Unverified | Unverified | Unverified | No control mapped |
 
 **Recorded case details and evidence:**
 
@@ -1832,9 +1833,9 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4024-T01 Controlled manual execution: get_page_text | N/A | Unverified | Unverified | EXT-F-4024-C01 |
+| EXT-F-4024-T01 Manual read: bounded text from owned fixture | N/A | Unverified | Unverified | EXT-F-4024-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### get_active_tab (EXT-F-4025)
@@ -1845,9 +1846,9 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4025-T01 Controlled manual execution: get_active_tab | N/A | Unverified | Unverified | EXT-F-4025-C01 |
+| EXT-F-4025-T01 Manual read: active tab metadata on owned fixture | N/A | Unverified | Unverified | EXT-F-4025-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### get_page_selection (EXT-F-4026)
@@ -1858,9 +1859,9 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4026-T01 Controlled manual execution: get_page_selection | N/A | Unverified | Unverified | EXT-F-4026-C01 |
+| EXT-F-4026-T01 Manual read: selected synthetic fixture text | N/A | Unverified | Unverified | EXT-F-4026-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### read_active_page (EXT-F-4027)
@@ -1897,9 +1898,9 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4029-T01 Controlled manual execution: query_elements | N/A | Unverified | Unverified | EXT-F-4029-C01 |
+| EXT-F-4029-T01 Manual read: query exact fixture card and id attribute | N/A | Unverified | Unverified | EXT-F-4029-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### find_text_on_page (EXT-F-4030)
@@ -1910,9 +1911,9 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4030-T01 Controlled manual execution: find_text_on_page | N/A | Unverified | Unverified | EXT-F-4030-C01 |
+| EXT-F-4030-T01 Manual read: find exact nonce on owned fixture | N/A | Unverified | Unverified | EXT-F-4030-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### get_page_links (EXT-F-4031)
@@ -1923,9 +1924,9 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4031-T01 Controlled manual execution: get_page_links | N/A | Unverified | Unverified | EXT-F-4031-C01 |
+| EXT-F-4031-T01 Manual read: filter same-origin fixture link | N/A | Unverified | Unverified | EXT-F-4031-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### get_computed_style (EXT-F-4032)
@@ -1936,9 +1937,9 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4032-T01 Controlled manual execution: get_computed_style | N/A | Unverified | Unverified | EXT-F-4032-C01 |
+| EXT-F-4032-T01 Manual read: computed style for owned fixture element | N/A | Unverified | Unverified | EXT-F-4032-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### get_element_at_point (EXT-F-4033)
@@ -1949,9 +1950,9 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4033-T01 Controlled manual execution: get_element_at_point | N/A | Unverified | Unverified | EXT-F-4033-C01 |
+| EXT-F-4033-T01 Manual read: identify element at recorded fixture coordinate | N/A | Unverified | Unverified | EXT-F-4033-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### inspect_element (EXT-F-4034)
@@ -1962,9 +1963,9 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4034-T01 Controlled manual execution: inspect_element | N/A | Unverified | Unverified | EXT-F-4034-C01 |
+| EXT-F-4034-T01 Manual read: inspect synthetic fixture card | N/A | Unverified | Unverified | EXT-F-4034-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### get_element_details (EXT-F-4035)
@@ -2092,9 +2093,9 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4044-T01 Controlled manual execution: get_form_fields | N/A | Unverified | Unverified | EXT-F-4044-C01 |
+| EXT-F-4044-T01 Manual read: synthetic form discovery and secret redaction | N/A | Unverified | Unverified | EXT-F-4044-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Manual-run procedures do not establish dispatcher permission or approval behavior; verify those through actual advertised-agent dispatch before claiming that coverage.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### ai_check_availability (EXT-F-4045)

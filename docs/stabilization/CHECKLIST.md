@@ -1,31 +1,31 @@
 # Stabilization checklist
 
-Generated 2026-10-01 16:14 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-09-29T18:27:38.241098Z.
+Generated 2026-10-01 16:37 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-10-01.
 
 ## Current truth
 
-- Scope: 205 feature records, 731 cases, 1314 controls, 1160 applicable case-role slots.
-- Case results: pass 57, partial 28, fail 1, unverified 1073, n/a 1; 124 explicitly unverified and 949 with no result record. Missing results count as unverified, including later-wave surfaces.
+- Scope: 205 feature records, 732 cases, 1314 controls, 1163 applicable case-role slots.
+- Case results: pass 57, partial 28, fail 1, unverified 1076, n/a 1; 124 explicitly unverified and 952 with no result record. Missing results count as unverified, including later-wave surfaces.
 - Fully verified feature-role pairs: 0/394 under the rule that every applicable case passes and every control maps to a case.
-- Procedure gaps: 168 missing steps; 167 missing expected outcomes; 31 missing control links.
-- Defect states: closed 44, retest-pass 1, fixed 21, in-fix 4, open 1. A fixed or closed defect is not a feature-level UI pass.
+- Procedure gaps: 158 missing steps; 157 missing expected outcomes; 32 missing control links.
+- Defect states: closed 44, retest-pass 1, fixed 22, in-fix 4, open 1. A fixed or closed defect is not a feature-level UI pass.
 
 ## Current-build evidence
 
-- **Release 0.2.139:** strict release gates passed: 1824 tests (5 skipped), compile/build, 82/82 tool definitions, migrations, Store package validation; no Chrome Web Store submission claim
-- **Artifact:** 0.2.139 tree SHA256 20bbd42bdb782dbef2616aa0996cf947060b0117d84674de2234f8376971c19f; personal Chrome runtime reload not verified
-- **Scoped native acceptance:** independent exact-0.2.139 native run passed admin D61/D62/D63/D67/D68 plus adjacent cases; report docs/stabilization/reports/notes-queue-review.json; UI archive filter check also passed boundedly
+- **Release 0.2.173:** Exact 0.2.173 candidate was created from verified origin/main/tag; strict release gates passed (1862 tests passed, 5 skipped; compile/typecheck, tool DB drift, migrations, package checks and Store package/risk gates passed). This is a candidate, not a Chrome Web Store submission; 0.2.130 remains pending review.
+- **Artifact:** Frozen 0.2.173 keyed tree SHA256 494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064; Store ZIP SHA256 1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff. Candidate receipt/hash verified; no personal Chrome runtime claim.
+- **Scoped native acceptance:** Candidate-native acceptance: signed-in non-admin Chat PASS_SCOPED on exact 0.2.173; guest UNVERIFIED because the run stopped at a tool-only-looking in-progress state before terminal answer evidence. Guest reload and signed-in-to-guest privacy transition remain unverified. Overall exact-candidate acceptance is HOLD; see docs/stabilization/reports/candidate-native-20261001.json.
 - These receipts establish only the named checks on the named artifact. Other inventory passes keep their recorded historical build boundary.
 
 ## Inventory freshness review
 
-Since inventory source `528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b`, **209 `src/` paths changed** through `d6d6d6b83c937652525f473082ac2f2492c9eabe`. A direct path-anchor comparison matched 25 and left 184 without an exact inventory anchor.
+Since inventory source `528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b`, **209 `src/` paths changed** through `9efe189d8e919b8d1190ecb659c374cc4ee8a4f4`. A direct path-anchor comparison matched 25 and left 184 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities
 
-- **Coverage model / all contained surfaces** — 0 of 394 applicable feature-role pairs meet the full-verification rule. The inventory records 57 pass, 124 explicit unverified, 28 partial, 1 fail, 1 not applicable, and 949 slots with no result. A pass retains its original build boundary. Next: Continue recording bounded runs by exact build and role; do not infer whole-feature health from a repaired defect or scoped pass.
-- **Executable test procedures** — 168 cases lack steps, 167 lack expected outcomes, and 31 lack control links. The registered-executor surface has 173 cases; its live catalog parity does not prove runtime behavior. Next: Design each missing case from the live advertised tool contract and safe real fixtures before execution.
+- **Coverage model / all contained surfaces** — 0 of 394 applicable feature-role pairs meet the full-verification rule. The inventory records 57 pass, 124 explicit unverified, 28 partial, 1 fail, 1 not applicable, and 952 slots with no result. A pass retains its original build boundary. Next: Continue recording bounded runs by exact build and role; do not infer whole-feature health from a repaired defect or scoped pass.
+- **Executable test procedures** — 158 cases lack steps, 157 lack expected outcomes, and 32 lack control links. The registered-executor surface has 173 cases; its live catalog parity does not prove runtime behavior. Next: Design each missing case from the live advertised tool contract and safe real fixtures before execution.
 - **Current install and native breadth** — 0.2.139 release gates passed and isolated extension artifact is recorded, but personal Chrome reload is explicitly unverified; broad guest/member/admin sidepanel/content-script/service-worker/offscreen passes are absent. Next: Bind native runs to current artifact receipt, real user surface and persona; preserve admission guard.
 - **Notes, Files, Saved captures** — Notes D61/D62/D63/D67/D68 have scoped exact139 admin native verification; feature/member breadth remains open. D64 Files and D65 saved-capture race are source-fixed with focused regression coverage but no native acceptance in current reconciliation. Next: Do not reimplement Notes or D64/D65 source fixes; run remaining current-build native cases and update statuses only for observed outcomes.
 - **Showcase / data / document identity** — Showcase has 59 cases: admin 1 pass, 26 partial, 3 unverified, 28 no-result; D54 is fixed with partial native dimensions, while D42/D47/D58/D59 remain among the active in-fix defect records, with build/native or shared document-identity consumer gaps documented. Next: Resume from their latest defect reports/checkpoint; avoid using historical artifact a8670bf7 as proof for newer corrections.
@@ -40,7 +40,7 @@ Pass and partial counts are recorded results; unverified includes explicit unver
 | Surface | Features | Pass | Partial | Fail | Unverified | N/A |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Development installation | 1 | 2 | 0 | 0 | 13 | 0 |
-| Testing infrastructure | 1 | 6 | 0 | 0 | 12 | 0 |
+| Testing infrastructure | 1 | 6 | 0 | 0 | 15 | 0 |
 | Release infrastructure | 1 | 24 | 0 | 0 | 6 | 0 |
 | Navigation / shell | 1 | 1 | 0 | 0 | 14 | 0 |
 | Popup / options / mic permission | 1 | 0 | 0 | 0 | 20 | 0 |

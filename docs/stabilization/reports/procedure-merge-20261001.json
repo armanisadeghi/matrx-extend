@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-procedure-merge-report",
+  "task_id": "inventory-tools",
+  "patch_id": "tool-procedure-batch-20261001",
+  "inventory": "docs/stabilization/inventory.json",
+  "result": "merged-static-procedures-only",
+  "source_review": {
+    "catalog": "types/tool-catalog.json",
+    "runner": "src/features/tools/ToolsView.tsx",
+    "active_tab_helpers": "src/lib/tools/handlers/_active-tab.ts",
+    "handlers": [
+      "src/lib/tools/handlers/read.ts",
+      "src/lib/tools/handlers/page-refs.ts",
+      "src/lib/tools/handlers/inspect.ts",
+      "src/lib/tools/handlers/forms.ts"
+    ],
+    "access": "src/config/sidepanel-visibility.ts"
+  },
+  "findings": [
+    "All ten names, argument shapes, read tiers, admin flags, required permissions, and optional permission lists matched the canonical catalog snapshot.",
+    "ToolsView validates arguments and calls handler.run directly with permissionMode=act and assignedTabId=null. This resolves to the focused browser tab and bypasses dispatcher permission/approval gates. Procedures therefore cover handler behavior only; no Ask/Act, authorization, or dispatcher-gate claim is made.",
+    "tools is signed-in in the sidepanel visibility table. Member/admin applicability is consistent for these non-admin read tools; guest is correctly inapplicable to invocation.",
+    "The manual runner source comment describing the same dispatcher path is stale and contradicted by its implementation. Procedures follow implementation behavior; this task did not change source code.",
+    "Execution statuses/cells remain unverified; procedures are not runtime results."
+  ],
+  "adjustments": [
+    {
+      "case_id": "EXT-F-4024-T01",
+      "change": "Expected title as the returned title field and marker in returned text; the handler does not put document.title into the text value."
+    },
+    {
+      "case_id": "EXT-F-4034-T01",
+      "change": "Allowed an empty ancestor list for a card directly under body; implementation intentionally stops before body."
+    },
+    {
+      "case_id": "EXT-F-4044-T01",
+      "change": "Retained strict secret-sentinel exclusion and redacted-only evidence; handler emits *** plus masked metadata, never the raw password value."
+    }
+  ],
+  "remaining_gaps": [
+    "No browser or runtime executions were performed; every cell remains unverified.",
+    "Permission-negative and dispatcher approval behavior remain outside this manual runner path and are recorded as an explicit readiness gap in each affected feature.",
+    "The existing source-catalog reconciliation readiness gap remains unchanged."
+  ],
+  "items": [
+    {
+      "feature_id": "EXT-F-4025",
+      "tool_name": "get_active_tab",
+      "case_id": "EXT-F-4025-T01",
+      "catalog_match": "tier, admin_only, required permissions, optional permissions, and argument schema match the checked-in canonical catalog",
+      "handler_review": "current handler implementation supports the proposed input and read-only output claim",
+      "procedure_decision": "merged with evidence-backed wording adjustments where noted"
+    },
+    {
+      "feature_id": "EXT-F-4026",
+      "tool_name": "get_page_selection",
+      "case_id": "EXT-F-4026-T01",
+      "catalog_match": "tier, admin_only, required permissions, optional permissions, and argument schema match the checked-in canonical catalog",
+      "handler_review": "current handler implementation supports the proposed input and read-only output claim",
+      "procedure_decision": "merged; selection fields are returned as specified, with selected true derived from non-empty selection text"
+    },
+    {
+      "feature_id": "EXT-F-4024",
+      "tool_name": "get_page_text",
+      "case_id": "EXT-F-4024-T01",
+      "catalog_match": "tier, admin_only, required permissions, optional permissions, and argument schema match the checked-in canonical catalog",
+      "handler_review": "current handler implementation supports the proposed input and read-only output claim",
+      "procedure_decision": "merged; clarified title is the separate title property while the marker appears in text; 2000-char cap applies to returned text"
+    },
+    {
+      "feature_id": "EXT-F-4030",
+      "tool_name": "find_text_on_page",
+      "case_id": "EXT-F-4030-T01",
+      "catalog_match": "tier, admin_only, required permissions, optional permissions, and argument schema match the checked-in canonical catalog",
+      "handler_review": "current handler implementation supports the proposed input and read-only output claim",
+      "procedure_decision": "merged with evidence-backed wording adjustments where noted"
+    },
+    {
+      "feature_id": "EXT-F-4031",
+      "tool_name": "get_page_links",
+      "case_id": "EXT-F-4031-T01",
+      "catalog_match": "tier, admin_only, required permissions, optional permissions, and argument schema match the checked-in canonical catalog",
+      "handler_review": "current handler implementation supports the proposed input and read-only output claim",
+      "procedure_decision": "merged with evidence-backed wording adjustments where noted"
+    },
+    {
+      "feature_id": "EXT-F-4032",
+      "tool_name": "get_computed_style",
+      "case_id": "EXT-F-4032-T01",
+      "catalog_match": "tier, admin_only, required permissions, optional permissions, and argument schema match the checked-in canonical catalog",
+      "handler_review": "current handler implementation supports the proposed input and read-only output claim",
+      "procedure_decision": "merged with evidence-backed wording adjustments where noted"
+    },
+    {
+      "feature_id": "EXT-F-4033",
+      "tool_name": "get_element_at_point",
+      "case_id": "EXT-F-4033-T01",
+      "catalog_match": "tier, admin_only, required permissions, optional permissions, and argument schema match the checked-in canonical catalog",
+      "handler_review": "current handler implementation supports the proposed input and read-only output claim",
+      "procedure_decision": "merged; coordinate hit is read-only elementFromPoint lookup and the operator must stop on coordinate drift"
+    },
+    {
+      "feature_id": "EXT-F-4034",
+      "tool_name": "inspect_element",
+      "case_id": "EXT-F-4034-T01",
+      "catalog_match": "tier, admin_only, required permissions, optional permissions, and argument schema match the checked-in canonical catalog",
+      "handler_review": "current handler implementation supports the proposed input and read-only output claim",
+      "procedure_decision": "merged; corrected impossible non-empty ancestor requirement because handler intentionally stops ancestor collection before body"
+    },
+    {
+      "feature_id": "EXT-F-4029",
+      "tool_name": "query_elements",
+      "case_id": "EXT-F-4029-T01",
+      "catalog_match": "tier, admin_only, required permissions, optional permissions, and argument schema match the checked-in canonical catalog",
+      "handler_review": "current handler implementation supports the proposed input and read-only output claim",
+      "procedure_decision": "merged; confirmed total/returned/items and requested id/data-case attributes"
+    },
+    {
+      "feature_id": "EXT-F-4044",
+      "tool_name": "get_form_fields",
+      "case_id": "EXT-F-4044-T01",
+      "catalog_match": "tier, admin_only, required permissions, optional permissions, and argument schema match the checked-in canonical catalog",
+      "handler_review": "current handler implementation supports the proposed input and read-only output claim",
+      "procedure_decision": "merged; handler masks password values as *** and emits masked/value_length metadata; no secret value is returned"
+    }
+  ],
+  "status_integrity": "preserved all test_status, defect_ids, run_ids, retest_status, and prior result receipts; no procedure was marked passed."
+}

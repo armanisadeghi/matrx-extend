@@ -1380,13 +1380,12 @@
     ]
   },
   "current_verified_checkpoint": {
-    "source_release": "0.2.139",
-    "release_commit": "ae6a3af1680148c0308d6eb285776ddafdb1039b",
-    "release_evidence_commit": "d7bebd0f",
-    "release_claim": "strict release gates passed: 1824 tests (5 skipped), compile/build, 82/82 tool definitions, migrations, Store package validation; no Chrome Web Store submission claim",
-    "local_artifact": "0.2.139 tree SHA256 20bbd42bdb782dbef2616aa0996cf947060b0117d84674de2234f8376971c19f; personal Chrome runtime reload not verified",
-    "native_notes": "independent exact-0.2.139 native run passed admin D61/D62/D63/D67/D68 plus adjacent cases; report docs/stabilization/reports/notes-queue-review.json; UI archive filter check also passed boundedly",
-    "supersession": "This is newer than docs/stabilization/STATUS.md and CHECKLIST.md coverage totals; use inventory + current coordinator/reports, not Sep 28 totals."
+    "source_release": "0.2.173",
+    "release_commit": "d6d6d6b83c937652525f473082ac2f2492c9eabe",
+    "release_claim": "Exact 0.2.173 candidate was created from verified origin/main/tag; strict release gates passed (1862 tests passed, 5 skipped; compile/typecheck, tool DB drift, migrations, package checks and Store package/risk gates passed). This is a candidate, not a Chrome Web Store submission; 0.2.130 remains pending review.",
+    "local_artifact": "Frozen 0.2.173 keyed tree SHA256 494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064; Store ZIP SHA256 1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff. Candidate receipt/hash verified; no personal Chrome runtime claim.",
+    "native_notes": "Candidate-native acceptance: signed-in non-admin Chat PASS_SCOPED on exact 0.2.173; guest UNVERIFIED because the run stopped at a tool-only-looking in-progress state before terminal answer evidence. Guest reload and signed-in-to-guest privacy transition remain unverified. Overall exact-candidate acceptance is HOLD; see docs/stabilization/reports/candidate-native-20261001.json.",
+    "supersession": "This current-artifact checkpoint supersedes the 0.2.139 release metadata; all 0.2.139 case receipts and historical results remain bound to their original build. Aggregate coverage totals below remain the dated audit snapshot, not a refreshed current inventory census."
   },
   "major_gaps_and_next_actions": [
     {
@@ -1427,7 +1426,7 @@
     },
     {
       "priority": "P2",
-      "scope": "D69–D71 latest batch",
+      "scope": "D69\u2013D71 latest batch",
       "gap": "D69 archived org visibility is bounded native-verified, but archived/stale choice and held-request paths remain open. D70 Guidance read-error/retry and D71 records cross-org runtime scope are source/release-verified; current native behavior remains unverified.",
       "next": "Use the current checkpoint/report to run only the unverified paths."
     },
