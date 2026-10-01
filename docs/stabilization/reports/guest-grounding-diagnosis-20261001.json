@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "guest-grounding-diagnosis-20261001",
+  "lane": "bounded source diagnosis and native guest runner instrumentation",
+  "status": "SOURCE_READY_NATIVE_REPRO_PENDING",
+  "prior_evidence": {
+    "candidate_version": "0.2.173",
+    "acceptance_report": "docs/stabilization/reports/guest-acceptance-final-20261001.json",
+    "observed": "The fresh guest turn reached terminal wire success and rendered a reply naming Capture, Understand, Use in order, but did not give the unpredictable opening code.",
+    "cause_verdict": "Undetermined. The earlier receipt verified the fixture and active tab only before send, so it does not distinguish a product grounding failure from fixture loss or a changed page target during execution."
+  },
+  "instrumentation": {
+    "source": [
+      "tests/browser/guest-chat-store-acceptance.mjs",
+      "tests/browser/guest-chat-completion-oracle.mjs"
+    ],
+    "records": "For each observed tool event, actual allowlisted tool name and phase, explicit tab-target classification when available, fixture URL match when returned, and booleans for opening code, follow-up code, and fixture heading in a tool result. The runner also samples readable fixture presence, page URL, and active tab identity during the turn, then samples those plus persisted assigned-tab identity at terminal.",
+    "privacy": "The report retains no raw tool arguments, tool results, page text, URLs, call IDs, run IDs, or marker values. Markers are held only in the runner and panel memory for boolean comparisons.",
+    "behavior": "The two questions, required answer terms, terminal classifier, and content assertions remain unchanged. The fixture is not reinserted during tool execution."
+  },
+  "source_checks": {
+    "result": "Diagnostic only; not resource-admitted verification",
+    "node_test": "11 of 11 focused cases passed in a direct local run, including safe tool-event projection",
+    "syntax": "node --check passed for the runner and collector",
+    "diff_check": "git diff --check passed",
+    "native_repro": "Not run in this lane pending independent source peer and resource permission"
+  },
+  "remaining": "Independently review this source, then run one admitted native attempt against the same frozen 0.2.173 artifact. Interpret a missing code only alongside terminal fixture and assigned-tab checks plus the matching page-read tool's result-marker booleans."
+}

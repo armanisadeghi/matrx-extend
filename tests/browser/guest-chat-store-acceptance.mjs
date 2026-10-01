@@ -45,6 +45,7 @@ const report = {
   failure_reason: null,
   stage_progress: [],
   guest_ai_requests: [],
+  grounding_diagnostics: {},
 };
 
 function markStage(next) {
@@ -121,7 +122,7 @@ async function observe(panel, expected = {}) {
   );
 }
 
-async function installStreamTrace(panel) {
+async function installStreamTrace(panel, fixture, fixtureTabId) {
   const installed = await evaluate(
     panel,
     `(() => {
@@ -130,11 +131,15 @@ async function installStreamTrace(panel) {
     const collector = makeCollector({
       replyCount: () => document.querySelectorAll('button[title="Copy reply"]').length,
       now: Date.now,
+      markers: ${JSON.stringify([fixture.openingCode, fixture.followupCode, fixture.title])},
+      fixtureTabId: ${JSON.stringify(fixtureTabId)},
+      fixtureUrl: ${JSON.stringify(`${WEB_ORIGIN}${DEMO_PATH}#${fixture.fragment}`)},
     });
     const listener = (message) => collector.accept(message);
     chrome.runtime.onMessage.addListener(listener);
     window.__guestChatStreamTrace = {
       snapshot: () => collector.snapshot(),
+      runIds: () => collector.runIds(),
       stop: () => chrome.runtime.onMessage.removeListener(listener),
     };
     return true;
@@ -143,12 +148,27 @@ async function installStreamTrace(panel) {
   assert.equal(installed, true, 'guest stream trace installed before send');
 }
 
-async function waitForTerminalAnswer(panel, expected) {
+async function waitForTerminalAnswer(panel, expected, probeToolBoundary = null) {
   let last = null;
   const timeline = [];
+  const toolBoundaryChecks = [];
+  let observedToolEvents = 0;
   const deadline = Date.now() + 180_000;
   while (Date.now() < deadline) {
     const state = await observe(panel, { ...expected, diagnostics: true });
+    const toolEvents = state.streamTrace?.toolEvents ?? [];
+    while (observedToolEvents < toolEvents.length) {
+      const event = toolEvents[observedToolEvents];
+      observedToolEvents += 1;
+      if (probeToolBoundary) {
+        toolBoundaryChecks.push({
+          eventIndex: observedToolEvents,
+          toolName: event.name,
+          phase: event.phase,
+          ...(await probeToolBoundary()),
+        });
+      }
+    }
     const answerTerms = expected.fixtureHeading
       ? [expected.nonce, expected.fixtureHeading]
       : [expected.nonce, ...REQUIRED_ANSWER_TERMS];
@@ -174,7 +194,7 @@ async function waitForTerminalAnswer(panel, expected) {
         streaming: state.streaming,
       });
     }
-    last = { state, verdict, timeline };
+    last = { state, verdict, timeline, toolBoundaryChecks };
     if (verdict.startsWith('terminal_')) return last;
     await new Promise((resolveWait) => setTimeout(resolveWait, 100));
   }
@@ -311,6 +331,48 @@ async function readableFixturePresent(page, fixture) {
   }, fixture);
 }
 
+async function fixtureIdentitySnapshot(attachWorker, page, fixture, fixtureTabId, panel = null) {
+  const readable = await readableFixturePresent(page, fixture).catch(() => false);
+  const pageUrlMatches = page.url() === `${WEB_ORIGIN}${DEMO_PATH}#${fixture.fragment}`;
+  const worker = await attachWorker();
+  try {
+    const response = await worker.send('Runtime.evaluate', {
+      expression: `new Promise((resolve) => chrome.tabs.query(
+        { active: true, lastFocusedWindow: true },
+        (tabs) => resolve({ id: tabs[0]?.id ?? null, url: tabs[0]?.url ?? null }),
+      ))`,
+      awaitPromise: true,
+      returnByValue: true,
+    });
+    const active = response.result?.value ?? {};
+    let assignedTabMatchesFixture = null;
+    if (panel) {
+      const runIds = await evaluate(panel, 'window.__guestChatStreamTrace?.runIds() ?? []');
+      const assignment = await worker.send('Runtime.evaluate', {
+        expression: `chrome.storage.session.get('matrx.dispatch.runs').then((values) => {
+          const rows = values['matrx.dispatch.runs'] ?? {};
+          const ids = ${JSON.stringify(runIds)};
+          return ids.map((id) => rows[id]?.assignedTabId ?? null);
+        })`,
+        awaitPromise: true,
+        returnByValue: true,
+      });
+      const assignedIds = assignment.result?.value;
+      assignedTabMatchesFixture = Array.isArray(assignedIds) && assignedIds.length > 0
+        ? assignedIds.every((id) => id === fixtureTabId) : null;
+    }
+    return {
+      readableMarkerPresent: readable,
+      pageUrlMatches,
+      activeTabMatchesFixture: active.id === fixtureTabId,
+      activeUrlMatchesFixture: active.url === `${WEB_ORIGIN}${DEMO_PATH}#${fixture.fragment}`,
+      assignedTabMatchesFixture,
+    };
+  } finally {
+    await worker.detach();
+  }
+}
+
 async function submitQuestion(panel, question, label) {
   const focused = await evaluate(
     panel,
@@ -344,12 +406,14 @@ async function requireActiveFixtureTab(attachWorker, page, fixture) {
     const result = await worker.send('Runtime.evaluate', {
       expression: `new Promise((resolve) => chrome.tabs.query(
         { active: true, lastFocusedWindow: true },
-        (tabs) => resolve(tabs[0]?.url ?? null),
+        (tabs) => resolve({ id: tabs[0]?.id ?? null, url: tabs[0]?.url ?? null }),
       ))`,
       awaitPromise: true,
       returnByValue: true,
     });
-    assert.equal(result.result?.value, page.url(), 'the nonce fixture tab must be active at send');
+    assert.equal(result.result?.value?.url, page.url(), 'the nonce fixture tab must be active at send');
+    assert.ok(Number.isInteger(result.result?.value?.id), 'fixture tab id must exist');
+    return result.result.value.id;
   } finally {
     await worker.detach();
   }
@@ -486,7 +550,6 @@ try {
 
         markStage('guest_question');
         networkWatch = await watchGuestAiRequests(panel);
-        await installStreamTrace(panel);
         const fixtureSurvivedOpen = await readableFixturePresent(web, fixture);
         if (!fixtureSurvivedOpen) {
           await installPageFixture(web, fixture);
@@ -497,12 +560,22 @@ try {
           true,
           'opening fixture must remain in the primary readable article before send',
         );
-        await requireActiveFixtureTab(attachWorker, web, fixture);
+        const fixtureTabId = await requireActiveFixtureTab(attachWorker, web, fixture);
+        await installStreamTrace(panel, fixture, fixtureTabId);
         networkWatch.arm('opening');
         await submitQuestion(panel, FIRST_QUESTION, 'opening_question');
 
         markStage('real_guest_answer');
-        const openingTurn = await waitForTerminalAnswer(panel, { nonce: fixture.openingCode });
+        const openingTurn = await waitForTerminalAnswer(
+          panel,
+          { nonce: fixture.openingCode },
+          () => fixtureIdentitySnapshot(attachWorker, web, fixture, fixtureTabId),
+        );
+        report.grounding_diagnostics.opening = {
+          toolEvents: openingTurn.state.streamTrace?.toolEvents ?? [],
+          toolBoundaryChecks: openingTurn.toolBoundaryChecks,
+          terminal: await fixtureIdentitySnapshot(attachWorker, web, fixture, fixtureTabId, panel),
+        };
         const answered = openingTurn.state;
         report.opening_turn_verdict = openingTurn.verdict;
         report.opening_turn_timeline = openingTurn.timeline;
@@ -566,7 +639,6 @@ try {
           30_000,
         );
         markStage('guest_followup_question');
-        await installStreamTrace(panel);
         networkWatch.arm('post_reload_new_conversation');
         const fixtureSurvivedReload = await readableFixturePresent(web, fixture);
         if (!fixtureSurvivedReload) {
@@ -578,14 +650,21 @@ try {
           true,
           'follow-up fixture must remain in the primary readable article before send',
         );
-        await requireActiveFixtureTab(attachWorker, web, fixture);
+        const followupFixtureTabId = await requireActiveFixtureTab(attachWorker, web, fixture);
+        await installStreamTrace(panel, fixture, followupFixtureTabId);
         await submitQuestion(panel, FOLLOWUP_QUESTION, 'followup_question');
 
         markStage('real_guest_followup_answer');
-        const followupTurn = await waitForTerminalAnswer(panel, {
-          nonce: fixture.followupCode,
-          fixtureHeading: fixture.title,
-        });
+        const followupTurn = await waitForTerminalAnswer(
+          panel,
+          { nonce: fixture.followupCode, fixtureHeading: fixture.title },
+          () => fixtureIdentitySnapshot(attachWorker, web, fixture, followupFixtureTabId),
+        );
+        report.grounding_diagnostics.followup = {
+          toolEvents: followupTurn.state.streamTrace?.toolEvents ?? [],
+          toolBoundaryChecks: followupTurn.toolBoundaryChecks,
+          terminal: await fixtureIdentitySnapshot(attachWorker, web, fixture, followupFixtureTabId, panel),
+        };
         const followup = followupTurn.state;
         report.followup_turn_verdict = followupTurn.verdict;
         report.followup_turn_timeline = followupTurn.timeline;

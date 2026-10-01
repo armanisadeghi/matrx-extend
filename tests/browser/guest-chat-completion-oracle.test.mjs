@@ -105,6 +105,32 @@ function streamEvent(runId, eventName, data) {
   return streamMessage(runId, 'event', { eventName, data });
 }
 
+test('tool diagnostics retain target and marker booleans without tool content', () => {
+  const collector = createGuestStreamCollector({
+    markers: ['OPEN-73', 'FOLLOW-92', 'Fixture heading'],
+    fixtureTabId: 21,
+    fixtureUrl: 'https://www.aimatrx.com/matrx-extend-demo#fixture',
+  });
+  collector.accept(streamEvent('run-a', 'tool_event', {
+    event: 'tool_delegated', call_id: 'private-call', tool_name: 'get_page_text',
+  }));
+  collector.accept({ __matrx: true, kind: 'tool:timeline-event', payload: {
+    callId: 'private-call', toolName: 'get_page_text', phase: 'started', args: { tab_id: '21', secret: 'NEVER-STORE' },
+  } });
+  collector.accept({ __matrx: true, kind: 'tool:timeline-event', payload: {
+    callId: 'private-call', toolName: 'get_page_text', phase: 'completed',
+    output: { url: 'https://www.aimatrx.com/matrx-extend-demo#fixture', text: 'OPEN-73 Fixture heading NEVER-STORE' },
+  } });
+  const events = collector.snapshot().toolEvents;
+  assert.deepEqual(events.at(-1), {
+    name: 'get_page_text', phase: 'completed', target: 'fixture_tab',
+    resultUrlMatchesFixture: true, resultContainsOpeningCode: true,
+    resultContainsFollowupCode: false, resultContainsFixtureHeading: true,
+  });
+  assert.equal(JSON.stringify(collector.snapshot()).includes('NEVER-STORE'), false);
+  assert.equal(JSON.stringify(collector.snapshot()).includes('OPEN-73'), false);
+});
+
 test('collector keeps failed user-request completion terminal even after end complete', () => {
   let replies = 0;
   const collector = createGuestStreamCollector({ replyCount: () => replies, now: () => 1000 });
