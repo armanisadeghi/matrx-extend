@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "status": "source_ready_native_unverified",
+  "scope": "bounded fixture-runner diagnosis; no product changes; no browser launched",
+  "historical_cause": "unrecoverable_from_recorded_artifacts",
+  "confirmed_diagnostic_defect": "Top-level catch discarded exception name, local stack locations, driverFailure and per-operation fixture state; both attempts retained only fixture_A/unclassified_runtime_failure.",
+  "evidence": {
+    "private_report": "test-results/files-saved-native-acceptance.json",
+    "fixture_receipt": "docs/stabilization/reports/saved-capture-fixture-20261001.json",
+    "resource_journals": [
+      "saved-provenance-create-20261001-1007.jsonl",
+      "saved-provenance-create-20261001-1011.jsonl"
+    ],
+    "resource_result": "Both admitted; child exit 1; no resource-invalid result",
+    "historical_fixture_sources": 0,
+    "peer_no_orphan_check": "Peer reports zero rows for both exact run markers in approved organization; no cleanup was executed."
+  },
+  "hypotheses": [
+    {
+      "rank": 1,
+      "cause": "Capture click resolves before lazy Scrape pane mounts",
+      "prediction": "Immediate snapshot has zero visible Capture text targets; post-barrier snapshot has one enabled capture control and capture proceeds",
+      "test": "Record before/after readiness during one root-admitted native attempt",
+      "status": "source_supported_unconfirmed"
+    },
+    {
+      "rank": 2,
+      "cause": "Global Capture text has multiple visible matches",
+      "prediction": "Immediate global visible count exceeds one while scoped control count is one",
+      "test": "Compare same content-free snapshots; use stable Capture control title",
+      "status": "unconfirmed"
+    },
+    {
+      "rank": 3,
+      "cause": "Navigation, identity read, or panel transport fails before Capture",
+      "prediction": "New safe diagnostic names public_page_navigation, pre_save_identity_absent, or associated transport frame before readiness",
+      "test": "Per-step diagnostic in same bounded native attempt",
+      "status": "unconfirmed"
+    },
+    {
+      "rank": 4,
+      "cause": "Capture succeeds but Save/landing UI fails",
+      "prediction": "Capture readiness is satisfied and new failure step reaches capture_result_ready, save_click, or landing_receipt_wait",
+      "test": "Per-step diagnostic in same bounded native attempt",
+      "status": "unconfirmed"
+    }
+  ],
+  "source_evidence": [
+    "App.tsx loads ScrapeView with React.lazy behind Suspense.",
+    "settings-panel-driver.mjs click fails immediately on initial target count != 1.",
+    "ScrapeView capture control has stable title and disabled state until tab page identity is available.",
+    "svg-caption-native-acceptance.mjs already waits for selected/linked/capture-ready state after opening Scrape."
+  ],
+  "change": [
+    "Record fixed fixture steps, allowlisted error name, known local stack file/line/column, and allowlisted driver fields.",
+    "Persist diagnostics in fixture and private acceptance reports.",
+    "Record immediate and post-barrier capture counts, active-pane state and enabled state.",
+    "Wait on actual active/visible/enabled control and use stable Capture title with existing trusted hit-tested driver."
+  ],
+  "safety": "Unique URL, pre-save zero rows, exact landing receipt, new-row provenance and exact-ID cleanup assertions unchanged. No row created or deleted during diagnosis.",
+  "validation": {
+    "node_syntax": "pass",
+    "native_attempt": "not_run",
+    "independent_review": "pending root-owned review",
+    "D65": "unverified"
+  },
+  "open_items": [
+    "Root independent source review",
+    "At most one resource-admitted corrected native attempt",
+    "Readiness hypothesis remains unconfirmed without native before/after evidence",
+    "Any newly created receipt-backed fixture still requires exact-ID reversible cleanup after D65"
+  ]
+}
