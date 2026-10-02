@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "report_id": "site-access-source-peer-20261002",
+  "lane": "independent implementation verifier, Sol medium, zero product authorship",
+  "reviewed_commit": "269c67dbdd349cda4b4c7b15ca9f583b3dc9a0a7",
+  "contract": "docs/stabilization/reports/site-access-recovery-20261002.json, revised design contract @33782978; scoped plan peer7a15294a",
+  "verdict_A_user_outcome": {
+    "status": "PARTIAL",
+    "source_observed": "The sidepanel App header mounts one SiteAccessControl for all visible modules. It exposes the temporary Chrome toolbar route, a separately clicked current-origin persistent request, and a separately clicked captured-tab reload. No contains(false) denial gate, timeout inference, auto-request, auto-retry, or auto-reload was added. Existing usePagePrep and SeoView page-key/run guards clear stale output on navigation.",
+    "unproven": "The new product UI and Chrome prompt have not been observed together in a native build. Existing native proof covers the frozen restricted Prepare failure, temporary activeTab positive control, and an ephemeral DevTools request button only. This source review cannot close the user outcome.",
+    "finding": "The page identity check before granting/reloading uses the last React-rendered ActiveTabInfo, not a fresh browser tab/document verification. A user who navigates or switches tabs while the popover is open can act before the asynchronous active-tab store publishes the new identity; the control can request the old site's origin or reload the old tab. The contract explicitly requires a live active-page check before reload and safe navigation before grant."
+  },
+  "verdict_B_engineering_contract": {
+    "status": "FAIL",
+    "findings": [
+      {
+        "id": "B1",
+        "severity": "Important",
+        "location": "src/components/SiteAccessControl.tsx:55-78; src/lib/permissions/site-access.ts:55-61",
+        "evidence": "request() and reload() only compare captured with currentRef.current, set from the rendered tab prop. reloadSiteAccessTarget sends chrome.tabs.reload(captured.tabId) without querying the live active tab or top-frame identity. The hook's refreshActiveTabIdentity awaits tabs.query and webNavigation.getFrame before publishing, leaving a real asynchronous window. The test simulates navigation only by rerendering before the click, so it cannot catch this race.",
+        "impact": "Wrong-site persistent permission prompt or reload of a tab/page no longer selected; the latter violates the explicit captured-target/live-active identity contract.",
+        "remedy": "Verify the live active tab, URL, and top-frame document identity at the reload boundary before calling tabs.reload, and make the grant path safe while preserving the direct user-gesture request. Add a test where browser state changes before React receives the new tab prop."
+      },
+      {
+        "id": "B2",
+        "severity": "Important",
+        "location": "src/components/SiteAccessControl.tsx:47-66; tests/unit/site-access-recovery.test.tsx",
+        "evidence": "An in-flight request completion unconditionally calls setStatus based on the captured target and currentRef. Closing/reopening the control resets status but does not invalidate the prior request; a late completion can overwrite the new session's status, including a same-document reopening or a different page's stale banner. No delayed-request/reopen test exists.",
+        "impact": "The control may tell the person a new access choice succeeded, failed, or is stale based on an earlier choice, which is misleading feedback during recovery.",
+        "remedy": "Sequence each opened control session and async action; apply a completion only if that session and captured target are still current. Cover late Allow/Deny after close, reopen, and navigation."
+      }
+    ],
+    "positive_evidence": "Grant call is synchronous in the click handler before its first await, scoped to URL origin; no manifest addition. Existing Prepare page-key/run-sequence and SEO audit-run/page-key logic support post-reload fresh work. Existing unit tests cover Allow, Deny, unsupported page/API, rerendered navigation, and a pending Prepare promise followed by reload, fresh result, and ignored late result.",
+    "test_limit": "The new connected test renders SiteAccessControl beside PrepareTab, not the App shell or SeoView. Existing seo-navigation-recovery tests cover SEO independently, but there is no connected shared-control plus SEO case promised by the contract. Structural red was a missing-module failure, not a behavior-level red. CI/import and native build verification are separate active lanes; this reviewer did not run a heavy build or browser."
+  },
+  "scope": "Source-only review of commit 269c67db against the current main checkout; no product edits and no native browser launch."
+}
