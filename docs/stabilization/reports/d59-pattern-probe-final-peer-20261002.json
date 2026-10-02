@@ -1,0 +1,51 @@
+{
+  "id": "EXT-D-0059",
+  "lane": "fresh independent source and focused-test peer",
+  "date": "2026-10-02",
+  "reviewed_commits": [
+    "c28cf7c6 Fix Showcase pattern probe ownership across document changes",
+    "e28160b4 Record D59 peer follow-up tests and restore locked dependencies"
+  ],
+  "scope": "Showcase pattern-from-data hook ownership across same-URL document replacement; not the full D59 consumer census or native acceptance",
+  "verdict_a_actual_runtime_spec": {
+    "status": "PARTIAL",
+    "scoped_source_behavior": "PASS: the hook captures a monotonically increasing conversion sequence and the actual page key. After asynchronous sample capture, probe success/failure, and stream-start failure it checks that both still belong to the active conversion before updating state. Probe finally only clears running for its owner. Reset and page changes invalidate prior ownership. The added cases establish that a late A probe resolution/rejection cannot overwrite B running/result state, B's own stream error survives a late A rejection, and A sample-capture resolution/rejection does not start stale work after B begins.",
+    "focused_test_evidence": {
+      "command": "node scripts/stabilization-resource.mjs run --run-id d59-pattern-probe-independent-20261002 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- pnpm exec vitest run --maxWorkers=1 tests/unit/pattern-from-data-document-race.test.tsx",
+      "result": "admitted; 1 file passed; 5 tests passed; exit 0; resource journal valid",
+      "journal": "docs/stabilization/resource-journals/d59-pattern-probe-independent-20261002.jsonl",
+      "run_timestamp": "2026-10-02T13:41:07Z to 2026-10-02T13:42:18Z"
+    },
+    "cannot_verify": [
+      "No installed extension was exercised on a real public page with an actual same-URL reload. Native Showcase acceptance remains unverified.",
+      "The guarded run proves the five unit regressions pass on the shared source. This peer did not independently rerun compile; the previously recorded post-frozen-install compile journal is separate evidence.",
+      "No return-expected replacement or mutation run was performed under the single granted heavy permit. The tests drive the real hook and replace Chrome execution/native messaging boundaries, but their forcing strength has not received that mutation proof in this lane."
+    ],
+    "missing": [],
+    "extra": [],
+    "misunderstood": []
+  },
+  "verdict_b_code_quality": {
+    "status": "PASS_WITH_CONCERNS",
+    "findings": [
+      {
+        "severity": "evidence_limit",
+        "location": "tests/unit/pattern-from-data-document-race.test.tsx",
+        "finding": "The prior peer's concrete concerns about B-error preservation and pending A sample capture are now covered by three added cases, and all five focused cases passed independently. The test replaces Chrome scripting and native messaging boundaries while retaining the production hook, ownership checks, parsing and state transitions. A return-expected/mutation pass was not run, so this review does not claim the full forcing-function standard has been independently established."
+      },
+      {
+        "severity": "evidence_limit",
+        "location": "docs/stabilization/reports/d59-pattern-probe-red-assertions-20261002.txt",
+        "finding": "The committed transcript shows the original two-case pre-fix run failed on the intended B-running assertion. This resolves the previous artifact's missing assertion detail by documentary evidence, but this peer did not independently rerun the pre-fix red."
+      }
+    ],
+    "source_quality": "The conversion ownership decision remains in the production hook. No host shim, duplicate implementation, or unrelated tool-routing change was introduced by the reviewed fix. The B-error and sample-capture branches have explicit outcome assertions in the follow-up tests.",
+    "authored_code_changes": false
+  },
+  "resolved_prior_peer_concerns": [
+    "B's own stream error is established before late A probe rejection and remains unchanged afterward.",
+    "Late A sample-capture resolve and reject are both exercised after B starts; neither begins a stale stream nor clears B running state or adds an error.",
+    "The original red's intended assertion is present in the captured runner transcript, although not independently replayed here."
+  ],
+  "scope_limit": "This is scoped source and unit-test evidence only. D59 remains open for installed-extension same-URL acceptance and the other page-derived consumers/modes in the campaign inventory."
+}
