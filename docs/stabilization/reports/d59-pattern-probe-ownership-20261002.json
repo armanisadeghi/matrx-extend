@@ -1,0 +1,33 @@
+{
+  "id": "EXT-D-0059",
+  "feature_id": "EXT-F-1012",
+  "scope": "Showcase AI Extract to reusable pattern conversion on same-URL document replacement",
+  "status": "source-fixed; independent review and native acceptance pending",
+  "root_cause": "usePatternFromData checked page identity before awaiting the live selector probe, but its catch and finally wrote error and running state after the wait without checking that the conversion still owned those writes. Its sample-capture wait also read a mutable shared page key, so a new conversion could make an old capture look current.",
+  "census": {
+    "fixed_in_hook": [
+      "sample HTML capture completion and error",
+      "stream-start failure",
+      "selector probe success, no-match, failure, and final running state",
+      "reset and page-change invalidation"
+    ],
+    "working_siblings_inspected": [
+      "useExtraction checks its own request sequence and current page before committing rows or error",
+      "useAiExtraction checks current page before accepting stream chunks"
+    ],
+    "outside_scope": "Other D59 live page consumers and Showcase native matrix remain open."
+  },
+  "engineering_evidence": {
+    "red": "docs/stabilization/resource-journals/d59-pattern-probe-red2-20261002.jsonl: admitted, both real-hook late-probe cases failed on B running state",
+    "green": "docs/stabilization/resource-journals/d59-pattern-probe-positive-20261002.jsonl: admitted, two cases passed including a positive B probe/result",
+    "format": "Biome check on the two changed source/test files passed with no fixes remaining",
+    "typecheck": "docs/stabilization/resource-journals/d59-pattern-probe-compile-20261002.jsonl: admitted child failure in unrelated @ai-matrx/agents/matrx imports from stream.ts, rejoin.ts and useCartesiaSpeaker.ts; no changed-file error",
+    "commit": "c28cf7c6"
+  },
+  "remaining": [
+    "Independent source review of the conversion ownership and test quality",
+    "Integrated typecheck after installed package exports are reconciled",
+    "Installed extension retest on a real repeated-card page for A/B same-URL reload and old success/failure",
+    "Other D59 consumers and modes in the campaign inventory"
+  ]
+}
