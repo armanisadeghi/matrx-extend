@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "report_id": "d58-native-20261002",
+  "defect_id": "EXT-D-0058",
+  "status": "native_partial",
+  "artifact": {
+    "version": "0.2.173",
+    "source_sha": "d6d6d6b83c937652525f473082ac2f2492c9eabe",
+    "source_commit_descends_from_repair": "78041e1632088a100476b33cb082e51f1bdbdf9a",
+    "directory": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/chrome-mv3-keyed",
+    "receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/release-receipt-frozen.json",
+    "tree_sha256": "494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064"
+  },
+  "runtime": {
+    "browser": "Chrome for Testing 149.0.7827.55",
+    "profile": "/Volumes/Samsung2TB/code/.stabilization-scratch/cft-profile-d58-frozen173",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version_verified_in_chrome_extensions": "0.2.173",
+    "source_path_verified_in_chrome_extensions": true,
+    "persona": "admin@admin.com / ADMIN verified in extension Settings",
+    "guard_journal": "docs/stabilization/resource-journals/showcase-d58-frozen173-native-20261002-01.jsonl",
+    "guard_decision": "valid",
+    "guard_admitted_at": "2026-10-02T15:52:30.470Z",
+    "guard_stopped_at": "2026-10-02T15:58:53.852Z",
+    "resource_invalid": false
+  },
+  "cases": {
+    "initial_page_a_success": {
+      "status": "pass",
+      "page": "https://nuxt.com/docs/4.x/getting-started/introduction",
+      "visible_result": "Prepared in 1006ms; banners dismissed 0; load-more clicks 0; scroll steps 4"
+    },
+    "reset_control": {
+      "status": "not_exposed",
+      "evidence": "The native Prepare tab exposed the three option toggles, Prepare page button, and report. It had no Reset control. The hook's reset callback is not wired into PrepareTab in this artifact."
+    },
+    "restricted_site_access_retry": {
+      "status": "unverified_injection_error",
+      "trigger": "Changed Matrx Extend site access for nuxt.com to Ask on every visit (Chrome wording: runs only after you click the extension), then reloaded as Chrome required.",
+      "observed": "After reload, the prior report was absent. Prepare was clicked; the UI stayed at Preparing… with no visible error during observation. Site permission was restored to Always on for nuxt.com, page reloaded, and a new Prepare run succeeded in 1008ms with 4 scroll steps.",
+      "limitation": "The permission-denial trigger did not produce the expected visible injection error; no rejection claim is made. The required reload cleared the prior report before retry, so same-document stale-report clearing under rejection was not isolated."
+    },
+    "page_a_to_b_ordering": {
+      "status": "unverified_late_completion",
+      "page_b": "https://nuxt.com/docs/4.x/getting-started/installation",
+      "observed": "Started Prepare on page A and navigated immediately to B in one native interaction sequence. The next observed state was page B and contained no A report or error.",
+      "limitation": "A visibly pending window was not established at navigation, so this does not prove a late A completion was discarded. Controlled native ordering remains unverified."
+    }
+  },
+  "limitations": [
+    "No Reset control is exposed in the native Prepare UI for this frozen artifact.",
+    "Chrome's restricted site-access retry remained in Preparing… without a visible injection error; this path is unverified.",
+    "Prepare completes in about one second on the fixture; A-to-B navigation did not establish an observable late-result race window.",
+    "Same-tab same-URL reload identity remains separately tracked by EXT-D-0059."
+  ],
+  "evidence_source": "Native CUA observations in the exact guarded Chrome for Testing profile; resource decision and closure are in the linked guard journal.",
+  "readiness_packet": "docs/stabilization/reports/d58-retest-readiness-20261002.json"
+}
