@@ -1373,6 +1373,15 @@ Every entry follows this shape:
 - **Edge cases:** empty/duplicate schema field names block Extract with an
   inline warning; agent dropdown shows "Loading agents…".
 
+### Showcase — pattern conversion survives a same-URL reload (EXT-D-0059)
+- **Where to test:** Showcase → AI Extract on a real page with repeated cards.
+- **Steps:** Extract rows, start Convert to reusable pattern, reload the same URL
+  while the old pattern is being verified, then extract and convert again on the
+  new document. Repeat with the old verification resolving and failing late.
+- **Expected:** The old verification neither reports success or error on the new
+  page nor stops the new conversion's progress. Only the new document's probe
+  can produce a verified pattern and live row.
+
 ### Showcase — List Pattern tab
 - **What it does:** Two-phase visual picker (click one example item → click
   fields inside) producing a reusable CSS config.

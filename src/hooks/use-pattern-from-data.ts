@@ -143,6 +143,7 @@ export function usePatternFromData() {
   const tabIdRef = useRef<number | null>(null);
   const documentIdRef = useRef<string | null>(null);
   const runPageKeyRef = useRef<string | null>(null);
+  const conversionSeqRef = useRef(0);
   const [resultPageKey, setResultPageKey] = useState<string | null>(null);
   // Stall watchdog (mirrors useAiExtraction): without it, a stream dying
   // with no terminal done/error chunk left "Generate pattern" spinning
@@ -163,46 +164,50 @@ export function usePatternFromData() {
 
   // The agent writes selectors from sample HTML — they can look plausible
   // and match NOTHING live (audit K3). Probe before declaring success.
-  const validateAndCommit = useCallback(async (parsed: PatternFromDataResult) => {
-    const tabId = tabIdRef.current;
-    if (!tabId || !isCurrentPageIdentity(runPageKeyRef.current)) {
-      setRunning(false);
-      return;
-    }
-    try {
-      const r = await chrome.scripting.executeScript({
-        target: { tabId, documentIds: [documentIdRef.current!] },
-        func: probeFirstRowInPage,
-        args: [parsed.config],
-      });
-      const probe = (r?.[0]?.result ?? null) as Record<string, string | null> | null;
-      if (!probe) {
+  const validateAndCommit = useCallback(
+    async (parsed: PatternFromDataResult, conversionSeq: number, pageKey: string) => {
+      const isCurrentConversion = () =>
+        conversionSeq === conversionSeqRef.current && isCurrentPageIdentity(pageKey);
+      const tabId = tabIdRef.current;
+      const documentId = documentIdRef.current;
+      if (!tabId || !documentId || !isCurrentConversion()) return;
+      try {
+        const r = await chrome.scripting.executeScript({
+          target: { tabId, documentIds: [documentId] },
+          func: probeFirstRowInPage,
+          args: [parsed.config],
+        });
+        if (!isCurrentConversion()) return;
+        const probe = (r?.[0]?.result ?? null) as Record<string, string | null> | null;
+        if (!probe) {
+          setError(
+            'The generated selectors matched nothing on the live page. Try again with a clearer description, or build the pattern manually in the List Pattern tab.',
+          );
+          setRawResponse((prev) => prev); // keep raw for debugging
+          return;
+        }
+        const matchedFields = Object.values(probe).filter((v) => v != null).length;
+        if (matchedFields === 0) {
+          setError(
+            'The generated item selector matched, but none of its field selectors produced a value. Refine in the List Pattern tab.',
+          );
+          return;
+        }
+        setLiveProbe(probe);
+        setResult(parsed);
+        setResultPageKey(pageKey);
+      } catch (e) {
+        if (!isCurrentConversion()) return;
+        // Probe failure (restricted page, navigation) — surface, don't bless.
         setError(
-          'The generated selectors matched nothing on the live page. Try again with a clearer description, or build the pattern manually in the List Pattern tab.',
+          `Could not verify the pattern on the page: ${e instanceof Error ? e.message : String(e)}`,
         );
-        setRawResponse((prev) => prev); // keep raw for debugging
-        return;
+      } finally {
+        if (isCurrentConversion()) setRunning(false);
       }
-      const matchedFields = Object.values(probe).filter((v) => v != null).length;
-      if (matchedFields === 0) {
-        setError(
-          'The generated item selector matched, but none of its field selectors produced a value. Refine in the List Pattern tab.',
-        );
-        return;
-      }
-      if (!isCurrentPageIdentity(runPageKeyRef.current)) return;
-      setLiveProbe(probe);
-      setResult(parsed);
-      setResultPageKey(runPageKeyRef.current);
-    } catch (e) {
-      // Probe failure (restricted page, navigation) — surface, don't bless.
-      setError(
-        `Could not verify the pattern on the page: ${e instanceof Error ? e.message : String(e)}`,
-      );
-    } finally {
-      setRunning(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
   useEffect(() => {
     return on<StreamChunk, { ack: true }>(CHANNELS.STREAM_CHUNK, (chunk) => {
@@ -227,8 +232,10 @@ export function usePatternFromData() {
           if (!Array.isArray(parsed.config.field_paths) || parsed.config.field_paths.length === 0) {
             throw new Error('Agent response has no field_paths.');
           }
+          const pageKey = runPageKeyRef.current;
+          if (!pageKey) return { ack: true };
           // setRunning(false) happens inside validateAndCommit.
-          void validateAndCommit(parsed);
+          void validateAndCommit(parsed, conversionSeqRef.current, pageKey);
           runIdRef.current = null;
           return { ack: true };
         } catch (e) {
@@ -257,6 +264,10 @@ export function usePatternFromData() {
       }
 
       setRunning(true);
+      const conversionSeq = ++conversionSeqRef.current;
+      const pageKey = tab.pageKey;
+      const isCurrentConversion = () =>
+        conversionSeq === conversionSeqRef.current && isCurrentPageIdentity(pageKey);
       setError(null);
       setResult(null);
       setLiveProbe(null);
@@ -274,8 +285,9 @@ export function usePatternFromData() {
           func: captureSampleHtmlInPage,
         });
         sampleHtml = (r?.[0]?.result as string[] | undefined) ?? [];
-        if (!isCurrentPageIdentity(runPageKeyRef.current)) return;
+        if (!isCurrentConversion()) return;
       } catch (e) {
+        if (!isCurrentConversion()) return;
         setError(`Could not capture sample HTML: ${e instanceof Error ? e.message : String(e)}`);
         setRunning(false);
         return;
@@ -328,15 +340,22 @@ export function usePatternFromData() {
           permissionMode: 'auto',
         });
       } catch (e) {
+        if (!isCurrentConversion()) return;
         setError(`Failed to start agent: ${e instanceof Error ? e.message : String(e)}`);
         setRunning(false);
         runIdRef.current = null;
       }
     },
-    [tab.id, tab.url, tab.title, tab.documentId, tab.pageKey],
+    [tab.id, tab.url, tab.title, tab.documentId, tab.pageKey, tab.identityError],
   );
 
   const reset = useCallback(() => {
+    conversionSeqRef.current += 1;
+    const runId = runIdRef.current;
+    runIdRef.current = null;
+    watchdogRef.current?.stop();
+    if (runId) void send(CHANNELS.STREAM_CANCEL, { runId }).catch(() => {});
+    setRunning(false);
     setResult(null);
     setLiveProbe(null);
     setError(null);
@@ -344,6 +363,8 @@ export function usePatternFromData() {
   }, []);
 
   useEffect(() => {
+    if (runPageKeyRef.current === tab.pageKey) return;
+    conversionSeqRef.current += 1;
     const runId = runIdRef.current;
     runIdRef.current = null;
     runPageKeyRef.current = null;
