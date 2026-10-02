@@ -1,0 +1,14 @@
+{
+  "$comment": "Shrink-only baseline of the retired-words guard (check_retired_words.py / check-retired-words.ts). Every entry is an EXISTING use of a retired word; it only ever gets smaller. A new use is fixed, never added here.",
+  "words_file": "common-docs/systems/platform/vocabulary/retired-words.json",
+  "static": {
+    "graveyard": {
+      "docs/stabilization/reports/package-catchup-008-peer.json": 1,
+      "docs/stabilization/reports/package-catchup-008.json": 1
+    },
+    "is-personal": {
+      "docs/stabilization/reports/package-catchup-005-peer.json": 1,
+      "scripts/check-org-default-ban.ts": 9
+    }
+  }
+}
