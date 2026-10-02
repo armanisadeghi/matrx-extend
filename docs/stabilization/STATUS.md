@@ -1,12 +1,12 @@
 # Extension stabilization status
 
-Generated 2026-10-02 17:34 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T17:34:08.674571+00:00. 205 features · 738 cases · 1322 controls · 78 linked defect records.
+Generated 2026-10-02 17:41 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T17:41:20.170172+00:00. 205 features · 738 cases · 1322 controls · 78 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1179** — Pass: 58 · Partial: 40 · Fail: 2 · Unverified: 1078 · N/A: 1.
+Applicable case-by-role slots: **1179** — Pass: 58 · Partial: 41 · Fail: 1 · Unverified: 1078 · N/A: 1.
 Unverified splits into **127 explicitly marked unverified** and **951 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
@@ -18,7 +18,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Development installation](#development-installation) | 1 | 1 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 1 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 2, partial 0, fail 0, unverified 16, n/a 0 | 1 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 7, partial 1, fail 0, unverified 14, n/a 0 | 1 |
 | [Release infrastructure](#release-infrastructure) | 1 | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 24, partial 0, fail 0, unverified 6, n/a 0 | 0 |
-| [Navigation / shell](#navigation--shell) | 1 | 1 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 3, fail 0, unverified 20, n/a 0 | 1 |
+| [Navigation / shell](#navigation--shell) | 1 | 1 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 3, fail 0, unverified 20, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 11 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 7 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | pass 18, partial 0, fail 0, unverified 54, n/a 1 | 0 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 32, n/a 0 | 0 |
@@ -29,7 +29,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 3 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 0 |
-| [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 26 partial · 1 fail · 30 unverified · 0 deferred; 0/1 full | pass 1, partial 26, fail 1, unverified 30, n/a 0 | 13 |
+| [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 27 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | pass 1, partial 27, fail 0, unverified 30, n/a 0 | 12 |
 | [Token broker](#token-broker) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 9, n/a 0 | 0 |
 | [Content-page overlays / context menus / commands](#content-page-overlays--context-menus--commands) | 1 | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 57, n/a 0 | 0 |
 | [Profile/auth/org picker](#profileauthorg-picker) | 1 | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
@@ -246,9 +246,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: Unverified · member: Unverified · admin: Partial. **Cases:** 18. **Controls:** 8.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0078
+**Next:** Finish the missing criteria and repeat the partial case in the extension.
 
-**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0026](defects/EXT-D-0026.json) (closed), [EXT-D-0078](defects/EXT-D-0078.json) (fixed)
+**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0026](defects/EXT-D-0026.json) (closed), [EXT-D-0078](defects/EXT-D-0078.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -281,8 +281,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: site-access-native-acceptance-20261002-01, docs/stabilization/reports/site-access-native-acceptance-20261002.json
 - EXT-F-1001-T17 · admin: Partial. Actual product opened Chrome origin prompt; Deny and later Allow showed correct states. Temporary per-visit Prepare succeeded757ms/3scrollsteps. No in-product contains=false measurement; pending grant navigation and unsupported path unverified.
   Evidence / build / date recorded: site-access-native-acceptance-20261002-01, docs/stabilization/reports/site-access-native-acceptance-20261002.json
-- EXT-F-1001-T18 · admin: Partial. Explicit product Reload page reloaded target; populated IANA SEO remained after reload. Original withheld-action recovery not established in run01, second bounded native run pending.
-  Evidence / build / date recorded: site-access-native-acceptance-20261002-01, docs/stabilization/reports/site-access-native-acceptance-20261002.json
+- EXT-F-1001-T18 · admin: Partial. Independent second native run reproduced withheld pending Prepare; product grant + explicit target reload cleared busy view and fresh Prepare succeeded756ms/3steps. First run showed actual SEO after reload. Late original completion, other roles and unsupported paths remain unverified.
+  Evidence / build / date recorded: site-access-native-recovery-20261002-02, docs/stabilization/reports/site-access-native-acceptance-20261002.json
 
 
 ## Popup / options / mic permission
@@ -900,11 +900,11 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Discover, save and replay site extraction patterns (EXT-F-1012)
 
-**Role status:** guest: N/A · member: N/A · admin: Fail. **Cases:** 59. **Controls:** 49.
+**Role status:** guest: N/A · member: N/A · admin: Partial. **Cases:** 59. **Controls:** 49.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0040, EXT-D-0041, EXT-D-0042, EXT-D-0043, EXT-D-0044, EXT-D-0046, EXT-D-0047, EXT-D-0048, EXT-D-0054, EXT-D-0057, EXT-D-0058, EXT-D-0059, EXT-D-0078
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0040, EXT-D-0041, EXT-D-0042, EXT-D-0043, EXT-D-0044, EXT-D-0046, EXT-D-0047, EXT-D-0048, EXT-D-0054, EXT-D-0057, EXT-D-0058, EXT-D-0059
 
-**Linked defects:** [EXT-D-0039](defects/EXT-D-0039.json) (closed), [EXT-D-0040](defects/EXT-D-0040.json) (fixed), [EXT-D-0041](defects/EXT-D-0041.json) (fixed), [EXT-D-0042](defects/EXT-D-0042.json) (in-fix), [EXT-D-0043](defects/EXT-D-0043.json) (fixed), [EXT-D-0044](defects/EXT-D-0044.json) (fixed), [EXT-D-0045](defects/EXT-D-0045.json) (closed), [EXT-D-0046](defects/EXT-D-0046.json) (fixed), [EXT-D-0047](defects/EXT-D-0047.json) (in-fix), [EXT-D-0048](defects/EXT-D-0048.json) (fixed), [EXT-D-0049](defects/EXT-D-0049.json) (closed), [EXT-D-0050](defects/EXT-D-0050.json) (closed), [EXT-D-0052](defects/EXT-D-0052.json) (closed), [EXT-D-0053](defects/EXT-D-0053.json) (closed), [EXT-D-0054](defects/EXT-D-0054.json) (fixed), [EXT-D-0055](defects/EXT-D-0055.json) (closed), [EXT-D-0057](defects/EXT-D-0057.json) (fixed), [EXT-D-0058](defects/EXT-D-0058.json) (in-fix), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0078](defects/EXT-D-0078.json) (fixed)
+**Linked defects:** [EXT-D-0039](defects/EXT-D-0039.json) (closed), [EXT-D-0040](defects/EXT-D-0040.json) (fixed), [EXT-D-0041](defects/EXT-D-0041.json) (fixed), [EXT-D-0042](defects/EXT-D-0042.json) (in-fix), [EXT-D-0043](defects/EXT-D-0043.json) (fixed), [EXT-D-0044](defects/EXT-D-0044.json) (fixed), [EXT-D-0045](defects/EXT-D-0045.json) (closed), [EXT-D-0046](defects/EXT-D-0046.json) (fixed), [EXT-D-0047](defects/EXT-D-0047.json) (in-fix), [EXT-D-0048](defects/EXT-D-0048.json) (fixed), [EXT-D-0049](defects/EXT-D-0049.json) (closed), [EXT-D-0050](defects/EXT-D-0050.json) (closed), [EXT-D-0052](defects/EXT-D-0052.json) (closed), [EXT-D-0053](defects/EXT-D-0053.json) (closed), [EXT-D-0054](defects/EXT-D-0054.json) (fixed), [EXT-D-0055](defects/EXT-D-0055.json) (closed), [EXT-D-0057](defects/EXT-D-0057.json) (fixed), [EXT-D-0058](defects/EXT-D-0058.json) (in-fix), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0078](defects/EXT-D-0078.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -915,7 +915,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1012-T05 Recipes show all | N/A | N/A | Unverified | EXT-F-1012-C05 |
 | EXT-F-1012-T06 Apply recipe | N/A | N/A | Unverified | EXT-F-1012-C06 |
 | EXT-F-1012-T07 Prepare option switches | N/A | N/A | Unverified | EXT-F-1012-C07 |
-| EXT-F-1012-T08 Run Prepare | N/A | N/A | Fail | EXT-F-1012-C08 |
+| EXT-F-1012-T08 Run Prepare | N/A | N/A | Partial | EXT-F-1012-C08 |
 | EXT-F-1012-T09 Run Snapshot | N/A | N/A | Unverified | EXT-F-1012-C09 |
 | EXT-F-1012-T10 JSON-LD quick filters | N/A | N/A | Partial | EXT-F-1012-C10 |
 | EXT-F-1012-T11 Run JSON-LD extraction | N/A | N/A | Partial | EXT-F-1012-C11 |
@@ -972,8 +972,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 - EXT-F-1012-T04 · admin: Partial.
   Evidence / build / date recorded: showcase-installed-d43-001, docs/stabilization/runs/showcase-installed-d43-001.json
-- EXT-F-1012-T08 · admin: Fail. Ordinary and temporary-grant Prepare success observed, but withheld-site injection stays pending without recovery action (D78). D58 late-result and reset acceptance remain unverified.
-  Evidence / build / date recorded: prepare-denial-probe-20261002-01, ['docs/stabilization/reports/d58-native-20261002.json', 'docs/stabilization/reports/prepare-denial-diagnosis-20261002.json', 'docs/stabilization/resource-journals/prepare-denial-probe-20261002-01.jsonl']
+- EXT-F-1012-T08 · admin: Partial. Withheld-access Prepare original D78 failure repaired: explicit product grant/reload then fresh Prepare756ms/3steps. Normal and temporary-grant success also observed. D58 late completion and all remaining Prepare dimensions not certified.
+  Evidence / build / date recorded: site-access-native-recovery-20261002-02, docs/stabilization/reports/site-access-native-acceptance-20261002.json
 - EXT-F-1012-T10 · admin: Partial. Type chip and blank/matching/nonexistent filters verified on actual Google Article page. Auth-transition, service-error and broader chips remain unverified.
   Evidence / build / date recorded: showcase-structured-journal-retest-20260928, ['docs/stabilization/reports/showcase-structured-journal-retest.json']
 - EXT-F-1012-T11 · admin: Partial. Blank/matching returned current BreadcrumbList; nonexistent shows honest no-match; changed-page live no-JSONLD state verified. Auth/fault dimensions remain unverified.

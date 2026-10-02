@@ -18,12 +18,14 @@
     "docs/stabilization/reports/prepare-denial-diagnosis-20261002.json",
     "docs/stabilization/resource-journals/prepare-denial-probe-20261002-01.jsonl",
     "docs/stabilization/reports/site-access-recovery-20261002.json",
-    "docs/stabilization/reports/site-access-final-source-peer-20261002.json"
+    "docs/stabilization/reports/site-access-final-source-peer-20261002.json",
+    "docs/stabilization/reports/site-access-native-acceptance-20261002.json",
+    "docs/stabilization/runs/site-access-native-recovery-20261002-02.json"
   ],
   "severity": "S2: restricted-site users cannot finish page preparation without discovering Chrome access controls themselves",
   "priority": "P1: confirmed contained-surface blocker, shared recovery class",
-  "state": "fixed",
-  "verification_status": "Source repair65f6840a independently accepted;26 focused tests and guarded typecheck passed. Integrated CI37039513091 succeeded. Exact development artifact source2a5fbe64 imported; independent native product retest running. No native repair pass or closure claimed.",
+  "state": "closed",
+  "verification_status": "CLOSED for original admin withheld Prepare recovery on exact imported175/source2a5fbe64. Independent native runs show real permission Deny/Allow, temporary per-visit success, withheld pending \u2192 explicit grant \u2192 product reload \u2192 successful fresh Prepare. Guest/member, unsupported/non-HTTP paths and D58 late-result behavior remain tracked/unverified.",
   "transition_history": [
     {
       "at": "2026-10-02T16:18:47.855749+00:00",
@@ -48,7 +50,31 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Shared Site access grant/reload repair65f6840a accepted by independent source review and integrated CI. Native acceptance remains a separate pending step."
+    },
+    {
+      "at": "2026-10-02T17:41:20.170172+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent native tester reproduced withheld Prepare on exact imported175, then product grant, explicit reload and fresh Prepare succeeded756ms/3steps. Surrounding Deny/Allow, temporary per-visit access, SEO and navigation passed in first run."
+    },
+    {
+      "at": "2026-10-02T17:41:20.170172+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original admin defect and bounded surrounding flows verified on source2a5fbe64; fresh source review accepted. Broader shell role/case coverage and D58 late-result lifecycle remain explicitly incomplete."
     }
   ],
-  "related_feature_ids": ["EXT-F-1001"]
+  "related_feature_ids": ["EXT-F-1001"],
+  "retest_results": {
+    "admin": {
+      "status": "pass_bounded",
+      "run_ids": [
+        "site-access-native-acceptance-20261002-01",
+        "site-access-native-recovery-20261002-02"
+      ],
+      "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
+      "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
+      "evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json"
+    }
+  }
 }

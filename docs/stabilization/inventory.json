@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-02T17:34:08.674571+00:00",
+  "updated_at": "2026-10-02T17:41:20.170172+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -2383,8 +2383,8 @@
             },
             "admin": {
               "status": "partial",
-              "run_id": "site-access-native-acceptance-20261002-01",
-              "detail": "Explicit product Reload page reloaded target; populated IANA SEO remained after reload. Original withheld-action recovery not established in run01, second bounded native run pending.",
+              "run_id": "site-access-native-recovery-20261002-02",
+              "detail": "Independent second native run reproduced withheld pending Prepare; product grant + explicit target reload cleared busy view and fresh Prepare succeeded756ms/3steps. First run showed actual SEO after reload. Late original completion, other roles and unsupported paths remain unverified.",
               "evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json",
               "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
               "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233"
@@ -15895,15 +15895,12 @@
           ],
           "results": {
             "admin": {
-              "status": "fail",
-              "run_id": "prepare-denial-probe-20261002-01",
-              "artifact_version": "0.2.173",
-              "detail": "Ordinary and temporary-grant Prepare success observed, but withheld-site injection stays pending without recovery action (D78). D58 late-result and reset acceptance remain unverified.",
-              "evidence": [
-                "docs/stabilization/reports/d58-native-20261002.json",
-                "docs/stabilization/reports/prepare-denial-diagnosis-20261002.json",
-                "docs/stabilization/resource-journals/prepare-denial-probe-20261002-01.jsonl"
-              ]
+              "status": "partial",
+              "run_id": "site-access-native-recovery-20261002-02",
+              "evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json",
+              "detail": "Withheld-access Prepare original D78 failure repaired: explicit product grant/reload then fresh Prepare756ms/3steps. Normal and temporary-grant success also observed. D58 late completion and all remaining Prepare dimensions not certified.",
+              "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
+              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233"
             }
           },
           "result_history": [
@@ -15914,6 +15911,18 @@
                 "docs/stabilization/reports/prepare-source-audit.json"
               ],
               "detail": "Source-derived defects D57/D58 cover absent reports, stale retry success and late page results. Runtime and native reproduction not yet executed; no UI pass/fail assigned."
+            },
+            {
+              "mode": "admin",
+              "status": "fail",
+              "run_id": "prepare-denial-probe-20261002-01",
+              "artifact_version": "0.2.173",
+              "detail": "Ordinary and temporary-grant Prepare success observed, but withheld-site injection stays pending without recovery action (D78). D58 late-result and reset acceptance remain unverified.",
+              "evidence": [
+                "docs/stabilization/reports/d58-native-20261002.json",
+                "docs/stabilization/reports/prepare-denial-diagnosis-20261002.json",
+                "docs/stabilization/resource-journals/prepare-denial-probe-20261002-01.jsonl"
+              ]
             }
           ]
         },
