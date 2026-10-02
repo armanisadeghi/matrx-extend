@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "scope": "Guest SEO native side panel on public pages, using the frozen release artifact",
+  "artifact": {
+    "version": "0.2.173",
+    "tree_sha256": "494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064",
+    "extension_dir": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/chrome-mv3-keyed",
+    "receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/release-receipt-frozen.json"
+  },
+  "execution": {
+    "command": ["node", "scripts/stabilization-resource.mjs", "run", "--run-id", "<unique run id>", "--profile-dir", "/Volumes/Samsung2TB/code/.stabilization-scratch", "--", "node", "tests/browser/seo-guest-acceptance.mjs"],
+    "environment": {
+      "TMPDIR": "/Volumes/Samsung2TB/code/.stabilization-scratch",
+      "SEO_GUEST_METADATA_FIXTURE": "airbnb",
+      "SEO_GUEST_EXTENSION_DIR": "frozen artifact directory above",
+      "SEO_GUEST_RELEASE_RECEIPT": "frozen receipt above"
+    },
+    "shell_wrapped_child": false,
+    "attempts": [
+      {
+        "run_id": "seo-guest-frozen-20261002T135952Z",
+        "resource_decision": "admitted; child_failed; permit released",
+        "child_exit_code": 1,
+        "fixture_wait_seconds": 30,
+        "acceptance_path": "docs/stabilization/runs/seo-guest-frozen-20261002T135952Z.acceptance.json",
+        "acceptance_sha256": "8d565a1223d7f480962199297feddcbff8770415fc9b458f351ee5e33a075583",
+        "resource_journal_path": "docs/stabilization/resource-journals/seo-guest-frozen-20261002T135952Z.jsonl",
+        "resource_journal_sha256": "5081d439691f56e346af293c809f9804ba292ecbb28fe0d2fed9789d7383184e"
+      },
+      {
+        "run_id": "seo-guest-frozen-20261002T140308Z",
+        "resource_decision": "admitted; child_failed; permit released",
+        "child_exit_code": 1,
+        "fixture_wait_seconds": 60,
+        "acceptance_path": "docs/stabilization/runs/seo-guest-frozen-20261002T140308Z.acceptance.json",
+        "acceptance_sha256": "b04782c190f38a557b3ede72fb6362847b0b424174a4f3b8ed9b094b6eba5231",
+        "resource_journal_path": "docs/stabilization/resource-journals/seo-guest-frozen-20261002T140308Z.jsonl",
+        "resource_journal_sha256": "83196df56f938d4687d4e870ee8eaef0b39d5b9cc4662984df74b14c950750d9"
+      }
+    ]
+  },
+  "result": {
+    "status": "unverified",
+    "passing_bounded_subtargets_per_attempt": 16,
+    "unverified_bounded_subtargets_per_attempt": 1,
+    "failure_stage_both_attempts": "metadata_fixture_audit_wait",
+    "last_observation_both_attempts": {
+      "page_url_matches_fixture": true,
+      "public_title_stable": true,
+      "seo_title_present": false,
+      "re_audit_enabled": false,
+      "audit_error_visible": false
+    },
+    "passing_evidence": [
+      "T01: two distinct public titles, URL navigation and panel reload use the current page",
+      "T02: trusted manual re-audit preserves the current public-page title",
+      "T03: about:blank clears the previous audit and public navigation recovers",
+      "T07: guest menu offers text and AI choices and hides JSON, including after reload",
+      "T09: sparse and rich detail groups match independent public DOM observations; MDN canonical link opens the expected public tab by trusted pointer",
+      "T09: Wikipedia manual audit matches 1786 internal and 410 external links, 29 images with 10 missing alt attributes, populated readability display, and 200 / 913 ms / 121 KB performance display"
+    ],
+    "wikipedia_metadata_doors": "unverified: public DOM exposed no alternate hreflang links",
+    "airbnb_metadata_doors": "unverified: automatic audit did not complete within either bounded wait, so no manual comparison or outbound activation occurred"
+  },
+  "interpretation": "The Airbnb continuation failed twice while the owned page had a stable public title and the SEO panel remained in its running state. The evidence does not distinguish unusually slow page capture from a stuck capture. No product defect or full case pass is claimed. The temporary 60-second test wait was reverted after the second failure.",
+  "remaining": "Investigate why this public page capture remains in progress; then repeat the metadata-door observation on a current artifact. T01-T14 and member/admin coverage remain unverified as whole cases."
+}
