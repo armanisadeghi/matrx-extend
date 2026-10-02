@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "lane": "EXT-D-0083 fresh independent final peer",
+  "reviewed_commits": ["4a852cf5", "38bbe4b4", "9262c1c4"],
+  "verdict_a_acceptance": {
+    "status": "PASS_SOURCE_RUNTIME_UNVERIFIED",
+    "evidence": [
+      "sample() obtains disk readings for the checkout, profile, actual lease root, and independent / path; preflight and watchdog both pass those readings through reasons() and diskIsLow() against the unchanged 20 GiB floor.",
+      "persistSafetyState() sets safetyStateBroken, resourceInvalid and exit code 3 before rethrowing. The running guard's finally block attempts to stop token-owned processes and the process group, and does not release the heavy lease when safetyStateBroken is true.",
+      "The final journal decision uses resourceInvalid and exit code 3. Marker contents and the underlying write error text are absent from emitted diagnostics."
+    ],
+    "unverified": "No local guard, test, build, or browser run was attempted: the internal volume remained below the existing 20 GiB floor. A hosted run and native observation are still required for runtime acceptance."
+  },
+  "verdict_b_quality": {
+    "status": "PARTIAL",
+    "strengths": [
+      "The helper test supplies different external and system free-space values, asserts the sampled paths and threshold boundary, and separately checks a low lease volume.",
+      "The macOS process regression copies and launches the real guard with a live owned child, makes an existing hold marker unwritable after admission, and asserts the named failure event, invalid final journal decision, exit 3, retained owner lease, and terminated child.",
+      "The process regression runs in a separate macOS CI job with no dependency install, using Node 22; its copied policy preserves the 20 GiB floor."
+    ],
+    "findings": [
+      {
+        "severity": "important",
+        "id": "disk_admission_and_watchdog_lack_process_seam_proof",
+        "evidence": "The injected low-system-volume input reaches sampleDiskSpace() and diskIsLow() directly, but no process fixture drives that input through preflight or watchdog. Deleting the diskIsLow() call in reasons() would leave the new helper tests green, and the marker-failure process test could still pass on a healthy host.",
+        "action": "On a healthy host, add a copied-guard process case with controlled system-volume readings that proves refusal before launch and a second case that proves watchdog stop after admission. Show each case fail when its reasons() disk call is removed."
+      }
+    ],
+    "hosted_workflow_limit": "The macOS job's copied guard samples the hosted runner's real / volume and retains the 20 GiB admission floor. The workflow does not establish that runner free space meets the floor, so CI results must be observed before treating this as reliable hosted evidence."
+  },
+  "review_method": "Static source and diff review only; no tests, guard invocation, build, browser run, or mutation was performed because local internal free space was below the guard floor."
+}
