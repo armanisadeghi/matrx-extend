@@ -2284,8 +2284,12 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "detail": "New shared recovery control under implementation; no UI acceptance claimed."
+              "status": "partial",
+              "run_id": "site-access-guest-sol-20261002-01",
+              "detail": "Fresh guest verified exact-origin Deny/Allow, separate reload and populated IANA SEO; Escape, tab switch, cross-origin navigation, panel reopen and non-HTTP target were exercised. Temporary contains=false access, navigation during permission sheet, stale SEO completion and unsupported permissions API remain unverified.",
+              "evidence": "docs/stabilization/reports/site-access-guest-native-20261002.json",
+              "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
+              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233"
             },
             "member": {
               "status": "unverified",
@@ -2335,8 +2339,12 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "detail": "New shared recovery control under implementation; no UI acceptance claimed."
+              "status": "partial",
+              "run_id": "site-access-guest-sol-20261002-01",
+              "detail": "Fresh guest verified exact-origin Deny/Allow, separate reload and populated IANA SEO; Escape, tab switch, cross-origin navigation, panel reopen and non-HTTP target were exercised. Temporary contains=false access, navigation during permission sheet, stale SEO completion and unsupported permissions API remain unverified.",
+              "evidence": "docs/stabilization/reports/site-access-guest-native-20261002.json",
+              "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
+              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233"
             },
             "member": {
               "status": "unverified",
@@ -2385,8 +2393,12 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "detail": "New shared recovery control under implementation; no UI acceptance claimed."
+              "status": "partial",
+              "run_id": "site-access-guest-sol-20261002-01",
+              "detail": "Fresh guest verified exact-origin Deny/Allow, separate reload and populated IANA SEO; Escape, tab switch, cross-origin navigation, panel reopen and non-HTTP target were exercised. Temporary contains=false access, navigation during permission sheet, stale SEO completion and unsupported permissions API remain unverified.",
+              "evidence": "docs/stabilization/reports/site-access-guest-native-20261002.json",
+              "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
+              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233"
             },
             "member": {
               "status": "unverified",
