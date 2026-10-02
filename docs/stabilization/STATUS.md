@@ -1,12 +1,12 @@
 # Extension stabilization status
 
-Generated 2026-10-02 14:16 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T14:16:10.055927+00:00. 205 features · 734 cases · 1318 controls · 75 linked defect records.
+Generated 2026-10-02 14:28 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T14:26:54.058323+00:00. 205 features · 734 cases · 1318 controls · 76 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1167** — Pass: 58 · Partial: 37 · Fail: 1 · Unverified: 1070 · N/A: 1.
+Applicable case-by-role slots: **1167** — Pass: 58 · Partial: 36 · Fail: 2 · Unverified: 1070 · N/A: 1.
 Unverified splits into **119 explicitly marked unverified** and **951 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
@@ -25,7 +25,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 0 |
 | [Scrape](#scrape) | 1 | 1 pass · 0 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 1, partial 0, fail 0, unverified 87, n/a 0 | 2 |
-| [SEO](#seo) | 1 | 0 pass · 5 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 5, fail 0, unverified 37, n/a 0 | 0 |
+| [SEO](#seo) | 1 | 0 pass · 4 partial · 1 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 4, fail 1, unverified 37, n/a 0 | 1 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 3 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 0 |
@@ -728,15 +728,15 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Audit page SEO and manage audit history (EXT-F-1008)
 
-**Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 14. **Controls:** 14.
+**Role status:** guest: Fail · member: Unverified · admin: Unverified. **Cases:** 14. **Controls:** 14.
 
-**Next:** Finish the missing criteria and repeat the partial case in the extension.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0076
 
-**Linked defects:** [EXT-D-0021](defects/EXT-D-0021.json) (closed)
+**Linked defects:** [EXT-D-0021](defects/EXT-D-0021.json) (closed), [EXT-D-0076](defects/EXT-D-0076.json) (triaged)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-1008-T01 Auto-audit on URL navigation | Partial | Unverified | Unverified | EXT-F-1008-C01 |
+| EXT-F-1008-T01 Auto-audit on URL navigation | Fail | Unverified | Unverified | EXT-F-1008-C01 |
 | EXT-F-1008-T02 Manual audit/re-audit | Partial | Unverified | Unverified | EXT-F-1008-C02 |
 | EXT-F-1008-T03 Restricted/unreachable page | Partial | Unverified | Unverified | EXT-F-1008-C03 |
 | EXT-F-1008-T04 Save audit and failure recovery | Unverified | Unverified | Unverified | EXT-F-1008-C04 |
@@ -753,7 +753,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Recorded case details and evidence:**
 
-- EXT-F-1008-T01 · guest: Partial. Two public titles, new URL replacement and panel reload observed; exactly-once and slow old result race unverified. Airbnb remained running; cause under investigation.
+- EXT-F-1008-T01 · guest: Fail. Two public titles, new URL replacement and panel reload observed; exactly-once and slow old result race unverified. Airbnb remained running; cause under investigation. Later boundary run confirmed actual stuck spinner after page completed; EXT-D-0076 active.
   Evidence / build / date recorded: seo-guest-frozen-20261002T140308Z, ['docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json']
 - EXT-F-1008-T02 · guest: Partial. Trusted re-audit preserved current public title; stale advice/failure dimensions unverified.
   Evidence / build / date recorded: seo-guest-frozen-20261002T140308Z, ['docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json']

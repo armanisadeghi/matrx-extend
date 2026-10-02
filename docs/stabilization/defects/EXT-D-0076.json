@@ -1,0 +1,37 @@
+{
+  "id": "EXT-D-0076",
+  "feature_id": "EXT-F-1008",
+  "case_ids": ["EXT-F-1008-T01", "EXT-F-1008-T02"],
+  "title": "SEO audit remains busy after public page finishes loading",
+  "surface": "SEO",
+  "auth_mode": "guest reproduced; member/admin unverified",
+  "reproduction": [
+    "Load receipt-matched frozen0.2.173 keyed unpacked extension in isolated Chrome for Testing; verify manifest and tree hash, reopen panel and refresh current public page. No rebuild while testing.",
+    "Run tests/browser/seo-guest-acceptance.mjs through stabilization-resource guard, with SEO_GUEST_EXTENSION_DIR and SEO_GUEST_RELEASE_RECEIPT pointing to frozen0.2.173, SEO_GUEST_METADATA_FIXTURE=airbnb.",
+    "After the preceding public-page checks, navigate to Airbnb and observe scoped audit spinner/button, Chrome top-frame and navigation boundaries."
+  ],
+  "expected": "Audit settles into current-page results or an actionable failure; subsequent page lifecycle events must not leave a discarded run permanently busy.",
+  "actual": "Original30second and60second attempts produced no title and disabled Re-audit. Discriminating run seo-boundary-20261002T142200Z observed spinner=true, no identity remedy, complete matching Chrome tab/frame and no frame error. Root cause still being localized; second loading event followed navigation commit.",
+  "evidence": [
+    "docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json",
+    "docs/stabilization/reports/seo-audit-diagnosis-20261002.json"
+  ],
+  "severity": "S2: affected public-page audit cannot complete or be retried",
+  "priority": "P1: contained surface active stabilization",
+  "state": "triaged",
+  "verification_status": "Frozen173 runtime failure confirmed; relevant current SEO/identity/capture source matches frozen artifact. Sequenced connected regression pending; no patch or closure claimed.",
+  "transition_history": [
+    {
+      "at": "2026-10-02T14:26:54.058323+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Two bounded native attempts failed audit completion; precise capture state initially unknown."
+    },
+    {
+      "at": "2026-10-02T14:26:54.058323+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Discriminating native run confirmed stuck spinner after complete page; assigned fresh escalation agent to prove cause and repair."
+    }
+  ]
+}
