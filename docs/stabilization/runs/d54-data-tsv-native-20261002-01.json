@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "run_id": "d54-data-tsv-native-20261002-01",
+  "defect_id": "EXT-D-0054",
+  "case_id": "EXT-F-2005-T03",
+  "result": "PASS_DATA_MULTILINE_TSV_NATIVE_PASTE",
+  "scope": "Data T03 multiline-cell copy/paste only; not a full D54 closure and no quote-bearing header claim.",
+  "started_at": "2026-10-02T19:50:46Z",
+  "build": {
+    "ci_run": "37050278631-1",
+    "artifact": "test-results/ci-artifacts/6aec7dd3464eb7a48404f2f06d659b8775c6c03b/37050278631-1/chrome-mv3",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.175",
+    "loaded_from_verified_in_native_extensions_ui": true,
+    "chrome_version": "149.0.7827.55",
+    "chrome_profile_path_verified_in_chrome_version": "/Volumes/Samsung2TB/code/.stabilization-scratch/cft-profile-d54-data-20261002-01/Default",
+    "release_tree_sha256": "36e04bafc2616833543fce2ae7af9decc31515ddc4b5b589c3058d9e2590be35",
+    "receipt_tree_sha256_match": true,
+    "extension_reloaded": true
+  },
+  "target": "https://www.gutenberg.org/files/1065/1065-h/1065-h.htm",
+  "admin_confirmed_in_extension_ui": true,
+  "device_org_selected_in_clone": "admin's Workspace",
+  "pattern": {
+    "name": "D54 Raven stanza TSV 20261002",
+    "id": "9dc5059b-c80c-46ee-8f6e-7ca09e4c50dd",
+    "field_1": "html > body > div.chapter:nth-of-type(3) > p:nth-of-type(1)",
+    "field_2": "html > body > div.h2:nth-of-type(2)",
+    "field_1_observed": "Once upon a midnight dreary, while I pondered, weak and weary,\nOver many a quaint and curious volume of forgotten lore—\nWhile I nodded, nearly napping, suddenly there came a tapping,\nAs of some one gently rapping, rapping at my chamber door.\n\u201c\u2019Tis some visiter,\u201d I muttered, \u201ctapping at my chamber door—\nOnly this and nothing more.\u201d",
+    "field_2_observed": "by Edgar Allan Poe",
+    "cleanup": "Preserved. Data UI has no delete control; Showcase delete permanently removes a record. Applicable CUA policy: ‘Confirmation Required at Action time: Permanently delete data: Confirm before any deletion the user cannot reverse through the product’s normal recovery flow.’ No backend/API deletion used."
+  },
+  "paste": {
+    "copy_control": "Data > Copy rows > TSV (paste to spreadsheet) Tab-separated rows",
+    "copy_feedback": "Copied",
+    "destination": "New disposable Google Sheet, Sheet1 gid=0",
+    "spreadsheet_id": "1aptzQyeXf7Ay62fDHj4Ztf6AXA9Tny-oGEwv3ot1rs0",
+    "selected_range_after_paste": "A1:B2",
+    "assertions": [
+      "PASS: native clipboard paste created two columns and two rows including headers.",
+      "PASS: A2 contained the complete stanza as one multiline cell; formula bar retained all six lines and punctuation.",
+      "PASS: B2 formula bar contained exactly 'by Edgar Allan Poe'."
+    ],
+    "cleanup": "Moved this uniquely created disposable sheet to Google Sheets Trash via File > Move to trash; UI confirmed. Recoverable for 30 days."
+  },
+  "resource_guard": {
+    "journal": "docs/stabilization/resource-journals/d54-data-tsv-native-20261002-01.jsonl",
+    "final_decision": "invalid",
+    "reason": "After multiple healthy samples, guard finalization failed to persist its unsafe-hold marker because /var/tmp had no space. Result is not an admitted-valid run under the guard despite successful native assertions.",
+    "last_successful_health_sample": "2026-10-02T19:58:43.956Z",
+    "failure_at": "2026-10-02T19:58:43.965Z"
+  },
+  "cleanup": {
+    "isolated_chrome_process_group_stopped": true,
+    "owned_profile_clone_removed": true,
+    "primary_chrome_sheet_fixture_moved_to_trash": true,
+    "owned_pattern_preserved_pending_human_confirmation": true
+  },
+  "limitations": [
+    "Native Data T03 clipboard-to-spreadsheet behavior passed, but the resource guard ended invalid due to ENOSPC, so this run is not an overall verified pass.",
+    "The native UI exposes no quote-bearing header editor; quoted-header native acceptance remains untested.",
+    "The one-off owned Data pattern remains pending because hard-delete requires action-time confirmation under the CUA policy."
+  ]
+}
