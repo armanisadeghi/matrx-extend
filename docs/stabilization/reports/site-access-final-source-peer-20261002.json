@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "report_id": "site-access-final-source-peer-20261002",
+  "lane": "independent final source re-verifier, Sol medium, zero product authorship",
+  "reviewed_commit": "65f6840ae772de3c22a6b4e4bd4fd5526c0080bf",
+  "contract": "docs/stabilization/reports/site-access-recovery-20261002.json, revised design contract at 33782978",
+  "verdict_A_user_outcome": {
+    "status": "PARTIAL",
+    "source_evidence": "The App header mounts one SiteAccessControl beside UserMenu across Prepare and SEO. Its temporary toolbar guidance remains visible after Deny, a direct click requests only the captured HTTP(S) origin, and a separate click reloads the captured tab. Prepare's page-key and run-sequence guard clears the old pending run on navigation; SEO's page-key and audit-run guards restart on the fresh document and ignore old results. No persistent-permission denial inference, automatic request, reload, or retry is present.",
+    "remaining": "The new product control and Chrome's native permission prompt have not yet been observed together in a built extension. The existing native clicked-button evidence establishes that an awaited tabs.query/getFrame sequence preserves the request gesture in Chrome 149, but its button was ephemeral test UI. Native product acceptance remains necessary to close the user outcome."
+  },
+  "verdict_B_engineering_contract": {
+    "status": "PASS_WITH_TEST_LIMIT",
+    "findings": [
+      {
+        "id": "B1",
+        "status": "ADDRESSED",
+        "evidence": "Both action handlers await verifyLiveSiteAccessTarget immediately before requesting or reloading. It compares captured tab ID and URL with Chrome's active tab, top-frame document ID and URL, then checks the active tab again. Source tests change browser state before React publishes it and replace the same-URL document; both reject request and reload. The native awaited-gesture probe supports this order in Chrome 149."
+      },
+      {
+        "id": "B2",
+        "status": "ADDRESSED",
+        "evidence": "sessionSeq advances on every open/close and captured-page change. Both async action paths check the captured session after live verification and before publishing the result. Delayed Allow and Deny tests close/reopen the control, and navigation tests reject a late grant."
+      },
+      {
+        "id": "connected_SEO_recovery",
+        "status": "ADDRESSED_WITH_TEST_LIMIT",
+        "evidence": "The new connected SEO test mounts the shared control beside SeoView, explicitly reloads the captured page, fires a new document ID, and observes a further capture call without requesting persistent access. SeoView's independent navigation tests prove old-result rejection and fresh-document audit behavior.",
+        "limit": "The connected reload test asserts only a capture call count, not the resulting fresh audit's displayed content; its claim of a fresh successful audit relies on the adjacent SEO navigation tests and source guards."
+      }
+    ],
+    "new_material_breakage": "None identified in source review. The live read still has the ordinary asynchronous browser-state race after its final check; no atomic Chrome compare-and-reload API is available in this implementation, and this does not recreate the reported last-render identity defect."
+  },
+  "verification_scope": "Read-only source, diff, contract, and test-evidence review. No heavy build, browser run, or product edit; CI/import and native product acceptance belong to separate active lanes."
+}
