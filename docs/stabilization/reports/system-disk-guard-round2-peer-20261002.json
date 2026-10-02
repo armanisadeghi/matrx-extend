@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "lane": "EXT-D-0083 fresh independent round-two peer",
+  "reviewed_commits": ["4a852cf5", "38bbe4b4", "316bdc89", "9262c1c4"],
+  "prior_finding": {
+    "id": "disk_admission_and_watchdog_lack_process_seam_proof",
+    "status": "ADDRESSED",
+    "evidence": "The new disk integration suite copies the production guard, changes only host telemetry and statfs readings in scratch copies, then launches that guard. The low-/ case requires RESOURCE_PREFLIGHT_REFUSED, RESOURCE_DISK_LOW, no admission, and no remaining heavy lease. The post-admission low-lease case requires RESOURCE_WATCH_UNSAFE with RESOURCE_DISK_LOW, owned workload termination, an unsafe hold, and an invalid final decision. Removing diskIsLow() from reasons() would defeat both expected guard outcomes."
+  },
+  "verdict_a_behavior": {
+    "status": "PASS_FOR_SCOPED_GUARD_BEHAVIOR; NATIVE_ACCEPTANCE_UNVERIFIED",
+    "evidence": [
+      "sampleDiskSpace() independently samples the checkout, profile, actual lease root, and /. reasons() compares all four against the unchanged 20 GiB floor in both preflight and watchdog.",
+      "persistSafetyState() marks resourceInvalid and safetyStateBroken and sets exit 3 before throwing. Cleanup stops token-owned processes and retains the heavy lease when safetyStateBroken is true; the final journal verdict is invalid.",
+      "Hosted macOS CI run 37063114646 at head 7b0fedfa reports three process tests passed, zero failed, zero skipped across the safety-marker and disk-admission/watchdog steps. Earlier run 37062590809 failed before marker injection on CPU pressure; the new scratch fixture replaces non-disk telemetry only."
+    ],
+    "unverified": "The original D54 browser acceptance has not been repeated with a valid terminal guard verdict. No actual physical low-disk or ENOSPC run was performed, and the local system volume remains about 2.9 GiB free, below the 20 GiB permit floor."
+  },
+  "verdict_b_quality": {
+    "status": "PASS_WITH_RED_PROOF_UNVERIFIED",
+    "evidence": [
+      "The decision tests retain the production preflight, reasons(), watchdog, ownership, and verdict paths; controlled inputs replace only external telemetry and filesystem measurements in a scratch copy.",
+      "The marker failure test starts a live owned child, makes its hold marker unwritable after admission, and asserts exit 3, invalid journal decision, retained lease, and child termination.",
+      "The two disk cases supply opposite decisions and distinct low-volume locations, so a hard-coded safe or low response cannot satisfy both; the new cases would fail if reasons() stopped calling diskIsLow().",
+      "git diff --check 4a852cf5^..316bdc89 passed."
+    ],
+    "unverified": "This reviewer did not run a planted mutation or local test because the host is below the resource floor; hosted CI proves green paths but does not itself execute the prescribed red mutation."
+  },
+  "review_method": "Fresh source and commit review, read-only hosted CI status, and read-only local disk/status inspection. No guard, test, build, browser, or release was launched locally."
+}
