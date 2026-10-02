@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { chmod, copyFile, mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { chmod, copyFile, mkdir, mkdtemp, readFile, rm, stat, statfs, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { test } from 'node:test';
@@ -13,8 +13,14 @@ test(
   {
     timeout: 120_000,
   },
-  async () => {
+  async (context) => {
     assert.equal(process.platform, 'darwin', 'this integration fixture needs the macOS guard host');
+    const system = await statfs('/');
+    const systemFreeGiB = (Number(system.bavail) * Number(system.bsize)) / 1024 ** 3;
+    if (systemFreeGiB < 20) {
+      context.skip(`system volume has ${systemFreeGiB.toFixed(2)} GiB free; guard correctly refuses below 20 GiB`);
+      return;
+    }
     const scratch = await mkdtemp(join(tmpdir(), 'resource-safety-guard-'));
     const scripts = join(scratch, 'scripts');
     const docs = join(scratch, 'docs/stabilization');
