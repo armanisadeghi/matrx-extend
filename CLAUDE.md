@@ -16,7 +16,7 @@
 9. **Raise the bar.** Judge against the best in the world: Linear, Stripe, Vercel, Apple, Salesforce, Airtable, Notion, Google, Microsoft, Anthropic, OpenAI, Cursor. Every discipline has a world champion: name it before you build, match it before you ship, beat it before you call it done. Parity is the floor. Champions by discipline: `common-docs/policies/champions.md`.
 10. **Talk to Arman like a person.** Every question, status, or pending item for him is plain English, full sentences, self-contained, and answerable in seconds: say what it is and what you need, the way you would say it out loud. Never send him to a file, path, section number, code, codename, or register — docs are for agents, not for him. If you need something, ask for it directly. When you need him to decide: number each question, give a line of background, ask ONE direct question, and attach the best practice plus your recommendation when it has a right answer — or say plainly that it is open-ended. **Every decision — asked or reported — carries five parts:** what he ruled before (quoted) or that he never has; what the best in the world do and why they are the reference; what the system does today; the implications of each option, saying plainly when it binds the whole platform; one recommendation with the reason (Arman, 2026-09-10: *"Give me real information, not little tidbits"*). **One complex question per round** — the rest wait in a queue file the round names; a few quick ones may share a round; answers squeezed out of a batch are never platform decisions. An agent-recorded quote of his from an older doc is not evidence against a decision he made today unless its source and circumstances are stated. **Assume he has read nothing agents wrote** — every question carries the background a stranger needs. **A phrase he said in passing is not a ruling on the thing it mentioned in passing** (Arman, 2026-09-12: *"almost all of the words that come out of my mouth come out with a gun to my head… a quick distillation of a small part of what I think"*): when such a phrase collides with common sense or with what the best in the world do, common sense and the best win, and it is never brought back to him as a conflict — "of course the admin can't read her private messages" is a given, not a question. **Never re-ask what he already answered or delegated:** when his last word was "research what the best do and decide", the decision is yours; make it, record the reason, tell him. **TELL HIM, don't ask him:** default to numbered DECISIONS stated in the voice of the best engineer alive — each with its reason and its champion, including saying plainly when a line of doctrine or an "Arman said" claim another agent leans on is wrong — then ONE gentle "confirm and I start", then take charge and finish. He is humble and comes to you for intelligence, expertise and partnership, not manual labor and not a syntax writer; "what I want" is never the standard — what is best for us is (Arman, 2026-09-19). `common-docs/policies/talk-to-arman-like-a-person.md` · `common-docs/policies/tell-me-dont-ask-me.md`.
 
-**The Data Doctrine binds data work.** Custom data, table types, organizations, and access words are ruled by the AI Matrx Data Doctrine (Arman, 2026-09-10) — a doctrine document, presumed right against the code and any other doc, amended only by him (`common-docs/policies/doctrine-documents.md`). Its data rules live once at `common-docs/systems/platform/db-rules/DECISIONS.md`; the gap between them and the code is tracked in `common-docs/projects/data-doctrine-adoption/REGISTER.md`. Live names (scope, component, machinery, graveyard…) stay until their convergence campaign runs — never rename on sight.
+**The Data Doctrine binds data work.** Custom data, table types, organizations, and access words are ruled by the AI Matrx Data Doctrine (Arman, 2026-09-10) — a doctrine document, presumed right against the code and any other doc, amended only by him (`common-docs/policies/doctrine-documents.md`). Its data rules live once at `common-docs/systems/architecture/database/DECISIONS.md`; the gap between them and the code is tracked in `common-docs/projects/data-doctrine-adoption/REGISTER.md`. Live names (scope, component, machinery, graveyard…) stay until their convergence campaign runs — never rename on sight.
 
 **The access ladder binds access.** Every table starts at Organization; Confidential and Private need Arman's approval and the database refuses them otherwise; sharing (public link or direct) works at every level; children inherit their parent; the sensitive fields are split out and locked, never the whole record; organizations are unlimited and equal with no personal/business type. Locking people out is a bug, never caution. Encryption and hashing are per field and never served to a client; protected values travel only through secure delivery. Before launch an unfinished protection stays visibly unfinished and listed in `common-docs/operations/go-live-gates.md` — never a stopgap, and a partial fix (scrubbing, masking) is forbidden: build the whole primitive or change nothing. `common-docs/policies/access-ladder.md`.
 
@@ -34,7 +34,7 @@
 This file carries the extension-specific rules that prevent this repo's mistakes, plus pointers
 to the shared systems it consumes — never feature narratives, shipped-work history, rule bodies
 with a canonical doc, or platform doctrine. Feature state lives in
-[/Users/armanisadeghi/code/common-docs/systems/clients/extension/STATE.md](/Users/armanisadeghi/code/common-docs/systems/clients/extension/STATE.md) (update THAT, not this, when you ship).
+[/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md](/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md) (update THAT, not this, when you ship).
 Budget: ≤200 lines; over budget = relocate, don't append.
 
 ## What this repo is
@@ -149,12 +149,12 @@ Guard: `pnpm check:org-default-ban`. Register row EX-T05: `../common-docs/projec
   The agent stays pinned to its per-turn assigned tab even when the user switches.
 - Request assembly resolves the active tab ONCE per send (`resolveActiveTab()`) and
   threads it through; a second query reintroduces a cross-tab race. Contract:
-  [/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §1](/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md).
+  [/Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md §1](/Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md).
 
 **Context keys are public API.** Engineers template `{{page_brief.title}}` into
 prompts; renames are breaking changes. Key catalog + the bundling rules (menu cost,
 one source of truth per fact, no shallow empty keys, confidence gating):
-[/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §2](/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md) — update it
+[/Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md §2](/Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md) — update it
 in the same commit as any key change.
 
 **Structured content: NEVER parse a stream here.** `render_block` envelopes render through the
@@ -165,7 +165,7 @@ design; a client-side kind parser is the banned "bespoke stream renderer". A kin
 component only when a `content_ir.kind_component` row (`platform='chrome-extension'`) names a key
 in `dispatch.tsx` — two explicit halves, no silent fallback; anything else gets the generic floor.
 Both packages are exact public npm dependencies; committed package tarballs are forbidden. SoR:
-`common-docs/systems/content-ir-twin/FEATURE.md`. Raw stream / markdown parsing
+`common-docs/systems/architecture/content-ir/content-ir-twin-FEATURE.md`. Raw stream / markdown parsing
 ([src/lib/api/stream.ts](./src/lib/api/stream.ts),
 [src/components/markdown/block-parser.ts](./src/components/markdown/block-parser.ts)) is next to
 adopt the kernel — read `common-docs/projects/unified-content-pipeline/FEATURE.md` first. Stream-silence rule: any event that implies expected silence (like
@@ -191,7 +191,7 @@ as a hang and kills a healthy run.
 **Sensitive flows — read the linked contract before touching:**
 - `google_email_send`: the review card IS the authorization; never add a server
   binding or a consent-style argument. Repo detail:
-  [/Users/armanisadeghi/code/common-docs/systems/clients/extension/STATE.md](/Users/armanisadeghi/code/common-docs/systems/clients/extension/STATE.md) § Reviewed Gmail send · cross-repo:
+  [/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md](/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md) § Reviewed Gmail send · cross-repo:
   `/Users/armanisadeghi/code/common-docs/projects/google-oauth-verification/PRODUCTION-ROLLOUT.md`.
 - `credential_login` + Vault: plaintext credentials never egress (grep-guarded tests);
   redaction contract in [src/lib/credentials/sensitive-fields.ts](./src/lib/credentials/sensitive-fields.ts).
@@ -201,7 +201,7 @@ as a hang and kills a healthy run.
   `/Users/armanisadeghi/code/common-docs/projects/outreach-system/INTEGRATION_MAP.md` (IC-10).
 - Token broker: consume [src/lib/broker/](./src/lib/broker/) (its FEATURE.md is the
   contract) — never hand-roll a mint call, cache, or gateway URL. System:
-  `/Users/armanisadeghi/code/common-docs/systems/platform/token-broker/FEATURE.md`.
+  `/Users/armanisadeghi/code/common-docs/systems/architecture/token-broker/FEATURE.md`.
 
 ## Conventions
 
@@ -241,10 +241,10 @@ pnpm check:schema-routing # schema-routing gate (check:migrations for the ledger
 
 ## Where the detail lives
 
-[/Users/armanisadeghi/code/common-docs/systems/clients/extension/STATE.md](/Users/armanisadeghi/code/common-docs/systems/clients/extension/STATE.md) — living feature state; update on every
+[/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md](/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md) — living feature state; update on every
 ship · [docs/DATABASE.md](./docs/DATABASE.md) — DB rules ·
 [docs/DEVELOPMENT.md](./docs/DEVELOPMENT.md) — setup, commands, conventions, TS
-toolchain · [/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md](/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md) —
+toolchain · [/Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md](/Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md) —
 wire contract · [docs/feature-tests.md](./docs/feature-tests.md) — how to verify
 anything · [docs/TOOLS.generated.md](./docs/TOOLS.generated.md) — tool descriptions
 (generated).
