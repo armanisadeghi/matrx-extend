@@ -16,9 +16,10 @@
   "fixture": {
     "page_a": "https://nuxt.com/docs/4.x/getting-started/introduction",
     "page_b": "https://nuxt.com/docs/4.x/getting-started/installation",
-    "extension": "Load the frozen keyed unpacked artifact above in the already configured primary Chrome profile; verify version 0.2.173 before interaction."
+    "browser": "Chrome for Testing only; isolated user-data directory /Volumes/Samsung2TB/code/.stabilization-scratch/cft-profile-d58-frozen173. Keep the primary personal Chrome profile untouched.",
+    "extension": "Load the frozen keyed unpacked artifact above in the isolated Chrome for Testing profile; verify version 0.2.173 before interaction."
   },
-  "guard_command": "node scripts/stabilization-resource.mjs browser --run-id showcase-d58-frozen173-native-20261002-01 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+  "guard_command": "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch node scripts/stabilization-resource.mjs browser --run-id showcase-d58-frozen173-native-20261002-01 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch/cft-profile-d58-frozen173",
   "acceptance_steps": [
     "On page A in Showcase > Prepare, run once and record visible success/report; click Reset and confirm report, error, and running state are clear.",
     "Restore Prepare success on page A. In Chrome's extension site-access menu, change access for nuxt.com to On click, retry Prepare on the same page, and confirm the old report is absent while the injection error is visible. Restore access to On this site and retry successfully.",
@@ -26,6 +27,7 @@
   ],
   "limits": [
     "No browser launch or UI action was performed: root has not granted the browser permit; CI currently owns it and SEO is queued.",
+    "Use the root-owned isolated Chrome for Testing launch path with the guarded profile above; do not launch the existing personal Chrome profile.",
     "The site-access retry is a real Chrome permission-denial path. If Chrome retains permission for the already loaded document, record the trigger as unavailable and stop; do not claim a native injection rejection.",
     "Prepare's injected page scan is synchronous, so ordinary public-page navigation provides no deterministic delay/control over A completion. Native page-A/page-B ordering is opportunistic only; absent an observable pending window, report it unverified. Existing deferred-promise tests remain controlled-code evidence, not native proof.",
     "Same-tab same-URL reload identity is tracked separately by EXT-D-0059 and is outside this D58 acceptance."
