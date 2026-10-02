@@ -1,12 +1,18 @@
 # Matrx Extend stabilization: resume here
 
-## Immediate resource interruption — October 2, 20:08 UTC
+## Current checkpoint — October 2, 20:50 UTC
 
-EXT-D-0083: internal APFS Data volume is near106–122MiB free while external test volume has1.7TiB. D54 Data native multiline copy/paste assertions succeeded but final watchdog /var/tmp safety-marker persistence hit ENOSPC; run7c849870 INVALID, no coverage pass. Browser stopped and owned clone removed; disposable Sheet trashed. Pattern9dc5059b-c80c-46ee-8f6e-7ca09e4c50dd preserved for repeat; permanent UI cleanup later requires action-time confirmation. All local heavy launches paused.
+Store0.2.130 remains the last authenticated published version (16:45UTC). Daily09:00 America/Los_Angeles check is active. No newer upload/submission; scoped hosted read-token approval and reviewer credential remediation remain separately pending. Never claim latest submitted.
 
-Sol oct02_notes_private_login source4a852cf5 adds independent OS and actual safety-state volume checks at unchanged20GiB, fail-closed ENOSPC handling, focused hosted CI test and copied-script fixture updates. Static checks only; fresh peer and hosted CI pending. Root owns D83/inventory. Luna oct02_control_procedures performs approved inactive Gradle cache3.8GiB copy/hash/metadata verification and original-path symlink relocation to external; no user/cloud/VM/conversation data deletion. Canonical dev-caches maintenance ran successfully but did not restore stable headroom. Two new-agent starts failed ENOSPC; existing agents still work.
+83 defects:49closed,23fixed,7in-fix,2retest-pass,1open,1triaged. Fixed is not accepted: native guest/member/admin retests remain extensive. F2015/F2016 ten procedures updated in0eab9ce5 with no test credit; formatting edc11516. D42/D47 source reconciliation612e4ee6 found current repairs already present; native adversarial proof remains, stale pending candidates must not be blindly applied.
 
-Automatic agents0.38.3 publisher37057249905 PASSED; it carries D81. Adoption remains pending resource recovery/verification. Full extension CI37056755481 at d1f35556 PASSED before guard repair; artifact11249175281 not yet imported. Daily09:00 Pacific active; Store130 published, latest hosted Store build awaits existing scoped-token approval. Reviewer-password approval also remains pending.
+D83/internal disk interruption continues. Verified inactive Gradle cache relocation ad88fc98 recovered about4GiB (now3.7GiB), original path resolves complete external copy. No cloud, VM, source or conversation data removed. Docker supported relocation alone cannot restore20GiB. macOS Storage confirms about4GBavailable/107GBSystemData. All local test/build/browser acceptance launches remain paused below existing20GiB floor. D54 native Data clipboard observation remains RESOURCE INVALID, no pass. Its owned pattern9dc5059b-c80c-46ee-8f6e-7ca09e4c50dd retained; Sheet trashed recoverably; browser/profile stopped/removed.
+
+Guard4a852cf5 source covers system/lease volumes and fail-closed safety persistence. First process regression38bbe4b4 hosted37062362091 refused CPU before workload, not a product RED or GREEN. Followup316bdc89 adds actual guard lowdisk decision coverage and scratch-only deterministic host-telemetry seams; physical hosted disk floor retained. Fresh round2 peer active. Local tests remain prohibited. Prior peer a25dd0ac sourceAaccepted/Bimportant missing causal guard coverage. Hosted CI also found formatting errors, repaired by edc11516/316bdc89. Automatic main sync may push locally committed units; inspect actual refs.
+
+D81 automatic agents0.38.3 publication37057249905 PASSED; remote lock adoption merged in bfb03b6d. Consumer fullCI after adoption pending (not locally installed due disk). D82 source fixed, validRED8/GREEN10/compile0 and fresh185d3e93 peer; native UI still unverified. Last fullgreenCI37056755481 at d1f35556 predates latest guard/package changes; artifact11249175281 not imported.
+
+All-ten-repo fetch20:28UTC, next21:28UTC. Concurrent remote changes merged without loss; latest extension fetch/push20:44 up-to-date. Root owns inventory/defects and integration; workers source fixes/independent reports. Do not end while live children remain.
 
 ## Active checkpoint — October 2, 2026: path-verified recovery; error-boundary repairs active
 
