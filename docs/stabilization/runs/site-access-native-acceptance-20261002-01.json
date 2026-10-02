@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "run_id": "site-access-native-acceptance-20261002-01",
+  "date": "2026-10-02",
+  "defect_id": "EXT-D-0078",
+  "status": "partial",
+  "browser": {
+    "product": "Chrome for Testing",
+    "version": "149.0.7827.55",
+    "profile": "/Volumes/Samsung2TB/code/.stabilization-scratch/site-access-native-20261002-owned",
+    "profile_origin": "Private copy of the isolated frozen173 admin profile, created before guarded launch; no primary personal Chrome profile used.",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "artifact": {
+    "kind": "local_dev_unpacked",
+    "version": "0.2.175",
+    "source_commit": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
+    "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
+    "extension_dir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a/37039513091-1/chrome-mv3",
+    "receipt": "test-results/ci-artifacts/2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a/37039513091-1/local-dev-receipt.json",
+    "tree_verification": "Independent hashReleaseTree result exactly matched the receipt; the running CFT extension page showed extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml and the admin-authenticated product UI."
+  },
+  "observations": [
+    {
+      "step": "control_and_denial",
+      "result": "pass",
+      "detail": "The actual sidepanel Site access control displayed nuxt.com, the temporary toolbar instruction, Always allow on this site, and Reload page. Clicking the persistent choice displayed Chrome's native additional-permissions sheet naming nuxt.com and its read/change scope. Deny returned to the extension and showed Access not granted while leaving the toolbar path visible."
+    },
+    {
+      "step": "temporary_prepare",
+      "result": "pass_bounded",
+      "detail": "With Ask on every visit still selected and no persistent grant, invoking Matrx from Chrome on nuxt.com enabled access for that visit and required page reload. Prepare then completed in 757 ms with three scroll steps. This is a real per-visit success with persistent grant denied; this run did not independently inspect chrome.permissions.contains or prove that the specific toolbar click used activeTab rather than Chrome's per-visit host-access control. The earlier probe in site-access-recovery-20261002.json separately observed temporary execution with contains(origin) false."
+    },
+    {
+      "step": "persistent_allow",
+      "result": "pass",
+      "detail": "After the product request had been denied once, clicking Always allow on this site again showed Chrome's native sheet with Allow enabled. Clicking Allow returned to the product and displayed Access allowed on this site. The grant was scoped to nuxt.com in the private test profile."
+    },
+    {
+      "step": "seo_nuxt",
+      "result": "pass_bounded",
+      "detail": "SEO showed populated Nuxt audit data including page title, canonical URL, social metadata, structured data, and HTTP 200. This was observed after the temporary per-visit toolbar action and before the persistent allow result."
+    },
+    {
+      "step": "navigation_and_reopen",
+      "result": "pass",
+      "detail": "With the Site access popover open on Nuxt, navigating the active tab to IANA cleared the old page action state and displayed Page changed. Reopening Site access showed www.iana.org, not the prior Nuxt origin. Closing the sidepanel and reopening it from the extension menu retained the current IANA page identity; Site access again showed www.iana.org."
+    },
+    {
+      "step": "explicit_target_reload_and_seo",
+      "result": "pass_bounded",
+      "detail": "On IANA, clicking the product's separate Reload page button reloaded the browser target page. SEO then showed populated IANA-specific audit results, including the IANA title, headings, metadata findings, and HTTP 200. The sidepanel did not reload in place of the target page."
+    }
+  ],
+  "unverified": [
+    "The original pending Prepare call under a fully withheld page grant was not recreated in the updated product: opening the sidepanel from Chrome itself granted temporary per-visit access before Prepare was invoked.",
+    "A native product-level stale Prepare completion after navigation, unsupported permissions API behavior, and non-HTTP(S) control state were not forced in this run.",
+    "The earlier ephemeral-click native probe verified Chrome 149's Allow and Deny request behavior and that awaited tab/frame reads preserve the gesture, but it is not native product UI evidence."
+  ],
+  "resource_guard": {
+    "run_id": "site-access-native-20261002-01",
+    "journal": "docs/stabilization/resource-journals/site-access-native-20261002-01.jsonl",
+    "admitted_at": "2026-10-02T17:23:18.203Z",
+    "admission": "valid",
+    "profile_dir": "/Volumes/Samsung2TB/code/.stabilization-scratch/site-access-native-20261002-owned"
+  },
+  "cleanup": "Chrome for Testing was quit through its native app menu, the guarded lease ended valid, and the private owned profile copy was removed. The frozen173 source profile was untouched.",
+  "secrets": "No credentials, auth tokens, or private values are included."
+}

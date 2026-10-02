@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "report_id": "site-access-native-acceptance-20261002",
+  "date": "2026-10-02",
+  "defect": "EXT-D-0078",
+  "artifact": "0.2.175, source 2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a, tree 2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233; exact imported unpacked artifact receipt independently hash-verified and loaded in isolated Chrome for Testing 149.",
+  "verdict_A_live_user_outcome": {
+    "status": "PARTIAL",
+    "verified": [
+      "The admin sidepanel's shared Site access control appeared on the actual page and exposed the temporary Chrome-toolbar path plus separate persistent grant and target-page reload actions.",
+      "The product persistent request opened Chrome's native origin-scoped permission sheet. Deny showed an explicit refusal while preserving the toolbar path; a later Allow succeeded and the product showed the granted state.",
+      "Prepare completed on Nuxt in 757 ms with three scroll steps under Chrome's temporary per-visit access path while its site setting remained Ask on every visit and before the persistent grant.",
+      "SEO rendered real, page-specific Nuxt and IANA results. Navigation while the control was open invalidated the prior page state; reopening Site access and reopening the sidepanel followed the new IANA origin. The separate Reload page action reloaded the browser target and IANA SEO data remained populated afterward."
+    ],
+    "limits": "Opening Matrx through Chrome's toolbar itself enabled access for the current visit, so this native run could not observe a Prepare injection remain pending before any access grant. The temporary Prepare success was not instrumented to read chrome.permissions.contains from product runtime; the linked earlier ephemeral-click probe supplies separate Chrome API evidence for contains(origin)=false compatibility. A native product-level stale pending completion, unsupported API, and non-HTTP(S) path remain unverified."
+  },
+  "verdict_B_evidence_quality": {
+    "status": "PASS_WITH_LIMIT",
+    "evidence": "Run site-access-native-acceptance-20261002-01 used the sole admitted browser permit and a uniquely owned profile cloned privately from the earlier frozen173 admin profile. The receipt path identifies the imported CI artifact, independent tree hashing matched the receipt, and the loaded CFT extension ID and authenticated admin product UI were visible. Browser observations were made through native Chrome UI, including Chrome's actual permission sheet and actual page reloads. The resource journal ended with a valid terminal decision.",
+    "limits": "This is bounded native evidence for the named flows, not full feature certification. It does not close EXT-D-0078 on its own and does not verify inaccessible/unreachable branches or the exact original no-access pending reproduction in the repaired build."
+  },
+  "linked_run": "docs/stabilization/runs/site-access-native-acceptance-20261002-01.json",
+  "resource_journal": "docs/stabilization/resource-journals/site-access-native-20261002-01.jsonl",
+  "source_contract": "docs/stabilization/reports/site-access-recovery-20261002.json",
+  "secret_handling": "Reports contain no credentials, auth tokens, or private values."
+}
