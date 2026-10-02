@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "lane": "fresh_independent_source_peer",
+  "reviewed_commit": "ac0ba7e629a38d55e215cfe32d304d10ecc423f8",
+  "scope": "Static review of authorized private member credential loading and genuine Notes native login; no credential, environment, browser, build, test, release, or Store access.",
+  "verdict_a_outcome": {
+    "status": "PARTIAL_NATIVE_PENDING",
+    "evidence": [
+      "The credential path is used only for NOTES_ROLE=member, conflicts with interactive member mode, and opens the exact www.aimatrx.com/login page. The runner fills the site's email/password controls and submits its Sign in button.",
+      "After submission, /api/whoami must report a signed-in email matching both the private fixture fingerprint and the exact credential email. The extension's own Sign in then must show that email, a stored user profile and token, and a canonical admin.admins GET with zero rows for that extension user id.",
+      "The existing imported-artifact verifier runs before and after the native attempt. No actual private fixture or authenticated member session was read or run in this review, so real login and D61/D62/D63/D67/D68 acceptance remain unverified."
+    ],
+    "next_evidence": "An exclusive, separately authorized native run must establish the genuine web and extension identities and complete the Notes cases on the attested artifact."
+  },
+  "verdict_b_source_quality": {
+    "status": "PASS_WITH_LIMITATIONS",
+    "evidence": [
+      "The private credential reader requires an owned regular file with mode 0600 and O_NOFOLLOW, exact email/password JSON fields, a nonempty password, and the designated reviewer email fingerprint before returning credentials.",
+      "Reader errors use fixed codes; the Notes runner catches them into fixed failure_code values, discards caught browser errors, and records only the reviewer fingerprint. No credential value is interpolated into a report, log, or assertion. The login form names and Sign in button match the current frontend source.",
+      "The new tests cover accepted fixture shape, wrong fingerprint, broad mode, final-path symlink, malformed/expanded JSON, and missing inputs. They use synthetic values; this review did not execute them."
+    ],
+    "actionable_findings": [],
+    "limits": [
+      "The fixture's authorization and ability to log in are external facts; UID/mode/fingerprint checks cannot prove a working password or a live member organization role.",
+      "The organization picker proves visible membership and fresh selection; it does not prove that the selected organization's IAM role is member. Report non-admin extension identity and organization membership only unless separate role evidence is obtained."
+    ]
+  }
+}
