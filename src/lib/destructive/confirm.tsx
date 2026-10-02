@@ -2,7 +2,7 @@
  * THE ONE WAY a destructive click is confirmed in this extension.
  *
  * Arman's destructive-and-expensive-actions law (2026-08-29,
- * `common-docs/policies/destructive-and-expensive-actions.md`) says a control
+ * `common-docs/policies/no-dead-ends.md`) says a control
  * that destroys work must STOP, NAME THE CONSEQUENCE, and make the person
  * confirm — "Are you sure?" is not a confirmation.
  *

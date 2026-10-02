@@ -17,12 +17,12 @@
 Also binding: the Data Doctrine (`common-docs/systems/architecture/database/DECISIONS.md`), the access ladder (`common-docs/policies/access-ladder.md`), canonical-first triage (`common-docs/policies/canonical-first-triage.md`), agents never author agents (`common-docs/policies/agents-never-author-agents.md`), and the domain tree (`common-docs/policies/domain-tree.md`).
 <!-- nine-laws:end -->
 
-- 🚨 **The active organization is never a list filter** (Arman, 2026-09-30): lists and reads show everything the person can see across all their organizations; an org filter is a visible page-local control defaulting to **All organizations**; the active org is only where new things are saved and which org a server call runs in — every write/API call must carry it. Law: `../common-docs/policies/active-org-is-never-a-list-filter.md`.
+- 🚨 **The active organization is never a list filter** (Arman, 2026-09-30): lists and reads show everything the person can see across all their organizations; an org filter is a visible page-local control defaulting to **All organizations**; the active org is only where new things are saved and which org a server call runs in — every write/API call must carry it. Law: `../common-docs/policies/access-ladder.md`.
 
-**Cloud task autonomy:** A task request authorizes routine in-scope edits, verification, exact-path commits, and pushes. Continue without a conversational confirmation pause; honor explicit hold points and human-only gates. [Completion policy](../common-docs/policies/defect-ownership.md).
+**Cloud task autonomy:** A task request authorizes routine in-scope edits, verification, exact-path commits, and pushes. Continue without a conversational confirmation pause; honor explicit hold points and human-only gates. [Completion policy](../common-docs/policies/reality-is-the-referee.md).
 
 
-**You are here to do CHROME-EXTENSION work** (charter: `/Users/armanisadeghi/code/common-docs/policies/claude-md-charter.md`).
+**You are here to do CHROME-EXTENSION work** (charter: `/Users/armanisadeghi/code/common-docs/policies/document-types.md`).
 This file carries the extension-specific rules that prevent this repo's mistakes, plus pointers
 to the shared systems it consumes — never feature narratives, shipped-work history, rule bodies
 with a canonical doc, or platform doctrine. Feature state lives in
@@ -75,7 +75,7 @@ scheduled sweep only catches what a session forgot; it is a safety net, not the 
   `/Users/armanisadeghi/code/common-docs/policies/no-legacy.md` + `/Users/armanisadeghi/code/common-docs/policies/pre-launch-mode.md`
 - **The access ladder decides who can open a record.** Every table starts at Organization; only Arman approves Confidential or Private; sharing sits outside the ladder; children inherit their parent; organizations are unlimited and equal, with no personal type. → `/Users/armanisadeghi/code/common-docs/policies/access-ladder.md`
 - **Human steps are guided sessions:**
-  `/Users/armanisadeghi/code/common-docs/policies/human-steps-are-guided-sessions.md`
+  `/Users/armanisadeghi/code/common-docs/policies/talk-to-arman-like-a-person.md`
 
 ## Hard rules for this repo
 
