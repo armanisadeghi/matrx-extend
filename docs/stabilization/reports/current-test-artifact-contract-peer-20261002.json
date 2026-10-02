@@ -4,9 +4,15 @@
   "reviewed_plan": "docs/stabilization/reports/current-test-artifact-20261002.json, revised snapshot at 2026-10-02 14:40 UTC",
   "verdict": "COMMIT",
   "coverage": "4/4: successful main-push CI retention, development identity/config, authenticated immutable import, receipt-bound SEO native path; implementation and native proof remain pending.",
-  "prior_gaps": {"github_run_provenance": "ADDRESSED: repository/workflow/event/ref/conclusion/head SHA/run attempt/artifact ID and GitHub archive digest are required in addition to CI tree proof.", "current_source_label": "ADDRESSED: freshly fetched origin/main and local tracked state at import and result time prevent dirty or advanced source from inheriting a current-source claim.", "nested_receipt_path": "ADDRESSED: strict run-qualified import and sibling receipt paths explicitly extend both helper admissions without replacing frozen .output builds."},
+  "prior_gaps": {
+    "github_run_provenance": "ADDRESSED: repository/workflow/event/ref/conclusion/head SHA/run attempt/artifact ID and GitHub archive digest are required in addition to CI tree proof.",
+    "current_source_label": "ADDRESSED: freshly fetched origin/main and local tracked state at import and result time prevent dirty or advanced source from inheriting a current-source claim.",
+    "nested_receipt_path": "ADDRESSED: strict run-qualified import and sibling receipt paths explicitly extend both helper admissions without replacing frozen .output builds."
+  },
   "new_blocking": [],
-  "advisory": ["The SEO runner currently requires manifest and receipt versions to equal the checkout package version for a development receipt. An older exact-commit artifact after a version bump will need its matching checkout or a separately scoped runner change; current-main import is unaffected."],
+  "advisory": [
+    "The SEO runner currently requires manifest and receipt versions to equal the checkout package version for a development receipt. An older exact-commit artifact after a version bump will need its matching checkout or a separately scoped runner change; current-main import is unaffected."
+  ],
   "source_checks": ".github/workflows/ci.yml has a successful-build path but no upload; release.yml is a separate release-authority path; record-local-dev-build.mjs and native-sidepanel-qa-harness.mjs enforce absolute path/tree binding; seo-guest-acceptance.mjs accepts both overrides; WXT development key and committed public runtime config are present.",
   "github_contract": "GitHub's Actions artifact REST response exposes digest/workflow_run; upload-artifact exposes artifact ID and SHA-256 digest: https://docs.github.com/en/rest/actions/artifacts and https://github.com/actions/upload-artifact",
   "limits": "Read-only plan reattack. No build, browser run, secret read, workflow edit, or claim that an artifact exists from this proposal."
