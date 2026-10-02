@@ -2,7 +2,7 @@
   "schema": 1,
   "date": "2026-10-02",
   "defect": "EXT-D-0078",
-  "status": "native API proof banked; revised implementation contract pending independent re-attack",
+  "status": "source implemented and locally verified; independent source, CI, and native product checks pending",
   "linked_diagnosis": "docs/stabilization/reports/prepare-denial-diagnosis-20261002.json",
   "design_contract_commit": "4608aa33",
   "native_probe": {
@@ -28,6 +28,21 @@
     "reload": "A separate direct Reload page click reloads the captured target browser tab, never the sidepanel. Before reload, check the captured tab/page identity still matches the live active page; if it changed, discard stale feedback and ask the person to reopen the control. Chrome navigation invalidates old exact-document injection completion; the person may then retry Prepare. Never auto-reload, auto-retry, or cancel an in-flight injection after grant or denial.",
     "pending_call_safety": "For Prepare, changing page identity must clear the visible running state immediately and its run-sequence guard must ignore any late old-document result; the next person-invoked Prepare targets the fresh document. SEO's existing page-key and audit-run guards must likewise prevent stale output and permit its normal fresh-page audit after reload. No same-document reset is offered because it could allow a second action while the old injection might later execute.",
     "acceptance": "Connected red-to-green tests cover one shared shell control used from both Prepare and SEO, a pending old Prepare promise followed by explicit target-tab reload and fresh retry, a late old-document completion ignored, SEO fresh-page audit and stale-result guard, persistent Allow and Deny, unsupported API/non-HTTP(S), navigation before granting/reloading, and a temporary activeTab success even when persistent contains is false. Native UI verifies the shared control and actual Chrome prompt. No inferred wait signal, elapsed-time denial, or new manifest privilege."
+  },
+  "control_mapping": {
+    "shared_surface": "src/entrypoints/sidepanel/App.tsx mounts SiteAccessControl in the persistent header beside UserMenu. It remains present when switching among Showcase Prepare, SEO, Scrape, Data, Screenshots, Notes, Tools, and Chat; no consumer-specific pending publisher is needed because the control makes no pending-state claim.",
+    "primary_reproduction": "Showcase Prepare EXT-F-1012-T08: a withheld executeScript may remain pending; the visible Site access control offers temporary toolbar access, an optional persistent current-site grant, and a separately clicked target-page reload to make a fresh attempt.",
+    "shared_cases": "EXT-F-1001-C06/C07/C08 and T16/T17/T18 across guest, member, and admin: the same header control is usable during SEO and other page actions; it does not gate injection on persistent permission checks.",
+    "tracked_siblings": "Direct executeScript callers remain distributed across page extraction, Showcase, scrape, screenshots, credentials, tools, and page context. This repair shares the user recovery route without changing their injection implementation or claiming each caller's pending status."
+  },
+  "verification": {
+    "native_prefix": "Frozen 0.2.173 restricted Prepare failure and temporary activeTab positive control are in linked diagnosis; explicit persistent permission request proof is in native_probe above. New product UI has not yet been observed in a built artifact.",
+    "structural_red": "Guarded site-access-red-20261002-01 failed because SiteAccessControl did not yet exist; it was a missing-module red, not a behavioral regression proof.",
+    "initial_green": "Guarded site-access-green-20261002-01 passed 15 tests across site-access-recovery and prepare-lifecycle before the pending-Prepare/reload integration case was added.",
+    "connected_green": "Guarded site-access-connected-20261002-02 passed 16/16 tests across site-access-recovery and prepare-lifecycle, including a pending old Prepare call, explicit page reload, fresh success without requesting persistent permission, and a late old result ignored. Prior connected attempt -01 was preflight refused due host resource pressure and ran no tests.",
+    "compile": "Guarded site-access-compile-20261002-02 passed tsc --noEmit. Compile -01 admitted but failed on a test-only unsupported toBeDisabled matcher; it was corrected before -02.",
+    "lint": "Targeted Biome checked all owned source/test files with no errors; it reported the pre-existing App.tsx DataView shadow-name warning only.",
+    "remaining": "Independent source peer, automatic CI build, and native new-product UI verification remain. The structural red is not represented as a behavioral failing-then-passing test; actual pre-fix native restricted Prepare failure is in the linked diagnosis."
   },
   "implementation_constraints": [
     "Preserve temporary activeTab success when persistent permissions.contains is false.",

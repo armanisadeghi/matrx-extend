@@ -1272,6 +1272,31 @@ Every entry follows this shape:
   leave no stale report when it returns. Also retry normally after a failure:
   the new report must replace the error and show the current page's counts.
 
+### Shared site access recovery (EXT-D-0078; EXT-F-1001-C06/C07/C08, T16/T17/T18)
+- **What it does:** The sidepanel header offers one Site access control for the
+  current web page across Prepare, SEO, and other page actions. Chrome's toolbar
+  provides temporary access; a separate explicit choice requests persistent
+  access to this site. Reload page is a separate user action that targets the
+  browser page and lets a stalled exact-document action be retried safely.
+- **Where to test:** Chrome sidepanel header on a public HTTP(S) page, including
+  Showcase → Prepare and SEO. Repeat with guest, member, and admin visibility.
+- **Steps:** Set this extension's Chrome access on the page to **Ask on every
+  visit** and reload. Open Showcase → Prepare and start it. Open Site access in
+  the header. Confirm the toolbar route remains visible, choose **Always allow
+  on this site**, and accept Chrome's site prompt. Then choose **Reload page**
+  and retry Prepare; repeat from SEO with a fresh audit. Test Deny separately,
+  then use Chrome's toolbar to grant temporary access and retry while persistent
+  access remains off. Switch pages before clicking a control opened on the old
+  page. Also open Site access on a `chrome://` page.
+- **Expected:** The header control is available from both tabs and never claims
+  Chrome definitely blocked a pending action. Persistent access is requested
+  only after its own click and never reloads automatically. Reload targets the
+  captured browser tab, not the sidepanel; old-document Prepare/SEO output
+  cannot replace fresh results. Deny and unsupported pages explain themselves;
+  the temporary toolbar route stays visible. Switching pages cannot grant or
+  reload the old target. Ordinary access and temporary toolbar access still
+  allow Prepare even if persistent `permissions.contains` is false.
+
 ### Showcase — Snapshot / JSON-LD / Microdata tabs
 - **What it does:** One-shot metadata grab / typed JSON-LD blocks / Schema.org
   microdata items, each with type-filter chips where applicable.

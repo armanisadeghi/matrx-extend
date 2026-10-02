@@ -1,6 +1,7 @@
 import { AuthGate } from '@/components/AuthGate';
 import { NoticeHost } from '@/components/NoticeHost';
 import { PermissionPromptModal } from '@/components/PermissionPromptModal';
+import { SiteAccessControl } from '@/components/SiteAccessControl';
 import { UserMenu } from '@/components/UserMenu';
 import { canAccessSidepanelTab, firstAccessibleSidepanelTab } from '@/config/sidepanel-visibility';
 import { useCapturePickup } from '@/features/capture-ladder/use-capture-pickup';
@@ -537,6 +538,7 @@ export function App() {
                     Open Vault
                   </button>
                 )}
+                <SiteAccessControl tab={activeTab} />
                 <UserMenu />
               </div>
               {/* forceMount (audit P1-14): ChatView owns the live stream-chunk
