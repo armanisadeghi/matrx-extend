@@ -27,6 +27,11 @@
   },
   "linked_run": "docs/stabilization/runs/notes-member-native-20261002-01.json",
   "resource_journal": "docs/stabilization/resource-journals/notes-member-native-20261002-01.jsonl",
+  "separate_guest_harness_abort": {
+    "run_id": "site-access-guest-native-20261002-01",
+    "resource_journal": "docs/stabilization/resource-journals/site-access-guest-native-20261002-01.jsonl",
+    "outcome": "A mistaken attempt to use the Notes member runner as a guest harness was interrupted before resource admission. The guard finalized refused with admitted=false, resourceInvalid=false, and exitCode=2. No browser or runner child launched; no guest Site access observation was made. The owned profile was empty and removed after a process check confirmed no Chrome child. This is setup-abort evidence only and does not change any Notes or guest acceptance verdict."
+  },
   "artifact": {
     "source_commit": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
     "version": "0.2.175",
