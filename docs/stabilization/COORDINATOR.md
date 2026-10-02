@@ -1,5 +1,13 @@
 # Matrx Extend stabilization: resume here
 
+## Immediate resource interruption — October 2, 20:08 UTC
+
+EXT-D-0083: internal APFS Data volume is near106–122MiB free while external test volume has1.7TiB. D54 Data native multiline copy/paste assertions succeeded but final watchdog /var/tmp safety-marker persistence hit ENOSPC; run7c849870 INVALID, no coverage pass. Browser stopped and owned clone removed; disposable Sheet trashed. Pattern9dc5059b-c80c-46ee-8f6e-7ca09e4c50dd preserved for repeat; permanent UI cleanup later requires action-time confirmation. All local heavy launches paused.
+
+Sol oct02_notes_private_login source4a852cf5 adds independent OS and actual safety-state volume checks at unchanged20GiB, fail-closed ENOSPC handling, focused hosted CI test and copied-script fixture updates. Static checks only; fresh peer and hosted CI pending. Root owns D83/inventory. Luna oct02_control_procedures performs approved inactive Gradle cache3.8GiB copy/hash/metadata verification and original-path symlink relocation to external; no user/cloud/VM/conversation data deletion. Canonical dev-caches maintenance ran successfully but did not restore stable headroom. Two new-agent starts failed ENOSPC; existing agents still work.
+
+Automatic agents0.38.3 publisher37057249905 PASSED; it carries D81. Adoption remains pending resource recovery/verification. Full extension CI37056755481 at d1f35556 PASSED before guard repair; artifact11249175281 not yet imported. Daily09:00 Pacific active; Store130 published, latest hosted Store build awaits existing scoped-token approval. Reviewer-password approval also remains pending.
+
 ## Active checkpoint — October 2, 2026: path-verified recovery; error-boundary repairs active
 
 Store0.2.130 is last verified published. No newer Store upload. Daily09:00 Pacific heartbeat is active. Hosted read-only release-token approval and reviewer-password replacement/update-in-Google approval remain separately pending; no new credential or account change inferred.

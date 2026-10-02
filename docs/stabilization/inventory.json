@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-02T19:38:54.393008+00:00",
+  "updated_at": "2026-10-02T20:08:07Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -549,7 +549,8 @@
           },
           "defect_ids": [
             "EXT-D-0056",
-            "EXT-D-0060"
+            "EXT-D-0060",
+            "EXT-D-0083"
           ],
           "verification_note": "D56source-confirmed legacyprocess falsepositive predicate; actualpriorrefusalcause unknown; preciseidentityclassification needsrepair/regression."
         },
@@ -703,7 +704,10 @@
               "detail": "Historical fixture proof retained; current infrastructure audit requires revalidation after guard repairs before asserting current pass.",
               "evidence": "docs/stabilization/reports/infrastructure-coverage-audit.json"
             }
-          }
+          },
+          "defect_ids": [
+            "EXT-D-0083"
+          ]
         },
         {
           "id": "EXT-F-0002-T04",

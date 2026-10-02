@@ -1,0 +1,43 @@
+{
+  "id": "EXT-D-0083",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T01", "EXT-F-0002-T03"],
+  "surface": "Testing infrastructure resource admission and watchdog",
+  "auth_mode": "guest/member/admin",
+  "title": "External-drive resource checks miss internal disk exhaustion and safety-marker failure",
+  "reproduction": [
+    "Observe the October 2 D54 native run with repository and owned browser profile on the external Samsung drive, which has about 1.7 TiB free.",
+    "The internal macOS Data volume falls to about 116 MiB free while admission and watchdog samples only measure repository/profile volumes.",
+    "The watchdog cannot write its unsafe-hold marker under /var/tmp because of ENOSPC; the run ends invalid. A separate shell tempfile and new agent writer-lock creation also fail with ENOSPC."
+  ],
+  "expected": "Admission refuses work when any required system or safety-state volume is below the configured minimum. Watchdog safety-state persistence failure cannot leave a live workload treated as safe or release its ownership prematurely.",
+  "actual": "External repository/profile free space hid internal disk exhaustion. The D54 run completed UI assertions but final safety-state persistence failed, invalidating acceptance; shell and agent initialization also failed.",
+  "evidence": [
+    "docs/stabilization/runs/d54-data-tsv-native-20261002-01.json",
+    "docs/stabilization/resource-journals/d54-data-tsv-native-20261002-01.jsonl"
+  ],
+  "severity": "S1: unsafe test environment can invalidate results and prevent safety-state persistence",
+  "priority": "P0: recover storage and repair admission before another test launch",
+  "state": "in-fix",
+  "transition_history": [
+    {
+      "at": "2026-10-02T20:08:07Z",
+      "from": null,
+      "to": "open",
+      "reason": "Observed actual ENOSPC and invalid native guard termination."
+    },
+    {
+      "at": "2026-10-02T20:08:07Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source samples only external repo/profile volumes; internal OS and /var/tmp safety-state volume are omitted."
+    },
+    {
+      "at": "2026-10-02T20:08:07Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol owns guard repair; root and a narrow census lane own safe disk recovery. All new heavy launches paused."
+    }
+  ],
+  "closure_requirement": "Recover stable storage headroom without losing user data; prove OS/safety volume refusal and persistence-failure behavior RED then GREEN under the resource guard; independent review; repeat the invalidated native acceptance with a valid terminal resource verdict."
+}
