@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "lane": "d81-upstream-type-resolution",
+  "status": "environment_recovered_agents_typecheck_green_guard_terminal",
+  "aidream_head": "a02a22af445b47075edb96f2c900cf4db8897040",
+  "cause": "The filtered @ai-matrx/agents... install materialized only manifest dependencies of agents. Agents imports @ai-matrx/kit/content-transfer; that kit source entry reaches across package boundaries with a relative re-export of alchemy/src/operate/core.ts and tree.ts. Those Alchemy source files import @ai-matrx/kit/json-format, /html-escape, and /format. TypeScript resolves those bare imports from Alchemy's own directory, but shared/alchemy/node_modules/@ai-matrx/kit does not exist because Alchemy is not a dependency in the filtered agents workspace graph.",
+  "evidence": {
+    "declared_graph": "shared/alchemy/package.json and apps/pnpm-lock.yaml importer shared/alchemy both declare @ai-matrx/kit workspace:*, link:../kit",
+    "exports": "shared/kit/package.json exports the three subpaths to existing src files",
+    "source_path": "shared/matrx-agents/content-transfer/index.ts -> @ai-matrx/kit/content-transfer -> shared/kit/src/content-transfer.ts -> ../../alchemy/src/operate/{core,tree}.ts",
+    "installed_graph": "shared/matrx-agents/node_modules/@ai-matrx/kit exists; shared/alchemy/node_modules/@ai-matrx and apps/node_modules/@ai-matrx/kit do not",
+    "prior_result": "d81-upstream-typecheck-20261002-01 resource journal records admitted tsc exiting 2"
+  },
+  "ruled_out": [
+    "Alchemy's package manifest and lockfile do not omit kit",
+    "Kit does not omit the imported source exports or files",
+    "No source or lockfile correction is indicated by this resolution failure"
+  ],
+  "narrow_recovery_after_permit": {
+    "command": "pnpm --filter @ai-matrx/alchemy... install --frozen-lockfile --ignore-scripts",
+    "cwd": "/Volumes/Samsung2TB/code/aidream/apps",
+    "expected_effect": "Materialize Alchemy's declared workspace links without changing manifests or the frozen lockfile",
+    "then": "Re-run the previously admitted guarded pnpm --filter @ai-matrx/agents typecheck; inspect any new diagnostics independently. Confirm git diff for apps/pnpm-lock.yaml and package manifests remains empty. No manual package build, release, version bump, or push."
+  },
+  "scope_note": "The kit compatibility entry's relative reach into Alchemy source creates this filtered-install blind spot. Repointing consumers and deleting that entry is the documented ALC-16 migration, outside this bounded D81 environment recovery.",
+  "verification": {
+    "install": "d81-alchemy-links-20261002-01.jsonl: admitted, frozen ignore-scripts Alchemy filter, child exit 0, final valid; shared/alchemy/node_modules/@ai-matrx/kit now links ../../../kit",
+    "typecheck": "d81-upstream-typecheck-20261002-02.jsonl: admitted @ai-matrx/agents tsc --noEmit, child exit 0 without diagnostics, final valid",
+    "git": "Aidream working tree and source/manifest/lock diff clean after both commands",
+    "resource": "Both guard processes terminal; /var/tmp/matrx-stabilization-resource-$(id -u) contains no heavy lease or unsafe hold. Permit released to parent."
+  }
+}

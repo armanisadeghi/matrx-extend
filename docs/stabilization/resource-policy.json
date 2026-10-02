@@ -22,6 +22,7 @@
   "allowedCommands": [
     ["pnpm", "install", "--frozen-lockfile", "--ignore-scripts"],
     ["pnpm", "--dir", "/Volumes/Samsung2TB/code/aidream/apps", "--filter", "@ai-matrx/agents...", "install", "--frozen-lockfile", "--ignore-scripts"],
+    ["pnpm", "--dir", "/Volumes/Samsung2TB/code/aidream/apps", "--filter", "@ai-matrx/alchemy...", "install", "--frozen-lockfile", "--ignore-scripts"],
     ["pnpm", "exec", "wxt", "prepare"],
     ["pnpm", "exec", "wxt", "build", "--mode", "development"],
     ["pnpm", "exec", "wxt", "build"],
