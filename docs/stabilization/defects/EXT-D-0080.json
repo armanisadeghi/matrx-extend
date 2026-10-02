@@ -1,0 +1,64 @@
+{
+  "id": "EXT-D-0080",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T06"],
+  "title": "Reused same-ID browser profile can invalidate intended artifact attribution",
+  "surface": "Native extension test setup and runtime evidence",
+  "auth_mode": "admin",
+  "reproduction": [
+    "Copy the established isolated frozen173 admin profile into a new owned profile.",
+    "Launch Chrome for Testing with the intended imported175 extension directory while the profile already registers the same extension ID at frozen173.",
+    "Observe Prepare/Snapshot and hash the intended175 directory without reading the actual loaded extension folder.",
+    "The observed dataset toast matches frozen173 and is absent from the intended175 bundle, exposing invalid artifact attribution."
+  ],
+  "expected": "A test establishes actual active profile and loaded extension folder/version against the receipt before assigning results to a source revision. Same-ID registration cannot silently substitute another artifact.",
+  "actual": "Prepare/Snapshot observations were attributed to175 from extension ID and intended-directory hash, while the base profile registers173 and the observed toast identifies its stale bundle. Earlier admin Site access had distinctive new UI but lacked exact loaded-path proof.",
+  "evidence": [
+    "docs/stabilization/reports/artifact-profile-identity-audit-20261002.json",
+    "docs/stabilization/reports/prepare-document-native-20261002.json"
+  ],
+  "severity": "S2: invalid release confidence and misleading defect attribution",
+  "priority": "P1: repair evidence setup before further admin acceptance",
+  "state": "closed",
+  "transition_history": [
+    {
+      "at": "2026-10-02T18:46:54.862249+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Native observation contradicted intended artifact content."
+    },
+    {
+      "at": "2026-10-02T18:46:54.862249+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Independent file/profile comparison identifies same-ID stale registration; current product dataset defect not inferred."
+    },
+    {
+      "at": "2026-10-02T18:46:54.862249+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Affected results withdrawn; explicit native profile and loaded-folder verification being prepared before repeat."
+    },
+    {
+      "at": "2026-10-02T19:00:01.793783+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh independent native repeat establishes actual owned Chrome profile and loaded imported175 path/version before and after Reload, validates receipt tree after run, and passes original withheld Prepare recovery plus completed Prepare/Snapshot same-URL clearing. See docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json"
+    },
+    {
+      "at": "2026-10-02T19:00:01.793783+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent native repeat establishes actual owned Chrome profile and loaded imported175 path/version before and after Reload, validates receipt tree after run, and passes original withheld Prepare recovery plus completed Prepare/Snapshot same-URL clearing. See docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json"
+    },
+    {
+      "at": "2026-10-02T19:00:01.793783+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Fresh independent native repeat establishes actual owned Chrome profile and loaded imported175 path/version before and after Reload, validates receipt tree after run, and passes original withheld Prepare recovery plus completed Prepare/Snapshot same-URL clearing. See docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json"
+    }
+  ],
+  "closure_requirement": "Repeat with actual native Chrome profile and developer loaded-from folder/version proven against intended artifact before assertions; reproduce original D78 and completed Prepare/Snapshot reload on that verified runtime. Add this identity check to durable native test instructions, retaining invalidated history.",
+  "verification_status": "Closed for bounded original reproduction on path-verified imported175; historical invalidated evidence retained. D58/D59 late completion and broader feature cases remain unverified.",
+  "current_native_evidence": "docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json"
+}

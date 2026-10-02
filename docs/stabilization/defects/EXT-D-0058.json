@@ -21,7 +21,7 @@
     "docs/stabilization/reports/prepare-lifecycle-peer.json",
     "docs/stabilization/reports/prepare-integrated-verification.json"
   ],
-  "verification_status": "Source checks previously passed; runtime-path audit invalidates attribution of the new admin Prepare/reload observations to imported175. Fresh exact-loaded-path retest, failed retry and controlled late settlement remain pending.",
+  "verification_status": "Fresh exact-loaded-path175 native repeat proves completed Prepare/Snapshot same-URL clearing only. Original late-settlement/failed-retry and broad class closure remain pending.",
   "transition_history": [
     {
       "at": "2026-09-28T15:00:57.328820+00:00",
@@ -42,11 +42,17 @@
       "reason": "Sol prepare_lifecycle_repair assigned async lifecycle repair with meaningful connected regression coverage and guarded self-verification."
     }
   ],
-  "current_native_evidence": {
+  "invalidated_native_evidence": {
     "report": "docs/stabilization/reports/prepare-document-native-20261002.json",
     "status": "artifact-unverified",
     "verified": "Exact development .175 admin completed Prepare and Snapshot results clear on same-tab, same-URL reload. Fresh Prepare on destination after navigation succeeds.",
     "unverified": "Controlled old invocation completion/rejection, failed retry after success, pending Snapshot, broader D59 consumers. Neither defect closes.",
     "correction": "Admin clone retained frozen173 registration; runtime path was not established. These observations do not verify imported175. See docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
+  },
+  "current_native_evidence": {
+    "report": "docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json",
+    "status": "partial",
+    "verified": "Path-verified imported175 completed Prepare and Snapshot clear on same-tab/same-URL reload.",
+    "unverified": "Failed retry, controlled late completion/rejection, pending Snapshot and broader D59 consumers."
   }
 }

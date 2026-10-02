@@ -48,5 +48,15 @@
     "draftVersion": "0.2.130",
     "uploadNewPackageEnabled": true,
     "action": "Read only; no upload or submission."
+  },
+  "review_queue_correction": {
+    "row_id": "4169515a-eab4-475d-9e5d-7c2d63837954",
+    "result": "Own stale pending-review title corrected to published130 with installed acceptance pending; publication-only observation metadata saved. Status remains submitted; no self-promotion or installed-acceptance claim."
+  },
+  "latest_integrated_ci": {
+    "source_sha": "6aec7dd3464eb7a48404f2f06d659b8775c6c03b",
+    "run_id": 37050278631,
+    "conclusion": "success",
+    "limits": "Development CI only; no Store ZIP uploaded, native post-transport acceptance pending and independent review found bounded error-handling follow-ups."
   }
 }

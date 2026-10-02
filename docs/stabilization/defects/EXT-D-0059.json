@@ -48,7 +48,7 @@
     "docs/stabilization/reports/d59-pattern-probe-ownership-20261002.json",
     "docs/stabilization/reports/d59-pattern-probe-final-peer-20261002.json"
   ],
-  "verification_status": "October2 Showcase pattern conversion async ownership repair c28cf7c6 independently source-reviewed and guarded 5/5 cases passed (late success/failure, B error, pending sample capture). Guarded frozen dependency install and integrated compile passed. Native same-URL reload and other D59 consumers remain open; not closed.",
+  "verification_status": "Fresh exact-loaded-path175 native repeat proves completed Prepare/Snapshot same-URL clearing only. Original late-settlement/failed-retry and broad class closure remain pending.",
   "transition_history": [
     {
       "at": "2026-09-28T15:30:38.553635+00:00",
@@ -71,11 +71,17 @@
   ],
   "scope_ruling": "Use one shared top-frame identity snapshot; keep URL/domain persisted lookup semantics separate. Include detection, completed/pending rows, auto-extract cache, AI/pattern derivation and capture residue. Explicit recovery for unresolved identity; no null-equals-null page key. Preserve approved network-replay document contract.",
   "related_feature_ids": ["EXT-F-1007", "EXT-F-1009", "EXT-F-1010"],
-  "current_native_evidence": {
+  "invalidated_native_evidence": {
     "report": "docs/stabilization/reports/prepare-document-native-20261002.json",
     "status": "artifact-unverified",
     "verified": "Exact development .175 admin completed Prepare and Snapshot results clear on same-tab, same-URL reload. Fresh Prepare on destination after navigation succeeds.",
     "unverified": "Controlled old invocation completion/rejection, failed retry after success, pending Snapshot, broader D59 consumers. Neither defect closes.",
     "correction": "Admin clone retained frozen173 registration; runtime path was not established. These observations do not verify imported175. See docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
+  },
+  "current_native_evidence": {
+    "report": "docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json",
+    "status": "partial",
+    "verified": "Path-verified imported175 completed Prepare and Snapshot clear on same-tab/same-URL reload.",
+    "unverified": "Failed retry, controlled late completion/rejection, pending Snapshot and broader D59 consumers."
   }
 }

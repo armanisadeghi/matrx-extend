@@ -1,0 +1,30 @@
+{
+  "id": "EXT-D-0081",
+  "feature_id": "EXT-F-1006",
+  "surface": "Shared HTTP error parsing",
+  "auth_mode": "guest/member/admin",
+  "title": "Shared HTTP parser consumes the body before its plain-text fallback",
+  "reproduction": [
+    "Pass a real non-2xx Response containing a distinct plain-text error to @ai-matrx/agents parseHttpError.",
+    "Inspect its detail/userMessage and repeat with a second distinct text and a structured JSON error."
+  ],
+  "expected": "The same single response body supports JSON classification or the documented plain-text fallback without losing details.",
+  "actual": "Source peer found response.json() consumes the body before the fallback response.text(); runtime RED proof is being executed.",
+  "evidence": [
+    "docs/stabilization/reports/package-request-client-peer-20261002.json",
+    "docs/stabilization/reports/package-request-review-resolution-20261002.json"
+  ],
+  "severity": "S2: error details needed for recovery may be lost",
+  "priority": "P1: bounded error boundary repair before next release",
+  "state": "open",
+  "reproduction_status": "source-confirmed; controlled RED runtime proof pending",
+  "transition_history": [
+    {
+      "at": "2026-10-02T19:00:53.942007+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Independent source review identified a reproducible boundary; runtime proof and repair assigned to implementation lane."
+    }
+  ],
+  "closure_requirement": "Demonstrate real-response RED\u2192GREEN, independent source review and relevant consumer regression checks. Upstream package repair additionally requires automatic publication and verified adoption; native user-facing behavior remains explicitly tracked."
+}

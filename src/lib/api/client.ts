@@ -26,7 +26,7 @@ import {
   isOrganizationNoMembershipsError,
   isOrganizationNotSelectedError,
 } from '@/lib/org/active-org';
-import { applyOrganizationContextHeader } from '@ai-matrx/agents/matrx';
+import { applyOrganizationContextHeader, sendMatrxRequest } from '@ai-matrx/agents/matrx';
 import type { z } from 'zod';
 
 type ApiSuccess<T> = { ok: true; data: T };
@@ -644,7 +644,7 @@ export async function privatePost<T>(opts: PrivatePostOptions<T>): Promise<Priva
   let response: Response;
   try {
     response = await bounded(
-      fetch(`${baseUrl}${opts.path}`, {
+      sendMatrxRequest(`${baseUrl}${opts.path}`, {
         method: 'POST',
         headers,
         body,
@@ -792,7 +792,7 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
   }
   let res: Response;
   try {
-    res = await fetch(url, init);
+    res = await sendMatrxRequest(url, init);
   } catch (err) {
     if (!opts.silent) {
       log.error('api', `✗ ${opts.method} ${opts.path} network error`, err);

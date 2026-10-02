@@ -9,6 +9,12 @@
 
 ## How to use this doc
 
+Before every native run, apply the **Native acceptance identity check** in
+[Development setup](DEVELOPMENT.md#loading-unpacked): prove the actual Chrome
+profile and loaded extension folder/version against the receipt, then reload the
+extension, reopen the panel and reload the target. Record role independently. An
+extension ID or intended-folder hash alone does not establish the running build.
+
 - **Find a tool / feature:** Cmd-F by name. Each entry has its tool name
   or feature name as the heading.
 - **After a build:** if you've changed user-visible behavior, update

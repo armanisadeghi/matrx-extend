@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "report_id": "siteaccess-prepare-pathchecked-native-20261002",
+  "date": "2026-10-02",
+  "scope": "One isolated authenticated admin native run on exact imported development artifact 0.2.175: D78 withheld Site access recovery and D59 completed Prepare/Snapshot same-tab same-URL reload.",
+  "verdict_A_live_user_outcome": {
+    "status": "PASS_BOUNDED",
+    "verified": [
+      "On the Nuxt Installation page, Chrome's site permission changed to Ask on every visit and Chrome reloaded that same target tab while the sidepanel stayed open. A user-clicked Showcase Prepare then remained visibly at Preparing… under withheld access.",
+      "While Prepare was pending, the product's Site access control identified nuxt.com and offered a persistent grant separate from Reload page. Clicking Always allow opened Chrome's native permission sheet scoped to read/change data on nuxt.com. Allow returned the product state Access allowed on this site; the original Prepare remained pending until a separate product Reload page click reset it to Prepare page with Page changed.",
+      "A fresh Prepare after the product reload completed on Nuxt Installation in 757 ms with three scroll steps. Reloading the exact same tab at the same URL while the sidepanel stayed open removed that completed report and returned to Prepare page.",
+      "Showcase Snapshot captured a real Nuxt Installation metadata row including canonical, Open Graph and Twitter fields. Reloading the same tab at the same URL while the sidepanel stayed open removed the completed row and returned to Capture snapshot."
+    ],
+    "limits": "The original pending Prepare was not observed settling before or after the recovery reload, so this does not prove late-result rejection. Admin Deny, unsupported permissions API, non-HTTP(S), failed Prepare retry, Reset, Snapshot pending completion, and broader D59 siblings were not exercised. Guest Site access has a separate run. D58/D59 class closure is not established."
+  },
+  "verdict_B_evidence_quality": {
+    "status": "PASS_BOUND_TO_IMPORTED_PATH",
+    "evidence": "Resource guard admitted at 18:53:03 UTC and ended valid with exit 0 at 18:57:26 UTC. Chrome for Testing 149 native chrome://version showed the uniquely owned cloned profile path and exact --load-extension argument. Before product assertions, Chrome Extensions developer Details visibly showed the running Matrx Extend ID cihdmkcdjjckfhjpgoedmgfpoljebaml, version 0.2.175, Source → Unpacked extension Loaded from the exact imported 37039513091-1/chrome-mv3 directory. The native Reload control was clicked and the same version/path remained visible. The actual sidepanel showed admin@admin.com and Showcase (admin only). The copied profile's Secure Preferences after shutdown registered the imported path, and hashReleaseTree after the run matched the local-dev receipt tree 2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233.",
+    "limits": "Development artifact from prior pushed source 2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a, not current main or a Store package. Native observation used UI accessibility and did not persist a screenshot, trace, or controlled async scheduler. The frozen173 profile's initial same-ID registration was replaced by the launched imported path in this run; this does not retroactively bind earlier deleted-profile admin observations."
+  },
+  "artifact_receipt": "test-results/ci-artifacts/2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a/37039513091-1/local-dev-receipt.json",
+  "resource_journal": "docs/stabilization/resource-journals/siteaccess-prepare-pathchecked-sol-20261002-01.jsonl",
+  "cleanup": "Chrome for Testing quit through its native app menu; no process using the owned profile remained. The guard returned valid exit 0, then only the exact owned clone was removed.",
+  "secret_handling": "No credentials, tokens, password fields, login step, or private profile values were inspected or emitted; only Chrome's extension ID, version, loaded source path, and owned profile path were captured."
+}
