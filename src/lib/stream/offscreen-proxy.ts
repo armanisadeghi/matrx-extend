@@ -112,6 +112,12 @@ export interface StartStreamArgs {
    * agenda task where the agent navigates itself).
    */
   assignedTabId?: number | null;
+  /**
+   * The organization of an EXISTING run this stream picks back up (a rejoin).
+   * Work on an existing record carries THAT record's organization, never the
+   * session's selection; omitted = the active organization (new work).
+   */
+  organizationId?: string | null;
 }
 
 /**
@@ -215,7 +221,7 @@ export async function startStream(args: StartStreamArgs): Promise<void> {
       // admission gate, which reads to the user as a hang. With nothing set on
       // this device the start HOLDS while the person is asked, then proceeds
       // with what they chose (src/lib/org/active-org.ts).
-      const organizationId = actor.organizationId;
+      const organizationId = args.organizationId ?? actor.organizationId;
       if (organizationId === null)
         throw new Error('Authenticated stream actor is missing an organization.');
       headers['X-Organization-Id'] = organizationId;

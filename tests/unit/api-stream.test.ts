@@ -187,3 +187,102 @@ describe('streamFetch public NDJSON kernel integration', () => {
     },
   );
 });
+
+describe('streamFetch server error events and live runs', () => {
+  it("shows the server's user_message from a stream error event, not generic copy", async () => {
+    const billing =
+      "OpenAI refused this request: the platform's OpenAI account is out of credit.";
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        fragmentedResponse([
+          new TextEncoder().encode(
+            `${JSON.stringify({
+              event: 'error',
+              data: {
+                error_type: 'insufficient_quota',
+                message: 'provider said 429 insufficient_quota',
+                user_message: billing,
+              },
+            })}\n`,
+          ),
+        ]),
+      ),
+    );
+    const events: StreamEvent[] = [];
+
+    await streamFetch({
+      url: 'https://example.test/stream',
+      headers: {},
+      onEvent: (event) => events.push(event),
+    });
+
+    expect(events).toEqual([{ type: 'error', message: billing }, { type: 'done' }]);
+  });
+
+  it('classifies a live-run 409 by the body rejoin_path, never the envelope request_id', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            error: 'run_in_progress',
+            code: 'run_in_progress',
+            request_id: 'api-call-id-not-the-run',
+            live_request_id: 'live-run-7f3a',
+            rejoin_path: '/runtime/operations/live-run-7f3a/rejoin',
+            user_message: 'This run is still running.',
+          }),
+          { status: 409 },
+        ),
+      ),
+    );
+    const events: StreamEvent[] = [];
+
+    await streamFetch({
+      url: 'https://example.test/ai/conversations/c1/resume',
+      headers: {},
+      onEvent: (event) => events.push(event),
+    });
+
+    expect(events).toEqual([
+      {
+        type: 'error',
+        message: 'The chat service could not complete this request. Try again.',
+        status: 409,
+        code: 'run_in_progress',
+        rejoinPath: '/runtime/operations/live-run-7f3a/rejoin',
+      },
+      { type: 'done' },
+    ]);
+  });
+
+  it('treats a resume_conflict that names a live run as a rejoin, not a retry', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            error: 'resume_conflict',
+            code: 'resume_conflict',
+            live_request_id: 'live-run-9c1d',
+            rejoin_path: '/runtime/operations/live-run-9c1d/rejoin',
+          }),
+          { status: 409 },
+        ),
+      ),
+    );
+    const events: StreamEvent[] = [];
+
+    await streamFetch({
+      url: 'https://example.test/ai/conversations/c1/resume',
+      headers: {},
+      onEvent: (event) => events.push(event),
+    });
+
+    expect(events[0]).toMatchObject({
+      code: 'run_in_progress',
+      rejoinPath: '/runtime/operations/live-run-9c1d/rejoin',
+    });
+  });
+});

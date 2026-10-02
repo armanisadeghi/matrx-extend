@@ -30,6 +30,7 @@ import {
   parseProviderRetry,
   toRetryState,
 } from '@/lib/stream/provider-retry';
+import { startRejoinStream } from '@/lib/stream/rejoin';
 import { attemptResume } from '@/lib/stream/resume';
 import { createStreamWatchdog } from '@/lib/stream/watchdog';
 import { lookup as lookupTool } from '@/lib/tools/registry';
@@ -168,7 +169,9 @@ interface StreamChunk {
      */
     status?: number;
     /** Protocol classification only; never rendered as chat text. */
-    code?: 'resume_conflict';
+    code?: 'resume_conflict' | 'run_in_progress';
+    /** Server-relative rejoin path of the live run — only with `code: 'run_in_progress'`. */
+    rejoinPath?: string;
   };
 }
 
@@ -430,6 +433,16 @@ const resumeRetryRef: {
   } | null;
 } = { current: null };
 
+// A resume answered `409 run_in_progress`: the run is still live server-side.
+// Drained on the following `done` chunk (the refused stream must finalize
+// first) into a rejoin stream. Late-bound through rejoinRunRef.
+const pendingRejoinRef: {
+  current: { conversationId: string; rejoinPath: string } | null;
+} = { current: null };
+const rejoinRunRef: {
+  current: (conversationId: string, rejoinPath: string) => Promise<string | null>;
+} = { current: async () => null };
+
 // The watchdog is created once per context; onStall late-binds below.
 const onStallRef = { current: () => {} };
 const watchdogRef = {
@@ -665,16 +678,36 @@ function ensureStreamListeners(): void {
       // protocol contract is at
       // matrx-frontend/features/agents/docs/CLIENT_TOOL_SUSPEND_RESUME.md §2.5.
       if (status === 409) {
-        // Three 409 shapes from /resume:
+        // The 409 shapes from /resume:
         //   * outstanding_delegated_calls — benign; the user still has
         //     pending ask cards. No retry.
-        //   * resume_conflict (retryable) — the suspending run hasn't
-        //     persisted status='paused' yet, or a duplicate continuation
-        //     lost the atomic claim. Retry with backoff (bounded).
+        //   * bare resume_conflict (retryable, no rejoin target) — the
+        //     suspending run hasn't persisted status='paused' yet, or a
+        //     duplicate continuation lost the claim. Retry with backoff.
         //   * not_resumable — terminal request status. No retry.
+        //   * a live run (run_in_progress, or resume_conflict naming a live
+        //     run; classified 'run_in_progress' with the body's rejoin_path)
+        //     — not a failure: POST rejoin_path on the `done` that follows.
         const retryState = resumeRetryRef.current;
         const RESUME_CONFLICT_MAX_RETRIES = 4;
+        const conversationId =
+          retryState?.runId === chunk.runId
+            ? retryState.conversationId
+            : useChatStore.getState().selectedConversationId;
         if (
+          chunk.payload.code === 'run_in_progress' &&
+          chunk.payload.rejoinPath &&
+          conversationId
+        ) {
+          log.info('stream', '409 run_in_progress — rejoining the live run', {
+            runId: chunk.runId,
+            rejoinPath: chunk.payload.rejoinPath,
+          });
+          pendingRejoinRef.current = {
+            conversationId,
+            rejoinPath: chunk.payload.rejoinPath,
+          };
+        } else if (
           chunk.payload.code === 'resume_conflict' &&
           retryState &&
           retryState.runId === chunk.runId &&
@@ -723,6 +756,12 @@ function ensureStreamListeners(): void {
       // server says `continuation_needed=true` — if that broadcast won
       // the race against `done`, we queued it; now is the moment to
       // fire it.
+      const rejoin = pendingRejoinRef.current;
+      if (rejoin) {
+        pendingRejoinRef.current = null;
+        void rejoinRunRef.current(rejoin.conversationId, rejoin.rejoinPath);
+        return { ack: true };
+      }
       const pending = pendingContinueRef.current;
       if (pending) {
         pendingContinueRef.current = null;
@@ -1259,6 +1298,73 @@ export function useChatStream() {
   // Keep the late-binding ref in sync so the STREAM_CHUNK `done` handler can
   // drain a queued STREAM_CONTINUE without dependency-array gymnastics.
   resumeRunRef.current = resumeRun;
+
+  /**
+   * Rejoin a run the server reported STILL RUNNING (a live-run 409 on
+   * /resume): POST the refusal's own `rejoin_path` and replay + follow the
+   * live stream into a fresh assistant bubble, under the conversation's own
+   * organization. Never re-runs the run.
+   */
+  const rejoinRun = useCallback(
+    async (conversationId: string, rejoinPath: string): Promise<string | null> => {
+      if (useChatStore.getState().selectedConversationId !== conversationId) {
+        log.info('stream', `rejoin skipped — conversation ${conversationId} not selected`);
+        return null;
+      }
+      if (runIdRef.current) {
+        log.info('stream', 'rejoin skipped — another run is live', {
+          activeRunId: runIdRef.current,
+          rejoinPath,
+        });
+        return null;
+      }
+      const assistantMsg: ChatMessage = {
+        id: newId('asst'),
+        role: 'assistant',
+        content: '',
+        timestamp: Date.now(),
+        pending: true,
+      };
+      useChatStore.getState().pushMessage(assistantMsg);
+      useChatStore.getState().setStreaming(true);
+      useChatStore.getState().setStreamInterruption(null);
+
+      const runId = newId('run');
+      runIdRef.current = runId;
+      targetIdRef.current = assistantMsg.id;
+      requestIdRef.current = null;
+      eventCountRef.current = 0;
+      watchdogRef.current?.start();
+
+      const activeTab = await resolveActiveTab();
+      try {
+        await startRejoinStream({
+          runId,
+          conversationId,
+          rejoinPath,
+          permissionMode: useChatStore.getState().getPermissionMode(null),
+          assignedTabId: activeTab?.id ?? null,
+        });
+      } catch (err) {
+        log.error('stream', `rejoin STREAM_START failed for ${runId}`, err);
+        watchdogRef.current?.stop();
+        presentChatStreamError({
+          messageId: assistantMsg.id,
+          runId,
+          message: streamErrorMessage(),
+          lastInput: lastSendRef.current?.input ?? '',
+        });
+        useChatStore.getState().finalizeAssistant(assistantMsg.id);
+        useChatStore.getState().setStreaming(false);
+        runIdRef.current = null;
+        targetIdRef.current = null;
+        return null;
+      }
+      return runId;
+    },
+    [],
+  );
+  rejoinRunRef.current = rejoinRun;
 
   // SW → sidepanel: a POST /tool_results came back with
   // continuation_needed=true. The SW broadcasts {conversationId, userRequestId};

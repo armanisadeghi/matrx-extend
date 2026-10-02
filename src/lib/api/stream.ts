@@ -15,10 +15,20 @@
 
 import { sanitizeNetworkUrl } from '@/lib/credentials/network-urls';
 import { log } from '@/lib/debug/log';
-import { fetchWithMatrxProtocolFallback } from '@ai-matrx/agents/matrx';
+import {
+  fetchWithMatrxProtocolFallback,
+  readLiveRunRejoin,
+  streamErrorText,
+} from '@ai-matrx/agents/matrx';
 import { type MatrxStreamEnvelope, readMatrxNdjsonStream } from '@ai-matrx/agents/stream/ndjson';
 
-export type StreamErrorCode = 'resume_conflict';
+/**
+ * Protocol classifications of a non-2xx stream open. `run_in_progress` = the
+ * run is STILL RUNNING (a `run_in_progress` refusal, or a `resume_conflict`
+ * that names a live run); the caller POSTs the body's `rejoinPath` instead of
+ * failing the turn. A bare `resume_conflict` (no rejoin target) is retried.
+ */
+export type StreamErrorCode = 'resume_conflict' | 'run_in_progress';
 
 export type StreamEvent =
   | { type: 'text'; content: string }
@@ -38,6 +48,8 @@ export type StreamEvent =
       status?: number;
       /** Protocol-only classification; never render this as user text. */
       code?: StreamErrorCode;
+      /** Server-relative path to POST to rejoin the live run — only with `code: 'run_in_progress'`. */
+      rejoinPath?: string;
     }
   | { type: 'done' };
 
@@ -118,7 +130,15 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
 
   if (!res.ok) {
     const errText = await res.text().catch(() => res.statusText);
-    const code = streamErrorCode(res.status, errText);
+    // ALWAYS the body's own `rejoin_path` — never a URL built here (some doors
+    // name no live request id at all).
+    const rejoin = readLiveRunRejoin({
+      status: res.status,
+      serverDetail: parseJsonBody(errText),
+    });
+    const code: StreamErrorCode | undefined = rejoin
+      ? 'run_in_progress'
+      : streamErrorCode(res.status, errText);
     log.error('stream', `✗ ${diagnosticUrl} ${res.status}`, {
       code: code ?? 'http_error',
       status: res.status,
@@ -128,6 +148,7 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
       message: streamErrorMessage(res.status),
       status: res.status,
       ...(code !== undefined && { code }),
+      ...(rejoin && { rejoinPath: rejoin.rejoinPath }),
     });
     opts.onEvent({ type: 'done' });
     return;
@@ -204,9 +225,13 @@ function dispatch(event: MatrxStreamEnvelope, onEvent: (e: StreamEvent) => void)
   }
   if (event.event === 'error') {
     log.error('stream', 'server emitted an error event');
+    // A stream `error` event is the server's sentence FOR the person
+    // (`user_message`, e.g. "OpenAI refused this request: the platform's
+    // OpenAI account is out of credit."). Replacing it with generic copy hid
+    // every actionable failure. HTTP error BODIES stay unshown (above).
     onEvent({
       type: 'error',
-      message: streamErrorMessage(),
+      message: streamErrorText(event) ?? streamErrorMessage(),
     });
     return;
   }
@@ -248,6 +273,14 @@ export function streamErrorMessage(status?: number): string {
       return status !== undefined && status >= 500
         ? 'The chat service is temporarily unavailable. Try again.'
         : 'The chat service could not complete this request. Try again.';
+  }
+}
+
+function parseJsonBody(text: string): unknown {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return undefined;
   }
 }
 

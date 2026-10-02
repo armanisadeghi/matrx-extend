@@ -3501,3 +3501,10 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 - **Where to test:** Signed-in Notes editor with an existing disposable note.
 - **Steps:** Confirm Delete while its filtered UPDATE returns zero affected rows. Repeat with a transport error. Restore access, use Retry delete, confirm again, and reopen the list.
 - **Expected:** An unconfirmed delete shows an explicit notice and preserves the editor draft. Retry requires confirmation again. A confirmed delete returns to the list without the note.
+
+### Server error sentences, live-run rejoin, and speech failures
+
+- **What it does:** A stream `error` event shows the server's `user_message` (for example "the platform's OpenAI account is out of credit") instead of generic copy. A `/resume` refused because the run is still live (a 409 with `rejoin_path`) rejoins that run's live stream into a fresh bubble under the conversation's organization; only a bare `resume_conflict` retries. A failed read-aloud (Cartesia) session is reported to `/broker/provider-failures` and shows the server's sentence.
+- **Where to test:** Assistant and Pilot chat in the side panel; the speaker button on an assistant message.
+- **Steps:** Run an agent whose provider is out of credit; trigger a delegated tool so two resumes race (the loser receives the live-run 409); break the Cartesia session (revoke the token) and press the speaker.
+- **Expected:** The billing sentence appears verbatim; the racing resume shows the run's output instead of an empty bubble, and no delegated tool runs twice; the speech error shows the server's sentence, not raw provider text. Unit proof: `tests/unit/api-stream.test.ts`.

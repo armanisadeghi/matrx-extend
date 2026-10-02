@@ -233,8 +233,12 @@ const DISPATCHED_CALLS_MAX = 500;
 const dispatchedCalls = new Set<string>();
 
 /** Returns true exactly once per (runId, callId); false for replays. */
-function markDispatched(runId: string, callId: string): boolean {
-  const key = `${runId}:${callId}`;
+function markDispatched(_runId: string, callId: string): boolean {
+  // Keyed by the server's call id ALONE: a rejoined run
+  // (`/runtime/operations/{id}/rejoin`) REPLAYS its stream under a new client
+  // runId, and a call already dispatched under the original stream must not
+  // run its handler a second time.
+  const key = callId;
   if (dispatchedCalls.has(key)) return false;
   dispatchedCalls.add(key);
   if (dispatchedCalls.size > DISPATCHED_CALLS_MAX) {

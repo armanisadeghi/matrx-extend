@@ -13,13 +13,52 @@
  *     toasts (no toast wrapper in the extension yet).
  */
 
+import { matrxTransport } from '@/lib/api/matrx-transport';
 import { AUDIO_API_ROUTES } from '@/lib/audio/constants';
 import { getAccessToken } from '@/lib/auth/flow';
 import { useVoicePrefsStore } from '@/state/voice-prefs';
+import { reportProviderSessionFailure } from '@ai-matrx/agents/matrx';
 import type { CartesiaClient, WebPlayer } from '@cartesia/cartesia-js';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { parseMarkdownToText } from './parse-markdown-for-speech';
 import { resolveReadAloudVoice } from './read-aloud-voice';
+
+const CARTESIA_MODEL_ID = 'sonic-3';
+
+/**
+ * A failure of the browser-held Cartesia session itself (connect / send /
+ * play on the ephemeral token) — as opposed to the platform's token mint.
+ * Only these are reported to `/broker/provider-failures`.
+ */
+class CartesiaSessionError extends Error {
+  readonly original: unknown;
+  constructor(original: unknown) {
+    super(original instanceof Error ? original.message : 'Speech failed');
+    this.original = original;
+    this.name = 'CartesiaSessionError';
+  }
+}
+
+/**
+ * Report the provider failure (the operator hears of it; the session talked
+ * to Cartesia directly) and return the server's sentence for the person —
+ * never the provider's raw text. Falls back to the raw message only when the
+ * report itself could not be made.
+ */
+async function providerFailureMessage(err: CartesiaSessionError): Promise<string> {
+  const cause = err.original as { status?: unknown; type?: unknown; code?: unknown } | null;
+  const status = typeof cause?.status === 'number' ? cause.status : null;
+  const type =
+    typeof cause?.type === 'string' ? cause.type : typeof cause?.code === 'string' ? cause.code : null;
+  const verdict = await reportProviderSessionFailure(matrxTransport, {
+    provider: 'cartesia',
+    model: CARTESIA_MODEL_ID,
+    status_code: status,
+    error_type: type,
+    message: err.message,
+  });
+  return verdict?.user_message ?? err.message;
+}
 
 export type SpeakerPhase =
   | 'idle'
@@ -124,7 +163,7 @@ export function useCartesiaSpeaker({
     } catch (err) {
       console.error('[matrx-audio] Cartesia websocket connect failed', err);
       if (mountedRef.current) setPhase('error');
-      throw err;
+      throw new CartesiaSessionError(err);
     }
   }, []);
 
@@ -136,13 +175,15 @@ export function useCartesiaSpeaker({
         return;
       }
 
+      let providerStage = false;
       try {
         const [voiceId] = await Promise.all([resolveReadAloudVoice(), ensureConnection()]);
 
         if (mountedRef.current) setPhase('sending');
 
+        providerStage = true;
         const resp = await websocketRef.current!.send({
-          modelId: 'sonic-3',
+          modelId: CARTESIA_MODEL_ID,
           voice: {
             mode: 'id' as const,
             id: voiceId,
@@ -165,8 +206,18 @@ export function useCartesiaSpeaker({
 
         if (mountedRef.current) setPhase('idle');
       } catch (err) {
-        const msg = err instanceof Error ? err.message : 'Speech failed';
         console.error('[matrx-audio] speak failed', err);
+        const sessionError =
+          err instanceof CartesiaSessionError
+            ? err
+            : providerStage
+              ? new CartesiaSessionError(err)
+              : null;
+        const msg = sessionError
+          ? await providerFailureMessage(sessionError)
+          : err instanceof Error
+            ? err.message
+            : 'Speech failed';
         onErrorRef.current?.(msg);
         if (mountedRef.current) setPhase('error');
       }

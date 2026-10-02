@@ -21,6 +21,7 @@ import {
   agentExecutePath,
 } from '@/lib/api/routes/ai';
 import { conversationResumePath } from '@/lib/api/routes/tool-results';
+import { streamErrorMessage } from '@/lib/api/stream';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
 import { type ChatRequestContext, buildChatContext } from '@/lib/chat/build-context';
@@ -36,6 +37,7 @@ import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { defaultChatModelFor } from '@/lib/settings/default-chat-model';
 import { deadlineFor, parseProviderRetry } from '@/lib/stream/provider-retry';
+import { startRejoinStream } from '@/lib/stream/rejoin';
 import { attemptResume } from '@/lib/stream/resume';
 import { createStreamWatchdog } from '@/lib/stream/watchdog';
 import { lookup as lookupTool } from '@/lib/tools/registry';
@@ -90,6 +92,10 @@ interface StreamChunk {
      * outstanding tool answers" signal, not a real error.
      */
     status?: number;
+    /** Protocol classification only; never rendered as chat text. */
+    code?: 'resume_conflict' | 'run_in_progress';
+    /** Server-relative rejoin path of the live run — only with `code: 'run_in_progress'`. */
+    rejoinPath?: string;
   };
 }
 
@@ -210,6 +216,14 @@ export function usePilotChatStream() {
   // continue without dependency-array gymnastics.
   const resumeRunRef = useRef<
     (conversationId: string, userRequestId: string | null) => Promise<string | null>
+  >(async () => null);
+  // A resume answered `409 run_in_progress` — rejoin the live run once the
+  // refused stream's `done` lands. See useChatStream's pendingRejoinRef.
+  const pendingRejoinRef = useRef<{ conversationId: string; rejoinPath: string } | null>(
+    null,
+  );
+  const rejoinRunRef = useRef<
+    (conversationId: string, rejoinPath: string) => Promise<string | null>
   >(async () => null);
 
   const watchdogRef = useRef<ReturnType<typeof createStreamWatchdog> | null>(null);
@@ -350,7 +364,24 @@ export function usePilotChatStream() {
         const status = chunk.payload.status;
         // 409 on /resume = "outstanding_delegated_calls" — benign. See the
         // assistant hook's 409 branch for the protocol rationale.
-        if (status === 409) {
+        const conversationId = usePilotChatStore.getState().selectedConversationId;
+        if (
+          status === 409 &&
+          chunk.payload.code === 'run_in_progress' &&
+          chunk.payload.rejoinPath &&
+          conversationId
+        ) {
+          // The run is STILL RUNNING — not a failure. Rejoin its live stream
+          // on the `done` that follows.
+          log.info('pilot-stream', '409 run_in_progress — rejoining the live run', {
+            runId: chunk.runId,
+            rejoinPath: chunk.payload.rejoinPath,
+          });
+          pendingRejoinRef.current = {
+            conversationId,
+            rejoinPath: chunk.payload.rejoinPath,
+          };
+        } else if (status === 409) {
           log.info(
             'pilot-stream',
             '409 on resume — outstanding delegated calls, leaving inbox cards for the user',
@@ -368,6 +399,12 @@ export function usePilotChatStream() {
         // Drain any STREAM_CONTINUE that raced the stream end. Same race as
         // the assistant surface — a fast client tool may resolve before the
         // `done` chunk reaches this hook. See useChatStream for the rationale.
+        const rejoin = pendingRejoinRef.current;
+        if (rejoin) {
+          pendingRejoinRef.current = null;
+          void rejoinRunRef.current(rejoin.conversationId, rejoin.rejoinPath);
+          return { ack: true };
+        }
         const pending = pendingContinueRef.current;
         if (pending) {
           pendingContinueRef.current = null;
@@ -701,6 +738,58 @@ export function usePilotChatStream() {
     [],
   );
   resumeRunRef.current = resumeRun;
+
+  /** Rejoin a still-running run (`409 run_in_progress`); never re-runs it. */
+  const rejoinRun = useCallback(
+    async (conversationId: string, rejoinPath: string): Promise<string | null> => {
+      if (usePilotChatStore.getState().selectedConversationId !== conversationId) return null;
+      if (runIdRef.current) {
+        log.info('pilot-stream', 'rejoin skipped — another run is live', { rejoinPath });
+        return null;
+      }
+      const assistantMsg: ChatMessage = {
+        id: newId('asst'),
+        role: 'assistant',
+        content: '',
+        timestamp: Date.now(),
+        pending: true,
+      };
+      usePilotChatStore.getState().pushMessage(assistantMsg);
+      usePilotChatStore.getState().setStreaming(true);
+      usePilotChatStore.getState().setStreamInterruption(null);
+
+      const runId = newId('run');
+      runIdRef.current = runId;
+      targetIdRef.current = assistantMsg.id;
+      requestIdRef.current = null;
+      watchdogRef.current?.start();
+
+      const assignedTabId = await resolvePilotAssignedTabId();
+      try {
+        await startRejoinStream({
+          runId,
+          conversationId,
+          rejoinPath,
+          permissionMode: usePilotChatStore.getState().getPermissionMode(null),
+          assignedTabId,
+        });
+      } catch (err) {
+        log.error('pilot-stream', `rejoin STREAM_START failed for ${runId}`, err);
+        watchdogRef.current?.stop();
+        usePilotChatStore
+          .getState()
+          .appendAssistantText(assistantMsg.id, `\n\n_Error:_ ${streamErrorMessage()}`);
+        usePilotChatStore.getState().finalizeAssistant(assistantMsg.id);
+        usePilotChatStore.getState().setStreaming(false);
+        runIdRef.current = null;
+        targetIdRef.current = null;
+        return null;
+      }
+      return runId;
+    },
+    [resolvePilotAssignedTabId],
+  );
+  rejoinRunRef.current = rejoinRun;
 
   // Subscribe to the SW's STREAM_CONTINUE broadcasts. The handler runs in
   // EVERY surface (assistant + pilot) — only the surface whose conversation
