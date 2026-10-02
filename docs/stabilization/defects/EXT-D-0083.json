@@ -14,11 +14,13 @@
   "actual": "External repository/profile free space hid internal disk exhaustion. The D54 run completed UI assertions but final safety-state persistence failed, invalidating acceptance; shell and agent initialization also failed.",
   "evidence": [
     "docs/stabilization/runs/d54-data-tsv-native-20261002-01.json",
-    "docs/stabilization/resource-journals/d54-data-tsv-native-20261002-01.jsonl"
+    "docs/stabilization/resource-journals/d54-data-tsv-native-20261002-01.jsonl",
+    "docs/stabilization/reports/system-disk-guard-round2-peer-20261002.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37063114646"
   ],
   "severity": "S1: unsafe test environment can invalidate results and prevent safety-state persistence",
   "priority": "P0: recover storage and repair admission before another test launch",
-  "state": "in-fix",
+  "state": "fixed",
   "transition_history": [
     {
       "at": "2026-10-02T20:08:07Z",
@@ -37,6 +39,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol owns guard repair; root and a narrow census lane own safe disk recovery. All new heavy launches paused."
+    },
+    {
+      "at": "2026-10-02T20:54:59.185519+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Guard repair and process regressions passed hosted macOS CI37063114646: marker1/1 and lowdisk2/2, zero skips; fresh292681f6 peer accepts scoped behavior. Local disk recovery and valid D54 repeat remain open; no closure."
     }
   ],
   "closure_requirement": "Recover stable storage headroom without losing user data; prove OS/safety volume refusal and persistence-failure behavior RED then GREEN under the resource guard; independent review; repeat the invalidated native acceptance with a valid terminal resource verdict."

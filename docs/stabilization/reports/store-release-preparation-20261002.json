@@ -41,7 +41,7 @@
     "latestSecretCheck": "Required SUPABASE_ACCESS_TOKEN still absent from GitHub secret metadata at October2 16:24UTC."
   },
   "latestDashboardObservation": {
-    "observedAt": "2026-10-02T16:45:36.694459+00:00",
+    "observedAt": "2026-10-02T20:56:15.304049+00:00",
     "surface": "Authenticated primary Chrome Web Store Package dashboard",
     "status": "Published - public",
     "publishedVersion": "0.2.130",
@@ -54,9 +54,9 @@
     "result": "Own stale pending-review title corrected to published130 with installed acceptance pending; publication-only observation metadata saved. Status remains submitted; no self-promotion or installed-acceptance claim."
   },
   "latest_integrated_ci": {
-    "source_sha": "6aec7dd3464eb7a48404f2f06d659b8775c6c03b",
-    "run_id": 37050278631,
+    "source_sha": "7b0fedfa15cf340b0a955f487ae5c961efbd3442",
+    "run_id": 37063114646,
     "conclusion": "success",
-    "limits": "Development CI only; no Store ZIP uploaded, native post-transport acceptance pending and independent review found bounded error-handling follow-ups."
+    "limits": "Full hosted CI plus three macOS guard process tests passed with zero guard skips. Development verification only; no Store ZIP uploaded; native acceptance and scoped release credential approval remain pending."
   }
 }

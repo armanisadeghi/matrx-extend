@@ -13,11 +13,13 @@
   "evidence": [
     "docs/stabilization/reports/package-request-client-peer-20261002.json",
     "docs/stabilization/reports/package-request-review-resolution-20261002.json",
-    "docs/stabilization/resource-journals/d81-parser-red-20261002-02.jsonl"
+    "docs/stabilization/resource-journals/d81-parser-red-20261002-02.jsonl",
+    "docs/stabilization/reports/d81-type-resolution-20261002.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37063114646"
   ],
   "severity": "S2: error details needed for recovery may be lost",
   "priority": "P1: bounded error boundary repair before next release",
-  "state": "in-fix",
+  "state": "fixed",
   "reproduction_status": "controlled real-Response RED confirmed",
   "transition_history": [
     {
@@ -37,6 +39,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Real-response pre-fix regression confirmed both plain-text failures; bounded one-read repair assigned."
+    },
+    {
+      "at": "2026-10-02T20:54:59.185519+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Shared parser repair published automatically as agents0.38.3, adopted through metadata-only0.38.4 in main lock; consumer fullCI37063114646 at7b0fedfa passed. Prior real-Response RED2/GREEN18 and independent source evidence remain. Native user-facing acceptance not claimed."
     }
   ],
   "closure_requirement": "Demonstrate real-response RED\u2192GREEN, independent source review and relevant consumer regression checks. Upstream package repair additionally requires automatic publication and verified adoption; native user-facing behavior remains explicitly tracked."
