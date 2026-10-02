@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "run_id": "guest-autoscrape-native-20261002-01",
+  "status": "completed_partial",
+  "started_at": "2026-10-02T19:19:50Z",
+  "completed_at": "2026-10-02T19:27:37Z",
+  "surface": "native Chrome for Testing UI; actual guest Settings and Chat context preview",
+  "build_receipt": {
+    "path": "test-results/ci-artifacts/6aec7dd3464eb7a48404f2f06d659b8775c6c03b/37050278631-1/local-dev-receipt.json",
+    "version": "0.2.175",
+    "extension_dir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/6aec7dd3464eb7a48404f2f06d659b8775c6c03b/37050278631-1/chrome-mv3"
+  },
+  "runtime_identity": {
+    "browser": "Google Chrome for Testing 149.0.7827.55 arm64",
+    "executable": "/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+    "profile_path_verified_in_chrome_version": "/Volumes/Samsung2TB/code/.stabilization-scratch/cft-guest-autoscrape-20261002-01/Default",
+    "profile_created_empty_before_guard_admission": true,
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "extension_enabled_and_version_verified_before_assertions": true,
+    "extension_version": "0.2.175",
+    "loaded_from_verified_before_assertions": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/6aec7dd3464eb7a48404f2f06d659b8775c6c03b/37050278631-1/chrome-mv3",
+    "extension_enabled_and_version_verified_after_final_reload": true,
+    "loaded_from_verified_after_final_reload": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/6aec7dd3464eb7a48404f2f06d659b8775c6c03b/37050278631-1/chrome-mv3",
+    "auth_state": "Guest; visible guest notice and Sign in/Sign up actions; no sign-in attempted"
+  },
+  "resource_guard": {
+    "run_id": "guest-autoscrape-native-20261002-01",
+    "journal": "docs/stabilization/resource-journals/guest-autoscrape-native-20261002-01.jsonl",
+    "admitted": true,
+    "decision": "valid",
+    "exit_code": 0,
+    "unsafe_samples": 0,
+    "browser_closed_before_guard_release": true
+  },
+  "fixture": {
+    "url": "https://example.com/",
+    "content": "Public Example Domain page; no personal data or credentials",
+    "browser_page_text_observed": "This domain is for use in documentation examples without needing permission. This is not a service; avoid relying on it for testing and monitoring purposes."
+  },
+  "case_results": {
+    "EXT-F-1003-T40": {
+      "status": "partial_unverified_integration",
+      "initial_state": { "auto_scrape_on_load": false, "mode": "Capture" },
+      "actions": [
+        "Enabled Auto-scrape on load in guest Settings.",
+        "Reloaded the extension from chrome://extensions/ and reopened the Settings panel.",
+        "Observed Auto-scrape on load remained On and mode remained Capture.",
+        "After the reload, the Chat context preview showed a Page content source with 2.3k chars for example.com. No message was sent."
+      ],
+      "verified_substeps": [
+        "Preference toggled and persisted through full extension reload.",
+        "The existing context preview reported a page-content source after the enabled page load."
+      ],
+      "unverified_criteria": [
+        "Preview exposed counts and source names but not captured text. A page-specific content marker could not be confirmed.",
+        "A clean disabled/new-document preview comparison was not performed; the initially Off setting alone does not prove disabled behavior."
+      ],
+      "verdict": "Do not claim the toggle's full background capture integration from this run."
+    },
+    "EXT-F-1003-T67": {
+      "status": "pass_preference_persistence",
+      "actions": [
+        "Selected Capture and performed full extension Reload; reopened Settings and confirmed Capture remained selected.",
+        "Selected Scroll & capture and performed full extension Reload; reopened Settings and confirmed Scroll & capture remained selected.",
+        "Restored Capture and confirmed it after final extension Reload."
+      ],
+      "acceptance_scope": "Inventory acceptance is mode selection and display after reload. No claim is made about deep-scroll quality or lazy content capture."
+    }
+  },
+  "cleanup": {
+    "restored_settings": { "auto_scrape_on_load": false, "mode": "Capture" },
+    "restoration_verified_after_full_reload": true,
+    "chat_message_sent": false,
+    "credentials_used": false,
+    "store_or_primary_chrome_touched": false,
+    "browser_window_closed": true
+  },
+  "limits": [
+    "No actual capture text was available through the visible no-send preview, so T40 integration remains unverified.",
+    "No scroll animation, viewport movement, or far-below-fold content was used to claim Scroll & capture behavior.",
+    "No compile, build, install, or product-code change was performed in this lane."
+  ]
+}

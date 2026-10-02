@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "report_id": "guest-autoscrape-native-20261002",
+  "status": "completed_partial",
+  "run_id": "guest-autoscrape-native-20261002-01",
+  "run_evidence": "docs/stabilization/runs/guest-autoscrape-native-20261002-01.json",
+  "resource_journal": "docs/stabilization/resource-journals/guest-autoscrape-native-20261002-01.jsonl",
+  "runtime_identity": "Native Chrome for Testing 149.0.7827.55; fresh owned profile; Matrx Extend 0.2.175 enabled at ID cihdmkcdjjckfhjpgoedmgfpoljebaml, exact receipt Loaded from path verified before assertions and after final Reload.",
+  "case_verdicts": {
+    "EXT-F-1003-T40": {
+      "status": "partial_unverified_integration",
+      "evidence": "Auto-scrape toggled On and remained On after full extension Reload. Guest Chat context preview after the page load showed Page content (2.3k chars) for example.com without sending a message.",
+      "limit": "Preview does not reveal captured text, so page-specific marker and clean disabled/new-document control were not proven. Full background-capture integration stays unverified."
+    },
+    "EXT-F-1003-T67": {
+      "status": "pass_preference_persistence",
+      "evidence": "Capture selected and persisted after full extension Reload; Scroll & capture selected and persisted after full extension Reload. Restored Capture after final Reload.",
+      "limit": "This verdict covers the inventory's preference-persistence criteria only; no capture-quality or scroll behavior claim."
+    }
+  },
+  "restore": "Auto-scrape Off / Capture mode, both confirmed after full extension Reload.",
+  "safety": "Guest remained signed out; no Chat message, credentials, Store build, or primary Chrome session used.",
+  "resource_verdict": "valid; guard admitted and ended normally with exit code 0 and no unsafe samples.",
+  "code_changes": false
+}
