@@ -24,15 +24,15 @@ import { type SupabaseClient, createClient } from '@supabase/supabase-js';
  *
  * AN ABSENT HEADER MEANS A PERSON. That is the whole point, so this header must
  * NEVER be attached to the shared client — a person's own click or keystroke
- * sends nothing and is stamped `human` by the database.
+ * sends nothing and is stamped `user` by the database.
  */
 export const ACTOR_TIER_HEADER = 'x-matrx-actor-tier';
 /** A model's turn caused this write. */
-export const ACTOR_TIER_AI = 'ai';
+export const ACTOR_TIER_AGENT = 'agent';
 /** This extension's OWN machinery caused this write — a scheduler claim, a
  *  background scanner, a rolling-health bookkeeping bump — not a model's turn
  *  and not a person's gesture. (DD-131, B-44.) */
-export const ACTOR_TIER_CODE = 'code';
+export const ACTOR_TIER_SYSTEM = 'system';
 
 /**
  * DD-131/B-56 — the client-channel SYSTEM declaration, read by
@@ -53,9 +53,9 @@ export const ACTOR_SYSTEM_MACHINERY = 'matrx-extend:scheduler';
  * Who caused a write.
  *
  *  - `'person'` — a human's own click or typing in the side panel. Sends NO
- *    actor header; the database stamps `human`.
+ *    actor header; the database stamps `user`.
  *  - `'agent'`  — a write a MODEL'S TURN caused (a tool handler running inside
- *    the browser-agent dispatcher). Sends `x-matrx-actor-tier: ai`.
+ *    the browser-agent dispatcher). Sends `x-matrx-actor-tier: agent`.
  *
  * Pass this explicitly at the call site. There is deliberately no default and
  * no ambient "current actor" — the two channels are two different clients, and
@@ -86,7 +86,7 @@ export function getSupabase(): SupabaseClient {
 /**
  * The AGENT-AUTHORED client (DD-131, DD-131/B-56). Same URL, same publishable
  * key, same access token as `getSupabase()` — the only difference is that
- * every request it makes carries `x-matrx-actor-tier: ai` and
+ * every request it makes carries `x-matrx-actor-tier: agent` and
  * `x-matrx-actor-system: matrx-extend:agent`.
  *
  * It is a SEPARATE instance on purpose: there is no way to "forget to unset"
@@ -109,7 +109,7 @@ export function getAgentAuthoredSupabase(): SupabaseClient {
       global: {
         headers: {
           'X-Client-Info': 'matrx-extend',
-          [ACTOR_TIER_HEADER]: ACTOR_TIER_AI,
+          [ACTOR_TIER_HEADER]: ACTOR_TIER_AGENT,
           [ACTOR_SYSTEM_HEADER]: ACTOR_SYSTEM_AGENT,
         },
       },
@@ -131,7 +131,7 @@ let machineryAuthoredClient: SupabaseClient | null = null;
 /**
  * The MACHINERY-AUTHORED client (DD-131, B-44, DD-131/B-56). Same URL, same
  * publishable key, same access token as `getSupabase()` — the only difference
- * is that every request it makes carries `x-matrx-actor-tier: code` and
+ * is that every request it makes carries `x-matrx-actor-tier: system` and
  * `x-matrx-actor-system: matrx-extend:scheduler`.
  *
  * Reach for it from a path the extension's OWN infrastructure drives with no
@@ -159,7 +159,7 @@ export function getMachineryAuthoredSupabase(): SupabaseClient {
       global: {
         headers: {
           'X-Client-Info': 'matrx-extend',
-          [ACTOR_TIER_HEADER]: ACTOR_TIER_CODE,
+          [ACTOR_TIER_HEADER]: ACTOR_TIER_SYSTEM,
           [ACTOR_SYSTEM_HEADER]: ACTOR_SYSTEM_MACHINERY,
         },
       },

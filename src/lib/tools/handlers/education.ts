@@ -260,7 +260,7 @@ export const capture_study_set: ToolHandler<CaptureStudySetArgs, unknown> = {
     // edges. Tab identity is Chrome's own committed URL, never page-supplied.
     // DD-131: the model's `capture_study_set` turn is what creates this deck,
     // so the RPC rides the agent-authored client and declares
-    // `x-matrx-actor-tier: ai`. (RPCs are plain PostgREST requests — the header
+    // `x-matrx-actor-tier: agent`. (RPCs are plain PostgREST requests — the header
     // reaches SQL the same way a table write's does.)
     // A new deck has no parent row to inherit an organization from, so the
     // RPC refuses a NULL `p_organization_id` (organization_required). The id

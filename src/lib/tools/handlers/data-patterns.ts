@@ -339,7 +339,7 @@ export const data_patterns: ToolHandler<DataPatternsArgs, unknown> = {
       }
       const saved = await savePattern({
         // DD-131: the model's turn is what produced this pattern, so the write
-        // rides the agent-authored client and declares `x-matrx-actor-tier: ai`.
+        // rides the agent-authored client and declares `x-matrx-actor-tier: agent`.
         authored_by: 'agent',
         organization_id: await requireRequestOrganizationId(),
         name: args.name as string,

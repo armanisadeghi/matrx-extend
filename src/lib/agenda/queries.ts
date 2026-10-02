@@ -512,7 +512,7 @@ export async function claimDueFire(
   patch: { next_due_at: string | null; last_run_at: string; enabled: boolean },
 ): Promise<boolean> {
   // DD-131 (B-44): only the SW scanner (a chrome.alarms poller) calls this —
-  // never a person's gesture — so it declares `x-matrx-actor-tier: code`.
+  // never a person's gesture — so it declares `x-matrx-actor-tier: system`.
   const c = schedulerMachineryDb();
   let q = c
     .from('sch_task')

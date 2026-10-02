@@ -925,7 +925,7 @@ export type SavePatternInput = {
   /**
    * DD-131 — who caused this save. `'agent'` (the `data_patterns` tool acting
    * inside a model's turn) rides the agent-authored client and declares
-   * `x-matrx-actor-tier: ai`; `'person'` (the Data / Showcase tab's own Save
+   * `x-matrx-actor-tier: agent`; `'person'` (the Data / Showcase tab's own Save
    * button) rides the ordinary client and declares nothing. Required, with no
    * default, so the channel is visible in the calling line.
    */
@@ -1025,7 +1025,7 @@ export async function renamePattern(patternId: string, name: string): Promise<st
  * DD-131 (B-44): this is bookkeeping the extension's own code performs after
  * ANY run finishes — whether a person clicked "run" or an agent's tool call
  * drove it — so it rides the machinery-authored client and declares
- * `x-matrx-actor-tier: code`, never the person's or the agent's channel.
+ * `x-matrx-actor-tier: system`, never the person's or the agent's channel.
  */
 export async function bumpPatternRun(
   patternId: string,
@@ -1226,7 +1226,7 @@ export async function saveScreenshot(p: SaveScreenshotPayload): Promise<{ id: st
     return null;
   }
   // DD-131: `source` already records who took the shot, so the write channel
-  // follows it — an agent capture declares `x-matrx-actor-tier: ai`, the user's
+  // follows it — an agent capture declares `x-matrx-actor-tier: agent`, the user's
   // own "Take screenshot" button declares nothing. ('unknown' is treated as the
   // person channel: absent means human, and inventing an agent claim is worse
   // than the default.)

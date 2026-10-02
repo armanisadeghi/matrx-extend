@@ -94,7 +94,7 @@ export async function startSchedulerHost(userId: string): Promise<void> {
       // DD-131 (B-44): every write this host makes through the scheduler
       // client — claiming a run, completing it, failing it — is this
       // extension's own machinery, not a person's gesture, so it rides the
-      // machinery-authored client and declares `x-matrx-actor-tier: code`.
+      // machinery-authored client and declares `x-matrx-actor-tier: system`.
       const supabase = getMachineryAuthoredSupabase();
       const instanceId = await getOrMintInstanceId();
 
