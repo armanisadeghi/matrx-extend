@@ -4,7 +4,7 @@
   "case_ids": ["EXT-F-2008-T02"],
   "title": "Files read failure also renders an empty-library or empty-captures claim",
   "surface": "Files side-panel",
-  "auth_mode": "member/admin; admin native retest passed on0.2.173, member unverified",
+  "auth_mode": "member/admin; both independently retested on frozen0.2.173",
   "reproduction": [
     "Open Files as a signed-in user with the selected organization set and no cached rows.",
     "Make fetchRecentFiles or fetchRecentExtensionCaptures reject.",
@@ -14,16 +14,17 @@
   "actual": "reload sets state to error and displays the error banner, but both tab panels branch only on state === loading and then use an empty-row test; the active panel additionally says \u2018No library files yet\u2019 or \u2018No captures yet\u2019.",
   "severity": "S3: an error is accompanied by a contradictory empty-state claim",
   "priority": "P2: user may infer files or screenshots do not exist",
-  "state": "retest-pass",
+  "state": "closed",
   "evidence": [
     "docs/stabilization/reports/notes-files-batch-audit.json",
     "src/features/files/FilesView.tsx:81-109",
     "src/features/files/FilesView.tsx:236-241",
     "src/features/files/FilesView.tsx:273-313",
-    "docs/stabilization/reports/files-fresh-acceptance-20261001.json"
+    "docs/stabilization/reports/files-fresh-acceptance-20261001.json",
+    "docs/stabilization/reports/files-member-acceptance-20261002.json"
   ],
-  "verification_status": "Independent exact173 admin native retest passed both Library/Screenshots error, no-false-empty and Retry recovery. Member native proof remains open; broader Files coverage not certified.",
-  "current_source_truth": "Source fix present and independently exercised on frozen0.2.173 admin UI; no product change needed in this turn.",
+  "verification_status": "Closed for the reported read-error/false-empty defect: exact173 admin and ordinary non-extension-admin Library/Screenshots native tests pass visible error, Retry, no false empty and actual read recovery. Clean exclusive member run003 supersedes overlapping run001; full Files feature/search controls remain unverified.",
+  "current_source_truth": "Existing product fix verified for both applicable account modes; no new product change needed for D64.",
   "native_acceptance_report": "docs/stabilization/reports/files-fresh-acceptance-20261001.json",
   "transition_history": [
     {
@@ -55,6 +56,13 @@
       "from": "fixed",
       "to": "retest-pass",
       "reason": "Independent exact173 admin native failure/recovery passed for both tabs; member remains unverified so defect not closed."
+    },
+    {
+      "at": "2026-10-02T13:52:27.718549+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Independent admin and clean exclusive ordinary-member exact173 native reproductions and adjacent Retry recovery passed. Full-feature coverage is separate.",
+      "evidence": "docs/stabilization/reports/files-member-acceptance-20261002.json"
     }
   ]
 }
