@@ -16,24 +16,24 @@
  * saved turn reloaded. Never an empty bubble, never a false failure.
  */
 
-import type { StreamRejoinTarget } from '@/lib/api/stream';
 import { matrxTransport } from '@/lib/api/matrx-transport';
-import type { ChatMessage } from '@/state/chat';
+import type { StreamRejoinTarget } from '@/lib/api/stream';
 import { log } from '@/lib/debug/log';
+import { send } from '@/lib/messaging/native';
+import { CHANNELS } from '@/lib/messaging/schemas';
 import {
   dbMessagesToChatMessages,
   fetchConversationMessages,
   fetchConversationToolCalls,
 } from '@/lib/supabase/queries';
+import { chatDb } from '@/lib/supabase/schemas';
+import type { ChatMessage } from '@/state/chat';
 import {
-  followUnavailableRejoin,
   MATRX_RUN_IN_PROGRESS,
   type MatrxRunPickupSettlement,
+  followUnavailableRejoin,
   settleRunPickup,
 } from '@ai-matrx/agents/matrx';
-import { send } from '@/lib/messaging/native';
-import { CHANNELS } from '@/lib/messaging/schemas';
-import { chatDb } from '@/lib/supabase/schemas';
 
 /** The conversation's own organization, or null when it cannot be read. */
 export async function readConversationOrganizationId(

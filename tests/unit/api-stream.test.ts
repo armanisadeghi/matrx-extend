@@ -251,13 +251,19 @@ describe('streamFetch server error events and live runs', () => {
         message: 'The chat service could not complete this request. Try again.',
         status: 409,
         code: 'run_in_progress',
-        rejoinPath: '/runtime/operations/live-run-7f3a/rejoin',
+        rejoin: {
+          liveRequestId: 'live-run-7f3a',
+          rejoinPath: '/runtime/operations/live-run-7f3a/rejoin',
+          runId: null,
+        },
       },
       { type: 'done' },
     ]);
   });
 
-  it('treats a resume_conflict that names a live run as a rejoin, not a retry', async () => {
+  // The claim holder is usually the turn still SUSPENDING: rejoining it replayed
+  // that turn from frame one and the person's continuation never ran.
+  it('treats a resume_conflict that names a live run as a retry, never a rejoin', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue(
@@ -280,9 +286,7 @@ describe('streamFetch server error events and live runs', () => {
       onEvent: (event) => events.push(event),
     });
 
-    expect(events[0]).toMatchObject({
-      code: 'run_in_progress',
-      rejoinPath: '/runtime/operations/live-run-9c1d/rejoin',
-    });
+    expect(events[0]).toMatchObject({ code: 'resume_conflict' });
+    expect(events[0]).not.toHaveProperty('rejoin');
   });
 });

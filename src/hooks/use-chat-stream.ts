@@ -760,9 +760,13 @@ function ensureStreamListeners(): void {
           activeRejoin &&
           activeRejoin.runId === chunk.runId
         ) {
-          log.info('stream', '409 live_stream_unavailable — following the run, then the saved turn', {
-            runId: chunk.runId,
-          });
+          log.info(
+            'stream',
+            '409 live_stream_unavailable — following the run, then the saved turn',
+            {
+              runId: chunk.runId,
+            },
+          );
           pendingSettleRef.current = {
             ...activeRejoin,
             unavailableRunId: chunk.payload.unavailableRunId ?? null,
