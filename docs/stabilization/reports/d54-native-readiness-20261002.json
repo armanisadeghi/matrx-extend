@@ -3,47 +3,36 @@
   "report_id": "d54-native-readiness-20261002",
   "defect_id": "EXT-D-0054",
   "status": "READY_FOR_PERMITTED_NATIVE_EXECUTION",
-  "scope": "Executable runbook for the remaining native TSV acceptance. No browser, build, test, spreadsheet, or product change was run.",
+  "scope": "First execution target is only the remaining Data T03 multiline copy/paste gap. No browser, build, test, spreadsheet, or product change was run.",
   "inventory_cases": [
-    {
-      "id": "EXT-F-1012-T49",
-      "title": "Result view/copy and shared execution consumers",
-      "surface": "Admin Matrx Showcase > Tables, plus an actual spreadsheet paste",
-      "target": "https://en.wikipedia.org/wiki/AFI%27s_100_Years...100_Movie_Quotes",
-      "steps": [
-        "On chrome://extensions, locate enabled Matrx Extend. Before any product assertion, record its ID, version, and the exact Loaded from path; click Reload, and verify the same entry reports Reloaded.",
-        "Open the AFI page after the extension reload. In Matrx Extend open Showcase > Tables, select detected table 1, Extract table 1, then Copy > Copy TSV.",
-        "Paste immediately into a disposable Google Sheets tab using ordinary paste. Confirm selected range A1:F101, 101 rows including header and six columns.",
-        "Inspect the formula bar for D2 (Rank 1 quotation, including both straight quotes and final period), B19 (Arthur \"Cody\" Jarrett), and B28 (\"Ratso\" Rizzo). Confirm each remains one cell and the other columns remain aligned."
-      ],
-      "expected_public_values": {
-        "source_headers": ["Rank", "Quotation", "Character", "Actor/Actress", "Film", "Year"],
-        "rank_1_quotation": "\"Frankly, my dear, I don't give a damn.\"",
-        "rank_18_character": "Arthur \"Cody\" Jarrett",
-        "rank_27_character": "\"Ratso\" Rizzo"
-      },
-      "already_proven": "Prior actual Chrome run pasted the same AFI copy into Google Sheets as 101×6 and inspected those three values. This run is a build-bound repeat, not a claim that old evidence proves the currently installed artifact."
-    },
     {
       "id": "EXT-F-2005-T03",
       "title": "Manual field pattern lifecycle and extracted rows",
-      "surface": "Member or admin Data tab; selected device organization required",
+      "surface": "Admin clone > Data tab; selected device organization required",
       "target": "https://www.gutenberg.org/files/1065/1065-h/1065-h.htm",
       "steps": [
-        "With the same pre-assertion extension identity check above, open the Raven page and Data. Use the ordinary field picker to select a stanza paragraph with visible embedded line breaks and a second short, plain-text field. Use the page's real CSS selectors; do not inject or edit page data.",
-        "Finish selection, name and save the pattern, then reread it in the saved-pattern list. Run the pattern and compare both extracted values to the visible source page, including each line break in the stanza.",
-        "From the actual Data manual rerun result, use its Copy TSV action. Paste immediately into a real spreadsheet. Confirm two data columns, row/cell boundaries, exact multiline stanza within its original cell, and unchanged plain text in the second cell. Record clipboard bytes/hash only if available without substituting a parser for the spreadsheet paste."
+        "Create a uniquely owned clone of the existing frozen173 admin Chrome profile using the established native admin-clone recipe; launch Chrome for Testing with that clone. Open chrome://version and record the unique Profile Path. In Chrome Extensions developer UI, load the exact receipt artifact directory, resolve any same-ID old registration only inside this owned clone, and verify the Matrx Extend ID, version, and Loaded from path. Click its Reload control and verify the same identity remains. Confirm the sidepanel is signed in as admin before product assertions.",
+        "Open the Raven page and Data. Use the ordinary field picker to select a stanza paragraph with visible embedded line breaks and a second short, plain-text field. Use the page's real CSS selectors; do not inject or edit page data.",
+        "Finish selection, name and save the uniquely named pattern, then reread it in the saved-pattern list. Capture the exact saved pattern ID from the product's Copy pattern > Full pattern (JSON) action. Run the pattern and compare both extracted values to the visible source page, including each line break in the stanza.",
+        "From the actual Data manual rerun result, use its Copy TSV action. Paste immediately into a newly created disposable Google Sheets document/tab using ordinary paste. Record its exact URL/document ID and tab ID. Confirm two data columns, row/cell boundaries, exact multiline stanza within its original cell, and unchanged plain text in the second cell. Record clipboard bytes/hash only if available without substituting a parser for the spreadsheet paste.",
+        "After recording results, delete only the saved pattern whose exact ID was captured above and discard/delete only the disposable sheet/tab whose exact identity was recorded. Quit the owned Chrome for Testing instance cleanly, verify no owned-profile process remains, then remove only the exact clone."
       ],
       "assertions": [
         "The stanza's embedded line breaks remain inside its original spreadsheet cell rather than becoming additional rows.",
-        "The plain-text field is byte-for-byte/textually unchanged.",
+        "The plain-text field is textually unchanged.",
         "The saved pattern rerun and the copied output contain the same values and columns."
       ],
+      "owned_cleanup_identity": {
+        "pattern_id": "Capture from the product's Copy pattern > Full pattern (JSON) after save; leave blank until the live run.",
+        "spreadsheet_url_and_document_id": "Capture from the newly created disposable Google Sheets document; leave blank until the live run.",
+        "spreadsheet_tab_id": "Capture the new disposable tab's gid; leave blank until the live run.",
+        "clone_profile_path": "Capture from Chrome chrome://version; remove only this exact owned clone after Chrome exits."
+      },
       "limits": "Data's ordinary field picker assigns generated field_N names and offers no field-name editor. A quoted column header cannot be honestly exercised through this path; do not rename the pattern and call it a header. Showcase AI Extract is a different surface."
     }
   ],
   "build_binding": {
-    "required_before_claiming_any_pass": "For the exact run, capture Chrome's Matrx Extend ID, version, Loaded from path, and explicit Reload confirmation. Hash that loaded extension tree and require it to equal the selected local-dev receipt's treeSha256; require Chrome version = receipt version = manifest version. Stop the assertions on any mismatch.",
+    "required_before_claiming_any_pass": "For the exact run, capture chrome://version's unique Profile Path, Chrome's Matrx Extend ID, version, Loaded from path, and explicit Reload confirmation. Hash that loaded extension tree and require it to equal the selected local-dev receipt's treeSha256; require Chrome version = receipt version = manifest version. Confirm admin in the sidepanel. Stop the assertions on any mismatch.",
     "available_artifact": {
       "provenance": "test-results/ci-artifacts/6aec7dd3464eb7a48404f2f06d659b8775c6c03b/37050278631-1/provenance.json",
       "local_dev_receipt": "test-results/ci-artifacts/6aec7dd3464eb7a48404f2f06d659b8775c6c03b/37050278631-1/local-dev-receipt.json",
@@ -55,12 +44,12 @@
       "tree_sha256": "36e04bafc2616833543fce2ae7af9decc31515ddc4b5b589c3058d9e2590be35",
       "channel": "CI development build; not published and not Store eligible"
     },
-    "caveat": "The artifact receipt proves the archived artifact identity only. It does not prove what Chrome currently loads. Do not use the historical 0.2.114 native receipts or a stale profile ID as current build evidence."
+    "caveat": "The artifact receipt proves the archived artifact identity only. It does not prove what Chrome currently loads. Do not use the historical 0.2.114 native receipts or a stale profile ID as current build evidence. The frozen173 profile can have the same extension ID registered to an old path; follow the existing path-checked recipe and inspect chrome://version plus the extension Loaded from field in the live clone."
   },
   "execution_controls": {
     "permission_state": "No browser or test launched in this preparation lane; native run waits for parent permit.",
     "resource_gate": "Use the current stabilization resource admission and healthy-watch procedure before browser interaction; stop if refused or unsafe.",
-    "spreadsheet": "Use a new disposable sheet or an explicitly disposable tab. Record its exact URL/ID for cleanup. Do not modify an existing personal workbook.",
+    "spreadsheet": "Create a new disposable sheet/tab; record exact document URL/ID and tab gid and delete only that owned disposable target after the run. Do not modify an existing personal workbook.",
     "evidence_to_capture": [
       "run timestamp and resource journal reference",
       "Chrome extension ID, version, Loaded from path, Reload result, and loaded-tree hash matched to receipt",
@@ -81,6 +70,9 @@
     "docs/stabilization/reports/tsv-quote-native.json",
     "docs/stabilization/reports/header-native-path.json",
     "docs/stabilization/reports/tsv-remaining-native-target.json",
+    "docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json",
+    "docs/stabilization/reports/artifact-profile-identity-audit-20261002.json",
+    "docs/stabilization/reports/data-picker-long-native.json",
     "test-results/ci-artifacts/6aec7dd3464eb7a48404f2f06d659b8775c6c03b/37050278631-1/provenance.json",
     "test-results/ci-artifacts/6aec7dd3464eb7a48404f2f06d659b8775c6c03b/37050278631-1/local-dev-receipt.json"
   ]
