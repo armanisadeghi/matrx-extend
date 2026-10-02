@@ -1,7 +1,10 @@
 {
   "id": "EXT-D-0059",
   "feature_id": "EXT-F-1012",
-  "case_ids": ["EXT-F-1012-T08", "EXT-F-1012-T09"],
+  "case_ids": [
+    "EXT-F-1012-T08",
+    "EXT-F-1012-T09"
+  ],
   "title": "Same-URL reload lacks document identity for page-result invalidation",
   "surface": "Shared active-tab document identity and live page-derived results",
   "auth_mode": "admin",
@@ -44,9 +47,10 @@
     "docs/stabilization/reports/document-integrated-peer.json",
     "docs/stabilization/reports/list-picker-document-correction.json",
     "docs/stabilization/reports/list-picker-source-peer.json",
-    "docs/stabilization/reports/picker-navigation-escalation.json"
+    "docs/stabilization/reports/picker-navigation-escalation.json",
+    "docs/stabilization/reports/d59-pattern-probe-ownership-20261002.json"
   ],
-  "verification_status": "Picker productc17eb2c7 exactdocumenttarget/trustedsenderguard sourceaccepted03cbd7f1. Escalationfixture1457a283 corrected stale D43 navigation and exercises real lateDone; 29/29passed before finaltype-only mockcorrection. Compilefailed then typedtransportfixed unverified atcap. Fixture sourcepeer0cc4ac46 accepted lifecycle assertions. Next freshguardedtests/compile/build required; native/fullD59 stillopen.",
+  "verification_status": "October 2: Showcase pattern conversion async ownership repair c28cf7c6 has guarded failing-then-passing late-success/late-failure tests plus positive current-conversion completion. Independent review and native acceptance pending; integrated compile blocked by installed @ai-matrx/agents/matrx export mismatch. Other D59 consumers and full matrix remain open.",
   "transition_history": [
     {
       "at": "2026-09-28T15:30:38.553635+00:00",
@@ -68,5 +72,9 @@
     }
   ],
   "scope_ruling": "Use one shared top-frame identity snapshot; keep URL/domain persisted lookup semantics separate. Include detection, completed/pending rows, auto-extract cache, AI/pattern derivation and capture residue. Explicit recovery for unresolved identity; no null-equals-null page key. Preserve approved network-replay document contract.",
-  "related_feature_ids": ["EXT-F-1007", "EXT-F-1009", "EXT-F-1010"]
+  "related_feature_ids": [
+    "EXT-F-1007",
+    "EXT-F-1009",
+    "EXT-F-1010"
+  ]
 }
