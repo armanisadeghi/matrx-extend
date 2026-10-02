@@ -1,0 +1,45 @@
+{
+  "lane": "oct02_consumer_peer",
+  "reviewed_commit": "11d0fba956785155be3427e8212710463704b072",
+  "package": "@ai-matrx/agents 0.32.0 installed public exports and CHANGELOG",
+  "verdict_a_source_behavior": "PARTIAL",
+  "verdict_a_runtime_ui": "UNVERIFIED: no live extension or guest session exercised in this source-only lane",
+  "verdict_b_quality": "PARTIAL",
+  "findings": [
+    {
+      "priority": "P1",
+      "area": "receipt row display",
+      "finding": "A server-added organization row can display a short character total. The host calls systemRowsToResolved(systemRows), then appends blocksForRow to deliveredBlocks. The package's receiptRowToResolved(row, blocks) computes organization chars as the delivered statement plus its organization_catalog block. Because systemRowsToResolved calls it without blocks, adding deliveredBlocks afterward does not recompute chars. The Organization row can therefore show its statement size while its detail includes the catalog, contrary to the 0.29 contract.",
+      "evidence": [
+        "src/features/chat/ContextRulesComposerChip.tsx:138-144",
+        "node_modules/@ai-matrx/agents/dist/context/index.js:384-404",
+        "node_modules/@ai-matrx/agents/dist/context/index.js:421-430",
+        "node_modules/@ai-matrx/agents/CHANGELOG.md:30-31"
+      ]
+    },
+    {
+      "priority": "P1 acceptance gap",
+      "area": "delivered text viewer",
+      "finding": "Receipt refs and blocks reach the panel, but no ContextViewLoader is passed. The package intentionally renders an em dash for each unopened text section when loadView is absent. The current receipt event and local optimistic message path do not expose the persisted server user-message ID required by GET /ai/context/delivered. This is an acknowledged wire gap, not evidence that exact text can be viewed or that the hash/size is missing.",
+      "evidence": [
+        "src/features/chat/ContextRulesComposerChip.tsx:188-196",
+        "src/hooks/use-chat-stream.ts:685-693",
+        "src/hooks/use-pilot-chat-stream.ts:351-357",
+        "node_modules/@ai-matrx/agents/dist/context/react/index.js:852-874",
+        "node_modules/@ai-matrx/agents/CHANGELOG.md:31",
+        "docs/stabilization/reports/oct02-agents-consumer-20261002.json:29"
+      ]
+    }
+  ],
+  "confirmed_source_behavior": [
+    "The label removal follows the 0.29 package contract: the face is icon and count, with accessible name N included. The changed assertions retain real included-count checks and mismatch checks; they are not a test weakening.",
+    "toContextReceipt carries receipt blocks plus row delivered/on_request refs when present. Absent blocks remain absent, rather than invented; the panel's unclaimedBlocks lists received blocks separately from claimed organization blocks.",
+    "getUserId reads the local auth store and returns null for a guest. The package load path returns an empty catalogue before readAgentCatalogRows and does not stamp freshness. The host's authenticated wrapper also returns before organization resolution for signed-out users. No new guest-chat gate appears in this commit.",
+    "Chat and Pilot select distinct conversation IDs and last-sent rows; their stream hooks record receipts against their own conversation IDs. The existing test checks that an Assistant receipt does not color Pilot's chip."
+  ],
+  "verification_basis": "Independent static inspection of exact commit diff, installed 0.32.0 package JS/types/CHANGELOG, host stream/store paths, and changed tests. Did not rerun tests or compile; the author reports 29 focused tests and compile passing in oct02-agents-consumer-20261002.json.",
+  "remaining_risks": [
+    "Native UI and anonymous-to-signed-in behavior need runtime verification by the owner lane.",
+    "The chip shows the last receipt for a conversation, not a per-message receipt viewer; this pre-existing storage shape limits sent-turn inspection and is separate from the changed mapping."
+  ]
+}
