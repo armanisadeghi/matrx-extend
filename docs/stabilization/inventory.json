@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-02T15:07:43.330064+00:00",
+  "updated_at": "2026-10-02T15:54:10.715760+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -3146,7 +3146,7 @@
             "Reload/reopen Settings in the still-signed-out guest session; confirm the same guidance and absence of the selector."
           ],
           "expected": [
-            "The guest sees “Sign in to choose”; no organization selector or guest organization-choice action is exposed, and the guest guidance remains after reload."
+            "The guest sees \u201cSign in to choose\u201d; no organization selector or guest organization-choice action is exposed, and the guest guidance remains after reload."
           ],
           "dimensions": [
             "warm",
@@ -3174,7 +3174,7 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
           ],
           "steps": [
-            "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
+            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
             "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
             "Perform a full extension Reload and confirm the organization persists."
           ],
@@ -3200,7 +3200,7 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
           ],
           "steps": [
-            "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
+            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
             "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
             "Perform a full extension Reload and confirm the organization persists."
           ],
@@ -3326,7 +3326,7 @@
             "Reload/reopen Settings in the same guest state; confirm the unavailable-state guidance remains."
           ],
           "expected": [
-            "The guest sees “Choose an organization above” and no agent picker or selection action; this unavailable-state guidance remains after reload."
+            "The guest sees \u201cChoose an organization above\u201d and no agent picker or selection action; this unavailable-state guidance remains after reload."
           ],
           "dimensions": [
             "warm",
@@ -4912,11 +4912,11 @@
                     "docs/stabilization/reports/cookies-prompt-semantics.json",
                     "docs/stabilization/reports/native-denial-operator-005.json"
                   ],
-                  "detail": "Ruling inferred from official Chrome warning semantics and current broad-host manifest, corroborated by actual no-prompt OFF→ON observation. Not a denial pass. Re-evaluate on browser/manifest warning-policy change."
+                  "detail": "Ruling inferred from official Chrome warning semantics and current broad-host manifest, corroborated by actual no-prompt OFF\u2192ON observation. Not a denial pass. Re-evaluate on browser/manifest warning-policy change."
                 },
                 "current-grant-removal-reload": {
                   "status": "unverified",
-                  "detail": "Current005 only observed UI OFF→ON; prior build grant/removal/reload remains historical."
+                  "detail": "Current005 only observed UI OFF\u2192ON; prior build grant/removal/reload remains historical."
                 }
               }
             }
@@ -5160,7 +5160,7 @@
             "Select all, agent, pilot, parallel and webmcp receipt filters."
           ],
           "expected": [
-            "Visible receipt rows and counts match selected origin; empty filter shows “No receipts with origin=…”; all restores every row."
+            "Visible receipt rows and counts match selected origin; empty filter shows \u201cNo receipts with origin=\u2026\u201d; all restores every row."
           ],
           "dimensions": [
             "warm",
@@ -7034,7 +7034,7 @@
                 "reload": "unverified",
                 "service-error": "unverified"
               },
-              "detail": "Switched Log → Bridges → Log. Both selected subviews rendered their intended content; Logs retained its current 113-row state when revisited, while Bridges showed its existing channel and health state. No bridge action was invoked.",
+              "detail": "Switched Log \u2192 Bridges \u2192 Log. Both selected subviews rendered their intended content; Logs retained its current 113-row state when revisited, while Bridges showed its existing channel and health state. No bridge action was invoked.",
               "remaining_criteria": [
                 "Reload and service-error observations required for the declared dimensions."
               ]
@@ -8202,7 +8202,7 @@
                 "reload": "unverified",
                 "service-error": "unverified"
               },
-              "detail": "Source=none deselected all source pills, reduced the row count to 0, and showed ‘No events match the current filter.’",
+              "detail": "Source=none deselected all source pills, reduced the row count to 0, and showed \u2018No events match the current filter.\u2019",
               "remaining_criteria": [
                 "Reload and service-error observations required for the declared dimensions."
               ]
@@ -8460,7 +8460,7 @@
                 "reload": "unverified",
                 "service-error": "unverified"
               },
-              "detail": "Level=none deselected all four level pills, reduced the row count to 0, and showed ‘No events match the current filter.’",
+              "detail": "Level=none deselected all four level pills, reduced the row count to 0, and showed \u2018No events match the current filter.\u2019",
               "remaining_criteria": [
                 "Reload and service-error observations required for the declared dimensions."
               ]
@@ -9044,7 +9044,7 @@
         {
           "id": "EXT-F-1006-C07",
           "label": "Desktop port override validation",
-          "action": "Enter blank, valid 1–65535, 0, >65535, fractional and nonnumeric values; Save."
+          "action": "Enter blank, valid 1\u201365535, 0, >65535, fractional and nonnumeric values; Save."
         },
         {
           "id": "EXT-F-1006-C09",
@@ -9347,7 +9347,7 @@
             "Signed in as an admin; open Debug > Bridges; use local test services and harmless requests."
           ],
           "steps": [
-            "Enter blank, valid 1–65535, 0, >65535, fractional and nonnumeric values; Save."
+            "Enter blank, valid 1\u201365535, 0, >65535, fractional and nonnumeric values; Save."
           ],
           "expected": [
             "Blank clears; valid integer persists and discovery reruns; invalid values are rejected and existing override remains."
@@ -10787,7 +10787,7 @@
             "Open Scrape before capturing, then navigate active tab to another URL."
           ],
           "expected": [
-            "Empty state invites capture; previous page’s content and Saved badge clear after navigation."
+            "Empty state invites capture; previous page\u2019s content and Saved badge clear after navigation."
           ],
           "dimensions": [
             "warm",
@@ -11573,12 +11573,35 @@
           ],
           "results": {
             "guest": {
-              "status": "fail",
-              "run_id": "seo-guest-frozen-20261002T140308Z",
-              "artifact_version": "0.2.173",
-              "detail": "Two public titles, new URL replacement and panel reload observed; exactly-once and slow old result race unverified. Airbnb remained running; cause under investigation. Later boundary run confirmed actual stuck spinner after page completed; EXT-D-0076 active.",
+              "status": "partial",
+              "run_id": "seo-current-ci-20261002-02",
+              "artifact_version": "0.2.175",
+              "artifact_source_sha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
+              "detail": "Bounded native checks pass on exact CI artifact; full case dimensions remain unverified. Original guest spinner D76 independently retested and closed. One Wikipedia metadata-door candidate unavailable.",
+              "observed_subtargets": [
+                {
+                  "case_id": "EXT-F-1008-T01",
+                  "subtarget": "new_url_replaces_visible_title",
+                  "status": "pass",
+                  "evidence": {
+                    "twoDistinctPublicTitles": true
+                  }
+                },
+                {
+                  "case_id": "EXT-F-1008-T01",
+                  "subtarget": "reload_audits_current_url",
+                  "status": "pass",
+                  "evidence": {
+                    "currentUrl": "https://www.iana.org/domains/reserved",
+                    "currentTitleMatched": true,
+                    "headingsPresenceMatched": true,
+                    "reselectedAfterReload": true
+                  }
+                }
+              ],
               "evidence": [
-                "docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"
+                "docs/stabilization/runs/seo-current-ci-20261002-02.json",
+                "docs/stabilization/reports/seo-native-final-peer-20261002.json"
               ]
             }
           },
@@ -11606,6 +11629,16 @@
                 "docs/stabilization/runs/seo-guest-dev089-002.json",
                 "test-results/seo-guest-dev089-002.evidence.json",
                 "docs/stabilization/reports/debug-seo-dev089-002-peer.json"
+              ]
+            },
+            {
+              "mode": "guest",
+              "status": "fail",
+              "run_id": "seo-guest-frozen-20261002T140308Z",
+              "artifact_version": "0.2.173",
+              "detail": "Two public titles, new URL replacement and panel reload observed; exactly-once and slow old result race unverified. Airbnb remained running; cause under investigation. Later boundary run confirmed actual stuck spinner after page completed; EXT-D-0076 active.",
+              "evidence": [
+                "docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"
               ]
             }
           ]
@@ -11637,11 +11670,23 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "seo-guest-frozen-20261002T140308Z",
-              "artifact_version": "0.2.173",
-              "detail": "Trusted re-audit preserved current public title; stale advice/failure dimensions unverified.",
+              "run_id": "seo-current-ci-20261002-02",
+              "artifact_version": "0.2.175",
+              "artifact_source_sha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
+              "detail": "Bounded native checks pass on exact CI artifact; full case dimensions remain unverified. Original guest spinner D76 independently retested and closed. One Wikipedia metadata-door candidate unavailable.",
+              "observed_subtargets": [
+                {
+                  "case_id": "EXT-F-1008-T02",
+                  "subtarget": "manual_button_returns_to_current_page",
+                  "status": "pass",
+                  "evidence": {
+                    "currentTitlePreserved": true
+                  }
+                }
+              ],
               "evidence": [
-                "docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"
+                "docs/stabilization/runs/seo-current-ci-20261002-02.json",
+                "docs/stabilization/reports/seo-native-final-peer-20261002.json"
               ]
             }
           },
@@ -11666,6 +11711,16 @@
                 "test-results/seo-guest-dev089-002.evidence.json",
                 "docs/stabilization/reports/debug-seo-dev089-002-peer.json"
               ]
+            },
+            {
+              "mode": "guest",
+              "status": "partial",
+              "run_id": "seo-guest-frozen-20261002T140308Z",
+              "artifact_version": "0.2.173",
+              "detail": "Trusted re-audit preserved current public title; stale advice/failure dimensions unverified.",
+              "evidence": [
+                "docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"
+              ]
             }
           ]
         },
@@ -11687,7 +11742,7 @@
             "Run/auto-run on browser-internal or restricted URL."
           ],
           "expected": [
-            "No fabricated partial audit is shown; clear “cannot be audited” or capture failure appears."
+            "No fabricated partial audit is shown; clear \u201ccannot be audited\u201d or capture failure appears."
           ],
           "dimensions": [
             "warm",
@@ -11696,11 +11751,37 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "seo-guest-frozen-20261002T140308Z",
-              "artifact_version": "0.2.173",
-              "detail": "about:blank cleared prior data, showed error/Retry; return to public page recovered. Other restricted/unreachable states unverified.",
+              "run_id": "seo-current-ci-20261002-02",
+              "artifact_version": "0.2.175",
+              "artifact_source_sha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
+              "detail": "Bounded native checks pass on exact CI artifact; full case dimensions remain unverified. Original guest spinner D76 independently retested and closed. One Wikipedia metadata-door candidate unavailable.",
+              "observed_subtargets": [
+                {
+                  "case_id": "EXT-F-1008-T03",
+                  "subtarget": "about_blank_clear_error_without_stale_audit",
+                  "status": "pass",
+                  "evidence": {
+                    "scopeValid": true,
+                    "expectedErrorVisible": true,
+                    "staleAuditAbsent": true,
+                    "copyAuditAbsent": true,
+                    "retryOffered": true
+                  }
+                },
+                {
+                  "case_id": "EXT-F-1008-T03",
+                  "subtarget": "public_page_recovers_after_restricted_url",
+                  "status": "pass",
+                  "evidence": {
+                    "publicTitleMatched": true,
+                    "headingsPresenceMatched": true,
+                    "auditErrorAbsent": true
+                  }
+                }
+              ],
               "evidence": [
-                "docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"
+                "docs/stabilization/runs/seo-current-ci-20261002-02.json",
+                "docs/stabilization/reports/seo-native-final-peer-20261002.json"
               ]
             }
           },
@@ -11728,6 +11809,16 @@
                 "docs/stabilization/runs/seo-guest-dev089-002.json",
                 "test-results/seo-guest-dev089-002.evidence.json",
                 "docs/stabilization/reports/debug-seo-dev089-002-peer.json"
+              ]
+            },
+            {
+              "mode": "guest",
+              "status": "partial",
+              "run_id": "seo-guest-frozen-20261002T140308Z",
+              "artifact_version": "0.2.173",
+              "detail": "about:blank cleared prior data, showed error/Retry; return to public page recovered. Other restricted/unreachable states unverified.",
+              "evidence": [
+                "docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"
               ]
             }
           ]
@@ -11834,11 +11925,35 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "seo-guest-frozen-20261002T140308Z",
-              "artifact_version": "0.2.173",
-              "detail": "Guest menu offers text and AI and hides JSON before/after reload; actual clipboard payload and other modes unverified.",
+              "run_id": "seo-current-ci-20261002-02",
+              "artifact_version": "0.2.175",
+              "artifact_source_sha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
+              "detail": "Bounded native checks pass on exact CI artifact; full case dimensions remain unverified. Original guest spinner D76 independently retested and closed. One Wikipedia metadata-door candidate unavailable.",
+              "observed_subtargets": [
+                {
+                  "case_id": "EXT-F-1008-T07",
+                  "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+                  "status": "pass",
+                  "evidence": {
+                    "textChoice": true,
+                    "agentChoice": true,
+                    "jsonAbsent": true
+                  }
+                },
+                {
+                  "case_id": "EXT-F-1008-T07",
+                  "subtarget": "guest_role_gate_after_reload",
+                  "status": "pass",
+                  "evidence": {
+                    "textChoice": true,
+                    "agentChoice": true,
+                    "jsonAbsent": true
+                  }
+                }
+              ],
               "evidence": [
-                "docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"
+                "docs/stabilization/runs/seo-current-ci-20261002-02.json",
+                "docs/stabilization/reports/seo-native-final-peer-20261002.json"
               ]
             }
           },
@@ -11866,6 +11981,16 @@
                 "docs/stabilization/runs/seo-guest-dev089-002.json",
                 "test-results/seo-guest-dev089-002.evidence.json",
                 "docs/stabilization/reports/debug-seo-dev089-002-peer.json"
+              ]
+            },
+            {
+              "mode": "guest",
+              "status": "partial",
+              "run_id": "seo-guest-frozen-20261002T140308Z",
+              "artifact_version": "0.2.173",
+              "detail": "Guest menu offers text and AI and hides JSON before/after reload; actual clipboard payload and other modes unverified.",
+              "evidence": [
+                "docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"
               ]
             }
           ]
@@ -11922,11 +12047,141 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "seo-guest-frozen-20261002T140308Z",
-              "artifact_version": "0.2.173",
-              "detail": "Sparse/rich details, MDN canonical click and Wikipedia exact public DOM counts observed; metadata/schema doors and Airbnb audit unverified.",
+              "run_id": "seo-current-ci-20261002-02",
+              "artifact_version": "0.2.175",
+              "artifact_source_sha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
+              "detail": "Bounded native checks pass on exact CI artifact; full case dimensions remain unverified. Original guest spinner D76 independently retested and closed. One Wikipedia metadata-door candidate unavailable.",
+              "observed_subtargets": [
+                {
+                  "case_id": "EXT-F-1008-T09",
+                  "subtarget": "page_0_title_and_headings",
+                  "status": "pass",
+                  "evidence": {
+                    "publicTitle": "Example Domain",
+                    "titleMatches": true,
+                    "headingsPresenceMatches": true
+                  }
+                },
+                {
+                  "case_id": "EXT-F-1008-T09",
+                  "subtarget": "page_1_title_and_headings",
+                  "status": "pass",
+                  "evidence": {
+                    "publicTitle": "IANA-managed Reserved Domains",
+                    "titleMatches": true,
+                    "headingsPresenceMatches": true
+                  }
+                },
+                {
+                  "case_id": "EXT-F-1008-T09",
+                  "subtarget": "sparse_public_detail_groups",
+                  "status": "pass",
+                  "evidence": {
+                    "descriptionAbsent": true,
+                    "canonicalAbsent": true,
+                    "groupsMatchPublicDom": true
+                  }
+                },
+                {
+                  "case_id": "EXT-F-1008-T09",
+                  "subtarget": "rich_public_detail_groups_and_canonical_door",
+                  "status": "pass",
+                  "evidence": {
+                    "descriptionMatchesPublicDom": true,
+                    "canonicalMatchesPublicDom": true,
+                    "groupsMatchPublicDom": true,
+                    "outboundAnchorSafe": true
+                  }
+                },
+                {
+                  "case_id": "EXT-F-1008-T09",
+                  "subtarget": "canonical_outbound_opens_expected_public_tab",
+                  "status": "pass",
+                  "evidence": {
+                    "trustedInput": true,
+                    "destinationMatchesPublicDom": true
+                  }
+                },
+                {
+                  "case_id": "EXT-F-1008-T09",
+                  "subtarget": "guest_manual_link_counts_match_live_dom",
+                  "status": "pass",
+                  "evidence": {
+                    "url": "https://en.wikipedia.org/wiki/HTML",
+                    "internal": 1785,
+                    "external": 411
+                  }
+                },
+                {
+                  "case_id": "EXT-F-1008-T09",
+                  "subtarget": "guest_manual_image_alt_counts_match_live_dom",
+                  "status": "pass",
+                  "evidence": {
+                    "url": "https://en.wikipedia.org/wiki/HTML",
+                    "total": 30,
+                    "missingAlt": 12
+                  }
+                },
+                {
+                  "case_id": "EXT-F-1008-T09",
+                  "subtarget": "guest_manual_readability_display_is_populated_and_explained",
+                  "status": "pass",
+                  "evidence": {
+                    "publicBodyHasText": true,
+                    "displayed": {
+                      "words": "10,488",
+                      "sentences": "786",
+                      "score": "44.48",
+                      "summary": "Difficult \u2014 college"
+                    },
+                    "metricValueCorrectness": "unverified"
+                  }
+                },
+                {
+                  "case_id": "EXT-F-1008-T09",
+                  "subtarget": "guest_manual_performance_reflects_current_navigation",
+                  "status": "pass",
+                  "evidence": {
+                    "pageResponseStatus": 200,
+                    "exposedNavigation": {
+                      "type": "navigate",
+                      "durationMs": 563,
+                      "transferSizeBytes": 123852,
+                      "responseStatus": 200
+                    },
+                    "displayed": {
+                      "status": "200",
+                      "navigation": "navigate",
+                      "duration": "563 ms",
+                      "transfer": "121 KB"
+                    }
+                  }
+                },
+                {
+                  "case_id": "EXT-F-1008-T09",
+                  "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+                  "status": "unverified",
+                  "reason": "The public DOM did not expose unique hreflang and openable schema door candidates."
+                },
+                {
+                  "case_id": "EXT-F-1008-T09",
+                  "subtarget": "guest_airbnb_hreflang_and_schema_doors_match_public_dom",
+                  "status": "pass",
+                  "evidence": {
+                    "sourceUrl": "https://www.airbnb.com/",
+                    "alternate": {
+                      "lang": "es-US",
+                      "href": "https://es.airbnb.com/"
+                    },
+                    "schemaType": "WebSite",
+                    "schemaUrl": "https://schema.org/WebSite",
+                    "trustedInput": true
+                  }
+                }
+              ],
               "evidence": [
-                "docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"
+                "docs/stabilization/runs/seo-current-ci-20261002-02.json",
+                "docs/stabilization/reports/seo-native-final-peer-20261002.json"
               ]
             }
           },
@@ -11986,6 +12241,16 @@
                 "docs/stabilization/runs/seo-guest-dev089-002.json",
                 "test-results/seo-guest-dev089-002.evidence.json",
                 "docs/stabilization/reports/debug-seo-dev089-002-peer.json"
+              ]
+            },
+            {
+              "mode": "guest",
+              "status": "partial",
+              "run_id": "seo-guest-frozen-20261002T140308Z",
+              "artifact_version": "0.2.173",
+              "detail": "Sparse/rich details, MDN canonical click and Wikipedia exact public DOM counts observed; metadata/schema doors and Airbnb audit unverified.",
+              "evidence": [
+                "docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"
               ]
             }
           ]
@@ -12058,7 +12323,7 @@
             "Choose Ask the agent to fix this for a finding."
           ],
           "expected": [
-            "The finding’s section and message are staged in Chat composer; user can review before sending."
+            "The finding\u2019s section and message are staged in Chat composer; user can review before sending."
           ],
           "dimensions": [
             "warm",
@@ -12118,7 +12383,7 @@
       ],
       "cells": {
         "guest": {
-          "test_status": "fail",
+          "test_status": "partial",
           "defect_ids": [
             "EXT-D-0076"
           ],
@@ -12143,9 +12408,10 @@
             "seo-guest-018",
             "seo-guest-019",
             "seo-guest-frozen-20261002T140308Z",
-            "seo-boundary-20261002T142200Z"
+            "seo-boundary-20261002T142200Z",
+            "seo-current-ci-20261002-02"
           ],
-          "retest_status": "pending"
+          "retest_status": "D76 guest spinner retest-pass/closed; full feature partial"
         },
         "member": {
           "test_status": "unverified",
@@ -13412,7 +13678,7 @@
         {
           "id": "EXT-F-1010-C08",
           "label": "Overlay stop toolbar control",
-          "action": "Click ✕ in injected highlighter toolbar."
+          "action": "Click \u2715 in injected highlighter toolbar."
         },
         {
           "id": "EXT-F-1010-C09",
@@ -13716,7 +13982,7 @@
             "Sign in; open Highlights on a controlled page with test text and selectable elements."
           ],
           "steps": [
-            "Click ✕ in injected highlighter toolbar."
+            "Click \u2715 in injected highlighter toolbar."
           ],
           "expected": [
             "Overlay sends inactive state and unmounts all page listeners/host."
@@ -16238,7 +16504,7 @@
               "evidence": [
                 "docs/stabilization/runs/showcase-installed-list-management-001.json"
               ],
-              "detail": "Renamed the exact owned List recipe from “Codex D45 fixture 20260927-2229Z” to “Codex D45 fixture 20260927-2229Z cleanup.” The new title persisted after Patterns Refresh and after leaving/reopening Patterns; its LIST type, OK status, and 249-row last-run summary remained. No-op and Cancel rename paths remain unverified."
+              "detail": "Renamed the exact owned List recipe from \u201cCodex D45 fixture 20260927-2229Z\u201d to \u201cCodex D45 fixture 20260927-2229Z cleanup.\u201d The new title persisted after Patterns Refresh and after leaving/reopening Patterns; its LIST type, OK status, and 249-row last-run summary remained. No-op and Cancel rename paths remain unverified."
             }
           }
         },
@@ -16445,7 +16711,7 @@
                 "docs/stabilization/reports/showcase-structured-journal-retest.json",
                 "docs/stabilization/reports/showcase-structured-save-navigation.json"
               ],
-              "detail": "Native JSONLD preview→draftchangedtoNewsArticle→save→leave/reopen→replay preserved executedBreadcrumbList config; exactowned91349863-4a89-4bd5-9248-8785ba1ec3fc. Existing savedJSONLD on404 shows no-match and routeguidance. Service-error remains unverified."
+              "detail": "Native JSONLD preview\u2192draftchangedtoNewsArticle\u2192save\u2192leave/reopen\u2192replay preserved executedBreadcrumbList config; exactowned91349863-4a89-4bd5-9248-8785ba1ec3fc. Existing savedJSONLD on404 shows no-match and routeguidance. Service-error remains unverified."
             }
           }
         },
@@ -16642,7 +16908,7 @@
                 "docs/stabilization/runs/showcase-installed-d43-001.json",
                 "docs/stabilization/runs/showcase-installed-d45-001.json"
               ],
-              "detail": "Saved List Pattern recipe “Codex D45 fixture 20260927-2229Z” on /vegas-edm-event-calendar/, left the builder, reopened Patterns, and replayed 249 rows with the same first visible event_title/locality samples. The UI exposed no record ID; 2026-09-27T22:29:53Z is the observed time immediately after “Pattern saved,” not a verified creation timestamp. Fixture remains intentionally retained. Partial: only 200 rows were visible, no reload or changed-source replay was tested, and deletion/cleanup was not tested.",
+              "detail": "Saved List Pattern recipe \u201cCodex D45 fixture 20260927-2229Z\u201d on /vegas-edm-event-calendar/, left the builder, reopened Patterns, and replayed 249 rows with the same first visible event_title/locality samples. The UI exposed no record ID; 2026-09-27T22:29:53Z is the observed time immediately after \u201cPattern saved,\u201d not a verified creation timestamp. Fixture remains intentionally retained. Partial: only 200 rows were visible, no reload or changed-source replay was tested, and deletion/cleanup was not tested.",
               "prior_run_ids": [
                 "showcase-installed-d43-001"
               ]
@@ -17296,9 +17562,9 @@
         "2026-09-27 user elevated Showcase to current priority; added shared-save and per-kind roundtrip acceptance before testing. Every added case starts unverified; admin-only product audience retained, guest/member denial remains separately tracked.",
         "D40 source-confirmed preview/config drift is linked; its focused regression and live saved/reopened retest remain pending. No added method case is promoted from source review.",
         "EXT-D-0042 investigates old picker events/cancellation reaching a new same-page session; source evidence at reports/showcase-picker-session-fix.json, boundary reproduction pending. This is separate from D39 handoff and D40 executed preview config, and no coverage is promoted.",
-        "EXT-D-0041 reserved for selected Network request → saved URL matching → repeat extraction; source-only investigation assigned while frozen .101 D39/D40 live review runs. No result claimed.",
-        "Fresh .101 live retest: original Doctor list seed arrives, but Pick more fields replaced event-card scope with one event’s nested list and returned3 rows. D43 assigned for independent diagnosis; D39 remains open until surrounding field/extraction behavior passes. No saved recipe persistence yet tested.",
-        "D40 real Microdata Event preview → unsent Place draft → saved pattern → reopened Patterns replay returned249 Event records with matching visible fields/sample values. T46 stays partial; full-value comparison/reload/errors and datasets remain unverified. Exact owned recipe retained as next persistence-test fixture.",
+        "EXT-D-0041 reserved for selected Network request \u2192 saved URL matching \u2192 repeat extraction; source-only investigation assigned while frozen .101 D39/D40 live review runs. No result claimed.",
+        "Fresh .101 live retest: original Doctor list seed arrives, but Pick more fields replaced event-card scope with one event\u2019s nested list and returned3 rows. D43 assigned for independent diagnosis; D39 remains open until surrounding field/extraction behavior passes. No saved recipe persistence yet tested.",
+        "D40 real Microdata Event preview \u2192 unsent Place draft \u2192 saved pattern \u2192 reopened Patterns replay returned249 Event records with matching visible fields/sample values. T46 stays partial; full-value comparison/reload/errors and datasets remain unverified. Exact owned recipe retained as next persistence-test fixture.",
         "Installed .108 real-calendar retest: Doctor handoff and seeded/fresh scope selection now work; title+href extraction249rows had matching sampled records and navigation cleared state. T04/T24/T29/T45/T51 remain partial; full rows beyond200, alternate-scope extraction, persistence and other dimensions still pending. No localhost UI was used.",
         "T53-T55 and C44-C45 added for EXT-D-0041 Network matcher/replay identity follow-up. These are unverified planning coverage only; no admin, guest, or member result was promoted. Guest/member denial remains the existing T38 case. Network evidence may record only sanitized fixed fields and local-producer digest presence; never raw request payload, credentials, or headers.",
         "Installed .109 D48 live run: one actual GET capture was saved, reopened from Patterns and interactively replayed with all four visible response values matching; recognized/unknown synthetic query-key masking controls were observed and the real matcher restored before save. T50/T53/T58 are partial only; no credential-bearing pattern was persisted or inspected, and D48 remains open pending full installed privacy acceptance."
@@ -21097,7 +21363,7 @@
             "On a conversation with disposable plan/task/todo rows, click Wipe all and cancel; verify rows remain. Reopen, confirm, then refresh."
           ],
           "expected": [
-            "Cancel preserves all rows; confirm removes that conversation’s plan, tasks and todos; dialog names permanent consequence."
+            "Cancel preserves all rows; confirm removes that conversation\u2019s plan, tasks and todos; dialog names permanent consequence."
           ],
           "dimensions": [
             "warm",
@@ -23854,7 +24120,7 @@
           ],
           "steps": [
             "Refresh list; search distinct title, URL, and description tokens; clear search; open capture; use Back; use Load more; on empty list use Go to Scrape.",
-            "As member B, search and open A’s Source with the page-local organization filter set to All organizations; check Captured by labeling for self, readable creator, and an unavailable creator name. Change the active organization and confirm it only changes the destination of new writes/API calls; exercise any explicit page-local organization filter separately."
+            "As member B, search and open A\u2019s Source with the page-local organization filter set to All organizations; check Captured by labeling for self, readable creator, and an unavailable creator name. Change the active organization and confirm it only changes the destination of new writes/API calls; exercise any explicit page-local organization filter separately."
           ],
           "expected": [
             "Search filters list; detail corresponds to selected capture; pagination adds results without duplicates; empty-state shortcut opens Scrape.",
@@ -24360,7 +24626,7 @@
             "Signed-in member who belongs to two organizations; other membership has a controlled waiting handoff."
           ],
           "steps": [
-            "Open Capture with active organization A; use “waiting elsewhere” control to switch to organization B; wait for subscription refresh."
+            "Open Capture with active organization A; use \u201cwaiting elsewhere\u201d control to switch to organization B; wait for subscription refresh."
           ],
           "expected": [
             "Only a membership-listed organization can be selected; device org switches and queue refreshes; pointer clears after successful switch; membership loss yields explicit explanation."
@@ -24417,7 +24683,7 @@
             "Signed-in member with controlled needs_drive handoff and safe test page."
           ],
           "steps": [
-            "Open it; perform page sign-in/navigation manually; enter page-specific note and capture. Repeat with another handoff and choose This one won’t work with a reason. Follow a valid pickup pointer."
+            "Open it; perform page sign-in/navigation manually; enter page-specific note and capture. Repeat with another handoff and choose This one won\u2019t work with a reason. Follow a valid pickup pointer."
           ],
           "expected": [
             "Extension leaves page actions to user until explicit capture; capture completes and updates status; skip removes only selected handoff and records note; pickup opens matching item/tab."
@@ -28172,7 +28438,7 @@
       "name": "Run built-in browser AI scenarios",
       "surface": "Tools Smart tests",
       "entry_points": [
-        "Tools tab → Tools Smart tests"
+        "Tools tab \u2192 Tools Smart tests"
       ],
       "controls": [
         {
@@ -28540,7 +28806,7 @@
       "name": "Record active browser tab",
       "surface": "Tools Recorder",
       "entry_points": [
-        "Tools tab → Tools Recorder"
+        "Tools tab \u2192 Tools Recorder"
       ],
       "controls": [
         {
@@ -28849,7 +29115,7 @@
       "name": "Generate and use credentials",
       "surface": "Vault password generator",
       "entry_points": [
-        "Tools tab → Vault password generator"
+        "Tools tab \u2192 Vault password generator"
       ],
       "controls": [
         {
@@ -31912,7 +32178,7 @@
         {
           "id": "EXT-F-4025-C01",
           "label": "Run get_active_tab on owned synthetic fixture",
-          "action": "Open the exact canonical tool row in Tools → Catalog and run {} against the active synthetic fixture tab; compare returned tab metadata to the browser tab."
+          "action": "Open the exact canonical tool row in Tools \u2192 Catalog and run {} against the active synthetic fixture tab; compare returned tab metadata to the browser tab."
         }
       ],
       "source_anchors": [
@@ -31980,7 +32246,7 @@
             "Complete shared build/reload cycle and synthetic fixture preconditions; fixture tab stays active when opening Tools. See shared setup and fixture contract in docs/stabilization/reports/tool-procedure-batch-20261001.json."
           ],
           "steps": [
-            "In Tools → Catalog, leave Surface=Canonical and Tier=all; search get_active_tab and expand the exact canonical row.",
+            "In Tools \u2192 Catalog, leave Surface=Canonical and Tier=all; search get_active_tab and expand the exact canonical row.",
             "Confirm the displayed schema has no required arguments and required permission activeTab; leave the default {} in the JSON editor.",
             "Click Run once. Record the inline output and compare tab_id/title/url/status to the active synthetic fixture tab's browser tab and address bar. Do not copy the full URL if it contains anything beyond the local fixture origin/path."
           ],

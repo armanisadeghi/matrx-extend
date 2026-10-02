@@ -1,7 +1,10 @@
 {
   "id": "EXT-D-0076",
   "feature_id": "EXT-F-1008",
-  "case_ids": ["EXT-F-1008-T01", "EXT-F-1008-T02"],
+  "case_ids": [
+    "EXT-F-1008-T01",
+    "EXT-F-1008-T02"
+  ],
   "title": "SEO audit remains busy after public page finishes loading",
   "surface": "SEO",
   "auth_mode": "guest reproduced; member/admin unverified",
@@ -16,12 +19,15 @@
     "docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json",
     "docs/stabilization/reports/seo-audit-diagnosis-20261002.json",
     "docs/stabilization/reports/seo-recovery-peer-20261002.json",
-    "docs/stabilization/reports/seo-recovery-final-peer-20261002.json"
+    "docs/stabilization/reports/seo-recovery-final-peer-20261002.json",
+    "docs/stabilization/reports/seo-current-artifact-20261002.json",
+    "docs/stabilization/runs/seo-current-ci-20261002-02.json",
+    "docs/stabilization/reports/seo-native-final-peer-20261002.json"
   ],
   "severity": "S2: affected public-page audit cannot complete or be retried",
   "priority": "P1: contained surface active stabilization",
-  "state": "fixed",
-  "verification_status": "Source94bfae67 + follow-up009fa468 accepted by fresh independent peer14552016. Guarded4connected cases pass for restart, late success, late rejection and current SEO title; original guarded compile passed. Current native retest still outstanding; no closure.",
+  "state": "closed",
+  "verification_status": "Guest original spinner reproduction and surrounding checks passed on CI development175/sourceb41fd0b3, native run seo-current-ci-20261002-02 (17 pass/1 unavailable unrelated door, overall partial). Independent0c84ddbd verified runner/result/guard/artifact hash chain and recommends scoped closure. Member/admin and full SEO coverage remain unverified.",
   "transition_history": [
     {
       "at": "2026-10-02T14:26:54.058323+00:00",
@@ -46,6 +52,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Independent source/connected-test acceptance after expanded overlap and positive-render cases; native retest pending."
+    },
+    {
+      "at": "2026-10-02T15:54:10.715760+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original Airbnb guest spinner no longer reproduces on exact development175 artifact; original and surrounding navigation/reload/manual cases pass."
+    },
+    {
+      "at": "2026-10-02T15:54:10.715760+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Fresh independent verifier accepts bounded guest fix and receipt chain. Full feature and other personas not certified."
     }
   ]
 }
