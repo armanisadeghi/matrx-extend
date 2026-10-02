@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-02 19:39 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T19:38:54.393008+00:00. 205 features · 738 cases · 1322 controls · 82 linked defect records.
+Generated 2026-10-02 19:50 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T19:38:54.393008+00:00. 205 features · 738 cases · 1322 controls · 82 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -799,7 +799,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0036, EXT-D-0038, EXT-D-0059, EXT-D-0082
 
-**Linked defects:** [EXT-D-0030](defects/EXT-D-0030.json) (closed), [EXT-D-0031](defects/EXT-D-0031.json) (closed), [EXT-D-0032](defects/EXT-D-0032.json) (closed), [EXT-D-0033](defects/EXT-D-0033.json) (closed), [EXT-D-0034](defects/EXT-D-0034.json) (closed), [EXT-D-0035](defects/EXT-D-0035.json) (closed), [EXT-D-0036](defects/EXT-D-0036.json) (fixed), [EXT-D-0037](defects/EXT-D-0037.json) (closed), [EXT-D-0038](defects/EXT-D-0038.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0082](defects/EXT-D-0082.json) (in-fix)
+**Linked defects:** [EXT-D-0030](defects/EXT-D-0030.json) (closed), [EXT-D-0031](defects/EXT-D-0031.json) (closed), [EXT-D-0032](defects/EXT-D-0032.json) (closed), [EXT-D-0033](defects/EXT-D-0033.json) (closed), [EXT-D-0034](defects/EXT-D-0034.json) (closed), [EXT-D-0035](defects/EXT-D-0035.json) (closed), [EXT-D-0036](defects/EXT-D-0036.json) (fixed), [EXT-D-0037](defects/EXT-D-0037.json) (closed), [EXT-D-0038](defects/EXT-D-0038.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0082](defects/EXT-D-0082.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -878,7 +878,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0082
 
-**Linked defects:** [EXT-D-0082](defects/EXT-D-0082.json) (in-fix)
+**Linked defects:** [EXT-D-0082](defects/EXT-D-0082.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |

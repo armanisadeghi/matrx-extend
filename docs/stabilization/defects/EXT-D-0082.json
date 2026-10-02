@@ -15,11 +15,15 @@
   "evidence": [
     "docs/stabilization/reports/package-request-client-peer-20261002.json",
     "docs/stabilization/reports/package-request-review-resolution-20261002.json",
-    "docs/stabilization/resource-journals/d82-upload-red-20261002-01.jsonl"
+    "docs/stabilization/resource-journals/d82-upload-red-20261002-01.jsonl",
+    "docs/stabilization/reports/d82-final-independent-peer-20261002.json",
+    "docs/stabilization/resource-journals/d82-followup-red-20261002-01.jsonl",
+    "docs/stabilization/resource-journals/d82-followup-green-20261002-01.jsonl",
+    "docs/stabilization/resource-journals/d82-followup-compile-20261002-01.jsonl"
   ],
   "severity": "S2: arbitrary server error bodies may expose sensitive values",
   "priority": "P1: bounded error boundary repair before next release",
-  "state": "in-fix",
+  "state": "fixed",
   "reproduction_status": "upload controlled RED confirmed; download sibling RED pending",
   "transition_history": [
     {
@@ -39,9 +43,16 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Actual upload consumer RED proves reflection; same source class in download included in bounded repair."
+    },
+    {
+      "at": "2026-10-02T19:50:34.593988+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Upload/download response-body reflection removed; truthful remedies and best-effort body cleanup verified by valid RED8/10 then GREEN10/10, compile0, fresh independent source review. Source and evidence on origin/main; native UI acceptance remains open."
     }
   ],
   "closure_requirement": "Demonstrate real-response RED\u2192GREEN, independent source review and relevant consumer regression checks. Upstream package repair additionally requires automatic publication and verified adoption; native user-facing behavior remains explicitly tracked.",
   "related_feature_ids": ["EXT-F-1011"],
-  "caller_census": "Screenshot persistence, guidance annotations/actions, tab recording, record handler and screenshot/PDF ingestion; file_upload page-input tool is not this API."
+  "caller_census": "Screenshot persistence, guidance annotations/actions, tab recording, record handler and screenshot/PDF ingestion; file_upload page-input tool is not this API.",
+  "verification_status": "Source fixed and independently accepted. Initial reflection RED4/GREEN7, followup cleanup/truthfulness RED8/GREEN10, compile pass; native file-transfer UI remains unverified."
 }
