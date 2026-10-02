@@ -1,0 +1,37 @@
+{
+  "scope": "EXT-D-0042 and EXT-D-0047 current-source reconciliation",
+  "reviewed_head": "a25dd0ac0e09aa8a43fe13acf086cc6d51b91ef1",
+  "status": "NO_PROVEN_REMAINING_PRODUCT_SOURCE_GAP",
+  "change": "No product or test source changed. Existing fixes were retained; neither pending D47 candidate was applied without its required reconciliation and regression proof.",
+  "EXT-D-0042": {
+    "status": "source_repair_present_runtime_unverified",
+    "source_evidence": [
+      "ListPatternTab.tsx checks the current session ID, trusted sender tab/document IDs, and page identity before consuming detection, result, or exit; cancellation invalidates the local session and targets the old ID.",
+      "list-picker-session.ts serializes per-tab install/start/cancel and pins Chrome injection to the initiating document ID; list-picker.ts carries session identity and tears down an earlier injected context.",
+      "list-picker-relay.ts preserves session identity while stamping sender tab and document; list-picker-session.test.ts, list-picker-relay.test.ts, and showcase-doctor-list-handoff.test.tsx contain the corresponding producer, relay, and consumer checks."
+    ],
+    "remaining": "Repeat the delayed A events/cancel and reinjection lifecycle on a current installed extension; no local run was performed."
+  },
+  "EXT-D-0047": {
+    "status": "source_repair_present_native_prior_document_proof_open",
+    "source_evidence": [
+      "document-network-capture.ts registers the document-start script before Page.reload, buffers early events until frame commit, and accepts binding packets only from the chosen new main-frame Chrome execution context; a later replacement context fails the run.",
+      "The replay event is stamped with capture ID and document key; run-interactive.ts also checks capture ID and tab ID before matching and waits for capture cleanup before resolving rows.",
+      "document-network-capture.test.ts includes old sequence 999 against new sequence 1, early new-document response, and same-URL replacement cases; document-network-saved-ui.test.tsx checks the saved UI path."
+    ],
+    "pending_candidate_decision": "EXT-D-0047-ci-causal/test.patch.pending targets an earlier saved-UI test and must be reconciled against the current four-case teardown, distinct tab identities, and fake-clock cleanup. The preapproval candidate has a recorded FIX_FIRST peer verdict for connected cancellation coverage and Network-only scope; it does not establish a current source failure in original D47 timing or provenance.",
+    "remaining": "A current installed extension still needs a deliberately delayed matching prior-document response after navigation, with an old sequence greater than the current response; compare the visible saved result and build receipt. Repeated saved replay remains an adjacent acceptance case."
+  },
+  "verification": {
+    "performed": "Read-only source and recorded-evidence inspection; no local tests, typecheck, build, browser, install, or release because internal disk admission is below 20 GiB.",
+    "hosted_ci_plan": [
+      "Run focused list-picker session, relay, and Showcase handoff tests, then typecheck.",
+      "Run focused document-network capture and saved-UI tests with a fresh current-source baseline; reconcile the pending causal patch only if CI demonstrates a real gap.",
+      "Use a current installed extension for the two remaining native adversarial checks; report artifact identity and observed rows."
+    ]
+  },
+  "open_questions": [
+    "Will the current installed build reject a deliberately delayed matching response from the prior document after reload begins?",
+    "Does current hosted CI expose a saved-UI teardown failure that the unapplied causal patch addresses?"
+  ]
+}
