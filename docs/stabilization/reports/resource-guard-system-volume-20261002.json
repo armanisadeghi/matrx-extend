@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "lane": "resource-guard-system-volume",
+  "status": "source_ready_tests_pending_heavy_permit",
+  "root_cause": "The guard sampled only the external checkout and chosen profile volumes. Its lease, unsafe hold, and stop markers use /var/tmp on the internal writable system volume. The internal volume reached approximately 116 MiB free while both sampled external paths remained ample, so admission and watchdog missed ENOSPC.",
+  "observed_red_evidence": "docs/stabilization/resource-journals/d54-data-tsv-native-20261002-01.jsonl records RESOURCE_WATCH_HEALTHY at 2026-10-02T19:58:43 with repo/profile at about 1695 GiB free, followed by RESOURCE_MEASUREMENT_FAILED and RESOURCE_FINAL_DECISION invalid, exit 2. docs/stabilization/runs/d54-data-tsv-native-20261002-01.json records the unsafe-hold marker persistence failure on /var/tmp with ENOSPC. The browser assertions passed, but this guard result invalidated the native run.",
+  "observed_read_only_mounts": {
+    "system_root_and_data": "df -k showed / and /System/Volumes/Data each with 117384 KiB free at diagnosis time; both are in the same APFS container on this host.",
+    "external_checkout": "df -k showed the extension checkout on /Volumes/Samsung2TB with more than 1.7 TiB free."
+  },
+  "source_change": {
+    "disk_admission_and_watchdog": "Every sample reads the repo, profile, actual lease root, and / independently. All four are compared with the existing minimumFreeDiskGiB=20 in the shared reasons() path used by preflight and watchdog. A future lease relocation cannot remove the system-volume check.",
+    "persistence_failure": "Writes to unsafe hold and stop markers use a private 0600 writer. Any write failure marks the run invalid and the safety state broken before throwing, keeps the heavy lease, stops owned work during cleanup, and records an invalid final decision when the journal remains writable. The original error payload and marker contents are not reflected in diagnostics."
+  },
+  "policy": "No threshold, concurrency, or command allowlist changes. The local guard must continue refusing below 20 GiB on the system volume. The focused helper test is wired to the existing hosted CI checks job on a healthy runner.",
+  "planned_forcing_checks": [
+    "Injected statfs measurements with external repo/profile/lease at 1600 GiB and independent / at 116 MiB must trigger disk-low under the unchanged 20 GiB floor.",
+    "A low lease volume independently triggers disk-low; the default statfs implementation reads actual mounted paths and rejects invalid values.",
+    "A real private 0600 marker is written, and injected ENOSPC surfaces RESOURCE_SAFETY_STATE_WRITE_FAILED without payload reflection.",
+    "Copied-guard process and journal fixture suites include the new disk helper so their existing integration assertions still run against the actual guard."
+  ],
+  "verification_limit": "Only node --check, report JSON parse, git diff --check, and targeted Biome passed locally (four pre-existing useTemplate warnings). No test, guard run, browser, build, or release was launched locally while the parent recovered internal disk. Hosted CI result and fresh peer review are pending; do not claim GREEN or a valid native run."
+}

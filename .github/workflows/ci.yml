@@ -161,6 +161,11 @@ jobs:
           RECORDS_GUIDE_SOURCE: ${{ github.workspace }}/.canonical/aidream
         run: pnpm test
 
+      # The resource guard itself requires a healthy macOS host; its disk
+      # sampler and private safety-state persistence can run on this CI host.
+      - name: Resource safety regression
+        run: node --test scripts/test-stabilization-resource-safety.mjs
+
       - name: Build on pull requests and release tags
         if: github.event_name != 'push' || github.ref != 'refs/heads/main'
         run: pnpm wxt build

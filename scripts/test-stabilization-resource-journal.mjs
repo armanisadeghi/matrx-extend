@@ -244,6 +244,7 @@ test('guard exits invalid and leaves no completed journal when close fails', asy
     await mkdir(docs, { recursive: true });
     for (const name of [
       'stabilization-resource.mjs',
+      'stabilization-resource-safety.mjs',
       'stabilization-resource-journal.mjs',
       'stabilization-resource-lease.mjs',
       'stabilization-resource-process.mjs',

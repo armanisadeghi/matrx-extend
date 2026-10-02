@@ -12,17 +12,7 @@ import { execFile } from 'node:child_process';
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { existsSync } from 'node:fs';
-import {
-  mkdir,
-  readFile,
-  readdir,
-  rename,
-  rm,
-  rmdir,
-  stat,
-  statfs,
-  writeFile,
-} from 'node:fs/promises';
+import { mkdir, readFile, readdir, rename, rm, rmdir, stat, writeFile } from 'node:fs/promises';
 import { platform } from 'node:os';
 import { join, resolve } from 'node:path';
 import { promisify } from 'node:util';
@@ -34,6 +24,7 @@ import {
   resourceLeaseRoot,
 } from './stabilization-resource-lease.mjs';
 import { classifyLegacyRunner, parseProcessIdentity } from './stabilization-resource-process.mjs';
+import { diskIsLow, sampleDiskSpace, writeSafetyState } from './stabilization-resource-safety.mjs';
 import { resourceVerdict } from './stabilization-resource-verdict.mjs';
 
 const run = promisify(execFile);
@@ -50,6 +41,7 @@ let journal;
 let activeRunId;
 let resourceInvalid = false;
 let journalBroken = false;
+let safetyStateBroken = false;
 let admitted = false;
 let childFinished = false;
 let operatorStopped = false;
@@ -83,6 +75,20 @@ const emit = (code, extra = {}) => {
 const fail = (code, extra = {}) => {
   emit(code, extra);
   process.exitCode = 2;
+};
+const persistSafetyState = async (path, state) => {
+  try {
+    await writeSafetyState(path, state);
+  } catch (error) {
+    // A missing hold or stop marker means the permit cannot be safely released.
+    safetyStateBroken = true;
+    resourceInvalid = true;
+    process.exitCode = 3;
+    process.stderr.write(
+      `RESOURCE_SAFETY_STATE_WRITE_FAILED runId=${activeRunId} Stop manual browser work; the permit is retained.\n`,
+    );
+    throw error;
+  }
 };
 const number = (value, name) => {
   const n = Number(value);
@@ -262,18 +268,16 @@ function validateCommand() {
 
 async function sample(profileDir) {
   if (platform() !== 'darwin') throw new Error('RESOURCE_UNSUPPORTED_PLATFORM');
-  const [memory, pressure, total, cpus, load, swap, repoDisk, profileDisk, cpuBusy] =
-    await Promise.all([
-      output('/usr/bin/memory_pressure', ['-Q']),
-      sysctl('kern.memorystatus_vm_pressure_level'),
-      sysctl('hw.memsize'),
-      sysctl('hw.logicalcpu'),
-      sysctl('vm.loadavg'),
-      sysctl('vm.swapusage'),
-      statfs(repo),
-      statfs(profileDir),
-      cpuBusyFraction(),
-    ]);
+  const [memory, pressure, total, cpus, load, swap, disk, cpuBusy] = await Promise.all([
+    output('/usr/bin/memory_pressure', ['-Q']),
+    sysctl('kern.memorystatus_vm_pressure_level'),
+    sysctl('hw.memsize'),
+    sysctl('hw.logicalcpu'),
+    sysctl('vm.loadavg'),
+    sysctl('vm.swapusage'),
+    sampleDiskSpace({ repo, profileDir, leaseRoot: root }),
+    cpuBusyFraction(),
+  ]);
   const freePercent = number(
     memory.match(/System-wide memory free percentage:\s*([\d.]+)%/)?.[1],
     'available-memory',
@@ -296,9 +300,7 @@ async function sample(profileDir) {
     logicalCpus,
     cpuBusyFraction: cpuBusy,
     swapUsedMiB,
-    repoFreeGiB: number(Number(repoDisk.bavail) * Number(repoDisk.bsize), 'repo-disk') / GiB,
-    profileFreeGiB:
-      number(Number(profileDisk.bavail) * Number(profileDisk.bsize), 'profile-disk') / GiB,
+    ...disk,
   };
 }
 
@@ -313,11 +315,7 @@ function reasons(current, previous) {
     current.cpuBusyFraction >= policy.maximumBusyFractionAtHighLoad
   )
     bad.push('RESOURCE_CPU_HIGH_LOAD_BUSY');
-  if (
-    current.repoFreeGiB < policy.minimumFreeDiskGiB ||
-    current.profileFreeGiB < policy.minimumFreeDiskGiB
-  )
-    bad.push('RESOURCE_DISK_LOW');
+  if (diskIsLow(current, policy.minimumFreeDiskGiB)) bad.push('RESOURCE_DISK_LOW');
   if (!previous) bad.push('RESOURCE_SWAP_BASELINE_MISSING');
   else if (current.swapUsedMiB - previous.swapUsedMiB > policy.maximumSwapGrowthMiB)
     bad.push('RESOURCE_SWAP_GROWTH');
@@ -365,16 +363,12 @@ async function recoverHold(profileDir) {
     const current = await sample(profileDir);
     const bad = reasons(current, baseline);
     if (bad.length) {
-      await writeFile(
-        holdPath,
-        JSON.stringify({ ...hold, healthySamples: 0, reason: bad }) + '\n',
-        { mode: 0o600 },
-      );
+      await persistSafetyState(holdPath, { ...hold, healthySamples: 0, reason: bad });
       fail('RESOURCE_UNSAFE_HOLD', { reasons: bad, sample: current });
       return false;
     }
     hold = { ...hold, healthySamples: hold.healthySamples + 1 };
-    await writeFile(holdPath, JSON.stringify(hold) + '\n', { mode: 0o600 });
+    await persistSafetyState(holdPath, hold);
     baseline = current;
   }
   emit('RESOURCE_RECOVERY_SAMPLES_READY', { previousRunId: hold.runId });
@@ -703,9 +697,7 @@ async function main() {
       }
       if (bad.length && existsSync(holdPath)) {
         const hold = JSON.parse(await readFile(holdPath, 'utf8'));
-        await writeFile(holdPath, JSON.stringify({ ...hold, healthySamples: 0 }) + '\n', {
-          mode: 0o600,
-        });
+        await persistSafetyState(holdPath, { ...hold, healthySamples: 0 });
       }
       emit(bad.length ? 'RESOURCE_WATCH_UNSAFE' : 'RESOURCE_WATCH_HEALTHY', {
         runId,
@@ -720,10 +712,8 @@ async function main() {
           at: new Date().toISOString(),
           healthySamples: 0,
         };
-        await writeFile(holdPath, JSON.stringify(hold) + '\n', { mode: 0o600 });
-        await writeFile(join(root, `stop-${owner.nonce}.json`), JSON.stringify(hold) + '\n', {
-          mode: 0o600,
-        });
+        await persistSafetyState(holdPath, hold);
+        await persistSafetyState(join(root, `stop-${owner.nonce}.json`), hold);
         emit('RESOURCE_STOP_AT_SAFE_BOUNDARY', { runId, reasons: bad });
         resourceInvalid = true;
         process.exitCode = 3;
@@ -740,9 +730,7 @@ async function main() {
       }
       if (existsSync(holdPath) && healthy >= policy.healthySamplesToResume) {
         const hold = JSON.parse(await readFile(holdPath, 'utf8'));
-        await writeFile(holdPath, JSON.stringify({ ...hold, healthySamples: healthy }) + '\n', {
-          mode: 0o600,
-        });
+        await persistSafetyState(holdPath, { ...hold, healthySamples: healthy });
         emit('RESOURCE_RECOVERY_SAMPLES_READY', { runId });
       }
     }
@@ -758,7 +746,7 @@ async function main() {
     } else if (groupId && !(await groupGone(groupId))) {
       emit('RESOURCE_GROUP_STILL_RUNNING', { runId, groupId });
       process.exitCode = 3;
-    } else if (!journalBroken) await release(owner);
+    } else if (!journalBroken && !safetyStateBroken) await release(owner);
   }
 }
 
@@ -766,10 +754,17 @@ try {
   await main();
 } catch (error) {
   if (admitted) resourceInvalid = true;
-  if (journalBroken) {
-    // A later successful journal write cannot repair the missing event. Keep
-    // the permit and invalid verdict instead of letting fail() downgrade to 2.
+  if (journalBroken || safetyStateBroken) {
+    // A later successful write cannot repair missing journal or safety state.
+    // Keep the permit and invalid verdict instead of letting fail() downgrade to 2.
     process.exitCode = 3;
+    if (safetyStateBroken && !journalBroken) {
+      try {
+        emit('RESOURCE_SAFETY_STATE_WRITE_FAILED', { runId: activeRunId });
+      } catch {
+        process.exitCode = 3;
+      }
+    }
   } else {
     const code = error.message.startsWith('RESOURCE_')
       ? error.message

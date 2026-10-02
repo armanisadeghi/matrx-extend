@@ -122,6 +122,7 @@ test('guard refuses a live old runner and journals bounded process identity', as
   const source = resolve(import.meta.dirname, '..');
   for (const name of [
     'stabilization-resource.mjs',
+    'stabilization-resource-safety.mjs',
     'stabilization-resource-lease.mjs',
     'stabilization-resource-journal.mjs',
     'stabilization-resource-process.mjs',
