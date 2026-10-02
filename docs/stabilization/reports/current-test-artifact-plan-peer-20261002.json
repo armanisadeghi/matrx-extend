@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "reviewed_plan": "docs/stabilization/reports/current-test-artifact-20261002.json at proposal_only_pending_independent_plan_review, snapshot observed 2026-10-02 14:35 UTC",
+  "lane": "standard_buildability_contracts_read_only",
+  "verdict": "FIX-FIRST",
+  "coverage": "4/4 core outcomes mapped: CI build, keyed runtime configuration, portable import, native SEO use. Two provenance conditions and one helper contract need repair before implementation.",
+  "operator_reality": {
+    "ci": "Main CI run 37020466023 at ceda515a275d5ccfc0675e999ad2aa9307a70264 succeeded, including Production build, and has zero Actions artifacts. Existing AIDREAM_DEPLOY_KEY preflight passed.",
+    "runtime": "Committed .env.production uses https://db.matrxserver.com, an sb_publishable_ key and a PKCE OAuth client ID. The corresponding three Actions secret names exist. The checked-in development public key independently derives cihdmkcdjjckfhjpgoedmgfpoljebaml. SEO guest and native harness accept extension directory plus development receipt overrides.",
+    "source": "Current HEAD is ceda515a275d5ccfc0675e999ad2aa9307a70264 at package version 0.2.175, but SeoView.tsx and docs/feature-tests.md are modified. HEAD equality alone does not prove the artifact contains those working-tree edits."
+  },
+  "blocking": [
+    {
+      "finding": "The importer trusts only the artifact's own provenance and caller-supplied SHA/run identity. Both can agree without establishing that the downloaded bytes came from that successful main-push CI run.",
+      "fix": "Bind the import to GitHub's run/artifact metadata: verify repository, workflow, push event, main ref, successful conclusion, head SHA, run ID/attempt, artifact identity and GitHub artifact digest (or download the exact artifact by ID through gh and verify that metadata). Keep the CI receipt and tree hash as separate byte-integrity checks."
+    },
+    {
+      "finding": "Local HEAD equality alone can label a historical or dirty checkout as 'current source'; the checkout is dirty now. A native pass could be attributed to edits absent from the downloaded CI build.",
+      "fix": "At import and native-result recording, compare the source SHA to freshly fetched origin/main and distinguish clean tracked checkout from local modifications. If dirty or main advanced, label the artifact as exact pushed commit only, not current working source, and leave changed-source acceptance pending until those edits are pushed and a matching CI artifact exists."
+    },
+    {
+      "finding": "recordLocalDevBuild admits only .output/chrome-mv3[-dev] and writes receipts only directly under test-results. The plan broadens the build directory but does not specify the receipt output-path contract needed for a run-qualified import subtree.",
+      "fix": "Specify a single strict run-qualified test-results layout and extend both path admission checks to that layout; keep existing .output admission, exclusive receipt creation, symlink refusal, and hash verification. Keep CI receipt/provenance outside the hashed unpacked tree."
+    }
+  ],
+  "advisory": [
+    "Validate the effective bundled WXT configuration from the explicit CI environment and the approved https://db.matrxserver.com origin; checking variable shapes before a build does not by itself prove those values were embedded.",
+    "The workflow's main-ref concurrency cancels superseded runs; an imported artifact from a cancelled or older run must retain its exact-commit label."
+  ],
+  "owner_only": [],
+  "limits": "Source, GitHub run metadata and repository contracts reviewed. No build, browser run, secret value read, or proposed implementation edit was performed."
+}
