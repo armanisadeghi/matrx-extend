@@ -1,0 +1,19 @@
+{
+  "date": "2026-10-02",
+  "target": "tests/browser/files-saved-native-acceptance.mjs",
+  "reviewedSha256": "aa73c98f83fee95fea3f2002afdb5047531f7d175fc98954bcc4d8746fadb0ed",
+  "scope": "Independent source review of the frozen interactive member path before execution; no browser run performed by this reviewer",
+  "A_limitations": [
+    "The member login is a normal headed web UI session. The runner checks /api/whoami and compares a SHA-256 email fingerprint, then opens the extension sign-in through the panel UI. No authentication state is injected into Chrome and no secret is written to the report.",
+    "The configured organization is selected through the UI and its active organization ID is checked in extension storage. This confirms the selected ID, but does not independently establish that the reviewer belongs to that organization.",
+    "The runner classifies any non-null Role row text without the substring admin as non_admin. Placeholder values such as Roleundefined, Role—, or an empty role could therefore be reported as non_admin. If the Role row is absent, it records unavailable_requires_live_admin_assignment_check and continues.",
+    "The configured approved_organization_membership_role is required to equal member, but it is a private-config assertion rather than a live identity-to-membership lookup. A read-only database proof is still needed for the reviewer user ID, non-admin assignment, and membership in the configured organization.",
+    "This source review does not establish the exact-build member journey or the signed-in-to-guest privacy transition; both require separate live evidence."
+  ],
+  "B_verdict": "Source is safe to run for diagnostic evidence with the intended private configuration, but its bounded-pass result alone cannot certify non-admin membership or organization ownership. Require a matched live read-only DB identity and membership receipt before treating it as member acceptance.",
+  "blockingProofs": [
+    "Map the fingerprint-matched reviewer to one Auth user ID without recording the email or credential in this report.",
+    "Show that this user has no extension-admin assignment and has member access to the exact configured organization ID.",
+    "Treat unavailable or placeholder panel role values as unverified, regardless of the runner's current non_admin label."
+  ]
+}
