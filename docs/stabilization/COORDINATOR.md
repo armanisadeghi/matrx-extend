@@ -7,12 +7,14 @@ User renewed continuous test/fix/retest and latest Store submission; daily follo
 Daily Codex heartbeat `matrx-extend-daily-review-and-update` is ACTIVE at 09:00 America/Los_Angeles, registered in common-docs operations/scheduled-tasks.md. Claim MCP is not exposed; scheduled runs use the documented ledger fallback until available. No duplicate schedule. Existing hourly repository sync remains separate.
 
 Active flat lanes (root owns integration, Store UI, inventory):
-- `oct02_package_catchup` — Sol medium, release-blocking agents package consumer reconciliation (current CI context-chip tests); source work until its guarded permit.
-- `oct02_member_testing` — Luna medium, ordinary-member Files D64. First exact173 native functional pass has correct successful current-user role proof and UI org selection, but exclusive-run claim was invalidated by another worker's 1.3-second unguarded diagnostic overlap. Repeat002 failed before UI because runtime launch env was omitted; corrected003 in progress. Do not close from the first run.
-- `oct02_d59_final_verifier` — terminal, fresh guarded five-case PASS, source accepted; native same-URL reload remains open. Fix c28cf7c6, evidence41ea5877. B-error and sample-capture gaps covered.
-- `oct02_release_prepare` — terminal: 130 approval/baseline confirmed, older validated173 ZIP exists, no175 artifact. Latest hosted packaging awaits scoped credential approval already asked in Q-2026-10-01-extend-hosted-read-token; no new token or upload. Local manual build/release remains forbidden.
+- `oct02_package_catchup` — Sol medium: consumer repair11d0fba9 and character-count correctionab994d97 pushed. Guarded29 tests, then actual RED20 vs100, GREEN8/8 and compile passed; independent final source peeraf9f333a accepted, native still open. Now owns sole heavy permit for CI lint5errors repair.
+- `oct02_seo_diagnosis` — Astra medium escalation: two frozen173 native attempts each passed16 bounded subtargets but Airbnb stayed running30/60sec. Cause unresolved, no third blind retry. Owns source diagnosis/fix, needs permit for discriminating execution.
+- `oct02_member_testing` — terminal: isolated member run003 passed D64 after invalidating run001 overlap and run002 setup failure. D64 CLOSED with prior admin pass; Files broader case remains partial; D65 member open. Evidence604664e0, tracking56278948.
+- `oct02_d59_final_verifier` — terminal: independent guarded5/5 source acceptance,41ea5877. Actual native same-URL reload/fullD59 remain open.
+- `oct02_context_final_peer` — terminal: source acceptance af9f333a; exact-text viewer D75 remains open because server message identity is missing.
+- `oct02_release_prepare` — terminal:130 published,173 frozenZIP, no175 artifact. Hosted packaging awaits scoped credential approval already asked in Q-2026-10-01-extend-hosted-read-token; no new token/upload. Local manual build/release forbidden.
 
-Dependency installation was stale (agents0.21.36 vs locked0.32.0); guarded frozen install restored the lock and guarded compile passed. One short diagnostic unit run violated the single-test rule; it earns no acceptance credit, and overlapping native proof is being repeated. No resource gate was bypassed by the native runner.
+Dependency installation restored locked0.32.0 from stale0.21.36; guarded compile passed. The single-test rule violation invalidated first member acceptance, and isolated repeat003 supplied valid replacement. Latest observed CI37017107411 failed lint5errors; repair active, no green-trunk claim yet.
 
 Keep original inventory/defect schema and exact build boundaries. One refusing resource-guarded heavy run at a time. Two failed attempts or 20 active minutes triggers decomposition/rerouting. Source-only proof never closes UI coverage. Commit/push each verified unit, preserve concurrent writers. Do not end while children run.
 

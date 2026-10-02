@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-02 14:02 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02. 205 features · 734 cases · 1318 controls · 75 linked defect records.
+Generated 2026-10-02 14:16 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T14:16:10.055927+00:00. 205 features · 734 cases · 1318 controls · 75 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1167** — Pass: 58 · Partial: 32 · Fail: 1 · Unverified: 1075 · N/A: 1.
-Unverified splits into **124 explicitly marked unverified** and **951 with no result record**.
+Applicable case-by-role slots: **1167** — Pass: 58 · Partial: 37 · Fail: 1 · Unverified: 1070 · N/A: 1.
+Unverified splits into **119 explicitly marked unverified** and **951 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -25,7 +25,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 0 |
 | [Scrape](#scrape) | 1 | 1 pass · 0 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 1, partial 0, fail 0, unverified 87, n/a 0 | 2 |
-| [SEO](#seo) | 1 | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 42, n/a 0 | 0 |
+| [SEO](#seo) | 1 | 0 pass · 5 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 5, fail 0, unverified 37, n/a 0 | 0 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 3 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 0 |
@@ -57,9 +57,9 @@ Role counts include only case-role combinations listed in each case. The all-rol
 
 ## Current artifact and bounded acceptance
 
-**Release:** 0.2.173 at `d6d6d6b83c937652525f473082ac2f2492c9eabe`. Exact 0.2.173 candidate was created from verified origin/main/tag; strict release gates passed (1862 tests passed, 5 skipped; compile/typecheck, tool DB drift, migrations, package checks and Store package/risk gates passed). This is a candidate, not a Chrome Web Store submission; 0.2.130 remains pending review.
+**Release:** 0.2.173 at `d6d6d6b83c937652525f473082ac2f2492c9eabe`. Last frozen validated candidate is0.2.173 at the receipt/tag shown (1862 tests,5skipped and strict gates passed). Primary Store0.2.130 is Published-public, verified October2 13:12UTC. Main is0.2.175 plus newer fixes, with no matching ZIP; latest hosted packaging awaits scoped credential approval. Candidate173 is not latestmain and has not been uploaded.
 **Local artifact:** Frozen 0.2.173 keyed tree SHA256 494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064; Store ZIP SHA256 1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff. Candidate receipt/hash verified; no personal Chrome runtime claim.
-**Native evidence:** Exact173: guest grounded first answer and post-panel-reload followup PASS; signed-in non-admin Chat PASS; admin Files Library/Screenshots read-error and Retry recovery PASS; admin Saved captures D65 late-success and late-failure selection race PASS. See guest-grounding-peer, candidate-native, files-fresh-acceptance and saved-capture-escalation-verify reports. Earlier guest marker miss unexplained; signout privacy, member Files/Saved, full controls and Chat/Pilot breadth remain unverified. Candidate173 not uploaded;130 still pending Google review.
+**Native evidence:** Exact173: guest grounded answer/reload and nonadmin Chat passed; D64 Files Library/Screenshots error/Retry now passed independently in admin and member, closed after isolated member run003. D65 admin selection race passed; member remains unverified. Guest SEO16 bounded subtargets passed twice, but Airbnb audit did not finish30/60sec; diagnosis active. Prior guest marker miss unexplained; signout privacy, full controls and Chat/Pilot breadth unverified. Source D59 and D74 repairs have guarded tests and independent source review but no new native artifact.
 These current-build checks supplement the inventory matrix; they do not promote unobserved cases or certify whole features.
 
 ## Development installation
@@ -728,23 +728,23 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Audit page SEO and manage audit history (EXT-F-1008)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 14. **Controls:** 14.
+**Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 14. **Controls:** 14.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Finish the missing criteria and repeat the partial case in the extension.
 
 **Linked defects:** [EXT-D-0021](defects/EXT-D-0021.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-1008-T01 Auto-audit on URL navigation | Unverified | Unverified | Unverified | EXT-F-1008-C01 |
-| EXT-F-1008-T02 Manual audit/re-audit | Unverified | Unverified | Unverified | EXT-F-1008-C02 |
-| EXT-F-1008-T03 Restricted/unreachable page | Unverified | Unverified | Unverified | EXT-F-1008-C03 |
+| EXT-F-1008-T01 Auto-audit on URL navigation | Partial | Unverified | Unverified | EXT-F-1008-C01 |
+| EXT-F-1008-T02 Manual audit/re-audit | Partial | Unverified | Unverified | EXT-F-1008-C02 |
+| EXT-F-1008-T03 Restricted/unreachable page | Partial | Unverified | Unverified | EXT-F-1008-C03 |
 | EXT-F-1008-T04 Save audit and failure recovery | Unverified | Unverified | Unverified | EXT-F-1008-C04 |
 | EXT-F-1008-T05 History open/close and saved snapshot | Unverified | Unverified | Unverified | EXT-F-1008-C05 |
 | EXT-F-1008-T06 History empty/loading/error states | Unverified | Unverified | Unverified | EXT-F-1008-C06 |
-| EXT-F-1008-T07 Copy audit formats and role gate | Unverified | Unverified | Unverified | EXT-F-1008-C07 |
+| EXT-F-1008-T07 Copy audit formats and role gate | Partial | Unverified | Unverified | EXT-F-1008-C07 |
 | EXT-F-1008-T08 Live versus saved diff/verdict | Unverified | Unverified | Unverified | EXT-F-1008-C08 |
-| EXT-F-1008-T09 SEO details and links | Unverified | Unverified | Unverified | EXT-F-1008-C09 |
+| EXT-F-1008-T09 SEO details and links | Partial | Unverified | Unverified | EXT-F-1008-C09 |
 | EXT-F-1008-T10 AI recommendation start/stop/retry | Unverified | Unverified | Unverified | EXT-F-1008-C10 |
 | EXT-F-1008-T11 AI recommendation copy/regenerate/agent link | Unverified | Unverified | Unverified | EXT-F-1008-C11 |
 | EXT-F-1008-T12 Stage one SEO fix in Chat | Unverified | Unverified | Unverified | EXT-F-1008-C12 |
@@ -753,16 +753,16 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Recorded case details and evidence:**
 
-- EXT-F-1008-T01 · guest: Unverified. Evidence covers title/headings across navigation and reselect after reload only; exactly-once audit and slow stale-result behavior remain unverified.
-  Evidence / build / date recorded: seo-guest-dev089-002, ['docs/stabilization/runs/seo-guest-dev089-002.json', 'test-results/seo-guest-dev089-002.evidence.json', 'docs/stabilization/reports/debug-seo-dev089-002-peer.json']
-- EXT-F-1008-T02 · guest: Unverified. Title preservation only; pending/running disablement, stale-advice replacement and failure recovery remain unverified.
-  Evidence / build / date recorded: seo-guest-dev089-002, ['docs/stabilization/runs/seo-guest-dev089-002.json', 'test-results/seo-guest-dev089-002.evidence.json', 'docs/stabilization/reports/debug-seo-dev089-002-peer.json']
-- EXT-F-1008-T03 · guest: Unverified. about:blank error/no-stale-audit and public recovery observed; full internal/restricted URL and reload dimensions remain unverified.
-  Evidence / build / date recorded: seo-guest-dev089-002, ['docs/stabilization/runs/seo-guest-dev089-002.json', 'test-results/seo-guest-dev089-002.evidence.json', 'docs/stabilization/reports/debug-seo-dev089-002-peer.json']
-- EXT-F-1008-T07 · guest: Unverified. Guest Text/AI/JSON menu availability observed before and after reload only; actual clipboard bytes and member/admin role gates remain unverified.
-  Evidence / build / date recorded: seo-guest-dev089-002, ['docs/stabilization/runs/seo-guest-dev089-002.json', 'test-results/seo-guest-dev089-002.evidence.json', 'docs/stabilization/reports/debug-seo-dev089-002-peer.json']
-- EXT-F-1008-T09 · guest: Unverified. The listed public-detail subtargets are bounded partial evidence. Hreflang/schema doors are unverified; robots, social preview fallback and remaining detail/link requirements are not established. No full case pass.
-  Evidence / build / date recorded: seo-guest-dev089-002, ['docs/stabilization/runs/seo-guest-dev089-002.json', 'test-results/seo-guest-dev089-002.evidence.json', 'docs/stabilization/reports/debug-seo-dev089-002-peer.json']
+- EXT-F-1008-T01 · guest: Partial. Two public titles, new URL replacement and panel reload observed; exactly-once and slow old result race unverified. Airbnb remained running; cause under investigation.
+  Evidence / build / date recorded: seo-guest-frozen-20261002T140308Z, ['docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json']
+- EXT-F-1008-T02 · guest: Partial. Trusted re-audit preserved current public title; stale advice/failure dimensions unverified.
+  Evidence / build / date recorded: seo-guest-frozen-20261002T140308Z, ['docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json']
+- EXT-F-1008-T03 · guest: Partial. about:blank cleared prior data, showed error/Retry; return to public page recovered. Other restricted/unreachable states unverified.
+  Evidence / build / date recorded: seo-guest-frozen-20261002T140308Z, ['docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json']
+- EXT-F-1008-T07 · guest: Partial. Guest menu offers text and AI and hides JSON before/after reload; actual clipboard payload and other modes unverified.
+  Evidence / build / date recorded: seo-guest-frozen-20261002T140308Z, ['docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json']
+- EXT-F-1008-T09 · guest: Partial. Sparse/rich details, MDN canonical click and Wikipedia exact public DOM counts observed; metadata/schema doors and Airbnb audit unverified.
+  Evidence / build / date recorded: seo-guest-frozen-20261002T140308Z, ['docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json']
 
 
 ## Screenshots

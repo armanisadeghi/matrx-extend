@@ -11,11 +11,16 @@
   ],
   "expected": "Preserve real receipt references and blocks and expose the included-row count; guest catalog identity reads must not demand sign-in.",
   "actual": "src/state/context-rules.ts normalization previously omitted delivered/on-request references and server blocks; ContextRulesComposerChip passed a generic label rather than the shared count label.",
-  "evidence": ["docs/stabilization/reports/oct02-agents-consumer-20261002.json"],
+  "evidence": [
+    "docs/stabilization/reports/oct02-agents-consumer-20261002.json",
+    "docs/stabilization/reports/agents-consumer-peer-20261002.json",
+    "docs/stabilization/reports/oct02-agents-server-row-repair-20261002.json",
+    "docs/stabilization/reports/context-consumer-final-peer-20261002.json"
+  ],
   "severity": "S3: incomplete or misleading context inspection; not proof that Chat sending fails",
   "priority": "P1 release compatibility",
   "state": "fixed",
-  "verification_status": "11d0fba9 repairs the consumer; 29 guarded focused tests and compile pass. Independent source review pending; new UI artifact not built.",
+  "verification_status": "Source repair ab994d97 independently accepted af9f333a. Actual guarded RED20 versus100, GREEN8/8 and compile pass. Exact-text viewer separately open D75; latest native UI unverified.",
   "transition_history": [
     {
       "at": "2026-10-02T14:02:09.608607+00:00",
@@ -40,6 +45,24 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Guarded focused tests and compile pass; independent/native acceptance outstanding."
+    },
+    {
+      "at": "2026-10-02T14:16:10.055927+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Independent peer found attached catalog blocks omitted from server-row character totals; actual red guard showed20 instead of100."
+    },
+    {
+      "at": "2026-10-02T14:16:10.055927+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Repair round uses canonical package receipt row conversion."
+    },
+    {
+      "at": "2026-10-02T14:16:10.055927+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "ab994d97: guarded8/8 and compile pass; fresh source peer accepts count repair. Native artifact acceptance outstanding."
     }
   ]
 }
