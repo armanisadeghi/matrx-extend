@@ -18,8 +18,8 @@
   ],
   "severity": "S2: affected public-page audit cannot complete or be retried",
   "priority": "P1: contained surface active stabilization",
-  "state": "triaged",
-  "verification_status": "Frozen173 runtime failure confirmed; relevant current SEO/identity/capture source matches frozen artifact. Sequenced connected regression pending; no patch or closure claimed.",
+  "state": "in-fix",
+  "verification_status": "Connected SeoView/useActiveTab reproduction confirmed failed restart:2 captures versus expected3. Sol repair has focused green; typecheck, independent review and current-artifact native retest outstanding.",
   "transition_history": [
     {
       "at": "2026-10-02T14:26:54.058323+00:00",
@@ -32,6 +32,12 @@
       "from": "open",
       "to": "triaged",
       "reason": "Discriminating native run confirmed stuck spinner after complete page; assigned fresh escalation agent to prove cause and repair."
+    },
+    {
+      "at": "2026-10-02T14:35:27.996477+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Native event sequence reproduced through real component/hook and Chrome boundary; source repair in progress."
     }
   ]
 }
