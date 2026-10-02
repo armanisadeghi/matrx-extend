@@ -31,13 +31,24 @@ const page = (pageKey = 'page-a'): ActiveTabInfo => ({
 
 const request = vi.fn();
 const reload = vi.fn();
+const query = vi.fn();
+const getFrame = vi.fn();
 
 beforeEach(() => {
   mocks.activeTab = page();
   mocks.preparePage.mockReset();
   request.mockReset();
   reload.mockReset().mockResolvedValue(undefined);
-  vi.stubGlobal('chrome', { permissions: { request }, tabs: { reload } });
+  query.mockReset().mockResolvedValue([{ id: 23, url: 'https://example.org/a' }]);
+  getFrame.mockReset().mockResolvedValue({
+    documentId: 'page-a',
+    url: 'https://example.org/a',
+  });
+  vi.stubGlobal('chrome', {
+    permissions: { request },
+    tabs: { reload, query },
+    webNavigation: { getFrame },
+  });
 });
 
 it('reloads a stuck Prepare document, permits a fresh action with persistent access still absent, and ignores the late result', async () => {
@@ -115,6 +126,45 @@ it('keeps the temporary route visible after denial', async () => {
   expect(reload).not.toHaveBeenCalled();
 });
 
+it.each([true, false])(
+  'ignores a late request result after the access control is reopened (grant=%s)',
+  async (granted) => {
+    let resolve!: (value: boolean) => void;
+    request.mockReturnValueOnce(
+      new Promise<boolean>((done) => {
+        resolve = done;
+      }),
+    );
+    const user = userEvent.setup();
+    render(<SiteAccessControl tab={page()} />);
+    await user.click(screen.getByRole('button', { name: 'Site access' }));
+    await user.click(screen.getByRole('button', { name: 'Always allow on this site' }));
+    expect(screen.getByText('Waiting for Chrome…')).toBeTruthy();
+    await user.click(screen.getByRole('button', { name: 'Site access' }));
+    await user.click(screen.getByRole('button', { name: 'Site access' }));
+    await act(async () => resolve(granted));
+    expect(screen.queryByText('Access allowed on this site.')).toBeNull();
+    expect(screen.queryByText('Access not granted.')).toBeNull();
+  },
+);
+
+it('does not publish a late grant after the target page navigates', async () => {
+  let resolve!: (value: boolean) => void;
+  request.mockReturnValueOnce(
+    new Promise<boolean>((done) => {
+      resolve = done;
+    }),
+  );
+  const user = userEvent.setup();
+  const view = render(<SiteAccessControl tab={page()} />);
+  await user.click(screen.getByRole('button', { name: 'Site access' }));
+  await user.click(screen.getByRole('button', { name: 'Always allow on this site' }));
+  view.rerender(<SiteAccessControl tab={page('page-b')} />);
+  await act(async () => resolve(true));
+  expect(screen.queryByText('Access allowed on this site.')).toBeNull();
+  expect(screen.getByText(/page changed/i)).toBeTruthy();
+});
+
 it('refuses to request or reload a page that changed after opening the control', async () => {
   const user = userEvent.setup();
   const view = render(<SiteAccessControl tab={page()} />);
@@ -127,8 +177,31 @@ it('refuses to request or reload a page that changed after opening the control',
   expect(screen.getByText(/page changed/i)).toBeTruthy();
 });
 
+it('checks the live browser identity when Chrome changes tabs before React publishes it', async () => {
+  query.mockResolvedValue([{ id: 24, url: 'https://another.example/page' }]);
+  const user = userEvent.setup();
+  render(<SiteAccessControl tab={page()} />);
+  await user.click(screen.getByRole('button', { name: 'Site access' }));
+  await user.click(screen.getByRole('button', { name: 'Always allow on this site' }));
+  expect(request).not.toHaveBeenCalled();
+  expect(await screen.findByText(/page changed/i)).toBeTruthy();
+  await user.click(screen.getByRole('button', { name: 'Reload page' }));
+  expect(reload).not.toHaveBeenCalled();
+});
+
+it('checks the top-frame document before granting or reloading a stale same-URL page', async () => {
+  getFrame.mockResolvedValue({ documentId: 'new-document', url: 'https://example.org/a' });
+  const user = userEvent.setup();
+  render(<SiteAccessControl tab={page()} />);
+  await user.click(screen.getByRole('button', { name: 'Site access' }));
+  await user.click(screen.getByRole('button', { name: 'Always allow on this site' }));
+  expect(request).not.toHaveBeenCalled();
+  await user.click(screen.getByRole('button', { name: 'Reload page' }));
+  expect(reload).not.toHaveBeenCalled();
+});
+
 it('explains unsupported APIs and non-web pages without making requests', async () => {
-  vi.stubGlobal('chrome', { tabs: { reload } });
+  vi.stubGlobal('chrome', { tabs: { reload, query }, webNavigation: { getFrame } });
   const user = userEvent.setup();
   const view = render(<SiteAccessControl tab={page()} />);
   await user.click(screen.getByRole('button', { name: 'Site access' }));

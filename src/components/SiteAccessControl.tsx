@@ -5,6 +5,7 @@ import {
   reloadSiteAccessTarget,
   requestPersistentSiteAccess,
   siteAccessTarget,
+  verifyLiveSiteAccessTarget,
 } from '@/lib/permissions/site-access';
 import { Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
 import { Globe2 } from 'lucide-react';
@@ -38,13 +39,18 @@ export function SiteAccessControl({ tab }: { tab: ActiveTabInfo }) {
   const [status, setStatus] = useState<AccessStatus>('idle');
   const current = siteAccessTarget(tab);
   const currentRef = useRef(current);
+  const sessionSeq = useRef(0);
   currentRef.current = current;
 
   useEffect(() => {
-    if (open && captured && !isSameSiteAccessTarget(captured, current)) setStatus('stale');
+    if (open && captured && !isSameSiteAccessTarget(captured, current)) {
+      sessionSeq.current += 1;
+      setStatus('stale');
+    }
   }, [open, captured, current]);
 
   const onOpenChange = (nextOpen: boolean) => {
+    sessionSeq.current += 1;
     setOpen(nextOpen);
     if (nextOpen) {
       setCaptured(currentRef.current);
@@ -53,6 +59,7 @@ export function SiteAccessControl({ tab }: { tab: ActiveTabInfo }) {
   };
 
   const request = async () => {
+    const session = sessionSeq.current;
     if (!captured) {
       setStatus('unavailable');
       return;
@@ -62,11 +69,20 @@ export function SiteAccessControl({ tab }: { tab: ActiveTabInfo }) {
       return;
     }
     setStatus('requesting');
+    const live = await verifyLiveSiteAccessTarget(captured);
+    if (session !== sessionSeq.current) return;
+    if (live !== 'current') {
+      setStatus(live);
+      return;
+    }
     const result = await requestPersistentSiteAccess(captured);
-    setStatus(isSameSiteAccessTarget(captured, currentRef.current) ? result : 'stale');
+    if (session === sessionSeq.current && isSameSiteAccessTarget(captured, currentRef.current)) {
+      setStatus(result);
+    }
   };
 
   const reload = async () => {
+    const session = sessionSeq.current;
     if (!captured) {
       setStatus('unavailable');
       return;
@@ -75,14 +91,16 @@ export function SiteAccessControl({ tab }: { tab: ActiveTabInfo }) {
       setStatus('stale');
       return;
     }
+    const live = await verifyLiveSiteAccessTarget(captured);
+    if (session !== sessionSeq.current) return;
+    if (live !== 'current') {
+      setStatus(live);
+      return;
+    }
     const result = await reloadSiteAccessTarget(captured);
-    setStatus(
-      isSameSiteAccessTarget(captured, currentRef.current)
-        ? result === 'failed'
-          ? 'reload-failed'
-          : result
-        : 'stale',
-    );
+    if (session === sessionSeq.current && isSameSiteAccessTarget(captured, currentRef.current)) {
+      setStatus(result === 'failed' ? 'reload-failed' : result);
+    }
   };
 
   return (

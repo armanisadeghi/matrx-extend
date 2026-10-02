@@ -2,7 +2,7 @@
   "schema": 1,
   "date": "2026-10-02",
   "defect": "EXT-D-0078",
-  "status": "source implemented and locally verified; independent source, CI, and native product checks pending",
+  "status": "source repair verified locally; fresh independent source, CI, and native product checks pending",
   "linked_diagnosis": "docs/stabilization/reports/prepare-denial-diagnosis-20261002.json",
   "design_contract_commit": "4608aa33",
   "native_probe": {
@@ -20,6 +20,15 @@
     "limits": "This probe establishes the API and grant scope, not the final recovery UI or all origins. The test button was ephemeral DevTools-inserted DOM, not product code. It did not test a denial choice or an in-flight stalled Prepare resumption.",
     "cleanup": "The explicit grant restored the profile's original Always on setting. The isolated browser exited, no profile process remained, and the resource guard ended valid.",
     "journal": "docs/stabilization/resource-journals/site-access-request-probe-20261002-01.jsonl"
+  },
+  "awaited_gesture_probe": {
+    "run_id": "site-access-await-gesture-20261002-01",
+    "purpose": "Adjudicate independent source peer B1: whether a live Chrome tab/frame read may precede permissions.request without losing the direct user gesture.",
+    "setup": "In the same isolated frozen keyed-extension profile, set nuxt.com to Ask on every visit and reload. A real clicked ephemeral extension-page button awaited chrome.tabs.query and chrome.webNavigation.getFrame, then requested https://nuxt.com/*.",
+    "observations": "Chrome displayed its nuxt.com Allow/Deny sheet after both awaits. Deny resolved false; a second real click and Allow resolved true, restoring the original Always on site grant. The extension-page frame lacked a documentId, which does not prove a target-page identity result; the observation specifically proves the awaited user gesture survives these API reads in Chrome 149.",
+    "conclusion": "The product can verify the live active tab URL and top-frame document before a user-clicked persistent request, then call permissions.request in that same handler. It must still feature-detect and visibly handle browsers where the request is unavailable.",
+    "cleanup": "The original persistent site setting was restored, isolated Chrome exited, no owned profile process remained, and the resource guard terminal decision was valid.",
+    "journal": "docs/stabilization/resource-journals/site-access-await-gesture-20261002-01.jsonl"
   },
   "revised_design_contract": {
     "review": "Addresses B1/B3 from docs/stabilization/reports/site-access-plan-peer-20261002.json. B2 is satisfied by a neutral, always-discoverable shell control available to every page action, without claiming to detect caller-specific blockage or adding a pending-call bus.",
@@ -42,7 +51,10 @@
     "connected_green": "Guarded site-access-connected-20261002-02 passed 16/16 tests across site-access-recovery and prepare-lifecycle, including a pending old Prepare call, explicit page reload, fresh success without requesting persistent permission, and a late old result ignored. Prior connected attempt -01 was preflight refused due host resource pressure and ran no tests.",
     "compile": "Guarded site-access-compile-20261002-02 passed tsc --noEmit. Compile -01 admitted but failed on a test-only unsupported toBeDisabled matcher; it was corrected before -02.",
     "lint": "Targeted Biome checked all owned source/test files with no errors; it reported the pre-existing App.tsx DataView shadow-name warning only.",
-    "remaining": "Independent source peer, automatic CI build, and native new-product UI verification remain. The structural red is not represented as a behavioral failing-then-passing test; actual pre-fix native restricted Prepare failure is in the linked diagnosis."
+    "source_peer_round1": "Independent source review at 269c67db found two important gaps: rendered-tab identity could lag Chrome before grant/reload, and a late request completion could overwrite a reopened control. Repair adds live Chrome tab/frame verification at the action boundary and per-open session sequencing.",
+    "repair_tests": "Guarded site-access-race-tests-20261002-01 passed 26/26 across site-access recovery, Prepare lifecycle, and SEO navigation. Added browser-state-before-React-publish and same-URL new-document refusals, late Allow/Deny after reopen/navigation, and shared control plus SEO explicit reload/fresh audit. The direct user-gesture assumption was independently probed in real Chrome above.",
+    "repair_compile": "Guarded site-access-race-compile-20261002-01 passed tsc --noEmit; targeted Biome found no errors on the repaired source/tests.",
+    "remaining": "Fresh independent source peer, automatic CI build, and native new-product UI verification remain. The structural red is not represented as a behavioral failing-then-passing test; actual pre-fix native restricted Prepare failure is in the linked diagnosis."
   },
   "implementation_constraints": [
     "Preserve temporary activeTab success when persistent permissions.contains is false.",

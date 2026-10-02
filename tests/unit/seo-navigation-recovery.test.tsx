@@ -2,6 +2,7 @@
 
 import type { SeoAudit } from '@/lib/seo/audit';
 import { act, cleanup, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { afterEach, expect, it, vi } from 'vitest';
 
 vi.mock('@/lib/supabase/queries', () => ({
@@ -12,7 +13,19 @@ vi.mock('@/components/CopyMenu', () => ({ CopyMenu: () => null }));
 vi.mock('@/features/seo/AiRecommendations', () => ({ AiRecommendations: () => null }));
 vi.mock('@/features/seo/SeoVerdict', () => ({ SeoVerdict: () => null }));
 
+import { SiteAccessControl } from '@/components/SiteAccessControl';
 import { SeoView } from '@/features/seo/SeoView';
+import { useActiveTab } from '@/hooks/use-active-tab';
+
+function SeoWithSiteAccess() {
+  const tab = useActiveTab();
+  return (
+    <>
+      <SiteAccessControl tab={tab} />
+      <SeoView />
+    </>
+  );
+}
 
 function event() {
   const listeners = new Set<(...args: unknown[]) => void>();
@@ -118,6 +131,43 @@ async function startOverlappingAudits() {
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
+});
+
+it('shares the site access control with SEO and re-audits only the fresh document after explicit reload', async () => {
+  const updated = event();
+  const committed = event();
+  const tab = { id: 41, active: true, url: oldSeo.url, title: oldSeo.title.value };
+  let documentId = 'first-document';
+  const sendMessage = vi.fn().mockResolvedValue({ __error: 'No capture' });
+  const reload = vi.fn(async () => {
+    documentId = 'second-document';
+    committed.fire({ tabId: 41, frameId: 0, documentId });
+    updated.fire(41, { status: 'complete' }, tab);
+  });
+  vi.stubGlobal('chrome', {
+    tabs: {
+      query: async () => [{ ...tab }],
+      reload,
+      sendMessage,
+      onActivated: event(),
+      onUpdated: updated,
+    },
+    permissions: { request: vi.fn() },
+    windows: { onFocusChanged: event() },
+    webNavigation: {
+      getFrame: async () => ({ documentId, url: tab.url, errorOccurred: false }),
+      onBeforeNavigate: event(),
+      onCommitted: committed,
+      onErrorOccurred: event(),
+    },
+  });
+  await act(async () => render(<SeoWithSiteAccess />));
+  const user = userEvent.setup();
+  await user.click(screen.getByRole('button', { name: 'Site access' }));
+  await user.click(screen.getByRole('button', { name: 'Reload page' }));
+  expect(reload).toHaveBeenCalledWith(41);
+  expect(sendMessage.mock.calls.length).toBeGreaterThanOrEqual(2);
+  expect(chrome.permissions.request).not.toHaveBeenCalled();
 });
 
 it('restarts the audit when a settled response was discarded during a second loading event', async () => {
