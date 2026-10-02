@@ -14,7 +14,9 @@
   "verification": {
     "static_syntax": "node --check on the three changed .mjs files passed",
     "format": "targeted Biome formatting applied",
+    "policy_diff": "Exactly one allowedCommands entry was added for node --test tests/browser/notes-member-credential.test.mjs; no threshold, concurrency, or other command changed",
     "unit": "Four synthetic node:test cases passed under the exact resource-guard command. Run notes-private-credential-unit-20261002-01 had RESOURCE_ADMITTED, child exit 0, and RESOURCE_FINAL_DECISION valid (resourceInvalid false). Journal: docs/stabilization/resource-journals/notes-private-credential-unit-20261002-01.jsonl",
+    "unit_assertions": "Positive: owned mode-0600 regular JSON with the expected email fingerprint returns only email, password, and fingerprint. Negative: wrong fingerprint, broad permissions, final symlink, malformed/expanded fields, empty password, invalid email, missing path, and missing expected fingerprint all refuse with fixed diagnostics; malformed input is absent from the error stack.",
     "native": "not run in this lane; no actual private credential was read"
   },
   "remaining": "A separately authorized fresh native member run must supply an existing permitted private fixture after credential remediation. Successful source checks do not establish real login, Notes behavior, or defect closure."
