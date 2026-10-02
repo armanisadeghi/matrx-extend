@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "review": "fresh independent review of repair commit 94bfae67 for EXT-D-0076",
+  "verdict_a": {
+    "status": "PARTIAL",
+    "finding": "The original native guest failure is well evidenced, but the repaired UI outcome is not verified natively.",
+    "evidence": [
+      "docs/stabilization/runs/seo-boundary-20261002T142200Z.acceptance.json records Airbnb tab and frame complete with matching URL and no frame error after committed, second loading, completed; the UI still showed spinner, disabled Audit this page, no title, and no visible error/identity remedy.",
+      "docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json identifies the loaded artifact as frozen 0.2.173 with tree hash 494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064; its two failures predate the repair.",
+      "No native run on a build containing 94bfae67 was found. The native data therefore cannot establish that the repaired guest UI settles to current results or an actionable error."
+    ],
+    "limits": [
+      "Member and admin modes remain unverified, and the existing acceptance artifact marks the larger SEO cases unverified.",
+      "An ordinary successful automatic audit on the repaired source is not demonstrated by this browser evidence."
+    ]
+  },
+  "verdict_b": {
+    "status": "PARTIAL",
+    "finding": "The source repair addresses the evidenced same-key restart defect and the focused guard is meaningful, but the required stale-result and successful-result behaviors are not fully guarded.",
+    "evidence": [
+      "src/features/seo/SeoView.tsx increments auditRunRef and clears the auto-run key when identity is absent; completion, error, and finally paths are fenced by run generation, tab, URL, and current identity.",
+      "The new guard drives SeoView and Chrome tab/navigation events. Diagnosis records guarded RED as two captures instead of three and guarded GREEN plus compile success; resource journals corroborate child failure for RED and exit 0 for GREEN and compile.",
+      "The test resolves the invalidated capture before the ready event launches the replacement. It asserts the replacement produces a visible error and leaves Audit this page enabled, but does not resolve the old capture after a newer result or assert a successful SEO title on the repaired automatic path.",
+      "The existing frozen acceptance artifact demonstrates ordinary manual SEO audits on 0.2.173, not the repaired automatic navigation path."
+    ],
+    "required_follow_up": [
+      "Add a controlled overlap assertion where the old capture resolves after the replacement result and prove it cannot replace that result or clear its busy state.",
+      "Obtain current-source/native evidence that the original navigation sequence settles to a correct title or visible actionable error, and that an ordinary successful automatic audit still renders its current-page title."
+    ]
+  },
+  "scope": "No product edits, tests, builds, release, or browser actions performed by this verifier."
+}
