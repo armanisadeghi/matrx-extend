@@ -322,7 +322,7 @@ export function handleToolEvent(
 
 /**
  * The running agent drained one or more queued inbox items at a turn boundary
- * (turn-boundary inbox — /Users/armanisadeghi/code/common-docs/systems/agents/execution-runtime/TURN-BOUNDARY-INBOX.md). For each item: flip its
+ * (turn-boundary inbox — /Users/armanisadeghi/code/common-docs/systems/architecture/execution-runtime/TURN-BOUNDARY-INBOX.md). For each item: flip its
  * floating "waiting" card to delivered, and slot the message into the
  * transcript as a real user bubble immediately above the still-streaming
  * assistant message so ordering reads naturally (… → user steer → assistant
@@ -949,7 +949,7 @@ export function useChatStream() {
       // Resolve the active tab ONCE — this Tab is the source of truth for
       // every tab-id field on the wire (page_brief.tab_id, tab_state.*,
       // client.state["browser-dom"].current_tab_id, STREAM_START.assignedTabId).
-      // See /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §1.
+      // See /Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md §1.
       const activeTab = await resolveActiveTab();
       // Highlights the user attached via the Highlight tab (sticky until they
       // clear the tray). Fetched once per send so the agent sees the exact
@@ -1470,8 +1470,8 @@ export function useChatStream() {
   }, [sendMessage]);
 
   // Interrupt the running turn and immediately redirect with a new message —
-  // the "stop & send" affordance. Server-managed (/Users/armanisadeghi/code/common-docs/systems/agents/execution-runtime/TURN-BOUNDARY-INBOX.md,
-  // /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md #6): aborting the stream makes the
+  // the "stop & send" affordance. Server-managed (/Users/armanisadeghi/code/common-docs/systems/architecture/execution-runtime/TURN-BOUNDARY-INBOX.md,
+  // /Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md #6): aborting the stream makes the
   // server persist the partial assistant turn + an auto "[interrupted]" marker;
   // the fresh run then loads that history and answers the redirect. Distinct
   // from the inbox, which waits for the turn boundary on the SAME run.
@@ -1484,7 +1484,7 @@ export function useChatStream() {
       // 2. Brief grace period so the server flushes that partial turn (with its
       //    interrupted-marker) BEFORE the new run loads history. There's no
       //    synchronous /interrupt endpoint yet, so the ordering is handled with
-      //    a short wait (/Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md #6 — "send the
+      //    a short wait (/Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md #6 — "send the
       //    redirect after the aborted stream has fully closed").
       await new Promise((r) => setTimeout(r, 350));
       // 3. Send the redirect as a normal fresh run on the same conversation.

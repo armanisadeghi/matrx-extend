@@ -2,7 +2,7 @@
  * Turn-boundary inbox — client-side state for messages the user queues into a
  * still-running agent run.
  *
- * The contract (/Users/armanisadeghi/code/common-docs/systems/agents/execution-runtime/TURN-BOUNDARY-INBOX.md): while a run is streaming for a
+ * The contract (/Users/armanisadeghi/code/common-docs/systems/architecture/execution-runtime/TURN-BOUNDARY-INBOX.md): while a run is streaming for a
  * conversation, the user can keep typing and "send" — instead of starting a
  * second run we POST the text to `/ai/conversations/{id}/inbox`. The running
  * agent drains it at its next natural pause and answers it on the SAME stream.
@@ -17,7 +17,7 @@
  *
  * Ephemeral by design — NOT persisted. A reopened side panel loses local items;
  * rebuilding them needs a server "list pending inbox items" endpoint that does
- * not exist yet (see /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md).
+ * not exist yet (see /Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md).
  */
 
 import { create } from 'zustand';

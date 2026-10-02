@@ -7,7 +7,7 @@ description: "Brokered short-lived provider credentials client in matrx-extend (
 
 The primitive lives at [src/lib/broker/](../../../src/lib/broker/) (read its
 FEATURE.md). Cross-repo contract:
-`/Users/armanisadeghi/code/common-docs/systems/platform/token-broker/FEATURE.md`.
+`/Users/armanisadeghi/code/common-docs/systems/architecture/token-broker/FEATURE.md`.
 
 ## Rule 0 — does the server support the audience?
 

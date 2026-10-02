@@ -192,4 +192,4 @@ this limitation in extension code; let the server-side fix arrive.
 ## Pointer
 
 For the full topology and the parallel inbound channels, see
-[`/Users/armanisadeghi/code/common-docs/systems/clients/extension/CHANNELS.md`](/Users/armanisadeghi/code/common-docs/systems/clients/extension/CHANNELS.md).
+[`/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHANNELS.md`](/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHANNELS.md).

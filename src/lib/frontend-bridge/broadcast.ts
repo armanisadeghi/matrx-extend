@@ -42,7 +42,7 @@
  * extension build talk to an OLD frontend and vice versa — the two halves of
  * this bridge ship on independent release trains, and the wire is the only
  * thing holding them together. Contract:
- * common-docs/systems/clients/extension/CHANNELS.md §4.
+ * common-docs/systems/apps/extension/CHANNELS.md §4.
  *
  * THE MANAGER IS THE REALM'S, NOT THIS MODULE'S. This file used to build its
  * own `createRealtimeManager`, which was a second manager (and therefore a

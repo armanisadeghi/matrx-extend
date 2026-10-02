@@ -129,4 +129,4 @@ Discovery in place today (see `src/lib/desktop/discovery.ts`):
 For the full topology, the FORBIDDEN domain list (de-spaced forms of
 `m a t r x . a p p` and `m a t r i x . c o m` — never reference either),
 and the parallel channels (A and C), see
-[`/Users/armanisadeghi/code/common-docs/systems/clients/extension/CHANNELS.md`](/Users/armanisadeghi/code/common-docs/systems/clients/extension/CHANNELS.md).
+[`/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHANNELS.md`](/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHANNELS.md).

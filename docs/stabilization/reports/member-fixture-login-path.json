@@ -26,7 +26,7 @@
     "ai-matrx/app/oauth/consent/ConsentClient.tsx lines 226-266",
     "ai-matrx/app/(auth-pages)/login/actions.ts (password form uses signInWithPassword)",
     "matrx-extend/src/lib/auth/flow.ts lines 1-9, 70-142, 403-427",
-    "common-docs/systems/clients/extension/ARCHITECTURE.md section Authentication",
+    "common-docs/systems/apps/extension/ARCHITECTURE.md section Authentication",
     "matrx-oauth and supabase skills"
   ]
 }

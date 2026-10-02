@@ -533,7 +533,7 @@ export function usePilotChatStream() {
       const manualScrape = useScrapeStore.getState().current;
       const autoScrape = useAutoScrapeStore.getState().current;
       // One tab query per send; both payloads reference the same Tab.
-      // See /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §1.
+      // See /Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md §1.
       const activeTab = await resolveActiveTab();
       let built: ChatRequestContext = { values: {}, rows: [], context: undefined, withheld: [] };
       try {

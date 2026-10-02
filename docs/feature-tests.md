@@ -1650,7 +1650,7 @@ Every entry follows this shape:
     tools render the inline approval card before each call (privileged
     tools always confirm).
 
-### Cryptographic run receipts (/Users/armanisadeghi/code/common-docs/systems/clients/extension/STATE.md roadmap #8)
+### Cryptographic run receipts (/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md roadmap #8)
 - **What it does:** every tool call gets signed with a device-bound
   Ed25519 key, appended to a local audit log, and exposed via a
   Shield-icon "Show receipt" button on every timeline row.
@@ -1794,7 +1794,7 @@ Every entry follows this shape:
   resume can't be attempted (missing ids, `matrx.stream.resume.enabled` flag
   off, conversation no longer selected, or the resume call itself errors)
   does it fall back to clearing the spinner and showing the amber Retry
-  banner (full-turn replay). See /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md and
+  banner (full-turn replay). See /Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md and
   src/lib/stream/resume.ts.
 - **Where to test:** chat surface (Assistant + Pilot). Hard to trigger
   naturally; force it.

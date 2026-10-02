@@ -11,7 +11,7 @@
  * `chrome.tabs.query({active:true})` twice introduces a tiny race where
  * the user can switch tabs between the two queries and the request goes
  * up with mixed identities — `page_brief` from one tab, discovery state
- * from another. See /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §1.
+ * from another. See /Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md §1.
  *
  * Returns null when the query fails (e.g. no window focused). Callers
  * must tolerate that — the builders all fall through to their own

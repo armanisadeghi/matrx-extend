@@ -4,7 +4,7 @@
  * `ContextRulesChip` from `@ai-matrx/agents/context/react`, fed by this
  * extension's stores.
  *
- * Contract: /Users/armanisadeghi/code/common-docs/systems/scopes-context/context-delivery/RULES.md
+ * Contract: /Users/armanisadeghi/code/common-docs/systems/account/scopes-context/context-delivery/RULES.md
  *
  * - Rows are resolved by the SAME function the send path uses
  *   (`contextRowSources` + `resolveContextRow` with the saved rules), so the

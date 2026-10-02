@@ -17,7 +17,7 @@ export interface BriefBlock {
   /**
    * Reasons confidence dropped. Empty array when confidence === "high".
    *
-   * Enumerated flag values (keep in sync with /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md):
+   * Enumerated flag values (keep in sync with /Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md):
    *   - `captcha_present`       — a VISIBLE recaptcha/hcaptcha/turnstile/arkose
    *                                iframe (non-zero rect, display:block) is
    *                                on-screen. Lazy-loaded invisible shims do

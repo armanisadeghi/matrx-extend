@@ -4,7 +4,7 @@
   "cause": "The isolated admin sign-in runner required the apex web origin, but its real login navigation landed on the canonical www origin before credential entry. Its dashboard wait used the same stale apex requirement.",
   "evidence": [
     "docs/stabilization/runs/isolated-admin-signin-002.json records https://www.aimatrx.com/login and web_origin_mismatch at web_url_check before credential_file_read.",
-    "common-docs/systems/clients/extension/ARCHITECTURE.md specifies the exact www.aimatrx.com callback origin.",
+    "common-docs/systems/apps/extension/ARCHITECTURE.md specifies the exact www.aimatrx.com callback origin.",
     "tests/browser/vault-realbrowser-acceptance.cjs uses https://www.aimatrx.com for origin checks and real login navigation."
   ],
   "sibling_census": {

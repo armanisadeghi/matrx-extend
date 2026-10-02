@@ -152,7 +152,7 @@ export const iamDb = () => getSupabase().schema('iam');
 /**
  * `media` — the capture ladder's `capture_handoff` queue. READ-ONLY from this
  * client. There is no outbound channel from aidream to the extension
- * (common-docs/systems/clients/extension/CHANNELS.md §2), so the extension
+ * (common-docs/systems/apps/extension/CHANNELS.md §2), so the extension
  * learns about work by reading this table directly; it never writes a row
  * here, because `/capture/*` is the one door that runs the ladder law.
  */

@@ -91,7 +91,7 @@ export async function buildContextV2Bundled(
   // Caller (use-chat-stream / use-pilot-chat-stream) resolves the active
   // tab ONCE per send and threads it in. Falling back to our own query is
   // only for legacy / one-off callers; the chat path always passes one.
-  // See /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §1 for why this matters.
+  // See /Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md §1 for why this matters.
   let tabId: number | null = null;
   let tabMeta: chrome.tabs.Tab | null = inputs.activeTab ?? null;
   if (tabMeta) {

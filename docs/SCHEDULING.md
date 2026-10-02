@@ -462,5 +462,5 @@ door) rather than opening a second channel on `sch_task`.
 
 - DB / schema / migration questions: this doc + the migration file.
 - Agent runtime / streaming / how runs actually execute: [`src/lib/agenda/runner.ts`](../src/lib/agenda/runner.ts) and [`src/lib/agenda/scanner.ts`](../src/lib/agenda/scanner.ts) in matrx-extend.
-- Cross-repo integration shape: [`/Users/armanisadeghi/code/common-docs/systems/clients/extension/CHANNELS.md`](/Users/armanisadeghi/code/common-docs/systems/clients/extension/CHANNELS.md).
+- Cross-repo integration shape: [`/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHANNELS.md`](/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHANNELS.md).
 - Naming conventions for future `sch_*` tables: §1 of [`migrations/2026_05_10_sch_v0.sql`](../migrations/2026_05_10_sch_v0.sql) (the header doc-comment is the canon).

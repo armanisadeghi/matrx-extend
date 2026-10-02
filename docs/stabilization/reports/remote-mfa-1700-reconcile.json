@@ -41,8 +41,8 @@
     "local_browser_wire_drift": "The shared LOCAL-EXECUTOR.md completion contract currently closes inspect_login data at origin, form and challenge. It does not include mfa_selector. The extension completion schema now admits that extra field; coordinate the canonical wire contract and downstream server projection before treating it as an established public contract. No cross-repo code or contract was edited in this lane.",
     "selector_use": "The existing authenticator command separately requires an explicit code_selector and fresh approval/claim. The inspection selector must not itself authorize credential or TOTP materialization.",
     "evidence": [
-      "/Users/armanisadeghi/code/common-docs/systems/clients/extension/STATE.md:198-207",
-      "/Users/armanisadeghi/code/common-docs/systems/clients/extension/DECISIONS.md:35-43",
+      "/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md:198-207",
+      "/Users/armanisadeghi/code/common-docs/systems/apps/extension/DECISIONS.md:35-43",
       "/Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/LOCAL-EXECUTOR.md:190-194"
     ]
   },

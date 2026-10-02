@@ -4,7 +4,7 @@
  *
  * WHY THE CLIENT READS THE TABLE DIRECTLY. There is no outbound channel from
  * aidream to the extension — no server push, no server WebSocket
- * (`common-docs/systems/clients/extension/CHANNELS.md` §2). The durable row IS
+ * (`common-docs/systems/apps/extension/CHANNELS.md` §2). The durable row IS
  * the channel: the server writes it, every client watches it. Reads come
  * straight from Supabase (RLS-scoped, org-filtered); every WRITE goes back
  * through `/capture/*` (see `api.ts`).

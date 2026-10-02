@@ -21,7 +21,7 @@ build read the bare `BridgeEnvelope` off the wire). The MANAGER is the service
 worker realm's, from `src/lib/realtime/host.ts` — this module must never build
 one of its own: a second manager is a second write ledger, and the scheduler
 host shares this realm. Contract:
-`common-docs/systems/clients/extension/CHANNELS.md` §4.
+`common-docs/systems/apps/extension/CHANNELS.md` §4.
 
 Requests and replies preserve `requestId`, including send failure, timeout,
 and disconnect paths. The event string is contractual and byte-matches

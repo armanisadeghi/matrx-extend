@@ -24,7 +24,7 @@ export interface ContextBuildInputs {
    * `context.tab_state.*`, `context.page_brief.tab_id`, and
    * `client.state["browser-dom"].current_tab_id` referencing the SAME
    * Tab even when the user switches mid-send. See
-   * /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §1.
+   * /Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md §1.
    *
    * When omitted, the builder falls back to its own query — kept for
    * tests and one-off invocations that don't have a tab handy.
@@ -56,7 +56,7 @@ export interface ContextBuildInputs {
    * strings, never objects, never content blocks) only when non-empty. The
    * server resolves the ids against the user's registered resources, names the
    * files for the agent, and injects the `google_workspace` tool for that turn.
-   * See /Users/armanisadeghi/code/common-docs/systems/clients/extension/WIRE_CONTRACT.md §2 (directive keys: /Users/armanisadeghi/code/common-docs/systems/scopes-context/context-delivery/RULES.md) and src/state/google-files.ts.
+   * See /Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md §2 (directive keys: /Users/armanisadeghi/code/common-docs/systems/account/scopes-context/context-delivery/RULES.md) and src/state/google-files.ts.
    */
   googleFileIds?: string[] | null;
 }
