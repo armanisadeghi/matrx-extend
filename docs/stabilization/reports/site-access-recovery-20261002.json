@@ -54,7 +54,21 @@
     "source_peer_round1": "Independent source review at 269c67db found two important gaps: rendered-tab identity could lag Chrome before grant/reload, and a late request completion could overwrite a reopened control. Repair adds live Chrome tab/frame verification at the action boundary and per-open session sequencing.",
     "repair_tests": "Guarded site-access-race-tests-20261002-01 passed 26/26 across site-access recovery, Prepare lifecycle, and SEO navigation. Added browser-state-before-React-publish and same-URL new-document refusals, late Allow/Deny after reopen/navigation, and shared control plus SEO explicit reload/fresh audit. The direct user-gesture assumption was independently probed in real Chrome above.",
     "repair_compile": "Guarded site-access-race-compile-20261002-01 passed tsc --noEmit; targeted Biome found no errors on the repaired source/tests.",
-    "remaining": "Fresh independent source peer, automatic CI build, and native new-product UI verification remain. The structural red is not represented as a behavioral failing-then-passing test; actual pre-fix native restricted Prepare failure is in the linked diagnosis."
+    "fresh_source_peer": "Independent report docs/stabilization/reports/site-access-final-source-peer-20261002.json accepted repaired source 65f6840a: B1/B2 addressed, connected SEO recovery addressed with a test limit, no material source breakage. Product native outcome remains partial.",
+    "ci": "Main-push CI 37039513091 attempt 1 at 2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a succeeded with full checks and uploaded the development test artifact below. This source includes 65f6840a and the later dependency sync and source-review reports.",
+    "remaining": "Independent native new-product UI verification remains. The structural red is not represented as a behavioral failing-then-passing test; actual pre-fix native restricted Prepare failure is in the linked diagnosis."
+  },
+  "imported_development_artifact": {
+    "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
+    "run_id": 37039513091,
+    "run_attempt": 1,
+    "artifact_id": 11241399881,
+    "github_digest": "sha256:e3257d08a49dbcb735c167cf9c715e7f1e0f25d81965812583983c8d7802b303",
+    "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
+    "extension_path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a/37039513091-1/chrome-mv3",
+    "receipt_path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a/37039513091-1/local-dev-receipt.json",
+    "import_status_path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a/37039513091-1/import-status.json",
+    "source_claim_at_import": "current_pushed_source: origin/main and local HEAD matched the source SHA, tracked tree was clean, and untracked runner inputs were absent. A subsequent report-only push does not change the imported build; native verification must report exact source classification at result time."
   },
   "implementation_constraints": [
     "Preserve temporary activeTab success when persistent permissions.contains is false.",
