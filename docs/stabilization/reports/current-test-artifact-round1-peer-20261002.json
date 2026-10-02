@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "lane": "independent_source_reverification_sol_medium_zero_authorship",
+  "reviewed_commit": "f2aee9a8",
+  "reviewed_contract": "docs/stabilization/reports/current-test-artifact-20261002.json",
+  "prior_review": "docs/stabilization/reports/current-test-artifact-final-peer-20261002.json",
+  "finding_verdicts": [
+    {
+      "id": "native_result_loses_source_provenance",
+      "status": "ADDRESSED",
+      "evidence": "verifyImportedNativeEvidence requires the run-qualified path and sibling local receipt, checks the original CI receipt and provenance against their import-time SHA-256 values, revalidates manifest/tree/run relationship, fetches origin/main, and records HEAD, tracked dirt and untracked runner inputs. The SEO guest result calls it after the native run and marks provenance unverified on failure. Its returned object cites source SHA, run ID/attempt, artifact ID, GitHub archive digest and tree hash."
+    },
+    {
+      "id": "original_ci_receipt_not_fully_validated",
+      "status": "ADDRESSED",
+      "evidence": "verifyDownloadedTree now requires schema_version 1, a parseable canonical observedAt timestamp and a hosted matrx-extend/.output/chrome-mv3 absolute path. The focused test rejects malformed examples at that verifier boundary."
+    }
+  ],
+  "verdict_a_live_outcome": {
+    "status": "PARTIAL_LIVE_PENDING",
+    "source_contract": "PASS",
+    "evidence": "The importer authenticates a completed successful main-push CI run, workflow and exact artifact metadata, then compares the downloaded ZIP with GitHub's SHA-256 digest and the unpacked tree with the preserved CI receipt. The native result preserves the imported identity and reclassifies source drift at result time.",
+    "remaining": "The workflow upload is an uncommitted draft in the shared checkout. No successful pushed main CI artifact, authenticated download/import, or native browser result exists in this review. GitHub ZIP layout and digest behavior remain live-pending; the artifact cannot yet support an observed current-source claim."
+  },
+  "verdict_b_quality": {
+    "status": "PASS_SOURCE_WITH_LIVE_LIMIT",
+    "evidence": "The source repair uses the existing receipt and tree-hash primitives, rejects changed CI evidence, keeps Store eligibility false, and fails the native report closed when imported provenance cannot be checked. The canonical focused test includes positive binding and negative drift/tamper cases; its recorded 9/9 pass and compile pass were not rerun in this read-only review.",
+    "new_blocking_findings": []
+  },
+  "review_limits": "Independent read-only source review. No build, test, browser run, release, GitHub artifact import, or credential use. Shared workflow edit was not modified."
+}
