@@ -696,7 +696,7 @@ async function webSignIn(page, config) {
 }
 
 async function memberPanelIdentity(panel, expectedEmail) {
-  const state = await evaluate(
+  return evaluate(
     panel,
     `(() => {
       const account = [...document.querySelectorAll('button[aria-expanded]')]
@@ -709,6 +709,7 @@ async function memberPanelIdentity(panel, expectedEmail) {
         'matrx.auth.accessToken', 'matrx.user.profile', 'matrx.user.isAdmin',
       ]).then((stored) => ({
         emailMatches: email === ${JSON.stringify(`Email${expectedEmail}`)},
+        userId: stored['matrx.user.profile']?.id ?? null,
         userProfilePresent: Boolean(stored['matrx.user.profile']?.id),
         accessTokenPresent: typeof stored['matrx.auth.accessToken'] === 'string',
         isAdmin: stored['matrx.user.isAdmin'] === true ? true
@@ -718,15 +719,116 @@ async function memberPanelIdentity(panel, expectedEmail) {
       }));
     })()`,
   );
-  if (state?.isAdmin === true) fail('member_identity_is_admin');
-  if (
-    state?.emailMatches &&
-    state.isAdmin === false &&
-    state.userProfilePresent &&
-    state.accessTokenPresent
-  )
-    report.observations.canonical_extension_admin_check = 'false';
-  return state;
+}
+
+function observeCanonicalAdminCheck(panel, supabaseOrigin) {
+  const requests = new Map();
+  const offRequest = panel.on('Network.requestWillBeSent', (event) => {
+    try {
+      const url = new URL(event.request.url);
+      const profile = Object.entries(event.request.headers ?? {}).find(
+        ([key]) => key.toLowerCase() === 'accept-profile',
+      )?.[1];
+      const userMatch = /^eq\.([0-9a-f-]{36})$/i.exec(url.searchParams.get('user_id') ?? '');
+      if (
+        url.origin === supabaseOrigin &&
+        url.pathname === '/rest/v1/admins' &&
+        event.request.method === 'GET' &&
+        String(profile).toLowerCase() === 'admin' &&
+        url.searchParams.get('select') === 'user_id' &&
+        UUID.test(userMatch?.[1] ?? '')
+      ) {
+        requests.set(event.requestId, {
+          userId: userMatch[1],
+          status: null,
+          rowCount: null,
+          outcome: 'pending',
+        });
+      }
+    } catch {
+      // Ignore unrelated events without retaining their text or headers.
+    }
+  });
+  const offResponse = panel.on('Network.responseReceived', (event) => {
+    const request = requests.get(event.requestId);
+    if (request) request.status = event.response.status;
+  });
+  const offFinished = panel.on('Network.loadingFinished', (event) => {
+    const request = requests.get(event.requestId);
+    if (!request) return;
+    void panel
+      .send('Network.getResponseBody', { requestId: event.requestId })
+      .then((body) => {
+        try {
+          const source = body.base64Encoded
+            ? Buffer.from(body.body, 'base64').toString('utf8')
+            : body.body;
+          const rows = JSON.parse(source);
+          request.rowCount = Array.isArray(rows) ? rows.length : null;
+          request.outcome = Array.isArray(rows) ? 'complete' : 'invalid_body_shape';
+        } catch {
+          request.outcome = 'invalid_body';
+        }
+      })
+      .catch(() => {
+        request.outcome = 'body_unavailable';
+      });
+  });
+  const offFailed = panel.on('Network.loadingFailed', (event) => {
+    const request = requests.get(event.requestId);
+    if (request) request.outcome = 'request_failed';
+  });
+  return {
+    async start() {
+      await panel.send('Network.enable');
+      await panel.send('Network.setCacheDisabled', { cacheDisabled: true });
+    },
+    async verify(expectedUserId) {
+      if (!UUID.test(expectedUserId ?? '')) fail('member_extension_user_id_missing');
+      const result = await waitFor(
+        'canonical_admin_assignment_read',
+        () => {
+          const matching = [...requests.values()].filter(
+            (request) => request.userId === expectedUserId,
+          );
+          const successfulEmpty = matching.find(
+            (request) =>
+              request.status === 200 && request.outcome === 'complete' && request.rowCount === 0,
+          );
+          const adminRow = matching.find(
+            (request) =>
+              request.status === 200 && request.outcome === 'complete' && request.rowCount > 0,
+          );
+          const terminal = matching.find((request) => request.outcome !== 'pending');
+          return {
+            successfulEmpty: Boolean(successfulEmpty),
+            adminRow: Boolean(adminRow),
+            terminal: Boolean(terminal),
+            status: successfulEmpty?.status ?? adminRow?.status ?? terminal?.status ?? null,
+            rowCount: successfulEmpty?.rowCount ?? adminRow?.rowCount ?? terminal?.rowCount ?? null,
+          };
+        },
+        (state) =>
+          state?.successfulEmpty === true || state?.adminRow === true || state?.terminal === true,
+        60_000,
+      );
+      if (result.adminRow) fail('member_identity_is_admin');
+      if (!result.successfulEmpty) fail('canonical_admin_assignment_read_not_proven');
+      report.observations.canonical_extension_admin_check = {
+        matched_current_extension_user: true,
+        http_status: result.status,
+        returned_rows: result.rowCount,
+      };
+    },
+    async stop() {
+      offRequest();
+      offResponse();
+      offFinished();
+      offFailed();
+      await panel.send('Network.setCacheDisabled', { cacheDisabled: false }).catch(() => {});
+      await panel.send('Network.disable').catch(() => {});
+    },
+  };
 }
 
 async function selectMemberOrganizationThroughUi(panel) {
@@ -1266,18 +1368,25 @@ async function main() {
       const expectedEmail = await webSignIn(page, config);
       await click(panel, 'title', 'Settings');
       await openSection(panel, 'Account');
+      const adminCheck = observeCanonicalAdminCheck(panel, origin);
+      await adminCheck.start();
       await click(panel, 'button', 'Sign in');
-      await waitFor(
-        'extension_account_signed_in',
-        () => memberPanelIdentity(panel, expectedEmail),
-        (state) =>
-          state?.emailMatches === true &&
-          state.isAdmin === false &&
-          state.userProfilePresent === true &&
-          state.accessTokenPresent === true &&
-          state.signOutVisible === true,
-        90_000,
-      );
+      try {
+        const identity = await waitFor(
+          'extension_account_signed_in',
+          () => memberPanelIdentity(panel, expectedEmail),
+          (state) =>
+            state?.emailMatches === true &&
+            state.userProfilePresent === true &&
+            state.accessTokenPresent === true &&
+            state.signOutVisible === true,
+          90_000,
+        );
+        if (identity.isAdmin === true) fail('member_identity_is_admin');
+        await adminCheck.verify(identity.userId);
+      } finally {
+        await adminCheck.stop();
+      }
       if (ROLE === 'member' && INTERACTIVE_MEMBER) {
         await selectMemberOrganizationThroughUi(panel);
       } else {
