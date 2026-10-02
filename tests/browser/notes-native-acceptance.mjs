@@ -9,6 +9,7 @@ import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifac
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { readMemberCredential } from './notes-member-credential.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
@@ -16,6 +17,7 @@ const RECEIPT = process.env.NOTES_DEV_BUILD_RECEIPT;
 const EXPECTED_SOURCE_SHA = process.env.NOTES_EXPECTED_SOURCE_SHA;
 const ROLE = process.env.NOTES_ROLE ?? 'admin';
 const INTERACTIVE_MEMBER = process.env.NOTES_INTERACTIVE_MEMBER === '1';
+const MEMBER_CREDENTIAL_FILE = process.env.NOTES_MEMBER_CREDENTIAL_FILE;
 const OUTPUT = join(REPO, 'test-results/notes-native-acceptance.json');
 const FIXTURE_RECEIPT = join(REPO, `test-results/notes-owned-fixture-${randomUUID()}.json`);
 const ADMIN_ENV = join(homedir(), 'code/aidream/.env');
@@ -75,12 +77,14 @@ async function supabaseOrigin() {
   return url.origin;
 }
 async function privateConfig() {
+  if (ROLE === 'member' && INTERACTIVE_MEMBER && MEMBER_CREDENTIAL_FILE)
+    fail('member_login_mode_conflict');
   const stat = await lstat(PRIVATE_CONFIG).catch(() => fail('test_org_config_missing'));
   if (!stat.isFile() || (stat.mode & 0o777) !== 0o600) fail('test_org_config_not_private');
   const config = JSON.parse(
     await readFile(PRIVATE_CONFIG, 'utf8').catch(() => fail('test_org_config_missing')),
   );
-  if (ROLE === 'member' && INTERACTIVE_MEMBER) {
+  if (ROLE === 'member') {
     if (config.reviewer_email_fingerprint !== '3d6137db6c081c07')
       fail('member_identity_fingerprint_missing');
   } else if (
@@ -100,26 +104,29 @@ async function realLogin(page, panel, config) {
     if (ROLE === 'member' && INTERACTIVE_MEMBER) {
       stage = 'ready_manual_member_login';
       process.stdout.write('STAGE ready_manual_member_login\n');
-      expectedEmail = await waitFor(
-        'member_web_session',
-        () =>
-          web.evaluate(async () => {
-            const response = await fetch('/api/whoami', {
-              credentials: 'include',
-              cache: 'no-store',
-            });
-            const identity = response.ok ? await response.json() : null;
-            return identity?.signed_in === true ? identity.email : null;
-          }),
-        (value) => typeof value === 'string' && value.includes('@'),
-        180_000,
-      );
-      const fingerprint = createHash('sha256')
-        .update(expectedEmail.toLowerCase())
-        .digest('hex')
-        .slice(0, 16);
-      if (fingerprint !== config.reviewer_email_fingerprint) fail('member_web_identity_mismatch');
-      report.observations.reviewer_email_fingerprint = fingerprint;
+      expectedEmail = null;
+    } else if (ROLE === 'member') {
+      stage = 'private_member_credential';
+      let credential;
+      try {
+        credential = await readMemberCredential(
+          MEMBER_CREDENTIAL_FILE,
+          config.reviewer_email_fingerprint,
+        );
+      } catch (error) {
+        fail(error.code ?? 'member_credential_unavailable');
+      }
+      expectedEmail = credential.email;
+      await web.locator('input[name="email"]').fill(credential.email);
+      await web.locator('input[name="password"]').fill(credential.password);
+      credential = null;
+      stage = 'member_web_signin';
+      await Promise.all([
+        web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname !== '/login', {
+          timeout: 90_000,
+        }),
+        web.getByRole('button', { name: 'Sign in', exact: true }).click(),
+      ]);
     } else if (ROLE === 'admin') {
       const source = await readFile(ADMIN_ENV, 'utf8').catch(() =>
         fail('credential_file_unavailable'),
@@ -155,6 +162,33 @@ async function realLogin(page, panel, config) {
         { timeout: 90_000 },
       );
     } else fail('unsupported_role');
+    if (ROLE === 'member') {
+      const identity = await waitFor(
+        'member_web_session',
+        () =>
+          web.evaluate(async () => {
+            const response = await fetch('/api/whoami', {
+              credentials: 'include',
+              cache: 'no-store',
+            });
+            const identity = response.ok ? await response.json() : null;
+            return identity?.signed_in === true ? identity.email : null;
+          }),
+        (value) => typeof value === 'string' && value.includes('@'),
+        INTERACTIVE_MEMBER ? 180_000 : 90_000,
+      );
+      const fingerprint = createHash('sha256')
+        .update(identity.toLowerCase())
+        .digest('hex')
+        .slice(0, 16);
+      if (
+        fingerprint !== config.reviewer_email_fingerprint ||
+        (expectedEmail && identity.toLowerCase() !== expectedEmail.toLowerCase())
+      )
+        fail('member_web_identity_mismatch');
+      expectedEmail = identity;
+      report.observations.reviewer_email_fingerprint = fingerprint;
+    }
     await click(panel, 'title', 'Settings');
     await openSection(panel, 'Account');
     const adminCheck =
@@ -778,7 +812,7 @@ try {
   if (origin !== 'https://db.matrxserver.com') fail('unexpected_supabase_origin');
   const config = await privateConfig();
   const native = await runNativeSidepanelQa({
-    headed: ROLE === 'member' && INTERACTIVE_MEMBER,
+    headed: ROLE === 'member',
     extensionDir: before.extensionDir,
     expectedRelease: before,
     localDevReceiptPath: RECEIPT,
@@ -786,7 +820,7 @@ try {
       stage = 'real_signin';
       await realLogin(page, panel, config);
       stage = 'organization';
-      if (ROLE === 'member' && INTERACTIVE_MEMBER) await selectMemberOrganizationThroughUi(panel);
+      if (ROLE === 'member') await selectMemberOrganizationThroughUi(panel);
       else await selectTestOrganization(panel, config.approved_organization_name);
       const transport = armNotesTransport(panel, origin);
       await transport.start();

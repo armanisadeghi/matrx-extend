@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "lane": "notes-private-login-implementation",
+  "defect": "EXT-D-0079",
+  "status": "source_ready_native_unverified",
+  "scope": "Notes ordinary-member native acceptance login only; no product, account, role, Store, vault, or organization mutation",
+  "input_contract": {
+    "mode": "NOTES_ROLE=member with NOTES_MEMBER_CREDENTIAL_FILE pointing to an existing authorized private JSON file",
+    "shape": "Exactly email and password string fields",
+    "privacy": "File must be a regular file owned by the runner uid, mode 0600, opened with O_NOFOLLOW; the email SHA-256 prefix must match reviewer_email_fingerprint in NOTES_PRIVATE_CONFIG",
+    "manual_alternative": "NOTES_INTERACTIVE_MEMBER=1 remains available and is mutually exclusive with NOTES_MEMBER_CREDENTIAL_FILE"
+  },
+  "source_behavior": "The runner opens the exact https://www.aimatrx.com/login destination, fills the real login form, waits for the real site session and /api/whoami identity, then verifies the extension Account identity and the canonical admin table empty-row proof. Reports and thrown credential errors use fixed codes and contain no credential value.",
+  "verification": {
+    "static_syntax": "node --check on the three changed .mjs files passed",
+    "format": "targeted Biome formatting applied",
+    "unit_and_native": "not run in this lane under the shared resource assignment; no actual private credential was read"
+  },
+  "remaining": "A separately authorized fresh native member run must supply an existing permitted private fixture after credential remediation. Successful source checks do not establish real login, Notes behavior, or defect closure."
+}
