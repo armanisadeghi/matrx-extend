@@ -1,0 +1,39 @@
+{
+  "id": "EXT-D-0078",
+  "feature_id": "EXT-F-1012",
+  "case_ids": ["EXT-F-1012-T08"],
+  "surface": "Showcase Prepare / shared script injection access recovery",
+  "auth_mode": "admin native reproduction; shared browser permission boundary",
+  "title": "Withheld Chrome site access leaves Prepare pending without a recovery action",
+  "reproduction": [
+    "Load receipt-matched frozen0.2.173 unpacked artifact in isolated Chrome for Testing; reopen sidepanel and sign in as the authorized admin. Record artifact receipt and actual version.",
+    "On nuxt.com, verify Prepare succeeds. In Chrome extension menu change site access to Ask on every visit, reload as Chrome requires, and click Prepare.",
+    "Observe Preparing without an access recovery action. In extension DevTools a harmless executeScript bound to the exact current tab/document remains pending after two seconds.",
+    "Invoke the extension through Chrome to grant temporary access and reload as required. Prepare and a fresh exact-document title probe succeed although permissions.contains for the origin still returns false."
+  ],
+  "expected": "A withheld browser injection has a clear user-invoked access recovery path. Working temporary activeTab grants remain usable; persistent-host permission status cannot alone refuse the action.",
+  "actual": "Chrome withholds the injection instead of rejecting it, leaving Prepare busy without an actionable access remedy. Temporary access restores success while persistent permissions.contains remains false.",
+  "evidence": [
+    "docs/stabilization/reports/d58-native-20261002.json",
+    "docs/stabilization/reports/prepare-denial-diagnosis-20261002.json",
+    "docs/stabilization/resource-journals/prepare-denial-probe-20261002-01.jsonl"
+  ],
+  "severity": "S2: restricted-site users cannot finish page preparation without discovering Chrome access controls themselves",
+  "priority": "P1: confirmed contained-surface blocker, shared recovery class",
+  "state": "triaged",
+  "verification_status": "Native withheld and temporary-grant positive controls observed. Frozen173 and current relevant source identical. No repair or closure claimed.",
+  "transition_history": [
+    {
+      "at": "2026-10-02T16:18:47.855749+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Native D58 testing found Preparing remains pending under withheld access."
+    },
+    {
+      "at": "2026-10-02T16:18:47.855749+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Exact-document native probe confirms pending injection and successful temporary grant; false persistent-host refusal refuted."
+    }
+  ]
+}
