@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "run_id": "seo-current-ci-20261002-02",
+  "status": "partial_with_airbnb_doors_pass",
+  "started_at": "2026-10-02T15:47:39.363Z",
+  "finished_at": "2026-10-02T15:49:01.793Z",
+  "runner": {
+    "path": "tests/browser/seo-guest-acceptance.mjs",
+    "sha256": "62d000954fa38e19d83dd162f5df014b4c43fa9368d62716f262244b8990aa37",
+    "local_head_at_result": "3ca1f08df4c8d45dfdb25c43ce4571290252bc97"
+  },
+  "artifact": {
+    "sourceSha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
+    "runId": 37027762568,
+    "runAttempt": 1,
+    "artifactId": 11236112494,
+    "githubArtifactDigest": "sha256:08c6432648da0c866595cebbf0a00e808080e56d6a93304d364ed26971b2c9c7",
+    "treeSha256": "a7f9728b45d9dcc407e392092c15383cd541de030d71330322d08617524e73ba",
+    "eligibleStore": false,
+    "publish_state": "not_published"
+  },
+  "native": {
+    "result_path": "test-results/seo-current-ci-20261002-02.json",
+    "result_sha256": "22aa77410629b5ed793bce502fd69e8ee0526a174bdbe6ed303108f053614305",
+    "result_status": "partial",
+    "passed_targets": 17,
+    "unverified_targets": 1,
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "last_safe_stage": "metadata_fixture_bounded_observation_complete",
+    "build_tree_matched_after": true
+  },
+  "guard": {
+    "journal_path": "docs/stabilization/resource-journals/seo-current-ci-20261002-02.jsonl",
+    "journal_sha256": "3f55a7a6d09fb223d8e347ebb015ad98eee3c8809bb5729b923b059d2986eadf",
+    "admitted": true,
+    "decision": "valid",
+    "child_exit_code": 0
+  },
+  "source_at_native_result": {
+    "originMain": "3ca1f08df4c8d45dfdb25c43ce4571290252bc97",
+    "localHead": "3ca1f08df4c8d45dfdb25c43ce4571290252bc97",
+    "trackedDirty": false,
+    "untrackedRunnerInputs": [],
+    "claim": "exact_pushed_commit_only"
+  },
+  "limits": "Airbnb hreflang/schema outbound actions passed on the exact b41fd0b3 development artifact. Wikipedia doors lacked unique candidates; the guest batch remains partial. No Store eligibility or full feature acceptance claim."
+}

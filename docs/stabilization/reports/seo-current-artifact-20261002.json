@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "native_partial_original_seo_recovery_observed_schema_door_unverified",
+  "status": "native_partial_airbnb_hreflang_and_schema_doors_pass",
   "scope": "Owned guest native sidepanel on the exact automatic main-push development/test artifact; Airbnb metadata continuation and surrounding SEO controls.",
   "feature": "EXT-F-1008",
   "artifact": {
@@ -24,7 +24,6 @@
   "ci_run_conclusion": "success",
   "resource_run": "seo-current-ci-20261002-01",
   "resource_decision": "admitted_healthy_child_failed",
-  "native_result_status": "unverified",
   "passed_surrounding_targets": 16,
   "unverified_targets": [
     {
@@ -37,7 +36,10 @@
     "status": "recovered_in_this_bounded_run",
     "evidence": "Airbnb public tab completed navigation; automatic SEO observation reached data state, manual re-audit settled, and title/metadata detail assertions passed before door activation. The frozen173 stall was not reproduced on source b41fd0b3."
   },
-  "later_failure": {
+  "privacy": "Private failure screenshot remains in ignored test-results and is not committed; this report includes no credentials or private fixture values.",
+  "next": "Independent review of the two receipts and bounded SEO result; broader feature matrix remains open. No local build or Store claim.",
+  "initial_run_status": "unverified",
+  "initial_run_failure": {
     "stage": "metadata_fixture_schema_outbound_activation",
     "last_safe_stage": "metadata_fixture_seo_details_inspected",
     "door_group": "structured_data",
@@ -49,6 +51,32 @@
     "source_url_unchanged": true,
     "interpretation": "The runner could not find the expected Structured data anchor after its prior hreflang outbound action. The cause is not yet established; this cannot count as an outbound schema-door pass."
   },
-  "privacy": "Private failure screenshot remains in ignored test-results and is not committed; this report includes no credentials or private fixture values.",
-  "next": "Diagnose the exact sidepanel/selector boundary, then make at most one bounded guarded retry if a single cause is established. No local build or Store claim."
+  "latest_run": {
+    "run_id": "seo-current-ci-20261002-02",
+    "guard_decision": "valid",
+    "runner_exit_code": 0,
+    "result_status": "partial",
+    "passed_targets": 17,
+    "unverified_targets": 1,
+    "airbnb_door_target": {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_airbnb_hreflang_and_schema_doors_match_public_dom",
+      "status": "pass",
+      "evidence": {
+        "sourceUrl": "https://www.airbnb.com/",
+        "alternate": {
+          "lang": "es-US",
+          "href": "https://es.airbnb.com/"
+        },
+        "schemaType": "WebSite",
+        "schemaUrl": "https://schema.org/WebSite",
+        "trustedInput": true
+      }
+    },
+    "build_tree_matched_after": true,
+    "native_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "artifact_source_claim_at_result": "exact_pushed_commit_only",
+    "receipt": "docs/stabilization/runs/seo-current-ci-20261002-02.json",
+    "limit": "Wikipedia manual door remains unverified because the live DOM had no unique hreflang/schema candidates; other deferred guest/member/admin cells remain open."
+  }
 }
