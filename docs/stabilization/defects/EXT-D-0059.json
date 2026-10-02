@@ -73,8 +73,9 @@
   "related_feature_ids": ["EXT-F-1007", "EXT-F-1009", "EXT-F-1010"],
   "current_native_evidence": {
     "report": "docs/stabilization/reports/prepare-document-native-20261002.json",
-    "status": "partial",
+    "status": "artifact-unverified",
     "verified": "Exact development .175 admin completed Prepare and Snapshot results clear on same-tab, same-URL reload. Fresh Prepare on destination after navigation succeeds.",
-    "unverified": "Controlled old invocation completion/rejection, failed retry after success, pending Snapshot, broader D59 consumers. Neither defect closes."
+    "unverified": "Controlled old invocation completion/rejection, failed retry after success, pending Snapshot, broader D59 consumers. Neither defect closes.",
+    "correction": "Admin clone retained frozen173 registration; runtime path was not established. These observations do not verify imported175. See docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
   }
 }

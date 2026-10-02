@@ -24,8 +24,8 @@
   ],
   "severity": "S2: restricted-site users cannot finish page preparation without discovering Chrome access controls themselves",
   "priority": "P1: confirmed contained-surface blocker, shared recovery class",
-  "state": "closed",
-  "verification_status": "CLOSED for original admin withheld Prepare recovery on exact imported175/source2a5fbe64. Independent native runs show real permission Deny/Allow, temporary per-visit success, withheld pending \u2192 explicit grant \u2192 product reload \u2192 successful fresh Prepare. Guest/member, unsupported/non-HTTP paths and D58 late-result behavior remain tracked/unverified.",
+  "state": "fixed",
+  "verification_status": "Guest empty-profile recovery remains bounded pass; admin new-control observations retained historically, but exact runtime-path provenance requires fresh retest before closure.",
   "transition_history": [
     {
       "at": "2026-10-02T16:18:47.855749+00:00",
@@ -62,6 +62,12 @@
       "from": "retest-pass",
       "to": "closed",
       "reason": "Original admin defect and bounded surrounding flows verified on source2a5fbe64; fresh source review accepted. Broader shell role/case coverage and D58 late-result lifecycle remain explicitly incomplete."
+    },
+    {
+      "at": "2026-10-02T18:44:25.219173+00:00",
+      "from": "closed",
+      "to": "fixed",
+      "reason": "Closure evidence audit: earlier admin runs saw distinctive new Site access UI but did not retain actual loaded path. Same-ID clone shadowing demonstrated in subsequent run. Source fix retained; exact-artifact admin retest required. This is evidence correction, not observed product regression."
     }
   ],
   "related_feature_ids": ["EXT-F-1001"],

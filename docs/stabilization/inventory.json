@@ -2296,12 +2296,13 @@
               "detail": "New shared recovery control under implementation; no UI acceptance claimed."
             },
             "admin": {
-              "status": "partial",
+              "status": "unverified",
               "run_id": "site-access-native-acceptance-20261002-01",
               "detail": "Actual admin .175 shared control visible on Prepare and SEO; navigation/open control invalidation and panel reopen followed new IANA target. Keyboard dismissal, tab switching and guest/member unverified.",
               "evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json",
               "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
-              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233"
+              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
+              "provenance_correction": "Exact runtime path was not established for reused same-ID admin profile. Earlier observations retained; no imported175 certification until fresh path-verified retest. docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
             }
           }
         },
@@ -2351,12 +2352,13 @@
               "detail": "New shared recovery control under implementation; no UI acceptance claimed."
             },
             "admin": {
-              "status": "partial",
+              "status": "unverified",
               "run_id": "site-access-native-acceptance-20261002-01",
               "detail": "Actual product opened Chrome origin prompt; Deny and later Allow showed correct states. Temporary per-visit Prepare succeeded757ms/3scrollsteps. No in-product contains=false measurement; pending grant navigation and unsupported path unverified.",
               "evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json",
               "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
-              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233"
+              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
+              "provenance_correction": "Exact runtime path was not established for reused same-ID admin profile. Earlier observations retained; no imported175 certification until fresh path-verified retest. docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
             }
           }
         },
@@ -2405,12 +2407,13 @@
               "detail": "New shared recovery control under implementation; no UI acceptance claimed."
             },
             "admin": {
-              "status": "partial",
+              "status": "unverified",
               "run_id": "site-access-native-recovery-20261002-02",
               "detail": "Independent second native run reproduced withheld pending Prepare; product grant + explicit target reload cleared busy view and fresh Prepare succeeded756ms/3steps. First run showed actual SEO after reload. Late original completion, other roles and unsupported paths remain unverified.",
               "evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json",
               "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
-              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233"
+              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
+              "provenance_correction": "Exact runtime path was not established for reused same-ID admin profile. Earlier observations retained; no imported175 certification until fresh path-verified retest. docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
             }
           }
         }
@@ -15918,7 +15921,7 @@
           ],
           "results": {
             "admin": {
-              "status": "partial",
+              "status": "unverified",
               "run_id": "site-access-native-recovery-20261002-02",
               "evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json",
               "detail": "Withheld-access Prepare original D78 failure repaired: explicit product grant/reload then fresh Prepare756ms/3steps. Normal and temporary-grant success also observed. D58 late completion and all remaining Prepare dimensions not certified.",
@@ -15927,7 +15930,8 @@
               "supplemental_evidence": {
                 "report": "docs/stabilization/reports/prepare-document-native-20261002.json",
                 "detail": "Completed Prepare result clears on same-tab/same-URL reload; fresh destination Prepare succeeds. Controlled late settlement and failed retry remain unverified."
-              }
+              },
+              "provenance_correction": "Exact runtime path was not established for reused same-ID admin profile. Earlier observations retained; no imported175 certification until fresh path-verified retest. docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
             }
           },
           "result_history": [
@@ -15982,12 +15986,13 @@
           ],
           "results": {
             "admin": {
-              "status": "partial",
+              "status": "unverified",
               "run_id": "prepare-document-sol-20261002-01",
               "evidence": "docs/stabilization/reports/prepare-document-native-20261002.json",
               "detail": "Captured real one-row Nuxt metadata table; same-tab/same-URL reload clears old Snapshot and restores Capture snapshot. Pending completion and remaining controls/dimensions unverified.",
               "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
-              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233"
+              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
+              "provenance_correction": "Exact runtime path was not established for reused same-ID admin profile. Earlier observations retained; no imported175 certification until fresh path-verified retest. docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
             }
           }
         },

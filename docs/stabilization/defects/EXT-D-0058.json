@@ -21,7 +21,7 @@
     "docs/stabilization/reports/prepare-lifecycle-peer.json",
     "docs/stabilization/reports/prepare-integrated-verification.json"
   ],
-  "verification_status": "Source checks previously passed; current imported .175 now provides bounded normal success/reload/navigation proof. Failed retry and independently observed late settlement remain native unverified.",
+  "verification_status": "Source checks previously passed; runtime-path audit invalidates attribution of the new admin Prepare/reload observations to imported175. Fresh exact-loaded-path retest, failed retry and controlled late settlement remain pending.",
   "transition_history": [
     {
       "at": "2026-09-28T15:00:57.328820+00:00",
@@ -44,8 +44,9 @@
   ],
   "current_native_evidence": {
     "report": "docs/stabilization/reports/prepare-document-native-20261002.json",
-    "status": "partial",
+    "status": "artifact-unverified",
     "verified": "Exact development .175 admin completed Prepare and Snapshot results clear on same-tab, same-URL reload. Fresh Prepare on destination after navigation succeeds.",
-    "unverified": "Controlled old invocation completion/rejection, failed retry after success, pending Snapshot, broader D59 consumers. Neither defect closes."
+    "unverified": "Controlled old invocation completion/rejection, failed retry after success, pending Snapshot, broader D59 consumers. Neither defect closes.",
+    "correction": "Admin clone retained frozen173 registration; runtime path was not established. These observations do not verify imported175. See docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
   }
 }
