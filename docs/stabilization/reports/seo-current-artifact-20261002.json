@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "status": "native_partial_original_seo_recovery_observed_schema_door_unverified",
+  "scope": "Owned guest native sidepanel on the exact automatic main-push development/test artifact; Airbnb metadata continuation and surrounding SEO controls.",
+  "feature": "EXT-F-1008",
+  "artifact": {
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "sourceSha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
+    "runId": 37027762568,
+    "runAttempt": 1,
+    "artifactId": 11236112494,
+    "githubArtifactDigest": "sha256:08c6432648da0c866595cebbf0a00e808080e56d6a93304d364ed26971b2c9c7",
+    "treeSha256": "a7f9728b45d9dcc407e392092c15383cd541de030d71330322d08617524e73ba",
+    "source": {
+      "originMain": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
+      "localHead": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "current_pushed_source"
+    }
+  },
+  "build_version": "0.2.175",
+  "ci_run_conclusion": "success",
+  "resource_run": "seo-current-ci-20261002-01",
+  "resource_decision": "admitted_healthy_child_failed",
+  "native_result_status": "unverified",
+  "passed_surrounding_targets": 16,
+  "unverified_targets": [
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+      "reason": "The public DOM did not expose unique hreflang and openable schema door candidates."
+    }
+  ],
+  "original_spinner_reproduction": {
+    "status": "recovered_in_this_bounded_run",
+    "evidence": "Airbnb public tab completed navigation; automatic SEO observation reached data state, manual re-audit settled, and title/metadata detail assertions passed before door activation. The frozen173 stall was not reproduced on source b41fd0b3."
+  },
+  "later_failure": {
+    "stage": "metadata_fixture_schema_outbound_activation",
+    "last_safe_stage": "metadata_fixture_seo_details_inspected",
+    "door_group": "structured_data",
+    "door_step": "anchor_sample",
+    "candidate_count": 0,
+    "sample_failure": "initial_candidate_count",
+    "pointer_press_returned": false,
+    "source_page_still_open": true,
+    "source_url_unchanged": true,
+    "interpretation": "The runner could not find the expected Structured data anchor after its prior hreflang outbound action. The cause is not yet established; this cannot count as an outbound schema-door pass."
+  },
+  "privacy": "Private failure screenshot remains in ignored test-results and is not committed; this report includes no credentials or private fixture values.",
+  "next": "Diagnose the exact sidepanel/selector boundary, then make at most one bounded guarded retry if a single cause is established. No local build or Store claim."
+}
