@@ -3357,7 +3357,7 @@
             "Reload/reopen Settings in the still-signed-out guest session; confirm the same guidance and absence of the selector."
           ],
           "expected": [
-            "The guest sees \u201cSign in to choose\u201d; no organization selector or guest organization-choice action is exposed, and the guest guidance remains after reload."
+            "The guest sees “Sign in to choose”; no organization selector or guest organization-choice action is exposed, and the guest guidance remains after reload."
           ],
           "dimensions": [
             "warm",
@@ -3385,7 +3385,7 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
           ],
           "steps": [
-            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
+            "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
             "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
             "Perform a full extension Reload and confirm the organization persists."
           ],
@@ -3411,7 +3411,7 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
           ],
           "steps": [
-            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
+            "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
             "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
             "Perform a full extension Reload and confirm the organization persists."
           ],
@@ -3537,7 +3537,7 @@
             "Reload/reopen Settings in the same guest state; confirm the unavailable-state guidance remains."
           ],
           "expected": [
-            "The guest sees \u201cChoose an organization above\u201d and no agent picker or selection action; this unavailable-state guidance remains after reload."
+            "The guest sees “Choose an organization above” and no agent picker or selection action; this unavailable-state guidance remains after reload."
           ],
           "dimensions": [
             "warm",
@@ -5133,11 +5133,11 @@
                     "docs/stabilization/reports/cookies-prompt-semantics.json",
                     "docs/stabilization/reports/native-denial-operator-005.json"
                   ],
-                  "detail": "Ruling inferred from official Chrome warning semantics and current broad-host manifest, corroborated by actual no-prompt OFF\u2192ON observation. Not a denial pass. Re-evaluate on browser/manifest warning-policy change."
+                  "detail": "Ruling inferred from official Chrome warning semantics and current broad-host manifest, corroborated by actual no-prompt OFF→ON observation. Not a denial pass. Re-evaluate on browser/manifest warning-policy change."
                 },
                 "current-grant-removal-reload": {
                   "status": "unverified",
-                  "detail": "Current005 only observed UI OFF\u2192ON; prior build grant/removal/reload remains historical."
+                  "detail": "Current005 only observed UI OFF→ON; prior build grant/removal/reload remains historical."
                 }
               }
             }
@@ -5381,7 +5381,7 @@
             "Select all, agent, pilot, parallel and webmcp receipt filters."
           ],
           "expected": [
-            "Visible receipt rows and counts match selected origin; empty filter shows \u201cNo receipts with origin=\u2026\u201d; all restores every row."
+            "Visible receipt rows and counts match selected origin; empty filter shows “No receipts with origin=…”; all restores every row."
           ],
           "dimensions": [
             "warm",
@@ -7262,7 +7262,7 @@
                 "reload": "unverified",
                 "service-error": "unverified"
               },
-              "detail": "Switched Log \u2192 Bridges \u2192 Log. Both selected subviews rendered their intended content; Logs retained its current 113-row state when revisited, while Bridges showed its existing channel and health state. No bridge action was invoked.",
+              "detail": "Switched Log → Bridges → Log. Both selected subviews rendered their intended content; Logs retained its current 113-row state when revisited, while Bridges showed its existing channel and health state. No bridge action was invoked.",
               "remaining_criteria": [
                 "Reload and service-error observations required for the declared dimensions."
               ]
@@ -8430,7 +8430,7 @@
                 "reload": "unverified",
                 "service-error": "unverified"
               },
-              "detail": "Source=none deselected all source pills, reduced the row count to 0, and showed \u2018No events match the current filter.\u2019",
+              "detail": "Source=none deselected all source pills, reduced the row count to 0, and showed ‘No events match the current filter.’",
               "remaining_criteria": [
                 "Reload and service-error observations required for the declared dimensions."
               ]
@@ -8688,7 +8688,7 @@
                 "reload": "unverified",
                 "service-error": "unverified"
               },
-              "detail": "Level=none deselected all four level pills, reduced the row count to 0, and showed \u2018No events match the current filter.\u2019",
+              "detail": "Level=none deselected all four level pills, reduced the row count to 0, and showed ‘No events match the current filter.’",
               "remaining_criteria": [
                 "Reload and service-error observations required for the declared dimensions."
               ]
@@ -9272,7 +9272,7 @@
         {
           "id": "EXT-F-1006-C07",
           "label": "Desktop port override validation",
-          "action": "Enter blank, valid 1\u201365535, 0, >65535, fractional and nonnumeric values; Save."
+          "action": "Enter blank, valid 1–65535, 0, >65535, fractional and nonnumeric values; Save."
         },
         {
           "id": "EXT-F-1006-C09",
@@ -9575,7 +9575,7 @@
             "Signed in as an admin; open Debug > Bridges; use local test services and harmless requests."
           ],
           "steps": [
-            "Enter blank, valid 1\u201365535, 0, >65535, fractional and nonnumeric values; Save."
+            "Enter blank, valid 1–65535, 0, >65535, fractional and nonnumeric values; Save."
           ],
           "expected": [
             "Blank clears; valid integer persists and discovery reruns; invalid values are rejected and existing override remains."
@@ -11029,7 +11029,7 @@
             "Open Scrape before capturing, then navigate active tab to another URL."
           ],
           "expected": [
-            "Empty state invites capture; previous page\u2019s content and Saved badge clear after navigation."
+            "Empty state invites capture; previous page’s content and Saved badge clear after navigation."
           ],
           "dimensions": [
             "warm",
@@ -11984,7 +11984,7 @@
             "Run/auto-run on browser-internal or restricted URL."
           ],
           "expected": [
-            "No fabricated partial audit is shown; clear \u201ccannot be audited\u201d or capture failure appears."
+            "No fabricated partial audit is shown; clear “cannot be audited” or capture failure appears."
           ],
           "dimensions": [
             "warm",
@@ -12374,7 +12374,7 @@
                       "words": "10,488",
                       "sentences": "786",
                       "score": "44.48",
-                      "summary": "Difficult \u2014 college"
+                      "summary": "Difficult — college"
                     },
                     "metricValueCorrectness": "unverified"
                   }
@@ -12565,7 +12565,7 @@
             "Choose Ask the agent to fix this for a finding."
           ],
           "expected": [
-            "The finding\u2019s section and message are staged in Chat composer; user can review before sending."
+            "The finding’s section and message are staged in Chat composer; user can review before sending."
           ],
           "dimensions": [
             "warm",
@@ -13928,7 +13928,7 @@
         {
           "id": "EXT-F-1010-C08",
           "label": "Overlay stop toolbar control",
-          "action": "Click \u2715 in injected highlighter toolbar."
+          "action": "Click ✕ in injected highlighter toolbar."
         },
         {
           "id": "EXT-F-1010-C09",
@@ -14232,7 +14232,7 @@
             "Sign in; open Highlights on a controlled page with test text and selectable elements."
           ],
           "steps": [
-            "Click \u2715 in injected highlighter toolbar."
+            "Click ✕ in injected highlighter toolbar."
           ],
           "expected": [
             "Overlay sends inactive state and unmounts all page listeners/host."
@@ -16795,7 +16795,7 @@
               "evidence": [
                 "docs/stabilization/runs/showcase-installed-list-management-001.json"
               ],
-              "detail": "Renamed the exact owned List recipe from \u201cCodex D45 fixture 20260927-2229Z\u201d to \u201cCodex D45 fixture 20260927-2229Z cleanup.\u201d The new title persisted after Patterns Refresh and after leaving/reopening Patterns; its LIST type, OK status, and 249-row last-run summary remained. No-op and Cancel rename paths remain unverified."
+              "detail": "Renamed the exact owned List recipe from “Codex D45 fixture 20260927-2229Z” to “Codex D45 fixture 20260927-2229Z cleanup.” The new title persisted after Patterns Refresh and after leaving/reopening Patterns; its LIST type, OK status, and 249-row last-run summary remained. No-op and Cancel rename paths remain unverified."
             }
           }
         },
@@ -17002,7 +17002,7 @@
                 "docs/stabilization/reports/showcase-structured-journal-retest.json",
                 "docs/stabilization/reports/showcase-structured-save-navigation.json"
               ],
-              "detail": "Native JSONLD preview\u2192draftchangedtoNewsArticle\u2192save\u2192leave/reopen\u2192replay preserved executedBreadcrumbList config; exactowned91349863-4a89-4bd5-9248-8785ba1ec3fc. Existing savedJSONLD on404 shows no-match and routeguidance. Service-error remains unverified."
+              "detail": "Native JSONLD preview→draftchangedtoNewsArticle→save→leave/reopen→replay preserved executedBreadcrumbList config; exactowned91349863-4a89-4bd5-9248-8785ba1ec3fc. Existing savedJSONLD on404 shows no-match and routeguidance. Service-error remains unverified."
             }
           }
         },
@@ -17199,7 +17199,7 @@
                 "docs/stabilization/runs/showcase-installed-d43-001.json",
                 "docs/stabilization/runs/showcase-installed-d45-001.json"
               ],
-              "detail": "Saved List Pattern recipe \u201cCodex D45 fixture 20260927-2229Z\u201d on /vegas-edm-event-calendar/, left the builder, reopened Patterns, and replayed 249 rows with the same first visible event_title/locality samples. The UI exposed no record ID; 2026-09-27T22:29:53Z is the observed time immediately after \u201cPattern saved,\u201d not a verified creation timestamp. Fixture remains intentionally retained. Partial: only 200 rows were visible, no reload or changed-source replay was tested, and deletion/cleanup was not tested.",
+              "detail": "Saved List Pattern recipe “Codex D45 fixture 20260927-2229Z” on /vegas-edm-event-calendar/, left the builder, reopened Patterns, and replayed 249 rows with the same first visible event_title/locality samples. The UI exposed no record ID; 2026-09-27T22:29:53Z is the observed time immediately after “Pattern saved,” not a verified creation timestamp. Fixture remains intentionally retained. Partial: only 200 rows were visible, no reload or changed-source replay was tested, and deletion/cleanup was not tested.",
               "prior_run_ids": [
                 "showcase-installed-d43-001"
               ]
@@ -17855,9 +17855,9 @@
         "2026-09-27 user elevated Showcase to current priority; added shared-save and per-kind roundtrip acceptance before testing. Every added case starts unverified; admin-only product audience retained, guest/member denial remains separately tracked.",
         "D40 source-confirmed preview/config drift is linked; its focused regression and live saved/reopened retest remain pending. No added method case is promoted from source review.",
         "EXT-D-0042 investigates old picker events/cancellation reaching a new same-page session; source evidence at reports/showcase-picker-session-fix.json, boundary reproduction pending. This is separate from D39 handoff and D40 executed preview config, and no coverage is promoted.",
-        "EXT-D-0041 reserved for selected Network request \u2192 saved URL matching \u2192 repeat extraction; source-only investigation assigned while frozen .101 D39/D40 live review runs. No result claimed.",
-        "Fresh .101 live retest: original Doctor list seed arrives, but Pick more fields replaced event-card scope with one event\u2019s nested list and returned3 rows. D43 assigned for independent diagnosis; D39 remains open until surrounding field/extraction behavior passes. No saved recipe persistence yet tested.",
-        "D40 real Microdata Event preview \u2192 unsent Place draft \u2192 saved pattern \u2192 reopened Patterns replay returned249 Event records with matching visible fields/sample values. T46 stays partial; full-value comparison/reload/errors and datasets remain unverified. Exact owned recipe retained as next persistence-test fixture.",
+        "EXT-D-0041 reserved for selected Network request → saved URL matching → repeat extraction; source-only investigation assigned while frozen .101 D39/D40 live review runs. No result claimed.",
+        "Fresh .101 live retest: original Doctor list seed arrives, but Pick more fields replaced event-card scope with one event’s nested list and returned3 rows. D43 assigned for independent diagnosis; D39 remains open until surrounding field/extraction behavior passes. No saved recipe persistence yet tested.",
+        "D40 real Microdata Event preview → unsent Place draft → saved pattern → reopened Patterns replay returned249 Event records with matching visible fields/sample values. T46 stays partial; full-value comparison/reload/errors and datasets remain unverified. Exact owned recipe retained as next persistence-test fixture.",
         "Installed .108 real-calendar retest: Doctor handoff and seeded/fresh scope selection now work; title+href extraction249rows had matching sampled records and navigation cleared state. T04/T24/T29/T45/T51 remain partial; full rows beyond200, alternate-scope extraction, persistence and other dimensions still pending. No localhost UI was used.",
         "T53-T55 and C44-C45 added for EXT-D-0041 Network matcher/replay identity follow-up. These are unverified planning coverage only; no admin, guest, or member result was promoted. Guest/member denial remains the existing T38 case. Network evidence may record only sanitized fixed fields and local-producer digest presence; never raw request payload, credentials, or headers.",
         "Installed .109 D48 live run: one actual GET capture was saved, reopened from Patterns and interactively replayed with all four visible response values matching; recognized/unknown synthetic query-key masking controls were observed and the real matcher restored before save. T50/T53/T58 are partial only; no credential-bearing pattern was persisted or inspected, and D48 remains open pending full installed privacy acceptance."
@@ -21656,7 +21656,7 @@
             "On a conversation with disposable plan/task/todo rows, click Wipe all and cancel; verify rows remain. Reopen, confirm, then refresh."
           ],
           "expected": [
-            "Cancel preserves all rows; confirm removes that conversation\u2019s plan, tasks and todos; dialog names permanent consequence."
+            "Cancel preserves all rows; confirm removes that conversation’s plan, tasks and todos; dialog names permanent consequence."
           ],
           "dimensions": [
             "warm",
@@ -24413,7 +24413,7 @@
           ],
           "steps": [
             "Refresh list; search distinct title, URL, and description tokens; clear search; open capture; use Back; use Load more; on empty list use Go to Scrape.",
-            "As member B, search and open A\u2019s Source with the page-local organization filter set to All organizations; check Captured by labeling for self, readable creator, and an unavailable creator name. Change the active organization and confirm it only changes the destination of new writes/API calls; exercise any explicit page-local organization filter separately."
+            "As member B, search and open A’s Source with the page-local organization filter set to All organizations; check Captured by labeling for self, readable creator, and an unavailable creator name. Change the active organization and confirm it only changes the destination of new writes/API calls; exercise any explicit page-local organization filter separately."
           ],
           "expected": [
             "Search filters list; detail corresponds to selected capture; pagination adds results without duplicates; empty-state shortcut opens Scrape.",
@@ -24919,7 +24919,7 @@
             "Signed-in member who belongs to two organizations; other membership has a controlled waiting handoff."
           ],
           "steps": [
-            "Open Capture with active organization A; use \u201cwaiting elsewhere\u201d control to switch to organization B; wait for subscription refresh."
+            "Open Capture with active organization A; use “waiting elsewhere” control to switch to organization B; wait for subscription refresh."
           ],
           "expected": [
             "Only a membership-listed organization can be selected; device org switches and queue refreshes; pointer clears after successful switch; membership loss yields explicit explanation."
@@ -24976,7 +24976,7 @@
             "Signed-in member with controlled needs_drive handoff and safe test page."
           ],
           "steps": [
-            "Open it; perform page sign-in/navigation manually; enter page-specific note and capture. Repeat with another handoff and choose This one won\u2019t work with a reason. Follow a valid pickup pointer."
+            "Open it; perform page sign-in/navigation manually; enter page-specific note and capture. Repeat with another handoff and choose This one won’t work with a reason. Follow a valid pickup pointer."
           ],
           "expected": [
             "Extension leaves page actions to user until explicit capture; capture completes and updates status; skip removes only selected handoff and records note; pickup opens matching item/tab."
@@ -28731,7 +28731,7 @@
       "name": "Run built-in browser AI scenarios",
       "surface": "Tools Smart tests",
       "entry_points": [
-        "Tools tab \u2192 Tools Smart tests"
+        "Tools tab → Tools Smart tests"
       ],
       "controls": [
         {
@@ -28971,13 +28971,17 @@
             "admin"
           ],
           "preconditions": [
-            "Use an owned regular page and authorized signed-in organization."
+            "For cap, selected-label, and invalid-input assertions, use the owned long synthetic fixture. A read-only public page is also valid for a positive summary/classification native acceptance run; record the page identity without copying page text into the run report."
           ],
           "steps": [
-            "Open the two scenario cards; vary summary type, length, content cap and classification labels; run each."
+            "In Tools → Smart tests, expand Summarize active page; set cap to 1k, type to key-points, and length to medium. Run once.",
+            "Inspect timing, result or visible refusal, and expand input the model saw. Verify the request event includes the selected type/length and page content is capped at 1,000 characters; use only fixture text.",
+            "Expand Classify active page, replace labels with 'article, landing page', and Run. Then enter the invalid one-label value 'article' and Run once more."
           ],
           "expected": [
-            "Selected options shape the requests; input payload and result/error are inspectable."
+            "The two card headings expand their own controls. Summary selections remain visible and the request event reflects key-points, medium, and the 1k cap; an available API returns a summary, while an unavailable API shows a failure/refusal instead of a fabricated success. Use public page content only for this positive read-only native check; keep cap assertions on the owned controlled fixture.",
+            "Classification success returns a label from the submitted set and a confidence value or null. One label produces the visible 'Need at least 2 comma-separated labels.' error and no model-input event for that invalid attempt.",
+            "Neither scenario edits or navigates the fixture. Generative wording is not fixed; record the displayed result or exact refusal, not a subjective text-quality verdict."
           ],
           "dimensions": [
             "warm",
@@ -28992,13 +28996,17 @@
             "admin"
           ],
           "preconditions": [
-            "Use an owned regular page and authorized signed-in organization."
+            "Use the owned fixture for marker-schema extraction and malformed-schema negative coverage. A genuinely public page may be used for the read-only translation positive path; record target language and outcome without copying page text into the report."
           ],
           "steps": [
-            "Edit a valid and invalid JSON schema; run extraction; choose translation target and run."
+            "Expand Extract JSON from active page. Set its schema to {\"type\":\"object\",\"properties\":{\"marker\":{\"type\":\"string\"}},\"required\":[\"marker\"]}; Run and inspect the structured result and model input.",
+            "Replace the schema with the malformed text '{' and Run once; then restore the valid schema so the visible control remains usable.",
+            "Expand Translate first paragraph, choose German (de), and Run. Inspect the result and model-input panel."
           ],
           "expected": [
-            "Invalid schema is explained without success; valid response and translation show input/result evidence."
+            "The extraction card exposes the schema editor; valid schema execution displays structured JSON or an explicit runtime refusal. The request event reflects the schema and the fixture is unchanged.",
+            "Malformed JSON produces a visible 'Schema is not valid JSON' error without a successful result or model-input event for that attempt.",
+            "Translation displays source/target and input/output or an explicit API refusal. Its request events show the source detector followed by translation, and the target is de."
           ],
           "dimensions": [
             "warm",
@@ -29013,13 +29021,19 @@
             "admin"
           ],
           "preconditions": [
-            "Use an owned regular page and authorized signed-in organization."
+            "Use the owned controlled fixture for exact typo selection, injection sample, known local PNG, and the no-image sibling. Language detection alone may use a genuinely public page as a read-only positive native check."
           ],
           "steps": [
-            "Run language detection, selection proofreading, prompt-injection scan and first-image description on suitable owned pages."
+            "Expand Detect page language and Run on the active fixture.",
+            "Expand Proofread selection; return to the fixture, select only 'Thiss sentense has a speling mistake.', reopen Tools → Smart tests, and Run.",
+            "Activate the owned controlled fixture. Expand Prompt-injection scan and Run on its harmless synthetic PAPERCLIP instruction.",
+            "On the owned fixture, expand Describe first image, set the question to What color is the circle?, and Run on the page with the local PNG. Then activate the owned sibling no-image fixture and Run once to exercise the missing-image path."
           ],
           "expected": [
-            "Each card reports result or precise refusal; selection/image absence is honest."
+            "Language detection shows candidate data or a visible refusal, with scrape/detect timing steps.",
+            "Proofread shows the selected input and correction/result or a visible refusal; the page text stays unchanged. With no selected text, the card instead shows the explicit 'Nothing is selected on the active page' error.",
+            "Injection scan shows a visible response with suspicious boolean, severity, and reason (plus excerpts when returned); it does not claim a fixed model wording. The captured request contains only the harmless synthetic sample.",
+            "Image scenario shows the question, fetched local image preview, and description or visible refusal; the input panel identifies a non-empty PNG Blob. On the no-image page, Run reports 'No images found on the active page.' and no description success."
           ],
           "dimensions": [
             "warm",
@@ -29034,13 +29048,17 @@
             "admin"
           ],
           "preconditions": [
-            "Use an owned regular page and authorized signed-in organization."
+            "Use only owned fixture data and first obtain a successful scenario result. If the API refuses, keep result-copy positive coverage explicitly pending."
           ],
           "steps": [
-            "Expand input events after a scenario; copy full payload and result."
+            "After the successful scenario, expand input the model saw and confirm the event count and literal request data are visible.",
+            "Click Copy full payload; paste into a local scratch buffer and compare byte-for-byte with the displayed event serialization. Do not attach copied payload to logs if it exceeds synthetic fixture data.",
+            "Click Copy result beside the visible result block and compare clipboard text with that block's displayed body."
           ],
           "expected": [
-            "Visible inputs match invoked wrapper calls, and copy actions yield their displayed content."
+            "Expand/collapse reveals the events emitted by wrapper callbacks in order; fallback requests, if any, appear as separate events.",
+            "Copy full payload copies the displayed serialized events. Copy result copies the visible result body exactly.",
+            "No copied value contains data outside the fixture. Result copy is only applicable when a result block is rendered; if every scenario refuses, record this positive branch as unverified."
           ],
           "dimensions": [
             "warm",
@@ -29054,13 +29072,13 @@
             "guest"
           ],
           "preconditions": [
-            "Use a signed-out side panel."
+            "Use a separate profile already signed out; complete artifact identity and reload setup."
           ],
           "steps": [
-            "Inspect navigation and attempt to reach this surface."
+            "Open the side panel, inspect main navigation, and attempt the Tools tab and Smart tests subtab only through visible navigation."
           ],
           "expected": [
-            "Signed-in tab and nested content remain unavailable with an honest sign-in path."
+            "Signed-in Tools and nested Smart tests content are unavailable to guest; the panel shows its honest sign-in path. No Smart Tests Run control is reachable."
           ],
           "dimensions": [
             "warm",
@@ -29099,7 +29117,7 @@
       "name": "Record active browser tab",
       "surface": "Tools Recorder",
       "entry_points": [
-        "Tools tab \u2192 Tools Recorder"
+        "Tools tab → Tools Recorder"
       ],
       "controls": [
         {
@@ -29277,13 +29295,17 @@
             "admin"
           ],
           "preconditions": [
-            "Use an owned regular page and authorized signed-in organization."
+            "Complete shared artifact/profile setup; sign in as a member or admin with an explicitly selected open organization on this device. Use the owned fixture tab; for the audio-on run, have that tab play only a locally generated test tone after a user gesture."
           ],
           "steps": [
-            "Set duration, toggle audio, start Chrome tab capture and stop before duration."
+            "Open Tools → Recorder. Set Duration (sec) to 1, then 60, and confirm the field accepts both displayed bounds. Set it to 2 for each short capture; toggle Capture audio off for the first and on for the second.",
+            "With the fixture active, click Record. If Chrome asks for optional tabCapture permission, grant it for this positive path. Observe Checking permission/Starting/Recording and elapsed time, then click Stop before the duration expires.",
+            "Wait for Finalizing/Uploading to finish; inspect the saved row, duration, title, MIME, size, and audio badge. Reload the side panel/extension using the documented artifact cycle and confirm the metadata row rehydrates."
           ],
           "expected": [
-            "Recorder shows progress, uploads saved file, and persists a local row after reload."
+            "Duration bounds are 1 and 60 seconds; recording uses the clamped seconds value. Controls are disabled during busy states, and Stop is shown while recording.",
+            "Successful captures return to Idle after upload and add a local recording row. Audio badge is absent for audio off and present for audio on; the saved metadata survives reload. The actual video bytes are stored as a file; the row is only local metadata.",
+            "If capture or upload refuses, the error/recovery UI must be visible; do not mark positive upload or persistence as passed."
           ],
           "dimensions": [
             "warm",
@@ -29298,13 +29320,17 @@
             "admin"
           ],
           "preconditions": [
-            "Use an owned regular page and authorized signed-in organization."
+            "Use a disposable signed-in profile with active organization but tabCapture not granted. Permission state must be reset between denial variants by removing/readding this exact unpacked artifact and rechecking its Loaded from path and tree hash."
           ],
           "steps": [
-            "Use a profile without tabCapture; press Record; dismiss recovery by each close path; reopen and press Open extension permissions."
+            "Click Record and decline Chrome's tabCapture request. Confirm the recovery dialog appears only after denial; test X, Close, and backdrop dismissal in separate reset runs. Each dismissal should close the dialog without opening another tab.",
+            "Repeat denial and click Open extension permissions. Inspect the newly opened chrome://extensions/?id=<this extension> page; return to the panel and, only for the recovery subcase, grant Tab capture through Chrome's extension UI and retry Record.",
+            "For Dismiss recorder error, start a short local capture, then set the isolated browser's network to offline immediately before Stop so upload fails; restore network after the visible failure. Click Dismiss. If offline does not produce the error branch, record that branch as unverified rather than forcing storage or service-worker state."
           ],
           "expected": [
-            "Recovery dialog appears only after Chrome rejection; permission page opens on command."
+            "A rejected Chrome permission request returns recorder status to Idle and opens 'Couldn't access tab capture'. X, Close, and backdrop each close that dialog; the normal flow does not show it before Chrome's permission result.",
+            "Open extension permissions navigates to the extension's own permissions page. Granting permission permits a retry to proceed to Starting/Recording or shows a separate explicit runtime refusal.",
+            "A real start/upload error is rendered with its message and a Dismiss control. Dismiss clears the error and returns to Idle; it does not hide an error without a user click."
           ],
           "dimensions": [
             "warm",
@@ -29319,13 +29345,18 @@
             "admin"
           ],
           "preconditions": [
-            "Use an owned regular page and authorized signed-in organization."
+            "Create at least two disposable successful recording rows using the owned fixture. Record their file IDs and confirm corresponding files are visible in the account's Files view before list cleanup."
           ],
           "steps": [
-            "Copy saved file ID; remove one row with cancel/confirm; clear list with cancel/confirm."
+            "Click file_id on one row, paste into a local scratch buffer, and compare exactly with the visible row's file_id; clear the scratch buffer afterward.",
+            "Click the row's trash control. Read the confirmation consequence; cancel and confirm the row remains. Repeat and confirm Remove for that row.",
+            "Click Clear list. Read the confirmation consequence; cancel and confirm the remaining row stays. Repeat and confirm Clear list.",
+            "Reopen Recorder and verify the local index is empty; check Files for the two file assets without opening or deleting them."
           ],
           "expected": [
-            "Cancelled mutations preserve rows; confirmed mutations remove only local index entries, leaving Files assets intact."
+            "Copy places the visible file ID on the clipboard.",
+            "Each cancellation preserves its row(s); confirmed row removal removes only that local row. Confirmed Clear list removes all local index rows, and after reload no rows return.",
+            "The file assets remain in Files after local index removal/clear, consistent with the confirmation copy."
           ],
           "dimensions": [
             "warm",
@@ -29339,13 +29370,13 @@
             "guest"
           ],
           "preconditions": [
-            "Use a signed-out side panel."
+            "Use a separate profile already signed out; complete artifact identity and reload setup."
           ],
           "steps": [
-            "Inspect navigation and attempt to reach this surface."
+            "Open the side panel, inspect main navigation, and attempt Tools → Recorder only through visible navigation."
           ],
           "expected": [
-            "Signed-in tab and nested content remain unavailable with an honest sign-in path."
+            "Signed-in Tools and nested Recorder content are unavailable to guest; a visible sign-in path remains. No Record or list-management control is reachable."
           ],
           "dimensions": [
             "warm",
@@ -29363,13 +29394,13 @@
             "EXT-F-2016-C18"
           ],
           "preconditions": [
-            "Signed in with a saved recording row whose fileUrl is present."
+            "Have a saved recording row with a non-null fileUrl; complete shared profile setup and use its existing signed-in role."
           ],
           "steps": [
-            "Click Open on that row."
+            "Click Open on the row and inspect the newly opened tab. If an available test row has null fileUrl, inspect that row separately without expecting an Open control."
           ],
           "expected": [
-            "File URL opens in a new browser tab; rows without fileUrl have no Open link."
+            "A row with fileUrl opens that URL in a new tab. A row without fileUrl renders no Open link. The source tab and local row remain unchanged."
           ],
           "dimensions": [
             "warm",
@@ -29408,7 +29439,7 @@
       "name": "Generate and use credentials",
       "surface": "Vault password generator",
       "entry_points": [
-        "Tools tab \u2192 Vault password generator"
+        "Tools tab → Vault password generator"
       ],
       "controls": [
         {
@@ -32471,7 +32502,7 @@
         {
           "id": "EXT-F-4025-C01",
           "label": "Run get_active_tab on owned synthetic fixture",
-          "action": "Open the exact canonical tool row in Tools \u2192 Catalog and run {} against the active synthetic fixture tab; compare returned tab metadata to the browser tab."
+          "action": "Open the exact canonical tool row in Tools → Catalog and run {} against the active synthetic fixture tab; compare returned tab metadata to the browser tab."
         }
       ],
       "source_anchors": [
@@ -32539,7 +32570,7 @@
             "Complete shared build/reload cycle and synthetic fixture preconditions; fixture tab stays active when opening Tools. See shared setup and fixture contract in docs/stabilization/reports/tool-procedure-batch-20261001.json."
           ],
           "steps": [
-            "In Tools \u2192 Catalog, leave Surface=Canonical and Tier=all; search get_active_tab and expand the exact canonical row.",
+            "In Tools → Catalog, leave Surface=Canonical and Tier=all; search get_active_tab and expand the exact canonical row.",
             "Confirm the displayed schema has no required arguments and required permission activeTab; leave the default {} in the JSON editor.",
             "Click Run once. Record the inline output and compare tab_id/title/url/status to the active synthetic fixture tab's browser tab and address bar. Do not copy the full URL if it contains anything beyond the local fixture origin/path."
           ],

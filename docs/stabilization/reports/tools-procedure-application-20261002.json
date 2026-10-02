@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-procedure-application-report",
+  "task_id": "tools-manual-surfaces",
+  "patch_id": "tools-procedure-delta-20261002",
+  "reviewed_source_commit": "a58e50f2",
+  "source_review": {
+    "result": "matched",
+    "files": [
+      "src/features/tools/SmartTestsView.tsx",
+      "src/features/tools/RecorderPane.tsx",
+      "src/features/tools/TabCaptureDialog.tsx",
+      "src/lib/video/useTabVideoRecorder.ts",
+      "src/lib/video/recordings-store.ts"
+    ],
+    "notes": [
+      "Checked the Smart Tests cards, input-validation and refusal branches, empty selection/image handling, result and input-copy controls, and local fixture procedure claims against current source.",
+      "Checked Recorder duration clamping, tabCapture denial recovery, error dismissal, upload metadata, recording-list confirmations, local persistence and optional fileUrl behavior against current source.",
+      "Public-page procedures remain read-only positive Smart Tests examples; synthetic fixtures remain required for fixed assertions and persisted recorder actions. No blocking restrictions added."
+    ]
+  },
+  "applied_fields": [
+    "preconditions",
+    "steps",
+    "expected"
+  ],
+  "case_ids": [
+    "EXT-F-2015-T01",
+    "EXT-F-2015-T02",
+    "EXT-F-2015-T03",
+    "EXT-F-2015-T04",
+    "EXT-F-2015-T05",
+    "EXT-F-2016-T01",
+    "EXT-F-2016-T02",
+    "EXT-F-2016-T03",
+    "EXT-F-2016-T04",
+    "EXT-F-2016-T05"
+  ],
+  "before": {
+    "cases": 10,
+    "complete_cases": 10,
+    "nonempty_fields": 30,
+    "total_fields": 30
+  },
+  "after": {
+    "cases": 10,
+    "complete_cases": 10,
+    "nonempty_fields": 30,
+    "total_fields": 30
+  },
+  "status_and_evidence": "All statuses, run_ids, defect_ids, evidence, identities and fields outside the three procedure fields were preserved. No execution/pass credit added.",
+  "verification": "Static JSON parse and field/count inspection only; no tests, build, or browser run."
+}
