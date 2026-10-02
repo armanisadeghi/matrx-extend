@@ -1,0 +1,21 @@
+{
+  "date": "2026-10-02",
+  "target": "tests/browser/files-saved-native-acceptance.mjs",
+  "reviewedSha256": "a1ac82bcb0d31b655ca1fdbbb4c4fab0cf89c8e197f7e75759848c31199898ab",
+  "scope": "Independent source review of interactive signed-in, non-extension-admin path; no browser execution or live database read by this reviewer",
+  "A_runtime_unverified": [
+    "The actual UI login, Chrome extension sign-in, canonical admin response, organization choice, and Files/Saved captures behavior still require a bounded native browser run. Source review cannot turn these into a pass.",
+    "The CDP observer assumes the browser emits Accept-Profile in Network.requestWillBeSent request headers and that Network.getResponseBody succeeds after loadingFinished. A missing header or body makes the role proof fail, so a run will test this assumption.",
+    "The picker path establishes a selected active organization through the extension's membership-backed UI. The source review does not prove the live membership response or any particular organization role."
+  ],
+  "B_source_quality_verdict": "Suitable for a diagnostic native member run with no source-visible nonadmin false pass. A bounded-pass must still be checked against the live run receipt. The runner's member label means signed in and not assigned as an extension admin; it does not claim an exact organization IAM role.",
+  "evidence": [
+    "Interactive mode requires FILES_SAVED_ROLE=member, no fixture mode, and reviewer_email_fingerprint=3d6137db6c081c07. The reviewer signs in on the normal headed /login page; /api/whoami must yield the fingerprint-matched email, which must then match the extension Account email.",
+    "The native harness creates a new temporary Chrome profile and loads the pinned extension build. The runner attaches the network observer before clicking the extension's Sign in UI.",
+    "Production checkIsAdmin calls adminDb().from('admins').select('user_id').eq('user_id', userId).limit(1); adminDb uses the admin schema. The observer accepts only that GET shape on the configured Supabase origin, with Accept-Profile admin and a UUID user_id filter.",
+    "The observer compares the request user_id to the signed-in extension profile UUID. Only HTTP 200 with a parsed empty JSON array satisfies nonadmin proof. A returned admin row fails; missing, failed, mismatched-user, non-200, and invalid-body responses cannot satisfy the proof.",
+    "The interactive organization branch requires no preselected organization, waits for an actual UI choice, and observes the resulting stored active ID. Settings options come from listMemberOrganizations via mbr_for_user; the runner does not substitute an approved admin organization.",
+    "The report contains a fingerprint, boolean identity and membership observations, HTTP status, and row count; it does not record the email, password, bearer token, response body, or request headers. Browser authentication is not injected into Chrome."
+  ],
+  "required_next_evidence": "Run the frozen native runner as the fingerprint-matched ordinary signed-in reviewer and inspect its bounded receipt, including the canonical_extension_admin_check observation and chosen organization."
+}
