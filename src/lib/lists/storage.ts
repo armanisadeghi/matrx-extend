@@ -196,7 +196,7 @@ export async function addTasks(
   }));
   // DD-131: `creatorKind` already says who authored these tasks, so the write
   // channel follows it. The model's own `update_plan` turn rides the
-  // agent-authored client (`x-matrx-actor-tier: ai`); the user typing a task
+  // agent-authored client (`x-matrx-actor-tier: agent`); the user typing a task
   // into the panel rides the ordinary client and declares nothing.
   const db = creatorKind === 'agent' ? agentChatDb() : chatDb();
   const { data, error } = await db.from('agent_task').insert(rows).select(AGENT_TASK_COLUMNS);

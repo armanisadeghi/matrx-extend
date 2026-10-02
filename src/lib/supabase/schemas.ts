@@ -190,7 +190,7 @@ export const contentIrDb = () => getSupabase().schema('content_ir');
 // ─── Agent-authored write channels (DD-131) ─────────────────────────────────
 //
 // Identical routing to the accessors above, but on the SEPARATE client that
-// declares `x-matrx-actor-tier: ai` on every request. Use one of these ONLY
+// declares `x-matrx-actor-tier: agent` on every request. Use one of these ONLY
 // from a path a model's turn drives (a tool handler under src/lib/tools/). A
 // person's own click keeps using the plain accessor and sends no header at all
 // — absent means human, and that is the whole contract.
@@ -205,7 +205,7 @@ export const agentChatDb = () => getAgentAuthoredSupabase().schema('chat');
 // ─── Machinery-authored write channels (DD-131, B-44) ───────────────────────
 //
 // Identical routing to the accessors above, but on the SEPARATE client that
-// declares `x-matrx-actor-tier: code` on every request. Use one of these ONLY
+// declares `x-matrx-actor-tier: system` on every request. Use one of these ONLY
 // from a path this extension's OWN background infrastructure drives — the
 // scheduler claiming/finishing a run, the agenda scanner firing a due task, a
 // rolling-health bookkeeping bump — never from a path a person's click or a
