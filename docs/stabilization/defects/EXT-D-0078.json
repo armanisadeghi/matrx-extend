@@ -16,12 +16,14 @@
   "evidence": [
     "docs/stabilization/reports/d58-native-20261002.json",
     "docs/stabilization/reports/prepare-denial-diagnosis-20261002.json",
-    "docs/stabilization/resource-journals/prepare-denial-probe-20261002-01.jsonl"
+    "docs/stabilization/resource-journals/prepare-denial-probe-20261002-01.jsonl",
+    "docs/stabilization/reports/site-access-recovery-20261002.json",
+    "docs/stabilization/reports/site-access-final-source-peer-20261002.json"
   ],
   "severity": "S2: restricted-site users cannot finish page preparation without discovering Chrome access controls themselves",
   "priority": "P1: confirmed contained-surface blocker, shared recovery class",
-  "state": "in-fix",
-  "verification_status": "Native withheld and temporary-grant positive controls observed. Frozen173 and current relevant source identical. No repair or closure claimed.",
+  "state": "fixed",
+  "verification_status": "Source repair65f6840a independently accepted;26 focused tests and guarded typecheck passed. Integrated CI37039513091 succeeded. Exact development artifact source2a5fbe64 imported; independent native product retest running. No native repair pass or closure claimed.",
   "transition_history": [
     {
       "at": "2026-10-02T16:18:47.855749+00:00",
@@ -40,6 +42,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Revised shared access/reload recovery contract33782978 accepted by fresh scoped peer7a15294a; implementation assigned."
+    },
+    {
+      "at": "2026-10-02T17:26:38.828347+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Shared Site access grant/reload repair65f6840a accepted by independent source review and integrated CI. Native acceptance remains a separate pending step."
     }
   ],
   "related_feature_ids": ["EXT-F-1001"]
