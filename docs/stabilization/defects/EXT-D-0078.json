@@ -1,7 +1,7 @@
 {
   "id": "EXT-D-0078",
   "feature_id": "EXT-F-1012",
-  "case_ids": ["EXT-F-1012-T08"],
+  "case_ids": ["EXT-F-1012-T08", "EXT-F-1001-T16", "EXT-F-1001-T17", "EXT-F-1001-T18"],
   "surface": "Showcase Prepare / shared script injection access recovery",
   "auth_mode": "admin native reproduction; shared browser permission boundary",
   "title": "Withheld Chrome site access leaves Prepare pending without a recovery action",
@@ -20,7 +20,7 @@
   ],
   "severity": "S2: restricted-site users cannot finish page preparation without discovering Chrome access controls themselves",
   "priority": "P1: confirmed contained-surface blocker, shared recovery class",
-  "state": "triaged",
+  "state": "in-fix",
   "verification_status": "Native withheld and temporary-grant positive controls observed. Frozen173 and current relevant source identical. No repair or closure claimed.",
   "transition_history": [
     {
@@ -34,6 +34,13 @@
       "from": "open",
       "to": "triaged",
       "reason": "Exact-document native probe confirms pending injection and successful temporary grant; false persistent-host refusal refuted."
+    },
+    {
+      "at": "2026-10-02T16:42:23.272084+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Revised shared access/reload recovery contract33782978 accepted by fresh scoped peer7a15294a; implementation assigned."
     }
-  ]
+  ],
+  "related_feature_ids": ["EXT-F-1001"]
 }

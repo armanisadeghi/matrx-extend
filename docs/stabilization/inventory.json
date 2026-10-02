@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-02T16:18:47.855749+00:00",
+  "updated_at": "2026-10-02T16:42:23.272084+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -1790,6 +1790,21 @@
           "id": "EXT-F-1001-C05",
           "label": "Lazy view load",
           "action": "Visit view and inspect loading/retry behavior."
+        },
+        {
+          "id": "EXT-F-1001-C06",
+          "label": "Site access menu",
+          "action": "Open and close shared current-page access recovery without diagnosing blocked work."
+        },
+        {
+          "id": "EXT-F-1001-C07",
+          "label": "Explicit persistent current-site grant",
+          "action": "Request narrow current-origin permission by user gesture; grant, Deny and unsupported outcomes remain honest."
+        },
+        {
+          "id": "EXT-F-1001-C08",
+          "label": "Explicit target-page reload",
+          "action": "Reload captured target tab only on separate user click; page identity invalidates old feedback/outcomes."
         }
       ],
       "source_anchors": [
@@ -2225,6 +2240,144 @@
             "warm",
             "reload"
           ]
+        },
+        {
+          "id": "EXT-F-1001-T16",
+          "title": "Shared site access discovery",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1001-C06"
+          ],
+          "preconditions": [
+            "Use the receipt-matched unpacked CI artifact; confirm manifest/tree/source, reopen sidepanel and reload owned public target before each role run. Do not rebuild during testing.",
+            "Use guest, actual non-admin member and admin independently; use only owned public-page tabs and restore Chrome site access after tests."
+          ],
+          "steps": [
+            "Visit SEO and, for admin, Showcase Prepare; open and close Site access, including keyboard dismissal.",
+            "Navigate the target page and switch tabs while menu is open."
+          ],
+          "expected": [
+            "One shared control remains discoverable across surfaces. No false denial claim or action gating occurs. Menu feedback describes current target only."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation"
+          ],
+          "defect_ids": [
+            "EXT-D-0078"
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "New shared recovery control under implementation; no UI acceptance claimed."
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "New shared recovery control under implementation; no UI acceptance claimed."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New shared recovery control under implementation; no UI acceptance claimed."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-1001-T17",
+          "title": "Explicit persistent grant and temporary-access preservation",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1001-C07"
+          ],
+          "preconditions": [
+            "Use the receipt-matched unpacked CI artifact; confirm manifest/tree/source, reopen sidepanel and reload owned public target before each role run. Do not rebuild during testing.",
+            "Use guest, actual non-admin member and admin independently; use only owned public-page tabs and restore Chrome site access after tests."
+          ],
+          "steps": [
+            "Set owned site access to Ask on every visit and reload. Start an affected page action; open Site access.",
+            "Choose persistent grant and inspect Chrome origin-specific prompt. Exercise Deny, then grant; verify scope and action feedback.",
+            "Separately invoke Chrome toolbar temporary access while persistent contains remains false; run the original page action successfully.",
+            "Navigate while the permission request is open; inspect completion feedback."
+          ],
+          "expected": [
+            "No automatic request, broadened origin, new manifest privilege or persistent-host-only refusal. Deny/unsupported stays honest. Stale grant completion cannot label a new page as granted. Temporary activeTab remains usable."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation"
+          ],
+          "defect_ids": [
+            "EXT-D-0078"
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "New shared recovery control under implementation; no UI acceptance claimed."
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "New shared recovery control under implementation; no UI acceptance claimed."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New shared recovery control under implementation; no UI acceptance claimed."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-1001-T18",
+          "title": "Explicit reload recovers withheld page action",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1001-C08"
+          ],
+          "preconditions": [
+            "Use the receipt-matched unpacked CI artifact; confirm manifest/tree/source, reopen sidepanel and reload owned public target before each role run. Do not rebuild during testing.",
+            "Use guest, actual non-admin member and admin independently; use only owned public-page tabs and restore Chrome site access after tests."
+          ],
+          "steps": [
+            "With a withheld Prepare or SEO action, grant access and separately choose Reload page.",
+            "Confirm only the captured target tab reloads; after identity settles, rerun Prepare or observe SEO recovery.",
+            "Verify no automatic reload or duplicate action follows grant alone; repeat navigation during pending operation."
+          ],
+          "expected": [
+            "Old exact-document work cannot populate the new page. Explicit reload permits a fresh action; sidepanel and unrelated tabs remain intact. Grant alone never triggers an automatic action or reload."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "navigation"
+          ],
+          "defect_ids": [
+            "EXT-D-0078"
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "New shared recovery control under implementation; no UI acceptance claimed."
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "New shared recovery control under implementation; no UI acceptance claimed."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New shared recovery control under implementation; no UI acceptance claimed."
+            }
+          }
         }
       ],
       "cells": {
