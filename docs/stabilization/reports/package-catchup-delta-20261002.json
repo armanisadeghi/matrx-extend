@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "lane": "package-catchup-delta-readonly",
+  "status": "source_delta_identified_not_adopted",
+  "baseline": {
+    "extension_commit": "11d0fba9",
+    "existing_action": "agents 0.32.0 catalog identity and context receipt UI were handled in docs/stabilization/reports/oct02-agents-consumer-20261002.json; this report excludes that solved work",
+    "version_source": "extension pnpm-lock.yaml package snapshot keys versus aidream/apps/shared/*/package.json and CHANGELOG.md on the current local aidream main checkout",
+    "declarations": "The extension's package.json declares its direct @ai-matrx dependencies as latest; the versions below are installed lockfile resolutions, not declared pins or verified npm registry latest"
+  },
+  "newer_source_versions": [
+    {
+      "package": "@ai-matrx/agents",
+      "extension_locked": "0.37.1",
+      "aidream_source": "0.38.1",
+      "changelog_entries_above_lock": ["0.37.2", "0.38.0", "0.38.1"],
+      "evidence": "pnpm-lock.yaml @ai-matrx/agents@0.37.1; aidream/apps/shared/matrx-agents/package.json and CHANGELOG.md sections 0.38.0-0.38.1",
+      "consumer_action": "0.38.0 asks imperative server clients to route through sendMatrxRequest plus readMatrxJsonResponse or parseMatrxNdjsonResponse and remove duplicate fetch/deadline/query/error parsing. 0.37.2 and 0.38.1 say no action.",
+      "extension_scope": "src/lib/api/client.ts rawRequest (fetch, deadline, response/error handling) and raw privatePost (fetch with strict actor, response-cap and no-store checks); src/lib/api/routes/files.ts upload/read fetches; src/lib/api/matrx-transport.ts bare fetch. src/lib/api/stream.ts already consumes shared fallback and NDJSON normalization, so preserve its long-running stream and 409/rejoin semantics while assessing any replacement.",
+      "next_release_action": "Reconcile the imperative request doors against the new shared helper without removing extension-specific bearer refresh, organization hold, actor pin, private-response cap, file body, or stream behavior. Add focused behavioral proof before adopting the new agents resolution; this is a migration item, not a demonstrated runtime break in 0.37.1."
+    },
+    {
+      "package": "@ai-matrx/content-ir",
+      "extension_locked": "0.19.21",
+      "aidream_source": "0.19.22",
+      "evidence": "pnpm-lock.yaml @ai-matrx/content-ir@0.19.21; aidream/apps/shared/content-ir-core/package.json and CHANGELOG.md section 0.19.22",
+      "consumer_action": "None; 0.19.22 is documented as a changed-only metadata republish with no source change intended. The 0.19.21 legacy kind-bridge guidance is already within the lockfile boundary."
+    },
+    {
+      "package": "@ai-matrx/kit",
+      "extension_locked": "0.19.0",
+      "aidream_source": "0.20.0",
+      "evidence": "pnpm-lock.yaml @ai-matrx/kit@0.19.0; aidream/apps/shared/kit/package.json and CHANGELOG.md section 0.20.0",
+      "consumer_action": "No mandatory extension change from this entry. The new /reversible subpath names matrx-frontend and records-ui as consumers; sampled extension kit imports include /uuid, /format, /confirm-opener, and /credential-generator, with no /reversible import. New extension Undo flows should be assessed against the shared reversible contract when built."
+    },
+    {
+      "package": "@ai-matrx/records",
+      "extension_locked": "0.58.126",
+      "aidream_source": "0.60.2",
+      "changelog_entries_above_lock": ["0.58.127", "0.59.0", "0.60.0", "0.60.1", "0.60.2"],
+      "evidence": "pnpm-lock.yaml @ai-matrx/records@0.58.126; aidream/apps/shared/records/package.json and CHANGELOG.md sections 0.58.127-0.60.2",
+      "consumer_action": "None required. 0.59.0 adds tableFind, tableEnsure, recordUpsert and plain Supabase-client binding; 0.60.0 adds tableDuplicate, neither called by this extension. The changelog says the new database doors are on the nightly clone until applied to main, so package source availability does not prove production door availability."
+    }
+  ],
+  "unchanged_source_versions": {
+    "@ai-matrx/associations": "0.13.134",
+    "@ai-matrx/content-ir-react": "0.16.1",
+    "@ai-matrx/design-system": "0.52.0",
+    "@ai-matrx/realtime": "0.8.7",
+    "@ai-matrx/tap-target": "0.2.19",
+    "@ai-matrx/data (transitive)": "0.18.36"
+  },
+  "verification_limit": "Read-only source and lockfile inspection. No registry freshness check, install, code change, typecheck, test, build, native run, or release was performed; no adoption or latest claim is made."
+}
