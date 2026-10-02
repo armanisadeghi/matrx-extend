@@ -1,21 +1,13 @@
 {
   "status": "growth source not proven; read-only observation completed within bounds",
-  "scope": "Internal APFS Data volume; no tests, recursive drive scans, data mutation, process termination, cache removal, or settings changes",
-  "samples": [
-    "2026-10-02 13:53:24 PDT: 2.7 GiB free / 99%",
-    "13:55:13, 13:55:28, 13:55:43 PDT: 2.7 GiB free / 99%"
-  ],
-  "trend": "No measurable free-space change across these samples (~2m19s); does not resolve the reported ~15-minute growth",
-  "observed": [
-    "cloudd PID 38811 active; lsof shows open CloudKit database and com.apple.bird/MMCS ChunkStoreDatabase plus WAL (~10 MiB open files)",
-    "CloudDocs Application Support tree is 3.5 GiB; targeted CloudKit log query exposed no transfer/space events",
-    "no local APFS snapshots; no significant deleted-open files found; fs_usage requires root and attribution was unavailable"
-  ],
-  "unverified_leads": [
-    "29 GiB bird/MMCS and 4.5 GiB fileproviderd temporary footprint are prior measurements from task context, not remeasured",
-    "open MMCS database proves access, not that cloudd wrote the growing payload"
-  ],
-  "recovery": "Apple documents Finder > iCloud Drive > Remove Download to free local space while retaining cloud copy; Download Now restores it. This is reversible for selected synced files but does not target or establish safety of opaque MMCS/fileproviderd caches. https://support.apple.com/en-us/109344",
-  "recommendation": "Keep the 20 GiB floor; defer storage-intensive tests until at least 20 GiB is restored through known user-owned files or approved external storage. Attribute the writer using authorized filesystem tracing or repeated targeted allocated-size samples before considering any cache action.",
+  "scope": "Read-only APFS observation; no tests or mutations",
+  "samples": "13:53:24–13:57:31 PDT: 2.7 GiB free, 99%; MMCS 30,425,172 KiB twice 34s apart",
+  "trend": "Free space flat ~4m; MMCS size flat over 34s; reported ~15m growth remains unresolved",
+  "evidence": "cloudd PID 38811 has CloudKit/MMCS DB and WAL open (~10 MiB); CloudDocs tree 3.5 GiB; MMCS 28.99 GiB",
+  "limits": "No transfer logs; fs_usage requires root; open DB proves access, not writes",
+  "other_checks": "No APFS snapshots or significant deleted-open files",
+  "prior_leads": "4.5 GiB fileproviderd temp is a prior, unrepeated measurement",
+  "recovery": "Finder Remove Download frees selected iCloud Drive files; Download Now restores them. Does not target opaque MMCS cache. https://support.apple.com/en-us/109344",
+  "recommendation": "Keep 20 GiB floor; defer storage-intensive tests until restored from known files or approved external storage. Attribute writer before cache action.",
   "destructive_actions": "none"
 }
