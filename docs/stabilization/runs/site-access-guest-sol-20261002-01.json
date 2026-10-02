@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "run_id": "site-access-guest-sol-20261002-01",
+  "date": "2026-10-02",
+  "role": "guest",
+  "status": "pass_bounded",
+  "browser": {
+    "product": "Chrome for Testing",
+    "version": "149.0.7827.55",
+    "profile": "/Volumes/Samsung2TB/code/.stabilization-scratch/site-access-guest-sol-20261002-owned",
+    "profile_origin": "Fresh empty directory created solely for this run; no authentication state or profile clone.",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "artifact": {
+    "kind": "local_dev_unpacked",
+    "version": "0.2.175",
+    "source_commit": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
+    "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
+    "receipt": "test-results/ci-artifacts/2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a/37039513091-1/local-dev-receipt.json",
+    "tree_verification": "Independent hashReleaseTree of the exact imported extension directory matched the receipt before native launch. The running sidepanel URL showed the extension ID and guest UI. At result time HEAD/origin-main had advanced beyond this artifact source; this is an exact prior pushed source, not a current-main build."
+  },
+  "observations": [
+    {
+      "case_id": "EXT-F-1001-T16",
+      "result": "pass_bounded",
+      "detail": "On public IANA with an empty guest profile, the persistent header exposed Site access from Chat and SEO. The menu named www.iana.org, showed the temporary Chrome-toolbar path and separate persistent grant and reload controls. Escape dismissed the menu. Opening a new tab while the menu was open invalidated its old target; chrome://newtab showed 'Select a web page to manage site access.' Returning to IANA restored its populated SEO audit. Closing and reopening the sidepanel returned to guest Chat with Site access still present. Navigation with the menu open produced 'Page changed. Reopen Site access'; after cross-origin navigation, reopening named www.rfc-editor.org rather than IANA."
+    },
+    {
+      "case_id": "EXT-F-1001-T17",
+      "result": "pass_bounded",
+      "detail": "Chrome site permission was changed from Always on all sites to Ask on every visit for IANA and its required target reload was accepted without reopening Matrx. Guest SEO showed a pending audit spinner. A user click on Always allow on this site displayed Chrome's native permission sheet naming only www.iana.org and read/change scope. Deny returned 'Access not granted' while the temporary path remained visible. A second product click displayed the same exact-origin sheet; Allow returned 'Access allowed on this site.' The target page and prior SEO pending state remained in place until the separately clicked Reload page action."
+    },
+    {
+      "case_id": "EXT-F-1001-T18",
+      "result": "pass_bounded",
+      "detail": "After Allow, the product's separate Reload page control reloaded IANA, left the sidepanel present, and produced real populated SEO results: IANA-managed Reserved Domains title, heading outline, 56 links, and HTTP status 200. The page-change message asked to reopen Site access; reopening showed www.iana.org. No automatic page reload was observed at the grant step."
+    }
+  ],
+  "unverified": [
+    "Temporary toolbar access while persistent permissions.contains(origin) remains false was not exercised in this guest run.",
+    "Navigation while the native Chrome permission sheet itself was open was not exercised; tab switching and navigation were observed with the product menu open.",
+    "A late completion from the old withheld SEO audit and unsupported permissions API behavior were not forced or instrumented."
+  ],
+  "resource_guard": {
+    "journal": "docs/stabilization/resource-journals/site-access-guest-sol-20261002-01.jsonl",
+    "admitted_at": "2026-10-02T18:16:33.264Z",
+    "terminal_at": "2026-10-02T18:20:30.625Z",
+    "terminal_decision": "valid",
+    "exit_code": 0
+  },
+  "cleanup": "Quit the exact owned Chrome for Testing process through its native app menu, confirmed no process using the owned profile, and then removed only that profile. No personal Chrome UI, authentication, credentials, or product code were touched."
+}

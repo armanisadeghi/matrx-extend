@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "report_id": "site-access-guest-native-20261002",
+  "date": "2026-10-02",
+  "scope": "Guest-only native EXT-F-1001-T16/T17/T18 on the exact imported development artifact 0.2.175.",
+  "verdict_A_live_user_outcome": {
+    "status": "PASS_BOUNDED",
+    "verified": [
+      "Guest SEO was pending under Chrome's withheld per-visit site access, while the shared Site access control remained usable.",
+      "The product opened Chrome's exact-IANA-origin permission sheet; Deny and then Allow gave honest in-product feedback without an automatic reload.",
+      "The separate product Reload page action recovered a populated IANA SEO audit with page-specific title, headings, links, and HTTP 200.",
+      "Escape, tab switch, non-HTTP new tab, cross-origin navigation, and sidepanel reopen showed current-page or honest unavailable states."
+    ],
+    "limits": "This is bounded guest coverage. Temporary access with contains=false, navigation during the Chrome sheet, stale old SEO completion, and unsupported permissions API remain unverified. T16/T17/T18 should remain partial rather than full case passes."
+  },
+  "verdict_B_evidence_quality": {
+    "status": "PASS_WITH_LIMIT",
+    "evidence": "Fresh empty owned profile; exact receipt tree hash independently matched; native Chrome for Testing 149 extension ID and guest state observed; native permission sheet, product feedback, and page-specific SEO output observed through UI accessibility and screenshot. Resource guard admitted and ended valid. No screenshot or raw UI transcript was persisted; the linked run records sanitized observations.",
+    "limits": "Receipt binds the result to prior pushed source 2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a, not newer main. No admin/member or Store package inference."
+  },
+  "linked_run": "docs/stabilization/runs/site-access-guest-sol-20261002-01.json",
+  "resource_journal": "docs/stabilization/resource-journals/site-access-guest-sol-20261002-01.jsonl",
+  "source_contract": "docs/stabilization/reports/site-access-recovery-20261002.json",
+  "secret_handling": "No credentials, tokens, authentication flow, or private values were accessed or included."
+}
