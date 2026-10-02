@@ -24,8 +24,8 @@
   ],
   "severity": "S2: restricted-site users cannot finish page preparation without discovering Chrome access controls themselves",
   "priority": "P1: confirmed contained-surface blocker, shared recovery class",
-  "state": "fixed",
-  "verification_status": "Guest empty-profile recovery remains bounded pass; admin new-control observations retained historically, but exact runtime-path provenance requires fresh retest before closure.",
+  "state": "closed",
+  "verification_status": "Closed for bounded original reproduction on path-verified imported175; historical invalidated evidence retained. D58/D59 late completion and broader feature cases remain unverified.",
   "transition_history": [
     {
       "at": "2026-10-02T16:18:47.855749+00:00",
@@ -68,6 +68,18 @@
       "from": "closed",
       "to": "fixed",
       "reason": "Closure evidence audit: earlier admin runs saw distinctive new Site access UI but did not retain actual loaded path. Same-ID clone shadowing demonstrated in subsequent run. Source fix retained; exact-artifact admin retest required. This is evidence correction, not observed product regression."
+    },
+    {
+      "at": "2026-10-02T19:00:01.793783+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent native repeat establishes actual owned Chrome profile and loaded imported175 path/version before and after Reload, validates receipt tree after run, and passes original withheld Prepare recovery plus completed Prepare/Snapshot same-URL clearing. See docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json"
+    },
+    {
+      "at": "2026-10-02T19:00:01.793783+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Fresh independent native repeat establishes actual owned Chrome profile and loaded imported175 path/version before and after Reload, validates receipt tree after run, and passes original withheld Prepare recovery plus completed Prepare/Snapshot same-URL clearing. See docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json"
     }
   ],
   "related_feature_ids": ["EXT-F-1001"],
@@ -82,5 +94,6 @@
       "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
       "evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json"
     }
-  }
+  },
+  "current_native_evidence": "docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json"
 }

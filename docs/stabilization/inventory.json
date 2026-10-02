@@ -336,9 +336,9 @@
               ]
             },
             "admin": {
-              "status": "fail",
-              "detail": "Native test-process artifact attribution failed for reused same-ID profile; product behavior is not failed by this result. Actual loaded folder/profile must be verified before repeat.",
-              "evidence": "docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
+              "status": "partial",
+              "evidence": "docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json",
+              "detail": "D80 actual profile/loaded-path/version check validated with fresh admin repeat; complete CI import collision/error matrix and all artifact coverage remain unverified."
             }
           },
           "defect_ids": [
@@ -407,6 +407,15 @@
       },
       "readiness_gaps": [
         "Concrete procedure and evidence required before executing each control."
+      ],
+      "runtime_evidence": [
+        {
+          "status": "source-only",
+          "source_sha": "58c5760e",
+          "report": "docs/stabilization/reports/package-request-client-adoption-20261002.json",
+          "verified": "Shared request sender adoption: guarded compile,53focused tests and npm-latest check passed; remote lock merge6aec7dd3 retained verified lock unchanged.",
+          "remaining": "Independent consumer-adoption review and native current-artifact acceptance; no feature-role pass implied."
+        }
       ]
     },
     {
@@ -2297,13 +2306,14 @@
               "detail": "New shared recovery control under implementation; no UI acceptance claimed."
             },
             "admin": {
-              "status": "unverified",
-              "run_id": "site-access-native-acceptance-20261002-01",
-              "detail": "Actual admin .175 shared control visible on Prepare and SEO; navigation/open control invalidation and panel reopen followed new IANA target. Keyboard dismissal, tab switching and guest/member unverified.",
-              "evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json",
+              "status": "partial",
+              "run_id": "siteaccess-prepare-pathchecked-sol-20261002-01",
+              "detail": "Actual Chrome owned profile and loaded175 folder/version verified before/after extension Reload. Withheld Prepare recovered through exact-origin Allow plus separate Reload; fresh Prepare757ms/3steps. Completed Prepare and Snapshot clear on same-URL reload. Admin Deny, controlled late results, failure retry and broad remaining controls unverified.",
+              "evidence": "docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json",
               "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
               "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
-              "provenance_correction": "Exact runtime path was not established for reused same-ID admin profile. Earlier observations retained; no imported175 certification until fresh path-verified retest. docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
+              "provenance_correction": "Earlier deleted-profile observations remain unbound; this fresh run establishes its own loaded path and receipt only.",
+              "prior_evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json"
             }
           }
         },
@@ -2353,13 +2363,14 @@
               "detail": "New shared recovery control under implementation; no UI acceptance claimed."
             },
             "admin": {
-              "status": "unverified",
-              "run_id": "site-access-native-acceptance-20261002-01",
-              "detail": "Actual product opened Chrome origin prompt; Deny and later Allow showed correct states. Temporary per-visit Prepare succeeded757ms/3scrollsteps. No in-product contains=false measurement; pending grant navigation and unsupported path unverified.",
-              "evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json",
+              "status": "partial",
+              "run_id": "siteaccess-prepare-pathchecked-sol-20261002-01",
+              "detail": "Actual Chrome owned profile and loaded175 folder/version verified before/after extension Reload. Withheld Prepare recovered through exact-origin Allow plus separate Reload; fresh Prepare757ms/3steps. Completed Prepare and Snapshot clear on same-URL reload. Admin Deny, controlled late results, failure retry and broad remaining controls unverified.",
+              "evidence": "docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json",
               "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
               "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
-              "provenance_correction": "Exact runtime path was not established for reused same-ID admin profile. Earlier observations retained; no imported175 certification until fresh path-verified retest. docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
+              "provenance_correction": "Earlier deleted-profile observations remain unbound; this fresh run establishes its own loaded path and receipt only.",
+              "prior_evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json"
             }
           }
         },
@@ -2408,13 +2419,14 @@
               "detail": "New shared recovery control under implementation; no UI acceptance claimed."
             },
             "admin": {
-              "status": "unverified",
-              "run_id": "site-access-native-recovery-20261002-02",
-              "detail": "Independent second native run reproduced withheld pending Prepare; product grant + explicit target reload cleared busy view and fresh Prepare succeeded756ms/3steps. First run showed actual SEO after reload. Late original completion, other roles and unsupported paths remain unverified.",
-              "evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json",
+              "status": "partial",
+              "run_id": "siteaccess-prepare-pathchecked-sol-20261002-01",
+              "detail": "Actual Chrome owned profile and loaded175 folder/version verified before/after extension Reload. Withheld Prepare recovered through exact-origin Allow plus separate Reload; fresh Prepare757ms/3steps. Completed Prepare and Snapshot clear on same-URL reload. Admin Deny, controlled late results, failure retry and broad remaining controls unverified.",
+              "evidence": "docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json",
               "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
               "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
-              "provenance_correction": "Exact runtime path was not established for reused same-ID admin profile. Earlier observations retained; no imported175 certification until fresh path-verified retest. docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
+              "provenance_correction": "Earlier deleted-profile observations remain unbound; this fresh run establishes its own loaded path and receipt only.",
+              "prior_evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json"
             }
           }
         }
@@ -10156,26 +10168,40 @@
       "cells": {
         "guest": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0081"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0081"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0081"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         }
       },
       "inventory_status": "complete",
       "missing_items": [],
-      "source_complete": true
+      "source_complete": true,
+      "runtime_evidence": [
+        {
+          "status": "source-finding-runtime-pending",
+          "defect_id": "EXT-D-0081",
+          "report": "docs/stabilization/reports/package-request-review-resolution-20261002.json",
+          "limits": "No product feature-mode failure or pass inferred from source inspection; controlled regression tests pending."
+        }
+      ]
     },
     {
       "id": "EXT-F-1007",
@@ -13744,7 +13770,8 @@
         "member": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0059"
+            "EXT-D-0059",
+            "EXT-D-0082"
           ],
           "run_ids": [],
           "retest_status": "not-run"
@@ -13760,7 +13787,8 @@
             "EXT-D-0036",
             "EXT-D-0037",
             "EXT-D-0038",
-            "EXT-D-0059"
+            "EXT-D-0059",
+            "EXT-D-0082"
           ],
           "run_ids": [
             "screenshot-capture-dev093-001",
@@ -13824,6 +13852,12 @@
             }
           ],
           "limits": "Bounded guest T09 dimensions only. The incomplete arbitrary-direct-state criterion keeps the guest cell unverified; no signed-in member/admin Screenshot capture, gallery, save, delete, or full EXT-F-1009 acceptance is claimed."
+        },
+        {
+          "status": "source-finding-runtime-pending",
+          "defect_id": "EXT-D-0082",
+          "report": "docs/stabilization/reports/package-request-review-resolution-20261002.json",
+          "limits": "No product feature-mode failure or pass inferred from source inspection; controlled regression tests pending."
         }
       ]
     },
@@ -15922,17 +15956,18 @@
           ],
           "results": {
             "admin": {
-              "status": "unverified",
-              "run_id": "site-access-native-recovery-20261002-02",
-              "evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json",
-              "detail": "Withheld-access Prepare original D78 failure repaired: explicit product grant/reload then fresh Prepare756ms/3steps. Normal and temporary-grant success also observed. D58 late completion and all remaining Prepare dimensions not certified.",
+              "status": "partial",
+              "run_id": "siteaccess-prepare-pathchecked-sol-20261002-01",
+              "evidence": "docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json",
+              "detail": "Actual Chrome owned profile and loaded175 folder/version verified before/after extension Reload. Withheld Prepare recovered through exact-origin Allow plus separate Reload; fresh Prepare757ms/3steps. Completed Prepare and Snapshot clear on same-URL reload. Admin Deny, controlled late results, failure retry and broad remaining controls unverified.",
               "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
               "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
               "supplemental_evidence": {
                 "report": "docs/stabilization/reports/prepare-document-native-20261002.json",
                 "detail": "Completed Prepare result clears on same-tab/same-URL reload; fresh destination Prepare succeeds. Controlled late settlement and failed retry remain unverified."
               },
-              "provenance_correction": "Exact runtime path was not established for reused same-ID admin profile. Earlier observations retained; no imported175 certification until fresh path-verified retest. docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
+              "provenance_correction": "Earlier deleted-profile observations remain unbound; this fresh run establishes its own loaded path and receipt only.",
+              "prior_evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json"
             }
           },
           "result_history": [
@@ -15987,13 +16022,14 @@
           ],
           "results": {
             "admin": {
-              "status": "unverified",
-              "run_id": "prepare-document-sol-20261002-01",
-              "evidence": "docs/stabilization/reports/prepare-document-native-20261002.json",
-              "detail": "Captured real one-row Nuxt metadata table; same-tab/same-URL reload clears old Snapshot and restores Capture snapshot. Pending completion and remaining controls/dimensions unverified.",
+              "status": "partial",
+              "run_id": "siteaccess-prepare-pathchecked-sol-20261002-01",
+              "evidence": "docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json",
+              "detail": "Actual Chrome owned profile and loaded175 folder/version verified before/after extension Reload. Withheld Prepare recovered through exact-origin Allow plus separate Reload; fresh Prepare757ms/3steps. Completed Prepare and Snapshot clear on same-URL reload. Admin Deny, controlled late results, failure retry and broad remaining controls unverified.",
               "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
               "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
-              "provenance_correction": "Exact runtime path was not established for reused same-ID admin profile. Earlier observations retained; no imported175 certification until fresh path-verified retest. docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
+              "provenance_correction": "Earlier deleted-profile observations remain unbound; this fresh run establishes its own loaded path and receipt only.",
+              "prior_evidence": "docs/stabilization/reports/prepare-document-native-20261002.json"
             }
           }
         },

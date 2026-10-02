@@ -19,7 +19,7 @@
   ],
   "severity": "S2: invalid release confidence and misleading defect attribution",
   "priority": "P1: repair evidence setup before further admin acceptance",
-  "state": "in-fix",
+  "state": "closed",
   "transition_history": [
     {
       "at": "2026-10-02T18:46:54.862249+00:00",
@@ -38,7 +38,27 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Affected results withdrawn; explicit native profile and loaded-folder verification being prepared before repeat."
+    },
+    {
+      "at": "2026-10-02T19:00:01.793783+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh independent native repeat establishes actual owned Chrome profile and loaded imported175 path/version before and after Reload, validates receipt tree after run, and passes original withheld Prepare recovery plus completed Prepare/Snapshot same-URL clearing. See docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json"
+    },
+    {
+      "at": "2026-10-02T19:00:01.793783+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent native repeat establishes actual owned Chrome profile and loaded imported175 path/version before and after Reload, validates receipt tree after run, and passes original withheld Prepare recovery plus completed Prepare/Snapshot same-URL clearing. See docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json"
+    },
+    {
+      "at": "2026-10-02T19:00:01.793783+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Fresh independent native repeat establishes actual owned Chrome profile and loaded imported175 path/version before and after Reload, validates receipt tree after run, and passes original withheld Prepare recovery plus completed Prepare/Snapshot same-URL clearing. See docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json"
     }
   ],
-  "closure_requirement": "Repeat with actual native Chrome profile and developer loaded-from folder/version proven against intended artifact before assertions; reproduce original D78 and completed Prepare/Snapshot reload on that verified runtime. Add this identity check to durable native test instructions, retaining invalidated history."
+  "closure_requirement": "Repeat with actual native Chrome profile and developer loaded-from folder/version proven against intended artifact before assertions; reproduce original D78 and completed Prepare/Snapshot reload on that verified runtime. Add this identity check to durable native test instructions, retaining invalidated history.",
+  "verification_status": "Closed for bounded original reproduction on path-verified imported175; historical invalidated evidence retained. D58/D59 late completion and broader feature cases remain unverified.",
+  "current_native_evidence": "docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json"
 }

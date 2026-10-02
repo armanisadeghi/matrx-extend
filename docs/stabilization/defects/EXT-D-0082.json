@@ -1,0 +1,33 @@
+{
+  "id": "EXT-D-0082",
+  "feature_id": "EXT-F-1009",
+  "surface": "Shared file upload error reporting",
+  "auth_mode": "member/admin",
+  "title": "Upload failure reflects arbitrary server response bodies into logs and thrown errors",
+  "reproduction": [
+    "Call the real uploadFile route consumer with a controlled non-2xx response containing a unique synthetic secret marker.",
+    "Capture its logger arguments and thrown error; verify the marker is absent from both while failure status and a safe remedy remain.",
+    "Run a successful upload and 401 refresh retry as surrounding controls."
+  ],
+  "expected": "Failure remains explicit and actionable without reflecting arbitrary response bodies into logs or thrown messages.",
+  "actual": "Source peer found raw response text passed to log.error and concatenated into the thrown Error; runtime RED proof is being executed.",
+  "evidence": [
+    "docs/stabilization/reports/package-request-client-peer-20261002.json",
+    "docs/stabilization/reports/package-request-review-resolution-20261002.json"
+  ],
+  "severity": "S2: arbitrary server error bodies may expose sensitive values",
+  "priority": "P1: bounded error boundary repair before next release",
+  "state": "open",
+  "reproduction_status": "source-confirmed; controlled RED runtime proof pending",
+  "transition_history": [
+    {
+      "at": "2026-10-02T19:00:53.942007+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Independent source review identified a reproducible boundary; runtime proof and repair assigned to implementation lane."
+    }
+  ],
+  "closure_requirement": "Demonstrate real-response RED\u2192GREEN, independent source review and relevant consumer regression checks. Upstream package repair additionally requires automatic publication and verified adoption; native user-facing behavior remains explicitly tracked.",
+  "related_feature_ids": ["EXT-F-1011"],
+  "caller_census": "Screenshot persistence, guidance annotations/actions, tab recording, record handler and screenshot/PDF ingestion; file_upload page-input tool is not this API."
+}
