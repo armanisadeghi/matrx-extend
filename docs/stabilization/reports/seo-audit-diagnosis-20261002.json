@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "status": "source_repair_verified",
+  "feature_id": "EXT-F-1008",
+  "cause": "SeoView retained its last auto-run page key when a second Chrome loading event withheld identity. The pending capture was discarded, but its finally branch skipped clearing running and the restored identical key could not start another audit.",
+  "evidence": [
+    "Prior frozen 0.2.173 observations establish absent title and disabled/missing Re-audit; they do not measure a pending capture.",
+    "Frozen browser boundary: spinner and disabled Audit this page while top frame and tab were complete with a matching URL, after committed, second loading, then completed events. This predates the source fix.",
+    "Guarded RED seo-recovery-red-20261002-002: real SeoView/useActiveTab Chrome-event test expected third capture on restored same document but received 2, assertion at tests/unit/seo-navigation-recovery.test.tsx:52.",
+    "Guarded GREEN seo-recovery-green-20261002-001: focused regression test passed."
+  ],
+  "hypotheses": [
+    {
+      "cause": "Page identity remains unresolved after navigation",
+      "outcome": "Ruled out for the settled frame: browser top-frame identity was complete with a matching URL at the failed sample.",
+      "prediction": "Identity Retry/Checking visible; browser frame evidence identifies whether top-frame URL/document settled.",
+      "test": "Passive identity and navigation boundary observation on original frozen Airbnb continuation."
+    },
+    {
+      "cause": "Capture response discarded during transient identity withholding; same page key suppresses auto restart",
+      "outcome": "Confirmed by the guarded RED assertion and GREEN repair through the production component and active-tab event path.",
+      "prediction": "Spinner remains while top frame settled; navigation event sequence contains a later withholding transition. A sequenced component test resolving capture during null identity reproduces dead state.",
+      "test": "Observe boundary first, then run narrow real component regression at Chrome messaging boundary if supported."
+    },
+    {
+      "cause": "Full scrape capture is pending before SEO result delivery",
+      "outcome": "The frozen browser observation alone could not distinguish a pending capture; the deterministic event-boundary reproduction showed the discarded-response mechanism.",
+      "prediction": "Spinner with valid identity and no intervening invalidation; capture boundary remains unresolved.",
+      "test": "If identity is exonerated, instrument content response/import/collector boundary rather than extend wait."
+    },
+    {
+      "cause": "Runner misidentifies visible SEO state",
+      "outcome": "Ruled out for the reported controls: scoped observation recorded the spinner, disabled button, and absent identity remedy separately.",
+      "prediction": "Actual audit button/spinner/identity controls disagree with inferred prior running claim.",
+      "test": "Read scoped visible controls independently of title/Re-audit predicate."
+    }
+  ],
+  "changes": [
+    "SeoView invalidates an in-flight audit, clears running and resets the auto-run key when page identity is withheld; run generations prevent a discarded older response from changing the resumed audit.",
+    "tests/unit/seo-navigation-recovery.test.tsx drives the production SeoView, active-tab hook and Chrome message boundary through the captured event order.",
+    "docs/feature-tests.md documents the visible recovery check."
+  ],
+  "verification": {
+    "syntax": "node --check tests/browser/seo-guest-acceptance.mjs passed",
+    "runtime": "focused guarded RED then GREEN; guarded pnpm compile passed in seo-recovery-compile-20261002-001"
+  },
+  "sibling_census": "lastAutoRunUrlRef occurs only in SeoView. Other page-key consumers have no corresponding auto-run latch.",
+  "test_coverage": "The regression guard proves discarded response, resumed capture, enabled audit button, and visible error result. A successful captured SEO title after this source repair remains unverified in a new native build.",
+  "files": [
+    "src/features/seo/SeoView.tsx",
+    "tests/unit/seo-navigation-recovery.test.tsx",
+    "docs/feature-tests.md"
+  ],
+  "unresolved": [
+    "Repaired UI has not been exercised in a new native build; build/release explicitly prohibited in this lane.",
+    "Frozen artifact cannot validate the new source fix; full SEO coverage remains incomplete."
+  ]
+}

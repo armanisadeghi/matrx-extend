@@ -68,6 +68,7 @@ export function SeoView() {
    * always runs on click.
    */
   const lastAutoRunUrlRef = useRef<string | null>(null);
+  const auditRunRef = useRef(0);
 
   const reloadHistory = async (url: string) => {
     const rows = await fetchSeoAuditHistoryForUrl(url);
@@ -98,7 +99,15 @@ export function SeoView() {
   // refresh against the same URL. Errors are already caught + logged inside
   // runAudit, so a restricted page (chrome://) just no-ops gracefully.
   useEffect(() => {
-    if (!tab.id || !tab.url || !tab.pageKey) return;
+    if (!tab.id || !tab.url || !tab.pageKey) {
+      // A navigation can withhold identity without changing the eventual page key.
+      // Invalidate its in-flight capture so it cannot leave the spinner running or
+      // publish a response after the same document becomes ready again.
+      auditRunRef.current += 1;
+      lastAutoRunUrlRef.current = null;
+      setRunning(false);
+      return;
+    }
     if (lastAutoRunUrlRef.current === tab.pageKey) return;
     lastAutoRunUrlRef.current = tab.pageKey;
     void runAudit();
@@ -114,6 +123,7 @@ export function SeoView() {
 
   const runAudit = async () => {
     if (!tab.id || !tab.pageKey) return;
+    const auditRun = ++auditRunRef.current;
     setRunning(true);
     setSavedId(null);
     setAuditError(null);
@@ -131,6 +141,7 @@ export function SeoView() {
       // Out-of-order / navigation guard: a slow audit of page A must not
       // overwrite page B's fresh state.
       if (
+        auditRunRef.current !== auditRun ||
         tabRef.current.id !== requestedTab ||
         tabRef.current.url !== requestedUrl ||
         !isCurrentPageIdentity(requestedPageKey)
@@ -148,12 +159,13 @@ export function SeoView() {
       setAudit(cap.soup.seo);
       setAuditPageKey(requestedPageKey);
     } catch (err) {
-      if (isCurrentPageIdentity(requestedPageKey)) {
+      if (auditRunRef.current === auditRun && isCurrentPageIdentity(requestedPageKey)) {
         setAudit(null);
         setAuditError(`Audit failed: ${(err as Error).message}`);
       }
     } finally {
-      if (isCurrentPageIdentity(requestedPageKey)) setRunning(false);
+      if (auditRunRef.current === auditRun && isCurrentPageIdentity(requestedPageKey))
+        setRunning(false);
     }
   };
 

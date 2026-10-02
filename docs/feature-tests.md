@@ -2428,6 +2428,10 @@ Every entry follows this shape:
   fetch_url_as_markdown returns the FETCHED page's metadata/links.
 - **SEO:** audit a link-heavy page — internal/external link counts are real
   numbers (they were hardcoded 0); chrome:// pages explain themselves.
+  During a public page navigation that emits a second loading event, the SEO
+  spinner clears while identity is withheld. When that same document becomes
+  ready, its audit starts again and the title or a visible capture error replaces
+  the spinner. Check this in the SEO tab with DevTools network throttling.
 - **Chat:** answer an agent questionnaire → Stop now stops that run; ask
   cards with a countdown disappear at 0; streamed code blocks no longer
   flash between plain and highlighted.
