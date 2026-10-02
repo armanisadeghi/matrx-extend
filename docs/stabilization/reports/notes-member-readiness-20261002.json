@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "lane": "Notes D61/D62/D63/D67/D68 member native acceptance readiness",
+  "status": "READY_FOR_GUARDED_NATIVE_RUN_NOT_EXECUTED",
+  "source_artifact": {
+    "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
+    "local_receipt": "test-results/ci-artifacts/2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a/37039513091-1/local-dev-receipt.json",
+    "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
+    "version": "0.2.175",
+    "publish_state": "not_published",
+    "claim": "The runner invokes verifyImportedNativeEvidence before and after the native run. This checks original CI and local receipts, provenance, GitHub run/artifact identity, archive digest, manifest, tree bytes, and current-source relation. The result records returned source and run provenance."
+  },
+  "procedure": [
+    "Reserve the exclusive native browser/heavy resource permit. Do not run this concurrently with another browser or test process.",
+    "Use the existing mode-0600 test-results/files-saved-private-config.json, which contains the authorized reviewer email fingerprint. The runner never records the email, password, or auth token. The reviewer enters their existing credentials into the headed, genuine www.aimatrx.com/login form when STAGE ready_manual_member_login appears.",
+    "Run with NOTES_ROLE=member NOTES_INTERACTIVE_MEMBER=1 NOTES_PRIVATE_CONFIG=/Volumes/Samsung2TB/code/matrx-extend/test-results/files-saved-private-config.json NOTES_EXPECTED_SOURCE_SHA=2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a NOTES_DEV_BUILD_RECEIPT=/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a/37039513091-1/local-dev-receipt.json node tests/browser/notes-native-acceptance.mjs under that resource permit.",
+    "At STAGE ready_manual_member_organization, the reviewer selects an existing organization in the extension's Acting as picker. The runner requires a fresh selection from Choose…, a matching web/extension account, and a successful empty canonical admin.admins result for the current extension user before Notes operations.",
+    "The runner injects only scoped workbench.notes transport failures, verifies recovery through the real UI, captures one successful created-note response ID, and writes it immediately to an ignored mode-0600 notes-owned-fixture-*.json receipt. D63 checks persisted content after panel reload; D68 deletes only this owned ID and checks absence after reload.",
+    "Inspect test-results/notes-native-acceptance.json plus the named private fixture receipt. If the run stops after creation, use the exact receipt note_id and a matching detail GET in the same organization before any UI cleanup. Never delete by title alone or scan/delete unrelated Notes."
+  ],
+  "static_validation": [
+    "node --check tests/browser/notes-native-acceptance.mjs: pass",
+    "git diff --check on owned runner: pass"
+  ],
+  "limits": [
+    "No test, browser, build, release, or authenticated run was executed in this readiness lane.",
+    "The current role proof establishes a real signed-in reviewer with no extension admin assignment. The picker proves organization membership but does not expose its IAM role; a strict organization-role=member claim needs separate authorized role evidence.",
+    "The existing D62 fault is a preflight failed POST, not an ambiguous committed insert with a lost response.",
+    "If the successful create response cannot yield exactly one UUID, the runner fails before editing or deleting and retains a private failure result; any created row then needs manual exact-ID recovery."
+  ]
+}
