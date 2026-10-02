@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "date": "2026-10-02",
+  "defect": "EXT-D-0078",
+  "status": "native API proof banked; revised implementation contract pending independent re-attack",
+  "linked_diagnosis": "docs/stabilization/reports/prepare-denial-diagnosis-20261002.json",
+  "design_contract_commit": "4608aa33",
+  "native_probe": {
+    "run_id": "site-access-request-probe-20261002-01",
+    "browser": "isolated Chrome for Testing 149 using frozen 0.2.173 extension artifact and test-owned profile",
+    "setup": "Changed nuxt.com extension site permission from Always on to Ask on every visit and accepted Chrome's page reload prompt. Opened the extension page directly by URL, without clicking the extension toolbar, then created a temporary DOM button in DevTools and clicked the actual button through the browser UI.",
+    "api": "chrome.permissions.request({origins:['https://nuxt.com/*']}) called inside the button's click handler",
+    "observations": [
+      "permissions.contains({origins:['https://nuxt.com/*']}) returned false before the click.",
+      "Chrome displayed an additional-permissions Allow/Deny sheet stating it could read and change data on nuxt.com.",
+      "After Allow, the request promise resolved true and permissions.contains returned true.",
+      "After navigating back to nuxt.com, Chrome's extension menu displayed 'Always on this site'."
+    ],
+    "conclusion": "A user-clicked request for the withheld required current-site origin works and grants persistent site access in this isolated Chrome profile. This is a distinct, optional remedy from the toolbar's temporary activeTab grant, which previously succeeded while contains(origin) remained false.",
+    "limits": "This probe establishes the API and grant scope, not the final recovery UI or all origins. The test button was ephemeral DevTools-inserted DOM, not product code. It did not test a denial choice or an in-flight stalled Prepare resumption.",
+    "cleanup": "The explicit grant restored the profile's original Always on setting. The isolated browser exited, no profile process remained, and the resource guard ended valid.",
+    "journal": "docs/stabilization/resource-journals/site-access-request-probe-20261002-01.jsonl"
+  },
+  "revised_design_contract": {
+    "review": "Addresses B1/B3 from docs/stabilization/reports/site-access-plan-peer-20261002.json. B2 is satisfied by a neutral, always-discoverable shell control available to every page action, without claiming to detect caller-specific blockage or adding a pending-call bus.",
+    "surface": "One compact Site access control in the sidepanel shell for the captured active HTTP(S) page. Opening it presents a temporary-access instruction (click Matrx in Chrome's toolbar, follow Chrome's reload prompt if shown), a separately labeled persistent choice (Always allow on this site), and an explicit Reload page action. The control is present regardless of Prepare, SEO, or other page-action pending state; no duplicate Prepare-specific prose.",
+    "grant": "Only a direct click on Always allow on this site calls chrome.permissions.request with the captured current origin pattern. It shows Chrome's own Allow/Deny prompt, does not request any manifest addition, and never treats permissions.contains(false) as proof of ineffective access. Allow shows the granted state and offers the separate reload choice; Deny shows a concise refusal with the temporary toolbar path still available. Unsupported APIs or non-HTTP(S) pages show a concise unavailable state and never issue an invalid request.",
+    "reload": "A separate direct Reload page click reloads the captured target browser tab, never the sidepanel. Before reload, check the captured tab/page identity still matches the live active page; if it changed, discard stale feedback and ask the person to reopen the control. Chrome navigation invalidates old exact-document injection completion; the person may then retry Prepare. Never auto-reload, auto-retry, or cancel an in-flight injection after grant or denial.",
+    "pending_call_safety": "For Prepare, changing page identity must clear the visible running state immediately and its run-sequence guard must ignore any late old-document result; the next person-invoked Prepare targets the fresh document. SEO's existing page-key and audit-run guards must likewise prevent stale output and permit its normal fresh-page audit after reload. No same-document reset is offered because it could allow a second action while the old injection might later execute.",
+    "acceptance": "Connected red-to-green tests cover one shared shell control used from both Prepare and SEO, a pending old Prepare promise followed by explicit target-tab reload and fresh retry, a late old-document completion ignored, SEO fresh-page audit and stale-result guard, persistent Allow and Deny, unsupported API/non-HTTP(S), navigation before granting/reloading, and a temporary activeTab success even when persistent contains is false. Native UI verifies the shared control and actual Chrome prompt. No inferred wait signal, elapsed-time denial, or new manifest privilege."
+  },
+  "implementation_constraints": [
+    "Preserve temporary activeTab success when persistent permissions.contains is false.",
+    "Request only the current HTTP(S) origin, only on a plainly labeled user click, with no manifest permission expansion.",
+    "Keep the toolbar temporary-access path visible; do not hide or disable page actions, auto-request permission, or diagnose denial from a timeout."
+  ]
+}

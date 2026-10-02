@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-02 15:54 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T15:54:10.715760+00:00. 205 features · 735 cases · 1319 controls · 77 linked defect records.
+Generated 2026-10-02 16:18 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T16:18:47.855749+00:00. 205 features · 735 cases · 1319 controls · 78 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1170** — Pass: 58 · Partial: 37 · Fail: 1 · Unverified: 1073 · N/A: 1.
-Unverified splits into **122 explicitly marked unverified** and **951 with no result record**.
+Applicable case-by-role slots: **1170** — Pass: 58 · Partial: 37 · Fail: 2 · Unverified: 1072 · N/A: 1.
+Unverified splits into **121 explicitly marked unverified** and **951 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -29,7 +29,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 3 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 0 |
-| [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 26 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 1, partial 26, fail 0, unverified 31, n/a 0 | 12 |
+| [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 26 partial · 1 fail · 30 unverified · 0 deferred; 0/1 full | pass 1, partial 26, fail 1, unverified 30, n/a 0 | 13 |
 | [Token broker](#token-broker) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 9, n/a 0 | 0 |
 | [Content-page overlays / context menus / commands](#content-page-overlays--context-menus--commands) | 1 | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 57, n/a 0 | 0 |
 | [Profile/auth/org picker](#profileauthorg-picker) | 1 | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
@@ -891,11 +891,11 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Discover, save and replay site extraction patterns (EXT-F-1012)
 
-**Role status:** guest: N/A · member: N/A · admin: Partial. **Cases:** 59. **Controls:** 49.
+**Role status:** guest: N/A · member: N/A · admin: Fail. **Cases:** 59. **Controls:** 49.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0040, EXT-D-0041, EXT-D-0042, EXT-D-0043, EXT-D-0044, EXT-D-0046, EXT-D-0047, EXT-D-0048, EXT-D-0054, EXT-D-0057, EXT-D-0058, EXT-D-0059
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0040, EXT-D-0041, EXT-D-0042, EXT-D-0043, EXT-D-0044, EXT-D-0046, EXT-D-0047, EXT-D-0048, EXT-D-0054, EXT-D-0057, EXT-D-0058, EXT-D-0059, EXT-D-0078
 
-**Linked defects:** [EXT-D-0039](defects/EXT-D-0039.json) (closed), [EXT-D-0040](defects/EXT-D-0040.json) (fixed), [EXT-D-0041](defects/EXT-D-0041.json) (fixed), [EXT-D-0042](defects/EXT-D-0042.json) (in-fix), [EXT-D-0043](defects/EXT-D-0043.json) (fixed), [EXT-D-0044](defects/EXT-D-0044.json) (fixed), [EXT-D-0045](defects/EXT-D-0045.json) (closed), [EXT-D-0046](defects/EXT-D-0046.json) (fixed), [EXT-D-0047](defects/EXT-D-0047.json) (in-fix), [EXT-D-0048](defects/EXT-D-0048.json) (fixed), [EXT-D-0049](defects/EXT-D-0049.json) (closed), [EXT-D-0050](defects/EXT-D-0050.json) (closed), [EXT-D-0052](defects/EXT-D-0052.json) (closed), [EXT-D-0053](defects/EXT-D-0053.json) (closed), [EXT-D-0054](defects/EXT-D-0054.json) (fixed), [EXT-D-0055](defects/EXT-D-0055.json) (closed), [EXT-D-0057](defects/EXT-D-0057.json) (fixed), [EXT-D-0058](defects/EXT-D-0058.json) (in-fix), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix)
+**Linked defects:** [EXT-D-0039](defects/EXT-D-0039.json) (closed), [EXT-D-0040](defects/EXT-D-0040.json) (fixed), [EXT-D-0041](defects/EXT-D-0041.json) (fixed), [EXT-D-0042](defects/EXT-D-0042.json) (in-fix), [EXT-D-0043](defects/EXT-D-0043.json) (fixed), [EXT-D-0044](defects/EXT-D-0044.json) (fixed), [EXT-D-0045](defects/EXT-D-0045.json) (closed), [EXT-D-0046](defects/EXT-D-0046.json) (fixed), [EXT-D-0047](defects/EXT-D-0047.json) (in-fix), [EXT-D-0048](defects/EXT-D-0048.json) (fixed), [EXT-D-0049](defects/EXT-D-0049.json) (closed), [EXT-D-0050](defects/EXT-D-0050.json) (closed), [EXT-D-0052](defects/EXT-D-0052.json) (closed), [EXT-D-0053](defects/EXT-D-0053.json) (closed), [EXT-D-0054](defects/EXT-D-0054.json) (fixed), [EXT-D-0055](defects/EXT-D-0055.json) (closed), [EXT-D-0057](defects/EXT-D-0057.json) (fixed), [EXT-D-0058](defects/EXT-D-0058.json) (in-fix), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0078](defects/EXT-D-0078.json) (triaged)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -906,7 +906,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1012-T05 Recipes show all | N/A | N/A | Unverified | EXT-F-1012-C05 |
 | EXT-F-1012-T06 Apply recipe | N/A | N/A | Unverified | EXT-F-1012-C06 |
 | EXT-F-1012-T07 Prepare option switches | N/A | N/A | Unverified | EXT-F-1012-C07 |
-| EXT-F-1012-T08 Run Prepare | N/A | N/A | Unverified | EXT-F-1012-C08 |
+| EXT-F-1012-T08 Run Prepare | N/A | N/A | Fail | EXT-F-1012-C08 |
 | EXT-F-1012-T09 Run Snapshot | N/A | N/A | Unverified | EXT-F-1012-C09 |
 | EXT-F-1012-T10 JSON-LD quick filters | N/A | N/A | Partial | EXT-F-1012-C10 |
 | EXT-F-1012-T11 Run JSON-LD extraction | N/A | N/A | Partial | EXT-F-1012-C11 |
@@ -963,8 +963,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 - EXT-F-1012-T04 · admin: Partial.
   Evidence / build / date recorded: showcase-installed-d43-001, docs/stabilization/runs/showcase-installed-d43-001.json
-- EXT-F-1012-T08 · admin: Unverified. Source-derived defects D57/D58 cover absent reports, stale retry success and late page results. Runtime and native reproduction not yet executed; no UI pass/fail assigned.
-  Evidence / build / date recorded: ['docs/stabilization/reports/prepare-source-audit.json']
+- EXT-F-1012-T08 · admin: Fail. Ordinary and temporary-grant Prepare success observed, but withheld-site injection stays pending without recovery action (D78). D58 late-result and reset acceptance remain unverified.
+  Evidence / build / date recorded: prepare-denial-probe-20261002-01, ['docs/stabilization/reports/d58-native-20261002.json', 'docs/stabilization/reports/prepare-denial-diagnosis-20261002.json', 'docs/stabilization/resource-journals/prepare-denial-probe-20261002-01.jsonl']
 - EXT-F-1012-T10 · admin: Partial. Type chip and blank/matching/nonexistent filters verified on actual Google Article page. Auth-transition, service-error and broader chips remain unverified.
   Evidence / build / date recorded: showcase-structured-journal-retest-20260928, ['docs/stabilization/reports/showcase-structured-journal-retest.json']
 - EXT-F-1012-T11 · admin: Partial. Blank/matching returned current BreadcrumbList; nonexistent shows honest no-match; changed-page live no-JSONLD state verified. Auth/fault dimensions remain unverified.

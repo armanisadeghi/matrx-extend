@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-02T15:54:10.715760+00:00",
+  "updated_at": "2026-10-02T16:18:47.855749+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -15727,13 +15727,27 @@
           ],
           "results": {
             "admin": {
+              "status": "fail",
+              "run_id": "prepare-denial-probe-20261002-01",
+              "artifact_version": "0.2.173",
+              "detail": "Ordinary and temporary-grant Prepare success observed, but withheld-site injection stays pending without recovery action (D78). D58 late-result and reset acceptance remain unverified.",
+              "evidence": [
+                "docs/stabilization/reports/d58-native-20261002.json",
+                "docs/stabilization/reports/prepare-denial-diagnosis-20261002.json",
+                "docs/stabilization/resource-journals/prepare-denial-probe-20261002-01.jsonl"
+              ]
+            }
+          },
+          "result_history": [
+            {
+              "mode": "admin",
               "status": "unverified",
               "evidence": [
                 "docs/stabilization/reports/prepare-source-audit.json"
               ],
               "detail": "Source-derived defects D57/D58 cover absent reports, stale retry success and late page results. Runtime and native reproduction not yet executed; no UI pass/fail assigned."
             }
-          }
+          ]
         },
         {
           "id": "EXT-F-1012-T09",
@@ -17538,7 +17552,8 @@
             "EXT-D-0052",
             "EXT-D-0053",
             "EXT-D-0054",
-            "EXT-D-0055"
+            "EXT-D-0055",
+            "EXT-D-0078"
           ],
           "run_ids": [
             "showcase-live-discovery-001",
@@ -17550,7 +17565,8 @@
             "showcase-d49-native-retest-001",
             "showcase-d49-final-acceptance-20260928",
             "showcase-d50-native-20260928",
-            "showcase-tables-native-20260928"
+            "showcase-tables-native-20260928",
+            "prepare-denial-probe-20261002-01"
           ],
           "retest_status": "fail"
         }
