@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "date": "2026-10-02",
+  "defect": "EXT-D-0078",
+  "status": "native API proof banked; implementation pending independent plan review",
+  "linked_diagnosis": "docs/stabilization/reports/prepare-denial-diagnosis-20261002.json",
+  "design_contract_commit": "4608aa33",
+  "native_probe": {
+    "run_id": "site-access-request-probe-20261002-01",
+    "browser": "isolated Chrome for Testing 149 using frozen 0.2.173 extension artifact and test-owned profile",
+    "setup": "Changed nuxt.com extension site permission from Always on to Ask on every visit and accepted Chrome's page reload prompt. Opened the extension page directly by URL, without clicking the extension toolbar, then created a temporary DOM button in DevTools and clicked the actual button through the browser UI.",
+    "api": "chrome.permissions.request({origins:['https://nuxt.com/*']}) called inside the button's click handler",
+    "observations": [
+      "permissions.contains({origins:['https://nuxt.com/*']}) returned false before the click.",
+      "Chrome displayed an additional-permissions Allow/Deny sheet stating it could read and change data on nuxt.com.",
+      "After Allow, the request promise resolved true and permissions.contains returned true.",
+      "After navigating back to nuxt.com, Chrome's extension menu displayed 'Always on this site'."
+    ],
+    "conclusion": "A user-clicked request for the withheld required current-site origin works and grants persistent site access in this isolated Chrome profile. This is a distinct, optional remedy from the toolbar's temporary activeTab grant, which previously succeeded while contains(origin) remained false.",
+    "limits": "This probe establishes the API and grant scope, not the final recovery UI or all origins. The test button was ephemeral DevTools-inserted DOM, not product code. It did not test a denial choice or an in-flight stalled Prepare resumption.",
+    "cleanup": "The explicit grant restored the profile's original Always on setting. The isolated browser exited, no profile process remained, and the resource guard ended valid.",
+    "journal": "docs/stabilization/resource-journals/site-access-request-probe-20261002-01.jsonl"
+  },
+  "implementation_constraints": [
+    "Preserve temporary activeTab success when persistent permissions.contains is false.",
+    "Request only the current HTTP(S) origin, only on a plainly labeled user click, with no manifest permission expansion.",
+    "Keep the toolbar temporary-access path visible; do not hide or disable page actions, auto-request permission, or diagnose denial from a timeout."
+  ]
+}
