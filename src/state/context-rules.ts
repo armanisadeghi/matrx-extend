@@ -29,9 +29,9 @@ import { useAuthStore } from '@/state/auth';
 import { pushNotice } from '@/state/notices';
 import {
   CONTEXT_RULES_FEATURE,
+  type ContextDeliveredRef,
   type ContextReceipt,
   type ContextReceiptBlock,
-  type ContextDeliveredRef,
   type ContextReceiptMismatch,
   type ContextRowSource,
   type ResolvedContextRow,
@@ -244,10 +244,12 @@ export function toContextReceipt(data: ContextReceiptData): ContextReceipt {
   // server sends hashes and sizes only; actual text is fetched when opened.
   const viewed = data as Omit<ContextReceiptData, 'rows'> & {
     blocks?: ContextReceiptBlock[];
-    rows?: Array<NonNullable<ContextReceiptData['rows']>[number] & {
-      delivered?: ContextDeliveredRef;
-      on_request?: ContextDeliveredRef;
-    }>;
+    rows?: Array<
+      NonNullable<ContextReceiptData['rows']>[number] & {
+        delivered?: ContextDeliveredRef;
+        on_request?: ContextDeliveredRef;
+      }
+    >;
   };
   return {
     version: 1,

@@ -27,6 +27,7 @@
     ["pnpm", "exec", "wxt"],
     ["pnpm", "compile"],
     ["pnpm", "lint"],
+    ["pnpm", "exec", "biome", "check", "--diagnostic-level=error", "."],
     [
       "pnpm",
       "exec",

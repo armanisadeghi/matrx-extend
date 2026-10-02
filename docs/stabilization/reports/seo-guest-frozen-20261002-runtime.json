@@ -9,7 +9,18 @@
     "receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/release-receipt-frozen.json"
   },
   "execution": {
-    "command": ["node", "scripts/stabilization-resource.mjs", "run", "--run-id", "<unique run id>", "--profile-dir", "/Volumes/Samsung2TB/code/.stabilization-scratch", "--", "node", "tests/browser/seo-guest-acceptance.mjs"],
+    "command": [
+      "node",
+      "scripts/stabilization-resource.mjs",
+      "run",
+      "--run-id",
+      "<unique run id>",
+      "--profile-dir",
+      "/Volumes/Samsung2TB/code/.stabilization-scratch",
+      "--",
+      "node",
+      "tests/browser/seo-guest-acceptance.mjs"
+    ],
     "environment": {
       "TMPDIR": "/Volumes/Samsung2TB/code/.stabilization-scratch",
       "SEO_GUEST_METADATA_FIXTURE": "airbnb",

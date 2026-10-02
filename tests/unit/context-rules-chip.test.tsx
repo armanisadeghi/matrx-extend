@@ -142,9 +142,9 @@ describe('ContextRulesComposerChip', () => {
       },
     });
     render(<ContextRulesComposerChip composer="chat" />);
-    expect(
-      screen.getByRole('button', { name: '1 included' }).getAttribute('data-mismatch'),
-    ).toBe('true');
+    expect(screen.getByRole('button', { name: '1 included' }).getAttribute('data-mismatch')).toBe(
+      'true',
+    );
   });
 
   it("Pilot shows its own last send and its own receipt, never the Assistant chat's", () => {
@@ -182,9 +182,9 @@ describe('ContextRulesComposerChip', () => {
       },
     }));
     render(<ContextRulesComposerChip composer="pilot" />);
-    expect(
-      screen.getByRole('button', { name: '2 included' }).getAttribute('data-mismatch'),
-    ).toBe('true');
+    expect(screen.getByRole('button', { name: '2 included' }).getAttribute('data-mismatch')).toBe(
+      'true',
+    );
   });
 
   it('shows the values the server added (attachments, scope seeds) as their own rows', () => {

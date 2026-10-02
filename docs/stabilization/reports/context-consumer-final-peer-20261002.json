@@ -1,6 +1,9 @@
 {
   "lane": "fresh_independent_source_verification",
-  "reviewed_commits": ["11d0fba956785155be3427e8212710463704b072", "ab994d97e513ee3d23997a87ff6c419da59bcb45"],
+  "reviewed_commits": [
+    "11d0fba956785155be3427e8212710463704b072",
+    "ab994d97e513ee3d23997a87ff6c419da59bcb45"
+  ],
   "verdict_a": {
     "status": "PARTIAL",
     "outcome": "Source now normalizes delivered/on_request references and receipt blocks; the shared chip gets the included count; package receiptRowToResolved computes server-authoritative row size including owned blocks, and the extension passes those rows and blocks to the package UI.",
@@ -10,7 +13,10 @@
       "exact_delivered_text_viewer_d75": "NOT ADDRESSED: host provides no loadView callback; the package contract requires one to retrieve text by persisted server identity."
     },
     "live_evidence": "None in this lane. No release artifact or native UI was exercised; attached blocks and accurate count are source/test claims, not live UI acceptance.",
-    "limitations": ["D75 remains open: no message_id reaches the canonical viewer door, and this consumer does not wire loadView.", "No production run or tests performed by verifier; user-authorized lane prohibited heavy test execution."]
+    "limitations": [
+      "D75 remains open: no message_id reaches the canonical viewer door, and this consumer does not wire loadView.",
+      "No production run or tests performed by verifier; user-authorized lane prohibited heavy test execution."
+    ]
   },
   "verdict_b": {
     "status": "PASS_WITH_OPEN_LIMITATION",

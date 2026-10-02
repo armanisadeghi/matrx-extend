@@ -184,8 +184,12 @@ describe('context_receipt', () => {
       cap: 50000,
       rows: [
         {
-          key: 'organization', label: 'Organization', surface_key: '_default',
-          origin: 'server' as const, include: true, max_inline_chars: 200,
+          key: 'organization',
+          label: 'Organization',
+          surface_key: '_default',
+          origin: 'server' as const,
+          include: true,
+          max_inline_chars: 200,
           delivery: 'inline' as const,
           decided_by: { include: 'default' as const, max_inline_chars: 'default' as const },
           delivered,

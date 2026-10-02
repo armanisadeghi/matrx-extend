@@ -1,0 +1,16 @@
+{
+  "lane": "oct02_package_catchup_ci_lint",
+  "trigger": "CI run 37017107411 failed Biome lint with five errors; warnings exhausted the standard diagnostic display.",
+  "current_main_diagnosis": {
+    "run_id": "oct02-ci-biome-errors-20261002-001",
+    "result": "Guarded errors-only check found seven current errors across six files: formatter differences in two JSON reports, two context tests, the context receipt state module, and the SEO guest acceptance script; plus context receipt import order.",
+    "note": "Current main gained two errors after the cited CI run because other committed reports and SEO diagnostics landed. Existing warnings were left intact."
+  },
+  "repair": "Applied the Biome formatter to only those six files and sorted the context receipt type imports. Added one read-only errors-only Biome invocation to the resource guard allowlist so future diagnostics are not hidden behind warnings.",
+  "verification": {
+    "run_id": "oct02-ci-biome-errors-20261002-002",
+    "result": "Guarded check valid, exit 0; 2282 files checked, no fixes applied and no errors reported.",
+    "journal": "docs/stabilization/resource-journals/oct02-ci-biome-errors-20261002-002.jsonl"
+  },
+  "limits": "This is local Biome evidence. A post-push exact-main CI result is required before claiming CI green."
+}

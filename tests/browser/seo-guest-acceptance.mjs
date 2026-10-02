@@ -1279,7 +1279,9 @@ try {
       if (RUN_METADATA_FIXTURE) {
         // Passive browser-boundary evidence distinguishes capture work from an
         // unresolved page identity; neither is inferred from missing output.
-        await evaluate(panel, `(() => {
+        await evaluate(
+          panel,
+          `(() => {
           globalThis.__seoBoundaryEvents = [];
           const record = (kind, detail) => {
             if (detail.frameId !== undefined && detail.frameId !== 0) return;
@@ -1294,7 +1296,8 @@ try {
           chrome.tabs.onUpdated.addListener((tabId, change) => {
             if (change.status) record('tab-status', { tabId, status: change.status });
           });
-        })()`);
+        })()`,
+        );
         enter('metadata_fixture_page_navigation');
         const fixtureResponse = await page.goto(METADATA_FIXTURE_PAGE, { waitUntil: 'load' });
         const fixtureExpected = await observe('metadata_fixture_public_dom_inspected', () =>
@@ -1306,7 +1309,9 @@ try {
           async () => {
             const state = await seoContent(panel);
             const publicDomTitleAtSample = await page.evaluate(() => document.title.trim());
-            const boundary = await evaluate(panel, `(async () => {
+            const boundary = await evaluate(
+              panel,
+              `(async () => {
               const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
               const frame = tab?.id ? await chrome.webNavigation.getFrame({tabId: tab.id, frameId: 0}) : null;
               return { tabId: tab?.id ?? null, status: tab?.status ?? null,
@@ -1314,7 +1319,8 @@ try {
                 tabUrlMatchesFrame: tab?.url === frame?.url,
                 frameError: frame?.errorOccurred ?? null,
                 events: globalThis.__seoBoundaryEvents ?? [] };
-            })()`);
+            })()`,
+            );
             return {
               boundary,
               ...state,
