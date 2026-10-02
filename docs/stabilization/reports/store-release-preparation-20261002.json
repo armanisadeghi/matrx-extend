@@ -37,6 +37,16 @@
     "failedRun": "https://github.com/armanisadeghi/matrx-extend/actions/runs/36820858912",
     "reason": "Required scoped SUPABASE_ACCESS_TOKEN GitHub secret is absent; workflow stopped before checkout",
     "credentialDecision": "Q-2026-10-01-extend-hosted-read-token is awaiting owner approval; no token was created or substituted",
-    "localConstraint": "Workspace parent CLAUDE.md prohibits manually initiating release or build commands on this machine"
+    "localConstraint": "Workspace parent CLAUDE.md prohibits manually initiating release or build commands on this machine",
+    "latestSecretCheck": "Required SUPABASE_ACCESS_TOKEN still absent from GitHub secret metadata at October2 16:24UTC."
+  },
+  "latestDashboardObservation": {
+    "observedAt": "2026-10-02T16:45:36.694459+00:00",
+    "surface": "Authenticated primary Chrome Web Store Package dashboard",
+    "status": "Published - public",
+    "publishedVersion": "0.2.130",
+    "draftVersion": "0.2.130",
+    "uploadNewPackageEnabled": true,
+    "action": "Read only; no upload or submission."
   }
 }
