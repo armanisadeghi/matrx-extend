@@ -1,6 +1,19 @@
 # Matrx Extend stabilization: resume here
 
-## Current checkpoint — October 1, 2026: candidate173 verified narrowly; Google review still pending
+## Active checkpoint — October 2, 2026: 130 published; latest release and product repairs active
+
+User renewed continuous test/fix/retest and latest Store submission; daily follow-up explicitly authorized. Root refreshed the authenticated primary Store Package dashboard at 13:12 UTC: **Published - public**, published version **0.2.130**, Upload new package enabled. Older pending-review facts below are historical.
+
+Daily Codex heartbeat `matrx-extend-daily-review-and-update` is ACTIVE at 09:00 America/Los_Angeles, registered in common-docs operations/scheduled-tasks.md. Claim MCP is not exposed; scheduled runs use the documented ledger fallback until available. No duplicate schedule. Existing hourly repository sync remains separate.
+
+Active flat lanes (root owns integration, Store UI, inventory):
+- `oct02_release_prepare` — Sol medium, newest eligible artifact, approved130 baseline, release evidence. Sole heavy slot reserved; current workspace forbids manual local builds/releases, so investigate canonical remote outputs first.
+- `oct02_product_fix` — Sol medium, real non-Chat/Pilot defect repair; source work only until heavy slot assigned.
+- `oct02_member_testing` — Luna medium, ordinary-member Files/Saved coverage; authenticate using actual reviewer identity, no admin substitution. No heavy launch until granted.
+
+Keep original inventory/defect schema and exact build boundaries. One refusing resource-guarded heavy run at a time. Two failed attempts or 20 active minutes triggers decomposition/rerouting. Source-only proof never closes UI coverage. Commit/push each verified unit, preserve concurrent writers. Do not end while children run.
+
+## Historical checkpoint — October 1, 2026: candidate173 verified narrowly; Google review still pending
 
 **Owner request:** full status/coverage audit, confirm Store approval, prepare/handle next submission, continue testing/fixing. Do not claim overall health.
 
