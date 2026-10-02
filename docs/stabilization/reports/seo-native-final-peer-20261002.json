@@ -1,7 +1,23 @@
 {
   "review": "Independent validation of the bounded SEO retry; no browser/build/test run or source edits.",
-  "verdict_a_actual_native": {"status": "BOUNDED_GUEST_RECOVERY_OBSERVED", "finding": "The reported frozen 0.2.173 guest spinner reproduction is the original failure; on the imported 0.2.175 development artifact, the same Airbnb page completed automatic SEO observation and manual re-audit, and bounded T01/T02 surrounding targets passed. This is a recovery retest, not a claim the original failure did not occur.", "evidence": ["Ignored native result test-results/seo-current-ci-20261002-02.json SHA-256 22aa77410629b5ed793bce502fd69e8ee0526a174bdbe6ed303108f053614305; status partial, 17 passed, 1 unverified; Airbnb source URL/title and 96 alternates/2 schema types observed, hreflang/schema outbound actions passed.", "Frozen-build original reproduction is documented in docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json; current result includes title replacement, manual current-page audit and reload targets passing."], "limits": "Bounded guest coverage only; Wikipedia door candidates remain unavailable, readability metric correctness is unverified, and deferred guest cases plus member/admin remain open."},
-  "verdict_b_receipt_quality": {"status": "RECEIPT_CHAIN_VALID_PRIOR_FINDING_ADDRESSED", "finding": "The earlier INCOMPLETE_RECEIPT_CHAIN finding is addressed by the retry receipts.", "evidence": ["Run receipt binds runner tests/browser/seo-guest-acceptance.mjs SHA-256 62d000954fa38e19d83dd162f5df014b4c43fa9368d62716f262244b8990aa37 (verified against commit acf44362), native result hash above, source 3ca1f08df4c8d45dfdb25c43ce4571290252bc97, artifact source b41fd0b367dd8142987013a07f77a34d2a03a4c6, CI run 37027762568/artifact 11236112494, digest sha256:08c6432648da0c866595cebbf0a00e808080e56d6a93304d364ed26971b2c9c7, and tree a7f9728b45d9dcc407e392092c15383cd541de030d71330322d08617524e73ba.", "Guard journal hash 3f55a7a6d09fb223d8e347ebb015ad98eee3c8809bb5729b923b059d2986eadf records admitted/valid and child exit 0; source claim is exact pushed commit only and artifact remains not published."], "limits": "Prior first-run incomplete receipt is superseded only for this retry; this does not certify a complete SEO feature run."},
+  "verdict_a_actual_native": {
+    "status": "BOUNDED_GUEST_RECOVERY_OBSERVED",
+    "finding": "The reported frozen 0.2.173 guest spinner reproduction is the original failure; on the imported 0.2.175 development artifact, the same Airbnb page completed automatic SEO observation and manual re-audit, and bounded T01/T02 surrounding targets passed. This is a recovery retest, not a claim the original failure did not occur.",
+    "evidence": [
+      "Ignored native result test-results/seo-current-ci-20261002-02.json SHA-256 22aa77410629b5ed793bce502fd69e8ee0526a174bdbe6ed303108f053614305; status partial, 17 passed, 1 unverified; Airbnb source URL/title and 96 alternates/2 schema types observed, hreflang/schema outbound actions passed.",
+      "Frozen-build original reproduction is documented in docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json; current result includes title replacement, manual current-page audit and reload targets passing."
+    ],
+    "limits": "Bounded guest coverage only; Wikipedia door candidates remain unavailable, readability metric correctness is unverified, and deferred guest cases plus member/admin remain open."
+  },
+  "verdict_b_receipt_quality": {
+    "status": "RECEIPT_CHAIN_VALID_PRIOR_FINDING_ADDRESSED",
+    "finding": "The earlier INCOMPLETE_RECEIPT_CHAIN finding is addressed by the retry receipts.",
+    "evidence": [
+      "Run receipt binds runner tests/browser/seo-guest-acceptance.mjs SHA-256 62d000954fa38e19d83dd162f5df014b4c43fa9368d62716f262244b8990aa37 (verified against commit acf44362), native result hash above, source 3ca1f08df4c8d45dfdb25c43ce4571290252bc97, artifact source b41fd0b367dd8142987013a07f77a34d2a03a4c6, CI run 37027762568/artifact 11236112494, digest sha256:08c6432648da0c866595cebbf0a00e808080e56d6a93304d364ed26971b2c9c7, and tree a7f9728b45d9dcc407e392092c15383cd541de030d71330322d08617524e73ba.",
+      "Guard journal hash 3f55a7a6d09fb223d8e347ebb015ad98eee3c8809bb5729b923b059d2986eadf records admitted/valid and child exit 0; source claim is exact pushed commit only and artifact remains not published."
+    ],
+    "limits": "Prior first-run incomplete receipt is superseded only for this retry; this does not certify a complete SEO feature run."
+  },
   "closure_recommendation": "Close EXT-D-0076 for the reproduced guest spinner scope: original frozen-build failure is recorded and corrected-artifact guest retest shows recovery with relevant surrounding targets passing. Preserve EXT-F-1008 as partial; do not infer full SEO acceptance or member/admin coverage.",
   "scope": "Independent artifact/result/receipt review only."
 }

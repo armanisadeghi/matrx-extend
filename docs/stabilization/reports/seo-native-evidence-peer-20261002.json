@@ -3,13 +3,23 @@
   "verdict_a": {
     "status": "RECOVERY_OBSERVED_BOUNDED",
     "finding": "The recorded current-source native session does not reproduce the original Airbnb spinner: its automatic SEO observation reached the Airbnb title/data and the detail assertions passed before later schema-door activation failed.",
-    "evidence": ["test-results/seo-guest-acceptance.json: current_operation=metadata_fixture_schema_outbound_activation; 16 surrounding targets pass; automatic title matches the public title; failure is schema anchor candidate_count=0.", "docs/stabilization/reports/seo-current-artifact-20261002.json identifies source b41fd0b3, artifact 11236112494, version 0.2.175, tree hash a7f9728b…, and reports original_spinner_reproduction=recovered_in_this_bounded_run."],
-    "limits": ["The native result remains status=unverified; this establishes only that the frozen-0.2.173 spinner was not seen in this bounded current-source session.", "The run stopped at the schema door; the full guest suite, exact readability correctness, member/admin modes, and other deferred actions remain unverified."]
+    "evidence": [
+      "test-results/seo-guest-acceptance.json: current_operation=metadata_fixture_schema_outbound_activation; 16 surrounding targets pass; automatic title matches the public title; failure is schema anchor candidate_count=0.",
+      "docs/stabilization/reports/seo-current-artifact-20261002.json identifies source b41fd0b3, artifact 11236112494, version 0.2.175, tree hash a7f9728b…, and reports original_spinner_reproduction=recovered_in_this_bounded_run."
+    ],
+    "limits": [
+      "The native result remains status=unverified; this establishes only that the frozen-0.2.173 spinner was not seen in this bounded current-source session.",
+      "The run stopped at the schema door; the full guest suite, exact readability correctness, member/admin modes, and other deferred actions remain unverified."
+    ]
   },
   "verdict_b": {
     "status": "INCOMPLETE_RECEIPT_CHAIN",
     "finding": "Source/build identity is corroborated, but this artifact cannot serve as a complete native acceptance receipt or close EXT-D-0076.",
-    "evidence": ["The embedded imported_artifact identity matches the summary: source b41fd0b367dd8142987013a07f77a34d2a03a4c6 (an ancestor of reviewed HEAD), CI run 37027762568, artifact 11236112494, digest sha256:08c643…, tree a7f9728b….", "The acceptance JSON itself has run_id/source_commit/artifact_sha256/timestamps unset; its present SHA-256 is 72c916d86e534e1996b2b470477cccced20058628e198cb1e70ca6828fbb29d5 and no native-run record binds that hash to the summary.", "The linked resource journal seo-current-ci-20261002-01 ends child_failed (exit 1); it records no successful native-run receipt. The later committed report is a summary, not the missing runner/guard/result-hash receipt."],
+    "evidence": [
+      "The embedded imported_artifact identity matches the summary: source b41fd0b367dd8142987013a07f77a34d2a03a4c6 (an ancestor of reviewed HEAD), CI run 37027762568, artifact 11236112494, digest sha256:08c643…, tree a7f9728b….",
+      "The acceptance JSON itself has run_id/source_commit/artifact_sha256/timestamps unset; its present SHA-256 is 72c916d86e534e1996b2b470477cccced20058628e198cb1e70ca6828fbb29d5 and no native-run record binds that hash to the summary.",
+      "The linked resource journal seo-current-ci-20261002-01 ends child_failed (exit 1); it records no successful native-run receipt. The later committed report is a summary, not the missing runner/guard/result-hash receipt."
+    ],
     "required_closure": "Preserve a native-run receipt binding run/time, exact runner hash, imported artifact/tree/source identity, result-file SHA, and terminal partial/unverified outcome; then separately resolve the outbound door boundary if that coverage is required."
   },
   "scope": "Artifact and local record review only."

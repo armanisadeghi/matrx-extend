@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0077",
   "feature_id": "EXT-F-0001",
-  "case_ids": [
-    "EXT-F-0001-T06"
-  ],
+  "case_ids": ["EXT-F-0001-T06"],
   "surface": "Development test artifact importer",
   "auth_mode": "guest/member/admin (artifact infrastructure)",
   "title": "Draft import collision cleanup could delete an existing artifact",
@@ -14,9 +12,7 @@
   ],
   "expected": "An occupied target refuses import without modifying any existing byte. Cleanup applies only to a directory successfully created by this invocation.",
   "actual": "Source review found target assigned before exclusive creation. This was an unpublished draft, not a shipped incident; no actual lost artifact observed and no original failing runtime receipt exists.",
-  "evidence": [
-    "docs/stabilization/reports/current-test-artifact-verification-20261002.json"
-  ],
+  "evidence": ["docs/stabilization/reports/current-test-artifact-verification-20261002.json"],
   "severity": "S2: existing test build/evidence could be removed by a duplicate import",
   "priority": "P1: must repair before importer/workflow publication",
   "state": "fixed",

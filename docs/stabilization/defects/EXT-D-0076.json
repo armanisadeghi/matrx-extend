@@ -1,10 +1,7 @@
 {
   "id": "EXT-D-0076",
   "feature_id": "EXT-F-1008",
-  "case_ids": [
-    "EXT-F-1008-T01",
-    "EXT-F-1008-T02"
-  ],
+  "case_ids": ["EXT-F-1008-T01", "EXT-F-1008-T02"],
   "title": "SEO audit remains busy after public page finishes loading",
   "surface": "SEO",
   "auth_mode": "guest reproduced; member/admin unverified",
