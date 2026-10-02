@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "review": "fresh independent verification of EXT-D-0076 commits 94bfae67 and 009fa468",
+  "verdict_a": {
+    "status": "NOTADDRESSED",
+    "finding": "The repaired product outcome is still not demonstrated in a current native extension build. The source and connected component tests support recovery, but cannot establish the reported guest page now settles in Chrome.",
+    "evidence": [
+      "The prior native acceptance is explicitly frozen 0.2.173, predates 94bfae67, and records a completed matching Airbnb tab with the SEO spinner still shown; it cannot verify repaired behavior.",
+      "No current-source native acceptance evidence was present in the reviewed artifacts. Member and admin outcomes are also unverified."
+    ],
+    "limits": [
+      "This verdict concerns live outcome evidence, not source behavior; no native browser session was run in this review."
+    ]
+  },
+  "verdict_b": {
+    "status": "ADDRESSED",
+    "finding": "The repair and follow-up guard the reproduced navigation recovery and stale-result cases at source and component-test level, and align with the active-tab identity contract.",
+    "checks": {
+      "overlap_late_success": "ADDRESSED: tests resolve an older successful capture both before and after the replacement succeeds, asserting it cannot publish old-page data or clear replacement busy state.",
+      "overlap_late_failure": "ADDRESSED: an older capture rejection after replacement success cannot introduce an error or change the settled current-page result.",
+      "normal_successful_audit": "ADDRESSED in connected test coverage: the replacement automatic capture renders the current-page title through real SeoDetails; native successful-audit behavior remains unverified under verdict A."
+    },
+    "evidence": [
+      "SeoView increments an audit generation when identity is withheld and when a new run starts; completion, catch, and finally paths check generation and current identity before publishing results or clearing running state.",
+      "The follow-up test uses production SeoView, useActiveTab, captureWithFallback, and SeoDetails, with stubbed Chrome events and sendMessage responses. Thus it exercises component and lifecycle logic, but transport/page capture is simulated.",
+      "The focused guard artifact records four passing cases after the harness-only CopyMenu isolation; the original red/green and compile evidence are recorded separately."
+    ],
+    "doctrine": "No conflict found with the active-tab identity or shared capture contracts. SEO continues to use captureWithFallback; pageKey identity gates current-page data; no second capture implementation was added.",
+    "limits": [
+      "The connected tests do not reproduce Chrome's native navigation or a real content-script capture."
+    ]
+  },
+  "scope": "Independent source, test, contract, and artifact review only; no product edits, test execution, build, or browser actions."
+}
