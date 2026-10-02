@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0058",
   "feature_id": "EXT-F-1012",
-  "case_ids": [
-    "EXT-F-1012-T08"
-  ],
+  "case_ids": ["EXT-F-1012-T08"],
   "title": "Prepare retry retains stale success and late results",
   "surface": "Showcase Prepare",
   "auth_mode": "admin",
