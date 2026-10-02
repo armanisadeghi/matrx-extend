@@ -159,7 +159,7 @@ design; a client-side kind parser is the banned "bespoke stream renderer". A kin
 component only when a `content_ir.kind_component` row (`platform='chrome-extension'`) names a key
 in `dispatch.tsx` — two explicit halves, no silent fallback; anything else gets the generic floor.
 Both packages are exact public npm dependencies; committed package tarballs are forbidden. SoR:
-`common-docs/systems/architecture/content-ir/content-ir-twin-FEATURE.md`. Raw stream / markdown parsing
+`common-docs/systems/architecture/content-ir/FEATURE.md`. Raw stream / markdown parsing
 ([src/lib/api/stream.ts](./src/lib/api/stream.ts),
 [src/components/markdown/block-parser.ts](./src/components/markdown/block-parser.ts)) is next to
 adopt the kernel — read `common-docs/projects/unified-content-pipeline/FEATURE.md` first. Stream-silence rule: any event that implies expected silence (like
