@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "lane": "package-request-review-resolution",
+  "status": "local_regressions_green_host_compile_green_upstream_typecheck_environment_blocked_pending_peer_review",
+  "source_review": "docs/stabilization/reports/package-request-client-peer-20261002.json at extension commit 58c5760e",
+  "findings": [
+    {
+      "id": "shared_plain_text_http_error_fallback_consumes_body",
+      "owner": "aidream/apps/shared/matrx-agents/matrx/backend-errors.ts parseHttpError",
+      "observed_source": "The function awaits response.json() and, after a non-JSON rejection, awaits response.text() on the same consumed Response body. The second read throws, so it emits a generic HTTP status instead of the plain-text detail promised by its contract.",
+      "bounded_fix": "Read response text once; parse that captured text as JSON when valid; classify the same captured text on a plain-text response. Preserve the existing structured JSON error parser and status classification.",
+      "forcing_guard": "Use real Response instances with two distinct plain-text non-2xx bodies and a structured JSON non-2xx body; assert distinct detail/userMessage values and status. First prove the plain-text assertion fails on current package source, then fix and rerun under the heavy resource guard. No live credential fixture."
+    },
+    {
+      "id": "file_transfer_reflects_raw_server_error_body",
+      "owner": "matrx-extend/src/lib/api/routes/files.ts uploadFile and downloadFileBytes",
+      "observed_source": "Both non-2xx paths concatenated arbitrary server response text into thrown errors; upload also logged it. A server body could echo a request value.",
+      "bounded_fix": "After each existing one-time 401 refresh, use the published shared bareStatusSentence(status) with the HTTP status for both upload and download. Upload logs only its fixed status/timing line. Preserve FormData, organization binding, retry, success decoding, and download bytes/filename/mime handling.",
+      "forcing_guard": "Real upload and download calls each receive synthetic-secret plain-text 403 and 502 responses; thrown messages must retain status and access/retry remedy without the marker, and upload log arguments must not contain it. Existing positive 401 retry, cancellation, and byte/filename cases remain green."
+    }
+  ],
+  "host_contracts_retained": {
+    "api_result": "rawRequest returns ApiResult, maps 204 success to undefined, and accepts successful text; changing it wholesale to readMatrxJsonResponse would alter callers' contract.",
+    "deadline": "rawRequest has a whole-response AbortSignal deadline and privatePost has a deadline spanning identity checks, dispatch, capped body read and final actor verification. sendMatrxRequest's timeoutMs covers only send-to-headers, so substituting it would weaken existing behavior.",
+    "private_response": "privatePost enforces actor pinning, no-store, strict JSON, response caps and no-reflection. These policies are extension-specific and are retained.",
+    "stream": "The extension already uses the shared NDJSON stream reader with per-event delivery and 409/rejoin behavior; no generic parser rewrite is in this repair."
+  },
+  "automatic_package_route": {
+    "trigger": "aidream/.github/workflows/publish-changed-npm-packages.yml runs on main pushes to apps/shared/**",
+    "nomination": "aidream/scripts/publish-all-ts-packages.mjs detects package source changed since its immutable npm tag, nominates in dependency order, and dispatches the trusted publish workflow",
+    "hold": "No manual release, version bump, package build, or consumer import of an unpublished helper. Verify the automatic workflow and npm latest, then refresh the extension lock and rerun its guarded checks in this same session before claiming the upstream repair complete."
+  },
+  "resource_status": "All local guarded children terminal; heavy permit released to parent after 2026-10-02T19:18:00Z. No native/browser work in this lane.",
+  "local_evidence": {
+    "upstream_invalid_first_attempt": "resource-journals/d81-parser-red-20261002-01.jsonl: missing local @ai-matrx/kit before test collection; excluded from RED proof",
+    "upstream_filtered_install": "resource-journals/d81-upstream-workspace-deps-20261002-01.jsonl: valid guarded @ai-matrx/agents... frozen workspace install; no manual build",
+    "upstream_red": "resource-journals/d81-parser-red-20261002-02.jsonl: two new plain-text assertions fail, 16 existing pass",
+    "upstream_green": "resource-journals/d81-parser-green-20261002-01.jsonl: 18/18 pass",
+    "host_upload_red": "resource-journals/d82-upload-red-20261002-01.jsonl: two new upload no-reflection assertions fail, two existing controls pass",
+    "host_transfer_red": "resource-journals/d82-download-red-20261002-01.jsonl: four upload/download no-reflection assertions fail, three controls pass",
+    "host_transfer_green": "resource-journals/d82-files-green-20261002-01.jsonl: 7/7 pass",
+    "resource_policy_diff": "Four narrow exact allowedCommands added: filtered upstream install, targeted upstream Vitest, targeted extension Vitest, upstream typecheck. No thresholds, concurrency, or watchdog values changed.",
+    "upstream_typecheck": "resource-journals/d81-upstream-typecheck-20261002-01.jsonl: guarded tsc exited 2 before changed source diagnostics because alchemy/src/operate imports @ai-matrx/kit subpaths but alchemy/node_modules/@ai-matrx/kit is absent after filtered agents install. No further environment retry, per two-failure cap.",
+    "host_compile": "resource-journals/d82-host-compile-20261002-01.jsonl: guarded pnpm compile valid exit 0",
+    "upstream_invalid_root_install": "resource-journals/d81-upstream-deps-20261002-01.jsonl: aidream root is not the pnpm workspace; no dependency links made; own generated root lock removed"
+  },
+  "remaining": "Independent peer must review immutable local D81 and D82 source commits before push. Upstream typecheck is unverified due the missing alchemy workspace link. Following approved upstream push, verify automatic npm publish and adopt actual latest into extension before claiming package repair end to end."
+}

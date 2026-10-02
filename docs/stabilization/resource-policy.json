@@ -21,6 +21,7 @@
   "cpuAdmissionRationale": "Admission samples a full 60-second window: refuse average CPU busy >=75%, or average busy >=60% if ANY sample has normalized one-minute load >=0.75. Missing samples refuse. The reported admission load is the window maximum normalized to the final CPU count.",
   "allowedCommands": [
     ["pnpm", "install", "--frozen-lockfile", "--ignore-scripts"],
+    ["pnpm", "--dir", "/Volumes/Samsung2TB/code/aidream/apps", "--filter", "@ai-matrx/agents...", "install", "--frozen-lockfile", "--ignore-scripts"],
     ["pnpm", "exec", "wxt", "prepare"],
     ["pnpm", "exec", "wxt", "build", "--mode", "development"],
     ["pnpm", "exec", "wxt", "build"],
@@ -68,6 +69,9 @@
     ["pnpm", "docs:tools"],
     ["pnpm", "exec", "tsc", "--noEmit"],
     ["pnpm", "exec", "vitest", "run", "--maxWorkers=1"],
+    ["pnpm", "exec", "vitest", "run", "--maxWorkers=1", "src/lib/api/routes/files.request-client.test.ts"],
+    ["pnpm", "--dir", "/Volumes/Samsung2TB/code/aidream/apps/shared/matrx-agents", "exec", "vitest", "run", "matrx/call.test.ts"],
+    ["pnpm", "--dir", "/Volumes/Samsung2TB/code/aidream/apps/shared/matrx-agents", "typecheck"],
     ["bash", "scripts/test-release-ship-path.sh"],
     ["bash", "scripts/test-release-ship-path.sh", "/tmp/matrx-release-before/release.sh"],
     ["bash", "scripts/test-release-ship-path.sh", "/tmp/matrx-release-ci-before/release.sh"],
