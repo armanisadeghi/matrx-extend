@@ -22,7 +22,7 @@
  *     A new surface that wires a delete button straight to the operation
  *     fails before it can ship.
  *
- * Law: `common-docs/policies/destructive-and-expensive-actions.md`.
+ * Law: `common-docs/policies/no-dead-ends.md`.
  */
 
 export interface DestructiveOperation {

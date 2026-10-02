@@ -3,7 +3,7 @@
  * THE CONSEQUENCE.
  *
  * The platform's destructive-and-expensive-actions law (Arman, 2026-08-29;
- * `common-docs/policies/destructive-and-expensive-actions.md`) says a generic
+ * `common-docs/policies/no-dead-ends.md`) says a generic
  * "Are you sure?" does not satisfy the confirmation requirement — the text has
  * to state what is LOST, what is DUPLICATED, or what it COSTS.
  * `@ai-matrx/design-system` enforces that inside the package (its own

@@ -5,7 +5,7 @@
  * operations directly. The guard (`tests/unit/destructive-confirm-guard.test.ts`)
  * checks that the operations below are only ever called inside `run`.
  *
- * Law: `common-docs/policies/destructive-and-expensive-actions.md`.
+ * Law: `common-docs/policies/no-dead-ends.md`.
  */
 
 import { confirmDestructive } from '@/lib/destructive/confirm';
