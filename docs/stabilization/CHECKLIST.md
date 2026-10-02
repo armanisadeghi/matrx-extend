@@ -1,6 +1,6 @@
 # Stabilization checklist
 
-Generated 2026-10-02 15:07 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-10-02T15:07:43.330064+00:00.
+Generated 2026-10-02 15:47 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-10-02T15:07:43.330064+00:00.
 
 ## Current truth
 
@@ -8,18 +8,18 @@ Generated 2026-10-02 15:07 UTC from inventory.json, defect records, and the curr
 - Case results: pass 58, partial 36, fail 2, unverified 1073, n/a 1; 122 explicitly unverified and 951 with no result record. Missing results count as unverified, including later-wave surfaces.
 - Fully verified feature-role pairs: 0/394 under the rule that every applicable case passes and every control maps to a case.
 - Procedure gaps: 158 missing steps; 157 missing expected outcomes; 31 missing control links.
-- Defect states: closed 46, retest-pass 2, fixed 22, in-fix 5, open 1. A fixed or closed defect is not a feature-level UI pass.
+- Defect states: closed 46, retest-pass 2, fixed 23, in-fix 4, open 1. A fixed or closed defect is not a feature-level UI pass.
 
 ## Current-build evidence
 
 - **Release 0.2.173:** Last frozen validated candidate is0.2.173 at the receipt/tag shown (1862 tests,5skipped and strict gates passed). Primary Store0.2.130 is Published-public, verified October2 13:12UTC. Main is0.2.175 plus newer fixes, with no matching ZIP; latest hosted packaging awaits scoped credential approval. Candidate173 is not latestmain and has not been uploaded.
-- **Artifact:** Frozen 0.2.173 keyed tree SHA256 494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064; Store ZIP SHA256 1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff. Candidate receipt/hash verified; no personal Chrome runtime claim.
-- **Scoped native acceptance:** Exact173: guest grounded answer/reload and nonadmin Chat passed; D64 Files Library/Screenshots error/Retry now passed independently in admin and member, closed after isolated member run003. D65 admin selection race passed; member remains unverified. Guest SEO16 bounded subtargets passed twice, but Airbnb audit did not finish30/60sec; diagnosis active. Prior guest marker miss unexplained; signout privacy, full controls and Chat/Pilot breadth unverified. Source D59 and D74 repairs have guarded tests and independent source review but no new native artifact.
+- **Artifact:** Frozen 0.2.173 keyed tree SHA256 494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064; Store ZIP SHA256 1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff. Candidate receipt/hash verified; no personal Chrome runtime claim. Current development-only175 artifact11236112494 from CI37027762568/sourceb41fd0b3 imported with tree a7f9728b45d9dcc407e392092c15383cd541de030d71330322d08617524e73ba; not Store-eligible.
+- **Scoped native acceptance:** Exact173: D64 Files admin/member error and Retry passed, closed; D65 member pending. Exact development175/sourceb41fd0b3: guest SEO16 surrounding targets passed and original Airbnb stuck audit recovered, but later schema outbound test stopped before clicking. Overall run unverified; bounded runner correction/retry active. D59 and D74 source accepted, native pending. Chat/Pilot breadth, signout privacy, and full mode/control coverage remain unverified.
 - These receipts establish only the named checks on the named artifact. Other inventory passes keep their recorded historical build boundary.
 
 ## Inventory freshness review
 
-Since inventory source `528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b`, **226 `src/` paths changed** through `1ab357397e3fb1f1bf8f07a3162d26356688b067`. A direct path-anchor comparison matched 28 and left 198 without an exact inventory anchor.
+Since inventory source `528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b`, **226 `src/` paths changed** through `acf443626b8c7af14e290ecd62d4a6a373f73cca`. A direct path-anchor comparison matched 28 and left 198 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities
