@@ -1,16 +1,36 @@
 /**
  * Rejoin a run that is STILL RUNNING.
  *
- * A `/resume` answered a live-run 409 (`run_in_progress`, or a
- * `resume_conflict` that names a live run). Its body carries `rejoin_path`
+ * A `/resume` answered `409 run_in_progress`. Its body carries `rejoin_path`
  * (read by `readLiveRunRejoin` in `@ai-matrx/agents/matrx` — never a URL built
  * here, never the envelope's own `request_id`). The client POSTs that path
  * (NDJSON replay, then follow; body `{}`) through the SAME STREAM_START
  * plumbing as every chat stream, under the RUN's organization (the
- * conversation's own), never the session's selection.
+ * conversation's own), never the session's selection. Chat's
+ * `resume_conflict` is retried, never rejoined (the package decides).
+ *
+ * When the rejoin itself answers `409 live_stream_unavailable` (no journal to
+ * replay), `settleUnavailableRejoin` takes the package's ONE fallback —
+ * `followUnavailableRejoin` then `settleRunPickup` — so the turn ends exactly
+ * as it does in the web app and the desktop: followed to its end, then the
+ * saved turn reloaded. Never an empty bubble, never a false failure.
  */
 
+import type { StreamRejoinTarget } from '@/lib/api/stream';
+import { matrxTransport } from '@/lib/api/matrx-transport';
+import type { ChatMessage } from '@/state/chat';
 import { log } from '@/lib/debug/log';
+import {
+  dbMessagesToChatMessages,
+  fetchConversationMessages,
+  fetchConversationToolCalls,
+} from '@/lib/supabase/queries';
+import {
+  followUnavailableRejoin,
+  MATRX_RUN_IN_PROGRESS,
+  type MatrxRunPickupSettlement,
+  settleRunPickup,
+} from '@ai-matrx/agents/matrx';
 import { send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { chatDb } from '@/lib/supabase/schemas';
@@ -38,22 +58,22 @@ export async function readConversationOrganizationId(
 export interface RejoinStreamArgs {
   runId: string;
   conversationId: string;
-  /** Server-relative path from the refusal body (`rejoin_path`). */
-  rejoinPath: string;
+  /** The live run, from the refusal body (`readLiveRunRejoin`). */
+  rejoin: StreamRejoinTarget;
   permissionMode: 'ask' | 'act';
   assignedTabId: number | null;
 }
 
-/** Open the rejoin stream at `rejoinPath` under `runId`. */
+/** Open the rejoin stream at the target's `rejoinPath` under `runId`. */
 export async function startRejoinStream(args: RejoinStreamArgs): Promise<void> {
   const organizationId = await readConversationOrganizationId(args.conversationId);
-  log.info('stream', `rejoining live run at ${args.rejoinPath}`, {
+  log.info('stream', `rejoining live run at ${args.rejoin.rejoinPath}`, {
     runId: args.runId,
     conversationId: args.conversationId,
   });
   await send(CHANNELS.STREAM_START, {
     runId: args.runId,
-    endpoint: args.rejoinPath,
+    endpoint: args.rejoin.rejoinPath,
     body: {},
     parser: 'rich-events' as const,
     agentName: null,
@@ -61,4 +81,53 @@ export async function startRejoinStream(args: RejoinStreamArgs): Promise<void> {
     assignedTabId: args.assignedTabId,
     ...(organizationId ? { organizationId } : {}),
   });
+}
+
+/** The conversation's saved messages, read the same way the chat view loads them. */
+export async function loadSavedConversation(conversationId: string): Promise<ChatMessage[]> {
+  const [messages, toolCalls] = await Promise.all([
+    fetchConversationMessages(conversationId),
+    fetchConversationToolCalls(conversationId),
+  ]);
+  return dbMessagesToChatMessages(messages.rows, toolCalls.rows).messages;
+}
+
+/**
+ * A rejoin answered `409 live_stream_unavailable`: follow the run to its end
+ * under the conversation's organization, then reload the saved turn
+ * (`reloadSavedTurn`). The settlement says what happened (`settled` with the
+ * run's real status, or `still_running` when the follow gave up).
+ */
+export async function settleUnavailableRejoin(args: {
+  conversationId: string;
+  rejoin: StreamRejoinTarget;
+  /** `run_id` the unavailable answer named (workflow legs), else null. */
+  unavailableRunId: string | null;
+  reloadSavedTurn: () => Promise<void>;
+}): Promise<MatrxRunPickupSettlement> {
+  const organizationId = await readConversationOrganizationId(args.conversationId);
+  log.info('stream', 'rejoin has no live journal — following the run to its end', {
+    conversationId: args.conversationId,
+    liveRequestId: args.rejoin.liveRequestId,
+  });
+  let followed: Awaited<ReturnType<typeof followUnavailableRejoin>> | null = null;
+  try {
+    followed = await followUnavailableRejoin(
+      matrxTransport,
+      { ...args.rejoin, code: MATRX_RUN_IN_PROGRESS, body: {} },
+      { runId: args.unavailableRunId },
+      organizationId ? { organizationId } : {},
+    );
+  } catch (err) {
+    // The follow itself failed (network, refused status read): the saved
+    // record is still the best truth — reload it rather than leave the turn
+    // empty, and report the run as possibly still running.
+    log.warn('stream', 'following the run failed — reloading the saved turn', err);
+  }
+  const settlement = await settleRunPickup(
+    followed ?? { kind: 'followed', executionId: 'unknown', ended: false, status: null },
+    { reloadSavedTurn: args.reloadSavedTurn },
+  );
+  log.info('stream', `rejoin settled: ${settlement.state}`, settlement);
+  return settlement;
 }

@@ -17,18 +17,29 @@ import { sanitizeNetworkUrl } from '@/lib/credentials/network-urls';
 import { log } from '@/lib/debug/log';
 import {
   fetchWithMatrxProtocolFallback,
+  isResumeConflict,
   readLiveRunRejoin,
+  readLiveStreamUnavailable,
   streamErrorText,
 } from '@ai-matrx/agents/matrx';
 import { type MatrxStreamEnvelope, readMatrxNdjsonStream } from '@ai-matrx/agents/stream/ndjson';
 
 /**
- * Protocol classifications of a non-2xx stream open. `run_in_progress` = the
- * run is STILL RUNNING (a `run_in_progress` refusal, or a `resume_conflict`
- * that names a live run); the caller POSTs the body's `rejoinPath` instead of
- * failing the turn. A bare `resume_conflict` (no rejoin target) is retried.
+ * Protocol classifications of a non-2xx stream open (the decisions are
+ * `@ai-matrx/agents/matrx`'s): `run_in_progress` = the run is STILL RUNNING —
+ * the caller POSTs the body's rejoin target instead of failing the turn;
+ * `resume_conflict` = retried (never rejoined, even when the body names a
+ * live run); `live_stream_unavailable` = a rejoin with no journal — the caller
+ * follows the run to its end and reloads the saved turn.
  */
-export type StreamErrorCode = 'resume_conflict' | 'run_in_progress';
+export type StreamErrorCode = 'resume_conflict' | 'run_in_progress' | 'live_stream_unavailable';
+
+/** A live run to rejoin, as read from the refusal body by `readLiveRunRejoin`. */
+export interface StreamRejoinTarget {
+  liveRequestId: string | null;
+  rejoinPath: string;
+  runId: string | null;
+}
 
 export type StreamEvent =
   | { type: 'text'; content: string }
@@ -48,8 +59,10 @@ export type StreamEvent =
       status?: number;
       /** Protocol-only classification; never render this as user text. */
       code?: StreamErrorCode;
-      /** Server-relative path to POST to rejoin the live run — only with `code: 'run_in_progress'`. */
-      rejoinPath?: string;
+      /** The live run to rejoin — only with `code: 'run_in_progress'`. */
+      rejoin?: StreamRejoinTarget;
+      /** Workflow `run_id` a `live_stream_unavailable` answer names (null when none). */
+      unavailableRunId?: string | null;
     }
   | { type: 'done' };
 
@@ -132,13 +145,16 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
     const errText = await res.text().catch(() => res.statusText);
     // ALWAYS the body's own `rejoin_path` — never a URL built here (some doors
     // name no live request id at all).
-    const rejoin = readLiveRunRejoin({
-      status: res.status,
-      serverDetail: parseJsonBody(errText),
-    });
+    const refusal = { status: res.status, serverDetail: parseJsonBody(errText) };
+    const rejoin = readLiveRunRejoin(refusal);
+    const unavailable = readLiveStreamUnavailable(refusal);
     const code: StreamErrorCode | undefined = rejoin
       ? 'run_in_progress'
-      : streamErrorCode(res.status, errText);
+      : unavailable
+        ? 'live_stream_unavailable'
+        : isResumeConflict(refusal)
+          ? 'resume_conflict'
+          : undefined;
     log.error('stream', `✗ ${diagnosticUrl} ${res.status}`, {
       code: code ?? 'http_error',
       status: res.status,
@@ -148,7 +164,14 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
       message: streamErrorMessage(res.status),
       status: res.status,
       ...(code !== undefined && { code }),
-      ...(rejoin && { rejoinPath: rejoin.rejoinPath }),
+      ...(rejoin && {
+        rejoin: {
+          liveRequestId: rejoin.liveRequestId,
+          rejoinPath: rejoin.rejoinPath,
+          runId: rejoin.runId,
+        },
+      }),
+      ...(unavailable && { unavailableRunId: unavailable.runId }),
     });
     opts.onEvent({ type: 'done' });
     return;
@@ -282,8 +305,4 @@ function parseJsonBody(text: string): unknown {
   } catch {
     return undefined;
   }
-}
-
-function streamErrorCode(status: number, diagnostic: string): StreamErrorCode | undefined {
-  return status === 409 && diagnostic.includes('resume_conflict') ? 'resume_conflict' : undefined;
 }

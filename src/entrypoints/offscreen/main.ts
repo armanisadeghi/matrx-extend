@@ -82,7 +82,8 @@ on<RunArgs, { ok: true }>(CHANNELS.STREAM_RUN, async (args) => {
                   message: e.message,
                   status: e.status,
                   ...(e.code !== undefined && { code: e.code }),
-                  ...(e.rejoinPath !== undefined && { rejoinPath: e.rejoinPath }),
+                  ...(e.rejoin !== undefined && { rejoin: e.rejoin }),
+                  ...(e.unavailableRunId !== undefined && { unavailableRunId: e.unavailableRunId }),
                 }
               : { message: e.message, ...(e.code !== undefined && { code: e.code }) };
         else payload = {};

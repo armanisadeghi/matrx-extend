@@ -5,7 +5,11 @@ import {
   mandateExecutePath,
 } from '@/lib/api/routes/ai';
 import { conversationResumePath } from '@/lib/api/routes/tool-results';
-import { streamErrorMessage } from '@/lib/api/stream';
+import {
+  type StreamErrorCode,
+  type StreamRejoinTarget,
+  streamErrorMessage,
+} from '@/lib/api/stream';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
 import { type ChatRequestContext, buildChatContext } from '@/lib/chat/build-context';
@@ -30,7 +34,11 @@ import {
   parseProviderRetry,
   toRetryState,
 } from '@/lib/stream/provider-retry';
-import { startRejoinStream } from '@/lib/stream/rejoin';
+import {
+  loadSavedConversation,
+  settleUnavailableRejoin,
+  startRejoinStream,
+} from '@/lib/stream/rejoin';
 import { attemptResume } from '@/lib/stream/resume';
 import { createStreamWatchdog } from '@/lib/stream/watchdog';
 import { lookup as lookupTool } from '@/lib/tools/registry';
@@ -169,9 +177,11 @@ interface StreamChunk {
      */
     status?: number;
     /** Protocol classification only; never rendered as chat text. */
-    code?: 'resume_conflict' | 'run_in_progress';
-    /** Server-relative rejoin path of the live run — only with `code: 'run_in_progress'`. */
-    rejoinPath?: string;
+    code?: StreamErrorCode;
+    /** The live run to rejoin — only with `code: 'run_in_progress'`. */
+    rejoin?: StreamRejoinTarget;
+    /** Workflow `run_id` a `live_stream_unavailable` answer names. */
+    unavailableRunId?: string | null;
   };
 }
 
@@ -437,11 +447,61 @@ const resumeRetryRef: {
 // Drained on the following `done` chunk (the refused stream must finalize
 // first) into a rejoin stream. Late-bound through rejoinRunRef.
 const pendingRejoinRef: {
-  current: { conversationId: string; rejoinPath: string } | null;
+  current: { conversationId: string; rejoin: StreamRejoinTarget } | null;
 } = { current: null };
 const rejoinRunRef: {
-  current: (conversationId: string, rejoinPath: string) => Promise<string | null>;
+  current: (conversationId: string, rejoin: StreamRejoinTarget) => Promise<string | null>;
 } = { current: async () => null };
+// The rejoin stream in flight, so its own `409 live_stream_unavailable` (no
+// journal to replay) is recognised; and that answer, drained on its `done`
+// into the shared follow-then-reload settle.
+const activeRejoinRef: {
+  current: { runId: string; conversationId: string; rejoin: StreamRejoinTarget } | null;
+} = { current: null };
+const pendingSettleRef: {
+  current: {
+    runId: string;
+    conversationId: string;
+    rejoin: StreamRejoinTarget;
+    unavailableRunId: string | null;
+  } | null;
+} = { current: null };
+
+/**
+ * The rejoin had no journal: keep the assistant bubble pending while the run
+ * is followed to its end, then show the SAVED turn in its place. Only a
+ * failed reload says so — never an empty bubble, never a failure the run did
+ * not have.
+ */
+function settleRejoinWithoutJournal(
+  settle: NonNullable<typeof pendingSettleRef.current>,
+  messageId: string,
+): void {
+  const stillShowing = () =>
+    useChatStore.getState().selectedConversationId === settle.conversationId;
+  void settleUnavailableRejoin({
+    conversationId: settle.conversationId,
+    rejoin: settle.rejoin,
+    unavailableRunId: settle.unavailableRunId,
+    reloadSavedTurn: async () => {
+      const saved = await loadSavedConversation(settle.conversationId);
+      if (stillShowing()) useChatStore.getState().setMessages(saved);
+    },
+  }).then((settlement) => {
+    if (!stillShowing()) return;
+    const chat = useChatStore.getState();
+    if (settlement.state !== 'streamed' && settlement.state !== 'retry' && !settlement.reloaded) {
+      presentChatStreamError({
+        messageId,
+        runId: settle.runId,
+        message: streamErrorMessage(),
+        lastInput: lastSendRef.current?.input ?? '',
+      });
+      chat.finalizeAssistant(messageId);
+    }
+    chat.setStreaming(false);
+  });
+}
 
 // The watchdog is created once per context; onStall late-binds below.
 const onStallRef = { current: () => {} };
@@ -694,18 +754,31 @@ function ensureStreamListeners(): void {
           retryState?.runId === chunk.runId
             ? retryState.conversationId
             : useChatStore.getState().selectedConversationId;
+        const activeRejoin = activeRejoinRef.current;
         if (
+          chunk.payload.code === 'live_stream_unavailable' &&
+          activeRejoin &&
+          activeRejoin.runId === chunk.runId
+        ) {
+          log.info('stream', '409 live_stream_unavailable — following the run, then the saved turn', {
+            runId: chunk.runId,
+          });
+          pendingSettleRef.current = {
+            ...activeRejoin,
+            unavailableRunId: chunk.payload.unavailableRunId ?? null,
+          };
+        } else if (
           chunk.payload.code === 'run_in_progress' &&
-          chunk.payload.rejoinPath &&
+          chunk.payload.rejoin &&
           conversationId
         ) {
           log.info('stream', '409 run_in_progress — rejoining the live run', {
             runId: chunk.runId,
-            rejoinPath: chunk.payload.rejoinPath,
+            rejoinPath: chunk.payload.rejoin.rejoinPath,
           });
           pendingRejoinRef.current = {
             conversationId,
-            rejoinPath: chunk.payload.rejoinPath,
+            rejoin: chunk.payload.rejoin,
           };
         } else if (
           chunk.payload.code === 'resume_conflict' &&
@@ -745,6 +818,15 @@ function ensureStreamListeners(): void {
     } else if (chunk.type === 'done') {
       watchdogRef.current?.stop();
       useChatStore.getState().setProviderRetry(null);
+      if (activeRejoinRef.current?.runId === chunk.runId) activeRejoinRef.current = null;
+      const settle = pendingSettleRef.current;
+      if (settle && settle.runId === chunk.runId) {
+        pendingSettleRef.current = null;
+        runIdRef.current = null;
+        targetIdRef.current = null;
+        settleRejoinWithoutJournal(settle, target);
+        return { ack: true };
+      }
       useChatStore.getState().finalizeAssistant(target);
       useChatStore.getState().setStreaming(false);
       runIdRef.current = null;
@@ -759,7 +841,7 @@ function ensureStreamListeners(): void {
       const rejoin = pendingRejoinRef.current;
       if (rejoin) {
         pendingRejoinRef.current = null;
-        void rejoinRunRef.current(rejoin.conversationId, rejoin.rejoinPath);
+        void rejoinRunRef.current(rejoin.conversationId, rejoin.rejoin);
         return { ack: true };
       }
       const pending = pendingContinueRef.current;
@@ -1306,7 +1388,7 @@ export function useChatStream() {
    * organization. Never re-runs the run.
    */
   const rejoinRun = useCallback(
-    async (conversationId: string, rejoinPath: string): Promise<string | null> => {
+    async (conversationId: string, rejoin: StreamRejoinTarget): Promise<string | null> => {
       if (useChatStore.getState().selectedConversationId !== conversationId) {
         log.info('stream', `rejoin skipped — conversation ${conversationId} not selected`);
         return null;
@@ -1314,7 +1396,7 @@ export function useChatStream() {
       if (runIdRef.current) {
         log.info('stream', 'rejoin skipped — another run is live', {
           activeRunId: runIdRef.current,
-          rejoinPath,
+          rejoinPath: rejoin.rejoinPath,
         });
         return null;
       }
@@ -1335,13 +1417,14 @@ export function useChatStream() {
       requestIdRef.current = null;
       eventCountRef.current = 0;
       watchdogRef.current?.start();
+      activeRejoinRef.current = { runId, conversationId, rejoin };
 
       const activeTab = await resolveActiveTab();
       try {
         await startRejoinStream({
           runId,
           conversationId,
-          rejoinPath,
+          rejoin,
           permissionMode: useChatStore.getState().getPermissionMode(null),
           assignedTabId: activeTab?.id ?? null,
         });

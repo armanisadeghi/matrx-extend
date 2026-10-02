@@ -21,7 +21,11 @@ import {
   agentExecutePath,
 } from '@/lib/api/routes/ai';
 import { conversationResumePath } from '@/lib/api/routes/tool-results';
-import { streamErrorMessage } from '@/lib/api/stream';
+import {
+  type StreamErrorCode,
+  type StreamRejoinTarget,
+  streamErrorMessage,
+} from '@/lib/api/stream';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildBrowserDomState } from '@/lib/chat/build-browser-dom-state';
 import { type ChatRequestContext, buildChatContext } from '@/lib/chat/build-context';
@@ -37,7 +41,11 @@ import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { defaultChatModelFor } from '@/lib/settings/default-chat-model';
 import { deadlineFor, parseProviderRetry } from '@/lib/stream/provider-retry';
-import { startRejoinStream } from '@/lib/stream/rejoin';
+import {
+  loadSavedConversation,
+  settleUnavailableRejoin,
+  startRejoinStream,
+} from '@/lib/stream/rejoin';
 import { attemptResume } from '@/lib/stream/resume';
 import { createStreamWatchdog } from '@/lib/stream/watchdog';
 import { lookup as lookupTool } from '@/lib/tools/registry';
@@ -93,9 +101,11 @@ interface StreamChunk {
      */
     status?: number;
     /** Protocol classification only; never rendered as chat text. */
-    code?: 'resume_conflict' | 'run_in_progress';
-    /** Server-relative rejoin path of the live run — only with `code: 'run_in_progress'`. */
-    rejoinPath?: string;
+    code?: StreamErrorCode;
+    /** The live run to rejoin — only with `code: 'run_in_progress'`. */
+    rejoin?: StreamRejoinTarget;
+    /** Workflow `run_id` a `live_stream_unavailable` answer names. */
+    unavailableRunId?: string | null;
   };
 }
 
@@ -219,12 +229,26 @@ export function usePilotChatStream() {
   >(async () => null);
   // A resume answered `409 run_in_progress` — rejoin the live run once the
   // refused stream's `done` lands. See useChatStream's pendingRejoinRef.
-  const pendingRejoinRef = useRef<{ conversationId: string; rejoinPath: string } | null>(
+  const pendingRejoinRef = useRef<{ conversationId: string; rejoin: StreamRejoinTarget } | null>(
     null,
   );
   const rejoinRunRef = useRef<
-    (conversationId: string, rejoinPath: string) => Promise<string | null>
+    (conversationId: string, rejoin: StreamRejoinTarget) => Promise<string | null>
   >(async () => null);
+  // The rejoin in flight, and its `409 live_stream_unavailable` (no journal)
+  // drained on `done` into the shared follow-then-reload settle. See
+  // useChatStream's settleRejoinWithoutJournal.
+  const activeRejoinRef = useRef<{
+    runId: string;
+    conversationId: string;
+    rejoin: StreamRejoinTarget;
+  } | null>(null);
+  const pendingSettleRef = useRef<{
+    runId: string;
+    conversationId: string;
+    rejoin: StreamRejoinTarget;
+    unavailableRunId: string | null;
+  } | null>(null);
 
   const watchdogRef = useRef<ReturnType<typeof createStreamWatchdog> | null>(null);
   if (!watchdogRef.current) {
@@ -365,21 +389,33 @@ export function usePilotChatStream() {
         // 409 on /resume = "outstanding_delegated_calls" — benign. See the
         // assistant hook's 409 branch for the protocol rationale.
         const conversationId = usePilotChatStore.getState().selectedConversationId;
+        const activeRejoin = activeRejoinRef.current;
         if (
           status === 409 &&
+          chunk.payload.code === 'live_stream_unavailable' &&
+          activeRejoin &&
+          activeRejoin.runId === chunk.runId
+        ) {
+          // The rejoin has no journal — follow the run, then show the saved turn.
+          pendingSettleRef.current = {
+            ...activeRejoin,
+            unavailableRunId: chunk.payload.unavailableRunId ?? null,
+          };
+        } else if (
+          status === 409 &&
           chunk.payload.code === 'run_in_progress' &&
-          chunk.payload.rejoinPath &&
+          chunk.payload.rejoin &&
           conversationId
         ) {
           // The run is STILL RUNNING — not a failure. Rejoin its live stream
           // on the `done` that follows.
           log.info('pilot-stream', '409 run_in_progress — rejoining the live run', {
             runId: chunk.runId,
-            rejoinPath: chunk.payload.rejoinPath,
+            rejoinPath: chunk.payload.rejoin.rejoinPath,
           });
           pendingRejoinRef.current = {
             conversationId,
-            rejoinPath: chunk.payload.rejoinPath,
+            rejoin: chunk.payload.rejoin,
           };
         } else if (status === 409) {
           log.info(
@@ -392,6 +428,39 @@ export function usePilotChatStream() {
         }
       } else if (chunk.type === 'done') {
         watchdogRef.current?.stop();
+        if (activeRejoinRef.current?.runId === chunk.runId) activeRejoinRef.current = null;
+        const settle = pendingSettleRef.current;
+        if (settle && settle.runId === chunk.runId) {
+          // Keep the bubble pending while the run is followed to its end; the
+          // SAVED turn replaces it. Only a failed reload says so.
+          pendingSettleRef.current = null;
+          runIdRef.current = null;
+          targetIdRef.current = null;
+          const stillShowing = () =>
+            usePilotChatStore.getState().selectedConversationId === settle.conversationId;
+          void settleUnavailableRejoin({
+            conversationId: settle.conversationId,
+            rejoin: settle.rejoin,
+            unavailableRunId: settle.unavailableRunId,
+            reloadSavedTurn: async () => {
+              const saved = await loadSavedConversation(settle.conversationId);
+              if (stillShowing()) usePilotChatStore.getState().setMessages(saved);
+            },
+          }).then((settlement) => {
+            if (!stillShowing()) return;
+            const pilot = usePilotChatStore.getState();
+            if (
+              settlement.state !== 'streamed' &&
+              settlement.state !== 'retry' &&
+              !settlement.reloaded
+            ) {
+              pilot.appendAssistantText(target, `\n\n_Error:_ ${streamErrorMessage()}`);
+              pilot.finalizeAssistant(target);
+            }
+            pilot.setStreaming(false);
+          });
+          return { ack: true };
+        }
         usePilotChatStore.getState().finalizeAssistant(target);
         usePilotChatStore.getState().setStreaming(false);
         runIdRef.current = null;
@@ -402,7 +471,7 @@ export function usePilotChatStream() {
         const rejoin = pendingRejoinRef.current;
         if (rejoin) {
           pendingRejoinRef.current = null;
-          void rejoinRunRef.current(rejoin.conversationId, rejoin.rejoinPath);
+          void rejoinRunRef.current(rejoin.conversationId, rejoin.rejoin);
           return { ack: true };
         }
         const pending = pendingContinueRef.current;
@@ -741,10 +810,12 @@ export function usePilotChatStream() {
 
   /** Rejoin a still-running run (`409 run_in_progress`); never re-runs it. */
   const rejoinRun = useCallback(
-    async (conversationId: string, rejoinPath: string): Promise<string | null> => {
+    async (conversationId: string, rejoin: StreamRejoinTarget): Promise<string | null> => {
       if (usePilotChatStore.getState().selectedConversationId !== conversationId) return null;
       if (runIdRef.current) {
-        log.info('pilot-stream', 'rejoin skipped — another run is live', { rejoinPath });
+        log.info('pilot-stream', 'rejoin skipped — another run is live', {
+          rejoinPath: rejoin.rejoinPath,
+        });
         return null;
       }
       const assistantMsg: ChatMessage = {
@@ -763,13 +834,14 @@ export function usePilotChatStream() {
       targetIdRef.current = assistantMsg.id;
       requestIdRef.current = null;
       watchdogRef.current?.start();
+      activeRejoinRef.current = { runId, conversationId, rejoin };
 
       const assignedTabId = await resolvePilotAssignedTabId();
       try {
         await startRejoinStream({
           runId,
           conversationId,
-          rejoinPath,
+          rejoin,
           permissionMode: usePilotChatStore.getState().getPermissionMode(null),
           assignedTabId,
         });
