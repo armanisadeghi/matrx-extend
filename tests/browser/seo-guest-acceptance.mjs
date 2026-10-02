@@ -826,6 +826,20 @@ async function activateSeoLink(panel, page, groupName, expectedHref) {
   }
 }
 
+async function waitForSourceSeoDoor(panel, expectedTitle, expectedHref, stage) {
+  // Opening the first outbound tab changes Chrome's active tab. Closing it
+  // restores the source tab, whose SEO audit may still be repopulating. Require
+  // the original title and exact second door before the next trusted click.
+  return waitObserved(
+    stage,
+    () => seoNextDetailState(panel),
+    (state) =>
+      state?.scopeValid === true &&
+      state.title === expectedTitle &&
+      state.schema?.filter((link) => link.href === expectedHref).length === 1,
+  );
+}
+
 async function copyMenu(panel) {
   enter('copy_menu_click');
   await click(panel, 'title', 'Copy audit');
@@ -1256,6 +1270,12 @@ try {
       if (uniqueAlternate && uniqueSchema) {
         enter('hreflang_outbound_activation');
         await activateSeoLink(panel, page, 'International', uniqueAlternate.href);
+        await waitForSourceSeoDoor(
+          panel,
+          manualAfter.title,
+          uniqueSchema.href,
+          'schema_door_source_panel_restored',
+        );
         enter('schema_outbound_activation');
         await activateSeoLink(panel, page, 'Structured data', uniqueSchema.href);
         target('T09', 'guest_manual_hreflang_and_schema_doors_match_page', {
@@ -1431,6 +1451,12 @@ try {
         if (uniqueFixtureAlternate && uniqueFixtureSchema) {
           enter('metadata_fixture_hreflang_outbound_activation');
           await activateSeoLink(panel, page, 'International', uniqueFixtureAlternate.href);
+          await waitForSourceSeoDoor(
+            panel,
+            fixtureAfter.title,
+            uniqueFixtureSchema.href,
+            'metadata_fixture_schema_source_panel_restored',
+          );
           enter('metadata_fixture_schema_outbound_activation');
           await activateSeoLink(panel, page, 'Structured data', uniqueFixtureSchema.href);
           target('T09', 'guest_airbnb_hreflang_and_schema_doors_match_public_dom', {
