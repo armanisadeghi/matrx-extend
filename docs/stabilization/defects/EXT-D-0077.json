@@ -1,0 +1,40 @@
+{
+  "id": "EXT-D-0077",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T06"],
+  "surface": "Development test artifact importer",
+  "auth_mode": "guest/member/admin (artifact infrastructure)",
+  "title": "Draft import collision cleanup could delete an existing artifact",
+  "reproduction": [
+    "Use isolated test-owned run-qualified import target containing a marker; never use a real active artifact for negative tests.",
+    "In the prepublication draft, assign cleanup target before attempting exclusive mkdir, then run import against that occupied directory.",
+    "The mkdir fails but finally cleanup treats the pre-existing path as owned; inspect preservation of the marker."
+  ],
+  "expected": "An occupied target refuses import without modifying any existing byte. Cleanup applies only to a directory successfully created by this invocation.",
+  "actual": "Source review found target assigned before exclusive creation. This was an unpublished draft, not a shipped incident; no actual lost artifact observed and no original failing runtime receipt exists.",
+  "evidence": ["docs/stabilization/reports/current-test-artifact-verification-20261002.json"],
+  "severity": "S2: existing test build/evidence could be removed by a duplicate import",
+  "priority": "P1: must repair before importer/workflow publication",
+  "state": "in-fix",
+  "verification_status": "Worker moved cleanup ownership behind successful exclusive reservation and tests actual wrapper used by importer; final guarded result and independent review pending.",
+  "transition_history": [
+    {
+      "at": "2026-10-02T15:07:43.330064+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Fresh implementation verifier identified prepublication cleanup ownership hazard."
+    },
+    {
+      "at": "2026-10-02T15:07:43.330064+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Existing-target preservation belongs to accepted artifact contract; no data-loss incident claimed."
+    },
+    {
+      "at": "2026-10-02T15:07:43.330064+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Repair routes actual importer through exclusive reservation/owned cleanup wrapper with connected filesystem tests."
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-02T14:50:09.924525+00:00",
+  "updated_at": "2026-10-02T15:07:43.330064+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -350,7 +350,8 @@
         "guest": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0014"
+            "EXT-D-0014",
+            "EXT-D-0077"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -367,7 +368,8 @@
         "member": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0007"
+            "EXT-D-0007",
+            "EXT-D-0077"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -385,7 +387,8 @@
           "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0007",
-            "EXT-D-0014"
+            "EXT-D-0014",
+            "EXT-D-0077"
           ],
           "run_ids": [
             "baseline-build-001",
