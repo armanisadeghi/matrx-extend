@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-02 19:00 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T17:41:20.170172+00:00. 205 features · 738 cases · 1322 controls · 82 linked defect records.
+Generated 2026-10-02 19:39 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T19:38:54.393008+00:00. 205 features · 738 cases · 1322 controls · 82 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1180** — Pass: 58 · Partial: 46 · Fail: 2 · Unverified: 1073 · N/A: 1.
-Unverified splits into **123 explicitly marked unverified** and **950 with no result record**.
+Applicable case-by-role slots: **1180** — Pass: 58 · Partial: 47 · Fail: 2 · Unverified: 1072 · N/A: 1.
+Unverified splits into **122 explicitly marked unverified** and **950 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -20,7 +20,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Release infrastructure](#release-infrastructure) | 1 | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 24, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 11 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 7 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | pass 18, partial 0, fail 0, unverified 54, n/a 1 | 0 |
+| [Settings](#settings) | 1 | 11 pass · 1 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 7 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | pass 18, partial 1, fail 0, unverified 53, n/a 1 | 0 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 32, n/a 0 | 0 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -331,9 +331,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Review and change extension settings (EXT-F-1003)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 72. **Controls:** 31.
+**Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 72. **Controls:** 31.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Finish the missing criteria and repeat the partial case in the extension.
 
 **Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0006](defects/EXT-D-0006.json) (closed), [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0009](defects/EXT-D-0009.json) (closed), [EXT-D-0011](defects/EXT-D-0011.json) (closed), [EXT-D-0012](defects/EXT-D-0012.json) (closed), [EXT-D-0015](defects/EXT-D-0015.json) (closed)
 
@@ -378,7 +378,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1003-T37 guest: Deep clean | Pass | N/A | N/A | EXT-F-1003-C13 |
 | EXT-F-1003-T38 member: Deep clean | N/A | Unverified | N/A | EXT-F-1003-C13 |
 | EXT-F-1003-T39 admin: Deep clean | N/A | N/A | Unverified | EXT-F-1003-C13 |
-| EXT-F-1003-T40 guest: Auto-scrape on load | Unverified | N/A | N/A | EXT-F-1003-C14 |
+| EXT-F-1003-T40 guest: Auto-scrape on load | Partial | N/A | N/A | EXT-F-1003-C14 |
 | EXT-F-1003-T41 member: Auto-scrape on load | N/A | Unverified | N/A | EXT-F-1003-C14 |
 | EXT-F-1003-T42 admin: Auto-scrape on load | N/A | N/A | Unverified | EXT-F-1003-C14 |
 | EXT-F-1003-T43 guest: Desktop bridge pairing | Unverified | N/A | N/A | EXT-F-1003-C15 |
@@ -448,8 +448,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: guest-settings-002, docs/stabilization/runs/guest-settings-002.json
 - EXT-F-1003-T37 · guest: Pass. Coming-soon preference toggles and persists after reload; functional deep cleaning is not implemented or verified by this case.
   Evidence / build / date recorded: guest-settings-dev089-001, ['docs/stabilization/runs/guest-settings-dev089-001.json', 'docs/stabilization/reports/guest-settings-dev089-001-peer.json']
-- EXT-F-1003-T40 · guest: Unverified.
-  Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
+- EXT-F-1003-T40 · guest: Partial. Actual profile and Loaded from path verified before and after reload. Auto-scrape On persisted; no-send context preview displayed Page content/count only. Restored Off and Capture.
+  Evidence / build / date recorded: guest-autoscrape-native-20261002-01, docs/stabilization/reports/guest-autoscrape-native-20261002.json
 - EXT-F-1003-T46 · guest: Pass. Valid override saves and survives reload, real Save-bounded worker rediscovery observed, invalid range preserves value, blank clears value/error and persists; isolated probe returns503, no healthy desktop claim.
   Evidence / build / date recorded: guest-settings-dev089-001, ['docs/stabilization/runs/guest-settings-dev089-001.json', 'docs/stabilization/reports/guest-settings-dev089-001-peer.json']
 - EXT-F-1003-T48 · admin: Unverified.
@@ -468,8 +468,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: admin-permissions-001, docs/stabilization/runs/admin-permissions-001.json
 - EXT-F-1003-T59 · admin: Unverified.
   Evidence / build / date recorded: permissions-auth-native-sol, docs/stabilization/runs/permissions-auth-native-sol.json
-- EXT-F-1003-T67 · guest: Pass.
-  Evidence / build / date recorded: guest-settings-002, docs/stabilization/runs/guest-settings-002.json
+- EXT-F-1003-T67 · guest: Pass. Capture and Scroll & capture each persisted after full extension Reload. Restored Capture and verified after final reload.
+  Evidence / build / date recorded: guest-autoscrape-native-20261002-01, docs/stabilization/reports/guest-autoscrape-native-20261002.json
 - EXT-F-1003-T70 · guest: Unverified. Identity/readiness and real no-update result observed; API-unavailable, update-available, throttled, and error alternatives remain unverified.
   Evidence / build / date recorded: guest-settings-dev089-001, ['docs/stabilization/runs/guest-settings-dev089-001.json', 'docs/stabilization/reports/guest-settings-dev089-001-peer.json']
 - EXT-F-1003-T72 · admin: Unverified.
@@ -656,7 +656,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0081
 
-**Linked defects:** [EXT-D-0081](defects/EXT-D-0081.json) (open)
+**Linked defects:** [EXT-D-0081](defects/EXT-D-0081.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -799,7 +799,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0036, EXT-D-0038, EXT-D-0059, EXT-D-0082
 
-**Linked defects:** [EXT-D-0030](defects/EXT-D-0030.json) (closed), [EXT-D-0031](defects/EXT-D-0031.json) (closed), [EXT-D-0032](defects/EXT-D-0032.json) (closed), [EXT-D-0033](defects/EXT-D-0033.json) (closed), [EXT-D-0034](defects/EXT-D-0034.json) (closed), [EXT-D-0035](defects/EXT-D-0035.json) (closed), [EXT-D-0036](defects/EXT-D-0036.json) (fixed), [EXT-D-0037](defects/EXT-D-0037.json) (closed), [EXT-D-0038](defects/EXT-D-0038.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0082](defects/EXT-D-0082.json) (open)
+**Linked defects:** [EXT-D-0030](defects/EXT-D-0030.json) (closed), [EXT-D-0031](defects/EXT-D-0031.json) (closed), [EXT-D-0032](defects/EXT-D-0032.json) (closed), [EXT-D-0033](defects/EXT-D-0033.json) (closed), [EXT-D-0034](defects/EXT-D-0034.json) (closed), [EXT-D-0035](defects/EXT-D-0035.json) (closed), [EXT-D-0036](defects/EXT-D-0036.json) (fixed), [EXT-D-0037](defects/EXT-D-0037.json) (closed), [EXT-D-0038](defects/EXT-D-0038.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0082](defects/EXT-D-0082.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -878,7 +878,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0082
 
-**Linked defects:** [EXT-D-0082](defects/EXT-D-0082.json) (open)
+**Linked defects:** [EXT-D-0082](defects/EXT-D-0082.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |

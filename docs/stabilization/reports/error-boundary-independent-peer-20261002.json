@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "lane": "fresh_independent_structured_verification_luna_medium",
+  "reviewed_commits": {
+    "aidream_d81": "cdbc1b1df9a3544ad1b4eb45fbc39533960c8fff",
+    "matrx_extend_d82": "a25b57c07964f90f88889efb1a95ba72fc2ccfa8"
+  },
+  "verdict_a_outcome": {
+    "status": "PASS_SOURCE_TESTS_PENDING_LIVE",
+    "d81": {
+      "evidence": [
+        "parseHttpError reads response.text() once, parses those bytes as JSON, and passes parsed JSON through the existing parseHttpErrorBody classifier. A failed JSON parse maps the same text to detail and userMessage; a failed body read falls back to status-based text.",
+        "call.test.ts uses actual Response objects for 400 and 502 plain-text errors and checks BackendApiError, status, detail, and userMessage. The existing JSON case still checks only error class and status; it does not assert code, userMessage, details, or requestId preservation."
+      ],
+      "result": "The source preserves separate JSON classification and plain-text diagnostics, while avoiding a second read of the consumed body."
+    },
+    "d82": {
+      "evidence": [
+        "The upload and download non-2xx branches no longer read response text. Upload logs only the status and elapsed time; both thrown errors include the status and bareStatusSentence remedy, so arbitrary response content cannot enter either output through these branches.",
+        "Tests cover synthetic marker exclusion for upload and download at 403 and 502, and check status plus remediation wording. Upload's existing 401 retry test checks the same FormData object, pinned organization header, refreshed authorization, and a valid success response.",
+        "A successful download test checks returned bytes, filename, and MIME type. The existing caller-abort test still checks AbortError propagation before response delivery."
+      ],
+      "result": "The inspected source paths preserve upload refresh and successful transfer behavior and provide safe actionable failures."
+    },
+    "limits": [
+      "This reviewer did not run tests, builds, browser checks, or account flows, per the review permit. The implementer reported D81 RED2/GREEN18, D82 RED4/GREEN7, and extension compile exit 0; those results are attributed to the implementer, not independently reproduced here.",
+      "No live UI behavior is claimed."
+    ]
+  },
+  "verdict_b_contract_quality": {
+    "status": "PASS_WITH_CONCERNS",
+    "evidence": [
+      "D81 changes the shared @ai-matrx/agents HTTP parser at its source and leaves the established JSON classification routine intact. It adds a real Response plain-text regression case.",
+      "D82 fixes the same response-body reflection class in both upload and download, with no new parser or parallel error classifier. Existing 401 refresh, FormData, org header, upload response validation, and download byte handling remain in place in the reviewed diff.",
+      "The D82 status sentence is broad for 401/403 but includes a concrete sign-in/remedy path and the HTTP status remains in the error text."
+    ],
+    "concerns": [
+      {
+        "severity": "important",
+        "finding": "Shared 5xx sentence claims facts the file-transfer boundary does not know",
+        "evidence": "D82 uses bareStatusSentence for both upload and download. For 5xx it says the server sent no explanation and tells the person to report with the request ID above. These branches deliberately do not read the response body and do not attach a request ID to the thrown error or upload log, so those statements are not established at this boundary. The error is thrown by uploadFile/downloadFileBytes and may be surfaced to users by their callers.",
+        "action": "Use a short file-transfer-specific status sentence that says the server failed while answering and gives a retry/report remedy without claiming the body was empty or referring to an unavailable request ID. Keep the response body unread and unlogged."
+      },
+      {
+        "severity": "minor",
+        "finding": "Unconsumed non-2xx response bodies",
+        "evidence": "D82 now throws immediately on a non-OK upload or download Response without consuming or explicitly canceling res.body. This removes response-body buffering/reflection, but cleanup is left to Fetch/runtime behavior; no test checks cancellation or stream closure.",
+        "action": "Consider explicitly canceling a present error body with best-effort handling, then add a focused stream-cancel assertion if this is required by the request-client contract. Do not read or log the body."
+      },
+      {
+        "severity": "minor",
+        "finding": "JSON classification assertion is shallow",
+        "evidence": "The D81 existing JSON non-2xx test asserts BackendApiError and status but not the classifier's code or userMessage, so the new test suite's direct assertions do not fully lock JSON classification preservation.",
+        "action": "Strengthen the JSON case to assert representative code and userMessage (and details/request ID where appropriate) if the package guard is expected to protect the full classification contract."
+      }
+    ],
+    "upstream_typecheck": "Not confirmed: parent reports exit 2 caused by unresolved existing @ai-matrx/kit/json-format and @ai-matrx/kit/html-escape / format imports under alchemy/src/operate. No further retry was run by this reviewer."
+  }
+}

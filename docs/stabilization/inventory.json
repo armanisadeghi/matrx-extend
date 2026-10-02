@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-02T17:41:20.170172+00:00",
+  "updated_at": "2026-10-02T19:38:54.393008+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -4516,14 +4516,24 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "render-retest-001",
-              "evidence": "docs/stabilization/runs/render-retest-001.json",
-              "verified_substeps": [
-                "Auto-scrape preference persisted after extension reload, then original Off value was restored."
-              ],
+              "status": "partial",
+              "scope": "Actual guest preference persistence on CI 6aec7dd3 version 0.2.175; not full scrape integration",
+              "run_id": "guest-autoscrape-native-20261002-01",
+              "evidence": "docs/stabilization/reports/guest-autoscrape-native-20261002.json",
+              "historical_result": {
+                "status": "unverified",
+                "run_id": "render-retest-001",
+                "evidence": "docs/stabilization/runs/render-retest-001.json",
+                "verified_substeps": [
+                  "Auto-scrape preference persisted after extension reload, then original Off value was restored."
+                ],
+                "remaining_criteria": [
+                  "Verify the preference actually controls background scrape on page load; only the setting and persistence were tested."
+                ]
+              },
+              "detail": "Actual profile and Loaded from path verified before and after reload. Auto-scrape On persisted; no-send context preview displayed Page content/count only. Restored Off and Capture.",
               "remaining_criteria": [
-                "Verify the preference actually controls background scrape on page load; only the setting and persistence were tested."
+                "Confirm actual captured page text/unique marker and disabled behavior on a fresh document; counts alone do not prove capture integration."
               ]
             }
           }
@@ -5496,9 +5506,16 @@
           "results": {
             "guest": {
               "status": "pass",
-              "scope": "Visible state or preference persistence only; not full integration behavior",
-              "run_id": "guest-settings-002",
-              "evidence": "docs/stabilization/runs/guest-settings-002.json"
+              "scope": "Actual guest preference persistence on CI 6aec7dd3 version 0.2.175; not full scrape integration",
+              "run_id": "guest-autoscrape-native-20261002-01",
+              "evidence": "docs/stabilization/reports/guest-autoscrape-native-20261002.json",
+              "historical_result": {
+                "status": "pass",
+                "scope": "Visible state or preference persistence only; not full integration behavior",
+                "run_id": "guest-settings-002",
+                "evidence": "docs/stabilization/runs/guest-settings-002.json"
+              },
+              "detail": "Capture and Scroll & capture each persisted after full extension Reload. Restored Capture and verified after final reload."
             }
           }
         },

@@ -1,30 +1,44 @@
 {
   "id": "EXT-D-0082",
   "feature_id": "EXT-F-1009",
-  "surface": "Shared file upload error reporting",
+  "surface": "Shared file transfer error reporting",
   "auth_mode": "member/admin",
-  "title": "Upload failure reflects arbitrary server response bodies into logs and thrown errors",
+  "title": "File upload and download failures reflect arbitrary server error bodies",
   "reproduction": [
     "Call the real uploadFile route consumer with a controlled non-2xx response containing a unique synthetic secret marker.",
     "Capture its logger arguments and thrown error; verify the marker is absent from both while failure status and a safe remedy remain.",
-    "Run a successful upload and 401 refresh retry as surrounding controls."
+    "Run a successful upload and 401 refresh retry as surrounding controls.",
+    "Repeat through downloadFileBytes with a distinct synthetic error-body marker; preserve successful byte body and filename as a positive control."
   ],
   "expected": "Failure remains explicit and actionable without reflecting arbitrary response bodies into logs or thrown messages.",
-  "actual": "Source peer found raw response text passed to log.error and concatenated into the thrown Error; runtime RED proof is being executed.",
+  "actual": "Guarded upload RED executed4 tests: two new403/502 cases fail because thrown errors contain a synthetic secret marker; existing401 retry and cancellation pass. Adjacent download error-body reflection is source-confirmed, with its separate RED running.",
   "evidence": [
     "docs/stabilization/reports/package-request-client-peer-20261002.json",
-    "docs/stabilization/reports/package-request-review-resolution-20261002.json"
+    "docs/stabilization/reports/package-request-review-resolution-20261002.json",
+    "docs/stabilization/resource-journals/d82-upload-red-20261002-01.jsonl"
   ],
   "severity": "S2: arbitrary server error bodies may expose sensitive values",
   "priority": "P1: bounded error boundary repair before next release",
-  "state": "open",
-  "reproduction_status": "source-confirmed; controlled RED runtime proof pending",
+  "state": "in-fix",
+  "reproduction_status": "upload controlled RED confirmed; download sibling RED pending",
   "transition_history": [
     {
       "at": "2026-10-02T19:00:53.942007+00:00",
       "from": null,
       "to": "open",
       "reason": "Independent source review identified a reproducible boundary; runtime proof and repair assigned to implementation lane."
+    },
+    {
+      "at": "2026-10-02T19:11:39.508812+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Actual upload consumer RED proves reflection; same source class in download included in bounded repair."
+    },
+    {
+      "at": "2026-10-02T19:11:39.508812+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Actual upload consumer RED proves reflection; same source class in download included in bounded repair."
     }
   ],
   "closure_requirement": "Demonstrate real-response RED\u2192GREEN, independent source review and relevant consumer regression checks. Upstream package repair additionally requires automatic publication and verified adoption; native user-facing behavior remains explicitly tracked.",

@@ -9,21 +9,34 @@
     "Inspect its detail/userMessage and repeat with a second distinct text and a structured JSON error."
   ],
   "expected": "The same single response body supports JSON classification or the documented plain-text fallback without losing details.",
-  "actual": "Source peer found response.json() consumes the body before the fallback response.text(); runtime RED proof is being executed.",
+  "actual": "Valid guarded pre-fix run executed18 parser tests: two distinct plain-text non-2xx assertions failed, returning generic HTTP400/502 instead of their expected distinct details;16 surrounding cases passed.",
   "evidence": [
     "docs/stabilization/reports/package-request-client-peer-20261002.json",
-    "docs/stabilization/reports/package-request-review-resolution-20261002.json"
+    "docs/stabilization/reports/package-request-review-resolution-20261002.json",
+    "docs/stabilization/resource-journals/d81-parser-red-20261002-02.jsonl"
   ],
   "severity": "S2: error details needed for recovery may be lost",
   "priority": "P1: bounded error boundary repair before next release",
-  "state": "open",
-  "reproduction_status": "source-confirmed; controlled RED runtime proof pending",
+  "state": "in-fix",
+  "reproduction_status": "controlled real-Response RED confirmed",
   "transition_history": [
     {
       "at": "2026-10-02T19:00:53.942007+00:00",
       "from": null,
       "to": "open",
       "reason": "Independent source review identified a reproducible boundary; runtime proof and repair assigned to implementation lane."
+    },
+    {
+      "at": "2026-10-02T19:09:22.973981+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Real-response pre-fix regression confirmed both plain-text failures; bounded one-read repair assigned."
+    },
+    {
+      "at": "2026-10-02T19:09:22.973981+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Real-response pre-fix regression confirmed both plain-text failures; bounded one-read repair assigned."
     }
   ],
   "closure_requirement": "Demonstrate real-response RED\u2192GREEN, independent source review and relevant consumer regression checks. Upstream package repair additionally requires automatic publication and verified adoption; native user-facing behavior remains explicitly tracked."
