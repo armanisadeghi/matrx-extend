@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "report_id": "notes-member-native-20261002",
+  "date": "2026-10-02",
+  "lane": "Independent native Notes member acceptance: EXT-D-0061, EXT-D-0062, EXT-D-0063, EXT-D-0067, EXT-D-0068",
+  "source_readiness": "docs/stabilization/reports/notes-member-readiness-20261002.json",
+  "source_peer": "docs/stabilization/reports/notes-member-source-peer-20261002.json",
+  "source_peer_commit": "39f2cb579494c9300f2c6d76ed188eb00cc583a5",
+  "runner_format_commit": "c90d48b9f05ee37394a767e618d929ef38dabbd6",
+  "verdict_A_actual_outcomes": {
+    "status": "UNVERIFIED",
+    "verified": [
+      "The exact imported development artifact and receipt/tree provenance passed the runner's before-run verifier.",
+      "The runner launched in headed Chrome for Testing 149 under a valid exclusive resource admission and reached the manual reviewer-login stage.",
+      "One sign-in submission showed an invalid-credentials error; the runner timed out before verifying the web session, extension account, canonical empty admin-assignment result, or organization selection."
+    ],
+    "limits": "No member identity or Notes case was verified. D61, D62, D63, D67, and D68 remain unverified for this lane. No note was created and no owned fixture receipt was produced."
+  },
+  "verdict_B_evidence_quality": {
+    "status": "FAIL_WITH_LIMITATIONS",
+    "evidence": "The raw runner result is mode 0600 with hash recorded in the linked run file. The exact imported artifact, runner source hash, and resource guard terminal journal are linked and secret-free. Guard admission was valid; the child failed at the manual login stage and the guard ended with resourceInvalid=false.",
+    "limitations": [
+      "Authentication never reached the runner's identity checks, so no member-role evidence or product-case evidence exists.",
+      "During credential preparation, the native CUA app refresh automatically emitted a full accessibility tree containing reviewer credentials before redaction could run. The values are omitted from this report; the password was re-hidden, clipboard overwritten with whitespace, and private CUA credential bindings cleared. No credential retry, reset, or account mutation followed. Parent adjudication is required before any further credential access.",
+      "The CFT login error was observed in the native UI but no screenshot was retained because the form contained credential fields."
+    ]
+  },
+  "linked_run": "docs/stabilization/runs/notes-member-native-20261002-01.json",
+  "resource_journal": "docs/stabilization/resource-journals/notes-member-native-20261002-01.jsonl",
+  "artifact": {
+    "source_commit": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
+    "version": "0.2.175",
+    "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
+    "receipt_sha256": "8e00b3f603a99ccf639ee78807bedfea23ac4298522ad6ef09b18d179d4d8656"
+  },
+  "secret_values_in_repository_evidence": false
+}

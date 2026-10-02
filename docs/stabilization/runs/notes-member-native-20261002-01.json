@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "run_id": "notes-member-native-20261002-01",
+  "date": "2026-10-02",
+  "lane": "member native acceptance for EXT-D-0061, EXT-D-0062, EXT-D-0063, EXT-D-0067, EXT-D-0068",
+  "status": "unverified_before_product_cases",
+  "artifact": {
+    "kind": "ci_development_test",
+    "version": "0.2.175",
+    "source_commit": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
+    "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
+    "local_receipt": "test-results/ci-artifacts/2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a/37039513091-1/local-dev-receipt.json",
+    "receipt_sha256": "8e00b3f603a99ccf639ee78807bedfea23ac4298522ad6ef09b18d179d4d8656",
+    "github_run_id": 37039513091,
+    "run_attempt": 1,
+    "artifact_id": 11241399881,
+    "verification": "Runner's before-run verifyImportedNativeEvidence completed and recorded exact source, GitHub artifact, local receipt, and tree provenance. Current source was exact pushed commit 56666e9fc2703be39c4a36717956e99f6050fe01 with no tracked dirty files or untracked runner inputs."
+  },
+  "runner": {
+    "path": "tests/browser/notes-native-acceptance.mjs",
+    "sha256": "e1ed35e87ad806e72989f8c6feac6551349b1df3bd9649f850b0c00e02338e66",
+    "reviewed_commit": "39f2cb579494c9300f2c6d76ed188eb00cc583a5",
+    "format_commit": "c90d48b9f05ee37394a767e618d929ef38dabbd6"
+  },
+  "identity_and_ui": {
+    "web_identity": "not_verified",
+    "extension_member_identity": "not_verified",
+    "canonical_admin_assignment_query": "not_reached",
+    "organization_selection": "not_reached",
+    "notes_operations": "none; no D61/D62/D63/D67/D68 case ran",
+    "owned_note_created": false,
+    "owned_fixture_receipt_created": false,
+    "native_observation": "The CFT login page displayed an invalid-credentials error after the single submitted sign-in attempt. The runner did not observe the signed-in reviewer session before its manual-login stage timed out. No member or organization claim is established."
+  },
+  "runner_result": {
+    "path": "test-results/notes-native-acceptance-20261002-member-attempt01.json",
+    "sha256": "6781975e868d162a2b11516dc4f6d209f6d196e8410d6bf62fac5498a9b21743",
+    "mode": "0600",
+    "status": "unverified",
+    "failure_stage": "ready_manual_member_login",
+    "failure_code": "stage_operation_failed",
+    "process_exit_code": 1
+  },
+  "resource_guard": {
+    "run_id": "notes-member-native-20261002-01",
+    "journal": "docs/stabilization/resource-journals/notes-member-native-20261002-01.jsonl",
+    "journal_sha256": "7f67841fa0e26b1928b0a747123683c84f0476f1e234edfbab8388018ae4bd50",
+    "admitted_at": "2026-10-02T17:47:39.133Z",
+    "terminal_at": "2026-10-02T17:50:43.309Z",
+    "admission": "valid",
+    "resource_invalid": false,
+    "terminal_decision": "child_failed",
+    "exit_code": 1
+  },
+  "secret_handling": {
+    "credential_values_in_report": false,
+    "incident": "A primary Chrome getApp refresh automatically emitted the full Test instructions accessibility tree, including reviewer credential fields, before in-call redaction could execute. No values are repeated here or in the runner result. The password was re-hidden, the system clipboard overwritten with whitespace, and private CUA variables cleared immediately after the disclosure was discovered. The credential was not reused after discovery; no reset or account mutation was performed.",
+    "operator_action": "Stop further credential access pending parent adjudication."
+  },
+  "cleanup": "The runner closed its own CFT process/profile. The guard ended with a valid child_failed decision and resourceInvalid=false. The empty owned external guard directory was removed. No Notes fixture exists. Primary Chrome stayed open; its Test instructions edit view was not saved.",
+  "private_preexisting_output": {
+    "path": "test-results/notes-native-acceptance-preexisting-20261002.json",
+    "sha256": "d6d5584f7b6d0262b0374ee4740be6f6fa91e5b9bb6d9105ff8bbcb599421008",
+    "mode": "0600",
+    "handling": "Preserved separately before the current runner wrote its fixed output path; unrelated and excluded from this run's acceptance claim."
+  }
+}
