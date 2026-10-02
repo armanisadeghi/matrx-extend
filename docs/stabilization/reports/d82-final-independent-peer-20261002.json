@@ -8,17 +8,18 @@
     "63012c473b6ed2fb9d17a53e463edb0d6b349cf8"
   ],
   "verdict_a_outcome": {
-    "status": "PASS_SOURCE_AND_RECORDED_TESTS_NATIVE_UNVERIFIED",
+    "status": "PASS_SOURCE_TESTS_AND_COMPILE_LIVE_UI_UNVERIFIED",
     "findings": [],
     "evidence": [
       "At the original fix commit a25b57c, upload/download stopped reading failed response text and upload logging contained only status/timing; real Response tests covered echoed markers at 403/502.",
       "The subsequent correction in 756fb903 replaces unsupported shared status claims with local status/remedy text and best-effort cancels unread failure bodies both before a 401 refresh and on final failure. A cancellation rejection is swallowed so it cannot replace the HTTP error.",
       "Current tests use real Response/ReadableStream bodies to assert marker exclusion, body cancellation, preservation of 502 when cancellation rejects, upload retry with same FormData and organization header, download retry and bytes, successful filename/MIME, and caller AbortError propagation. Source inspection confirms download requests and retries carry the resolved organization ID and only one refresh retry is possible.",
-      "Recorded resource journals d82-followup-red-20261002-01 and d82-followup-green-20261002-01 report 8/10 failing and 10/10 passing respectively. These are recorded implementer runs, not executions by this reviewer."
+      "Recorded resource journals d82-followup-red-20261002-01 and d82-followup-green-20261002-01 report 8/10 failing and 10/10 passing respectively. These are recorded implementer runs, not executions by this reviewer.",
+      "Guarded compile journal d82-followup-compile-20261002-01 records admitted child exit 0 at 2026-10-02T19:47:31Z; this compile result is coordinator-recorded, not run by this reviewer."
     ],
     "limits": [
-      "No tests, build, browser, or account flow were run by this reviewer.",
-      "Native acceptance is unverified. Current compile is pending per the coordinating parent; this report does not claim compile success from an older journal."
+      "No tests, build, browser, or account flow were run by this reviewer; the red/green test and compile outcomes above are recorded runs by the implementer/coordinator.",
+      "Live file-transfer UI behavior is unverified. This is not a whole-product acceptance or deployment claim."
     ]
   },
   "verdict_b_contract_quality": {
