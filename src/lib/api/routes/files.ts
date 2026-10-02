@@ -15,7 +15,11 @@ import { getBackendUrl } from '@/config/backend';
 import { getAccessToken, refreshAccessToken } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 import { requireActiveOrganizationId } from '@/lib/org/active-org';
-import { readMatrxJsonResponse, sendMatrxRequest } from '@ai-matrx/agents/matrx';
+import {
+  bareStatusSentence,
+  readMatrxJsonResponse,
+  sendMatrxRequest,
+} from '@ai-matrx/agents/matrx';
 
 export interface FileUploadResponse {
   file_id: string;
@@ -136,9 +140,8 @@ export async function uploadFile(
   }
   const ms = Math.round(performance.now() - start);
   if (!res.ok) {
-    const text = await res.text().catch(() => res.statusText);
-    log.error('api', `✗ POST /files/upload ${res.status} (${ms}ms)`, text);
-    throw new Error(`upload failed ${res.status}: ${text}`);
+    log.error('api', `✗ POST /files/upload ${res.status} (${ms}ms)`);
+    throw new Error(`File upload failed (${res.status}). ${bareStatusSentence(res.status)}`);
   }
   const data = parseFileUploadResponse(await readMatrxJsonResponse<unknown>(res));
   log.success('api', `← /files/upload ${res.status} (${ms}ms)`, { file_id: data.file_id });
@@ -179,8 +182,7 @@ export async function downloadFileBytes(
     }
   }
   if (!res.ok) {
-    const text = await res.text().catch(() => res.statusText);
-    throw new Error(`download failed ${res.status}: ${text}`);
+    throw new Error(`File download failed (${res.status}). ${bareStatusSentence(res.status)}`);
   }
   const blob = await res.blob();
   const cd = res.headers.get('content-disposition') ?? '';

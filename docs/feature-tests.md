@@ -468,6 +468,7 @@ Every entry follows this shape:
   `image_base64` is still returned for the vision model. `width` and
   `height` are in image-pixels (× DPR). `source_rect` is the CSS-pixel
   rect that was captured (with padding applied).
+- **File-transfer failure:** If the upload is refused, the surfaced error includes the HTTP status and a sign-in/access or retry remedy. The server's raw response body never appears in the error or debug log. The same status/remedy rule applies when an existing file's bytes cannot be downloaded.
 - **Edge cases worth poking:**
   - Off-viewport element → handler auto-scrolls it into view first,
     then captures.
