@@ -2,8 +2,8 @@
   "schema_version": 1,
   "artifact_type": "read-only-disk-target-census",
   "task_id": "internal-disk-space-recovery",
-  "captured_at_utc": "2026-10-02T20:09:46Z",
-  "scope": "Bounded, read-only inspection of likely generated development caches and simulator data. No files were deleted, moved, cleared, or modified by the census. Root-owned top-level Data-volume du scan was not repeated.",
+  "captured_at_utc": "2026-10-02T20:42:00Z",
+  "scope": "Bounded disk-space census followed by the parent-authorized, reversible relocation of the verified inactive Gradle cache. One exact redundant generated artifact was removed internally only after byte-for-byte external verification; the complete external copy retains the original content for rollback. No source, credential, user, browser, VM, AVD, or simulator data was changed.",
   "capacity_snapshot": {
     "internal_volume": "/System/Volumes/Data",
     "size": "228GiB",
@@ -12,7 +12,10 @@
     "external_volume": "/Volumes/Samsung2TB",
     "external_available": "1.7TiB",
     "external_filesystem": "APFS",
-    "external_volume_uuid": "05F4443C-C2F9-4A6B-BAD5-FA58E90BBEE6"
+    "external_volume_uuid": "05F4443C-C2F9-4A6B-BAD5-FA58E90BBEE6",
+    "internal_available_before_relocation": "108MiB",
+    "internal_available_after_relocation": "4.0GiB",
+    "external_available_after_relocation": "1.7TiB"
   },
   "canonical_cleanup_review": {
     "skill": ".claude/skills/disk-groom/SKILL.md",
@@ -30,9 +33,9 @@
         "95MiB build-cache-1"
       ],
       "directory_mtime": "2026-02-06/07 local time",
-      "active_process_evidence": "The point-in-time ps snapshot showed no Gradle/Android Studio/emulator process. This only establishes no matching process was visible at capture time.",
-      "open_file_check": "A subsequent pgrep for GradleDaemon/gradle/org.gradle/Android Studio/emulator/qemu returned only its own shell, and lsof +D over this exact directory returned no open-file rows. This is a point-in-time check only.",
-      "classification": "Generated dependency/build cache candidate, but only 3.8GiB. Older mtime, absent matching process, and no current open files make a controlled reversible relocation plausible; they do not establish that the cache is disposable or that all contents are reproducible offline. Not a 20GiB target; do not move until owner approval and final just-in-time process/open-file checks.",
+      "active_process_evidence": "No GradleDaemon process was visible at the initial check or immediately before rename and final backup removal; each check showed only its own shell/awk. This is point-in-time evidence.",
+      "open_file_check": "lsof +D over the exact source returned no rows before rename; lsof +D over the dated backup also returned no rows immediately before its removal. Point-in-time checks only.",
+      "classification": "Generated Gradle transforms, dependency artifacts, and build-cache entries. The original complete cache is preserved on the external APFS volume and exposed at its stable original path through a symlink. Cache reproducibility while offline is not claimed.",
       "canonical_cleanup": "Not covered by current groom.py dev-caches targets."
     },
     {
@@ -96,9 +99,9 @@
   ],
   "disposition": {
     "safe_verified_targets_at_least": "20GiB",
-    "result": "none identified",
-    "basis": "The bounded generated Gradle cache is 3.8GiB and is the only materially sized target here that resembles regenerable development output. Android AVD and CoreSimulator trees contain user/device state, and CoreSimulator is active. Other observed large trees are application, browser, cloud-sync, or VM data explicitly protected by the operator. Do not infer a safe 20GiB reclaim path from this census.",
-    "next_evidence_needed": "If the owner approves the proposed Gradle-cache relocation, perform the final process/open-file and offline-use checks immediately before copying."
+    "result": "none identified; one approved 3.8GiB Gradle cache relocation completed",
+    "basis": "No additional safe target was found in the bounded census. The approved cache relocation reclaimed about 3.9GiB (from 108MiB to 4.0GiB available); the 20GiB goal remains unmet. Protected cloud sync, application, browser, VM, AVD, and simulator data were preserved.",
+    "next_evidence_needed": "If more space is required, run a fresh targeted census; do not extrapolate from this bounded pass."
   },
   "proposed_reversible_relocation_for_owner_review": {
     "target": "/Users/armanisadeghi/.gradle/caches",
@@ -111,27 +114,49 @@
       "After a complete match and a second no-open-handle/daemon check, atomically rename the original directory to a same-parent dated backup, create the stable ~/.gradle/caches symlink to the unique external copy, and verify the symlink and content. Before deleting only that exact backup, recheck that it still matches the preserved external copy and is not open. Remove it with a safe exact-path Python operation; never use broad rm/force.",
       "If validation fails after swap, stop Gradle, verify the symlink points to this exact external target, remove only that symlink, and rename the dated backup to ~/.gradle/caches. Keep the external copy."
     ],
-    "status": "copy-staged-attribute-mismatch-stop-before-swap",
+    "status": "completed-verified-symlink-and-external-rollback-copy",
     "performed": {
       "copied_to": "/Volumes/Samsung2TB/.matrx-disk-recovery/gradle-caches-20261002",
-      "source_untouched": true,
-      "swap_started": false,
-      "source_tree_manifest_sha256": "8c89f4a102cd1741f8b10e6109eaca8feb19b40cbb362be35945bd6fe53cf8e0",
-      "copy_tree_manifest_sha256": "8c89f4a102cd1741f8b10e6109eaca8feb19b40cbb362be35945bd6fe53cf8e0",
-      "acl_listing_sha256_equal": true,
-      "xattr_listing_sha256_equal": false,
+      "external_copy_retains_all_original_cache_content": true,
+      "original_path": "/Users/armanisadeghi/.gradle/caches",
+      "original_path_is_symlink": true,
+      "symlink_target": "/Volumes/Samsung2TB/.matrx-disk-recovery/gradle-caches-20261002",
+      "dated_backup_removed_after_verification": "/Users/armanisadeghi/.gradle/caches.relocated-20261002",
+      "bootstrap_file_removed_only_from_internal_original_before_swap": {
+        "relative_path": "modules-2/files-2.1/com.facebook.react/react-android/0.81.5/98805d876957296e393f2c1ef180f7a650afce7c/react-android-0.81.5-debug.aar",
+        "size_bytes": 204124602,
+        "sha256": "5780b154ece55333bf4c606fc9e0fda3f7e925aaa7297e89faf95ca92db9619b",
+        "external_original_retained": true,
+        "purpose": "Create metadata headroom after atomic rename failed with ENOSPC; exact original artifact was confirmed identical to external copy and no open handle existed."
+      },
+      "precopy_manifest_sha256": "8c89f4a102cd1741f8b10e6109eaca8feb19b40cbb362be35945bd6fe53cf8e0",
+      "precopy_entries": 73808,
+      "precopy_files": 41611,
+      "precopy_file_bytes": 3987688922,
+      "acl_listing_sha256_equal_before_copy_policy_acceptance": true,
       "xattr_difference": {
         "attribute": "com.apple.provenance",
-        "changed_entries": 73808,
+        "entries": 73808,
         "source_value_hex": "01 02 00 86 EB 1B 2A A9 86 1F 5A",
         "copy_value_hex": "01 02 00 AF A6 60 89 DC A2 50 28",
-        "evidence_files": [
-          "/Volumes/Samsung2TB/.matrx-disk-recovery/source-xattrs.txt",
-          "/Volumes/Samsung2TB/.matrx-disk-recovery/copy-xattrs.txt"
-        ]
+        "handling": "Accepted by parent as copy-generated macOS metadata delta for this inactive generated cache only. Attribute was not changed, removed, forged, or generalized to other metadata."
       },
-      "metadata": "/Volumes/Samsung2TB/.matrx-disk-recovery/gradle-caches-20261002-verified-manifests",
-      "reason_held": "A copy-generated xattr changed identically on 73,808 entries. Available sources describe com.apple.provenance as macOS Gatekeeper/XProtect provenance metadata, but no Apple primary documentation defining this private attribute was found. It was not overwritten, removed, or normalized. Preserve the original and pause until this difference is understood and accepted."
+      "post_bootstrap_backup_comparison": {
+        "comparison": "all remaining relative paths, types, modes, owners/groups, symlink targets, file sizes, mtimes, and SHA-256 contents compared against external copy, excluding only the one intentionally removed relative path; directory mtimes excluded because unlink updated ancestors",
+        "mismatches": 0,
+        "external_copy_retains_removed_artifact": true
+      },
+      "final_checks": {
+        "no_gradle_daemon_process_before_swap_or_backup_removal": true,
+        "lsof_exact_source_before_swap_empty": true,
+        "lsof_exact_backup_before_removal_empty": true,
+        "temporary_symlink_metadata_probe_succeeded_and_was_removed": true,
+        "stable_symlink_resolves_and_cache_artifact_path_exists": true,
+        "internal_available_before": "108MiB",
+        "internal_available_after": "4.0GiB"
+      },
+      "evidence_directory": "/Volumes/Samsung2TB/.matrx-disk-recovery",
+      "rollback_source": "Full verified external copy; it retains all original content, including the bootstrap artifact."
     }
   },
   "commands_and_limits": {
@@ -140,14 +165,14 @@
       "du -x -d 2/-d 3 targeted paths under ~/Library/Caches, ~/.gradle, ~/.android, ~/Library/pnpm, ~/.npm, ~/.cache, ~/Library/Developer",
       "find targeted Gradle cache and Android AVD paths (names only)",
       "ps -axo pid,etime,comm,args filtered for Gradle, Android Studio, emulator and CoreSimulator",
-      "lsof on the four observed CoreSimulator process IDs"
-      ,"pgrep and lsof +D for the exact Gradle cache; diskutil info for Samsung2TB filesystem and UUID"
+      "lsof on the four observed CoreSimulator process IDs",
+      "pgrep and lsof +D for the exact Gradle cache; diskutil info for Samsung2TB filesystem and UUID"
     ],
     "limits": [
-      "This is a single point-in-time process and directory observation; no open-file scan was attempted over the full Gradle cache.",
-      "No source, browser, test, build, database, release, or push action was performed.",
-      "Temporary verification manifests and xattr listings are stored only on the external APFS volume. The report is in the external-backed repository checkout.",
-      "The approved copy has been staged externally, but no source rename, symlink, or local backup removal has occurred because the exact com.apple.provenance value differs on copied entries."
+      "Bounded census and point-in-time process/open-handle checks only; no claim that Gradle cache contents are reproducible offline.",
+      "One generated Gradle cache artifact was removed from internal storage only after exact size/SHA-256/metadata and byte equality with the external copy were verified. The external copy retains the artifact and complete original tree.",
+      "The macOS-generated com.apple.provenance token difference was accepted by the parent for this cache copy only; no provenance or other xattr was altered.",
+      "No tests, builds, database operations, browser interaction, release, or push were run."
     ]
   }
 }
