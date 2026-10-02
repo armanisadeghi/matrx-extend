@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "lane": "guarded native member and guest acceptance",
+  "run_id": "files-member-d64-20261002-001",
+  "completed_at": "2026-10-02",
+  "subject_build": {
+    "version": "0.2.173",
+    "tree_sha256": "494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064",
+    "frozen_receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/release-receipt-frozen.json"
+  },
+  "identity_and_membership": {
+    "real_web_sign_in": "PASS: manually entered credentials through the actual headed web login; whoami fingerprint matched the previously verified reviewer.",
+    "extension_sign_in": "PASS: real extension OAuth completed and the Account UI matched the same reviewer fingerprint.",
+    "extension_admin_check": "PASS: observed the canonical admin-schema GET, selected user_id matching the current extension profile UUID, HTTP 200, empty result. Request headers and response body were discarded after classification.",
+    "organization_membership": "PASS: Arman selected an organization shown in the authenticated extension picker, populated through the canonical mbr_for_user resolver. The selected organization identifier and name were not retained. The picker does not expose the membership role."
+  },
+  "cases": {
+    "guest": "PASS: Files and Saved captures tabs were absent before and after panel reload.",
+    "EXT-D-0064_member_library": {
+      "result": "PASS",
+      "request_failure_observed": true,
+      "visible_error_and_retry": true,
+      "false_empty_claim": false,
+      "successful_read_after_retry": true,
+      "recovered_view": true
+    },
+    "EXT-D-0064_member_screenshots": {
+      "result": "PASS",
+      "request_failure_observed": true,
+      "visible_error_and_retry": true,
+      "false_empty_claim": false,
+      "successful_read_after_retry": true,
+      "recovered_view": true
+    },
+    "EXT-D-0065_member_saved_capture_race": "UNVERIFIED: no test-owned Source pair was configured. The run performed no fixture writes."
+  },
+  "resource": {
+    "journal": "docs/stabilization/resource-journals/files-member-d64-20261002-001.jsonl",
+    "admission": "admitted; healthy watches; resourceInvalid=false",
+    "runner_exit": 1,
+    "exit_interpretation": "Expected partial-status exit because D65 was unverified; D64 and guest cases passed."
+  },
+  "validation": {
+    "runner_result": "test-results/files-saved-native-acceptance.json",
+    "runner_commit": "b83c9767",
+    "scope_limit": "This is native evidence for frozen 0.2.173. It does not establish coverage on latest main or a newer hosted build."
+  }
+}
