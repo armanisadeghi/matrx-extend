@@ -21,5 +21,14 @@
   "restore": "Auto-scrape Off / Capture mode, both confirmed after full extension Reload.",
   "safety": "Guest remained signed out; no Chat message, credentials, Store build, or primary Chrome session used.",
   "resource_verdict": "valid; guard admitted and ended normally with exit code 0 and no unsafe samples.",
-  "code_changes": false
+  "code_changes": false,
+  "cleanup_disposition": {
+    "owned_profile": "/Volumes/Samsung2TB/code/.stabilization-scratch/cft-guest-autoscrape-20261002-01",
+    "resolved_path_verified_exact": true,
+    "symlink": false,
+    "open_process_references": false,
+    "chrome_for_testing_process_active": false,
+    "removed_with_python_shutil": true,
+    "deletion_confirmed": true
+  }
 }
