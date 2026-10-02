@@ -1,7 +1,8 @@
 // @vitest-environment jsdom
+
+import type { SeoAudit } from '@/lib/seo/audit';
 import { act, cleanup, render, screen } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
-import type { SeoAudit } from '@/lib/seo/audit';
 
 vi.mock('@/lib/supabase/queries', () => ({
   fetchSeoAuditHistoryForUrl: async () => [],
