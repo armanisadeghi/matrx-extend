@@ -49,7 +49,11 @@ async function providerFailureMessage(err: CartesiaSessionError): Promise<string
   const cause = err.original as { status?: unknown; type?: unknown; code?: unknown } | null;
   const status = typeof cause?.status === 'number' ? cause.status : null;
   const type =
-    typeof cause?.type === 'string' ? cause.type : typeof cause?.code === 'string' ? cause.code : null;
+    typeof cause?.type === 'string'
+      ? cause.type
+      : typeof cause?.code === 'string'
+        ? cause.code
+        : null;
   const verdict = await reportProviderSessionFailure(matrxTransport, {
     provider: 'cartesia',
     model: CARTESIA_MODEL_ID,

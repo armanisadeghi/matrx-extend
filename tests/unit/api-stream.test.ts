@@ -190,8 +190,7 @@ describe('streamFetch public NDJSON kernel integration', () => {
 
 describe('streamFetch server error events and live runs', () => {
   it("shows the server's user_message from a stream error event, not generic copy", async () => {
-    const billing =
-      "OpenAI refused this request: the platform's OpenAI account is out of credit.";
+    const billing = "OpenAI refused this request: the platform's OpenAI account is out of credit.";
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue(
