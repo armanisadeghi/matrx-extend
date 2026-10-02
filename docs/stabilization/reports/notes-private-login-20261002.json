@@ -14,7 +14,7 @@
   "verification": {
     "static_syntax": "node --check on the three changed .mjs files passed",
     "format": "targeted Biome formatting applied",
-    "unit": "The exact synthetic node:test command is registered in the resource policy; execution awaits explicit heavy-permit transfer",
+    "unit": "Four synthetic node:test cases passed under the exact resource-guard command. Run notes-private-credential-unit-20261002-01 had RESOURCE_ADMITTED, child exit 0, and RESOURCE_FINAL_DECISION valid (resourceInvalid false). Journal: docs/stabilization/resource-journals/notes-private-credential-unit-20261002-01.jsonl",
     "native": "not run in this lane; no actual private credential was read"
   },
   "remaining": "A separately authorized fresh native member run must supply an existing permitted private fixture after credential remediation. Successful source checks do not establish real login, Notes behavior, or defect closure."
