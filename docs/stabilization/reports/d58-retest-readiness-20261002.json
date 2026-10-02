@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "report_id": "d58-retest-readiness-20261002",
+  "defect_id": "EXT-D-0058",
+  "status": "native_retest_prepared_not_run",
+  "artifact": {
+    "version": "0.2.173",
+    "source_sha": "d6d6d6b83c937652525f473082ac2f2492c9eabe",
+    "source_commit_descends_from_repair": "78041e1632088a100476b33cb082e51f1bdbdf9a",
+    "frozen_directory": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/chrome-mv3-keyed",
+    "receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/release-receipt-frozen.json",
+    "tree_sha256": "494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064",
+    "inclusion_evidence": "git merge-base --is-ancestor 78041e1632088a100476b33cb082e51f1bdbdf9a d6d6d6b83c937652525f473082ac2f2492c9eabe succeeded; frozen source usePagePrep.ts contains run-sequence/page-key/mounted guards, clears report at run start, and checks attempt identity before result/error/final-state writes."
+  },
+  "persona": "Admin; EXT-D-0058 auth_mode is admin and Showcase is admin-only. Use the existing authorized admin session; do not substitute a guest/member account or invent credentials.",
+  "fixture": {
+    "page_a": "https://nuxt.com/docs/4.x/getting-started/introduction",
+    "page_b": "https://nuxt.com/docs/4.x/getting-started/installation",
+    "extension": "Load the frozen keyed unpacked artifact above in the already configured primary Chrome profile; verify version 0.2.173 before interaction."
+  },
+  "guard_command": "node scripts/stabilization-resource.mjs browser --run-id showcase-d58-frozen173-native-20261002-01 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+  "acceptance_steps": [
+    "On page A in Showcase > Prepare, run once and record visible success/report; click Reset and confirm report, error, and running state are clear.",
+    "Restore Prepare success on page A. In Chrome's extension site-access menu, change access for nuxt.com to On click, retry Prepare on the same page, and confirm the old report is absent while the injection error is visible. Restore access to On this site and retry successfully.",
+    "For late-result ordering, start Prepare on A and navigate the same tab to page B while the run is visibly pending; confirm B never displays A's report or error. Repeat once with a rejected A attempt if the pending window is observable."
+  ],
+  "limits": [
+    "No browser launch or UI action was performed: root has not granted the browser permit; CI currently owns it and SEO is queued.",
+    "The site-access retry is a real Chrome permission-denial path. If Chrome retains permission for the already loaded document, record the trigger as unavailable and stop; do not claim a native injection rejection.",
+    "Prepare's injected page scan is synchronous, so ordinary public-page navigation provides no deterministic delay/control over A completion. Native page-A/page-B ordering is opportunistic only; absent an observable pending window, report it unverified. Existing deferred-promise tests remain controlled-code evidence, not native proof.",
+    "Same-tab same-URL reload identity is tracked separately by EXT-D-0059 and is outside this D58 acceptance."
+  ],
+  "provenance": {
+    "defect": "docs/stabilization/defects/EXT-D-0058.json",
+    "source_repair": "docs/stabilization/reports/prepare-lifecycle-repair.json",
+    "independent_review": "docs/stabilization/reports/prepare-lifecycle-peer.json",
+    "guarded_integrated_verification": "docs/stabilization/reports/prepare-integrated-verification.json"
+  }
+}
