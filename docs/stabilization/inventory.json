@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-02T14:26:54.058323+00:00",
+  "updated_at": "2026-10-02T14:50:09.924525+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -52,6 +52,11 @@
           "id": "EXT-F-0001-C05",
           "label": "Dev identity auth redirect and origin compatibility",
           "action": "Dev identity auth redirect and origin compatibility"
+        },
+        {
+          "id": "EXT-F-0001-C06",
+          "label": "Import exact automatic CI development test artifact",
+          "action": "Verify successful main-push GitHub provenance and archive/tree hashes, import to a unique owned path, bind native runner receipt."
         }
       ],
       "source_anchors": [
@@ -287,6 +292,58 @@
               "remaining": "OAuth callback not directly observed; ordinary-member flow unverified. All full mode cells remain unverified."
             }
           ]
+        },
+        {
+          "id": "EXT-F-0001-T06",
+          "title": "Automatic CI development artifact is trustworthy and usable without local build",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0001-C06"
+          ],
+          "preconditions": [
+            "Normal main push completed CI with development artifact; no local build or new release credentials."
+          ],
+          "steps": [
+            "Authenticate read-only GitHub run and artifact metadata; verify workflow/repository/main-push/success/source/run attempt/archive digest.",
+            "Verify keyed dev manifest, public runtime config, source version and tree digest; import into unused run-qualified owned directory, preserving original CI evidence outside hashed tree.",
+            "Record exact-source status against current remote and dirty checkout; load/reload that exact unpacked path with valid resource admission, refresh public page and verify correct role/runtime before tests.",
+            "Exercise altered digest/source/run, collision and symlink refusals in isolated helper guards; verify existing frozen .output is untouched."
+          ],
+          "expected": [
+            "No untrusted or overwritten artifact is accepted. Current working-source claims require matching clean source; older artifacts stay labeled exact commit.",
+            "New test artifact can run real native checks using existing supported dev identity and public runtime configuration.",
+            "Development receipt cannot establish Store readiness or authorize upload."
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "Implementation active after independent contract review; actual artifact/import/native evidence pending.",
+              "evidence": [
+                "docs/stabilization/reports/current-test-artifact-20261002.json",
+                "docs/stabilization/reports/current-test-artifact-contract-peer-20261002.json"
+              ]
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "Implementation active after independent contract review; actual artifact/import/native evidence pending.",
+              "evidence": [
+                "docs/stabilization/reports/current-test-artifact-20261002.json",
+                "docs/stabilization/reports/current-test-artifact-contract-peer-20261002.json"
+              ]
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Implementation active after independent contract review; actual artifact/import/native evidence pending.",
+              "evidence": [
+                "docs/stabilization/reports/current-test-artifact-20261002.json",
+                "docs/stabilization/reports/current-test-artifact-contract-peer-20261002.json"
+              ]
+            }
+          }
         }
       ],
       "cells": {

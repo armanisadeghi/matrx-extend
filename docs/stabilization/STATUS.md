@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-02 14:28 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T14:26:54.058323+00:00. 205 features · 734 cases · 1318 controls · 76 linked defect records.
+Generated 2026-10-02 14:50 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T14:50:09.924525+00:00. 205 features · 735 cases · 1319 controls · 76 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1167** — Pass: 58 · Partial: 36 · Fail: 2 · Unverified: 1070 · N/A: 1.
-Unverified splits into **119 explicitly marked unverified** and **951 with no result record**.
+Applicable case-by-role slots: **1170** — Pass: 58 · Partial: 36 · Fail: 2 · Unverified: 1073 · N/A: 1.
+Unverified splits into **122 explicitly marked unverified** and **951 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -15,7 +15,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 
 | Tab or surface | Features | Guest cases | Member cases | Admin cases | All-role case slots | Active defects |
 | --- | ---: | --- | --- | --- | --- | ---: |
-| [Development installation](#development-installation) | 1 | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 2, partial 0, fail 0, unverified 13, n/a 0 | 0 |
+| [Development installation](#development-installation) | 1 | 1 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 1 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 2, partial 0, fail 0, unverified 16, n/a 0 | 0 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 7, partial 1, fail 0, unverified 14, n/a 0 | 1 |
 | [Release infrastructure](#release-infrastructure) | 1 | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 24, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 0, fail 0, unverified 14, n/a 0 | 0 |
@@ -66,7 +66,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Development build, reload and runtime identity (EXT-F-0001)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 5. **Controls:** 5.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 6. **Controls:** 6.
 
 **Next:** Run the remaining role cases in the extension and attach a result.
 
@@ -79,6 +79,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-0001-T03 Content-script page reload | Unverified | Unverified | Unverified | EXT-F-0001-C03 |
 | EXT-F-0001-T04 Service-worker and offscreen restart | Unverified | Unverified | Unverified | EXT-F-0001-C04 |
 | EXT-F-0001-T05 Development identity auth redirect | Unverified | Unverified | Unverified | EXT-F-0001-C05 |
+| EXT-F-0001-T06 Automatic CI development artifact is trustworthy and usable without local build | Unverified | Unverified | Unverified | EXT-F-0001-C06 |
 
 **Recorded case details and evidence:**
 
@@ -88,6 +89,12 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
 - EXT-F-0001-T02 · admin: Pass. Final shipped0.2.56 full extension Reload,30s before opening actual sidepanel: admin/ADMIN restored; selected org visible about5s later. Original development30s-settle proof retained in permissions-auth-native-sol.
   Evidence / build / date recorded: release-native-verification, docs/stabilization/runs/release-native-verification.json
+- EXT-F-0001-T06 · guest: Unverified. Implementation active after independent contract review; actual artifact/import/native evidence pending.
+  Evidence / build / date recorded: ['docs/stabilization/reports/current-test-artifact-20261002.json', 'docs/stabilization/reports/current-test-artifact-contract-peer-20261002.json']
+- EXT-F-0001-T06 · member: Unverified. Implementation active after independent contract review; actual artifact/import/native evidence pending.
+  Evidence / build / date recorded: ['docs/stabilization/reports/current-test-artifact-20261002.json', 'docs/stabilization/reports/current-test-artifact-contract-peer-20261002.json']
+- EXT-F-0001-T06 · admin: Unverified. Implementation active after independent contract review; actual artifact/import/native evidence pending.
+  Evidence / build / date recorded: ['docs/stabilization/reports/current-test-artifact-20261002.json', 'docs/stabilization/reports/current-test-artifact-contract-peer-20261002.json']
 
 **Other remaining work:** Concrete procedure and evidence required before executing each control.
 
@@ -732,7 +739,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0076
 
-**Linked defects:** [EXT-D-0021](defects/EXT-D-0021.json) (closed), [EXT-D-0076](defects/EXT-D-0076.json) (triaged)
+**Linked defects:** [EXT-D-0021](defects/EXT-D-0021.json) (closed), [EXT-D-0076](defects/EXT-D-0076.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
