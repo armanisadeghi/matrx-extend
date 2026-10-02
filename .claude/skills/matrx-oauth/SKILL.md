@@ -22,7 +22,6 @@ The Matrx OAuth provider is **a thin Next.js proxy in front of Supabase Auth**, 
 ## Where to read what
 
 - **Writing or fixing client-side OAuth code** — a SPA's `/oauth/callback` or `/access-denied` route, wiring OAuth into a new Matrx SPA, or the Tauri desktop client → read [client-wiring.md](client-wiring.md).
-- **Tracing why a verified verdict below holds** (ES256 vs HS256, SPA paths, `ai-matrx` naming, `admin.admins`), or the history of this merged doc → read [changelog.md](changelog.md).
 
 ## Repositories
 
@@ -35,7 +34,6 @@ The Matrx OAuth provider is **a thin Next.js proxy in front of Supabase Auth**, 
 
 ## This doc replaced two divergent copies
 
-Merge history and the evidence behind every VERIFIED verdict → [changelog.md](changelog.md).
 
 ## Architecture
 
@@ -107,7 +105,7 @@ These took three weeks of debugging to nail down. **Internalize them.** Most "fi
 1. **The Matrx OAuth client is a PUBLIC PKCE client. Never send `client_secret`.**
    Supabase rejects confidential-client params for public clients with `400`. The proof of possession is the PKCE `code_verifier`, not a secret. Same client type matrx-local desktop uses — see `projects/matrx-local/desktop/src/lib/oauth.ts`.
 
-2. **JWT signing algorithm: ES256 is current, not HS256.** VERIFIED (see [changelog.md](changelog.md)). Matrx Main signs JWTs with **ES256** (asymmetric). `aidream/aidream/api/middleware/auth.py` documents this explicitly and keeps `JWT_ALGORITHMS = ("HS256", "ES256")` — HS256 stays in the allow-list only as a rotation-window compatibility fallback, not because it's the live signer. Any JWT verification code must accept both via the configured allow-list and JWKS, never hard-code one algorithm.
+2. **JWT signing algorithm: ES256 is current, not HS256.** VERIFIED. Matrx Main signs JWTs with **ES256** (asymmetric). `aidream/aidream/api/middleware/auth.py` documents this explicitly and keeps `JWT_ALGORITHMS = ("HS256", "ES256")` — HS256 stays in the allow-list only as a rotation-window compatibility fallback, not because it's the live signer. Any JWT verification code must accept both via the configured allow-list and JWKS, never hard-code one algorithm.
    The OAuth authorize/token flow still drops the `openid` scope (`scope=email profile` only) — the comment in `aidream/services/auth_oauth/service.py` justifying this still says "Supabase HS256 projects can't sign ID tokens," which is the stale rationale for a decision that may still be operationally correct. **Flagged, not resolved:** re-verify against the live token response before trusting that comment if `openid` is ever needed.
 
 3. **Supabase error responses don't always use `{error, error_description}`.**
@@ -119,7 +117,7 @@ These took three weeks of debugging to nail down. **Internalize them.** Most "fi
 5. **The repo's `.gitignore` has a Python `lib/` rule that swallows TS source.**
    Anything new under `aidream/apps/dashboard/src/lib/`, `aidream/apps/workflow-studio/src/lib/`, etc. is silently dropped from git unless explicitly allow-listed. Symptom: the build fails with `Cannot find module '@/lib/...'`, while the running service continues serving the previous healthy image. **Always run `git check-ignore -v <new-lib-file>` after creating one** — a hit against the bare `lib/` rule means add an explicit `!path/**` rule next to the existing dashboard/studio entries.
 
-6. **The admin table is `admin.admins`, not `public.admins`.** VERIFIED (see [changelog.md](changelog.md)) — `aidream/db/models/admin.py` defines `Admins` with `_db_schema = "admin"`, `_table_name = "admins"`.
+6. **The admin table is `admin.admins`, not `public.admins`.** VERIFIED — `aidream/db/models/admin.py` defines `Admins` with `_db_schema = "admin"`, `_table_name = "admins"`.
 
 7. **The token-verification path in `oauth_callback` is currently UNVERIFIED, as-is.** `aidream/services/auth_oauth/service.py:_decode_jwt_payload` base64url-decodes the JWT payload without checking the signature — this is live code, not a historical artifact. It's defended as safe because `AuthMiddleware` re-verifies the signature on every subsequent API call, so an attacker who forges the callback's decoded claims can't get real API access — but the callback DOES use those unverified claims to decide `access_token` vs `/access-denied` redirect. Route this through `aidream.api.middleware.token_verifier.verify_supabase_token` (the shared, JWKS/ES256-aware verifier) rather than treating unverified decode as the intended end state.
 
@@ -218,10 +216,6 @@ Required on each SPA (baked into the Vite build via `.env.production`):
 | `aidream/api/config.py` (`CORS_DEFAULT_ORIGIN_REGEX`) | Whitelist of allowed SPA origins. Add new SPAs here. |
 | `aidream/aidream/api/middleware/auth.py` + `packages/matrx-connect/matrx_connect/middleware/auth.py` + `aidream/aidream/api/middleware/token_verifier.py` | JWT verification (HS256/ES256 allow-list, JWKS) on every API call and for the shared out-of-band verifier. The token from this OAuth flow flows through here. |
 | `aidream/db/models/admin.py` | `Admins` model — `_db_schema = "admin"`, `_table_name = "admins"`. |
-
-## Changelog
-
-Merge history and the three disputed claims' verdicts, with evidence → [changelog.md](changelog.md).
 
 ## Sign-out scope — a sign-out ends only the session that asked (2026-09-15)
 
