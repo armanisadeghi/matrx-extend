@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "report_id": "artifact-profile-identity-audit-20261002",
+  "date": "2026-10-02",
+  "scope": "Read-only audit of extension runtime identity in cloned frozen173 Chrome for Testing profiles used by recent admin native checks; no browser, build, release, login, or credential access.",
+  "verdict_A_live_user_outcome": {
+    "status": "PREPARE_VERSION_UNVERIFIED",
+    "finding": "The Prepare/Snapshot reload actions in prepare-document-native-20261002.json remain UI observations, but cannot be claimed against imported 0.2.175. The incidental Datasets/PGRST205 toast identifies a callsite present in frozen 0.2.173 code and absent from 0.2.175. No current-source dataset defect was reproduced. The prior admin Site access runs observed a control absent from frozen 0.2.173 and present in imported 0.2.175, which supports newer runtime code for those specific UI observations; exact loaded path and version were not recorded, so their 0.2.175 provenance remains pending a controlled rerun.",
+    "guest_boundary": "The separate guest Site access run used a fresh empty profile, not a frozen173 clone. Its recorded setup lacks the same-ID preinstalled-extension collision; its own runtime path was not captured after launch, so it must not be used to repair the admin artifact-binding gap."
+  },
+  "verdict_B_evidence_quality": {
+    "status": "FAIL_ADMIN_ARTIFACT_BINDING",
+    "registered_baseline": "The source frozen173 profile's Default/Secure Preferences registers cihdmkcdjjckfhjpgoedmgfpoljebaml at /Volumes/Samsung2TB/code/.stabilization-scratch/store-candidates/v0.2.173-d6d6d6b8/chrome-mv3-keyed (Chrome location 8). The baseline manifest is keyed version 0.2.173. The imported test artifact uses the same development extension ID and is keyed version 0.2.175. Launching --load-extension with a same-ID preinstalled clone and checking only URL ID cannot distinguish which directory Chrome actually ran.",
+    "binary_markers": {
+      "frozen173_showcase_bundle": "chunks/ShowcaseView-STI2VTTM.js, SHA-256 918568098b4436fcb766cc8dcdbeb156dca27034826ebaf35f312586746a2e63; same SHA-256 as local .output/chrome-mv3-dev bundle; contains exact Datasets could not be loaded, load your datasets, and workbench.udt_datasets callsite",
+      "imported175_showcase_bundle": "chunks/ShowcaseView-Cz1Hzy9H.js, SHA-256 d84c981a99895894222c7d00895f2e4895a503a473b166f7b3c4d6ed4a0547b8; contains Prepare page and Capture snapshot but not the old Datasets toast/callsite",
+      "site_access_marker": "The frozen173 JS tree has no Site access string; the imported175 sidepanel chunk contains Site access. The earlier admin D78 reports recorded that actual control, while the Prepare report did not record a distinctive 0.2.175 UI marker."
+    },
+    "limits": "The owned admin run profiles were removed after valid guard shutdown, so historical registered paths cannot be inspected directly. The baseline registration and binary markers establish collision risk and strongly attribute the Prepare-run toast to old code; they do not prove which runtime path Chrome chose at each past launch. Receipt/tree hashes attest files on disk, not the loaded extension."
+  },
+  "affected_reports": [
+    "docs/stabilization/reports/prepare-document-native-20261002.json",
+    "docs/stabilization/reports/site-access-native-acceptance-20261002.json"
+  ],
+  "other_affected_run": "docs/stabilization/runs/site-access-native-recovery-20261002-02.json",
+  "next_native_check": "After exclusive browser permit returns, create a new owned clone, open Chrome's Extensions developer UI, Load unpacked from the exact imported 0.2.175 directory, and visibly verify the registered loaded path and version before doing any admin assertions. If the same-ID frozen173 registration prevents replacement, resolve it through Chrome UI in the owned clone only, then recheck admin role and path. Repeat the bounded D78 control/recovery and completed Prepare/Snapshot same-tab reload actions under that verified registration. Do not use ID plus receipt alone as runtime proof.",
+  "artifact_receipt": "test-results/ci-artifacts/2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a/37039513091-1/local-dev-receipt.json",
+  "secret_handling": "Inspected only extension registration ID/path/location and manifest version in a dedicated frozen test profile; no other profile preference values, credentials, tokens, or private content were output."
+}
