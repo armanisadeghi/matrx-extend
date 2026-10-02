@@ -19,11 +19,7 @@
       "Public-page procedures remain read-only positive Smart Tests examples; synthetic fixtures remain required for fixed assertions and persisted recorder actions. No blocking restrictions added."
     ]
   },
-  "applied_fields": [
-    "preconditions",
-    "steps",
-    "expected"
-  ],
+  "applied_fields": ["preconditions", "steps", "expected"],
   "case_ids": [
     "EXT-F-2015-T01",
     "EXT-F-2015-T02",
