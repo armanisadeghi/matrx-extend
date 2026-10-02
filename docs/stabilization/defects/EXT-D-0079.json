@@ -1,0 +1,46 @@
+{
+  "id": "EXT-D-0079",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T08"],
+  "surface": "Native test process / CUA credential handling",
+  "auth_mode": "member acceptance setup; infrastructure failure before identity verification",
+  "title": "Native app re-selection emits unmasked reviewer credentials in accessibility output",
+  "reproduction": [
+    "Use a synthetic or disposable credential in a controlled native test session; never use a real credential for reproduction.",
+    "While handling a protected Store UI, trigger native app re-selection/refresh and inspect whether accessibility output is emitted before redaction.",
+    "Stop immediately if any secret appears; do not retain the output, retry authentication, or use a real account."
+  ],
+  "expected": "Native app selection must not emit secret-bearing accessibility output before the caller can redact it; sensitive fields must be excluded at the capture boundary.",
+  "actual": "During member test setup, native app re-selection automatically emitted an accessibility tree containing unmasked Store reviewer credentials before redaction could run. The login attempt was rejected and no member identity or Notes operation was confirmed.",
+  "evidence": [
+    "docs/stabilization/reports/notes-member-native-20261002.json",
+    "docs/stabilization/reports/reviewer-credential-containment-20261002.json"
+  ],
+  "severity": "S1: native test tooling exposed an unmasked Store reviewer credential in accessibility output",
+  "priority": "P0: credential remediation and safe native capture repair are urgent",
+  "state": "in-fix",
+  "verification_status": "Open remediation. The password was re-hidden, clipboard overwritten with whitespace, and private CUA credential bindings cleared. No credential value is present in repository evidence. Parent owns credential remediation; completion is pending. Any retest must use synthetic or disposable credentials. The Notes member lane remains unverified, and this is not a Notes product defect verdict.",
+  "containment": "Credential fields were hidden again; clipboard was overwritten with whitespace; private CUA credential bindings were cleared. No credential retry, reset, or account mutation followed. No credential value is retained in repository evidence.",
+  "pending_step": "Parent-owned remediation of the exposed reviewer credential and repair of native accessibility capture so sensitive fields are excluded before output; then verify only with synthetic/disposable data.",
+  "related_feature_ids": [],
+  "transition_history": [
+    {
+      "at": "2026-10-02T18:17:20Z",
+      "from": null,
+      "to": "open",
+      "reason": "Native app re-selection emitted unmasked credential content in accessibility output during member test setup."
+    },
+    {
+      "at": "2026-10-02T18:17:20Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Confirmed test-process exposure; member identity and all Notes operations remain unverified. Containment actions are documented without retaining secret values."
+    },
+    {
+      "at": "2026-10-02T18:17:20Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Parent owns pending credential remediation; test process requires safe capture repair and synthetic/disposable-only retest."
+    }
+  ]
+}
