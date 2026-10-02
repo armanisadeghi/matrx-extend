@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "lane": "EXT-D-0083 independent system disk guard review",
+  "reviewed_commits": ["4a852cf5", "9262c1c4"],
+  "A_outcome": {
+    "verdict": "SOURCE_ACCEPTED_RUNTIME_UNVERIFIED",
+    "evidence": [
+      "scripts/stabilization-resource.mjs samples the checkout, profile, actual /var/tmp lease root, and / on every preflight and watchdog sample; reasons() applies the unchanged minimumFreeDiskGiB=20 policy to all four.",
+      "scripts/stabilization-resource-safety.mjs rejects invalid statfs values and turns marker-write failures into RESOURCE_SAFETY_STATE_WRITE_FAILED without reflecting marker contents.",
+      "persistSafetyState marks the run invalid and safetyStateBroken before throwing. The finalizer retains the permit when safety state failed, even if owned process cleanup succeeds; if cleanup cannot prove the workload gone, it also retains ownership. The final journal decision uses resourceInvalid and exit code 3.",
+      "The actual D54 journal ended invalid after ENOSPC despite healthy external-volume samples; this historical run does not prove the new guard at runtime."
+    ],
+    "limit": "Source-only review. The system disk remains below the 20 GiB floor, so no guard, browser, test, build, or release was run locally. Hosted CI and a guarded runtime observation remain pending."
+  },
+  "B_quality": {
+    "verdict": "FOCUSED_HELPER_TESTS_USEFUL_INTEGRATION_PROOF_MISSING",
+    "strengths": [
+      "The new test gives distinct high external and low system readings, checks all sampled paths, and checks the 20 GiB boundary and independently low lease volume.",
+      "It checks a real 0600 marker write and an injected ENOSPC failure without payload reflection; CI invokes this focused test on a healthy host. Copied-guard fixtures include the new import."
+    ],
+    "gap": "No test injects a failed hold or stop-marker write through the actual guard while a workload is alive, then asserts invalid RESOURCE_FINAL_DECISION and retained heavy lease. The focused writer test cannot catch a regression in persistSafetyState, main's catch/finally, or release ordering. Adding the import to copied-guard fixtures keeps them loadable but does not exercise this failure path.",
+    "recommendation": "On a healthy host, add a copied-guard process fixture that injects ENOSPC at the marker write boundary and proves the real guard's exit, journal verdict, and lease ownership while owned work exists; first observe the focused CI test result."
+  }
+}
