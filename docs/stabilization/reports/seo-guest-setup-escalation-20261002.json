@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "report_id": "seo-guest-setup-escalation-20261002",
+  "date": "2026-10-02",
+  "feature_id": "EXT-F-1008",
+  "case_id": "EXT-F-1008-T09",
+  "control_id": "EXT-F-1008-C09",
+  "mode": "guest",
+  "scope": "Preparation and guarded-launch setup only for the frozen 0.2.173 SEO acceptance runner",
+  "artifact": {
+    "version": "0.2.173",
+    "source_commit": "d6d6d6b83c937652525f473082ac2f2492c9eabe",
+    "tree_sha256": "494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064",
+    "store_zip_sha256": "1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff",
+    "runner_support_commit": "bdb7dc4fa0fd267ac7502a133591f7838c1e6983"
+  },
+  "attempts": [
+    {
+      "run_id": "seo-guest-020",
+      "guard_journal": "docs/stabilization/resource-journals/seo-guest-020.jsonl",
+      "outcome": "refused_before_admission",
+      "guard_code": "RESOURCE_COMMAND_NOT_ALLOWED:see docs/stabilization/resource-policy.json",
+      "guard_exit_code": 2,
+      "cause": "The command used an env wrapper inside the guarded argv; env is not allowlisted.",
+      "chrome_started": false
+    },
+    {
+      "run_id": "seo-guest-021",
+      "outcome": "shell_setup_failed_before_guard",
+      "cause": "The Chrome path assignment quoted the whole assignment, so zsh treated it as a command.",
+      "chrome_started": false,
+      "guard_started": false
+    }
+  ],
+  "terminal_state": "No native UI observations were collected. The root released this lane's permit and rerouted execution to Sol after two setup failures.",
+  "inventory_effect": "None. EXT-F-1008-T09 guest remains unverified; no product defect or acceptance pass is claimed.",
+  "validation": {
+    "frozen_tree_hash_recomputed": true,
+    "runner_syntax_check": "passed before native permit",
+    "runner_biome_format": "checked; no changes needed",
+    "native_browser_launch": false
+  }
+}
