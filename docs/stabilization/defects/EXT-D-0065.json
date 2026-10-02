@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0065",
   "feature_id": "EXT-F-2009",
-  "case_ids": [
-    "EXT-F-2009-T02"
-  ],
+  "case_ids": ["EXT-F-2009-T02"],
   "title": "Concurrent saved-capture opens can select a different item than the last click",
   "surface": "Saved captures side-panel",
   "auth_mode": "member/admin; admin native passed, member unverified",

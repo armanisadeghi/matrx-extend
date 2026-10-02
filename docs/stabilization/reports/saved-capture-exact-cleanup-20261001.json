@@ -2,10 +2,7 @@
   "schema_version": 1,
   "status": "exact-owned-fixtures-cleaned",
   "source": "docs/stabilization/reports/saved-capture-fixture-20261001.json",
-  "record_ids": [
-    "4dd5911b-d4d0-4673-9a7c-15fe4c70efdd",
-    "2bf1a5fc-7af0-4245-bfba-e264d3e5e866"
-  ],
+  "record_ids": ["4dd5911b-d4d0-4673-9a7c-15fe4c70efdd", "2bf1a5fc-7af0-4245-bfba-e264d3e5e866"],
   "method": "canonical docproc.processed_documents soft delete via Supabase MCP",
   "preconditions": "Both IDs and unique canonical identities, organization, source_kind=scrape_parsed_page, origin_client=extension, capture_method=own_browser and null deleted_at matched receipt and independent readback before update.",
   "update_result": "Exactly two rows returned, each with non-null deleted_at; independent readback matched both IDs, org and identities.",

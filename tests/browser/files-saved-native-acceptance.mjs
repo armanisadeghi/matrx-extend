@@ -989,7 +989,10 @@ async function sourceRowClick(panel, source) {
   // row to become clickable before dispatching input; keep the one-row proof.
   const point = await waitFor(
     'owned_source_row_hittable',
-    () => evaluate(panel, `(() => {
+    () =>
+      evaluate(
+        panel,
+        `(() => {
     const tab = document.querySelector('button[role="tab"][title="Saved captures"]');
     const root = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
     const rows = [...(root?.querySelectorAll(${JSON.stringify(selector)}) ?? [])]
@@ -999,7 +1002,8 @@ async function sourceRowClick(panel, source) {
     const rect = row.getBoundingClientRect(), x = rect.x + rect.width / 2,
       y = rect.y + Math.min(14, rect.height / 2), hit = document.elementFromPoint(x,y);
     return { count: 1, x, y, hittable: hit === row || row.contains(hit) };
-  })()`),
+  })()`,
+      ),
     (state) => state?.count === 1 && state.hittable === true,
     45_000,
   );

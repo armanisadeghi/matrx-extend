@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0073",
   "feature_id": "EXT-F-0002",
-  "case_ids": [
-    "EXT-F-0002-T08"
-  ],
+  "case_ids": ["EXT-F-0002-T08"],
   "title": "Files fixture failures discard operation and safe exception diagnostics",
   "surface": "Native Files/Saved captures acceptance infrastructure",
   "auth_mode": "admin fixture setup; not a product authorization defect",
