@@ -7,7 +7,9 @@
     "Prior frozen 0.2.173 observations establish absent title and disabled/missing Re-audit; they do not measure a pending capture.",
     "Frozen browser boundary: spinner and disabled Audit this page while top frame and tab were complete with a matching URL, after committed, second loading, then completed events. This predates the source fix.",
     "Guarded RED seo-recovery-red-20261002-002: real SeoView/useActiveTab Chrome-event test expected third capture on restored same document but received 2, assertion at tests/unit/seo-navigation-recovery.test.tsx:52.",
-    "Guarded GREEN seo-recovery-green-20261002-001: focused regression test passed."
+    "Guarded GREEN seo-recovery-green-20261002-001: focused regression test passed.",
+    "Guarded overlap run seo-recovery-overlap-20261002-001 failed in the test harness because real successful audit rendering mounted CopyMenu auth listeners absent from its Chrome stub; no product assertion was reached. The CopyMenu dependency was isolated without mocking SeoView, captureWithFallback, useActiveTab, or SeoDetails.",
+    "Guarded overlap run seo-recovery-overlap-20261002-002 passed all four focused cases with source unchanged."
   ],
   "hypotheses": [
     {
@@ -37,15 +39,15 @@
   ],
   "changes": [
     "SeoView invalidates an in-flight audit, clears running and resets the auto-run key when page identity is withheld; run generations prevent a discarded older response from changing the resumed audit.",
-    "tests/unit/seo-navigation-recovery.test.tsx drives the production SeoView, active-tab hook and Chrome message boundary through the captured event order.",
+    "tests/unit/seo-navigation-recovery.test.tsx drives production SeoView, active-tab hook, capture fallback and real SeoDetails through the captured event order, including old success before the replacement settles, old success afterward, old rejection afterward, and a successful current-page title render.",
     "docs/feature-tests.md documents the visible recovery check."
   ],
   "verification": {
     "syntax": "node --check tests/browser/seo-guest-acceptance.mjs passed",
-    "runtime": "focused guarded RED then GREEN; guarded pnpm compile passed in seo-recovery-compile-20261002-001"
+    "runtime": "focused guarded RED then GREEN; guarded pnpm compile passed in seo-recovery-compile-20261002-001; expanded four-case guard passed in seo-recovery-overlap-20261002-002"
   },
   "sibling_census": "lastAutoRunUrlRef occurs only in SeoView. Other page-key consumers have no corresponding auto-run latch.",
-  "test_coverage": "The regression guard proves discarded response, resumed capture, enabled audit button, and visible error result. A successful captured SEO title after this source repair remains unverified in a new native build.",
+  "test_coverage": "Connected guard proves discarded response, resumed capture, enabled button and visible error; old success cannot clear a pending replacement or render its stale title; old success or rejection after replacement cannot overwrite the current title, create an error or change the settled button. Real SeoDetails renders the current page title from a successful automatic capture. New native-build UI proof remains pending.",
   "files": [
     "src/features/seo/SeoView.tsx",
     "tests/unit/seo-navigation-recovery.test.tsx",
