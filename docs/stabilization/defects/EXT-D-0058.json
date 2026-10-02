@@ -1,7 +1,9 @@
 {
   "id": "EXT-D-0058",
   "feature_id": "EXT-F-1012",
-  "case_ids": ["EXT-F-1012-T08"],
+  "case_ids": [
+    "EXT-F-1012-T08"
+  ],
   "title": "Prepare retry retains stale success and late results",
   "surface": "Showcase Prepare",
   "auth_mode": "admin",
@@ -21,7 +23,7 @@
     "docs/stabilization/reports/prepare-lifecycle-peer.json",
     "docs/stabilization/reports/prepare-integrated-verification.json"
   ],
-  "verification_status": "Candidate and correction78041e16 independently reviewed3d01fcf1. Reset and overlapping older-rejection assertions now pass; guarded combined D57/D58 18tests pass, prior guarded compile passes. Integrated build refused CPU_HIGH_LOAD_BUSY before launch; no new artifact. Remains in-fix pending build/native. SameURL identity tracked D59.",
+  "verification_status": "Source checks previously passed; current imported .175 now provides bounded normal success/reload/navigation proof. Failed retry and independently observed late settlement remain native unverified.",
   "transition_history": [
     {
       "at": "2026-09-28T15:00:57.328820+00:00",
@@ -41,5 +43,11 @@
       "to": "in-fix",
       "reason": "Sol prepare_lifecycle_repair assigned async lifecycle repair with meaningful connected regression coverage and guarded self-verification."
     }
-  ]
+  ],
+  "current_native_evidence": {
+    "report": "docs/stabilization/reports/prepare-document-native-20261002.json",
+    "status": "partial",
+    "verified": "Exact development .175 admin completed Prepare and Snapshot results clear on same-tab, same-URL reload. Fresh Prepare on destination after navigation succeeds.",
+    "unverified": "Controlled old invocation completion/rejection, failed retry after success, pending Snapshot, broader D59 consumers. Neither defect closes."
+  }
 }

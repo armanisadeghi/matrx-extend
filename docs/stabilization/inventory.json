@@ -15923,7 +15923,11 @@
               "evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json",
               "detail": "Withheld-access Prepare original D78 failure repaired: explicit product grant/reload then fresh Prepare756ms/3steps. Normal and temporary-grant success also observed. D58 late completion and all remaining Prepare dimensions not certified.",
               "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
-              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233"
+              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
+              "supplemental_evidence": {
+                "report": "docs/stabilization/reports/prepare-document-native-20261002.json",
+                "detail": "Completed Prepare result clears on same-tab/same-URL reload; fresh destination Prepare succeeds. Controlled late settlement and failed retry remain unverified."
+              }
             }
           },
           "result_history": [
@@ -15975,7 +15979,17 @@
           ],
           "defect_ids": [
             "EXT-D-0059"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "prepare-document-sol-20261002-01",
+              "evidence": "docs/stabilization/reports/prepare-document-native-20261002.json",
+              "detail": "Captured real one-row Nuxt metadata table; same-tab/same-URL reload clears old Snapshot and restores Capture snapshot. Pending completion and remaining controls/dimensions unverified.",
+              "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
+              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233"
+            }
+          }
         },
         {
           "id": "EXT-F-1012-T10",

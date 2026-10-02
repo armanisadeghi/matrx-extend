@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-02 18:29 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T17:41:20.170172+00:00. 205 features · 738 cases · 1322 controls · 79 linked defect records.
+Generated 2026-10-02 18:35 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T17:41:20.170172+00:00. 205 features · 738 cases · 1322 controls · 79 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1180** — Pass: 58 · Partial: 44 · Fail: 2 · Unverified: 1075 · N/A: 1.
-Unverified splits into **124 explicitly marked unverified** and **951 with no result record**.
+Applicable case-by-role slots: **1180** — Pass: 58 · Partial: 45 · Fail: 2 · Unverified: 1074 · N/A: 1.
+Unverified splits into **124 explicitly marked unverified** and **950 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -29,7 +29,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 3 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 0 |
-| [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 27 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | pass 1, partial 27, fail 0, unverified 30, n/a 0 | 12 |
+| [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 28 partial · 0 fail · 29 unverified · 0 deferred; 0/1 full | pass 1, partial 28, fail 0, unverified 29, n/a 0 | 12 |
 | [Token broker](#token-broker) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 9, n/a 0 | 0 |
 | [Content-page overlays / context menus / commands](#content-page-overlays--context-menus--commands) | 1 | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 57, n/a 0 | 0 |
 | [Profile/auth/org picker](#profileauthorg-picker) | 1 | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
@@ -924,7 +924,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1012-T06 Apply recipe | N/A | N/A | Unverified | EXT-F-1012-C06 |
 | EXT-F-1012-T07 Prepare option switches | N/A | N/A | Unverified | EXT-F-1012-C07 |
 | EXT-F-1012-T08 Run Prepare | N/A | N/A | Partial | EXT-F-1012-C08 |
-| EXT-F-1012-T09 Run Snapshot | N/A | N/A | Unverified | EXT-F-1012-C09 |
+| EXT-F-1012-T09 Run Snapshot | N/A | N/A | Partial | EXT-F-1012-C09 |
 | EXT-F-1012-T10 JSON-LD quick filters | N/A | N/A | Partial | EXT-F-1012-C10 |
 | EXT-F-1012-T11 Run JSON-LD extraction | N/A | N/A | Partial | EXT-F-1012-C11 |
 | EXT-F-1012-T12 Microdata quick filters | N/A | N/A | Unverified | EXT-F-1012-C12 |
@@ -982,6 +982,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: showcase-installed-d43-001, docs/stabilization/runs/showcase-installed-d43-001.json
 - EXT-F-1012-T08 · admin: Partial. Withheld-access Prepare original D78 failure repaired: explicit product grant/reload then fresh Prepare756ms/3steps. Normal and temporary-grant success also observed. D58 late completion and all remaining Prepare dimensions not certified.
   Evidence / build / date recorded: site-access-native-recovery-20261002-02, docs/stabilization/reports/site-access-native-acceptance-20261002.json
+- EXT-F-1012-T09 · admin: Partial. Captured real one-row Nuxt metadata table; same-tab/same-URL reload clears old Snapshot and restores Capture snapshot. Pending completion and remaining controls/dimensions unverified.
+  Evidence / build / date recorded: prepare-document-sol-20261002-01, docs/stabilization/reports/prepare-document-native-20261002.json
 - EXT-F-1012-T10 · admin: Partial. Type chip and blank/matching/nonexistent filters verified on actual Google Article page. Auth-transition, service-error and broader chips remain unverified.
   Evidence / build / date recorded: showcase-structured-journal-retest-20260928, ['docs/stabilization/reports/showcase-structured-journal-retest.json']
 - EXT-F-1012-T11 · admin: Partial. Blank/matching returned current BreadcrumbList; nonexistent shows honest no-match; changed-page live no-JSONLD state verified. Auth/fault dimensions remain unverified.
