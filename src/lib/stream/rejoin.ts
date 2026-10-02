@@ -32,27 +32,29 @@ import {
   MATRX_RUN_IN_PROGRESS,
   type MatrxRunPickupSettlement,
   followUnavailableRejoin,
+  readConversationOrganizationId as readRunConversationOrganizationId,
   settleRunPickup,
 } from '@ai-matrx/agents/matrx';
 
-/** The conversation's own organization, or null when it cannot be read. */
-export async function readConversationOrganizationId(
-  conversationId: string,
-): Promise<string | null> {
-  const { data, error } = await chatDb()
-    .from('conversation')
-    .select('organization_id')
-    .eq('id', conversationId)
-    .maybeSingle();
-  const organizationId = (data as { organization_id?: unknown } | null)?.organization_id;
-  if (error || typeof organizationId !== 'string' || !organizationId) {
-    log.warn('stream', 'rejoin: conversation organization unreadable — using the active one', {
-      conversationId,
-      error: error?.message ?? null,
-    });
-    return null;
-  }
-  return organizationId;
+/** The conversation's own organization (the package's reader, fed the extension's db), or null. */
+export function readConversationOrganizationId(conversationId: string): Promise<string | null> {
+  return readRunConversationOrganizationId(
+    conversationId,
+    async (id) => {
+      const { data, error } = await chatDb()
+        .from('conversation')
+        .select('organization_id')
+        .eq('id', id)
+        .maybeSingle();
+      if (error) throw new Error(error.message);
+      return (data as { organization_id?: unknown } | null)?.organization_id;
+    },
+    (reason) =>
+      log.warn('stream', 'rejoin: conversation organization unreadable — using the active one', {
+        conversationId,
+        error: reason,
+      }),
+  );
 }
 
 export interface RejoinStreamArgs {
