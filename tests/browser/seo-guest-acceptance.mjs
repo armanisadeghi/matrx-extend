@@ -212,7 +212,15 @@ async function seoContent(panel) {
       const title = titleRow?.lastElementChild?.lastElementChild?.textContent.trim() ?? null;
       const headingGroup = [...(pane?.querySelectorAll('span') ?? [])]
         .find((node) => node.textContent.trim() === 'Headings');
+      const auditButton = [...(pane?.querySelectorAll('button') ?? [])]
+        .find((node) => /^(Audit this page|Re-audit)$/.test(node.textContent.trim()));
       return { scopeValid: true, title, headings: !!headingGroup,
+        auditButtonPresent: !!auditButton,
+        auditButtonDisabled: auditButton?.disabled ?? null,
+        auditSpinner: !!auditButton?.querySelector('svg.animate-spin'),
+        identityRetryVisible: [...(pane?.querySelectorAll('button') ?? [])]
+          .some((node) => node.textContent.trim() === 'Retry'),
+        identityChecking: (pane?.innerText ?? '').includes('Checking this page'),
         reAudit: [...(pane?.querySelectorAll('button') ?? [])]
           .some((node) => node.textContent.trim() === 'Re-audit' && !node.disabled),
         error: [...(pane?.querySelectorAll('div') ?? [])]
@@ -1269,6 +1277,24 @@ try {
       // Optional bounded continuation for public sources whose HTTP markup
       // exposes both metadata groups. The default Wikipedia run is unchanged.
       if (RUN_METADATA_FIXTURE) {
+        // Passive browser-boundary evidence distinguishes capture work from an
+        // unresolved page identity; neither is inferred from missing output.
+        await evaluate(panel, `(() => {
+          globalThis.__seoBoundaryEvents = [];
+          const record = (kind, detail) => {
+            if (detail.frameId !== undefined && detail.frameId !== 0) return;
+            globalThis.__seoBoundaryEvents.push({ kind, at: Date.now(),
+              tabId: detail.tabId, documentId: detail.documentId ?? null,
+              status: detail.status ?? null });
+          };
+          chrome.webNavigation.onBeforeNavigate.addListener(d => record('before', d));
+          chrome.webNavigation.onCommitted.addListener(d => record('committed', d));
+          chrome.webNavigation.onCompleted.addListener(d => record('completed', d));
+          chrome.webNavigation.onErrorOccurred.addListener(d => record('error', d));
+          chrome.tabs.onUpdated.addListener((tabId, change) => {
+            if (change.status) record('tab-status', { tabId, status: change.status });
+          });
+        })()`);
         enter('metadata_fixture_page_navigation');
         const fixtureResponse = await page.goto(METADATA_FIXTURE_PAGE, { waitUntil: 'load' });
         const fixtureExpected = await observe('metadata_fixture_public_dom_inspected', () =>
@@ -1280,7 +1306,17 @@ try {
           async () => {
             const state = await seoContent(panel);
             const publicDomTitleAtSample = await page.evaluate(() => document.title.trim());
+            const boundary = await evaluate(panel, `(async () => {
+              const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+              const frame = tab?.id ? await chrome.webNavigation.getFrame({tabId: tab.id, frameId: 0}) : null;
+              return { tabId: tab?.id ?? null, status: tab?.status ?? null,
+                documentId: frame?.documentId ?? null,
+                tabUrlMatchesFrame: tab?.url === frame?.url,
+                frameError: frame?.errorOccurred ?? null,
+                events: globalThis.__seoBoundaryEvents ?? [] };
+            })()`);
             return {
+              boundary,
               ...state,
               pageUrlMatchesFixture: page.url() === METADATA_FIXTURE_PAGE,
               expectedPublicTitleAtNavigation: fixtureExpected.title,
