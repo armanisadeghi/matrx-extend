@@ -12,6 +12,16 @@ const DEFAULT_BUILD = resolve(REPO, '.output', 'chrome-mv3-dev');
 // other output directory can be certified as a local artifact.
 const LOCAL_BUILD_DIRECTORIES = new Set([DEFAULT_BUILD, resolve(REPO, '.output', 'chrome-mv3')]);
 const SHA256 = /^[a-f0-9]{64}$/;
+const IMPORTED_BUILD = /^test-results\/ci-artifacts\/[a-f0-9]{40}\/[1-9]\d*-[1-9]\d*\/chrome-mv3$/;
+
+function importedBuildParent(build) {
+  const relative = build.startsWith(`${REPO}/`) ? build.slice(REPO.length + 1) : '';
+  return IMPORTED_BUILD.test(relative) ? dirname(build) : undefined;
+}
+
+function isAdmittedBuild(build) {
+  return LOCAL_BUILD_DIRECTORIES.has(build) || importedBuildParent(build) !== undefined;
+}
 
 export function requireLocalDevReceipt(receipt, extensionDir) {
   if (
@@ -21,7 +31,7 @@ export function requireLocalDevReceipt(receipt, extensionDir) {
     typeof receipt.version !== 'string' ||
     !SHA256.test(receipt.treeSha256 ?? '') ||
     typeof receipt.extensionDir !== 'string' ||
-    !LOCAL_BUILD_DIRECTORIES.has(resolve(extensionDir)) ||
+    !isAdmittedBuild(resolve(extensionDir)) ||
     resolve(receipt.extensionDir) !== resolve(extensionDir) ||
     !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(receipt.observedAt ?? '') ||
     !Number.isFinite(Date.parse(receipt.observedAt))
@@ -32,11 +42,15 @@ export function requireLocalDevReceipt(receipt, extensionDir) {
 
 export async function recordLocalDevBuild({ extensionDir = DEFAULT_BUILD, outputPath }) {
   const build = resolve(extensionDir);
-  if (!LOCAL_BUILD_DIRECTORIES.has(build)) throw new Error('local_dev_build_path_refused');
+  if (!isAdmittedBuild(build)) throw new Error('local_dev_build_path_refused');
   if (typeof outputPath !== 'string' || !outputPath)
     throw new Error('local_dev_receipt_output_refused');
   const output = resolve(outputPath);
-  if (dirname(output) !== resolve(REPO, 'test-results'))
+  const importedParent = importedBuildParent(build);
+  if (
+    (importedParent && output !== resolve(importedParent, 'local-dev-receipt.json')) ||
+    (!importedParent && dirname(output) !== resolve(REPO, 'test-results'))
+  )
     throw new Error('local_dev_receipt_output_refused');
   const [manifest, pkg] = await Promise.all([
     readFile(resolve(build, 'manifest.json'), 'utf8').then(JSON.parse),

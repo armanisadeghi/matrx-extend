@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "lane": "artifact_import_helper_and_canonical_unit_tests",
+  "status": "helper_verified_locally_remote_artifact_pending",
+  "implemented": [
+    "scripts/current-test-artifact.mjs verifies successful main-push CI run metadata, exact Actions artifact identity and SHA-256 digest, original CI receipt, development manifest ID, provenance, and downloaded tree bytes before import.",
+    "scripts/record-local-dev-build.mjs admits only the exact run-qualified imported tree and its sibling local receipt, retaining original local output paths and exclusive receipt writes.",
+    "EXT-D-0077: import writes run inside an exclusively reserved destination; cleanup can remove only a destination this importer created. An occupied artifact is preserved."
+  ],
+  "verification": {
+    "focused_vitest": "current-test-artifact-vitest-20261002-06: resource admitted; tests/unit/current-test-artifact-receipt.test.ts 7/7 passed; final decision valid",
+    "syntax": "node --check passed for both edited .mjs scripts",
+    "diff": "git diff --check passed",
+    "coverage": "Connected verifier success and rejection for run status, main branch, workflow, source SHA, repository, attempt, artifact identity/digest, CI provenance, changed tree bytes, symlinked entry and destination, occupied destination preservation, and cleanup of a newly created partial destination."
+  },
+  "limits": [
+    "No remote GitHub artifact was present or downloaded in this lane; metadata fixture verifies the importer contract, not a live GitHub run.",
+    "No local extension build, native browser result, Store release, or new credentials were used.",
+    "Resource guard attempt 03 refused before admission because its profile directory did not exist; attempts 04, 05 and 06 were admitted and passed.",
+    "EXT-D-0077 was caught in source review before publication. No failing runtime receipt was recorded before the fix."
+  ]
+}
