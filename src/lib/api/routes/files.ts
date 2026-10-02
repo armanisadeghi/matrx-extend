@@ -15,6 +15,7 @@ import { getBackendUrl } from '@/config/backend';
 import { getAccessToken, refreshAccessToken } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 import { requireActiveOrganizationId } from '@/lib/org/active-org';
+import { readMatrxJsonResponse, sendMatrxRequest } from '@ai-matrx/agents/matrx';
 
 export interface FileUploadResponse {
   file_id: string;
@@ -121,7 +122,7 @@ export async function uploadFile(
   const url = `${baseUrl}/files/upload`;
   const start = performance.now();
   log.info('api', '→ POST /files/upload (multipart)', { filename, size: blob.size });
-  let res = await fetch(url, { method: 'POST', headers, body: fd });
+  let res = await sendMatrxRequest(url, { method: 'POST', headers, body: fd });
   if (res.status === 401) {
     const refreshed = await refreshAccessToken();
     if (refreshed) {
@@ -130,7 +131,7 @@ export async function uploadFile(
         ...(t2 ? { Authorization: `Bearer ${t2}` } : {}),
         'X-Organization-Id': organizationId,
       };
-      res = await fetch(url, { method: 'POST', headers: h2, body: fd });
+      res = await sendMatrxRequest(url, { method: 'POST', headers: h2, body: fd });
     }
   }
   const ms = Math.round(performance.now() - start);
@@ -139,7 +140,7 @@ export async function uploadFile(
     log.error('api', `✗ POST /files/upload ${res.status} (${ms}ms)`, text);
     throw new Error(`upload failed ${res.status}: ${text}`);
   }
-  const data = parseFileUploadResponse(await res.json());
+  const data = parseFileUploadResponse(await readMatrxJsonResponse<unknown>(res));
   log.success('api', `← /files/upload ${res.status} (${ms}ms)`, { file_id: data.file_id });
   return data;
 }
@@ -162,7 +163,7 @@ export async function downloadFileBytes(
     'X-Organization-Id': organizationId,
   };
   const url = `${baseUrl}/files/${encodeURIComponent(fileId)}/download`;
-  let res = await fetch(url, signal ? { headers, signal } : { headers });
+  let res = await sendMatrxRequest(url, signal ? { headers, signal } : { headers });
   if (res.status === 401) {
     const refreshed = await refreshAccessToken();
     if (refreshed) {
@@ -171,7 +172,7 @@ export async function downloadFileBytes(
         ...(t2 ? { Authorization: `Bearer ${t2}` } : {}),
         'X-Organization-Id': organizationId,
       };
-      res = await fetch(
+      res = await sendMatrxRequest(
         url,
         signal ? { headers: refreshedHeaders, signal } : { headers: refreshedHeaders },
       );

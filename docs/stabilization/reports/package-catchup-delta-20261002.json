@@ -50,5 +50,5 @@
     "@ai-matrx/tap-target": "0.2.19",
     "@ai-matrx/data (transitive)": "0.18.36"
   },
-  "verification_limit": "Read-only source and lockfile inspection. No registry freshness check, install, code change, typecheck, test, build, native run, or release was performed; no adoption or latest claim is made."
+  "verification_limit": "This report records the earlier read-only source and lockfile inspection. A later guarded npm registry check in package-request-client-adoption-20261002.json found content-ir 0.19.21 and records 0.58.126 still published latest despite newer aidream source manifests; only agents 0.38.1 and kit 0.20.0 were adopted by the subsequent guarded refresh. This report itself made no adoption or release claim."
 }

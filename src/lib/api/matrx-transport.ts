@@ -8,13 +8,13 @@
  */
 
 import { buildHeaders, getApiBaseUrl } from '@/lib/api/client';
-import type { MatrxTransport } from '@ai-matrx/agents/matrx';
+import { type MatrxTransport, sendMatrxRequest } from '@ai-matrx/agents/matrx';
 
 export const matrxTransport: MatrxTransport = {
   async fetch(path, init) {
     const baseUrl = await getApiBaseUrl();
     const headers = await buildHeaders(init.headers);
-    return fetch(`${baseUrl}${path}`, {
+    return sendMatrxRequest(`${baseUrl}${path}`, {
       method: init.method,
       headers,
       ...(init.body !== undefined && { body: init.body }),
