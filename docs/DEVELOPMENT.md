@@ -37,6 +37,20 @@ operator credential causes strict verification to fail.
 
 ## Loading unpacked
 
+**Native acceptance identity check (EXT-D-0080):** before every test run, record
+`chrome://version`'s actual profile path and the extension's developer-mode
+**Loaded from** folder and version in `chrome://extensions`. Compare the loaded
+folder's complete-tree hash with the chosen receipt. A matching extension ID,
+`--load-extension` argument, or hash of a different intended folder is insufficient:
+a reused profile can already register the same ID at an older path. Use **Load
+unpacked** to select the intended folder, verify the resulting registration, then
+reload the extension, reopen the panel and reload the owned target page. If the
+path cannot be established, stop artifact-specific assertions and record unverified.
+Keep only sanitized path/version/hash evidence; never dump profile preferences or
+account storage. For the stabilization campaign, use the authenticated imported CI
+artifact directory; local build/release commands below do not override the workspace
+prohibition on agents running manual builds or releases.
+
 `chrome://extensions` → enable Developer Mode → "Load unpacked" → select `.output/chrome-mv3-dev/`.
 
 `pnpm dev` uses that directory for temporary HMR output. A successful `release.sh`

@@ -336,14 +336,14 @@
               ]
             },
             "admin": {
-              "status": "unverified",
-              "detail": "Implementation active after independent contract review; actual artifact/import/native evidence pending.",
-              "evidence": [
-                "docs/stabilization/reports/current-test-artifact-20261002.json",
-                "docs/stabilization/reports/current-test-artifact-contract-peer-20261002.json"
-              ]
+              "status": "fail",
+              "detail": "Native test-process artifact attribution failed for reused same-ID profile; product behavior is not failed by this result. Actual loaded folder/profile must be verified before repeat.",
+              "evidence": "docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
             }
-          }
+          },
+          "defect_ids": [
+            "EXT-D-0080"
+          ]
         }
       ],
       "cells": {
@@ -388,7 +388,8 @@
           "defect_ids": [
             "EXT-D-0007",
             "EXT-D-0014",
-            "EXT-D-0077"
+            "EXT-D-0077",
+            "EXT-D-0080"
           ],
           "run_ids": [
             "baseline-build-001",

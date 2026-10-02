@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-02 18:44 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T17:41:20.170172+00:00. 205 features · 738 cases · 1322 controls · 79 linked defect records.
+Generated 2026-10-02 18:46 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T17:41:20.170172+00:00. 205 features · 738 cases · 1322 controls · 80 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1180** — Pass: 58 · Partial: 40 · Fail: 2 · Unverified: 1079 · N/A: 1.
-Unverified splits into **129 explicitly marked unverified** and **950 with no result record**.
+Applicable case-by-role slots: **1180** — Pass: 58 · Partial: 40 · Fail: 3 · Unverified: 1078 · N/A: 1.
+Unverified splits into **128 explicitly marked unverified** and **950 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -15,7 +15,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 
 | Tab or surface | Features | Guest cases | Member cases | Admin cases | All-role case slots | Active defects |
 | --- | ---: | --- | --- | --- | --- | ---: |
-| [Development installation](#development-installation) | 1 | 1 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 1 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 2, partial 0, fail 0, unverified 16, n/a 0 | 1 |
+| [Development installation](#development-installation) | 1 | 1 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 1 pass · 0 partial · 1 fail · 4 unverified · 0 deferred; 0/1 full | pass 2, partial 0, fail 1, unverified 15, n/a 0 | 2 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 7, partial 1, fail 1, unverified 14, n/a 0 | 2 |
 | [Release infrastructure](#release-infrastructure) | 1 | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 24, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 1, partial 3, fail 0, unverified 20, n/a 0 | 1 |
@@ -66,11 +66,11 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Development build, reload and runtime identity (EXT-F-0001)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 6. **Controls:** 6.
+**Role status:** guest: Unverified · member: Unverified · admin: Fail. **Cases:** 6. **Controls:** 6.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0077
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0077, EXT-D-0080
 
-**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed)
+**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed), [EXT-D-0080](defects/EXT-D-0080.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -79,7 +79,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-0001-T03 Content-script page reload | Unverified | Unverified | Unverified | EXT-F-0001-C03 |
 | EXT-F-0001-T04 Service-worker and offscreen restart | Unverified | Unverified | Unverified | EXT-F-0001-C04 |
 | EXT-F-0001-T05 Development identity auth redirect | Unverified | Unverified | Unverified | EXT-F-0001-C05 |
-| EXT-F-0001-T06 Automatic CI development artifact is trustworthy and usable without local build | Unverified | Unverified | Unverified | EXT-F-0001-C06 |
+| EXT-F-0001-T06 Automatic CI development artifact is trustworthy and usable without local build | Unverified | Unverified | Fail | EXT-F-0001-C06 |
 
 **Recorded case details and evidence:**
 
@@ -93,8 +93,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: ['docs/stabilization/reports/current-test-artifact-20261002.json', 'docs/stabilization/reports/current-test-artifact-contract-peer-20261002.json']
 - EXT-F-0001-T06 · member: Unverified. Implementation active after independent contract review; actual artifact/import/native evidence pending.
   Evidence / build / date recorded: ['docs/stabilization/reports/current-test-artifact-20261002.json', 'docs/stabilization/reports/current-test-artifact-contract-peer-20261002.json']
-- EXT-F-0001-T06 · admin: Unverified. Implementation active after independent contract review; actual artifact/import/native evidence pending.
-  Evidence / build / date recorded: ['docs/stabilization/reports/current-test-artifact-20261002.json', 'docs/stabilization/reports/current-test-artifact-contract-peer-20261002.json']
+- EXT-F-0001-T06 · admin: Fail. Native test-process artifact attribution failed for reused same-ID profile; product behavior is not failed by this result. Actual loaded folder/profile must be verified before repeat.
+  Evidence / build / date recorded: docs/stabilization/reports/artifact-profile-identity-audit-20261002.json
 
 **Other remaining work:** Concrete procedure and evidence required before executing each control.
 
