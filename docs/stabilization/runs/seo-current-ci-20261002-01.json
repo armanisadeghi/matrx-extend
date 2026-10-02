@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "run_id": "seo-current-ci-20261002-01",
+  "status": "unverified_partial",
+  "started_at": "2026-10-02T15:38:29.446Z",
+  "finished_at": "2026-10-02T15:39:50.165Z",
+  "runner": {
+    "path": "tests/browser/seo-guest-acceptance.mjs",
+    "sha256": "8722c794a0ed9f0df3788a5c025f7242ee2111be761460a5be4c3b4dab28f407",
+    "source_commit_at_run": "b41fd0b367dd8142987013a07f77a34d2a03a4c6"
+  },
+  "artifact": {
+    "sourceSha": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
+    "runId": 37027762568,
+    "runAttempt": 1,
+    "artifactId": 11236112494,
+    "githubArtifactDigest": "sha256:08c6432648da0c866595cebbf0a00e808080e56d6a93304d364ed26971b2c9c7",
+    "treeSha256": "a7f9728b45d9dcc407e392092c15383cd541de030d71330322d08617524e73ba",
+    "eligibleStore": false,
+    "publish_state": "not_published"
+  },
+  "native": {
+    "result_path": "test-results/seo-current-ci-20261002-01.json",
+    "result_sha256": "72c916d86e534e1996b2b470477cccced20058628e198cb1e70ca6828fbb29d5",
+    "result_status": "unverified",
+    "passed_targets": 16,
+    "failure_stage": "metadata_fixture_schema_outbound_activation",
+    "last_safe_stage": "metadata_fixture_seo_details_inspected"
+  },
+  "guard": {
+    "journal_path": "docs/stabilization/resource-journals/seo-current-ci-20261002-01.jsonl",
+    "journal_sha256": "3828c5e4bea0469c239034cdadf1a705a58168679f509507dcb9ea4dce1b301c",
+    "admitted": true,
+    "decision": "child_failed",
+    "child_exit_code": 1
+  },
+  "source_at_native_result": {
+    "originMain": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
+    "localHead": "b41fd0b367dd8142987013a07f77a34d2a03a4c6",
+    "trackedDirty": false,
+    "untrackedRunnerInputs": [],
+    "claim": "current_pushed_source"
+  },
+  "limits": "Original spinner recovered in this bounded run; later schema outbound candidate was absent. Native runner exited unverified; no Store eligibility or complete SEO acceptance claim."
+}
