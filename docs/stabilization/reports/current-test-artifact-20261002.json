@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "proposal_revised_after_fix_first_peer_pending_reattack",
+  "status": "contract_accepted_implementation_drafted_unverified_handed_to_fresh_repair",
   "objective": "Retain a current-main keyed DEVELOPMENT/TEST Chrome extension from automatic push CI so the owned native harness can test the actual pushed source without a local build or Store release credential.",
   "source_findings": {
     "ci": ".github/workflows/ci.yml runs pnpm wxt build on main pushes, tags, and pull requests, but uploads no unpacked output. Hosted release is a separate workflow gated on a scoped Supabase PAT and is unchanged by this proposal.",
@@ -21,5 +21,28 @@
     "Static syntax and focused helper tests for authenticated run/artifact/digest verification, exact SHA/version/hash/ID, dirty or advanced source labeling, collision/symlink refusal, credential-shape and emitted-config verification, and PR/tag exclusion; no local build or native launch in this lane.",
     "After main push, inspect the exact successful CI run and GitHub artifact metadata, download by artifact ID, verify/import without clobbering frozen173, and hand the new native path/receipt to the root owner for resource-admitted SEO test. Source commit 94bfae67 includes the newly pushed SEO repair; only an artifact whose attested head SHA includes that commit can exercise it. Report the run/artifact ID, GitHub archive digest and imported tree hash; do not claim native pass until the owned browser run completes."
   ],
-  "review_history": "Independent plan peer docs/stabilization/reports/current-test-artifact-plan-peer-20261002.json returned FIX-FIRST for GitHub run authenticity, pushed versus dirty-source labels, and nested receipt path. This revision addresses all three for fresh reattack before workflow/helper edits."
+  "review_history": "Independent plan peer docs/stabilization/reports/current-test-artifact-plan-peer-20261002.json returned FIX-FIRST for GitHub run authenticity, pushed versus dirty-source labels, and nested receipt path. The revised contract was accepted by a fresh peer before implementation began.",
+  "tracking": "EXT-F-0001-T06/C06 records the development artifact path; native modes remain unverified.",
+  "implementation_handoff": {
+    "proposal_commit": "5dc5544d",
+    "owned_uncommitted_files": [
+      ".github/workflows/ci.yml",
+      "scripts/record-local-dev-build.mjs",
+      "scripts/current-test-artifact.mjs",
+      "tests/unit/current-test-artifact-receipt.test.mjs"
+    ],
+    "test_seam": "scripts/current-test-artifact.mjs exports verifyGitHubMetadata and verifyDownloadedTree. These exports were added after the last local syntax and Biome pass and have not been tested. The .test.mjs file is outside the Vitest include pattern and did not execute; the fresh repair seat owns conversion to a canonical test and a real importer-boundary proof.",
+    "guarded_runs": [
+      "current-test-artifact-vitest-20261002-01 refused resource measurement before child launch because the disposable profile directory was absent; the directory was created for the next run.",
+      "current-test-artifact-vitest-20261002-02 was admitted and finished 1874 passing tests with 2 unrelated records-guide parity failures because RECORDS_GUIDE_SOURCE was absent. The new .mjs test was excluded, so this run is diagnostic only for the new contract.",
+      "current-test-artifact-focused-20261002-01 was admitted and exited with No test files found for the excluded .mjs test."
+    ],
+    "not_verified": [
+      "GitHub download/archive digest behavior and artifact ZIP layout",
+      "real importer provenance/hash/collision behavior",
+      "successful push CI artifact and native browser run",
+      "latest helper exports after their final edit"
+    ],
+    "next_owner": "Fresh oct02_artifact_verification_repair exclusively owns both helper files and canonical test. This lane owns only the workflow and report after that verification and peer review. Do not push the unverified workflow."
+  }
 }
