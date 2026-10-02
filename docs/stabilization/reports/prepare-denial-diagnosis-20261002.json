@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "report_id": "prepare-denial-diagnosis-20261002",
+  "defect_id": "EXT-D-0058",
+  "status": "confirmed_chrome_permission_wait_requires_shared_design",
+  "observed": {
+    "source": "docs/stabilization/reports/d58-native-20261002.json",
+    "artifact": "0.2.173 at d6d6d6b83c937652525f473082ac2f2492c9eabe",
+    "fact": "After site access for nuxt.com was changed to Ask on every visit and the page was reloaded, Prepare displayed Preparing… without a visible error during the native observation. Restoring site access and reloading allowed a successful run in 1008ms.",
+    "limits": "The first observer did not capture the executeScript call's settlement. A second native probe below did. The required reload cleared the earlier report, so stale success on a same-document rejected retry remains untested."
+  },
+  "source_comparison": {
+    "result": "Frozen 0.2.173 and current main have identical src/hooks/use-page-prep.ts, src/lib/data-pattern/page-prep.ts, and src/features/showcase/tabs/PrepareTab.tsx contents at the diagnosis checkpoint (git diff d6d6d6b8..HEAD -- those files was empty).",
+    "boundary": "usePagePrep sets running before awaiting preparePage; preparePage awaits chrome.scripting.executeScript. The hook clears running and shows an error if that promise rejects. A promise that does not settle leaves Preparing visible until page identity changes or the component unmounts.",
+    "prior_guard": "tests/unit/prepare-lifecycle.test.tsx already covers a rejected injection through the hook and visible error; it does not model a Chrome call waiting for site access."
+  },
+  "browser_contract": {
+    "inference": "Chrome's host-access documentation says run-on-click access requires a user invocation and describes script injection waiting for an access grant. The second native probe confirmed that behavior for this frozen MV3 extension.",
+    "active_tab_caveat": "The frozen manifest declares activeTab and scripting. Native proof shows permissions.contains({origins:['https://nuxt.com/*']}) remained false even after invoking the extension made targeted executeScript and Prepare succeed. A negative persistent-host check would be a false refusal for a valid temporary grant.",
+    "sources": [
+      "https://developer.chrome.com/docs/extensions/reference/api/scripting",
+      "https://developer.chrome.com/docs/extensions/develop/concepts/activeTab",
+      "https://developer.chrome.com/docs/extensions/mv2/runtime-host-permissions"
+    ]
+  },
+  "discriminating_native_probe": {
+    "run_id": "prepare-denial-probe-20261002-01",
+    "browser": "Chrome for Testing 149.0.7827.55, isolated pre-existing cft-profile-d58-frozen173, frozen keyed extension 0.2.173, admin session",
+    "page": "https://nuxt.com/docs/4.x/getting-started/installation",
+    "restricted": "Changed Matrx site access from Always on to Ask on every visit, accepted Chrome's required reload, and clicked Prepare. The button displayed Preparing… without an error. The sidepanel extension DevTools console measured chrome.permissions.contains for https://nuxt.com/* as false; top-frame documentId was 768012CCD07D883D9049A30A879A8C26. A harmless chrome.scripting.executeScript targeting that exact tab and document remained unsettled after 2 seconds. This reproduces the same permission-dependent Chrome API boundary, although it does not instrument the particular promise created by the UI click.",
+    "grant_positive_control": "Clicked Matrx in Chrome's extension menu while Ask on every visit remained selected; Chrome showed Allowed to read and change this site and required reload. A fresh Prepare succeeded in 754ms with 3 scroll steps. In the extension context, permissions.contains for the origin still returned false, while a fresh targeted executeScript returned the actual page title. The earlier pending diagnostic promise later resolved with result:null for its old document after grant/reload, which cannot be counted as a successful report.",
+    "conclusion": "The visible hang is a Chrome permission-wait path crossing preparePage's await. It is not an observed injection rejection, and a persistent-origin permission check cannot distinguish temporary activeTab access."
+  },
+  "hypothesis_verdicts": [
+    {
+      "name": "Chrome holds the injection promise pending site access",
+      "verdict": "Supported by the targeted native API probe pending for 2 seconds and granted fresh execution; the prior pending probe resumed only after grant/reload, with a null result from its old document."
+    },
+    {
+      "name": "Injection rejects but page identity invalidation suppresses the error",
+      "verdict": "Not supported by the discriminating probe: the injected promise had not rejected when the UI was Preparing. The exact UI-created promise was not separately instrumented."
+    },
+    {
+      "name": "The injected scan is still running",
+      "verdict": "Not sufficient to explain the harmless targeted script also pending without site access, while a fresh targeted script succeeded after grant."
+    }
+  ],
+  "recommended_repair_shape": "Use a shared browser-injection access lifecycle primitive for Prepare and sibling callers. When Chrome is withholding site access, show a short visible site-access request with the actual user-invoked extension toolbar action and keep the action available for a fresh attempt after grant. Preserve already running work and temporary activeTab access; never treat permissions.contains(false) as proof that executeScript cannot run. Identify a Chrome signal that distinguishes waiting-for-grant from ordinary in-page work before building the guard. Test restricted, temporary-granted, and persistently-granted cases through the actual injection boundary, including a pending old-document completion.",
+  "class_census": "Direct chrome.scripting.executeScript calls appear across page extraction, Showcase, scrape, screenshots, credentials, tools, and page context. A confirmed permission lifecycle repair belongs at a shared injection boundary or equivalent common handling, preserving activeTab grants; a Prepare-only persistent-host gate would miss siblings and can block legitimate access.",
+  "repair_decision": "No product code or regression guard added. The Chrome permission wait is confirmed, but the class repair must distinguish an ungranted on-click site from a working temporary activeTab grant. A contains(false) preflight is disproven by the native positive control. A timeout or synthetic denied-permission unit test would conceal that distinction. This exceeds the focused Prepare hook repair: owner should choose a shared injection/access interaction that announces the pending grant and resumes after real user invocation, then prove it red-to-green across Prepare and a sibling caller.",
+  "resource_provenance": "The sole guarded browser permit was admitted and closed valid for the isolated profile under prepare-denial-probe-20261002-01; terminal journal at docs/stabilization/resource-journals/prepare-denial-probe-20261002-01.jsonl. The isolated browser process was closed and the site's original Always on setting restored. No personal Chrome profile or private credential was used."
+}
