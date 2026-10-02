@@ -22,11 +22,12 @@
     "green": "docs/stabilization/resource-journals/d59-pattern-probe-positive-20261002.jsonl: admitted, two cases passed including a positive B probe/result",
     "format": "Biome check on the two changed source/test files passed with no fixes remaining",
     "typecheck": "docs/stabilization/resource-journals/d59-pattern-probe-compile-20261002.jsonl: admitted child failure in unrelated @ai-matrx/agents/matrx imports from stream.ts, rejoin.ts and useCartesiaSpeaker.ts; no changed-file error",
+    "typecheck_root_cause": "The manifest declares @ai-matrx/agents latest and pnpm-lock resolves 0.32.0 (also npm latest on 2026-10-02), but this checkout's node_modules holds 0.21.36. The canonical aidream 0.32.0 ./matrx source exports the missing names. Reconcile the installed dependencies with the frozen lockfile, then rerun typecheck; no host shim or version pin is warranted.",
     "commit": "c28cf7c6"
   },
   "remaining": [
     "Independent source review of the conversion ownership and test quality",
-    "Integrated typecheck after installed package exports are reconciled",
+    "Guarded frozen install and integrated typecheck after the member browser job releases the shared heavy permit",
     "Installed extension retest on a real repeated-card page for A/B same-URL reload and old success/failure",
     "Other D59 consumers and modes in the campaign inventory"
   ]
