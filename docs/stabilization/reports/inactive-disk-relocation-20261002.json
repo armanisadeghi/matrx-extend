@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "report_id": "inactive-disk-relocation-20261002",
+  "observed_at": "2026-10-02T13:38:00-07:00",
+  "status": "diagnosed_no_relocation",
+  "purpose": "Determine whether inactive VM images can be moved safely to restore the 20 GiB local test safety floor without losing user data.",
+  "space": {
+    "macos_data_free_gib": 3.7,
+    "external_free_tib": 1.7,
+    "test_safety_floor_gib": 20,
+    "shortfall_gib": 16.3
+  },
+  "docker": {
+    "path": "/Users/armanisadeghi/Library/Containers/com.docker.docker/Data/vms/0/data/Docker.raw",
+    "logical_bytes": 245106737152,
+    "allocated_bytes_from_stat_blocks": 8294277120,
+    "last_modified": "2026-02-09",
+    "activity": "No Docker backend process or Docker.raw open handle observed. com.docker.vmnetd privileged helper remains running.",
+    "official_move_method": "Docker Desktop > Settings > Resources > Advanced > Disk image location > Browse > Apply. Docker explicitly warns not to move the image directly in Finder because Desktop can lose track of it.",
+    "official_source": "https://docs.docker.com/desktop/troubleshoot-and-support/faqs/macfaqs/",
+    "official_backup_source": "https://docs.docker.com/desktop/settings-and-maintenance/backup-and-restore/",
+    "decision": "Preserve in place. The supported Desktop move would recover at most about 7.7 GiB, leaving the Data volume below the 20 GiB test floor, and the Desktop app was not launched in this diagnostic lane. No unsupported filesystem swap or settings edit was attempted."
+  },
+  "claude": {
+    "path": "/Users/armanisadeghi/Library/Application Support/Claude/vm_bundles/claudevm.bundle",
+    "allocated_gib_from_du": 10,
+    "rootfs_img": {
+      "logical_bytes": 10737418240,
+      "allocated_bytes_from_stat_blocks": 10737418240,
+      "last_modified": "2026-09-17"
+    },
+    "sessiondata_img": {
+      "logical_bytes": 10737418240,
+      "allocated_bytes_from_stat_blocks": 110538752,
+      "last_modified": "2026-07-13"
+    },
+    "activity": "No open handles to rootfs.img or sessiondata.img observed. Claude chrome-native-host processes were running. The bundle also has machine identifiers, network identifiers, and VM boot files.",
+    "classification": "Mixed VM bundle, including mutable session state; rootfs.img appears to be a base image from its name and modification date, but immutability and safe reconstruction were not proved.",
+    "official_architecture_source": "https://support.claude.com/en/articles/14479288-claude-cowork-architecture-overview",
+    "decision": "Preserve in place. No official supported disk-location move procedure was found for this bundle. Do not move, symlink, delete, or reconfigure it based on this evidence."
+  },
+  "actions": [
+    "Read the disk-groom skill and register; neither provides a relocation procedure for these VM images.",
+    "Checked sizes, allocation, timestamps, processes, and open handles without opening image contents.",
+    "A small sparse-file cp -p probe on the external APFS volume preserved its 1 GiB logical size while allocating only 20 KiB; this was a tool-capability probe, not proof that a VM copy is safe to activate.",
+    "An optional external Docker backup copy was interrupted after about 844 MiB had been allocated at the parent lane's direction; its partial file and unique staging directory were removed. The original was not changed."
+  ],
+  "current_truth": "No local disk space was reclaimed by this lane. Both original images remain intact in their original locations. No VM was launched, stopped, or reconfigured. Local tests, builds, browser launches, release, and push remain withheld until the safety floor is met."
+}
