@@ -1,10 +1,18 @@
 import assert from 'node:assert/strict';
-import { randomBytes } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import { mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
-import { join, resolve } from 'node:path';
+import { basename, join, resolve } from 'node:path';
 import { afterEach, it } from 'vitest';
-import { withReservedImportTarget, verifyDownloadedTree, verifyGitHubMetadata } from '../../scripts/current-test-artifact.mjs';
-import { recordLocalDevBuild, requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
+import {
+  verifyDownloadedTree,
+  verifyGitHubMetadata,
+  verifyImportedNativeEvidence,
+  withReservedImportTarget,
+} from '../../scripts/current-test-artifact.mjs';
+import {
+  recordLocalDevBuild,
+  requireLocalDevReceipt,
+} from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 
 const repo = resolve(import.meta.dirname, '..', '..');
@@ -47,10 +55,17 @@ async function fixture() {
   const config = await readFile(join(repo, 'wxt.config.ts'), 'utf8');
   const key = /const devExtensionKey =\s*'([^']+)'/.exec(config)?.[1];
   assert.ok(key, 'the checked-in development key is required for this fixture');
-  await writeFile(join(build, 'manifest.json'), JSON.stringify({ manifest_version: 3, version, key }));
+  await writeFile(
+    join(build, 'manifest.json'),
+    JSON.stringify({ manifest_version: 3, version, key }),
+  );
   await writeFile(join(build, 'sidepanel.js'), 'development guest entry');
   const localReceiptPath = join(root, '37020466023-1', 'local-dev-receipt.json');
   const receipt = await recordLocalDevBuild({ extensionDir: build, outputPath: localReceiptPath });
+  const ciReceipt = {
+    ...receipt,
+    extensionDir: '/home/runner/work/matrx-extend/matrx-extend/.output/chrome-mv3',
+  };
   const provenance = {
     schema_version: 1,
     kind: 'ci_development_test',
@@ -67,11 +82,14 @@ async function fixture() {
     expectedExtensionId: 'cihdmkcdjjckfhjpgoedmgfpoljebaml',
     treeSha256: receipt.treeSha256,
   };
-  return { root, build, version, receipt, provenance, localReceiptPath };
+  return { root, build, version, receipt, ciReceipt, provenance, localReceiptPath };
 }
 
 it('accepts only successful main-push CI metadata and the exact artifact digest', () => {
-  assert.equal(verifyGitHubMetadata(run, workflow, artifact, String(run.id), String(artifact.id)), 'a'.repeat(64));
+  assert.equal(
+    verifyGitHubMetadata(run, workflow, artifact, String(run.id), String(artifact.id)),
+    'a'.repeat(64),
+  );
   for (const changed of [
     { run: { conclusion: 'cancelled' } },
     { run: { event: 'pull_request' } },
@@ -85,42 +103,74 @@ it('accepts only successful main-push CI metadata and the exact artifact digest'
     { artifact: { workflow_run: { id: run.id, head_sha: 'b'.repeat(40) } } },
   ]) {
     assert.throws(
-      () => verifyGitHubMetadata({ ...run, ...changed.run }, workflow, { ...artifact, ...changed.artifact }, String(run.id), String(artifact.id)),
+      () =>
+        verifyGitHubMetadata(
+          { ...run, ...changed.run },
+          workflow,
+          { ...artifact, ...changed.artifact },
+          String(run.id),
+          String(artifact.id),
+        ),
       /test_artifact_(?:run|github_metadata)_refused/,
     );
   }
-  assert.throws(() => verifyGitHubMetadata(run, { id: 1518 }, artifact, String(run.id), String(artifact.id)), /test_artifact_run_refused/);
-  assert.throws(() => verifyGitHubMetadata(run, workflow, artifact, '37020466024', String(artifact.id)), /test_artifact_run_refused/);
+  assert.throws(
+    () => verifyGitHubMetadata(run, { id: 1518 }, artifact, String(run.id), String(artifact.id)),
+    /test_artifact_run_refused/,
+  );
+  assert.throws(
+    () => verifyGitHubMetadata(run, workflow, artifact, '37020466024', String(artifact.id)),
+    /test_artifact_run_refused/,
+  );
 });
 
 it('accepts a copied remote build only when its preserved receipt binds the real bytes and manifest', async () => {
-  const { build, version, receipt, provenance, localReceiptPath } = await fixture();
+  const { build, version, receipt, ciReceipt, provenance, localReceiptPath } = await fixture();
   assert.deepEqual(JSON.parse(await readFile(localReceiptPath, 'utf8')), receipt);
   assert.equal(requireLocalDevReceipt(receipt, build), receipt);
-  await verifyDownloadedTree(build, receipt, provenance, run, version);
+  await verifyDownloadedTree(build, ciReceipt, provenance, run, version);
   await writeFile(join(build, 'sidepanel.js'), 'tampered after CI receipt');
-  await assert.rejects(verifyDownloadedTree(build, receipt, provenance, run, version), /test_artifact_tree_refused/);
+  await assert.rejects(
+    verifyDownloadedTree(build, ciReceipt, provenance, run, version),
+    /test_artifact_tree_refused/,
+  );
 });
 
 it('refuses a receipt bound to another run directory or a symlinked build entry', async () => {
-  const { root, build, version, receipt, provenance } = await fixture();
+  const { root, build, version, receipt, ciReceipt, provenance } = await fixture();
   const wrongOutput = join(root, '37020466024-1', 'local-dev-receipt.json');
   await mkdir(resolve(wrongOutput, '..'));
-  await assert.rejects(recordLocalDevBuild({ extensionDir: build, outputPath: wrongOutput }), /local_dev_receipt_output_refused/);
-  assert.throws(() => requireLocalDevReceipt({ ...receipt, extensionDir: join(root, '37020466024-1', 'chrome-mv3') }, build), /local_dev_build_receipt_refused/);
+  await assert.rejects(
+    recordLocalDevBuild({ extensionDir: build, outputPath: wrongOutput }),
+    /local_dev_receipt_output_refused/,
+  );
+  assert.throws(
+    () =>
+      requireLocalDevReceipt(
+        { ...receipt, extensionDir: join(root, '37020466024-1', 'chrome-mv3') },
+        build,
+      ),
+    /local_dev_build_receipt_refused/,
+  );
   await symlink(join(build, 'sidepanel.js'), join(build, 'shadow.js'));
-  await assert.rejects(verifyDownloadedTree(build, receipt, provenance, run, version), /Refusing symlink/);
+  await assert.rejects(
+    verifyDownloadedTree(build, ciReceipt, provenance, run, version),
+    /Refusing symlink/,
+  );
 });
 
 it('refuses an occupied import path without changing its existing bytes', async () => {
   const { root } = await fixture();
-  const source = resolve(root).split('/').at(-1)!;
+  const source = basename(root);
   const existing = join(root, '37020466023-1', 'chrome-mv3', 'sidepanel.js');
   const original = await readFile(existing);
   let entered = false;
-  await assert.rejects(withReservedImportTarget(source, run.id, run.run_attempt, async () => {
-    entered = true;
-  }), { code: 'EEXIST' });
+  await assert.rejects(
+    withReservedImportTarget(source, run.id, run.run_attempt, async () => {
+      entered = true;
+    }),
+    { code: 'EEXIST' },
+  );
   assert.equal(entered, false);
   assert.deepEqual(await readFile(existing), original);
 });
@@ -131,7 +181,10 @@ it('refuses a symlink at the run-qualified import destination', async () => {
   owned.push(root);
   await mkdir(root, { recursive: true });
   await symlink(join(repo, 'test-results'), join(root, '37020466023-1'));
-  await assert.rejects(withReservedImportTarget(source, run.id, run.run_attempt, async () => {}), /test_artifact_import_symlink_refused/);
+  await assert.rejects(
+    withReservedImportTarget(source, run.id, run.run_attempt, async () => {}),
+    /test_artifact_import_symlink_refused/,
+  );
 });
 
 it('removes only a newly reserved import when its write fails', async () => {
@@ -149,7 +202,7 @@ it('removes only a newly reserved import when its write fails', async () => {
 });
 
 it('refuses mismatched CI provenance even when build bytes still match', async () => {
-  const { build, version, receipt, provenance } = await fixture();
+  const { build, version, ciReceipt, provenance } = await fixture();
   for (const changed of [
     { sourceSha: 'b'.repeat(40) },
     { runId: run.id + 1 },
@@ -160,8 +213,102 @@ it('refuses mismatched CI provenance even when build bytes still match', async (
     { treeSha256: 'b'.repeat(64) },
     { version: '0.0.0' },
   ]) {
-    await assert.rejects(verifyDownloadedTree(build, receipt, { ...provenance, ...changed }, run, version), /test_artifact_provenance_refused/);
+    await assert.rejects(
+      verifyDownloadedTree(build, ciReceipt, { ...provenance, ...changed }, run, version),
+      /test_artifact_provenance_refused/,
+    );
   }
-  await assert.rejects(verifyDownloadedTree(build, { ...receipt, treeSha256: 'b'.repeat(64) }, provenance, run, version), /test_artifact_provenance_refused/);
-  assert.equal(hashReleaseTree(build), receipt.treeSha256);
+  await assert.rejects(
+    verifyDownloadedTree(
+      build,
+      { ...ciReceipt, treeSha256: 'b'.repeat(64) },
+      provenance,
+      run,
+      version,
+    ),
+    /test_artifact_provenance_refused/,
+  );
+  assert.equal(hashReleaseTree(build), ciReceipt.treeSha256);
+});
+
+it('refuses a CI receipt with malformed schema, timestamp, or original build path', async () => {
+  const { build, version, ciReceipt, provenance } = await fixture();
+  for (const changed of [
+    { schema_version: 2 },
+    { observedAt: 'yesterday' },
+    { extensionDir: '/tmp/other-extension/chrome-mv3' },
+    { extensionDir: '/home/runner/work/matrx-extend/matrx-extend/.output/../chrome-mv3' },
+  ]) {
+    await assert.rejects(
+      verifyDownloadedTree(build, { ...ciReceipt, ...changed }, provenance, run, version),
+      /test_artifact_provenance_refused/,
+    );
+  }
+});
+
+it('binds the native result to unchanged CI evidence and freshly classifies source drift', async () => {
+  const { root, build, receipt, ciReceipt, provenance, localReceiptPath } = await fixture();
+  const target = resolve(build, '..');
+  const sourceSha = basename(root);
+  const nativeProvenance = { ...provenance, sourceSha };
+  const ciReceiptBytes = Buffer.from(JSON.stringify(ciReceipt));
+  const provenanceBytes = Buffer.from(JSON.stringify(nativeProvenance));
+  await writeFile(join(target, 'ci-receipt.json'), ciReceiptBytes);
+  await writeFile(join(target, 'provenance.json'), provenanceBytes);
+  const status = {
+    schema_version: 1,
+    eligibleStore: false,
+    sourceSha,
+    runId: run.id,
+    runAttempt: run.run_attempt,
+    artifactId: artifact.id,
+    githubArtifactDigest: digest,
+    treeSha256: receipt.treeSha256,
+    ciReceiptSha256: createHash('sha256').update(ciReceiptBytes).digest('hex'),
+    provenanceSha256: createHash('sha256').update(provenanceBytes).digest('hex'),
+  };
+  await writeFile(join(target, 'import-status.json'), JSON.stringify(status));
+  const fakeBin = join(root, 'fake-bin');
+  await mkdir(fakeBin);
+  await writeFile(
+    join(fakeBin, 'git'),
+    '#!/bin/sh\ncase "$1 $2" in\n  "fetch --quiet") exit 0;;\n  "rev-parse origin/main") printf "%s\\n" "$FAKE_ORIGIN_SHA";;\n  "rev-parse HEAD") printf "%s\\n" "$FAKE_LOCAL_SHA";;\n  "status --porcelain") printf "%s" "$FAKE_TRACKED_DIRT";;\n  "ls-files --others") printf "%s" "$FAKE_UNTRACKED_RUNNER";;\n  *) exit 3;;\nesac\n',
+    { mode: 0o700 },
+  );
+  const oldPath = process.env.PATH;
+  try {
+    process.env.PATH = `${fakeBin}:${oldPath}`;
+    process.env.FAKE_ORIGIN_SHA = sourceSha;
+    process.env.FAKE_LOCAL_SHA = sourceSha;
+    process.env.FAKE_TRACKED_DIRT = '';
+    process.env.FAKE_UNTRACKED_RUNNER = '';
+    const current = await verifyImportedNativeEvidence(build, localReceiptPath);
+    assert.equal(current.artifactId, artifact.id);
+    assert.equal(current.githubArtifactDigest, digest);
+    assert.equal(current.treeSha256, receipt.treeSha256);
+    assert.equal(current.source.claim, 'current_pushed_source');
+    process.env.FAKE_ORIGIN_SHA = 'b'.repeat(40);
+    assert.equal(
+      (await verifyImportedNativeEvidence(build, localReceiptPath)).source.claim,
+      'exact_pushed_commit_only',
+    );
+    process.env.FAKE_ORIGIN_SHA = sourceSha;
+    process.env.FAKE_UNTRACKED_RUNNER = 'tests/browser/seo-guest-acceptance-local.mjs';
+    const untracked = await verifyImportedNativeEvidence(build, localReceiptPath);
+    assert.equal(untracked.source.claim, 'exact_pushed_commit_only');
+    assert.deepEqual(untracked.source.untrackedRunnerInputs, [
+      'tests/browser/seo-guest-acceptance-local.mjs',
+    ]);
+    await writeFile(join(target, 'ci-receipt.json'), 'changed');
+    await assert.rejects(
+      verifyImportedNativeEvidence(build, localReceiptPath),
+      /test_artifact_native_evidence_refused/,
+    );
+  } finally {
+    process.env.PATH = oldPath;
+    Reflect.deleteProperty(process.env, 'FAKE_ORIGIN_SHA');
+    Reflect.deleteProperty(process.env, 'FAKE_LOCAL_SHA');
+    Reflect.deleteProperty(process.env, 'FAKE_TRACKED_DIRT');
+    Reflect.deleteProperty(process.env, 'FAKE_UNTRACKED_RUNNER');
+  }
 });

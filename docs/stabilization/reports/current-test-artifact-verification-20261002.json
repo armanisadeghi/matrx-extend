@@ -5,18 +5,22 @@
   "implemented": [
     "scripts/current-test-artifact.mjs verifies successful main-push CI run metadata, exact Actions artifact identity and SHA-256 digest, original CI receipt, development manifest ID, provenance, and downloaded tree bytes before import.",
     "scripts/record-local-dev-build.mjs admits only the exact run-qualified imported tree and its sibling local receipt, retaining original local output paths and exclusive receipt writes.",
-    "EXT-D-0077: import writes run inside an exclusively reserved destination; cleanup can remove only a destination this importer created. An occupied artifact is preserved."
+    "EXT-D-0077: import writes run inside an exclusively reserved destination; cleanup can remove only a destination this importer created. An occupied artifact is preserved.",
+    "The preserved CI receipt is checked for schema version, timestamp, and its original hosted .output/chrome-mv3 path before its bytes can support an imported build.",
+    "SEO native results bind the imported original receipt, provenance, local receipt, run/artifact identity, GitHub archive digest and tree hash; origin/main, HEAD, tracked dirt and untracked runner files are checked again at result time."
   ],
   "verification": {
-    "focused_vitest": "current-test-artifact-vitest-20261002-06: resource admitted; tests/unit/current-test-artifact-receipt.test.ts 7/7 passed; final decision valid",
+    "focused_vitest": "current-test-artifact-vitest-20261002-08: resource admitted; tests/unit/current-test-artifact-receipt.test.ts 9/9 passed; final decision valid",
+    "compile": "current-test-artifact-compile-20261002-02: resource admitted; pnpm compile passed; final decision valid",
     "syntax": "node --check passed for both edited .mjs scripts",
-    "diff": "git diff --check passed",
-    "coverage": "Connected verifier success and rejection for run status, main branch, workflow, source SHA, repository, attempt, artifact identity/digest, CI provenance, changed tree bytes, symlinked entry and destination, occupied destination preservation, and cleanup of a newly created partial destination."
+    "diff": "git diff --check passed for prior helper commit; repeated before follow-up commit",
+    "targeted_lint": "pnpm exec biome check --write on owned helper, declaration, test, SEO runner and report files: zero findings",
+    "coverage": "Connected verifier success and rejection for CI metadata and bytes, malformed original CI receipt fields, occupied/symlinked destinations, and native result GitHub identity. A fake git CLI at the external boundary proves current-source downgrade when origin/main advances or an untracked runner appears; changed original CI bytes are refused before parsing."
   },
   "limits": [
     "No remote GitHub artifact was present or downloaded in this lane; metadata fixture verifies the importer contract, not a live GitHub run.",
     "No local extension build, native browser result, Store release, or new credentials were used.",
-    "Resource guard attempt 03 refused before admission because its profile directory did not exist; attempts 04, 05 and 06 were admitted and passed.",
+    "Resource guard attempt 03 refused before admission because its profile directory did not exist; attempts 04, 05, 06 and 08 were admitted and passed. Attempt 07 was admitted and failed one assertion; the fix was verified by 08.",
     "EXT-D-0077 was caught in source review before publication. No failing runtime receipt was recorded before the fix."
   ]
 }

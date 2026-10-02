@@ -53,6 +53,33 @@ export function verifyDownloadedTree(
   version: string,
 ): Promise<void>;
 
+export type ImportedNativeEvidence = {
+  schema_version: 1;
+  kind: 'ci_development_test';
+  eligibleStore: false;
+  publish_state: 'not_published';
+  repository: string;
+  workflow: string;
+  sourceSha: string;
+  runId: number;
+  runAttempt: number;
+  artifactId: number;
+  githubArtifactDigest: string;
+  treeSha256: string;
+  source: {
+    originMain: string;
+    localHead: string;
+    trackedDirty: boolean;
+    untrackedRunnerInputs: string[];
+    claim: 'current_pushed_source' | 'exact_pushed_commit_only';
+  };
+};
+
+export function verifyImportedNativeEvidence(
+  extensionDir: string,
+  localReceiptPath: string,
+): Promise<ImportedNativeEvidence>;
+
 export function reserveImportTarget(sha: string, runId: number, attempt: number): Promise<string>;
 
 export function withReservedImportTarget(

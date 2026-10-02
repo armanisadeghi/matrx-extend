@@ -8,6 +8,7 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { open, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
+import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
@@ -54,6 +55,7 @@ const report = {
   last_safe_observable: null,
   current_operation: null,
   build: null,
+  imported_artifact: null,
 };
 const advance = (stage, observable = null) => {
   report.last_safe_stage = stage;
@@ -1465,6 +1467,19 @@ try {
   report.failure_stage = report.current_operation ?? report.last_safe_stage;
   if (error?.seoDoorDiagnostic) report.door_activation_diagnostic = error.seoDoorDiagnostic;
   process.exitCode = 1;
+}
+if (
+  DEV_BUILD_RECEIPT !== undefined &&
+  resolve(EXTENSION_DIR).startsWith(`${join(REPO, 'test-results', 'ci-artifacts')}/`)
+) {
+  try {
+    report.imported_artifact = await verifyImportedNativeEvidence(EXTENSION_DIR, DEV_BUILD_RECEIPT);
+  } catch {
+    report.imported_artifact_verification = 'unverified';
+    report.failure_stage ??= 'imported_artifact_result_provenance';
+    report.status = 'unverified';
+    process.exitCode = 1;
+  }
 }
 await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
 process.stdout.write(`${report.status.toUpperCase()} seo_guest_native_batch\n`);

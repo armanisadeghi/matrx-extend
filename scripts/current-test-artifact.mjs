@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import { fileURLToPath } from 'node:url';
-import { recordLocalDevBuild } from './record-local-dev-build.mjs';
+import { recordLocalDevBuild, requireLocalDevReceipt } from './record-local-dev-build.mjs';
 import { hashReleaseTree } from './sync-unpacked-release.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -23,6 +23,9 @@ const RESULTS = join(REPO, 'test-results');
 
 function fail(code) {
   throw new Error(code);
+}
+function sha256(bytes) {
+  return createHash('sha256').update(bytes).digest('hex');
 }
 function json(path) {
   return readFile(path, 'utf8').then(JSON.parse);
@@ -134,7 +137,9 @@ function ghDownload(endpoint, output) {
   const exited = new Promise((resolveDownload, rejectDownload) => {
     child.on('error', rejectDownload);
     child.on('close', (code) =>
-      code === 0 ? resolveDownload() : rejectDownload(new Error(`test_artifact_download_failed_${code}`)),
+      code === 0
+        ? resolveDownload()
+        : rejectDownload(new Error(`test_artifact_download_failed_${code}`)),
     );
   });
   return Promise.all([
@@ -191,12 +196,23 @@ async function sourceState(sha) {
   const originMain = git('rev-parse', 'origin/main');
   const localHead = git('rev-parse', 'HEAD');
   const dirty = git('status', '--porcelain', '--untracked-files=no') !== '';
+  const untrackedRunnerInputs = git(
+    'ls-files',
+    '--others',
+    '--exclude-standard',
+    '--',
+    'tests/browser',
+    'scripts',
+  )
+    .split('\n')
+    .filter(Boolean);
   return {
     originMain,
     localHead,
     trackedDirty: dirty,
+    untrackedRunnerInputs,
     claim:
-      originMain === sha && localHead === sha && !dirty
+      originMain === sha && localHead === sha && !dirty && untrackedRunnerInputs.length === 0
         ? 'current_pushed_source'
         : 'exact_pushed_commit_only',
   };
@@ -232,6 +248,10 @@ export function verifyGitHubMetadata(run, workflow, artifact, runId, artifactId)
 }
 
 export async function verifyDownloadedTree(build, receipt, provenance, run, version) {
+  const ciBuildPath =
+    typeof receipt?.extensionDir === 'string' &&
+    /^\/[^\0]+\/matrx-extend\/\.output\/chrome-mv3$/.test(receipt.extensionDir) &&
+    !receipt.extensionDir.split('/').includes('..');
   if (
     provenance.kind !== 'ci_development_test' ||
     provenance.eligibleStore !== false ||
@@ -246,14 +266,80 @@ export async function verifyDownloadedTree(build, receipt, provenance, run, vers
     provenance.expectedExtensionId !== DEV_ID ||
     provenance.version !== version ||
     provenance.treeSha256 !== receipt.treeSha256 ||
+    receipt.schema_version !== 1 ||
     receipt.kind !== 'local_dev_unpacked' ||
     receipt.publish_state !== 'not_published' ||
     receipt.version !== version ||
+    !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(receipt.observedAt ?? '') ||
+    !Number.isFinite(Date.parse(receipt.observedAt)) ||
+    !ciBuildPath ||
     !SHA256.test(receipt.treeSha256 ?? '')
   )
     fail('test_artifact_provenance_refused');
   await assertManifest(build, version);
   if (hashReleaseTree(build) !== receipt.treeSha256) fail('test_artifact_tree_refused');
+}
+
+export async function verifyImportedNativeEvidence(extensionDir, localReceiptPath) {
+  const build = resolve(extensionDir);
+  const relative = build.startsWith(`${REPO}/`) ? build.slice(REPO.length + 1) : '';
+  const match =
+    /^test-results\/ci-artifacts\/([a-f0-9]{40})\/([1-9]\d*)-([1-9]\d*)\/chrome-mv3$/.exec(
+      relative,
+    );
+  if (!match) fail('test_artifact_native_path_refused');
+  const [, sourceSha, runId, runAttempt] = match;
+  const target = dirname(build);
+  if (resolve(localReceiptPath) !== join(target, 'local-dev-receipt.json'))
+    fail('test_artifact_native_receipt_path_refused');
+  assertNoSymlinkParents(build);
+  const [localReceipt, ciReceiptBytes, provenanceBytes, status] = await Promise.all([
+    json(localReceiptPath),
+    readFile(join(target, 'ci-receipt.json')),
+    readFile(join(target, 'provenance.json')),
+    json(join(target, 'import-status.json')),
+  ]);
+  requireLocalDevReceipt(localReceipt, build);
+  if (
+    status.schema_version !== 1 ||
+    status.eligibleStore !== false ||
+    status.sourceSha !== sourceSha ||
+    status.runId !== Number(runId) ||
+    status.runAttempt !== Number(runAttempt) ||
+    !DECIMAL.test(String(status.artifactId ?? '')) ||
+    !/^sha256:[a-f0-9]{64}$/.test(status.githubArtifactDigest ?? '') ||
+    status.treeSha256 !== localReceipt.treeSha256 ||
+    status.ciReceiptSha256 !== sha256(ciReceiptBytes) ||
+    status.provenanceSha256 !== sha256(provenanceBytes)
+  )
+    fail('test_artifact_native_evidence_refused');
+  const ciReceipt = JSON.parse(ciReceiptBytes);
+  const provenance = JSON.parse(provenanceBytes);
+  const version = (await json(join(REPO, 'package.json'))).version;
+  if (localReceipt.version !== version) fail('test_artifact_native_version_refused');
+  await verifyDownloadedTree(
+    build,
+    ciReceipt,
+    provenance,
+    { head_sha: sourceSha, id: status.runId, run_attempt: status.runAttempt },
+    version,
+  );
+  const source = await sourceState(sourceSha);
+  return {
+    schema_version: 1,
+    kind: 'ci_development_test',
+    eligibleStore: false,
+    publish_state: 'not_published',
+    repository: OWNER,
+    workflow: '.github/workflows/ci.yml',
+    sourceSha,
+    runId: status.runId,
+    runAttempt: status.runAttempt,
+    artifactId: status.artifactId,
+    githubArtifactDigest: status.githubArtifactDigest,
+    treeSha256: status.treeSha256,
+    source,
+  };
 }
 
 async function importArtifact(runId, artifactId) {
@@ -289,36 +375,44 @@ async function importArtifact(runId, artifactId) {
     const version = (await json(join(REPO, 'package.json'))).version;
     await verifyDownloadedTree(build, receipt, provenance, run, version);
     const state = await sourceState(run.head_sha);
-    const target = await withReservedImportTarget(run.head_sha, run.id, run.run_attempt, async (target) => {
-      const imported = join(target, 'chrome-mv3');
-      await cp(build, imported, { recursive: true, errorOnExist: true, force: false });
-      if (hashReleaseTree(imported) !== receipt.treeSha256) fail('test_artifact_import_tree_refused');
-      await copyFile(ciReceiptPath, join(target, 'ci-receipt.json'));
-      await copyFile(provenancePath, join(target, 'provenance.json'));
-      await recordLocalDevBuild({
-        extensionDir: imported,
-        outputPath: join(target, 'local-dev-receipt.json'),
-      });
-      await writeFile(
-        join(target, 'import-status.json'),
-        `${JSON.stringify(
-          {
-            schema_version: 1,
-            eligibleStore: false,
-            sourceSha: run.head_sha,
-            runId: run.id,
-            runAttempt: run.run_attempt,
-            artifactId: artifact.id,
-            githubArtifactDigest: artifact.digest,
-            treeSha256: receipt.treeSha256,
-            source: state,
-          },
-          null,
-          2,
-        )}\n`,
-        { flag: 'wx', mode: 0o600 },
-      );
-    });
+    const target = await withReservedImportTarget(
+      run.head_sha,
+      run.id,
+      run.run_attempt,
+      async (target) => {
+        const imported = join(target, 'chrome-mv3');
+        await cp(build, imported, { recursive: true, errorOnExist: true, force: false });
+        if (hashReleaseTree(imported) !== receipt.treeSha256)
+          fail('test_artifact_import_tree_refused');
+        await copyFile(ciReceiptPath, join(target, 'ci-receipt.json'));
+        await copyFile(provenancePath, join(target, 'provenance.json'));
+        await recordLocalDevBuild({
+          extensionDir: imported,
+          outputPath: join(target, 'local-dev-receipt.json'),
+        });
+        await writeFile(
+          join(target, 'import-status.json'),
+          `${JSON.stringify(
+            {
+              schema_version: 1,
+              eligibleStore: false,
+              sourceSha: run.head_sha,
+              runId: run.id,
+              runAttempt: run.run_attempt,
+              artifactId: artifact.id,
+              githubArtifactDigest: artifact.digest,
+              treeSha256: receipt.treeSha256,
+              ciReceiptSha256: sha256(ciReceiptBytes),
+              provenanceSha256: sha256(provenanceBytes),
+              source: state,
+            },
+            null,
+            2,
+          )}\n`,
+          { flag: 'wx', mode: 0o600 },
+        );
+      },
+    );
     process.stdout.write(`DEVELOPMENT_TEST_IMPORTED ${target} ${state.claim}\n`);
   } finally {
     await rm(scratch, { recursive: true, force: true });
