@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "run_id": "site-access-native-recovery-20261002-02",
+  "date": "2026-10-02",
+  "defect_id": "EXT-D-0078",
+  "status": "pass_bounded",
+  "browser": {
+    "product": "Chrome for Testing",
+    "version": "149.0.7827.55",
+    "profile": "/Volumes/Samsung2TB/code/.stabilization-scratch/site-access-native-recovery-20261002-owned",
+    "profile_origin": "Private copy of the isolated frozen173 admin profile, created before guarded launch; no primary personal Chrome profile used.",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "artifact": {
+    "kind": "local_dev_unpacked",
+    "version": "0.2.175",
+    "source_commit": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
+    "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
+    "extension_dir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a/37039513091-1/chrome-mv3",
+    "receipt": "test-results/ci-artifacts/2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a/37039513091-1/local-dev-receipt.json",
+    "tree_verification": "The exact imported local-dev receipt was used; independent hashReleaseTree verification matched the receipt. The running extension page showed ID cihdmkcdjjckfhjpgoedmgfpoljebaml and the authenticated admin product UI."
+  },
+  "observations": [
+    {
+      "step": "withheld_prepare_reproduction",
+      "result": "pass",
+      "detail": "With the sidepanel open on nuxt.com and its Prepare page action visible, Chrome site settings were changed to Ask on every visit. The target page was reloaded using Chrome's own required reload prompt while the sidepanel stayed open; Matrx was not reopened from the toolbar. Clicking Prepare left the actual product action at Preparing… . The in-panel Site access control remained usable and identified nuxt.com, the temporary toolbar path, Always allow on this site, and Reload page."
+    },
+    {
+      "step": "native_request_and_recovery",
+      "result": "pass",
+      "detail": "While Prepare was pending, clicking Always allow on this site opened Chrome's native permission sheet naming nuxt.com and the read/change scope. Allow was initially unavailable while the sheet settled; it became enabled and was selected. The product then displayed Access allowed on this site while the previous Prepare remained pending."
+    },
+    {
+      "step": "product_reload_and_retry",
+      "result": "pass_bounded",
+      "detail": "The product's separate Reload page action reloaded the target. The page-change state replaced the old pending action with Prepare page and Page changed. Reopening the control confirmed the navigation state. A fresh user-clicked Prepare then completed in 756 ms with three scroll steps. This confirms visible recovery through the product's grant and reload controls plus successful work after retry; it does not establish whether the earlier invocation later completed invisibly."
+    }
+  ],
+  "unverified": [
+    "Whether the original pending injection returns after the user grants access, before or without the explicit target reload.",
+    "Whether a stale completion from the original Prepare is ignored after navigation; native run observed its visible pending state clear on reload, then validated a new invocation.",
+    "Unsupported permissions API behavior, non-HTTP(S) control state, and guest/member account behavior."
+  ],
+  "resource_guard": {
+    "run_id": "site-access-native-recovery-20261002-02",
+    "journal": "docs/stabilization/resource-journals/site-access-native-recovery-20261002-02.jsonl",
+    "admitted_at": "2026-10-02T17:34:26.239Z",
+    "admission": "valid",
+    "terminal_at": "2026-10-02T17:38:20.707Z",
+    "terminal_decision": "valid",
+    "profile_dir": "/Volumes/Samsung2TB/code/.stabilization-scratch/site-access-native-recovery-20261002-owned"
+  },
+  "cleanup": "Chrome for Testing was quit through its native app menu; the guard emitted RESOURCE_BROWSER_STOP_CONFIRMED and RESOURCE_FINAL_DECISION valid. The privately copied owned profile was removed. Frozen173 source profile and primary Chrome were untouched.",
+  "secrets": "No credentials, auth tokens, or private values are included."
+}
