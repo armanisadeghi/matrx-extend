@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "lane": "fresh_independent_package_request_client_peer",
+  "reviewed_source_commit": "58c5760e",
+  "reviewed_dependency_commit": "d97d545e",
+  "contract": "@ai-matrx/agents CHANGELOG 0.38.0 and common-docs/systems/apps/extension/WIRE_CONTRACT.md",
+  "verdict_a_outcome": {
+    "status": "PARTIAL_LIVE_PENDING",
+    "evidence": [
+      "The exact sender substitutions preserve the existing host request headers and raw Response branches. buildHeaders still distinguishes guest X-Fingerprint-ID from authenticated Bearer plus organization, privatePost still fences its actor and response, and file upload/download still preserve FormData/bytes and their one 401 refresh attempt.",
+      "The main stream/offscreen path is unchanged and already uses the shared readMatrxNdjsonStream. The installed lock resolves @ai-matrx/agents 0.38.1, whose exported module contains sendMatrxRequest and readMatrxJsonResponse. The worker reports guarded compile, 53 focused tests, and npm-latest check passing; this reviewer did not run them.",
+      "No post-change owned-browser guest or authenticated extension behavior was exercised in this lane. The existing native results cannot be attributed to this source change."
+    ],
+    "required_live_evidence": "Run the owned native guest and authenticated paths on an artifact built from the changed source, checking identity headers, organization choice, file transfer behavior, and stream delivery."
+  },
+  "verdict_b_contract_security_quality": {
+    "status": "PARTIAL_IMPORTANT_ERROR_BOUNDARY",
+    "evidence": [
+      "sendMatrxRequest with no timeout option is a raw fetch wrapper. Its use in client.ts, matrx-transport.ts, and files.ts therefore preserves caller signals and raw response semantics, including private redirect refusal and response cap. The file success JSON branch uses the package reader and local file-shape validator.",
+      "The package 0.38.0 consumer action also calls for deleting host copies of fetch, deadline, query, and NDJSON line parsing. This commit replaces direct fetch in the touched consumers. No duplicate NDJSON framer was found: stream.ts already uses the shared readMatrxNdjsonStream. Existing route-specific URL construction is not a copy of buildMatrxRequestUrl. rawRequest translates the package's raw Response into the extension's ApiResult, including 204=undefined and successful text; this boundary is required by existing callers. Its whole-response timeout and privatePost's stricter actor/deadline/cap/no-reflection policy are intentional host contracts."
+    ],
+    "findings": [
+      {
+        "severity": "important",
+        "id": "shared_plain_text_http_error_fallback_consumes_body",
+        "owner": "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/matrx/backend-errors.ts",
+        "evidence": "parseHttpError() first awaits response.json(); when that rejects for a plain-text response it next awaits response.text() on the already-consumed body, so its advertised plain-text fallback normally returns only a generic status. This affects readMatrxJsonResponse's error branch and would lose server diagnostics if the host migrated its existing non-JSON error handling as-is.",
+        "action": "Read the response body once and classify JSON or plain text from those same bytes; add a real Response plain-text rejection test that fails before the package fix, then release and adopt the package in this session. Do not alter the extension's ApiResult, whole-response deadline, 204 or text-success contracts to work around the parser."
+      },
+      {
+        "severity": "important",
+        "id": "file_upload_reflects_raw_server_error_body",
+        "owner": "src/lib/api/routes/files.ts",
+        "evidence": "On non-2xx upload, files.ts reads the entire server body as text, passes it to log.error, and concatenates it into the thrown error. The new shared sender leaves this pre-existing path intact. Error bodies can echo request fields or arbitrary server content; the path bypasses the package's classified HTTP error interface and lacks a no-reflection boundary.",
+        "action": "After fixing the shared parser, classify the upload error through it and expose/log only approved bounded status/code or safe user text. Preserve the existing FormData, pinned organization, 401 retry, and successful response-shape validation. Add a rejection fixture whose body contains a synthetic secret and prove no log or thrown message contains it."
+      }
+    ],
+    "limits": "These are an upstream parser defect and a pre-existing host error-reflection gap exposed by review of the adoption; neither proves a regression from the sender substitution. The host's ApiResult translation and stronger private policy remain valid. No credentials, browser, build, test, or release were used by this review."
+  }
+}
