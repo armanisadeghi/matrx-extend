@@ -132,3 +132,80 @@ it.each(['resolve', 'reject'] as const)(
     expect(hook.result.current.result?.config.item_selector).toBe('.event');
   },
 );
+
+it('keeps document B stream error when document A probe rejects later', async () => {
+  const oldProbe = deferred<{ result: Record<string, string> }[]>();
+  mocks.executeScript
+    .mockResolvedValueOnce([{ result: ['<article>Autumn Fair</article>'] }])
+    .mockReturnValueOnce(oldProbe.promise)
+    .mockResolvedValueOnce([{ result: ['<article>Winter Fair</article>'] }]);
+  vi.stubGlobal('chrome', { scripting: { executeScript: mocks.executeScript } });
+  const hook = renderHook(usePatternFromData);
+  await act(async () => {
+    await hook.result.current.convert(input);
+  });
+  const runA = (
+    mocks.send.mock.calls.find(([channel]) => channel === 'stream:start')?.[1] as {
+      runId: string;
+    }
+  ).runId;
+  act(() => {
+    mocks.listener?.({ runId: runA, type: 'text', payload: { content: pattern } });
+    mocks.listener?.({ runId: runA, type: 'done', payload: {} });
+    mocks.tab.documentId = 'document-b';
+    mocks.tab.pageKey = 'page-b';
+    hook.rerender();
+  });
+  await act(async () => {
+    await hook.result.current.convert(input);
+  });
+  const starts = mocks.send.mock.calls.filter(([channel]) => channel === 'stream:start');
+  const runB = (starts.at(-1)?.[1] as { runId: string }).runId;
+  act(() => {
+    mocks.listener?.({ runId: runB, type: 'error', payload: { message: 'B request refused' } });
+  });
+  expect(hook.result.current.error).toBe('B request refused');
+  await act(async () => {
+    oldProbe.reject(new Error('Old document is gone'));
+    try {
+      await oldProbe.promise;
+    } catch {}
+  });
+  expect(hook.result.current.error).toBe('B request refused');
+  expect(hook.result.current.running).toBe(false);
+});
+
+it.each(['resolve', 'reject'] as const)(
+  'a late document A sample capture %s cannot start a stale conversion on B',
+  async (settlement) => {
+    const oldCapture = deferred<{ result: string[] }[]>();
+    mocks.executeScript
+      .mockReturnValueOnce(oldCapture.promise)
+      .mockResolvedValueOnce([{ result: ['<article>Winter Fair</article>'] }]);
+    vi.stubGlobal('chrome', { scripting: { executeScript: mocks.executeScript } });
+    const hook = renderHook(usePatternFromData);
+    let oldCompletion!: Promise<void>;
+    act(() => {
+      oldCompletion = hook.result.current.convert(input);
+    });
+    act(() => {
+      mocks.tab.documentId = 'document-b';
+      mocks.tab.pageKey = 'page-b';
+      hook.rerender();
+    });
+    await act(async () => {
+      await hook.result.current.convert(input);
+    });
+    expect(hook.result.current.running).toBe(true);
+    expect(mocks.send.mock.calls.filter(([channel]) => channel === 'stream:start')).toHaveLength(1);
+    await act(async () => {
+      if (settlement === 'resolve')
+        oldCapture.resolve([{ result: ['<article>Autumn Fair</article>'] }]);
+      else oldCapture.reject(new Error('Old document is gone'));
+      await oldCompletion;
+    });
+    expect(mocks.send.mock.calls.filter(([channel]) => channel === 'stream:start')).toHaveLength(1);
+    expect(hook.result.current.running).toBe(true);
+    expect(hook.result.current.error).toBeNull();
+  },
+);

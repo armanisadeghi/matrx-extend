@@ -1,0 +1,24 @@
+Captured stdout from the admitted guarded run d59-pattern-probe-red2-20261002,
+before the production hook was changed. The resource journal records the same
+run's admission and child exit 1; the guard does not retain child stdout.
+
+tests/unit/pattern-from-data-document-race.test.tsx (2 tests | 2 failed)
+  a late document A probe resolve cannot change document B pattern generation
+  a late document A probe reject cannot change document B pattern generation
+
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+  101|     expect(hook.result.current.running).toBe(true);
+
+Test Files  1 failed (1)
+Tests       2 failed (2)
+
+This is the actual focused runner output from the original invocation, copied
+from the command transcript. It proves the red was a B-running assertion, not
+an import or fixture error. It is not a second independently run reproduction.

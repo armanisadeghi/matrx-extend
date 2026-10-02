@@ -2,7 +2,7 @@
   "id": "EXT-D-0059",
   "feature_id": "EXT-F-1012",
   "scope": "Showcase AI Extract to reusable pattern conversion on same-URL document replacement",
-  "status": "source-fixed; independent review and native acceptance pending",
+  "status": "source-fixed; independent source peer partial; follow-up tests and native acceptance pending",
   "root_cause": "usePatternFromData checked page identity before awaiting the live selector probe, but its catch and finally wrote error and running state after the wait without checking that the conversion still owned those writes. Its sample-capture wait also read a mutable shared page key, so a new conversion could make an old capture look current.",
   "census": {
     "fixed_in_hook": [
@@ -19,15 +19,20 @@
   },
   "engineering_evidence": {
     "red": "docs/stabilization/resource-journals/d59-pattern-probe-red2-20261002.jsonl: admitted, both real-hook late-probe cases failed on B running state",
+    "red_assertion_stdout": "docs/stabilization/reports/d59-pattern-probe-red-assertions-20261002.txt: verbatim command transcript excerpt; not an independent rerun",
     "green": "docs/stabilization/resource-journals/d59-pattern-probe-positive-20261002.jsonl: admitted, two cases passed including a positive B probe/result",
+    "peer": "docs/stabilization/reports/d59-pattern-probe-peer-20261002.json: production source PASS; A verdict PARTIAL pending native and stronger test cases",
+    "followup_tests": "tests/unit/pattern-from-data-document-race.test.tsx now adds B-error preservation and pending A sample-capture resolve/reject cases; these three added cases are UNRUN because the shared guarded permit moved to the member browser job",
     "format": "Biome check on the two changed source/test files passed with no fixes remaining",
     "typecheck": "docs/stabilization/resource-journals/d59-pattern-probe-compile-20261002.jsonl: admitted child failure in unrelated @ai-matrx/agents/matrx imports from stream.ts, rejoin.ts and useCartesiaSpeaker.ts; no changed-file error",
-    "typecheck_root_cause": "The manifest declares @ai-matrx/agents latest and pnpm-lock resolves 0.32.0 (also npm latest on 2026-10-02), but this checkout's node_modules holds 0.21.36. The canonical aidream 0.32.0 ./matrx source exports the missing names. Reconcile the installed dependencies with the frozen lockfile, then rerun typecheck; no host shim or version pin is warranted.",
+    "typecheck_root_cause": "The manifest declares @ai-matrx/agents latest and pnpm-lock resolves 0.32.0 (also npm latest on 2026-10-02), but this checkout's node_modules held 0.21.36. The canonical aidream 0.32.0 ./matrx source exports the missing names. No host shim or version pin was added.",
+    "frozen_install": "docs/stabilization/resource-journals/agents-frozen-install-20261002.jsonl: admitted/pass; installed @ai-matrx/agents 0.32.0 and other lockfile-resolved packages with --ignore-scripts",
+    "typecheck_after_install": "docs/stabilization/resource-journals/agents-compile-after-install2-20261002.jsonl: admitted/pass; initial retry was refused before admission because the prior runner PID was still visible, recorded separately in agents-compile-after-install-20261002.jsonl",
     "commit": "c28cf7c6"
   },
   "remaining": [
-    "Independent source review of the conversion ownership and test quality",
-    "Guarded frozen install and integrated typecheck after the member browser job releases the shared heavy permit",
+    "Guarded run of all five focused tests after the member browser job releases the shared heavy permit; new B-error and sample-capture cases are currently unrun",
+    "Independent review of the three added cases after their guarded run",
     "Installed extension retest on a real repeated-card page for A/B same-URL reload and old success/failure",
     "Other D59 consumers and modes in the campaign inventory"
   ]
