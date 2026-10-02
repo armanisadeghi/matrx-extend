@@ -161,5 +161,45 @@ jobs:
           RECORDS_GUIDE_SOURCE: ${{ github.workspace }}/.canonical/aidream
         run: pnpm test
 
-      - name: Production build
+      - name: Build on pull requests and release tags
+        if: github.event_name != 'push' || github.ref != 'refs/heads/main'
         run: pnpm wxt build
+
+      # Only a successful main-push CI run can furnish a native development
+      # artifact. These are public client configuration values already approved
+      # for the extension bundle; release authority is never available here.
+      - name: Require approved public runtime configuration
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          WXT_SUPABASE_URL: ${{ secrets.WXT_SUPABASE_URL }}
+          WXT_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.WXT_SUPABASE_PUBLISHABLE_KEY }}
+          WXT_EXTENSION_OAUTH_CLIENT_ID: ${{ secrets.WXT_EXTENSION_OAUTH_CLIENT_ID }}
+        run: node scripts/current-test-artifact.mjs validate-config
+
+      - name: Build keyed development test extension
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          WXT_SUPABASE_URL: ${{ secrets.WXT_SUPABASE_URL }}
+          WXT_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.WXT_SUPABASE_PUBLISHABLE_KEY }}
+          WXT_EXTENSION_OAUTH_CLIENT_ID: ${{ secrets.WXT_EXTENSION_OAUTH_CLIENT_ID }}
+        run: pnpm wxt build
+
+      - name: Record development test provenance
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          WXT_SUPABASE_URL: ${{ secrets.WXT_SUPABASE_URL }}
+          WXT_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.WXT_SUPABASE_PUBLISHABLE_KEY }}
+          WXT_EXTENSION_OAUTH_CLIENT_ID: ${{ secrets.WXT_EXTENSION_OAUTH_CLIENT_ID }}
+        run: node scripts/current-test-artifact.mjs produce
+
+      - name: Upload current-source development test artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: matrx-extend-development-test-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
+          include-hidden-files: true
+          path: |
+            .output/chrome-mv3/
+            test-results/ci-build-receipt.json
+            test-results/ci-build-provenance.json
