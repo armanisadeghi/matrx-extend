@@ -46,6 +46,21 @@
     }
   ],
   "recommended_repair_shape": "Use a shared browser-injection access lifecycle primitive for Prepare and sibling callers. When Chrome is withholding site access, show a short visible site-access request with the actual user-invoked extension toolbar action and keep the action available for a fresh attempt after grant. Preserve already running work and temporary activeTab access; never treat permissions.contains(false) as proof that executeScript cannot run. Identify a Chrome signal that distinguishes waiting-for-grant from ordinary in-page work before building the guard. Test restricted, temporary-granted, and persistently-granted cases through the actual injection boundary, including a pending old-document completion.",
+  "design_contract_for_review": {
+    "scope": "One shared, compact site-access recovery control in the sidepanel shell, reusable beside a pending page action such as Showcase Prepare. It is discoverable across page-action surfaces and offers only explicit user actions.",
+    "behavior": "While Prepare is pending, present a conditional instruction to click Matrx in Chrome's toolbar if Chrome is waiting for access, then retry. Do not claim that an origin permission query proves denial. A separate, plainly labeled persistent-site choice may call Chrome permissions.request for the current HTTP(S) origin only from its own user click, subject to native proof. Chrome refusal remains visible with the temporary toolbar remedy.",
+    "invariants": "No new manifest privileges, automatic permission request, timeout-based diagnosis, disabled or hidden page action, cancelled valid injection, or persistent-host check that rejects activeTab success. Navigation invalidates old feedback and old Prepare results.",
+    "acceptance": "Native restricted run exposes recovery, user-invoked temporary activeTab Prepare succeeds while permissions.contains(origin) is false, and ordinary Always-on success stays direct. If adopted, persistent request must be native-proven for withheld required host access and show its actual grant scope. Connected tests fail before the repair and pass afterward for restricted, temporary-granted, persistent-granted, and stale-document cases.",
+    "proposed_paths": [
+      "src/lib/permissions/site-access.ts",
+      "src/components/SiteAccessRecovery.tsx",
+      "src/entrypoints/sidepanel/App.tsx",
+      "src/features/showcase/tabs/PrepareTab.tsx",
+      "tests/unit/site-access-recovery.test.tsx",
+      "docs/feature-tests.md",
+      "docs/stabilization/reports/site-access-recovery-20261002.json"
+    ]
+  },
   "class_census": "Direct chrome.scripting.executeScript calls appear across page extraction, Showcase, scrape, screenshots, credentials, tools, and page context. A confirmed permission lifecycle repair belongs at a shared injection boundary or equivalent common handling, preserving activeTab grants; a Prepare-only persistent-host gate would miss siblings and can block legitimate access.",
   "repair_decision": "No product code or regression guard added. The Chrome permission wait is confirmed, but the class repair must distinguish an ungranted on-click site from a working temporary activeTab grant. A contains(false) preflight is disproven by the native positive control. A timeout or synthetic denied-permission unit test would conceal that distinction. This exceeds the focused Prepare hook repair: owner should choose a shared injection/access interaction that announces the pending grant and resumes after real user invocation, then prove it red-to-green across Prepare and a sibling caller.",
   "resource_provenance": "The sole guarded browser permit was admitted and closed valid for the isolated profile under prepare-denial-probe-20261002-01; terminal journal at docs/stabilization/resource-journals/prepare-denial-probe-20261002-01.jsonl. The isolated browser process was closed and the site's original Always on setting restored. No personal Chrome profile or private credential was used."
