@@ -42,10 +42,21 @@
     "EXT-F-2015-T01": {
       "feature_id": "EXT-F-2015",
       "title": "Set and run summary and classification scenarios",
-      "control_ids": ["EXT-F-2015-C01", "EXT-F-2015-C02", "EXT-F-2015-C03", "EXT-F-2015-C04", "EXT-F-2015-C05", "EXT-F-2015-C06", "EXT-F-2015-C07", "EXT-F-2015-C08"],
+      "control_ids": [
+        "EXT-F-2015-C01",
+        "EXT-F-2015-C02",
+        "EXT-F-2015-C03",
+        "EXT-F-2015-C04",
+        "EXT-F-2015-C05",
+        "EXT-F-2015-C06",
+        "EXT-F-2015-C07",
+        "EXT-F-2015-C08"
+      ],
       "modes": ["member", "admin"],
       "design_status": "procedure-ready-unverified",
-      "preconditions": ["Complete shared profile/build/reload and fixture setup; keep the long synthetic fixture active."],
+      "preconditions": [
+        "Complete shared profile/build/reload and fixture setup; keep the long synthetic fixture active."
+      ],
       "steps": [
         "In Tools → Smart tests, expand Summarize active page; set cap to 1k, type to key-points, and length to medium. Run once.",
         "Inspect timing, result or visible refusal, and expand input the model saw. Verify the request event includes the selected type/length and page content is capped at 1,000 characters; use only fixture text.",
@@ -58,16 +69,31 @@
       ],
       "dimensions": ["valid-input", "invalid-input", "runtime-availability", "reload"],
       "auth_notes": "Member and admin are both feature-applicable; these direct wrapper runs do not cover dispatcher approval, Ask/Act gates, or a server-side agent run. Guest belongs to EXT-F-2015-T05.",
-      "source_evidence": ["src/features/tools/SmartTestsView.tsx:530", "src/features/tools/SmartTestsView.tsx:624", "src/features/tools/SmartTestsView.tsx:120"],
-      "limits": ["The browser AI runtime can refuse based on current device capability; a refusal is an observed outcome but does not verify the positive API result path."]
+      "source_evidence": [
+        "src/features/tools/SmartTestsView.tsx:530",
+        "src/features/tools/SmartTestsView.tsx:624",
+        "src/features/tools/SmartTestsView.tsx:120"
+      ],
+      "limits": [
+        "The browser AI runtime can refuse based on current device capability; a refusal is an observed outcome but does not verify the positive API result path."
+      ]
     },
     "EXT-F-2015-T02": {
       "feature_id": "EXT-F-2015",
       "title": "Extract JSON and translate a synthetic paragraph",
-      "control_ids": ["EXT-F-2015-C09", "EXT-F-2015-C10", "EXT-F-2015-C11", "EXT-F-2015-C12", "EXT-F-2015-C13", "EXT-F-2015-C14"],
+      "control_ids": [
+        "EXT-F-2015-C09",
+        "EXT-F-2015-C10",
+        "EXT-F-2015-C11",
+        "EXT-F-2015-C12",
+        "EXT-F-2015-C13",
+        "EXT-F-2015-C14"
+      ],
       "modes": ["member", "admin"],
       "design_status": "procedure-ready-unverified",
-      "preconditions": ["Complete shared setup; fixture includes ordinary synthetic article prose."],
+      "preconditions": [
+        "Complete shared setup; fixture includes ordinary synthetic article prose."
+      ],
       "steps": [
         "Expand Extract JSON from active page. Set its schema to {\"type\":\"object\",\"properties\":{\"marker\":{\"type\":\"string\"}},\"required\":[\"marker\"]}; Run and inspect the structured result and model input.",
         "Replace the schema with the malformed text '{' and Run once; then restore the valid schema so the visible control remains usable.",
@@ -80,16 +106,34 @@
       ],
       "dimensions": ["valid-input", "invalid-input", "runtime-availability", "reload"],
       "auth_notes": "Member/admin are feature-applicable. The view passes its local TEST_CTX in Act mode to direct handlers/wrappers; this is not dispatcher Ask/Act coverage. Guest belongs to EXT-F-2015-T05.",
-      "source_evidence": ["src/features/tools/SmartTestsView.tsx:729", "src/features/tools/SmartTestsView.tsx:807", "src/features/tools/SmartTestsView.tsx:120"],
-      "limits": ["Generated extraction/translation text varies; validate visible shape, selected target, captured input, and success/refusal state rather than exact prose."]
+      "source_evidence": [
+        "src/features/tools/SmartTestsView.tsx:729",
+        "src/features/tools/SmartTestsView.tsx:807",
+        "src/features/tools/SmartTestsView.tsx:120"
+      ],
+      "limits": [
+        "Generated extraction/translation text varies; validate visible shape, selected target, captured input, and success/refusal state rather than exact prose."
+      ]
     },
     "EXT-F-2015-T03": {
       "feature_id": "EXT-F-2015",
       "title": "Detect language, proofread selection, scan injection and describe image",
-      "control_ids": ["EXT-F-2015-C15", "EXT-F-2015-C16", "EXT-F-2015-C17", "EXT-F-2015-C18", "EXT-F-2015-C19", "EXT-F-2015-C20", "EXT-F-2015-C21", "EXT-F-2015-C22", "EXT-F-2015-C23"],
+      "control_ids": [
+        "EXT-F-2015-C15",
+        "EXT-F-2015-C16",
+        "EXT-F-2015-C17",
+        "EXT-F-2015-C18",
+        "EXT-F-2015-C19",
+        "EXT-F-2015-C20",
+        "EXT-F-2015-C21",
+        "EXT-F-2015-C22",
+        "EXT-F-2015-C23"
+      ],
       "modes": ["member", "admin"],
       "design_status": "procedure-ready-unverified",
-      "preconditions": ["Complete shared setup. Select the exact synthetic typo sentence for proofread; the normal fixture has the harmless PAPERCLIP injection sample and one local PNG."],
+      "preconditions": [
+        "Complete shared setup. Select the exact synthetic typo sentence for proofread; the normal fixture has the harmless PAPERCLIP injection sample and one local PNG."
+      ],
       "steps": [
         "Expand Detect page language and Run on the active fixture.",
         "Expand Proofread selection; return to the fixture, select only 'Thiss sentense has a speling mistake.', reopen Tools → Smart tests, and Run.",
@@ -102,10 +146,23 @@
         "Injection scan shows a visible response with suspicious boolean, severity, and reason (plus excerpts when returned); it does not claim a fixed model wording. The captured request contains only the harmless synthetic sample.",
         "Image scenario shows the question, fetched local image preview, and description or visible refusal; the input panel identifies a non-empty PNG Blob. On the no-image page, Run reports 'No images found on the active page.' and no description success."
       ],
-      "dimensions": ["valid-input", "missing-selection", "missing-image", "runtime-availability", "reload"],
+      "dimensions": [
+        "valid-input",
+        "missing-selection",
+        "missing-image",
+        "runtime-availability",
+        "reload"
+      ],
       "auth_notes": "Member/admin are feature-applicable. Proofreading reads selection with the local get_page_selection handler and calls the wrapper directly; no dispatcher permission gate is exercised. Guest belongs to EXT-F-2015-T05.",
-      "source_evidence": ["src/features/tools/SmartTestsView.tsx:894", "src/features/tools/SmartTestsView.tsx:932", "src/features/tools/SmartTestsView.tsx:989", "src/features/tools/SmartTestsView.tsx:1060"],
-      "limits": ["The source establishes response shape and explicit empty-selection/image errors, not a deterministic accuracy score for AI outputs."]
+      "source_evidence": [
+        "src/features/tools/SmartTestsView.tsx:894",
+        "src/features/tools/SmartTestsView.tsx:932",
+        "src/features/tools/SmartTestsView.tsx:989",
+        "src/features/tools/SmartTestsView.tsx:1060"
+      ],
+      "limits": [
+        "The source establishes response shape and explicit empty-selection/image errors, not a deterministic accuracy score for AI outputs."
+      ]
     },
     "EXT-F-2015-T04": {
       "feature_id": "EXT-F-2015",
@@ -113,7 +170,9 @@
       "control_ids": ["EXT-F-2015-C24", "EXT-F-2015-C25", "EXT-F-2015-C26"],
       "modes": ["member", "admin"],
       "design_status": "procedure-ready-unverified",
-      "preconditions": ["Complete shared setup and first obtain a successful scenario result using only the synthetic fixture; if the API refuses, keep result-copy positive coverage explicitly pending."],
+      "preconditions": [
+        "Complete shared setup and first obtain a successful scenario result using only the synthetic fixture; if the API refuses, keep result-copy positive coverage explicitly pending."
+      ],
       "steps": [
         "After the successful scenario, expand input the model saw and confirm the event count and literal request data are visible.",
         "Click Copy full payload; paste into a local scratch buffer and compare byte-for-byte with the displayed event serialization. Do not attach copied payload to logs if it exceeds synthetic fixture data.",
@@ -126,8 +185,14 @@
       ],
       "dimensions": ["clipboard", "runtime-availability", "reload"],
       "auth_notes": "Member/admin are feature-applicable. Guest belongs to EXT-F-2015-T05. Clipboard is an explicit user action; copied text is synthetic fixture data only.",
-      "source_evidence": ["src/features/tools/SmartTestsView.tsx:243", "src/features/tools/SmartTestsView.tsx:269", "src/features/tools/SmartTestsView.tsx:408"],
-      "limits": ["The native AI runtime must produce a result to exercise Copy scenario result; copy-payload remains independently testable when an error event was emitted."]
+      "source_evidence": [
+        "src/features/tools/SmartTestsView.tsx:243",
+        "src/features/tools/SmartTestsView.tsx:269",
+        "src/features/tools/SmartTestsView.tsx:408"
+      ],
+      "limits": [
+        "The native AI runtime must produce a result to exercise Copy scenario result; copy-payload remains independently testable when an error event was emitted."
+      ]
     },
     "EXT-F-2015-T05": {
       "feature_id": "EXT-F-2015",
@@ -135,12 +200,21 @@
       "control_ids": [],
       "modes": ["guest"],
       "design_status": "procedure-ready-unverified",
-      "preconditions": ["Use a separate profile already signed out; complete artifact identity and reload setup."],
-      "steps": ["Open the side panel, inspect main navigation, and attempt the Tools tab and Smart tests subtab only through visible navigation."],
-      "expected": ["Signed-in Tools and nested Smart tests content are unavailable to guest; the panel shows its honest sign-in path. No Smart Tests Run control is reachable."],
+      "preconditions": [
+        "Use a separate profile already signed out; complete artifact identity and reload setup."
+      ],
+      "steps": [
+        "Open the side panel, inspect main navigation, and attempt the Tools tab and Smart tests subtab only through visible navigation."
+      ],
+      "expected": [
+        "Signed-in Tools and nested Smart tests content are unavailable to guest; the panel shows its honest sign-in path. No Smart Tests Run control is reachable."
+      ],
       "dimensions": ["access-denial", "reload"],
       "auth_notes": "This is the only guest-applicable case. It does not invoke any child control.",
-      "source_evidence": ["src/config/sidepanel-visibility.ts", "src/features/tools/ToolsView.tsx:90"],
+      "source_evidence": [
+        "src/config/sidepanel-visibility.ts",
+        "src/features/tools/ToolsView.tsx:90"
+      ],
       "limits": []
     },
     "EXT-F-2016-T01": {
@@ -149,7 +223,9 @@
       "control_ids": ["EXT-F-2016-C01", "EXT-F-2016-C02", "EXT-F-2016-C03", "EXT-F-2016-C04"],
       "modes": ["member", "admin"],
       "design_status": "procedure-ready-unverified",
-      "preconditions": ["Complete shared artifact/profile setup; sign in as a member or admin with an explicitly selected open organization on this device. Use the owned fixture tab; for the audio-on run, have that tab play only a locally generated test tone after a user gesture."],
+      "preconditions": [
+        "Complete shared artifact/profile setup; sign in as a member or admin with an explicitly selected open organization on this device. Use the owned fixture tab; for the audio-on run, have that tab play only a locally generated test tone after a user gesture."
+      ],
       "steps": [
         "Open Tools → Recorder. Set Duration (sec) to 1, then 60, and confirm the field accepts both displayed bounds. Set it to 2 for each short capture; toggle Capture audio off for the first and on for the second.",
         "With the fixture active, click Record. If Chrome asks for optional tabCapture permission, grant it for this positive path. Observe Checking permission/Starting/Recording and elapsed time, then click Stop before the duration expires.",
@@ -162,16 +238,34 @@
       ],
       "dimensions": ["bounds", "permission-grant", "audio-off", "audio-on", "upload", "reload"],
       "auth_notes": "Member/admin both apply; an explicit active organization is required for the upload path. Guest belongs to EXT-F-2016-T04. Recorder tab capture/upload are platform and file-service paths, not dispatcher Ask/Act tool invocation.",
-      "source_evidence": ["src/features/tools/RecorderPane.tsx:31", "src/features/tools/RecorderPane.tsx:137", "src/lib/video/useTabVideoRecorder.ts:315", "src/lib/video/useTabVideoRecorder.ts:138", "src/lib/video/recordings-store.ts:1"],
-      "limits": ["Source defines duration clamping, permission flow, upload, and metadata persistence; it does not guarantee audio hardware/runtime availability or a live upload result."]
+      "source_evidence": [
+        "src/features/tools/RecorderPane.tsx:31",
+        "src/features/tools/RecorderPane.tsx:137",
+        "src/lib/video/useTabVideoRecorder.ts:315",
+        "src/lib/video/useTabVideoRecorder.ts:138",
+        "src/lib/video/recordings-store.ts:1"
+      ],
+      "limits": [
+        "Source defines duration clamping, permission flow, upload, and metadata persistence; it does not guarantee audio hardware/runtime availability or a live upload result."
+      ]
     },
     "EXT-F-2016-T02": {
       "feature_id": "EXT-F-2016",
       "title": "Recover from denied capture permission and visible recorder errors",
-      "control_ids": ["EXT-F-2016-C03", "EXT-F-2016-C05", "EXT-F-2016-C06", "EXT-F-2016-C07", "EXT-F-2016-C08", "EXT-F-2016-C09", "EXT-F-2016-C10"],
+      "control_ids": [
+        "EXT-F-2016-C03",
+        "EXT-F-2016-C05",
+        "EXT-F-2016-C06",
+        "EXT-F-2016-C07",
+        "EXT-F-2016-C08",
+        "EXT-F-2016-C09",
+        "EXT-F-2016-C10"
+      ],
       "modes": ["member", "admin"],
       "design_status": "procedure-ready-unverified",
-      "preconditions": ["Use a disposable signed-in profile with active organization but tabCapture not granted. Permission state must be reset between denial variants by removing/readding this exact unpacked artifact and rechecking its Loaded from path and tree hash."],
+      "preconditions": [
+        "Use a disposable signed-in profile with active organization but tabCapture not granted. Permission state must be reset between denial variants by removing/readding this exact unpacked artifact and rechecking its Loaded from path and tree hash."
+      ],
       "steps": [
         "Click Record and decline Chrome's tabCapture request. Confirm the recovery dialog appears only after denial; test X, Close, and backdrop dismissal in separate reset runs. Each dismissal should close the dialog without opening another tab.",
         "Repeat denial and click Open extension permissions. Inspect the newly opened chrome://extensions/?id=<this extension> page; return to the panel and, only for the recovery subcase, grant Tab capture through Chrome's extension UI and retry Record.",
@@ -184,16 +278,34 @@
       ],
       "dimensions": ["permission-denial", "recovery", "error", "network-refusal"],
       "auth_notes": "Member/admin both apply; guest cannot reach the Recorder child controls and is covered by EXT-F-2016-T04.",
-      "source_evidence": ["src/lib/video/useTabVideoRecorder.ts:315", "src/lib/video/useTabVideoRecorder.ts:323", "src/lib/video/useTabVideoRecorder.ts:138", "src/features/tools/TabCaptureDialog.tsx", "src/features/tools/RecorderPane.tsx:259"],
-      "limits": ["C05 depends on a genuine visible start/upload error; network-offline timing is a proposed controlled trigger, not evidence it was observed. If it fails to reach status=error, preserve that as unverified."]
+      "source_evidence": [
+        "src/lib/video/useTabVideoRecorder.ts:315",
+        "src/lib/video/useTabVideoRecorder.ts:323",
+        "src/lib/video/useTabVideoRecorder.ts:138",
+        "src/features/tools/TabCaptureDialog.tsx",
+        "src/features/tools/RecorderPane.tsx:259"
+      ],
+      "limits": [
+        "C05 depends on a genuine visible start/upload error; network-offline timing is a proposed controlled trigger, not evidence it was observed. If it fails to reach status=error, preserve that as unverified."
+      ]
     },
     "EXT-F-2016-T03": {
       "feature_id": "EXT-F-2016",
       "title": "Copy, cancel and confirm local recording-list changes",
-      "control_ids": ["EXT-F-2016-C11", "EXT-F-2016-C12", "EXT-F-2016-C13", "EXT-F-2016-C14", "EXT-F-2016-C15", "EXT-F-2016-C16", "EXT-F-2016-C17"],
+      "control_ids": [
+        "EXT-F-2016-C11",
+        "EXT-F-2016-C12",
+        "EXT-F-2016-C13",
+        "EXT-F-2016-C14",
+        "EXT-F-2016-C15",
+        "EXT-F-2016-C16",
+        "EXT-F-2016-C17"
+      ],
       "modes": ["member", "admin"],
       "design_status": "procedure-ready-unverified",
-      "preconditions": ["Create at least two disposable successful recording rows using the owned fixture. Record their file IDs and confirm corresponding files are visible in the account's Files view before list cleanup."],
+      "preconditions": [
+        "Create at least two disposable successful recording rows using the owned fixture. Record their file IDs and confirm corresponding files are visible in the account's Files view before list cleanup."
+      ],
       "steps": [
         "Click file_id on one row, paste into a local scratch buffer, and compare exactly with the visible row's file_id; clear the scratch buffer afterward.",
         "Click the row's trash control. Read the confirmation consequence; cancel and confirm the row remains. Repeat and confirm Remove for that row.",
@@ -207,8 +319,14 @@
       ],
       "dimensions": ["clipboard", "cancel", "confirm", "local-persistence", "reload"],
       "auth_notes": "Member/admin both apply and must use the same explicitly selected organization for creating the two test files. Guest belongs to EXT-F-2016-T04.",
-      "source_evidence": ["src/features/tools/RecorderPane.tsx:275", "src/features/tools/RecorderPane.tsx:305", "src/features/tools/RecorderPane.tsx:378", "src/lib/video/recordings-store.ts:48"],
-      "limits": ["Confirmations modify only the extension's local recording index; test data is disposable, while remote file assets intentionally remain."
+      "source_evidence": [
+        "src/features/tools/RecorderPane.tsx:275",
+        "src/features/tools/RecorderPane.tsx:305",
+        "src/features/tools/RecorderPane.tsx:378",
+        "src/lib/video/recordings-store.ts:48"
+      ],
+      "limits": [
+        "Confirmations modify only the extension's local recording index; test data is disposable, while remote file assets intentionally remain."
       ]
     },
     "EXT-F-2016-T04": {
@@ -217,12 +335,22 @@
       "control_ids": [],
       "modes": ["guest"],
       "design_status": "procedure-ready-unverified",
-      "preconditions": ["Use a separate profile already signed out; complete artifact identity and reload setup."],
-      "steps": ["Open the side panel, inspect main navigation, and attempt Tools → Recorder only through visible navigation."],
-      "expected": ["Signed-in Tools and nested Recorder content are unavailable to guest; a visible sign-in path remains. No Record or list-management control is reachable."],
+      "preconditions": [
+        "Use a separate profile already signed out; complete artifact identity and reload setup."
+      ],
+      "steps": [
+        "Open the side panel, inspect main navigation, and attempt Tools → Recorder only through visible navigation."
+      ],
+      "expected": [
+        "Signed-in Tools and nested Recorder content are unavailable to guest; a visible sign-in path remains. No Record or list-management control is reachable."
+      ],
       "dimensions": ["access-denial", "reload"],
       "auth_notes": "This is the only guest-applicable case; child controls are not invoked as guest.",
-      "source_evidence": ["src/config/sidepanel-visibility.ts", "src/features/tools/ToolsView.tsx:90", "src/features/tools/ToolsView.tsx:93"],
+      "source_evidence": [
+        "src/config/sidepanel-visibility.ts",
+        "src/features/tools/ToolsView.tsx:90",
+        "src/features/tools/ToolsView.tsx:93"
+      ],
       "limits": []
     },
     "EXT-F-2016-T05": {
@@ -231,18 +359,30 @@
       "control_ids": ["EXT-F-2016-C18"],
       "modes": ["member", "admin"],
       "design_status": "procedure-ready-unverified",
-      "preconditions": ["Have a saved recording row with a non-null fileUrl; complete shared profile setup and use its existing signed-in role."],
-      "steps": ["Click Open on the row and inspect the newly opened tab. If an available test row has null fileUrl, inspect that row separately without expecting an Open control."],
-      "expected": ["A row with fileUrl opens that URL in a new tab. A row without fileUrl renders no Open link. The source tab and local row remain unchanged."],
+      "preconditions": [
+        "Have a saved recording row with a non-null fileUrl; complete shared profile setup and use its existing signed-in role."
+      ],
+      "steps": [
+        "Click Open on the row and inspect the newly opened tab. If an available test row has null fileUrl, inspect that row separately without expecting an Open control."
+      ],
+      "expected": [
+        "A row with fileUrl opens that URL in a new tab. A row without fileUrl renders no Open link. The source tab and local row remain unchanged."
+      ],
       "dimensions": ["new-tab", "optional-link", "reload"],
       "auth_notes": "Member/admin both apply; guest belongs to EXT-F-2016-T04.",
       "source_evidence": ["src/features/tools/RecorderPane.tsx:366"],
-      "limits": ["The null-fileUrl branch is observable only if such a row is already present; do not edit storage to fabricate one for this live procedure."]
+      "limits": [
+        "The null-fileUrl branch is observable only if such a row is already present; do not edit storage to fabricate one for this live procedure."
+      ]
     }
   },
   "coverage_notes": {
     "auth_cells": "The existing feature inventory remains authoritative for role cells: member/admin child-action cases and one guest access-denial case per feature. This patch supplies concrete procedures only and leaves test_status, retest_status, run_ids, defect_ids, and feature/control identities unchanged.",
     "api_only_paths": "Smart Tests invoke read_active_page/get_page_selection handlers and onbox-ai browser wrappers directly with a local TEST_CTX; they do not traverse agent dispatch, organization headers, or Ask/Act permission gates. Recorder uses tabCapture and the app's file upload path. These distinctions limit what these manual surface cases can claim.",
-    "unverified_branches": ["Smart Tests positive model-result and copy-result branches require the browser AI runtime to return success.", "Recorder C05 requires a real status=error branch; the suggested offline upload failure trigger must be observed before the control can be claimed exercised.", "No case has been run. The imported CI artifact mechanism itself is currently described as unverified by current-test-artifact-20261002.json."]
+    "unverified_branches": [
+      "Smart Tests positive model-result and copy-result branches require the browser AI runtime to return success.",
+      "Recorder C05 requires a real status=error branch; the suggested offline upload failure trigger must be observed before the control can be claimed exercised.",
+      "No case has been run. The imported CI artifact mechanism itself is currently described as unverified by current-test-artifact-20261002.json."
+    ]
   }
 }
