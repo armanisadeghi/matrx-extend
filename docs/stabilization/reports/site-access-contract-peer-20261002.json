@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "report_id": "site-access-contract-peer-20261002",
+  "lane": "fresh scoped plan re-attack, standard, zero authorship",
+  "pinned_plan": "docs/stabilization/reports/site-access-recovery-20261002.json at 33782978",
+  "scope": "Rejudge B1/B2/B3 from site-access-plan-peer-20261002.json and material new breakage only; no product edits.",
+  "verdict": "COMMIT",
+  "live_contact": {
+    "run_id": "site-access-contract-peer-20261002-01",
+    "observed": "Isolated Chrome for Testing 149 opened the real Nuxt installation page in the named test-owned profile. chrome://extensions showed no installed extension card during this bounded contact, so this contact did not exercise the sidepanel or permission path. The prior native probes remain the evidence for restricted Prepare, temporary activeTab, and explicit persistent request behavior.",
+    "limit": "No claim of new sidepanel or API verification. The browser was closed within the two-minute live setup window; no permission state was changed.",
+    "cleanup": "The owned Chrome process exited; the resource guard reported RESOURCE_BROWSER_STOP_CONFIRMED and final decision valid. Personal Chrome was untouched.",
+    "journal": "docs/stabilization/resource-journals/site-access-contract-peer-20261002-01.jsonl"
+  },
+  "coverage": {
+    "mapped": 7,
+    "total": 7,
+    "requirements": [
+      "Restricted page: the always-discoverable shell control supplies temporary and persistent access routes even while a page action is pending.",
+      "Temporary activeTab: grant and acceptance explicitly preserve success when persistent permissions.contains is false.",
+      "Persistent current-site access: a direct user click requests only the captured HTTP(S) origin, with native Allow/Deny and invalid-page handling.",
+      "Ordinary granted action: no preflight gate, inferred denial, auto-request, or automatic reload changes its direct path.",
+      "Old document: active page identity plus sequence/run guards ignore late Prepare and SEO output.",
+      "Stuck action: a separate direct target-tab reload changes document identity, clears visible Prepare running state, and permits a person-invoked fresh attempt.",
+      "Sibling callers: the shell control is shared and available from Prepare, SEO, and every page-action surface without a caller-specific pending signal."
+    ],
+    "unmapped": []
+  },
+  "prior_blockers": {
+    "B1": "Resolved. The revised contract chooses explicit reload instead of same-document reset. This is implementable with usePagePrep's page-key/run-sequence invalidation and avoids a second action on a potentially still executing old document. Acceptance explicitly covers pending old Prepare, reload, fresh retry, and late completion.",
+    "B2": "Resolved for this scoped contract. The global shell control does not claim caller-specific blockage and needs no pending-call bus. It is reachable from both Prepare and SEO, with connected acceptance from both; remaining direct injection callers inherit the same visible route. Its accessibility and wording need native UI verification during implementation.",
+    "B3": "Resolved. The revised contract removes the nonexistent denial signal and relies on a neutral user-opened affordance. It forbids timeout and permissions.contains(false) diagnosis while preserving temporary activeTab success."
+  },
+  "new_blocking": [],
+  "advisory": [
+    "The implementation should validate captured tab, URL, and document identity immediately before both request and reload, then discard grant feedback if navigation occurs while Chrome's prompt is open. The revised acceptance already names navigation before granting/reloading; this is a test precision point.",
+    "Native UI verification remains essential because this contact could not inspect a loaded sidepanel; the plan already requires that proof."
+  ],
+  "owner_only": []
+}
