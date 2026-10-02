@@ -1,0 +1,84 @@
+{
+  "schema": 1,
+  "report_id": "site-access-plan-peer-20261002",
+  "lane": "independent plan attack, standard, zero authorship",
+  "pinned_plan": "docs/stabilization/reports/prepare-denial-diagnosis-20261002.json at 4608aa33",
+  "verdict": "FIX-FIRST",
+  "live_contact": {
+    "run_id": "site-access-peer-contact-20261002-01",
+    "browser": "isolated Chrome for Testing 149, existing admin profile, frozen keyed extension 0.2.173; no local build",
+    "observed": "On nuxt.com installation, Showcase > Prepare displayed one enabled Prepare page action and no site-access recovery control. Under restored Always on access it completed in 756ms with three scroll steps. I did not change the site's grant in this contact; the restricted and temporary-grant observations are the earlier native probe, not new observations here.",
+    "cleanup": "Closed the isolated browser and resource guard; guard terminal decision was valid. Personal Chrome was untouched.",
+    "journal": "docs/stabilization/resource-journals/site-access-peer-contact-20261002-01.jsonl"
+  },
+  "evidence_boundary": {
+    "pinned": "The pinned plan and source diagnosis support a Chrome-held executeScript promise, temporary activeTab success with permissions.contains(origin) false, and old-document null completion after grant/reload.",
+    "newer_native_proof": "docs/stabilization/reports/site-access-recovery-20261002.json at 0e3fd2c0 independently proves a user-clicked request({origins:['https://nuxt.com/*']}) displays Chrome's site prompt, resolves true after Allow, and makes contains(origin) true. This proves the optional persistent grant, not in-flight Prepare resumption or denial behavior."
+  },
+  "coverage": {
+    "mapped": 5,
+    "total": 7,
+    "requirements": [
+      {
+        "name": "restricted user sees a recovery route",
+        "plan": "design_contract_for_review.scope/behavior",
+        "existing": "absent in frozen Prepare"
+      },
+      {
+        "name": "temporary activeTab remains usable with contains false",
+        "plan": "invariants/acceptance",
+        "existing": "native positive control"
+      },
+      {
+        "name": "persistent current-site grant is explicit and narrow",
+        "plan": "behavior/acceptance",
+        "existing": "newer native API proof validates feasibility"
+      },
+      {
+        "name": "ordinary granted action remains direct",
+        "plan": "acceptance",
+        "existing": "live contact, 756ms success"
+      },
+      {
+        "name": "old document cannot surface stale output",
+        "plan": "invariants/acceptance",
+        "existing": "usePagePrep page-key and sequence guards"
+      },
+      {
+        "name": "stuck action can make a fresh attempt after grant without navigation",
+        "plan": null,
+        "existing": "Prepare remains disabled while the old promise is pending"
+      },
+      {
+        "name": "sibling page-action callers inherit recovery",
+        "plan": null,
+        "existing": "many direct executeScript callers have no shared pending/access status"
+      }
+    ]
+  },
+  "blocking": [
+    {
+      "id": "B1",
+      "finding": "The persistent-grant path does not specify how a currently stuck Prepare becomes retryable if Chrome grants without a page reload and the original executeScript promise remains pending. PrepareTab disables the button while running; the new native request probe explicitly did not test in-flight resumption.",
+      "impact": "A user can press Allow and still see Preparing forever, violating the requested recovery despite a valid site grant.",
+      "fix": "Specify and test an explicit fresh-attempt transition after grant and after denial, including a same-document pending old promise. Keep the old injection uncancelled; use run identity to ignore its late result and permit a user-initiated new attempt. If Chrome itself reloads, page identity handles that branch."
+    },
+    {
+      "id": "B2",
+      "finding": "The plan names a shared shell control but its proposed integration only lists App and PrepareTab; direct executeScript callers across Showcase, scrape, screenshots, notes, data, and tools do not publish a common pending/access lifecycle. A reusable component alone cannot know when a sibling action needs it.",
+      "impact": "The Prepare instance can be repaired while the same Chrome-held-promise class remains silent elsewhere.",
+      "fix": "Give one shared injection/access boundary or equivalent common status publisher an exact owner and caller contract, migrate a representative sibling in the first change, and make connected acceptance prove restricted and activeTab-granted behavior through both callers. Inventory remaining direct calls and track any staged migration explicitly."
+    },
+    {
+      "id": "B3",
+      "finding": "The plan requires a Chrome signal distinguishing withheld access from ordinary in-page work but names none. Its fallback wording is conditional while Prepare is pending, yet the condition has no implementable source. permissions.contains(false) is disproven as that signal by temporary activeTab success.",
+      "impact": "An implementer either stalls on an undefined signal or adds a false denial check/timeout that breaks valid work.",
+      "fix": "Choose an implementable non-diagnostic UI contract now: a small, optional access-help affordance during relevant pending injections, worded as a possibility, with explicit toolbar and persistent-grant choices. If a reliable Chrome signal is found later, narrow visibility then. Do not infer denial from elapsed time or contains(false)."
+    }
+  ],
+  "advisory": [
+    "Acceptance should include the persistent prompt's Deny outcome and ensure the temporary toolbar route stays visible; the newer probe only proves Allow.",
+    "Keep the grant target tied to the action's captured HTTP(S) page origin and page identity, rather than a later active tab, so navigation cannot grant the wrong site."
+  ],
+  "owner_only": []
+}
