@@ -1,0 +1,38 @@
+{
+  "id": "EXT-D-0059",
+  "lane": "independent source peer",
+  "reviewed_commit": "c28cf7c6be5c2f4011759a3854d2a13ed7c6841f",
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_a_actual_runtime_spec": {
+    "status": "PARTIAL",
+    "source_finding": "PASS: a late document A selector probe cannot replace document B's running state, error, live probe, or pattern result. The hook captures a conversion sequence and actual page key, checks both after the probe await on success and failure, and guards the finally update. Sample capture completion and failure and stream-start failure also check the captured owner. Page changes and reset invalidate the sequence.",
+    "test_evidence": "The real hook test drives A to a pending Chrome probe, replaces document A with B at the same URL, then settles A by both resolve and reject. It asserts B remains running with no error/result and then asserts B's own verified result. Resource journals record an admitted red run with exit 1 and admitted green/positive runs with exit 0.",
+    "cannot_verify": [
+      "No installed extension or real public-page run was performed in this source-only lane; the Showcase D59 native acceptance target remains open.",
+      "The committed red journal records the child exit code but not assertion output, so the journal alone does not establish that red failed on the intended B-running assertion.",
+      "The B-error preservation and late A sample-capture cases were inspected in source but are not exercised by the new focused test."
+    ],
+    "missing": [],
+    "extra": [],
+    "misunderstood": []
+  },
+  "verdict_b_code_quality": {
+    "status": "PASS_WITH_CONCERNS",
+    "findings": [
+      {
+        "severity": "minor",
+        "location": "tests/unit/pattern-from-data-document-race.test.tsx",
+        "finding": "The focused regression proves B running and B success but never establishes B's own error before A settles, and does not exercise A's pending sample-capture branch. The source guards those paths. Add these cases when completing the D59 test matrix so a future ownership regression in those branches fails visibly."
+      },
+      {
+        "severity": "evidence_limit",
+        "location": "docs/stabilization/resource-journals/d59-pattern-probe-red2-20261002.jsonl",
+        "finding": "The RED artifact preserves exit 1 but not the failed assertion. The author's report says both cases failed on B running, which this reviewer could not independently confirm from the committed artifact."
+      }
+    ],
+    "quality_evidence": "The hook keeps the actual probe and page-identity decision in production; tests replace Chrome execution and transport boundaries, not the ownership logic. The resolve/reject pair detects an unguarded late probe or finally update. The shared watchdog clears old timers on stop/start. No new fallback, parallel implementation, or changed tool handler was introduced.",
+    "typecheck": "The author's compile journal records exit 1 for 12 missing @ai-matrx/agents/matrx exports in other files. This lane did not rerun compile and does not certify changed-file types or an integrated build."
+  },
+  "scope_limit": "This review covers the pattern-from-data hook change in c28cf7c6, not the remaining D59 consumers or runtime acceptance.",
+  "authored_code_changes": false
+}
