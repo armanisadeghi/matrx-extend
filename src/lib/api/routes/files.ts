@@ -15,11 +15,7 @@ import { getBackendUrl } from '@/config/backend';
 import { getAccessToken, refreshAccessToken } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 import { requireActiveOrganizationId } from '@/lib/org/active-org';
-import {
-  bareStatusSentence,
-  readMatrxJsonResponse,
-  sendMatrxRequest,
-} from '@ai-matrx/agents/matrx';
+import { readMatrxJsonResponse, sendMatrxRequest } from '@ai-matrx/agents/matrx';
 
 export interface FileUploadResponse {
   file_id: string;
@@ -51,6 +47,24 @@ export interface UploadFileOptions {
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value);
+}
+
+function fileTransferError(operation: 'upload' | 'download', status: number): Error {
+  const remedy =
+    status === 401 || status === 403
+      ? 'Sign in again; if access is still denied, ask an administrator.'
+      : status === 429
+        ? 'Wait a moment and try again.'
+        : 'Try again; if it keeps failing, report this HTTP status to support.';
+  return new Error(`File ${operation} failed (${status}). ${remedy}`);
+}
+
+async function discardUnreadErrorBody(response: Response): Promise<void> {
+  try {
+    await response.body?.cancel();
+  } catch {
+    // A failed cleanup must not replace the HTTP status that explains the transfer failure.
+  }
 }
 
 export function parseFileUploadResponse(value: unknown): FileUploadResponse {
@@ -127,7 +141,10 @@ export async function uploadFile(
   const start = performance.now();
   log.info('api', '→ POST /files/upload (multipart)', { filename, size: blob.size });
   let res = await sendMatrxRequest(url, { method: 'POST', headers, body: fd });
+  let currentBodyDiscarded = false;
   if (res.status === 401) {
+    await discardUnreadErrorBody(res);
+    currentBodyDiscarded = true;
     const refreshed = await refreshAccessToken();
     if (refreshed) {
       const t2 = await getAccessToken();
@@ -136,12 +153,14 @@ export async function uploadFile(
         'X-Organization-Id': organizationId,
       };
       res = await sendMatrxRequest(url, { method: 'POST', headers: h2, body: fd });
+      currentBodyDiscarded = false;
     }
   }
   const ms = Math.round(performance.now() - start);
   if (!res.ok) {
+    if (!currentBodyDiscarded) await discardUnreadErrorBody(res);
     log.error('api', `✗ POST /files/upload ${res.status} (${ms}ms)`);
-    throw new Error(`File upload failed (${res.status}). ${bareStatusSentence(res.status)}`);
+    throw fileTransferError('upload', res.status);
   }
   const data = parseFileUploadResponse(await readMatrxJsonResponse<unknown>(res));
   log.success('api', `← /files/upload ${res.status} (${ms}ms)`, { file_id: data.file_id });
@@ -167,7 +186,10 @@ export async function downloadFileBytes(
   };
   const url = `${baseUrl}/files/${encodeURIComponent(fileId)}/download`;
   let res = await sendMatrxRequest(url, signal ? { headers, signal } : { headers });
+  let currentBodyDiscarded = false;
   if (res.status === 401) {
+    await discardUnreadErrorBody(res);
+    currentBodyDiscarded = true;
     const refreshed = await refreshAccessToken();
     if (refreshed) {
       const t2 = await getAccessToken();
@@ -179,10 +201,12 @@ export async function downloadFileBytes(
         url,
         signal ? { headers: refreshedHeaders, signal } : { headers: refreshedHeaders },
       );
+      currentBodyDiscarded = false;
     }
   }
   if (!res.ok) {
-    throw new Error(`File download failed (${res.status}). ${bareStatusSentence(res.status)}`);
+    if (!currentBodyDiscarded) await discardUnreadErrorBody(res);
+    throw fileTransferError('download', res.status);
   }
   const blob = await res.blob();
   const cd = res.headers.get('content-disposition') ?? '';
