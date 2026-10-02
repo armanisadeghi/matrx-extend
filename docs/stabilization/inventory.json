@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-02T16:42:23.272084+00:00",
+  "updated_at": "2026-10-02T17:34:08.674571+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -2281,8 +2281,12 @@
               "detail": "New shared recovery control under implementation; no UI acceptance claimed."
             },
             "admin": {
-              "status": "unverified",
-              "detail": "New shared recovery control under implementation; no UI acceptance claimed."
+              "status": "partial",
+              "run_id": "site-access-native-acceptance-20261002-01",
+              "detail": "Actual admin .175 shared control visible on Prepare and SEO; navigation/open control invalidation and panel reopen followed new IANA target. Keyboard dismissal, tab switching and guest/member unverified.",
+              "evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json",
+              "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
+              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233"
             }
           }
         },
@@ -2328,8 +2332,12 @@
               "detail": "New shared recovery control under implementation; no UI acceptance claimed."
             },
             "admin": {
-              "status": "unverified",
-              "detail": "New shared recovery control under implementation; no UI acceptance claimed."
+              "status": "partial",
+              "run_id": "site-access-native-acceptance-20261002-01",
+              "detail": "Actual product opened Chrome origin prompt; Deny and later Allow showed correct states. Temporary per-visit Prepare succeeded757ms/3scrollsteps. No in-product contains=false measurement; pending grant navigation and unsupported path unverified.",
+              "evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json",
+              "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
+              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233"
             }
           }
         },
@@ -2374,8 +2382,12 @@
               "detail": "New shared recovery control under implementation; no UI acceptance claimed."
             },
             "admin": {
-              "status": "unverified",
-              "detail": "New shared recovery control under implementation; no UI acceptance claimed."
+              "status": "partial",
+              "run_id": "site-access-native-acceptance-20261002-01",
+              "detail": "Explicit product Reload page reloaded target; populated IANA SEO remained after reload. Original withheld-action recovery not established in run01, second bounded native run pending.",
+              "evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json",
+              "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
+              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233"
             }
           }
         }
@@ -2384,7 +2396,8 @@
         "guest": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0001"
+            "EXT-D-0001",
+            "EXT-D-0078"
           ],
           "run_ids": [
             "guest-local-001",
@@ -2401,7 +2414,8 @@
         "member": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0001"
+            "EXT-D-0001",
+            "EXT-D-0078"
           ],
           "run_ids": [],
           "retest_status": "not-run"
@@ -2410,7 +2424,8 @@
           "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0001",
-            "EXT-D-0026"
+            "EXT-D-0026",
+            "EXT-D-0078"
           ],
           "run_ids": [
             "contained-navigation-001",

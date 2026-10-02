@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-02 17:26 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T16:42:23.272084+00:00. 205 features · 738 cases · 1322 controls · 78 linked defect records.
+Generated 2026-10-02 17:34 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-02T17:34:08.674571+00:00. 205 features · 738 cases · 1322 controls · 78 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1179** — Pass: 58 · Partial: 37 · Fail: 2 · Unverified: 1081 · N/A: 1.
-Unverified splits into **130 explicitly marked unverified** and **951 with no result record**.
+Applicable case-by-role slots: **1179** — Pass: 58 · Partial: 40 · Fail: 2 · Unverified: 1078 · N/A: 1.
+Unverified splits into **127 explicitly marked unverified** and **951 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -18,7 +18,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Development installation](#development-installation) | 1 | 1 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 1 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 2, partial 0, fail 0, unverified 16, n/a 0 | 1 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 7, partial 1, fail 0, unverified 14, n/a 0 | 1 |
 | [Release infrastructure](#release-infrastructure) | 1 | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 24, partial 0, fail 0, unverified 6, n/a 0 | 0 |
-| [Navigation / shell](#navigation--shell) | 1 | 1 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 1, partial 0, fail 0, unverified 23, n/a 0 | 1 |
+| [Navigation / shell](#navigation--shell) | 1 | 1 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 3, fail 0, unverified 20, n/a 0 | 1 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 11 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 7 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | pass 18, partial 0, fail 0, unverified 54, n/a 1 | 0 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 32, n/a 0 | 0 |
@@ -244,7 +244,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Navigate sidepanel tabs and recover inaccessible selection (EXT-F-1001)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 18. **Controls:** 8.
+**Role status:** guest: Unverified · member: Unverified · admin: Partial. **Cases:** 18. **Controls:** 8.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0078
 
@@ -267,9 +267,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1001-T13 guest: Lazy view load | Pass | N/A | N/A | EXT-F-1001-C05 |
 | EXT-F-1001-T14 member: Lazy view load | N/A | Unverified | N/A | EXT-F-1001-C05 |
 | EXT-F-1001-T15 admin: Lazy view load | N/A | N/A | Unverified | EXT-F-1001-C05 |
-| EXT-F-1001-T16 Shared site access discovery | Unverified | Unverified | Unverified | EXT-F-1001-C06 |
-| EXT-F-1001-T17 Explicit persistent grant and temporary-access preservation | Unverified | Unverified | Unverified | EXT-F-1001-C07 |
-| EXT-F-1001-T18 Explicit reload recovers withheld page action | Unverified | Unverified | Unverified | EXT-F-1001-C08 |
+| EXT-F-1001-T16 Shared site access discovery | Unverified | Unverified | Partial | EXT-F-1001-C06 |
+| EXT-F-1001-T17 Explicit persistent grant and temporary-access preservation | Unverified | Unverified | Partial | EXT-F-1001-C07 |
+| EXT-F-1001-T18 Explicit reload recovers withheld page action | Unverified | Unverified | Partial | EXT-F-1001-C08 |
 
 **Recorded case details and evidence:**
 
@@ -277,6 +277,12 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: d26-d29-native092, ['docs/stabilization/runs/contained-navigation-dev089-001.json', 'docs/stabilization/runs/contained-navigation-dev089-002.json', 'test-results/contained-navigation-dev089-002.evidence.json', 'docs/stabilization/reports/contained-navigation-dev089-002-peer.json', 'docs/stabilization/defects/EXT-D-0026.json', 'docs/stabilization/runs/d26-d29-native092.json', 'docs/stabilization/reports/auth-integration-peer.json']
 - EXT-F-1001-T13 · guest: Pass. pass_original_render_repro_twice
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
+- EXT-F-1001-T16 · admin: Partial. Actual admin .175 shared control visible on Prepare and SEO; navigation/open control invalidation and panel reopen followed new IANA target. Keyboard dismissal, tab switching and guest/member unverified.
+  Evidence / build / date recorded: site-access-native-acceptance-20261002-01, docs/stabilization/reports/site-access-native-acceptance-20261002.json
+- EXT-F-1001-T17 · admin: Partial. Actual product opened Chrome origin prompt; Deny and later Allow showed correct states. Temporary per-visit Prepare succeeded757ms/3scrollsteps. No in-product contains=false measurement; pending grant navigation and unsupported path unverified.
+  Evidence / build / date recorded: site-access-native-acceptance-20261002-01, docs/stabilization/reports/site-access-native-acceptance-20261002.json
+- EXT-F-1001-T18 · admin: Partial. Explicit product Reload page reloaded target; populated IANA SEO remained after reload. Original withheld-action recovery not established in run01, second bounded native run pending.
+  Evidence / build / date recorded: site-access-native-acceptance-20261002-01, docs/stabilization/reports/site-access-native-acceptance-20261002.json
 
 
 ## Popup / options / mic permission
