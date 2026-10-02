@@ -319,8 +319,8 @@ Every entry follows this shape:
 - **Covered by:** `tests/unit/api-stream.test.ts`.
 
 ### Context chip — what the next turn sends, and the person's rules
-- **What it does:** The composer's **Context** chip lists every value the next
-  turn carries (page content, page brief, highlights, you, extension…) with
+- **What it does:** The composer's values chip (icon and included count) lists
+  every value the next turn carries (page content, page brief, highlights, you, extension…) with
   its size, and lets the person turn a value off or set its inline limit. The
   rule is saved to the same per-person store the web app and the server use,
   so it holds on every device and every turn. After each turn the chip turns

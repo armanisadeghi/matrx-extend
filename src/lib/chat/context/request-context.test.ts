@@ -176,6 +176,29 @@ describe('context_receipt', () => {
     });
   });
 
+  it('keeps server text references and blocks for on-demand viewing', () => {
+    const delivered = { chars: 17, sha256: 'a'.repeat(64) };
+    const block = { id: 'organization_catalog', label: 'Organization catalog', delivered };
+    const data = {
+      type: 'context_receipt' as const,
+      cap: 50000,
+      rows: [
+        {
+          key: 'organization', label: 'Organization', surface_key: '_default',
+          origin: 'server' as const, include: true, max_inline_chars: 200,
+          delivery: 'inline' as const,
+          decided_by: { include: 'default' as const, max_inline_chars: 'default' as const },
+          delivered,
+        },
+      ],
+      blocks: [block],
+    };
+    expect(toContextReceipt(data)).toMatchObject({
+      rows: [{ delivered }],
+      blocks: [block],
+    });
+  });
+
   it('is quiet when the server did what the rows said', () => {
     const saved = { _default: { page_full_content: { include: false } } };
     const { rows } = buildRequestContext(VALUES, saved);

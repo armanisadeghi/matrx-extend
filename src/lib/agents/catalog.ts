@@ -74,7 +74,7 @@ export function reportCatalogError(event: CatalogErrorEvent): void {
       return;
     }
     if (status === 'signed-out') {
-      log.info('sys', '[agent-catalog] guest session using the public catalogue');
+      log.info('sys', '[agent-catalog] guest session has no catalogue');
       return;
     }
   }
@@ -91,14 +91,12 @@ export function getAgentCatalog(): AgentCatalog {
   catalog = createAgentCatalog({
     client: getSupabase() as unknown as AgentCatalogClient,
     identity: {
+      // The package checks this before any catalogue RPC. Guests get an empty
+      // catalogue; a later sign-in can load it without a stale freshness stamp.
+      getUserId: () => useAuthStore.getState().user?.id ?? null,
       /**
-       * Throws when signed out — and that is correct. The package catches this
-       * in exactly one place (the "which tab do we open on" heuristic, where a
-       * guest legitimately lands on the public catalogue) and reports it once.
-       * The catalog door is deliberately signed-in only. Guest surfaces do not
-       * mount a picker or call `ensureLoaded`; if this method is reached during
-       * auth hydration, the package catches it for its tab heuristic and the
-       * error sink below records an informational state instead of a failure.
+       * Authenticated catalogue operations require a user. The package uses
+       * getUserId above to avoid this door for a signed-out visitor.
        */
       requireUserId: () => {
         const id = useAuthStore.getState().user?.id;

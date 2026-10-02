@@ -115,9 +115,9 @@ describe('ContextRulesComposerChip', () => {
 
   it('shows the values the last send carried', () => {
     render(<ContextRulesComposerChip composer="chat" />);
-    const face = screen.getByRole('button', { name: 'Context: Context' });
-    // The face: label + how many values ride (sizes are in the popover table).
-    expect(face.textContent).toBe('Context1');
+    const face = screen.getByRole('button', { name: '1 included' });
+    // The compact face counts included values; sizes are in the popover table.
+    expect(face.textContent).toBe('1');
     expect(face.getAttribute('data-mismatch')).toBeNull();
   });
 
@@ -142,7 +142,7 @@ describe('ContextRulesComposerChip', () => {
     });
     render(<ContextRulesComposerChip composer="chat" />);
     expect(
-      screen.getByRole('button', { name: 'Context: Context' }).getAttribute('data-mismatch'),
+      screen.getByRole('button', { name: '1 included' }).getAttribute('data-mismatch'),
     ).toBe('true');
   });
 
@@ -170,8 +170,8 @@ describe('ContextRulesComposerChip', () => {
       },
     });
     render(<ContextRulesComposerChip composer="pilot" />);
-    const face = screen.getByRole('button', { name: 'Context: Context' });
-    expect(face.textContent).toBe('Context2');
+    const face = screen.getByRole('button', { name: '2 included' });
+    expect(face.textContent).toBe('2');
     expect(face.getAttribute('data-mismatch')).toBeNull();
     cleanup();
     useContextRulesStore.setState((st) => ({
@@ -182,7 +182,7 @@ describe('ContextRulesComposerChip', () => {
     }));
     render(<ContextRulesComposerChip composer="pilot" />);
     expect(
-      screen.getByRole('button', { name: 'Context: Context' }).getAttribute('data-mismatch'),
+      screen.getByRole('button', { name: '2 included' }).getAttribute('data-mismatch'),
     ).toBe('true');
   });
 
@@ -235,6 +235,6 @@ describe('ContextRulesComposerChip', () => {
       },
     });
     render(<ContextRulesComposerChip composer="chat" />);
-    expect(screen.getByRole('button', { name: 'Context: Context' }).textContent).toBe('Context2');
+    expect(screen.getByRole('button', { name: '2 included' }).textContent).toBe('2');
   });
 });

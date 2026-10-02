@@ -40,6 +40,7 @@ import {
   DEFAULT_SURFACE_KEY,
   applyReceiptToRows,
   compareReceipt,
+  blocksForRow,
   resolveContextRow,
   systemRowsToResolved,
 } from '@ai-matrx/agents/context';
@@ -135,7 +136,13 @@ export function ContextRulesComposerChip({ composer }: { composer: ContextCompos
     const filled = applyReceiptToRows(rows, receipt);
     if (!receipt) return filled;
     const { systemRows } = compareReceipt(lastSentRows, receipt);
-    return [...filled, ...systemRowsToResolved(systemRows)];
+    return [
+      ...filled,
+      ...systemRowsToResolved(systemRows).map((row) => {
+        const attached = blocksForRow(row.key, receipt.blocks);
+        return attached.length ? { ...row, deliveredBlocks: attached } : row;
+      }),
+    ];
   }, [rows, lastSentRows, receiptEntry]);
   const mismatches = receiptEntry?.mismatches ?? [];
 
@@ -162,7 +169,6 @@ export function ContextRulesComposerChip({ composer }: { composer: ContextCompos
   return (
     <>
       <ContextRulesChip
-        label="Context"
         rows={shownRows}
         cap={cap}
         modelReadsContext={receiptEntry?.receipt.model_reads_context !== false}
@@ -177,12 +183,15 @@ export function ContextRulesComposerChip({ composer }: { composer: ContextCompos
       <Dialog open={fullView} onOpenChange={setFullView}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Context</DialogTitle>
+            <DialogTitle>Values</DialogTitle>
           </DialogHeader>
           <ContextRulesPanelBody
             rows={shownRows}
             cap={cap}
             mismatches={mismatches}
+            {...(receiptEntry?.receipt.blocks !== undefined && {
+              blocks: receiptEntry.receipt.blocks,
+            })}
             onChange={onChange}
           />
         </DialogContent>

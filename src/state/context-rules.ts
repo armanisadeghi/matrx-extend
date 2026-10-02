@@ -30,6 +30,8 @@ import { pushNotice } from '@/state/notices';
 import {
   CONTEXT_RULES_FEATURE,
   type ContextReceipt,
+  type ContextReceiptBlock,
+  type ContextDeliveredRef,
   type ContextReceiptMismatch,
   type ContextRowSource,
   type ResolvedContextRow,
@@ -238,13 +240,23 @@ export function rememberRunContextRows(
 
 /** Normalize the generated wire type (optional fields) to the package's receipt. */
 export function toContextReceipt(data: ContextReceiptData): ContextReceipt {
+  // The generated stream types lag the receipt's text-reference fields. The
+  // server sends hashes and sizes only; actual text is fetched when opened.
+  const viewed = data as Omit<ContextReceiptData, 'rows'> & {
+    blocks?: ContextReceiptBlock[];
+    rows?: Array<NonNullable<ContextReceiptData['rows']>[number] & {
+      delivered?: ContextDeliveredRef;
+      on_request?: ContextDeliveredRef;
+    }>;
+  };
   return {
     version: 1,
     surface: data.surface ?? null,
     cap: data.cap,
     model_reads_context: data.model_reads_context !== false,
     rules_error: data.rules_error ?? null,
-    rows: (data.rows ?? []).map((row) => ({
+    ...(viewed.blocks !== undefined && { blocks: viewed.blocks }),
+    rows: (viewed.rows ?? []).map((row) => ({
       key: row.key,
       label: row.label,
       surface_key: row.surface_key,
@@ -269,6 +281,8 @@ export function toContextReceipt(data: ContextReceiptData): ContextReceipt {
       // The package models only "model"; a "self_check" strip shows up in
       // compareReceipt as an include/delivery difference, so it is not lost.
       blocked_by: row.blocked_by === 'model' ? 'model' : null,
+      ...(row.delivered !== undefined && { delivered: row.delivered }),
+      ...(row.on_request !== undefined && { on_request: row.on_request }),
     })),
   };
 }

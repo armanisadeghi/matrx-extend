@@ -1,0 +1,31 @@
+{
+  "lane": "oct02_package_catchup",
+  "scope": "@ai-matrx/agents 0.32.0 consumer compatibility for catalog identity and context rules chip",
+  "diagnosis": "Four context-rules-chip tests failed because the host still supplied the generic Context label and asserted the package's old accessible name. The host also dropped receipt text references and server blocks; the catalog adapter did not supply the guest-safe getUserId port.",
+  "source_changes": [
+    "src/features/chat/ContextRulesComposerChip.tsx",
+    "src/state/context-rules.ts",
+    "src/lib/agents/catalog.ts"
+  ],
+  "verification": [
+    {
+      "run_id": "oct02-agents-consumer-focused-20261002-002",
+      "result": "valid; 4 files, 29 tests passed",
+      "journal": "docs/stabilization/resource-journals/oct02-agents-consumer-focused-20261002-002.jsonl",
+      "journal_sha256": "ecfae712f1dd0b96774b003878eddbbb1d821bd91c16bc689be4e2846cb09438"
+    },
+    {
+      "run_id": "oct02-agents-consumer-compile-20261002-002",
+      "result": "valid; tsc --noEmit passed",
+      "journal": "docs/stabilization/resource-journals/oct02-agents-consumer-compile-20261002-002.jsonl",
+      "journal_sha256": "321a66f95a8e24e831136c8bf82dafc046cc4c86973b09e48193a144679d327f"
+    }
+  ],
+  "non_acceptance_diagnostics": [
+    "An unguarded 13:37:36 UTC focused Vitest diagnostic overlapped the native member permit; its 4 failed and 3 passed tests are not acceptance evidence. Root reran native member verification clean.",
+    "The first guarded command was refused because the extra Vitest reporter flag was not allowed.",
+    "The first guarded compile exposed five TypeScript errors in the new receipt mapping; source was corrected and compile 002 passed."
+  ],
+  "remaining_wire_gap": "The package's loadView needs the persisted server user message ID for GET /ai/context/delivered. The current context_receipt stream event and local optimistic messages do not carry that ID. Receipt hashes and blocks now display, but exact text viewing is not wired by this release repair; no guessed ID or alternate text is presented.",
+  "native_ui": "Not exercised in this lane; root owns release and native verification."
+}
