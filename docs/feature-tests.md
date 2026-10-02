@@ -333,7 +333,8 @@ Every entry follows this shape:
   agent says it cannot see the article body; the chip stays its normal color.
   Second send: the value rides again. The same rule appears in the web app's
   context chip for the same account. A mismatch (chip amber) files
-  `context_truth_mismatch`.
+  `context_truth_mismatch`. A server-added Organization value counts its
+  attached catalog block in the Chars column.
 - **Covered by:** `src/lib/chat/context/request-context.test.ts`,
   `tests/unit/context-rules-chip.test.tsx`; the live receipt needs a real turn.
 

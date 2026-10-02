@@ -40,7 +40,7 @@ import {
   DEFAULT_SURFACE_KEY,
   applyReceiptToRows,
   compareReceipt,
-  blocksForRow,
+  receiptRowToResolved,
   resolveContextRow,
   systemRowsToResolved,
 } from '@ai-matrx/agents/context';
@@ -138,9 +138,11 @@ export function ContextRulesComposerChip({ composer }: { composer: ContextCompos
     const { systemRows } = compareReceipt(lastSentRows, receipt);
     return [
       ...filled,
-      ...systemRowsToResolved(systemRows).map((row) => {
-        const attached = blocksForRow(row.key, receipt.blocks);
-        return attached.length ? { ...row, deliveredBlocks: attached } : row;
+      ...systemRowsToResolved(systemRows).map((row, index) => {
+        // The package knows which receipt blocks belong to a value and counts
+        // them in server-authoritative sizes. Keep its server-row origin flags.
+        const withBlocks = receiptRowToResolved(systemRows[index]!, receipt.blocks);
+        return { ...row, ...withBlocks, origin: row.origin };
       }),
     ];
   }, [rows, lastSentRows, receiptEntry]);

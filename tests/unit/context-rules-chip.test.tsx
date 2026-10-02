@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const { upsert, select, requireActiveOrganizationId } = vi.hoisted(() => ({
@@ -29,6 +29,7 @@ vi.mock('@/hooks/use-chat-stream', () => ({
   resolveAttachedGoogleFileIds: () => null,
 }));
 vi.mock('@/lib/chat/context', () => ({ buildChatContextValues: vi.fn(async () => ({})) }));
+vi.mock('@/lib/chat/active-tab', () => ({ resolveActiveTab: vi.fn(async () => null) }));
 
 import { ContextRulesComposerChip } from '@/features/chat/ContextRulesComposerChip';
 import { useAuthStore } from '@/state/auth';
@@ -236,5 +237,53 @@ describe('ContextRulesComposerChip', () => {
     });
     render(<ContextRulesComposerChip composer="chat" />);
     expect(screen.getByRole('button', { name: '2 included' }).textContent).toBe('2');
+  });
+
+  it('counts the Organization catalog block in a server-added Organization row', () => {
+    useContextRulesStore.setState({
+      lastSentRowsByComposer: { chat: [] },
+      receiptByConversation: {
+        'conv-1': {
+          receipt: {
+            version: 1,
+            surface: null,
+            cap: 50000,
+            model_reads_context: true,
+            rules_error: null,
+            rows: [
+              {
+                key: 'organization',
+                label: 'Organization',
+                surface_key: '_default',
+                origin: 'server',
+                chars: 20,
+                include: true,
+                max_inline_chars: 200,
+                delivery: 'inline',
+                decided_by: { include: 'default', max_inline_chars: 'default' },
+                user_rule: null,
+                clamped: false,
+                client_sent_excluded: false,
+                blocked_by: null,
+                delivered: { chars: 20, sha256: 'a'.repeat(64) },
+              },
+            ],
+            blocks: [
+              {
+                id: 'organization_catalog',
+                label: 'Organization catalog',
+                delivered: { chars: 80, sha256: 'b'.repeat(64) },
+              },
+            ],
+          },
+          mismatches: [],
+          receivedAt: 1,
+        },
+      },
+    });
+    render(<ContextRulesComposerChip composer="chat" />);
+    fireEvent.click(screen.getByRole('button', { name: '1 included' }));
+    const row = screen.getByRole('row', { name: /Organization/ });
+    expect(within(row).getByText('100')).toBeTruthy();
   });
 });

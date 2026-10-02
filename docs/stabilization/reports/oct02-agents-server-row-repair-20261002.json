@@ -1,0 +1,21 @@
+{
+  "lane": "oct02_package_catchup_round1",
+  "finding": "P1 peer finding: the server-added Organization row showed only its delivered statement chars after organization_catalog was attached. The package receiptRowToResolved(row, blocks) is the authoritative size calculation.",
+  "repair": "Every system receipt row now takes the package's block-aware conversion while retaining the package's system-row origin and serverResolved flags.",
+  "red": {
+    "run_id": "oct02-agents-server-row-red-20261002-001",
+    "result": "Guarded 1 intended failure, 7 passed. Organization displayed 20; the receipt statement (20) plus organization_catalog block (80) required 100.",
+    "journal": "docs/stabilization/resource-journals/oct02-agents-server-row-red-20261002-001.jsonl"
+  },
+  "green": {
+    "run_id": "oct02-agents-server-row-green-20261002-001",
+    "result": "Guarded 8 of 8 focused tests passed.",
+    "journal": "docs/stabilization/resource-journals/oct02-agents-server-row-green-20261002-001.jsonl"
+  },
+  "compile": {
+    "run_id": "oct02-agents-server-row-compile-20261002-001",
+    "result": "Guarded tsc --noEmit passed.",
+    "journal": "docs/stabilization/resource-journals/oct02-agents-server-row-compile-20261002-001.jsonl"
+  },
+  "out_of_scope": "Exact delivered text viewing still lacks the server user message ID required by its API. Tracked separately as D75; this repair makes no viewer claim."
+}
