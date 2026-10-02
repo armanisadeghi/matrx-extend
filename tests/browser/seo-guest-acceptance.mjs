@@ -15,9 +15,16 @@ import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '..', '..');
 const OUTPUT = join(REPO, 'test-results', 'seo-guest-acceptance.json');
-const EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3-dev');
+const EXTENSION_DIR =
+  process.env.SEO_GUEST_EXTENSION_DIR ?? join(REPO, '.output', 'chrome-mv3-dev');
 const DEV_BUILD_RECEIPT = process.env.SEO_GUEST_DEV_BUILD_RECEIPT;
-const RECEIPT = DEV_BUILD_RECEIPT ?? join(REPO, '.output', 'release-receipt.json');
+const RELEASE_RECEIPT =
+  process.env.SEO_GUEST_RELEASE_RECEIPT ?? join(REPO, '.output', 'release-receipt.json');
+const RECEIPT = DEV_BUILD_RECEIPT ?? RELEASE_RECEIPT;
+const RELEASE_ARTIFACT_OVERRIDE =
+  DEV_BUILD_RECEIPT === undefined &&
+  (process.env.SEO_GUEST_EXTENSION_DIR !== undefined ||
+    process.env.SEO_GUEST_RELEASE_RECEIPT !== undefined);
 const PAGES = ['https://example.org/', 'https://www.iana.org/domains/reserved'];
 const DETAIL_PAGE = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link';
 const NEXT_DETAIL_PAGE = 'https://en.wikipedia.org/wiki/HTML';
@@ -94,8 +101,11 @@ async function buildIdentity() {
     readFile(join(REPO, 'package.json'), 'utf8').then(JSON.parse),
   ]);
   if (DEV_BUILD_RECEIPT !== undefined) requireLocalDevReceipt(receipt, EXTENSION_DIR);
-  assert.equal(manifest.version, pkg.version, 'manifest matches current package');
-  assert.equal(receipt.version, pkg.version, 'receipt matches current package');
+  if (!RELEASE_ARTIFACT_OVERRIDE) {
+    assert.equal(manifest.version, pkg.version, 'manifest matches current package');
+    assert.equal(receipt.version, pkg.version, 'receipt matches current package');
+  }
+  assert.equal(manifest.version, receipt.version, 'manifest matches artifact receipt');
   if (DEV_BUILD_RECEIPT !== undefined)
     assert.ok(manifest.key, 'development build has a stable key');
   assert.equal(hashReleaseTree(EXTENSION_DIR), receipt.treeSha256, 'artifact matches receipt');
@@ -841,6 +851,11 @@ try {
       extensionDir: EXTENSION_DIR,
       expectedRelease: before,
       localDevReceiptPath: DEV_BUILD_RECEIPT,
+    }),
+    ...(RELEASE_ARTIFACT_OVERRIDE && {
+      extensionDir: EXTENSION_DIR,
+      expectedRelease: before,
+      releaseReceiptPath: RELEASE_RECEIPT,
     }),
     exercisePanel: async ({ page, panel }) => {
       advance('owned_guest_panel_ready', { nativePanel: true });
