@@ -13,7 +13,7 @@
  * owned demo Sources first. After D65, set FILES_SAVED_FIXTURE_MODE=cleanup to
  * delete only that pair, checking each detail's Source link against its ID.
  */
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { lstat, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -29,6 +29,7 @@ const RECEIPT = RELEASE_RECEIPT ?? LOCAL_DEV_RECEIPT;
 const EXPECTED_TREE_SHA256 = process.env.FILES_SAVED_EXPECTED_TREE_SHA256;
 const CONFIG = process.env.FILES_SAVED_PRIVATE_CONFIG;
 const ROLE = process.env.FILES_SAVED_ROLE ?? 'admin';
+const INTERACTIVE_MEMBER = process.env.FILES_SAVED_INTERACTIVE_MEMBER === '1';
 const FIXTURE_MODE = process.env.FILES_SAVED_FIXTURE_MODE ?? null;
 const ADMIN_ENV = join(homedir(), 'code/aidream/.env');
 const WEB_ORIGIN = 'https://www.aimatrx.com';
@@ -152,12 +153,20 @@ async function privateConfig() {
   const stat = await lstat(CONFIG).catch(() => fail('private_config_missing'));
   if (!stat.isFile() || (stat.mode & 0o777) !== 0o600) fail('private_config_mode');
   const value = JSON.parse(await readFile(CONFIG, 'utf8'));
-  if (
+  if (INTERACTIVE_MEMBER) {
+    if (
+      ROLE !== 'member' ||
+      FIXTURE_MODE !== null ||
+      value.reviewer_email_fingerprint !== '3d6137db6c081c07'
+    )
+      fail('interactive_member_identity_unproven');
+  } else if (
     typeof value.approved_organization_name !== 'string' ||
     !value.approved_organization_name.trim() ||
     !UUID.test(value.approved_organization_id)
-  )
+  ) {
     fail('approved_organization_identity_missing');
+  }
   if (value.source_a || value.source_b) {
     for (const key of ['source_a', 'source_b']) {
       const source = value[key];
@@ -636,25 +645,131 @@ async function webSignIn(page, config) {
     await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
     const route = new URL(web.url());
     if (route.origin !== WEB_ORIGIN || route.pathname !== '/login') fail('web_login_route');
-    const credentials = await roleCredentials(config);
-    await web.locator('input[name="email"]').fill(credentials.email);
-    await web.locator('input[name="password"]').fill(credentials.password);
-    await Promise.all([
-      web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname !== '/login', {
-        timeout: 90_000,
-      }),
-      web.getByRole('button', { name: 'Sign in', exact: true }).click(),
-    ]);
-    const email = await web.evaluate(async () => {
-      const response = await fetch('/api/whoami', { credentials: 'include', cache: 'no-store' });
-      const identity = response.ok ? await response.json() : null;
-      return identity?.signed_in === true ? identity.email : null;
-    });
-    if (email !== credentials.email) fail('web_identity_mismatch');
+    let expectedEmail;
+    if (ROLE === 'member' && INTERACTIVE_MEMBER) {
+      stage = 'ready_manual_member_login';
+      process.stdout.write('STAGE ready_manual_member_login\n');
+      const email = await waitFor(
+        'member_manual_web_session',
+        () =>
+          web.evaluate(async () => {
+            const response = await fetch('/api/whoami', {
+              credentials: 'include',
+              cache: 'no-store',
+            });
+            const identity = response.ok ? await response.json() : null;
+            return identity?.signed_in === true ? identity.email : null;
+          }),
+        (value) => typeof value === 'string' && value.includes('@'),
+        180_000,
+      );
+      const fingerprint = createHash('sha256')
+        .update(email.toLowerCase())
+        .digest('hex')
+        .slice(0, 16);
+      if (fingerprint !== config.reviewer_email_fingerprint) fail('web_identity_mismatch');
+      expectedEmail = email;
+      report.observations.reviewer_email_fingerprint = fingerprint;
+    } else {
+      const credentials = await roleCredentials(config);
+      expectedEmail = credentials.email;
+      await web.locator('input[name="email"]').fill(credentials.email);
+      await web.locator('input[name="password"]').fill(credentials.password);
+      await Promise.all([
+        web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname !== '/login', {
+          timeout: 90_000,
+        }),
+        web.getByRole('button', { name: 'Sign in', exact: true }).click(),
+      ]);
+      const email = await web.evaluate(async () => {
+        const response = await fetch('/api/whoami', { credentials: 'include', cache: 'no-store' });
+        const identity = response.ok ? await response.json() : null;
+        return identity?.signed_in === true ? identity.email : null;
+      });
+      if (email !== credentials.email) fail('web_identity_mismatch');
+    }
     report.observations.real_web_signin = true;
+    return expectedEmail;
   } finally {
     await web.close();
   }
+}
+
+async function memberPanelIdentity(panel, expectedEmail) {
+  const state = await evaluate(
+    panel,
+    `(() => {
+      const account = [...document.querySelectorAll('button[aria-expanded]')]
+        .find((button) => button.textContent.trim() === 'Account');
+      const section = account?.parentElement?.nextElementSibling;
+      const row = (label) => [...(section?.querySelectorAll('span') ?? [])]
+        .find((span) => span.textContent.trim() === label)?.parentElement?.textContent.trim() ?? null;
+      const email = row('Email');
+      return chrome.storage.local.get([
+        'matrx.auth.accessToken', 'matrx.user.profile', 'matrx.user.isAdmin',
+      ]).then((stored) => ({
+        emailMatches: email === ${JSON.stringify(`Email${expectedEmail}`)},
+        userProfilePresent: Boolean(stored['matrx.user.profile']?.id),
+        accessTokenPresent: typeof stored['matrx.auth.accessToken'] === 'string',
+        isAdmin: stored['matrx.user.isAdmin'] === true ? true
+          : stored['matrx.user.isAdmin'] === false ? false : null,
+        signOutVisible: [...document.querySelectorAll('button')]
+          .some((button) => button.textContent.trim() === 'Sign out'),
+      }));
+    })()`,
+  );
+  if (state?.isAdmin === true) fail('member_identity_is_admin');
+  if (
+    state?.emailMatches &&
+    state.isAdmin === false &&
+    state.userProfilePresent &&
+    state.accessTokenPresent
+  )
+    report.observations.canonical_extension_admin_check = 'false';
+  return state;
+}
+
+async function selectMemberOrganizationThroughUi(panel) {
+  await openSection(panel, 'Organization');
+  const selected = () =>
+    evaluate(
+      panel,
+      `(() => {
+        const section = [...document.querySelectorAll('button[aria-expanded]')]
+          .find((button) => button.textContent.trim() === 'Organization')?.parentElement?.nextElementSibling;
+        const label = [...(section?.querySelectorAll('span') ?? [])]
+          .find((span) => span.textContent.trim() === 'Acting as');
+        const control = label?.parentElement?.parentElement?.querySelector('button[role="combobox"]');
+        return chrome.storage.local.get('matrx.org.active').then((stored) => ({
+          count: control ? 1 : 0,
+          name: control?.textContent.trim() ?? null,
+          id: stored['matrx.org.active']?.id ?? null,
+        }));
+      })()`,
+    );
+  const before = await waitFor(
+    'member_organization_picker_ready',
+    selected,
+    (state) => state?.count === 1,
+    30_000,
+  );
+  if (before.name !== 'Choose…' || before.id) fail('unexpected_preselected_member_organization');
+  stage = 'ready_manual_member_organization';
+  process.stdout.write('STAGE ready_manual_member_organization\n');
+  const choice = await waitFor(
+    'member_organization_selected_in_ui',
+    selected,
+    (state) =>
+      state?.count === 1 &&
+      typeof state.id === 'string' &&
+      state.id.length > 0 &&
+      typeof state.name === 'string' &&
+      state.name !== 'Choose…',
+    180_000,
+  );
+  report.observations.organization_selected_through_membership_ui = true;
+  report.observations.organization_membership_resolver = 'canonical mbr_for_user picker';
+  return choice;
 }
 
 async function selectOrganization(panel, name, expectedId) {
@@ -1120,6 +1235,7 @@ async function main() {
   const key = /^WXT_SUPABASE_PUBLISHABLE_KEY=(.*)$/m.exec(env)?.[1]?.replace(/^['"]|['"]$/g, '');
   if (FIXTURE_MODE === 'create' && !key) fail('publishable_key_missing');
   await runNativeSidepanelQa({
+    headed: ROLE === 'member' && INTERACTIVE_MEMBER,
     extensionDir: build.extensionDir,
     expectedRelease: build,
     ...(LOCAL_DEV_RECEIPT ? { localDevReceiptPath: RECEIPT } : { releaseReceiptPath: RECEIPT }),
@@ -1147,26 +1263,30 @@ async function main() {
       );
       report.cases.guest = 'pass';
       stage = 'real_signin';
-      await webSignIn(page, config);
+      const expectedEmail = await webSignIn(page, config);
       await click(panel, 'title', 'Settings');
       await openSection(panel, 'Account');
       await click(panel, 'button', 'Sign in');
       await waitFor(
         'extension_account_signed_in',
-        () =>
-          evaluate(
-            panel,
-            `(() =>
-        [...document.querySelectorAll('button')].some(b => b.textContent.trim() === 'Sign out'))()`,
-          ),
-        Boolean,
+        () => memberPanelIdentity(panel, expectedEmail),
+        (state) =>
+          state?.emailMatches === true &&
+          state.isAdmin === false &&
+          state.userProfilePresent === true &&
+          state.accessTokenPresent === true &&
+          state.signOutVisible === true,
         90_000,
       );
-      await selectOrganization(
-        panel,
-        config.approved_organization_name,
-        config.approved_organization_id,
-      );
+      if (ROLE === 'member' && INTERACTIVE_MEMBER) {
+        await selectMemberOrganizationThroughUi(panel);
+      } else {
+        await selectOrganization(
+          panel,
+          config.approved_organization_name,
+          config.approved_organization_id,
+        );
+      }
       if (FIXTURE_MODE === 'create') {
         await createFixturePair(page, panel, config, build, origin, key);
         return;
