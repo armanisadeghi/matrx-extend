@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "artifact_type": "read-only-disk-target-census",
+  "task_id": "internal-disk-space-recovery",
+  "captured_at_utc": "2026-10-02T20:09:46Z",
+  "scope": "Bounded, read-only inspection of likely generated development caches and simulator data. No files were deleted, moved, cleared, or modified by the census. Root-owned top-level Data-volume du scan was not repeated.",
+  "capacity_snapshot": {
+    "internal_volume": "/System/Volumes/Data",
+    "size": "228GiB",
+    "internal_available": "122MiB",
+    "source": "df -h /System/Volumes/Data /Volumes/Samsung2TB",
+    "external_volume": "/Volumes/Samsung2TB",
+    "external_available": "1.7TiB",
+    "external_filesystem": "APFS",
+    "external_volume_uuid": "05F4443C-C2F9-4A6B-BAD5-FA58E90BBEE6"
+  },
+  "canonical_cleanup_review": {
+    "skill": ".claude/skills/disk-groom/SKILL.md",
+    "register": "/Users/armanisadeghi/code/common-docs/operations/disk-grooming.md",
+    "implementation": "/Users/armanisadeghi/code/common-docs/meta/scripts/disk-groom/groom.py",
+    "finding": "dev-caches handles uv/npm/pnpm caps, uv prune, Homebrew cleanup, unavailable simulators, idle generated checkout build output, Rust targets, old smoke/test runs, and stale Xcode DeviceSupport. It does not target ~/.gradle/caches or Android AVD userdata/snapshots. The operator reports dev-caches --apply already ran; this census did not rerun it. The register cautions that launchd access is not yet verified."
+  },
+  "candidate_evidence": [
+    {
+      "path": "/Users/armanisadeghi/.gradle/caches",
+      "measured_size": "3.8GiB",
+      "contents": [
+        "2.3GiB Gradle 8.14.3 transforms/generated jars",
+        "1.4GiB modules-2/files-2.1 dependency artifacts",
+        "95MiB build-cache-1"
+      ],
+      "directory_mtime": "2026-02-06/07 local time",
+      "active_process_evidence": "The point-in-time ps snapshot showed no Gradle/Android Studio/emulator process. This only establishes no matching process was visible at capture time.",
+      "open_file_check": "A subsequent pgrep for GradleDaemon/gradle/org.gradle/Android Studio/emulator/qemu returned only its own shell, and lsof +D over this exact directory returned no open-file rows. This is a point-in-time check only.",
+      "classification": "Generated dependency/build cache candidate, but only 3.8GiB. Older mtime, absent matching process, and no current open files make a controlled reversible relocation plausible; they do not establish that the cache is disposable or that all contents are reproducible offline. Not a 20GiB target; do not move until owner approval and final just-in-time process/open-file checks.",
+      "canonical_cleanup": "Not covered by current groom.py dev-caches targets."
+    },
+    {
+      "path": "/Users/armanisadeghi/.android/avd/Pixel_7_Pro_API_35.avd",
+      "measured_size": "3.1GiB",
+      "contents": [
+        "1.4GiB snapshots/default_boot",
+        "userdata-qemu.img and userdata-qemu.img.qcow2",
+        "AVD.conf, config.ini, runtime and emulator state files"
+      ],
+      "active_process_evidence": "No Android emulator or Android Studio process appeared in the ps snapshot; directory contents include an AVD userdata image, default boot snapshot, and a multiinstance lock file.",
+      "classification": "Emulator/profile state, not safely classifiable as a disposable development cache from name, age, or process absence. Preserve."
+    },
+    {
+      "path": "/Users/armanisadeghi/Library/Developer/CoreSimulator/Devices",
+      "measured_size": "4.1GiB",
+      "contents": [
+        "Two largest device trees are 2.5GiB and 1.5GiB; both contain simulator data/private, Library, var, and Containers subtrees."
+      ],
+      "active_process_evidence": "At capture, CoreSimulatorService PID 35765, simdiskimaged PID 35766, SimLaunchHost PID 35799, and SimulatorTrampoline PID 35801 were running. lsof showed open CoreSimulator profile/device directories and mounted iOS/watchOS/tvOS runtime libraries. Device directory mtime was 2026-10-02 13:02:23 PDT.",
+      "classification": "Active simulator runtime/device state. Preserve; unavailable-device pruning does not establish these active trees are safe to remove."
+    },
+    {
+      "path": "/Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime",
+      "measured_size": "1.5GiB",
+      "active_process_evidence": "Current Codex/CUA node processes were visible in ps; direct process-to-runtime file handles were not established.",
+      "classification": "Application execution runtime rather than an identified disposable development build cache. Preserve."
+    }
+  ],
+  "protected_or_out_of_scope_evidence": [
+    {
+      "path": "/Users/armanisadeghi/Library/Caches/CloudKit/com.apple.bird",
+      "size": "29GiB",
+      "source": "Parent-provided reconnaissance, not remeasured in this lane.",
+      "classification": "Cloud synchronization state; preserve."
+    },
+    {
+      "path": "/Users/armanisadeghi/Library/Caches/Google/Chrome",
+      "size": "3.4GiB",
+      "source": "This lane's bounded du under ~/Library/Caches.",
+      "classification": "Browser profile/cache tree; do not classify as disposable dev output."
+    },
+    {
+      "path": "/Users/armanisadeghi/Library/Caches/com.openai.codex",
+      "size": "1.6GiB",
+      "source": "This lane's bounded du under ~/Library/Caches.",
+      "classification": "Codex application cache; parent instruction says preserve all conversations."
+    },
+    {
+      "path": "Docker VM disk",
+      "size": "7.7GiB",
+      "source": "Parent-provided reconnaissance, not remeasured in this lane.",
+      "classification": "Parent instruction says preserve VM."
+    },
+    {
+      "path": "/private/var/folders",
+      "size": "6.4GiB",
+      "source": "Parent-provided reconnaissance, not remeasured in this lane.",
+      "classification": "Mostly fileproviderd synchronization state (4.5GiB); parent instruction says preserve sync."
+    }
+  ],
+  "disposition": {
+    "safe_verified_targets_at_least": "20GiB",
+    "result": "none identified",
+    "basis": "The bounded generated Gradle cache is 3.8GiB and is the only materially sized target here that resembles regenerable development output. Android AVD and CoreSimulator trees contain user/device state, and CoreSimulator is active. Other observed large trees are application, browser, cloud-sync, or VM data explicitly protected by the operator. Do not infer a safe 20GiB reclaim path from this census.",
+    "next_evidence_needed": "If the owner approves the proposed Gradle-cache relocation, perform the final process/open-file and offline-use checks immediately before copying."
+  },
+  "proposed_reversible_relocation_for_owner_review": {
+    "target": "/Users/armanisadeghi/.gradle/caches",
+    "estimated_local_space_recovered": "3.8GiB",
+    "destination_volume": "/Volumes/Samsung2TB (APFS, UUID 05F4443C-C2F9-4A6B-BAD5-FA58E90BBEE6)",
+    "steps": [
+      "Immediately before copying, repeat the Gradle/Android Studio process check and lsof +D on the exact source. Stop if a process or open handle appears; confirm Gradle is not needed offline and destination has sufficient free space.",
+      "Copy to a unique external staging directory with macOS ditto options that preserve mode, ACLs, extended attributes, and resource forks. Keep the source untouched and authoritative during this copy.",
+      "Compare a complete relative-path manifest, entry types, file count, logical sizes, permissions, owner/group, timestamps, content hashes, ACL listing and extended attributes between source and staged tree. Abort without swap on any discrepancy.",
+      "After a complete match and a second no-open-handle/daemon check, atomically rename the original directory to a same-parent dated backup, create the stable ~/.gradle/caches symlink to the unique external copy, and verify the symlink and content. Before deleting only that exact backup, recheck that it still matches the preserved external copy and is not open. Remove it with a safe exact-path Python operation; never use broad rm/force.",
+      "If validation fails after swap, stop Gradle, verify the symlink points to this exact external target, remove only that symlink, and rename the dated backup to ~/.gradle/caches. Keep the external copy."
+    ],
+    "status": "copy-staged-attribute-mismatch-stop-before-swap",
+    "performed": {
+      "copied_to": "/Volumes/Samsung2TB/.matrx-disk-recovery/gradle-caches-20261002",
+      "source_untouched": true,
+      "swap_started": false,
+      "source_tree_manifest_sha256": "8c89f4a102cd1741f8b10e6109eaca8feb19b40cbb362be35945bd6fe53cf8e0",
+      "copy_tree_manifest_sha256": "8c89f4a102cd1741f8b10e6109eaca8feb19b40cbb362be35945bd6fe53cf8e0",
+      "acl_listing_sha256_equal": true,
+      "xattr_listing_sha256_equal": false,
+      "xattr_difference": {
+        "attribute": "com.apple.provenance",
+        "changed_entries": 73808,
+        "source_value_hex": "01 02 00 86 EB 1B 2A A9 86 1F 5A",
+        "copy_value_hex": "01 02 00 AF A6 60 89 DC A2 50 28",
+        "evidence_files": [
+          "/Volumes/Samsung2TB/.matrx-disk-recovery/source-xattrs.txt",
+          "/Volumes/Samsung2TB/.matrx-disk-recovery/copy-xattrs.txt"
+        ]
+      },
+      "metadata": "/Volumes/Samsung2TB/.matrx-disk-recovery/gradle-caches-20261002-verified-manifests",
+      "reason_held": "A copy-generated xattr changed identically on 73,808 entries. Available sources describe com.apple.provenance as macOS Gatekeeper/XProtect provenance metadata, but no Apple primary documentation defining this private attribute was found. It was not overwritten, removed, or normalized. Preserve the original and pause until this difference is understood and accepted."
+    }
+  },
+  "commands_and_limits": {
+    "read_only_commands": [
+      "df -h /System/Volumes/Data /Volumes/Samsung2TB",
+      "du -x -d 2/-d 3 targeted paths under ~/Library/Caches, ~/.gradle, ~/.android, ~/Library/pnpm, ~/.npm, ~/.cache, ~/Library/Developer",
+      "find targeted Gradle cache and Android AVD paths (names only)",
+      "ps -axo pid,etime,comm,args filtered for Gradle, Android Studio, emulator and CoreSimulator",
+      "lsof on the four observed CoreSimulator process IDs"
+      ,"pgrep and lsof +D for the exact Gradle cache; diskutil info for Samsung2TB filesystem and UUID"
+    ],
+    "limits": [
+      "This is a single point-in-time process and directory observation; no open-file scan was attempted over the full Gradle cache.",
+      "No source, browser, test, build, database, release, or push action was performed.",
+      "Temporary verification manifests and xattr listings are stored only on the external APFS volume. The report is in the external-backed repository checkout.",
+      "The approved copy has been staged externally, but no source rename, symlink, or local backup removal has occurred because the exact com.apple.provenance value differs on copied entries."
+    ]
+  }
+}
