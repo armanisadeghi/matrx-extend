@@ -1,10 +1,21 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { chmod, copyFile, mkdir, mkdtemp, readFile, rm, stat, statfs, writeFile } from 'node:fs/promises';
+import {
+  chmod,
+  copyFile,
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  stat,
+  statfs,
+  writeFile,
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { test } from 'node:test';
+import { setHealthyHostMeasurements } from './stabilization-resource-test-measurements.mjs';
 
 const source = resolve(import.meta.dirname, '..');
 
@@ -18,7 +29,9 @@ test(
     const system = await statfs('/');
     const systemFreeGiB = (Number(system.bavail) * Number(system.bsize)) / 1024 ** 3;
     if (systemFreeGiB < 20) {
-      context.skip(`system volume has ${systemFreeGiB.toFixed(2)} GiB free; guard correctly refuses below 20 GiB`);
+      context.skip(
+        `system volume has ${systemFreeGiB.toFixed(2)} GiB free; guard correctly refuses below 20 GiB`,
+      );
       return;
     }
     const scratch = await mkdtemp(join(tmpdir(), 'resource-safety-guard-'));
@@ -43,9 +56,11 @@ test(
         'stabilization-resource-verdict.mjs',
       ])
         await copyFile(join(source, 'scripts', name), join(scripts, name));
+      await setHealthyHostMeasurements(scripts);
 
       // Isolate the real ownership protocol from other runs on the host. The
-      // copied guard still samples the independent / volume and the real lease.
+      // copied guard still samples actual disk volumes; unrelated CPU, memory,
+      // pressure and swap readings are deterministic for this failure case.
       const leasePath = join(scripts, 'stabilization-resource-lease.mjs');
       const leaseSource = await readFile(leasePath, 'utf8');
       const isolatedLease = leaseSource.replace(
