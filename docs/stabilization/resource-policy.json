@@ -72,6 +72,7 @@
     ["bash", "scripts/test-release-ship-path.sh", "/tmp/matrx-release-ci-before/release.sh"],
     ["node", "--test", "scripts/test-release-recovery.mjs"],
     ["node", "--test", "tests/browser/guest-chat-completion-oracle.test.mjs"],
+    ["node", "--test", "tests/browser/notes-member-credential.test.mjs"],
     ["node", "tests/browser/settings-local-reset-acceptance.mjs"],
     ["bash", "release.sh", "--message", "EXT-D-0002 validated release integration"],
     ["bash", "release.sh", "--message", "EXT-D-0006 validated permission controls"],
