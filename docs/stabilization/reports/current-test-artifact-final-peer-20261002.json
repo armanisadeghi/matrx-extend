@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "lane": "fresh_independent_final_peer_sol_medium",
+  "reviewed": {
+    "helper_commit": "fa3d68cc",
+    "workflow_draft_diff_sha256": "1e7f1f82f6cd1930f8cc8670ab2579ca9304f1c8bda548065bae4e4cdfe237a8",
+    "contract": "docs/stabilization/reports/current-test-artifact-20261002.json",
+    "accepted_contract_peer": "docs/stabilization/reports/current-test-artifact-contract-peer-20261002.json"
+  },
+  "verdict_a_outcome_and_live_artifact": {
+    "status": "PARTIAL",
+    "evidence": [
+      "The draft CI path builds only main pushes with the existing public runtime values, produces a keyed development manifest, writes CI receipt/provenance, and uploads an unpacked artifact named for SHA/run/attempt. PR and tag builds do not upload it.",
+      "The importer authenticates a successful main-push GitHub run and artifact ID/name/digest, hashes the downloaded archive and unpacked tree, and copies into an exclusive run-qualified path. The existing SEO guest runner accepts both imported extension and sibling local receipt overrides and rehashes the tree before launch.",
+      "No successful GitHub run, artifact metadata, downloaded archive, imported tree, or native browser result was available for live verification. ZIP layout and GitHub digest behavior remain unverified against the service."
+    ],
+    "required_before_outcome_claim": [
+      "After the workflow is pushed, identify one successful main-push CI run and exact artifact ID, download and import it, record the GitHub archive digest and imported tree hash, and run the owned native consumer using that import. Do not call it Store eligible."
+    ]
+  },
+  "verdict_b_correctness_and_doctrine": {
+    "status": "FAIL_IMPORTANT",
+    "strengths": [
+      "No release authority is added to CI; the development key and public config are checked before upload. Import refuses an occupied or symlinked destination without replacing its bytes, and the local receipt remains separate from the original CI receipt.",
+      "The seven canonical focused tests pass per the builder's admitted run, but they do not exercise a real GitHub download or the native result provenance boundary. EXT-D-0077 was found by source review; no prior failing runtime proof is claimed."
+    ],
+    "findings": [
+      {
+        "severity": "important",
+        "id": "native_result_loses_source_provenance",
+        "evidence": "scripts/current-test-artifact.mjs sourceState() is called only during import and writes import-status.json. tests/browser/seo-guest-acceptance.mjs buildIdentity() returns only kind, publishState, version and treeSha256; its final report never reads import-status.json or rechecks origin/main, local HEAD, tracked dirt, or untracked runner inputs. A later source advance or local edit cannot downgrade a native result's current-source claim, and the result cannot cite its original GitHub run/artifact identity as required by the accepted contract.",
+        "action": "Bind the imported status and unchanged CI receipt/provenance to the SEO native report; verify the run/artifact/SHA/tree relationship and re-evaluate source state at result time. Record relevant untracked runner inputs separately and label any mismatch exact pushed commit only."
+      },
+      {
+        "severity": "important",
+        "id": "original_ci_receipt_not_fully_validated",
+        "evidence": "verifyDownloadedTree() checks receipt kind, publish_state, version and treeSha256, but omits schema_version, observedAt and extensionDir. Its focused test uses a newly created local receipt fixture and never rejects malformed or misbound original CI receipt fields.",
+        "action": "Validate the original CI receipt's canonical schema and timestamp and require its path to identify the CI .output/chrome-mv3 build without treating that absolute hosted-runner path as a usable local path. Add a rejection case at the real verifier boundary."
+      }
+    ]
+  },
+  "limits": "Read-only static/source review of the committed helper and frozen workflow draft. No local build, browser launch, new credential, GitHub artifact download, or Store eligibility claim."
+}
