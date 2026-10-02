@@ -1,0 +1,14 @@
+{
+  "task_id": "popup-mock-repair-20261002",
+  "lane": "test maintenance",
+  "status": "verified",
+  "scope": "tests/unit/popup-claim-recovery.test.tsx",
+  "evidence": [
+    "CI 37037468164 at 9ea26e08 reports this as the sole failure among 1,888 passing tests.",
+    "App now mounts SiteAccessControl, which imports Popover, PopoverContent, and PopoverTrigger absent from this test's design-system mock.",
+    "Added presentation stubs only: trigger and wrapper preserve children, closed content returns null to match SiteAccessControl's initial closed state. This does not verify real Popover visibility or focus behavior; SiteAccess recovery/UI lanes own those claims.",
+    "The corrected guarded run passed 1 file and 1 test with wrapper exit 0 after the final closed-content stub was in place; claim/recovery assertions are unchanged."
+  ],
+  "verification": "Guarded runs 001 and 002 each passed 1 test with exit 0; 001 measured the shared scratch root, while 002 used the owned popup profile after the final mock adjustment. Targeted Biome passed.",
+  "remaining": "This unit test does not prove real Popover visibility or focus behavior; the SiteAccess lane owns those claims."
+}

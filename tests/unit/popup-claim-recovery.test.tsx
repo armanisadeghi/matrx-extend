@@ -58,6 +58,12 @@ vi.mock('@ai-matrx/design-system', () => ({
     <button type="button">{children}</button>
   ),
   TooltipProvider: ({ children }: { children: React.ReactNode }) => children,
+  // App now mounts SiteAccessControl. Keep its unrelated popover dependency
+  // present while leaving the claim/recovery path and its assertions real.
+  Popover: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  // SiteAccessControl starts closed; Radix omits closed content from the DOM.
+  PopoverContent: () => null,
+  PopoverTrigger: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 describe('popup capture claim recovery', () => {
