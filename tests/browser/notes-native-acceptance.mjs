@@ -5,8 +5,8 @@ import { createHash, randomUUID } from 'node:crypto';
 import { lstat, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
-import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
+import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
@@ -20,7 +20,8 @@ const OUTPUT = join(REPO, 'test-results/notes-native-acceptance.json');
 const FIXTURE_RECEIPT = join(REPO, `test-results/notes-owned-fixture-${randomUUID()}.json`);
 const ADMIN_ENV = join(homedir(), 'code/aidream/.env');
 const DEV_ENV = join(REPO, '.env.development');
-const PRIVATE_CONFIG = process.env.NOTES_PRIVATE_CONFIG ?? join(REPO, 'test-results/notes-private-config.json');
+const PRIVATE_CONFIG =
+  process.env.NOTES_PRIVATE_CONFIG ?? join(REPO, 'test-results/notes-private-config.json');
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const EMAIL = 'admin@admin.com';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -85,7 +86,8 @@ async function privateConfig() {
   } else if (
     typeof config.approved_organization_name !== 'string' ||
     !config.approved_organization_name.trim()
-  ) fail('test_org_name_missing');
+  )
+    fail('test_org_name_missing');
   return config;
 }
 async function realLogin(page, panel, config) {
@@ -100,19 +102,28 @@ async function realLogin(page, panel, config) {
       process.stdout.write('STAGE ready_manual_member_login\n');
       expectedEmail = await waitFor(
         'member_web_session',
-        () => web.evaluate(async () => {
-          const response = await fetch('/api/whoami', { credentials: 'include', cache: 'no-store' });
-          const identity = response.ok ? await response.json() : null;
-          return identity?.signed_in === true ? identity.email : null;
-        }),
+        () =>
+          web.evaluate(async () => {
+            const response = await fetch('/api/whoami', {
+              credentials: 'include',
+              cache: 'no-store',
+            });
+            const identity = response.ok ? await response.json() : null;
+            return identity?.signed_in === true ? identity.email : null;
+          }),
         (value) => typeof value === 'string' && value.includes('@'),
         180_000,
       );
-      const fingerprint = createHash('sha256').update(expectedEmail.toLowerCase()).digest('hex').slice(0, 16);
+      const fingerprint = createHash('sha256')
+        .update(expectedEmail.toLowerCase())
+        .digest('hex')
+        .slice(0, 16);
       if (fingerprint !== config.reviewer_email_fingerprint) fail('member_web_identity_mismatch');
       report.observations.reviewer_email_fingerprint = fingerprint;
     } else if (ROLE === 'admin') {
-      const source = await readFile(ADMIN_ENV, 'utf8').catch(() => fail('credential_file_unavailable'));
+      const source = await readFile(ADMIN_ENV, 'utf8').catch(() =>
+        fail('credential_file_unavailable'),
+      );
       const values = {};
       for (const line of source.split(/\r?\n/)) {
         const match = /^\s*(AI_ADMIN_USERNAME|AI_ADMIN_PASSWORD)\s*=\s*(.*?)\s*$/.exec(line);
@@ -125,25 +136,38 @@ async function realLogin(page, panel, config) {
       await web.locator('input[name="email"]').fill(EMAIL);
       await web.locator('input[name="password"]').fill(values.AI_ADMIN_PASSWORD);
       await Promise.all([
-        web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname !== '/login', { timeout: 90_000 }),
+        web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname !== '/login', {
+          timeout: 90_000,
+        }),
         web.getByRole('button', { name: 'Sign in', exact: true }).click(),
       ]);
-      await web.waitForFunction(async (expected) => {
-        const response = await fetch('/api/whoami', { credentials: 'include', cache: 'no-store' });
-        if (!response.ok) return false;
-        const identity = await response.json();
-        return identity?.signed_in === true && identity.email === expected;
-      }, EMAIL, { timeout: 90_000 });
+      await web.waitForFunction(
+        async (expected) => {
+          const response = await fetch('/api/whoami', {
+            credentials: 'include',
+            cache: 'no-store',
+          });
+          if (!response.ok) return false;
+          const identity = await response.json();
+          return identity?.signed_in === true && identity.email === expected;
+        },
+        EMAIL,
+        { timeout: 90_000 },
+      );
     } else fail('unsupported_role');
     await click(panel, 'title', 'Settings');
     await openSection(panel, 'Account');
-    const adminCheck = ROLE === 'member' ? observeCanonicalAdminCheck(panel, await supabaseOrigin()) : null;
+    const adminCheck =
+      ROLE === 'member' ? observeCanonicalAdminCheck(panel, await supabaseOrigin()) : null;
     if (adminCheck) await adminCheck.start();
     await click(panel, 'button', 'Sign in');
     try {
-      const account = await waitFor('extension_account', () => memberPanelIdentity(panel, expectedEmail),
+      const account = await waitFor(
+        'extension_account',
+        () => memberPanelIdentity(panel, expectedEmail),
         (s) => s?.emailMatches && s.userProfilePresent && s.accessTokenPresent && s.signOutVisible,
-        90_000);
+        90_000,
+      );
       if (ROLE === 'member') {
         if (account.isAdmin === true) fail('member_identity_is_admin');
         await adminCheck.verify(account.userId);
@@ -157,7 +181,9 @@ async function realLogin(page, panel, config) {
   }
 }
 async function memberPanelIdentity(panel, expectedEmail) {
-  return evaluate(panel, `(() => {
+  return evaluate(
+    panel,
+    `(() => {
     const account = [...document.querySelectorAll('button[aria-expanded]')]
       .find(button => button.textContent.trim() === 'Account');
     const section = account?.parentElement?.nextElementSibling;
@@ -172,36 +198,56 @@ async function memberPanelIdentity(panel, expectedEmail) {
         isAdmin: stored['matrx.user.isAdmin'] === true ? true : stored['matrx.user.isAdmin'] === false ? false : null,
         signOutVisible: [...document.querySelectorAll('button')].some(button => button.textContent.trim() === 'Sign out'),
       }));
-  })()`);
+  })()`,
+  );
 }
 function observeCanonicalAdminCheck(panel, origin) {
   const requests = new Map();
-  const offRequest = panel.on('Network.requestWillBeSent', event => {
+  const offRequest = panel.on('Network.requestWillBeSent', (event) => {
     try {
       const url = new URL(event.request.url);
-      const profile = Object.entries(event.request.headers ?? {}).find(([key]) => key.toLowerCase() === 'accept-profile')?.[1];
+      const profile = Object.entries(event.request.headers ?? {}).find(
+        ([key]) => key.toLowerCase() === 'accept-profile',
+      )?.[1];
       const userId = /^eq\.([0-9a-f-]{36})$/i.exec(url.searchParams.get('user_id') ?? '')?.[1];
-      if (url.origin === origin && url.pathname === '/rest/v1/admins' && event.request.method === 'GET' &&
-        String(profile).toLowerCase() === 'admin' && url.searchParams.get('select') === 'user_id' && UUID.test(userId ?? ''))
+      if (
+        url.origin === origin &&
+        url.pathname === '/rest/v1/admins' &&
+        event.request.method === 'GET' &&
+        String(profile).toLowerCase() === 'admin' &&
+        url.searchParams.get('select') === 'user_id' &&
+        UUID.test(userId ?? '')
+      )
         requests.set(event.requestId, { userId, status: null, rowCount: null, outcome: 'pending' });
-    } catch { /* Unrelated request. */ }
+    } catch {
+      /* Unrelated request. */
+    }
   });
-  const offResponse = panel.on('Network.responseReceived', event => {
+  const offResponse = panel.on('Network.responseReceived', (event) => {
     const request = requests.get(event.requestId);
     if (request) request.status = event.response.status;
   });
-  const offFinished = panel.on('Network.loadingFinished', event => {
+  const offFinished = panel.on('Network.loadingFinished', (event) => {
     const request = requests.get(event.requestId);
     if (!request) return;
-    void panel.send('Network.getResponseBody', { requestId: event.requestId }).then(body => {
-      try {
-        const rows = JSON.parse(body.base64Encoded ? Buffer.from(body.body, 'base64').toString('utf8') : body.body);
-        request.rowCount = Array.isArray(rows) ? rows.length : null;
-        request.outcome = Array.isArray(rows) ? 'complete' : 'invalid_body_shape';
-      } catch { request.outcome = 'invalid_body'; }
-    }).catch(() => { request.outcome = 'body_unavailable'; });
+    void panel
+      .send('Network.getResponseBody', { requestId: event.requestId })
+      .then((body) => {
+        try {
+          const rows = JSON.parse(
+            body.base64Encoded ? Buffer.from(body.body, 'base64').toString('utf8') : body.body,
+          );
+          request.rowCount = Array.isArray(rows) ? rows.length : null;
+          request.outcome = Array.isArray(rows) ? 'complete' : 'invalid_body_shape';
+        } catch {
+          request.outcome = 'invalid_body';
+        }
+      })
+      .catch(() => {
+        request.outcome = 'body_unavailable';
+      });
   });
-  const offFailed = panel.on('Network.loadingFailed', event => {
+  const offFailed = panel.on('Network.loadingFailed', (event) => {
     const request = requests.get(event.requestId);
     if (request) request.outcome = 'request_failed';
   });
@@ -212,17 +258,41 @@ function observeCanonicalAdminCheck(panel, origin) {
     },
     async verify(expectedUserId) {
       if (!UUID.test(expectedUserId ?? '')) fail('member_extension_user_id_missing');
-      const result = await waitFor('canonical_admin_assignment_read', () => {
-        const matching = [...requests.values()].filter(request => request.userId === expectedUserId);
-        return matching.find(request => request.status === 200 && request.outcome === 'complete' && request.rowCount === 0) ??
-          matching.find(request => request.outcome !== 'pending') ?? null;
-      }, Boolean, 60_000);
+      const result = await waitFor(
+        'canonical_admin_assignment_read',
+        () => {
+          const matching = [...requests.values()].filter(
+            (request) => request.userId === expectedUserId,
+          );
+          return (
+            matching.find(
+              (request) =>
+                request.status === 200 && request.outcome === 'complete' && request.rowCount === 0,
+            ) ??
+            matching.find((request) => request.outcome !== 'pending') ??
+            null
+          );
+        },
+        Boolean,
+        60_000,
+      );
       if (result.status !== 200 || result.outcome !== 'complete' || result.rowCount !== 0)
-        fail(result.rowCount > 0 ? 'member_identity_is_admin' : 'canonical_admin_assignment_read_not_proven');
-      report.observations.canonical_extension_admin_check = { matched_current_extension_user: true, http_status: 200, returned_rows: 0 };
+        fail(
+          result.rowCount > 0
+            ? 'member_identity_is_admin'
+            : 'canonical_admin_assignment_read_not_proven',
+        );
+      report.observations.canonical_extension_admin_check = {
+        matched_current_extension_user: true,
+        http_status: 200,
+        returned_rows: 0,
+      };
     },
     async stop() {
-      offRequest(); offResponse(); offFinished(); offFailed();
+      offRequest();
+      offResponse();
+      offFinished();
+      offFailed();
       await panel.send('Network.setCacheDisabled', { cacheDisabled: false }).catch(() => {});
       await panel.send('Network.disable').catch(() => {});
     },
@@ -230,7 +300,10 @@ function observeCanonicalAdminCheck(panel, origin) {
 }
 async function selectMemberOrganizationThroughUi(panel) {
   await openSection(panel, 'Organization');
-  const selected = () => evaluate(panel, `(() => {
+  const selected = () =>
+    evaluate(
+      panel,
+      `(() => {
     const section = [...document.querySelectorAll('button[aria-expanded]')]
       .find(button => button.textContent.trim() === 'Organization')?.parentElement?.nextElementSibling;
     const label = [...(section?.querySelectorAll('span') ?? [])].find(span => span.textContent.trim() === 'Acting as');
@@ -239,13 +312,24 @@ async function selectMemberOrganizationThroughUi(panel) {
       count: control ? 1 : 0, name: control?.textContent.trim() ?? null,
       id: stored['matrx.org.active']?.id ?? null,
     }));
-  })()`);
-  const before = await waitFor('member_organization_picker_ready', selected, state => state?.count === 1, 30_000);
+  })()`,
+    );
+  const before = await waitFor(
+    'member_organization_picker_ready',
+    selected,
+    (state) => state?.count === 1,
+    30_000,
+  );
   if (before.name !== 'Choose…' || before.id) fail('unexpected_preselected_member_organization');
   stage = 'ready_manual_member_organization';
   process.stdout.write('STAGE ready_manual_member_organization\n');
-  await waitFor('member_organization_selected_in_ui', selected,
-    state => state?.count === 1 && UUID.test(state.id ?? '') && state.name && state.name !== 'Choose…', 180_000);
+  await waitFor(
+    'member_organization_selected_in_ui',
+    selected,
+    (state) =>
+      state?.count === 1 && UUID.test(state.id ?? '') && state.name && state.name !== 'Choose…',
+    180_000,
+  );
   report.observations.organization_selected_through_membership_ui = true;
   report.observations.organization_membership_resolver = 'canonical mbr_for_user picker';
 }
@@ -396,18 +480,33 @@ function armNotesTransport(panel, origin) {
     });
     tracked.status = event.response.status;
   });
-  const offFinished = panel.on('Network.loadingFinished', event => {
+  const offFinished = panel.on('Network.loadingFinished', (event) => {
     const tracked = requests.get(event.requestId);
     if (!tracked) return;
-    if (tracked.method === 'POST' && tracked.inScope && !tracked.injected && tracked.status >= 200 && tracked.status < 300) {
-      void panel.send('Network.getResponseBody', { requestId: event.requestId }).then(body => {
-        try {
-          const value = JSON.parse(body.base64Encoded ? Buffer.from(body.body, 'base64').toString('utf8') : body.body);
-          const id = Array.isArray(value) ? value[0]?.id : value?.id;
-          if (UUID.test(id ?? '')) createdNoteIds.push(id);
-          else interceptionFailed = true;
-        } catch { interceptionFailed = true; }
-      }).catch(() => { interceptionFailed = true; });
+    if (
+      tracked.method === 'POST' &&
+      tracked.inScope &&
+      !tracked.injected &&
+      tracked.status >= 200 &&
+      tracked.status < 300
+    ) {
+      void panel
+        .send('Network.getResponseBody', { requestId: event.requestId })
+        .then((body) => {
+          try {
+            const value = JSON.parse(
+              body.base64Encoded ? Buffer.from(body.body, 'base64').toString('utf8') : body.body,
+            );
+            const id = Array.isArray(value) ? value[0]?.id : value?.id;
+            if (UUID.test(id ?? '')) createdNoteIds.push(id);
+            else interceptionFailed = true;
+          } catch {
+            interceptionFailed = true;
+          }
+        })
+        .catch(() => {
+          interceptionFailed = true;
+        });
     }
     requests.delete(event.requestId);
   });
@@ -787,13 +886,29 @@ try {
           45_000,
         );
         report.observations.D62.recovered_by_real_create = true;
-        const created = await waitFor('owned_note_create_response_id', transport.state,
-          s => s.createdNoteIds.length === 1 && !s.interceptionFailed, 30_000);
-        await writeFile(FIXTURE_RECEIPT, `${JSON.stringify({
-          schema_version: 1, status: 'created', note_id: created.createdNoteIds[0],
-          note_title: noteTitle, role: ROLE, source_sha: EXPECTED_SOURCE_SHA,
-          tree_sha256: before.treeSha256,
-        }, null, 2)}\n`, { mode: 0o600, flag: 'wx' });
+        const created = await waitFor(
+          'owned_note_create_response_id',
+          transport.state,
+          (s) => s.createdNoteIds.length === 1 && !s.interceptionFailed,
+          30_000,
+        );
+        await writeFile(
+          FIXTURE_RECEIPT,
+          `${JSON.stringify(
+            {
+              schema_version: 1,
+              status: 'created',
+              note_id: created.createdNoteIds[0],
+              note_title: noteTitle,
+              role: ROLE,
+              source_sha: EXPECTED_SOURCE_SHA,
+              tree_sha256: before.treeSha256,
+            },
+            null,
+            2,
+          )}\n`,
+          { mode: 0o600, flag: 'wx' },
+        );
         report.observations.owned_fixture_receipt = FIXTURE_RECEIPT;
 
         stage = 'D63_seed_owned_note';
@@ -877,7 +992,8 @@ try {
 
         const detailIds = transport.state().detailIds.slice(detailRequestsBeforeReopen);
         if (detailIds.length !== 1) fail('owned_detail_request_not_unique');
-        if (detailIds[0] !== transport.state().createdNoteIds[0]) fail('owned_detail_id_not_created_id');
+        if (detailIds[0] !== transport.state().createdNoteIds[0])
+          fail('owned_detail_id_not_created_id');
         transport.setOwnedNoteId(detailIds[0]);
 
         stage = 'D67_failed_detail';
@@ -1055,11 +1171,23 @@ try {
         report.observations.D68.real_delete_confirmed_by_live_response = true;
         report.observations.D68.owned_note_absent_after_reload = true;
         report.observations.D68.no_new_autosave_after_delete = true;
-        await writeFile(FIXTURE_RECEIPT, `${JSON.stringify({
-          schema_version: 1, status: 'deleted_confirmed', note_id: detailIds[0],
-          note_title: noteTitle, role: ROLE, source_sha: EXPECTED_SOURCE_SHA,
-          tree_sha256: before.treeSha256,
-        }, null, 2)}\n`, { mode: 0o600 });
+        await writeFile(
+          FIXTURE_RECEIPT,
+          `${JSON.stringify(
+            {
+              schema_version: 1,
+              status: 'deleted_confirmed',
+              note_id: detailIds[0],
+              note_title: noteTitle,
+              role: ROLE,
+              source_sha: EXPECTED_SOURCE_SHA,
+              tree_sha256: before.treeSha256,
+            },
+            null,
+            2,
+          )}\n`,
+          { mode: 0o600 },
+        );
       } catch (error) {
         report.observations.failure_ui = await notesState(panel).catch(() => ({
           unavailable: true,
@@ -1077,7 +1205,8 @@ try {
   report.build.after = await identity();
   assert.deepEqual(report.build.after, before);
   report.imported_artifact = await verifyImportedNativeEvidence(before.extensionDir, RECEIPT);
-  if (report.imported_artifact.sourceSha !== EXPECTED_SOURCE_SHA) fail('unexpected_source_sha_after');
+  if (report.imported_artifact.sourceSha !== EXPECTED_SOURCE_SHA)
+    fail('unexpected_source_sha_after');
   report.status = 'pass';
   stage = 'complete';
 } catch {
