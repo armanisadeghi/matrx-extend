@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "lane": "guarded native member and guest acceptance",
-  "run_id": "files-member-d64-20261002-001",
+  "run_id": "files-member-d64-20261002-003",
   "completed_at": "2026-10-02",
   "subject_build": {
     "version": "0.2.173",
@@ -15,7 +15,7 @@
     "organization_membership": "PASS: Arman selected an organization shown in the authenticated extension picker, populated through the canonical mbr_for_user resolver. The selected organization identifier and name were not retained. The picker does not expose the membership role."
   },
   "cases": {
-    "guest": "PASS: Files and Saved captures tabs were absent before and after panel reload.",
+    "guest": "PASS: Files and Saved captures tabs were absent before and after panel reload in the clean exclusive repeat.",
     "EXT-D-0064_member_library": {
       "result": "PASS",
       "request_failure_observed": true,
@@ -35,14 +35,25 @@
     "EXT-D-0065_member_saved_capture_race": "UNVERIFIED: no test-owned Source pair was configured. The run performed no fixture writes."
   },
   "resource": {
-    "journal": "docs/stabilization/resource-journals/files-member-d64-20261002-001.jsonl",
-    "admission": "admitted; healthy watches; resourceInvalid=false",
+    "journal": "docs/stabilization/resource-journals/files-member-d64-20261002-003.jsonl",
+    "admission": "admitted; all recorded healthy watches; resourceInvalid=false",
+    "exclusive_run": true,
     "runner_exit": 1,
-    "exit_interpretation": "Expected partial-status exit because D65 was unverified; D64 and guest cases passed."
+    "exit_interpretation": "Expected partial-status exit because D65 was unverified; guest and member D64 passed.",
+    "prior_attempts": [
+      {
+        "run_id": "files-member-d64-20261002-001",
+        "adjudication": "D64 observations retained but invalidated by overlapping unguarded Vitest process at 13:37:36–13:37:38 UTC."
+      },
+      {
+        "run_id": "files-member-d64-20261002-002",
+        "adjudication": "guarded startup configuration error before UI; no acceptance observations."
+      }
+    ]
   },
   "validation": {
     "runner_result": "test-results/files-saved-native-acceptance.json",
     "runner_commit": "b83c9767",
-    "scope_limit": "This is native evidence for frozen 0.2.173. It does not establish coverage on latest main or a newer hosted build."
+    "scope_limit": "Clean exclusive native evidence for frozen 0.2.173 only; no latest main/newer hosted build claim. D65 is unverified."
   }
 }
