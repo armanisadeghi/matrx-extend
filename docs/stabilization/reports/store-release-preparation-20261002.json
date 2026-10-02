@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-02",
+  "itemId": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "published": {
+    "status": "Published - public",
+    "version": "0.2.130",
+    "sourceSha": "10ac483f35d97faf5affdd57d8c4a5a258d91c65",
+    "tag": "v0.2.130",
+    "submittedStoreZipSha256": "9bdf93b207cef0ff849189b124f1899a8a425a860e5801dcbd164a9c4c75467a",
+    "evidence": "Authenticated primary publisher dashboard, observed by the Store session on October 2"
+  },
+  "latestFrozenStoreArtifact": {
+    "version": "0.2.173",
+    "sourceSha": "d6d6d6b83c937652525f473082ac2f2492c9eabe",
+    "tag": "v0.2.173",
+    "path": ".output/matrx-extend-0.2.173-store.zip",
+    "sha256": "1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff",
+    "releaseReceipt": ".output/release-receipt.json",
+    "uploaded": false,
+    "classification": "The packaged manifest policy surface matches the approved published baseline. Changes in the candidate's guest and signed-in experience require existing truthful Store copy and exact-build acceptance."
+  },
+  "currentSource": {
+    "packageVersionBeforeThisReport": "0.2.175",
+    "note": "Main has commits after v0.2.175; no newer frozen Store ZIP was located locally, in GitHub Releases, or in Actions artifacts."
+  },
+  "verification": {
+    "approvedBaselineAdvanced": true,
+    "baselineSourceTagVerified": true,
+    "artifactHashVerified": true,
+    "artifactManifestMatchesApprovedPolicySurface": true,
+    "exactTreeGuestAndNonAdminAcceptance": "Passed on v0.2.173 per reports/release-readiness-20261001.json and reports/guest-grounding-peer-20261001.json",
+    "signedInToGuestPrivacyTransition": "Unverified",
+    "newerSourceReleaseGates": "Not run; no newer artifact was produced"
+  },
+  "hostedReleaseBlocker": {
+    "workflow": ".github/workflows/release.yml",
+    "failedRun": "https://github.com/armanisadeghi/matrx-extend/actions/runs/36820858912",
+    "reason": "Required scoped SUPABASE_ACCESS_TOKEN GitHub secret is absent; workflow stopped before checkout",
+    "credentialDecision": "Q-2026-10-01-extend-hosted-read-token is awaiting owner approval; no token was created or substituted",
+    "localConstraint": "Workspace parent CLAUDE.md prohibits manually initiating release or build commands on this machine"
+  }
+}
