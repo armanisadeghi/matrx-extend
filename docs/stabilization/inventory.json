@@ -26746,6 +26746,18 @@
           "id": "EXT-F-2013-C136",
           "label": "Render typed decision answer in Chat live stream and conversation history",
           "action": "The verdict appears as readable assistant content during the stream and after reopening the conversation, without an empty assistant bubble."
+        },
+        {
+          "id": "EXT-F-2013-C137",
+          "label": "Inspect context receipt details",
+          "action": "Open the composer context chip and inspect actual receipt references and blocks.",
+          "test_design_status": "unverified"
+        },
+        {
+          "id": "EXT-F-2013-C138",
+          "label": "View exact delivered context",
+          "action": "Open the canonical delivered-text viewer for the actual persisted server message.",
+          "test_design_status": "unverified"
         }
       ],
       "source_anchors": [
@@ -27182,13 +27194,43 @@
               }
             }
           }
+        },
+        {
+          "id": "EXT-F-2013-T11",
+          "title": "Inspect actual context receipt blocks and delivered text",
+          "control_ids": [
+            "EXT-F-2013-C137",
+            "EXT-F-2013-C138"
+          ],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Exact artifact identity recorded; reload extension and page; use each applicable real account mode."
+          ],
+          "steps": [
+            "Send a page-grounded turn and wait for its terminal receipt.",
+            "Open the context chip; compare displayed included count, references and blocks with the actual received receipt.",
+            "Open exact delivered text for that persisted server user message.",
+            "Repeat separately in Chat and Pilot without cross-conversation receipt leakage."
+          ],
+          "expected": [
+            "Count and blocks match the current turn receipt; absent/unknown data is not fabricated.",
+            "Viewer opens actual stored delivered text for the exact turn; no client-generated message ID is substituted."
+          ],
+          "verification_status": "Source consumer repair guarded29/29 and compile; native unverified. Exact text viewer wire gap EXT-D-0075 remains.",
+          "results": {}
         }
       ],
       "cells": {
         "guest": {
           "test_status": "fail",
           "defect_ids": [
-            "EXT-D-0066"
+            "EXT-D-0066",
+            "EXT-D-0074",
+            "EXT-D-0075"
           ],
           "run_ids": [
             "guest-grounding-peer-native-20261001-001"
@@ -27197,13 +27239,19 @@
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0074",
+            "EXT-D-0075"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "admin": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0074",
+            "EXT-D-0075"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         }

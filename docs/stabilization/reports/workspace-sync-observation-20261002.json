@@ -1,0 +1,117 @@
+{
+  "observed_at": "2026-10-02T13:55:39.399755+00:00",
+  "note": "Read-only repository observation; active unrelated changes not modified. First baseline for this checkpoint.",
+  "repositories": [
+    {
+      "repo": "workspace",
+      "fetch_ok": true,
+      "branch": "main",
+      "ahead_behind": "0\t0",
+      "origin_main": "c310db0b638abbcdaa6121ca259818292c590c11",
+      "last_update": "2026-08-13T10:34:42-07:00",
+      "dirty_paths": [],
+      "stashes": []
+    },
+    {
+      "repo": "aidream",
+      "fetch_ok": true,
+      "branch": "main",
+      "ahead_behind": "0\t7",
+      "origin_main": "8a2c3fbcd91afe25879974372b680de01e263b44",
+      "last_update": "2026-10-02T06:55:13-07:00",
+      "dirty_paths": [],
+      "stashes": []
+    },
+    {
+      "repo": "ai-matrx",
+      "fetch_ok": true,
+      "branch": "main",
+      "ahead_behind": "0\t9",
+      "origin_main": "ab36bd64ca21c63b7b7428c8b7d09ec7f5c8990a",
+      "last_update": "2026-10-02T06:54:03-07:00",
+      "dirty_paths": [],
+      "stashes": []
+    },
+    {
+      "repo": "matrx-extend",
+      "fetch_ok": true,
+      "branch": "main",
+      "ahead_behind": "0\t0",
+      "origin_main": "562789486a0a2bbd40d1725d951520223d31fe1b",
+      "last_update": "2026-10-02T06:52:45-07:00",
+      "dirty_paths": [
+        "M docs/feature-tests.md",
+        " M src/features/chat/ContextRulesComposerChip.tsx",
+        " M src/lib/agents/catalog.ts",
+        " M src/lib/chat/context/request-context.test.ts",
+        " M src/state/context-rules.ts",
+        " M tests/unit/context-rules-chip.test.tsx",
+        "?? docs/stabilization/resource-journals/oct02-agents-consumer-compile-20261002-001.jsonl",
+        "?? docs/stabilization/resource-journals/oct02-agents-consumer-compile-20261002-002.jsonl",
+        "?? docs/stabilization/resource-journals/oct02-agents-consumer-focused-20261002-001.jsonl",
+        "?? docs/stabilization/resource-journals/oct02-agents-consumer-focused-20261002-002.jsonl"
+      ],
+      "stashes": []
+    },
+    {
+      "repo": "matrx-local",
+      "fetch_ok": true,
+      "branch": "main",
+      "ahead_behind": "0\t1",
+      "origin_main": "4ccc9c7e0a823b05b0c55ddcd6f9775db3d120c9",
+      "last_update": "2026-10-02T13:49:40Z",
+      "dirty_paths": [],
+      "stashes": []
+    },
+    {
+      "repo": "matrx-sandbox",
+      "fetch_ok": true,
+      "branch": "main",
+      "ahead_behind": "0\t0",
+      "origin_main": "ce39443cd7a25fccbe7e7abaaf04ab8b4b7befca",
+      "last_update": "2026-10-01T23:50:50-07:00",
+      "dirty_paths": [],
+      "stashes": []
+    },
+    {
+      "repo": "matrx-ship",
+      "fetch_ok": true,
+      "branch": "main",
+      "ahead_behind": "0\t0",
+      "origin_main": "b95e1aee10a2fbb0e8bbc6e68f899f0e79a0b409",
+      "last_update": "2026-10-02T01:14:36-07:00",
+      "dirty_paths": [],
+      "stashes": []
+    },
+    {
+      "repo": "my-matrx",
+      "fetch_ok": true,
+      "branch": "main",
+      "ahead_behind": "0\t0",
+      "origin_main": "1e6c05dbb3c1852e80e769d425c8d1806abf9195",
+      "last_update": "2026-09-30T20:45:17-07:00",
+      "dirty_paths": [],
+      "stashes": []
+    },
+    {
+      "repo": "matrx-common-docs",
+      "fetch_ok": true,
+      "branch": "main",
+      "ahead_behind": "0\t5",
+      "origin_main": "d9178768e85d59c644860c4064d40a89b42dfe3b",
+      "last_update": "2026-10-02T06:48:52-07:00",
+      "dirty_paths": [],
+      "stashes": []
+    },
+    {
+      "repo": "matrx-package-template",
+      "fetch_ok": true,
+      "branch": "main",
+      "ahead_behind": "0\t0",
+      "origin_main": "8822c1bdc035dcaf332c8af60685e4d93dcee032",
+      "last_update": "2026-09-30T20:45:02-07:00",
+      "dirty_paths": [],
+      "stashes": []
+    }
+  ]
+}

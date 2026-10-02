@@ -1,0 +1,33 @@
+{
+  "id": "EXT-D-0075",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T11"],
+  "surface": "Chat and Pilot context receipt details / shared agents consumer",
+  "auth_mode": "guest/member/admin as exposed by the shared composer",
+  "title": "Delivered context text viewer lacks the server message identity",
+  "reproduction": [
+    "Use an exact identified development or hosted artifact; record receipt/version, reload the unpacked extension, refresh the page and reopen the panel before native checks.",
+    "After a turn, open the context receipt details and try to inspect exact delivered text. At the source boundary compare the viewer required message_id with context_receipt normalization and local optimistic message IDs. Do not substitute a client-minted ID."
+  ],
+  "expected": "Open the exact persisted delivered context for that turn through the canonical viewer API.",
+  "actual": "GET /ai/context/delivered requires the persisted server user message_id; the extension context_receipt and optimistic message state do not supply that identity.",
+  "evidence": ["docs/stabilization/reports/oct02-agents-consumer-20261002.json"],
+  "severity": "S3: incomplete or misleading context inspection; not proof that Chat sending fails",
+  "priority": "P2 cross-repo viewer completion after contained surfaces",
+  "state": "triaged",
+  "verification_status": "Source contract gap confirmed; no native reproduction or server wire repair in this batch. Cross-repo Chat/Pilot work remains deferred; do not call the viewer complete.",
+  "transition_history": [
+    {
+      "at": "2026-10-02T14:02:09.608607+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Reconciled source finding from bounded package consumer work; runtime limits explicit."
+    },
+    {
+      "at": "2026-10-02T14:02:09.608607+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Package/server contracts and consumer source inspected."
+    }
+  ]
+}

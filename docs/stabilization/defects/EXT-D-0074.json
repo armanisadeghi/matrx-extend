@@ -1,0 +1,45 @@
+{
+  "id": "EXT-D-0074",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T11"],
+  "surface": "Chat and Pilot context receipt details / shared agents consumer",
+  "auth_mode": "guest/member/admin as exposed by the shared composer",
+  "title": "Shared agents package consumer drops receipt references and blocks",
+  "reproduction": [
+    "Use an exact identified development or hosted artifact; record receipt/version, reload the unpacked extension, refresh the page and reopen the panel before native checks.",
+    "Use source before11d0fba9 with @ai-matrx/agents0.32.0. Run the context-rules-chip unit suite and feed a receipt containing delivered/on_request references and blocks through normal store normalization; inspect the shared panel props."
+  ],
+  "expected": "Preserve real receipt references and blocks and expose the included-row count; guest catalog identity reads must not demand sign-in.",
+  "actual": "src/state/context-rules.ts normalization previously omitted delivered/on-request references and server blocks; ContextRulesComposerChip passed a generic label rather than the shared count label.",
+  "evidence": ["docs/stabilization/reports/oct02-agents-consumer-20261002.json"],
+  "severity": "S3: incomplete or misleading context inspection; not proof that Chat sending fails",
+  "priority": "P1 release compatibility",
+  "state": "fixed",
+  "verification_status": "11d0fba9 repairs the consumer; 29 guarded focused tests and compile pass. Independent source review pending; new UI artifact not built.",
+  "transition_history": [
+    {
+      "at": "2026-10-02T14:02:09.608607+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Reconciled source finding from bounded package consumer work; runtime limits explicit."
+    },
+    {
+      "at": "2026-10-02T14:02:09.608607+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Package/server contracts and consumer source inspected."
+    },
+    {
+      "at": "2026-10-02T14:02:09.608607+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Consumer fields and label adopted in11d0fba9."
+    },
+    {
+      "at": "2026-10-02T14:02:09.608607+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Guarded focused tests and compile pass; independent/native acceptance outstanding."
+    }
+  ]
+}
