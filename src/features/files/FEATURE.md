@@ -66,6 +66,9 @@ does not create a second file store.
 
 ## Runtime race and byte-loading rules
 
+- Upload/download failures discard unread response bodies before retrying or
+  returning. User-facing errors keep the HTTP status and a bounded remedy, never
+  reflect arbitrary server text or let cleanup failure hide the transfer error.
 - Attachment mutations are globally serialized in this compact surface. A
   refresh that started before an attach/detach cannot overwrite the
   server-confirmed result when it resolves later.
