@@ -17,7 +17,8 @@
     "Injected statfs measurements with external repo/profile/lease at 1600 GiB and independent / at 116 MiB must trigger disk-low under the unchanged 20 GiB floor.",
     "A low lease volume independently triggers disk-low; the default statfs implementation reads actual mounted paths and rejects invalid values.",
     "A real private 0600 marker is written, and injected ENOSPC surfaces RESOURCE_SAFETY_STATE_WRITE_FAILED without payload reflection.",
-    "Copied-guard process and journal fixture suites include the new disk helper so their existing integration assertions still run against the actual guard."
+    "Copied-guard process and journal fixture suites include the new disk helper so their existing integration assertions still run against the actual guard.",
+    "A macOS CI subprocess fixture starts the copied real guard and a live owned workload, makes its hold marker read-only after admission, and requires exit 3, an invalid final journal decision, a retained owner lease, and stopped owned work. The fixture keeps the 20 GiB floor unchanged and shortens only its isolated sampling intervals."
   ],
-  "verification_limit": "Only node --check, report JSON parse, git diff --check, and targeted Biome passed locally (four pre-existing useTemplate warnings). No test, guard run, browser, build, or release was launched locally while the parent recovered internal disk. Hosted CI result and fresh peer review are pending; do not claim GREEN or a valid native run."
+  "verification_limit": "Only node --check, report JSON parse, git diff --check, and targeted Biome passed locally (four pre-existing useTemplate warnings). No test, guard run, browser, build, or release was launched locally while the parent recovered internal disk. Hosted CI helper and new macOS running-guard results plus fresh peer review are pending; do not claim GREEN or a valid native run."
 }

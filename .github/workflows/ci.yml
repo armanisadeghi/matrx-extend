@@ -33,6 +33,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  resource-guard-integration:
+    runs-on: macos-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Safety marker failure retains guard ownership
+        run: node --test scripts/test-stabilization-resource-safety-integration.mjs
+
   checks:
     runs-on: ubuntu-latest
     timeout-minutes: 15
