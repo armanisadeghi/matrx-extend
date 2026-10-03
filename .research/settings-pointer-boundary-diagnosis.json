@@ -65,7 +65,19 @@
     "log_sha256": "21a1568406668ee172848c25a819f5aa0f3c301840118ab0552008ebb4a07f89",
     "formatted_durable_receipt_path": "docs/stabilization/reports/settings-pointer-boundary-20261003/diagnostic.receipt.json",
     "formatted_durable_receipt_sha256": "7d32dc8869748688012eac79bf8aff6639b65d4c9776ad50cb936479e804fba4",
-    "durable_log_path": "docs/stabilization/reports/settings-pointer-boundary-20261003/diagnostic-02.hosted.log"
+    "durable_log_path": "docs/stabilization/reports/settings-pointer-boundary-20261003/diagnostic-02.hosted.log",
+    "resource_journals": [
+      {
+        "path": "docs/stabilization/resource-journals/d87-pointer-diagnostic-20261003.jsonl",
+        "sha256": "eb46d05dd9870d99ec3ea015f13e627d259a1a920481707684b9c63b353dc464",
+        "final_decision": "refused"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/d87-pointer-diagnostic-20261003-02.jsonl",
+        "sha256": "deff1d092c912d5991910de5ca96281a6912fff8789139ab781d8ed2c5b264ae",
+        "final_decision": "child_failed"
+      }
+    ]
   },
   "credential_temp_file_removed": true,
   "product_verdict": "unverified_after_first_theme_choice",
