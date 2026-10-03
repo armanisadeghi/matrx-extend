@@ -1728,7 +1728,9 @@ Every entry follows this shape:
      with "Retry export" and no copied checkmark. After a successful rotation
      whose details refresh fails, "Key rotated" remains visible and retrying
      details does not rotate again. A failed rotation reports failure and
-     requires a fresh Re-key confirmation.
+     requires a fresh Re-key confirmation. If storage cannot confirm whether
+     the key changed, "Key status unknown" blocks Re-key until "Retry audit
+     details" succeeds.
   7. Run another tool. Verify the new receipt's `publicKeyId` matches
      the new active key. Open an old receipt — it still shows
      "Signature valid" (verified against the retired key in history).

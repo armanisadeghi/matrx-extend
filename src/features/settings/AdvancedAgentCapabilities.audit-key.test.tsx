@@ -1,4 +1,5 @@
 import { AdvancedAgentCapabilities } from '@/features/settings/AdvancedAgentCapabilities';
+import { DeviceKeyOutcomeUnknownError } from '@/lib/audit/device-key';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -13,6 +14,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('@/lib/audit/device-key', () => ({
+  DeviceKeyOutcomeUnknownError: class extends Error {},
   exportPublicKeyJwk: mocks.exportKey,
   rotateDeviceKey: mocks.rotateKey,
 }));
@@ -109,6 +111,28 @@ describe('Settings admin audit key', () => {
     expect(await screen.findByRole('alert', { name: /audit details/i })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: /retry audit details/i }));
     await waitFor(() => expect(screen.queryByRole('alert', { name: /audit details/i })).toBeNull());
+    expect(mocks.rotateKey).toHaveBeenCalledTimes(1);
+  });
+
+  it('blocks another rotation while an ambiguous active-key write is unresolved', async () => {
+    render(<AdvancedAgentCapabilities />);
+    await screen.findByText('isolated-key');
+    mocks.rotateKey.mockRejectedValueOnce(new DeviceKeyOutcomeUnknownError());
+    fireEvent.click(screen.getByRole('button', { name: 'Re-key' }));
+    fireEvent.click(
+      within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Rotate key' }),
+    );
+    expect(await screen.findByRole('alert', { name: /audit key status unknown/i })).toBeTruthy();
+    expect((screen.getByRole('button', { name: 'Re-key' }) as HTMLButtonElement).disabled).toBe(
+      true,
+    );
+    fireEvent.click(screen.getByRole('button', { name: /retry audit details/i }));
+    await waitFor(() =>
+      expect(screen.queryByRole('alert', { name: /audit key status unknown/i })).toBeNull(),
+    );
+    expect((screen.getByRole('button', { name: 'Re-key' }) as HTMLButtonElement).disabled).toBe(
+      false,
+    );
     expect(mocks.rotateKey).toHaveBeenCalledTimes(1);
   });
 });

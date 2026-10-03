@@ -2,7 +2,7 @@
   "lead": "EXT-L-SETTINGS-002",
   "defect": "EXT-D-0093",
   "scope": "Admin Settings audit-key card through AdvancedAgentCapabilities",
-  "current_truth": "Source repair is locally green; exact-build native behavior and independent review are unverified. Defect remains open.",
+  "current_truth": "Initial source repair passed guarded tests; independent review found a late storage-write gap. Expanded primitive repair passed guarded focused tests 10/10 and guarded TypeScript compilation. Independent re-review and native behavior remain open. Defect remains in-fix.",
   "diagnosis": {
     "boundary": "AuditKeyCard asynchronous operation handlers and first-load effect",
     "root_cause": "The first-load promise was not caught; export caught to console only; rotation joined the successful mutation and later refresh in one uncaught chain, so a failed refresh obscured a completed key change.",
@@ -12,7 +12,7 @@
       "Rotation mutation",
       "Post-rotation detail refresh"
     ],
-    "repair": "Each operation reports a visible result. Details retry performs reads only. Rotation success is recorded immediately after mutation, before refresh. Failed reads clear stale key details. Structured debug logging records only exception type, never error text or key contents."
+    "repair": "Each operation reports a visible result. Details retry performs reads only. Rotation success is recorded immediately after mutation, before refresh. Failed reads clear stale key details. Structured debug logging records only exception type, never error text or key contents. The device-key primitive imports before persistence, prepares public history before writing an active key, reads back a rejected active write, and reports an unknown outcome when readback also fails. Prepared public entries remain hidden until active; this does not claim atomic storage writes."
   },
   "verification": {
     "red": "Guarded run audit-key-red-20261003: 3/3 connected-component cases failed for original missing UI outcomes; original load and rotation refresh also produced unhandled rejections.",
@@ -21,12 +21,23 @@
     "journals": [
       "docs/stabilization/resource-journals/audit-key-red-20261003.jsonl",
       "docs/stabilization/resource-journals/audit-key-green-20261003.jsonl",
-      "docs/stabilization/resource-journals/audit-key-compile-20261003.jsonl"
+      "docs/stabilization/resource-journals/audit-key-compile-20261003.jsonl",
+      "docs/stabilization/resource-journals/check-091d0994-d781-404b-b8e1-3f11b630b2aa.jsonl",
+      "docs/stabilization/resource-journals/audit-key-partial-red-20261003.jsonl",
+      "docs/stabilization/resource-journals/audit-key-partial-green-20261003.jsonl",
+      "docs/stabilization/resource-journals/audit-key-final-tests-20261003.jsonl",
+      "docs/stabilization/resource-journals/audit-key-history-final-20261003.jsonl",
+      "docs/stabilization/resource-journals/audit-key-history-compile-20261003.jsonl",
+      "docs/stabilization/resource-journals/audit-key-history-compile-2-20261003.jsonl"
     ],
+    "partial_write_red": "Guarded run audit-key-partial-red-20261003: actual crypto plus isolated storage, two failures for persisted-then-rejected active writes in rotation and first creation.",
+    "partial_write_first_green": "Guarded run audit-key-final-tests-20261003: 8/8 primitive and connected UI tests passed before the failed-no-persist history scenario was added. This is not final verification of the expanded repair.",
+    "partial_write_final_green": "Guarded run audit-key-history-final-20261003: 10/10 primitive and connected UI tests passed, including failed-no-persist history equality, hidden candidate lookup, unknown readback cache recovery, and real Ed25519 verification of two retired keys after repeated rotations.",
+    "partial_write_final_compile": "Guarded run audit-key-history-compile-2-20261003: pnpm exec tsc --noEmit exited 0. The immediate prior compile admission was refused RESOURCE_LEGACY_RUNNER_BUSY while the completed test wrapper PID was still exiting; no compile child ran in that attempt.",
     "native": "Not run in this lane; no real user/device key was rotated."
   },
   "open": [
-    "Independent source review",
+    "Independent source re-review",
     "Exact-build native Settings verification with isolated key inputs and safe failure injection"
   ]
 }

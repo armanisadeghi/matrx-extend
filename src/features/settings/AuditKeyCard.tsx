@@ -18,7 +18,11 @@
  * `lib/audit/log`.
  */
 
-import { exportPublicKeyJwk, rotateDeviceKey } from '@/lib/audit/device-key';
+import {
+  DeviceKeyOutcomeUnknownError,
+  exportPublicKeyJwk,
+  rotateDeviceKey,
+} from '@/lib/audit/device-key';
 import {
   MAX_RECEIPTS,
   getAuditFailureCount,
@@ -63,7 +67,9 @@ export function AuditKeyCard() {
   const [rotateOpen, setRotateOpen] = useState(false);
   const [failureCount, setFailureCount] = useState(0);
   const [detailsError, setDetailsError] = useState(false);
-  const [operationError, setOperationError] = useState<'export' | 'rotate' | null>(null);
+  const [operationError, setOperationError] = useState<'export' | 'rotate' | 'unknown' | null>(
+    null,
+  );
   const [rotationSucceeded, setRotationSucceeded] = useState(false);
 
   const refresh = useCallback(async () => {
@@ -80,6 +86,7 @@ export function AuditKeyCard() {
       setRecent(r);
       setFailureCount(f);
       setDetailsError(false);
+      setOperationError((current) => (current === 'unknown' ? null : current));
     } catch (err) {
       log.error('ui', 'Audit key details could not load', safeErrorKind(err));
       setPublicKeyId(null);
@@ -112,7 +119,16 @@ export function AuditKeyCard() {
       await refresh();
     } catch (err) {
       log.error('ui', 'Audit key rotation failed', safeErrorKind(err));
-      setOperationError('rotate');
+      if (err instanceof DeviceKeyOutcomeUnknownError) {
+        setDetailsError(true);
+        setPublicKeyId(null);
+        setCreatedAt(null);
+        setCount(null);
+        setRecent([]);
+        setOperationError('unknown');
+      } else {
+        setOperationError('rotate');
+      }
     } finally {
       setBusy(null);
     }
@@ -160,7 +176,7 @@ export function AuditKeyCard() {
       {rotationSucceeded && (
         <output className="text-xs text-emerald-700 dark:text-emerald-400">Key rotated.</output>
       )}
-      {detailsError && (
+      {detailsError && operationError !== 'unknown' && (
         <div className="space-y-1">
           <div
             role="alert"
@@ -197,6 +213,20 @@ export function AuditKeyCard() {
           Key rotation failed. Try Re-key again.
         </div>
       )}
+      {operationError === 'unknown' && (
+        <div className="space-y-1">
+          <div
+            role="alert"
+            aria-label="Audit key status unknown"
+            className="text-xs text-destructive"
+          >
+            Key status unknown. Check audit details before re-keying.
+          </div>
+          <Button type="button" size="sm" variant="ghost" onClick={() => void refresh()}>
+            Retry audit details
+          </Button>
+        </div>
+      )}
 
       <div className="flex items-center justify-end gap-2 pt-1">
         <Button
@@ -215,7 +245,7 @@ export function AuditKeyCard() {
           size="sm"
           variant="outline"
           onClick={() => setRotateOpen(true)}
-          disabled={busy !== null}
+          disabled={busy !== null || operationError === 'unknown'}
           className="h-7 rounded-full px-3 text-xs"
         >
           {busy === 'rotate' ? 'Rotating…' : 'Re-key'}
