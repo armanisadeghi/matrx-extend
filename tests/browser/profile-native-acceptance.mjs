@@ -86,9 +86,56 @@ async function state(panel) {
       back:buttons.some(b=>b.title==='Back'), chat:!!document.querySelector('button[role="tab"][title="Chat"][data-state="active"]'),
       preferred:input?.value ?? null, dirty:(document.body.innerText??'').includes('Unsaved changes'),
       discard:buttons.some(b=>b.textContent.trim()==='Discard'), saveEnabled:buttons.some(b=>b.textContent.trim()==='Save'&&!b.disabled),
+      loading:!input,
       error:([...document.querySelectorAll('div')].find(el=>el.classList.contains('text-destructive')&&
         el.classList.contains('rounded-xl')&&el.classList.contains('border-destructive/40'))?.textContent??'').slice(0,160) };
   })()`);
+}
+function redactedState(observed, expected) {
+  return {preferred_matches_expected:observed.preferred===expected,
+    preferred_empty:observed.preferred==='',preferred_missing:observed.preferred===null,
+    dirty:observed.dirty,save_enabled:observed.saveEnabled,
+    error_present:Boolean(observed.error),loading:observed.loading,back:observed.back};
+}
+function observeProfileRequests(panel) {
+  const requests=new Map();
+  const events=[];
+  const route=(url)=>{
+    try {
+      const path=new URL(url).pathname;
+      if(path==='/rest/v1/user_form_profile')return 'profile_row';
+      if(path==='/rest/v1/rpc/get_user_form_context')return 'profile_context';
+    } catch { /* An unrelated URL. */ }
+    return null;
+  };
+  const offRequest=panel.on('Network.requestWillBeSent',({requestId,request})=>{
+    const name=route(request?.url);
+    if(name)requests.set(requestId,{route:name,method:request.method,status:null,outcome:'pending',error_code:null});
+  });
+  const offResponse=panel.on('Network.responseReceived',({requestId,response})=>{
+    const entry=requests.get(requestId);
+    if(entry)entry.status=response.status;
+  });
+  const offFinished=panel.on('Network.loadingFinished',({requestId})=>{
+    const entry=requests.get(requestId);
+    if(!entry)return;
+    entry.outcome='finished';
+    events.push(entry);
+    requests.delete(requestId);
+    if(entry.status===null||entry.status<400)return;
+    void panel.send('Network.getResponseBody',{requestId}).then(({body,base64Encoded})=>{
+      const raw=base64Encoded?Buffer.from(body,'base64').toString('utf8'):body;
+      const code=JSON.parse(raw)?.code;
+      if(typeof code==='string'&&/^[A-Za-z0-9_]{1,40}$/.test(code))entry.error_code=code;
+    }).catch(()=>{});
+  });
+  const offFailed=panel.on('Network.loadingFailed',({requestId})=>{
+    const entry=requests.get(requestId);
+    if(entry){entry.outcome='network_failed';events.push(entry);requests.delete(requestId);}
+  });
+  return {start:()=>panel.send('Network.enable'),
+    snapshot:()=>events.map(({route,method,status,outcome,error_code})=>({route,method,status,outcome,error_code})),
+    stop:()=>{offRequest();offResponse();offFinished();offFailed();}};
 }
 async function openProfile(panel) {
   await click(panel, 'title', 'admin@admin.com');
@@ -138,29 +185,61 @@ async function caseT02(panel, original) {
 }
 async function caseT04(panel, original) {
   const id='EXT-F-1004-T04', startedAt=new Date().toISOString();
+  const diagnostic={stages:[],requests:[]};
+  report.t04_diagnostic=diagnostic;
+  const network=observeProfileRequests(panel);
+  await network.start();
+  const observe=async(stage,expected)=>{
+    diagnostic.stages.push({stage,...redactedState(await state(panel),expected)});
+  };
   await fillPreferred(panel,`Profile discard ${randomUUID().slice(0,8)}`);
+  await observe('discard_draft','');
   await clickProfileHeader(panel,'Discard');
   const discarded=await waitFor('profile_discard_restored',()=>state(panel),s=>s.preferred===original&&!s.dirty&&!s.saveEnabled,10000);
+  await observe('discard_settled',original);
   const savedValue=`Profile save ${randomUUID().slice(0,8)}`;
   await fillPreferred(panel,savedValue);
+  await observe('save_draft',savedValue);
+  let firstError=null, cleanupError=null;
   try {
     await clickProfileHeader(panel,'Save');
     await waitFor('profile_save_settled',()=>state(panel),s=>s.preferred===savedValue&&!s.dirty&&!s.error,30000);
+    await observe('save_settled',savedValue);
     await click(panel,'title','Back');
     await openProfile(panel);
     await waitFor('profile_saved_after_reopen',()=>state(panel),s=>s.preferred===savedValue&&!s.dirty,30000);
+    await observe('saved_after_reopen',savedValue);
+  } catch(error) {
+    firstError=error;
+    diagnostic.first_failure=String(error?.message??'unknown').split(':',1)[0].slice(0,100);
+    await observe('first_failure',savedValue).catch(()=>{});
   } finally {
-    const current=await state(panel);
-    if(current.preferred!==original) {
-      await fillPreferred(panel,original);
-      await clickProfileHeader(panel,'Save');
-      await waitFor('profile_original_restored',()=>state(panel),s=>s.preferred===original&&!s.dirty&&!s.error,30000);
-      await click(panel,'title','Back');
-      await openProfile(panel);
-      await waitFor('profile_restore_reopen',()=>state(panel),s=>s.preferred===original&&!s.dirty,30000);
+    try {
+      const current=await state(panel);
+      await observe('before_cleanup',original);
+      if(current.preferred!==original) {
+        await fillPreferred(panel,original);
+        await observe('cleanup_draft',original);
+        await clickProfileHeader(panel,'Save');
+        await waitFor('profile_original_restored',()=>state(panel),s=>s.preferred===original&&!s.dirty&&!s.error,30000);
+        await observe('cleanup_settled',original);
+        await click(panel,'title','Back');
+        await openProfile(panel);
+        await waitFor('profile_restore_reopen',()=>state(panel),s=>s.preferred===original&&!s.dirty,30000);
+        await observe('cleanup_after_reopen',original);
+      }
+      report.restoration={verified:true,at:new Date().toISOString()};
+    } catch(error) {
+      cleanupError=error;
+      diagnostic.cleanup_failure=String(error?.message??'unknown').split(':',1)[0].slice(0,100);
+      await observe('cleanup_failure',original).catch(()=>{});
+    } finally {
+      diagnostic.requests=network.snapshot();
+      network.stop();
     }
-    report.restoration={verified:true,at:new Date().toISOString()};
   }
+  if(firstError)throw firstError;
+  if(cleanupError)throw cleanupError;
   report.cases.push({id,mode:'admin',dimension:'warm',branch:'discard-draft',status:'passed',started_at:startedAt,
     observed:{discard_restored:discarded.preferred===original,save_disabled:!discarded.saveEnabled}});
   report.cases.push({id,mode:'admin',dimension:'warm',branch:'save-draft',status:'passed',started_at:startedAt,
