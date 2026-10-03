@@ -1,0 +1,21 @@
+{
+  "scope": "Source-only peer review of 520589c8 and 00f3ef31 for EXT-D-0087; no native browser run in this lane",
+  "A_runtime": {
+    "status": "PENDING",
+    "reason": "No hosted development artifact or browser execution was performed by this reviewer. Runtime readiness requires the separately owned native run."
+  },
+  "B_source_quality": {
+    "status": "READY_FOR_NATIVE_RUN",
+    "defects": [],
+    "evidence": [
+      "The test chooses themes through the shared CDP trusted-pointer driver, observes the Settings control and alert in the rendered panel, and reads matrx.settings.v1 through chrome.storage.local.get.",
+      "The rejected-write case requires a dark UI selection, previously persisted system value, visible save error and Retry save button, plus one intercepted storage call. The retry then requires dark storage and reload hydration.",
+      "The overlap case holds the first Chrome storage write, chooses a second value, requires no second write before release, then requires two writes, the latest stored value, and the latest value after reload.",
+      "Hosted routing requires a CI development artifact; the importer verifies GitHub run/artifact metadata and native evidence, while this test checks the imported path, status, receipt, source ancestry, manifest version and tree hash."
+    ],
+    "limitations": [
+      "The one-shot storage interception depends on chrome.storage.local.set being assignable in the actual Chrome extension context; installStorageFault checks assignment, so a mismatch fails closed during the native run.",
+      "The test proves save, error, retry and ordered persistence behavior for Theme. It is not a census of all Settings controls."
+    ]
+  }
+}
