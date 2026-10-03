@@ -45,8 +45,8 @@
     "Reload Settings after storage recovers and compare the displayed choice with the previous in-memory choice; repeat with two rapid preference changes whose writes settle out of order."
   ],
   "expected": "Each preference control reports failed persistence and offers a retry; rapid choices persist the latest successful intent and reload shows the saved choice.",
-  "actual": "Controlled store RED: two Theme choices (light, then dark) with reversed Chrome write completion persisted light. The existing Zustand setter also gave no visible save failure when Chrome rejected. A serialized settings storage boundary and visible retry now pass focused store and SettingsView tests; exact-build browser reload acceptance remains pending.",
-  "reproduction_status": "controlled store RED observed; focused repair green; browser reload and independent review pending",
+  "actual": "Shared Settings storage repair passes focused store/UI tests and full CI. Native trial exposed a test baseline error: selecting already-selected System in a fresh profile emits no change and leaves storage absent. Runner now establishes Light then System; its first corrected attempt was resource-refused before product execution. No native product pass is claimed.",
+  "reproduction_status": "controlled store RED and focused repair green; independent source review passed; native acceptance pending after baseline no-op correction and a resource-refused run",
   "evidence": [
     "src/state/settings.ts",
     "src/lib/storage/zustand-adapter.ts",
@@ -55,7 +55,12 @@
     ".research/settings-overlap-peer.json",
     "src/state/settings.persistence.test.ts",
     "src/features/settings/SettingsView.about.test.tsx",
-    ".research/settings-d87-repair.json"
+    ".research/settings-d87-repair.json",
+    ".research/settings-d87-source-peer.json",
+    ".research/d87-diagnostic-native.json",
+    ".research/settings-baseline-repair.json",
+    ".research/settings-baseline-peer.json",
+    ".research/settings-changed-baseline-native.json"
   ],
   "severity": "S2: a visible preference can fail to survive reload",
   "priority": "P1: make Settings preference persistence truthful",
