@@ -19,8 +19,8 @@
     "Repeat with two pair codes: submit the first, enter and submit the second while the first write is pending, then settle both writes and inspect the input and final saved code."
   ],
   "expected": "A delayed initial read preserves newer port input and settles before a submitted write; writes to each desktop setting complete in submission order. An older pair-code completion cannot erase newer input. The latest successful submission is the final persisted value.",
-  "actual": "Pre-fix source applied the initial port read to the input even after user edits, invoked Chrome storage for each Save without ordering, and cleared pair input after an older write. This is source-confirmed; controlled runtime RED and native reproduction have not been executed.",
-  "reproduction_status": "source-confirmed read/write overlap; controlled component and native runtime reproduction pending",
+  "actual": "Pre-fix source overwrote later port edits with the initial read, started storage writes concurrently, and cleared newer pair input after an older write. Controlled gut/mutations now reproduce the named missing-side-effect/order/read failures; restored tests and independent exact-build native role runs verify the repair.",
+  "reproduction_status": "Causal gut/mutation RED and restored21GREEN executed; independent guest/member/admin exact991 native ordering/read-before-save/latest-persistence cases passed.",
   "evidence": [
     "src/features/settings/SettingsView.tsx",
     "src/features/settings/SettingsView.about.test.tsx",
@@ -29,11 +29,15 @@
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/37093887851",
     ".research/desktop-settings-native-prepare.json",
     ".research/desktop-settings-source-peer.json",
-    ".research/desktop-settings-repair-peer.json"
+    ".research/desktop-settings-repair-peer.json",
+    ".research/desktop-settings-independent-native.json",
+    ".research/desktop-settings-admin-final.json",
+    ".research/desktop-settings-guard-proof.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37140176210"
   ],
   "severity": "S2: a desktop setting can revert to an older choice",
   "priority": "P1: preserve Settings choice under overlapping saves",
-  "state": "fixed",
+  "state": "closed",
   "transition_history": [
     {
       "at": "2026-10-03T03:34:17Z",
@@ -58,8 +62,21 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "cf0877f1 and17b8ea9d source repair accepted by independent1120b813. HostedCI37093887851 passed20Settings tests; fullCI has separate release recovery failure. Native exact-build and pre-fixRED remain pending."
+    },
+    {
+      "at": "2026-10-03T17:31:52.022229+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent exact991 native guest/member/admin passed delayed port read, serialized port/pair submissions and latest persisted value after reload. Guardproof0ed6ddea proved missing-write gut, queue bypass and stale-read mutation RED; restored21GREEN and fullCI37140176210 passed."
+    },
+    {
+      "at": "2026-10-03T17:31:52.022229+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Fresh peer scope adjudication0c20f617 confirms the defect-specific combined closure requirement is met. Root verified immutable receipt/journal hashes and source bindings. Intermediate pair input after the older write resolves is controlled-component/CI proof, not separately observed in native Chrome; this boundary is retained."
     }
   ],
   "closure_requirement": "Hosted controlled caller regression, independent repair review, and exact-build native save/reload acceptance; no closure from source inspection or an unexecuted test.",
-  "current_work": "Bounded actual guest native port/pair persistence refusal, retry and ordered-write cases passed on source991385d9 CI37129518563/artifact11275878549. Stronger reset-only retry passed with a trusted-UI nondefault draft cleared and exact fresh guest defaults. Fresh independent guest/member/admin lane is active. HTTP-only pair removal, actual desktop connection/rediscovery and broader mapped control criteria remain unverified; no defect closure or Store acceptance."
+  "current_work": "Closed for the specified read/write overlap defect. Full T43\u2013T51 controls, HTTP-only Forget (D84), actual desktop connection/rediscovery and Store shipment remain separate open work.",
+  "verification_boundary": "Native Chrome proves delayed-read preservation, write sequencing and final newest stored values after reload across all roles. The precise intermediate pair-input state after the first write resolves is proven by the controlled component suite included in hosted CI, not independently sampled in native Chrome."
 }
