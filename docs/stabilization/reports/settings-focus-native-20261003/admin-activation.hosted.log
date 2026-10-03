@@ -1,0 +1,4 @@
+HOSTED_BROWSER_READY 1194 acceptance
+PREPARED_DEVELOPMENT 3092444e73094cb0023f6086202869ccbd22978b 025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660
+FAIL D87 native acceptance: test-results/settings-d87-native-2b82d443-c258-4463-996b-280fddfade86.json
+Hosted acceptance wrapper reported native side-panel acceptance exited 1.
