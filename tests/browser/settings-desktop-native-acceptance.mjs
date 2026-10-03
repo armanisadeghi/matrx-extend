@@ -22,6 +22,7 @@ const EXTENSION_DIR = process.env.MATRX_DESKTOP_SETTINGS_EXTENSION_DIR;
 const RECEIPT_PATH = process.env.MATRX_DESKTOP_SETTINGS_RECEIPT;
 const MODE = process.env.MATRX_DESKTOP_SETTINGS_AUTH_MODE ?? 'guest';
 const OUTPUT = join(REPO, 'test-results', `settings-desktop-native-${randomUUID()}.json`);
+const STORAGE_SALT = randomUUID();
 const SOURCE = '991385d9816b31a568619522e4795c001b4d3a06';
 const RUN_ID = 37129518563;
 const ARTIFACT_ID = 11275878549;
@@ -67,7 +68,8 @@ async function state(panel) {
     const port = pane?.querySelector('input[placeholder="auto"]');
     const pair = pane?.querySelector('input[placeholder="Pair code"]');
     const row = port?.parentElement;
-    const local = await chrome.storage.local.get([${JSON.stringify(PORT_KEY)}, ${JSON.stringify(PAIR_KEY)}]);
+    // A read-only observer must never consume the held initial get([portKey]).
+    const local = await chrome.storage.local.get(null);
     const dialog = [...document.querySelectorAll('[role="alertdialog"]')]
       .find((item) => item.textContent.includes('Clear local data?'));
     const pairDialog = [...document.querySelectorAll('[role="alertdialog"], [role="dialog"]')]
@@ -96,6 +98,65 @@ async function state(panel) {
       resetError: !!dialog?.textContent.includes('Could not finish reset. Try again.'),
       signInVisible: [...(pane?.querySelectorAll('button') ?? [])].some((item) => item.textContent.trim() === 'Sign in'),
     };
+  })()`,
+  );
+}
+
+async function storageCensus(panel, baseline = null) {
+  return evaluate(
+    panel,
+    `(async () => {
+    const salt = ${JSON.stringify(STORAGE_SALT)};
+    const baseline = ${JSON.stringify(baseline)};
+    const local = await chrome.storage.local.get(null);
+    const session = await chrome.storage.session.get(null);
+    const digest = async (value) => Array.from(new Uint8Array(await crypto.subtle.digest(
+      'SHA-256', new TextEncoder().encode(salt + JSON.stringify(value)))),
+      (byte) => byte.toString(16).padStart(2, '0')).join('');
+    const category = (area, key) => {
+      if (area === 'session' && key === 'matrx.crossComponent.instanceId') return 'instance';
+      if (area === 'session' && key === 'matrx.qa.desktopSettings.session') return 'fixture';
+      if (area === 'local' && ['matrx.guest.signature', 'matrx.guest.nonce', 'matrx.guest.createdAt'].includes(key)) return 'guest';
+      if (area === 'local' && ['matrxLocalEnginePort', 'matrxLocalEngineLastGoodPort'].includes(key)) return 'discovery';
+      if (area === 'local' && key === 'matrx.chat.v1') return 'chat';
+      return 'other';
+    };
+    const freshChatDefault = (raw) => {
+      if (typeof raw !== 'string') return false;
+      try {
+        const parsed = JSON.parse(raw), state = parsed?.state;
+        return parsed.version === 1 && state && Object.keys(state).sort().join(',') ===
+          'boundComputeTarget,draft,permissionMode,selectedAgentId,variableValues' &&
+          state.draft === '' && state.boundComputeTarget === null &&
+          state.variableValues && Object.keys(state.variableValues).length === 0 &&
+          state.permissionMode && Object.keys(state.permissionMode).length === 0;
+      } catch { return false; }
+    };
+    const entries = async (area, values) => Promise.all(Object.entries(values).map(async ([key, value]) => ({
+      key: await digest([area, key]), value: await digest([area, key, value]),
+      category: category(area, key), freshDefault: key === 'matrx.chat.v1' && freshChatDefault(value),
+    })));
+    const current = { local: await entries('local', local), session: await entries('session', session) };
+    if (!baseline) return { baseline: current,
+      counts: { local: current.local.length, session: current.session.length },
+      sessionFixturePresent: Object.hasOwn(session, 'matrx.qa.desktopSettings.session') };
+    const compare = (area) => {
+      const result = { before: baseline[area].length, missing: 0, identical: 0,
+        allowedFresh: 0, unexplained: 0 };
+      for (const prior of baseline[area]) {
+        const now = current[area].find((item) => item.key === prior.key);
+        if (!now) { result.missing++; continue; }
+        if (now.value === prior.value) {
+          result.identical++;
+          if (!['chat'].includes(prior.category) || !now.freshDefault) result.unexplained++;
+        } else if (['guest', 'instance', 'discovery'].includes(prior.category) ||
+          (prior.category === 'chat' && now.freshDefault)) result.allowedFresh++;
+        else result.unexplained++;
+      }
+      return result;
+    };
+    return { local: compare('local'), session: compare('session'),
+      sessionFixturePresent: Object.hasOwn(session, 'matrx.qa.desktopSettings.session') };
   })()`,
   );
 }
@@ -546,6 +607,16 @@ try {
       }
 
       stage = 'desktop_reset';
+      await evaluate(
+        panel,
+        `chrome.storage.session.set({ 'matrx.qa.desktopSettings.session': 'owned-disposable-session' })`,
+      );
+      const beforeReset = await storageCensus(panel);
+      assert.equal(beforeReset.sessionFixturePresent, true, 'desktop_session_fixture_missing');
+      assert.ok(
+        beforeReset.counts.local > 0 && beforeReset.counts.session > 0,
+        'desktop_reset_census_empty',
+      );
       await openSection(panel, 'Data & reset');
       await click(panel, 'button', 'Clear local data on this device');
       await waitFor(
@@ -561,10 +632,30 @@ try {
           () => state(panel),
           (s) => s?.resetDialog && s.resetError && s.portSaved === 65005,
         );
+        const rejectedCensus = await storageCensus(panel, beforeReset.baseline);
+        assert.equal(rejectedCensus.local.missing, 0, 'desktop_refused_reset_removed_local_key');
+        assert.equal(
+          rejectedCensus.session.missing,
+          0,
+          'desktop_refused_reset_removed_session_key',
+        );
+        assert.equal(
+          rejectedCensus.local.identical,
+          rejectedCensus.local.before,
+          'desktop_refused_reset_changed_local_value',
+        );
+        assert.equal(
+          rejectedCensus.session.identical,
+          rejectedCensus.session.before,
+          'desktop_refused_reset_changed_session_value',
+        );
         assert.equal((await faultState(panel)).calls, 1);
         passed('reset refusal keeps confirmation and saved value', {
           error_visible: true,
           retry_available: true,
+          prior_local_count: rejectedCensus.local.before,
+          prior_session_count: rejectedCensus.session.before,
+          prior_values_preserved: true,
         });
       } finally {
         await restoreFault(panel);
@@ -579,9 +670,19 @@ try {
       await reload(panel, true);
       assert.equal((await state(panel)).portSaved, null);
       assert.equal((await panelIdentity(panel)).accessTokenPresent, false);
-      passed('reset retry clears local state and signs out after reload', {
-        cleared: true,
+      const clearedCensus = await storageCensus(panel, beforeReset.baseline);
+      assert.equal(clearedCensus.local.unexplained, 0, 'desktop_reset_local_overlap');
+      assert.equal(clearedCensus.session.unexplained, 0, 'desktop_reset_session_overlap');
+      assert.equal(
+        clearedCensus.sessionFixturePresent,
+        false,
+        'desktop_reset_session_fixture_survived',
+      );
+      passed('reset retry clears prior local/session values and signs out after reload', {
         signed_out: true,
+        local: clearedCensus.local,
+        session: clearedCensus.session,
+        session_fixture_removed: true,
       });
     },
   });
