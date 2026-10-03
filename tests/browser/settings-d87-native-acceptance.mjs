@@ -145,14 +145,20 @@ async function reload(panel, expectedTheme) {
   await waitFor(
     'd87_reloaded_guest',
     () => observation(panel),
+    (state) => state?.guest,
+  );
+  await openSettings(panel);
+  operation = 'reloaded_theme';
+  return waitFor(
+    `d87_${expectedTheme}_saved`,
+    () => observation(panel),
     (state) =>
-      state?.guest &&
-      state.settingsActive &&
+      state?.settingsActive &&
+      state.guest &&
       state.theme === LABELS[expectedTheme] &&
       state.storedTheme === expectedTheme &&
       !state.error,
   );
-  await openSection(panel, 'Appearance');
 }
 
 async function installStorageFault(panel, mode) {
@@ -292,11 +298,12 @@ try {
         stage = 'retry';
         await click(panel, 'button-text', 'Retry save');
         const retried = await settledTheme(panel, 'dark');
-        await reload(panel, 'dark');
+        const reloaded = await reload(panel, 'dark');
         report.cases.push({
           name: 'retry persisted after reload',
           status: 'pass',
-          observation: retried,
+          before_reload: retried,
+          observation: reloaded,
         });
 
         stage = 'overlap';
@@ -334,11 +341,11 @@ try {
           await restoreFault(panel);
         }
         stage = 'overlap_reload';
-        await reload(panel, 'system');
+        const reloadedLatest = await reload(panel, 'system');
         report.cases.push({
           name: 'latest rapid choice survives reload',
           status: 'pass',
-          observation: await observation(panel),
+          observation: reloadedLatest,
         });
       } catch (error) {
         report.failure_operation = operation;
