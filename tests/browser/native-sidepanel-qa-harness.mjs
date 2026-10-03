@@ -310,6 +310,32 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
   }
 }
 
+async function acquireLiveExtensionPanel({ cdp, page, extensionId }) {
+  const panelUrl = `chrome-extension://${extensionId}/sidepanel.html`;
+  for (let attempt = 0; attempt < ATTEMPTS; attempt += 1) {
+    const { targetInfos } = await cdp.send('Target.getTargets');
+    const target = targetInfos.find((item) => item.type === 'page' && item.url === panelUrl);
+    if (target) {
+      const panel = await attachTargetSession(cdp, target.targetId);
+      try {
+        const identity = await panel.send('Runtime.evaluate', {
+          expression: 'chrome.runtime.id',
+          returnByValue: true,
+        });
+        if (identity.result?.value === extensionId) return panel;
+      } catch {
+        // Reload can destroy this target between discovery and attachment.
+      }
+      await panel.detach();
+    } else if (attempt === 0) {
+      await page.bringToFront();
+      await page.locator('#open-panel').click();
+    }
+    await wait(WAIT_MS);
+  }
+  throw new Error('native_extension_live_panel_unavailable_for_cleanup');
+}
+
 async function sidePanelContexts(cdp, serviceWorkerTargetId) {
   const worker = await attachTargetSession(cdp, serviceWorkerTargetId);
   try {
@@ -671,6 +697,8 @@ export async function runNativeSidepanelQa({
                 extensionId: expectedExtensionId,
                 oldPanelId: panelTarget.targetId,
               }),
+            acquireLivePanel: () =>
+              acquireLiveExtensionPanel({ cdp, page, extensionId: expectedExtensionId }),
           }),
         );
       } finally {

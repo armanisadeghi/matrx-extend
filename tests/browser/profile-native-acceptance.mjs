@@ -2,7 +2,7 @@
 /** Receipt-bound native Profile acceptance in an owned Chrome profile. */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
@@ -22,6 +22,7 @@ const SOURCE_SHA = process.env.PROFILE_EXPECTED_SOURCE_SHA;
 const CI_RUN_ID = Number(process.env.PROFILE_EXPECTED_CI_RUN_ID);
 const ARTIFACT_ID = Number(process.env.PROFILE_EXPECTED_ARTIFACT_ID);
 const AUTH_MODE = process.env.PROFILE_AUTH_MODE ?? 'admin';
+const PRIVATE_OWNERSHIP_RECEIPT = process.env.PROFILE_PRIVATE_OWNERSHIP_RECEIPT;
 const report = {
   schema_version: 1,
   kind: 'profile_native_acceptance',
@@ -65,6 +66,22 @@ async function profileApiConfig() {
   assert.equal(new URL(url).protocol, 'https:', 'profile_api_url_invalid');
   assert.ok(key, 'profile_api_key_missing');
   return { url, key };
+}
+async function persistPrivateOwnership(record, create = false) {
+  assert.ok(PRIVATE_OWNERSHIP_RECEIPT?.startsWith('/'), 'private_ownership_receipt_required');
+  const payload = `${JSON.stringify(record)}\n`;
+  if (create) {
+    await writeFile(PRIVATE_OWNERSHIP_RECEIPT, payload, { mode: 0o600, flag: 'wx' });
+  } else {
+    const temporary = `${PRIVATE_OWNERSHIP_RECEIPT}.${randomUUID()}`;
+    await writeFile(temporary, payload, { mode: 0o600, flag: 'wx' });
+    await rename(temporary, PRIVATE_OWNERSHIP_RECEIPT);
+  }
+  assert.equal(
+    (await stat(PRIVATE_OWNERSHIP_RECEIPT)).mode & 0o077,
+    0,
+    'private_ownership_receipt_not_private',
+  );
 }
 async function profileOwnerRequest(panel, { key, organizationId }, requestUrl, method = 'GET') {
   const result = await evaluate(
@@ -653,7 +670,7 @@ try {
     expectedRelease: receipt,
     localDevReceiptPath: RECEIPT,
     artifactRoot: OUTPUT_DIR,
-    exercisePanel: async ({ page, panel, reloadExtension }) => {
+    exercisePanel: async ({ page, panel, reloadExtension, acquireLivePanel }) => {
       report.stage = 'authentication';
       let identity;
       let selectedOrg;
@@ -737,6 +754,8 @@ try {
       let pendingMarker = null;
       let cleanupPanel = panel;
       let reloadedPanel = null;
+      let reacquiredPanel = null;
+      let reloadAttempted = false;
       let executionError = null;
       try {
         if (!initialRow.row_present) {
@@ -749,6 +768,19 @@ try {
           );
           const marker = `Profile first save ${randomUUID()}`;
           pendingMarker = marker;
+          await persistPrivateOwnership(
+            {
+              run_id: RUN_ID,
+              original_row_absent: true,
+              user_id: identity.userId,
+              organization_id: stored.organizationId,
+              marker,
+              created_at: null,
+              expected_version: null,
+              state: 'before_first_save',
+            },
+            true,
+          );
           await fillPreferred(panel, marker);
           await clickProfileHeader(panel, 'Save');
           await waitFor(
@@ -764,6 +796,16 @@ try {
             marker,
           });
           ownedVersion = 1;
+          await persistPrivateOwnership({
+            run_id: RUN_ID,
+            original_row_absent: true,
+            user_id: owned.userId,
+            organization_id: owned.organizationId,
+            marker: owned.marker,
+            created_at: owned.createdAt,
+            expected_version: 1,
+            state: 'first_save_verified',
+          });
           original = marker;
           report.first_save = {
             case_id: 'EXT-F-1004-T28',
@@ -785,6 +827,7 @@ try {
         }
         await caseT25(panel, original, identity.email, AUTH_MODE, 'warm');
         report.stage = 'extension_reload';
+        reloadAttempted = true;
         const reloaded = await reloadExtension();
         reloadedPanel = reloaded.panel;
         cleanupPanel = reloaded.panel;
@@ -809,9 +852,17 @@ try {
         await caseT25(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
       } catch (error) {
         executionError = error;
+        report.execution_failure_code = String(error?.message ?? 'unknown')
+          .split(':', 1)[0]
+          .slice(0, 100);
       }
       let cleanupError = null;
       try {
+        if (reloadAttempted && !reloadedPanel && (owned || pendingMarker)) {
+          reacquiredPanel = await acquireLivePanel();
+          cleanupPanel = reacquiredPanel;
+          report.cleanup_panel_reacquired_after_reload_failure = true;
+        }
         if (!owned && pendingMarker) {
           const row = await readProfileOwnerRow(cleanupPanel, ownerConfig, identity.userId);
           if (row) {
@@ -848,6 +899,7 @@ try {
         if (report.first_save) report.first_save.status = 'cleanup_unverified';
         cleanupError = error;
       } finally {
+        if (reacquiredPanel) await reacquiredPanel.detach();
         if (reloadedPanel) await reloadedPanel.detach();
       }
       if (cleanupError) throw cleanupError;

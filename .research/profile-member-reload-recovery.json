@@ -1,5 +1,5 @@
 {
-  "status": "owned_test_row_recovered_source_repair_pending_review",
+  "status": "owned_test_row_recovered_source_candidate_pending_review",
   "failed_run": {
     "run_id": "profile-member-native-next-04",
     "started_at": "2026-10-03T23:03:17.454Z",
@@ -30,8 +30,18 @@
     "private_report_sha256": "f4f3b370f717212df9fccc8e92244b4680af6bcf5f9eee3144c68aa53ceb253e",
     "resource_journal_sha256": "06dc65cbef1a55cbb20e851bbef999137e962a3ae5060f5483ef46cc8b115e2f"
   },
+  "source_candidate": {
+    "private_ownership_receipt_before_first_save": true,
+    "private_ownership_receipt_updated_after_verified_insert": true,
+    "live_extension_panel_reacquisition_on_reload_failure": true,
+    "original_execution_failure_recorded_separately": true,
+    "cleanup_failure_does_not_claim_restoration": true,
+    "targeted_biome_and_node_syntax": "passed",
+    "native_execution": "not_run_pending_independent_review",
+    "underlying_reload_failure": "unknown; failed run did not record original execution error"
+  },
   "remaining": [
-    "Repair the acceptance runner's lost-panel cleanup and separate original execution failure reporting.",
-    "Independent source review is required before another acceptance run; no reload case is promoted by this recovery."
+    "Independent source review is required before another acceptance run; no reload case is promoted by this recovery.",
+    "A later native run must supply a fresh private ownership-receipt path and prove whether reload itself succeeds."
   ]
 }
