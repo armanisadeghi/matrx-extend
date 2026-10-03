@@ -3303,15 +3303,18 @@ Every entry follows this shape:
 
 ### The organization's records (the `records` tool)
 
-- **What it does:** Lets the browser agent use the organization's custom records through the record store's doors. The shared `records` contract currently declares 24 actions. The Chrome executor performs Table listing, one-record reads, aggregates, create/update (including bulk create), delete/restore, history, and version restore; it returns a clear executor-unavailable result for platform workflows that do not yet have a browser implementation. It carries exactly the authority of the person operating it, in their active organization.
+- **What it does:** Lets the browser agent use custom records through the record store's doors across organizations the person can access. The shared `records` contract declares 25 actions. The Chrome executor performs Table listing, one-record reads, supported aggregates, create/update (including bulk create), delete/restore, history, and version restore; it returns a clear executor-unavailable result for platform workflows that do not yet have a browser implementation. It carries exactly the authority of the person operating it.
 - **Where to test:** Sidepanel → Tools tab → `records` (signed in). It is the same tool the agent calls mid-turn.
 - **Prereq:** The record store must be switched on for your active organization. It is off at platform scope and turned on per organization; `admin@admin.com`'s Workspace has it on.
 - **Steps:**
   1. Open the Tools tab, search `records`, open the row.
   2. Run `{"action":"table_list"}` — the Tables your organization holds come back with their ids.
-  3. Run `{"action":"record_write","table_id":"<one of them>","values":{"title":"hello"}}` — you get the new record's id.
-  4. Run `{"action":"record_read","record_id":"<that id>"}` — the values come back.
-  5. Run `{"action":"record_write","record_id":"<that id>","values":{"title":"changed"}}` — the record is patched, not duplicated.
+     An app-kept output Table is omitted by default and appears when `include_app_tables` is true.
+     Check Tables in two organizations are returned, each with its own organization id.
+  3. Run `{"action":"record_aggregate","table_id":"<table with a date field>","group_by":"<date field>","bucket":"month"}` — the store groups in monthly buckets. A `bucket` without `group_by` returns an explicit refusal.
+  4. Run `{"action":"record_write","table_id":"<one of them>","values":{"title":"hello"}}` — you get the new record's id.
+  5. Run `{"action":"record_read","record_id":"<that id>"}` — the values come back.
+  6. Run `{"action":"record_write","record_id":"<that id>","values":{"title":"changed"}}` — the record is patched, not duplicated.
 - **Expected:** Every action answers either the data or the store's own sentence. A field the store decided you may not see comes back present with its reason, never a silent blank.
 - **Edge cases worth poking:**
   - Switch to an organization the store is off for: every action says so in one sentence and names who turns it on — it never returns an empty list.

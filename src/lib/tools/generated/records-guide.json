@@ -26,7 +26,8 @@
       "entity_read",
       "entity_write"
     ],
-    "note": "Call {\"action\": \"guide\", \"topic\": \"<action>\"} with one of these.",
+    "how": "Read and write the person's custom records — tables, their fields and their rows — publish a form that people with no account can answer, and open a portal where each client signs in and sees only their own rows, and write the wording of a proposal, a quote or a letter once and render it for any record. One tool, 25 actions.\n\nDO A WHOLE INTENT IN ONE CALL. Each action takes everything it needs at once; calling one per field or one per row is the single thing that makes this tool slow, and it is never necessary.\n\nA table and all its fields — ONE call: {\"action\": \"table_propose\", \"name\": \"Field Crews\", \"fields\": [{\"name\": \"crew name\", \"type\": \"text\"}, {\"name\": \"region\", \"type\": \"text\"}, {\"name\": \"day rate\", \"type\": \"currency\", \"unit\": \"USD\"}]}. It answers with table_id and every field's key and field_id. Never follow it with field_propose for a field you already named here.\n\nEvery row — ONE call: {\"action\": \"record_write\", \"table_id\": \"<id>\", \"records\": [{\"crew_name\": \"North Crew\", \"region\": \"North\", \"day_rate\": 1200}, {...}, {...}]} — up to 200 rows in one call, in one transaction. Each entry IS the field map; do not wrap it in `values` and do not call record_write in a loop.\n\nRead them all back — ONE call: {\"action\": \"record_read\", \"table_id\": \"<id>\"} returns every record of that table. `record_id` instead of `table_id` reads exactly one, with its field versions.\n\nThe rest of the everyday verbs: table_list (what tables and homes exist), metadata_search (search structure, not rows), record_aggregate (count/sum/avg/min/max, grouped, computed inside the query — EVERY total, count, average or top N is this action, with `match`, `as_of`, `bucket`, `order` or `related_to`; never read rows and add them up), record_delete (soft delete; undo=true restores), field_propose (add ONE field to a table that already exists).\n\nTHE BIGGER JOBS — each is ONE call, never a table plus a plan to build the rest later. Before the FIRST use of one in a conversation, call {\"action\": \"guide\", \"topic\": \"<that action>\"}: it answers the worked example and every argument in full. Pick by what the person asked for:\n· checklist_propose — how a job is done: a process, SOP, onboarding, closing checklist, what-happens-when.\n· form_propose — a form, intake, sign-up sheet or application that anyone with a link answers.\n· capture_propose — their OWN crew on site logging photos, weights, readings or inspections on a phone, even offline (never form_propose).\n· import_propose — a spreadsheet or CSV they sent, OR rows already in the conversation (a table in an answer, a list, Key: value lines): save it as a table, or add these rows to one of their tables.\n· subscription_propose — tell, text or email me when something happens, or a summary on a schedule.\n· booking_propose — let people book, schedule or reserve a time (never a form with a date field).\n· dashboard_propose — how things stand: a breakdown, counts by stage, a chart, what is stuck.\n· pipeline_propose — a board, kanban or funnel where things move between stages, with rules on the moves.\n· document_propose — turn a record into a proposal, quote, invoice, contract, letter or report.\n· portal_propose — clients, customers or tenants sign in and see only their own rows.\n· signature_request — have somebody sign a document on a record.\n· enrich_propose, entity_read, entity_write, record_history, record_restore_version — ask the guide.\n\nField names: you may write a field by its key or by its display label, in any casing — both are resolved, and a name that is no field at all is refused with the real ones listed rather than written into nowhere.\n\nWHERE THE WORK WENT — read it, never guess it. Every answer that puts something somewhere carries `where`, with the organization's name, the home's name and a ready-made sentence in `where.say`. Tell the person that sentence, with those exact names. Never say the work went to a default workspace, a sandbox, a fallback, or anywhere you were not told: new work is saved in the organization this run works in; a write into an EXISTING table or record lands in the organization that owns it; and if a name could not be read the answer says so in the same place.\n\nREADS COVER EVERY ORGANIZATION THE PERSON BELONGS TO. table_list, metadata_search, record_read, record_aggregate and record_history look across all of them, every row names its own `organization_id` (and `organization`), and a table or record id opens in the organization that owns it. Their optional `organization_id` only NARROWS a read to one organization; nothing takes it to steer a write. An organization that could not answer is listed in `organizations_unavailable` with the reason — say so rather than treating it as empty.\n\nWHEN A CHANGE WAITS FOR A PERSON. An organization can ask a person before an agent changes a table that already existed — a new column, new rows, a record CHANGED, a record DELETED or put back, and on the strictest setting a whole new table. The answer then says `awaiting_approval` with `approval_id`, `approvers` and `not_done`. Say plainly that it did NOT happen, name the people who can approve it, and stop: do not retry it, do not work around it, do not call it queued unless the answer gave you an `approval_id`, and do not claim it is done. A table you made yourself in this conversation never waits. Deleting is not an exception to this — it is the change people most want to be asked about.\n\nEvery call runs under your own authority: it reads and changes exactly what you could, values you are not cleared to see come back masked and named rather than dropped, and anything that could not be done is said in the answer.",
+    "note": "Call {\"action\": \"guide\", \"args\": {\"topic\": \"<action>\"}} with one of these.",
     "topic": null
   },
   "topics": {
@@ -847,14 +848,25 @@
     },
     "record_aggregate": {
       "arguments": {
+        "as_of": {
+          "default": null,
+          "description": "Answer about the table AS IT STOOD at this moment (ISO date-time, e.g. \"2026-09-25T17:00:00Z\") — before later edits.",
+          "type": "string"
+        },
+        "bucket": {
+          "default": null,
+          "description": "Cut the DATE field named by group_by into these periods (org calendar).",
+          "enum": ["day", "week", "month", "quarter", "year"],
+          "type": "string"
+        },
         "field_key": {
           "default": null,
-          "description": "The field being measured, required for anything but count. Its key or its display label, either works.",
+          "description": "The field being measured, required for anything but count. Its key or its display label, either works. Formula columns are measured as they are shown.",
           "type": "string"
         },
         "group_by": {
           "default": null,
-          "description": "Field to bucket by — its key or its display label, either works.",
+          "description": "Field to bucket by — its key or its display label, either works. With `bucket`, this names the DATE field to cut into periods.",
           "type": "string"
         },
         "limit": {
@@ -862,9 +874,20 @@
           "description": "How many buckets to return at most.",
           "type": "integer"
         },
+        "match": {
+          "default": null,
+          "description": "ONLY THE RECORDS WHOSE FIELDS EQUAL THESE VALUES: {\"Status\": \"Completed\"}. Keys are field keys or labels. A key \"Relation.Field\" reaches across a relation: {\"Patient.Referring physician\": \"Dr. Samuel Okafor\"} measures the records whose Patient has that referring physician.",
+          "type": "object"
+        },
         "measure": {
           "default": "count",
-          "description": "count | sum | avg | min | max, computed inside the query.",
+          "description": "count | sum | avg | min | max, computed inside the query; the field to measure goes in field_key. A field name here is read as that field's sum.",
+          "type": "string"
+        },
+        "order": {
+          "default": "count_desc",
+          "description": "How groups are ordered: count_desc (most records first), measure_desc (highest measured value first — \"the top 5\"), measure_asc (lowest first).",
+          "enum": ["count_desc", "measure_desc", "measure_asc"],
           "type": "string"
         },
         "organization_id": {
@@ -872,13 +895,26 @@
           "description": "OPTIONAL FILTER, never needed: this reads across ALL the person's organizations and every row names its own `organization_id`. Pass one of the person's organization ids only to narrow the answer to it.",
           "type": "string"
         },
+        "related_to": {
+          "default": null,
+          "description": "Record ids of ANOTHER table: measures only the records of THIS table that point at them through a relation field (\"the visits of these patients\"). Combines with every other argument.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "table": {
+          "default": null,
+          "description": "The table's NAME as the person said it, e.g. \"Visit Log\" — instead of table_id; no table_list needed first. Two tables of that name are refused with both ids.",
+          "type": "string"
+        },
         "table_id": {
-          "description": "The table to measure.",
-          "required": true,
+          "default": null,
+          "description": "The table to measure, by id. Or name it with `table`.",
           "type": "string"
         }
       },
-      "how": null,
+      "how": "ONE NUMBER (OR ONE NUMBER PER GROUP) ABOUT A TABLE, WORKED OUT INSIDE THE STORE. Every total, count, average, minimum, maximum or \"top N\" is this action — INCLUDING questions that cross a relation. Never read the records and add them up yourself: a read returns one page, and a sum over one page is a wrong answer that looks right. Every argument is honoured by the store or the call is refused by name; nothing is left out. Fields go by key or label. One worked example per question shape: · Total of a column: {\"action\": \"record_aggregate\", \"table_id\": \"<visits>\", \"measure\": \"sum\", \"field_key\": \"Copay\"} · By the table's name, no lookup first: {\"action\": \"record_aggregate\", \"table\": \"Visit Log\", \"measure\": \"count\"} · Count per value: {\"action\": \"record_aggregate\", \"table_id\": \"<visits>\", \"measure\": \"count\", \"group_by\": \"Status\"} · Average of a subset: {\"action\": \"record_aggregate\", \"table_id\": \"<visits>\", \"measure\": \"avg\", \"field_key\": \"Copay\", \"match\": {\"Status\": \"Completed\"}} · Across a relation, by a field of the related table: {\"action\": \"record_aggregate\", \"table_id\": \"<visits>\", \"measure\": \"sum\", \"field_key\": \"Copay\", \"match\": {\"Patient.Referring physician\": \"Dr. Samuel Okafor\"}} · Across a relation, for known records: {\"action\": \"record_aggregate\", \"table_id\": \"<visits>\", \"measure\": \"sum\", \"field_key\": \"Copay\", \"related_to\": [\"<patient id>\", \"<patient id>\"]} · As the table stood: {\"action\": \"record_aggregate\", \"table_id\": \"<visits>\", \"measure\": \"sum\", \"field_key\": \"Copay\", \"as_of\": \"2026-09-25T17:00:00Z\"} · Per day/week/month: {\"action\": \"record_aggregate\", \"table_id\": \"<visits>\", \"measure\": \"count\", \"group_by\": \"Visit date\", \"bucket\": \"day\"} · Top 5: {\"action\": \"record_aggregate\", \"table_id\": \"<visits>\", \"measure\": \"sum\", \"field_key\": \"Copay\", \"group_by\": \"Patient\", \"order\": \"measure_desc\", \"limit\": 5} A grouped answer says `groups_total` and `truncated`; when it is truncated, say the list is cut.",
       "topic": "record_aggregate"
     },
     "record_delete": {
@@ -950,6 +986,11 @@
           "description": "ONE record, by id. Leave it out when you pass table_id.",
           "type": "string"
         },
+        "table": {
+          "default": null,
+          "description": "The table's NAME as the person said it, e.g. \"Visit Log\" — instead of table_id; no table_list needed first. Two tables of that name are refused with both ids.",
+          "type": "string"
+        },
         "table_id": {
           "default": null,
           "description": "Read ALL the records of this table in one call, instead of one record_read per id. Returns a list.",
@@ -994,7 +1035,7 @@
         },
         "records": {
           "default": null,
-          "description": "ALL the records to create, in ONE call, all in the same table. This is the normal way to write more than one record — never call record_write in a loop. Example: {\"action\": \"record_write\", \"table_id\": \"<id>\", \"records\": [{\"crew_name\": \"North Crew\", \"region\": \"North\", \"day_rate\": 1200}, {\"crew_name\": \"South Crew\", \"region\": \"South\", \"day_rate\": 1450}]}. Each entry IS the field map — do not wrap it in `values`. A choice column takes the choice's own WORD, never an id. Up to 200 at a time; one refused row rolls the whole batch back.",
+          "description": "ALL the records to create, in ONE call, all in the same table. This is the normal way to write more than one record — never call record_write in a loop. Example: {\"action\": \"record_write\", \"table_id\": \"<id>\", \"records\": [{\"crew_name\": \"North Crew\", \"region\": \"North\", \"day_rate\": 1200}, {\"crew_name\": \"South Crew\", \"region\": \"South\", \"day_rate\": 1450}]}. Each entry IS the field map — do not wrap it in `values`. A choice column takes the choice's own WORD, never an id. Up to 200 at a time; one refused row rolls the whole batch back. To CHANGE several existing records in the same call, give each entry its `record_id`: [{\"record_id\": \"<id>\", \"status\": \"Contacted\"}, ...] — only the fields named are changed.",
           "items": {
             "additionalProperties": true,
             "type": "object"
@@ -1093,6 +1134,11 @@
     },
     "table_list": {
       "arguments": {
+        "include_app_tables": {
+          "default": false,
+          "description": "Leave false. Tables the app keeps for agents' own outputs are left out of this list; pass true only when the person asks to see those tables too.",
+          "type": "boolean"
+        },
         "limit": {
           "default": 50,
           "description": "How many tables to return at most (capped at 500).",
@@ -1175,7 +1221,7 @@
       "entity_read",
       "entity_write"
     ],
-    "note": "'__MATRX_RECORDS_UNKNOWN_GUIDE_TOPIC__' is not an action of this tool. Call {\"action\": \"guide\", \"topic\": \"<action>\"} with one of these.",
+    "note": "'__MATRX_RECORDS_UNKNOWN_GUIDE_TOPIC__' is not an action of this tool. Call {\"action\": \"guide\", \"args\": {\"topic\": \"<action>\"}} with one of these.",
     "topic": null
   },
   "unknown_topic_quoted": "'__MATRX_RECORDS_UNKNOWN_GUIDE_TOPIC__'"

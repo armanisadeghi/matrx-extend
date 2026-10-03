@@ -8,6 +8,8 @@ const h = vi.hoisted(() => ({
   searched: [] as (string | null)[],
   wroteIn: [] as string[],
   off: [] as string[],
+  appTables: [] as string[],
+  aggregateCalls: [] as Record<string, unknown>[],
   tables: {} as Record<string, { id: string; slug: string; name: string }[]>,
   records: {} as Record<string, Record<string, unknown>>,
 }));
@@ -40,6 +42,15 @@ vi.mock('@/lib/records/store', () => ({
   // A write goes to the client of the organization that owns the thing.
   recordsClientFor: async (org: string) => ({
     org,
+    tableListEverywhere: async () => ({
+      ok: true,
+      data: {
+        success: true,
+        tables: (h.tables[org] ?? [])
+          .filter((table) => !h.appTables.includes(table.id))
+          .map((table) => ({ id: table.id, store: 'records' })),
+      },
+    }),
     recordDelete: async () => {
       h.wroteIn.push(org);
       return { ok: true, data: '2026-09-30T00:00:00Z' };
@@ -84,15 +95,18 @@ vi.mock('@/lib/records/store', () => ({
           },
         };
       },
-      recordAggregate: async (a: { table_id: string }) => ({
-        ok: true,
-        data: [
-          {
-            row_count: 3,
-            organization_id: h.tables[ORG_B]?.some((t) => t.id === a.table_id) ? ORG_B : ORG_A,
-          },
-        ],
-      }),
+      recordAggregate: async (a: { table_id: string }) => {
+        h.aggregateCalls.push(a);
+        return {
+          ok: true,
+          data: [
+            {
+              row_count: 3,
+              organization_id: h.tables[ORG_B]?.some((t) => t.id === a.table_id) ? ORG_B : ORG_A,
+            },
+          ],
+        };
+      },
       tableList: async (args?: { organization_id?: string | null }) => {
         h.opened.push(args?.organization_id ?? null);
         const orgs = args?.organization_id ? [args.organization_id] : [ORG_A, ORG_B];
@@ -125,6 +139,8 @@ describe('records tool: sees every organization, active org never narrows', () =
     h.searched = [];
     h.wroteIn = [];
     h.off = [];
+    h.appTables = [];
+    h.aggregateCalls = [];
     h.tables = {
       [ORG_A]: [{ id: 't-a', slug: 'a', name: 'Alpha' }],
       [ORG_B]: [{ id: 't-b', slug: 'b', name: 'Beta' }],
@@ -145,6 +161,30 @@ describe('records tool: sees every organization, active org never narrows', () =
     const out = await run({ action: 'table_list', organization_id: ORG_A });
     expect((out.tables as unknown[]).length).toBe(1);
     expect(h.opened).toEqual([ORG_A]);
+  });
+
+  it('the store decides which app tables default lists omit', async () => {
+    h.appTables = ['t-b'];
+    const defaultList = await run({ action: 'table_list' });
+    expect((defaultList.tables as { id: string }[]).map((table) => table.id)).toEqual(['t-a']);
+    const allTables = await run({ action: 'table_list', include_app_tables: true });
+    expect((allTables.tables as { id: string }[]).map((table) => table.id)).toEqual(['t-a', 't-b']);
+  });
+
+  it('forwards a date bucket to the shared aggregate client and refuses an incomplete one', async () => {
+    const out = await run({ action: 'record_aggregate', table_id: 't-a', group_by: 'date', bucket: 'month' });
+    expect(out.ok).toBe(true);
+    expect(h.aggregateCalls[0]).toMatchObject({ bucket: { key: 'date', by: 'month' } });
+    const incomplete = await run({ action: 'record_aggregate', table_id: 't-a', bucket: 'month' });
+    expect(incomplete.ok).toBe(false);
+    expect(h.aggregateCalls).toHaveLength(1);
+  });
+
+  it('refuses aggregate options that the shared client cannot answer yet', async () => {
+    const out = await run({ action: 'record_aggregate', table_id: 't-a', as_of: '2026-09-01T00:00:00Z' });
+    expect(out).toMatchObject({ ok: false, action: 'record_aggregate' });
+    expect(String(out.reason)).toContain('No aggregate was computed');
+    expect(h.aggregateCalls).toHaveLength(0);
   });
 
   it('the catalog null default and an explicit null both keep all organizations visible', async () => {

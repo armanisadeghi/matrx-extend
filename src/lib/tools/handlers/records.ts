@@ -112,9 +112,11 @@ const RecordsArgs = z.object({
    * only where NEW things (table_propose) are saved.
    */
   organization_id: nullDefault(z.string()),
+  as_of: nullDefault(z.string()),
   availability: nullDefault(unknownObject()),
   blocks: unknownArray().optional(),
   body: z.string().optional(),
+  bucket: nullDefault(z.enum(['day', 'week', 'month', 'quarter', 'year'])),
   checklist_id: nullDefault(z.string()),
   client_fields: nullDefault(unknownArray()),
   client_table: nullDefault(z.string()),
@@ -140,6 +142,7 @@ const RecordsArgs = z.object({
   group_by: nullDefault(z.string()),
   home: nullDefault(z.string()),
   id_keyed: z.boolean().default(false),
+  include_app_tables: z.boolean().default(false),
   intro: nullDefault(z.string()),
   invite: nullDefault(unknownArray()),
   label: nullDefault(z.string()),
@@ -158,6 +161,7 @@ const RecordsArgs = z.object({
   open_to_crew: z.boolean().default(true),
   options: nullDefault(z.array(z.string())),
   options_table_id: nullDefault(z.string()),
+  order: z.enum(['count_desc', 'measure_desc', 'measure_asc']).default('count_desc'),
   presentation: nullDefault(unknownObject()),
   preview_only: z.boolean().default(false),
   publish: z.boolean().default(true),
@@ -167,6 +171,7 @@ const RecordsArgs = z.object({
   /** record_read / record_write / record_delete */
   record_id: nullDefault(z.string()),
   records: nullDefault(unknownArray()),
+  related_to: nullDefault(z.array(z.string())),
   relation_target: nullDefault(z.string()),
   render_id: nullDefault(z.string()),
   requires: nullDefault(unknownObject()),
@@ -370,7 +375,22 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
         // The package spans every organization itself; the optional filter narrows it.
         const result = await spanning.tableList(orgArg ? { organization_id: orgArg } : undefined);
         if (!result.ok) return refused('table_list', result.error);
-        const tables = result.data.map((table) => ({
+        let visibleTables = result.data;
+        if (!args.include_app_tables) {
+          // The store owns which app tables are withheld from default lists.
+          // Ask its list door rather than copying that placement policy here.
+          const allowed = new Set<string>();
+          for (const organizationId of open) {
+            const home = await recordsClientFor(organizationId, 'agent');
+            const listed = await home.tableListEverywhere();
+            if (!listed.ok) return refused('table_list', listed.error);
+            for (const table of listed.data.tables) {
+              if (table.store === 'records') allowed.add(table.id);
+            }
+          }
+          visibleTables = visibleTables.filter((table) => allowed.has(table.id));
+        }
+        const tables = visibleTables.map((table) => ({
           id: table.id,
           slug: table.slug,
           name: table.name,
@@ -427,6 +447,25 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
         };
       }
       case 'record_aggregate': {
+        if (args.bucket && !args.group_by) {
+          return {
+            ok: false,
+            action: 'record_aggregate',
+            reason: 'A bucket needs the date field named in group_by. No aggregate was computed.',
+          };
+        }
+        const unsupported = [
+          args.as_of ? 'as_of' : null,
+          args.order !== 'count_desc' ? 'order' : null,
+          args.related_to?.length ? 'related_to' : null,
+        ].filter(Boolean);
+        if (unsupported.length) {
+          return {
+            ok: false,
+            action: 'record_aggregate',
+            reason: `The Chrome extension record executor cannot yet answer ${unsupported.join(', ')}. No aggregate was computed.`,
+          };
+        }
         if (!args.table_id) {
           return {
             ok: false,
@@ -439,6 +478,9 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
           table_id: args.table_id as string,
           ...(orgArg ? { organization_id: orgArg } : {}),
           ...(args.group_by ? { groupBy: [args.group_by] } : {}),
+          ...(args.bucket && args.group_by
+            ? { bucket: { key: args.group_by, by: args.bucket } }
+            : {}),
           ...(args.measure !== 'count'
             ? { measures: [{ operation: args.measure, key: args.field_key ?? null }] }
             : {}),
