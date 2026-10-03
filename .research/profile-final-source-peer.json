@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "review_type": "fresh independent source review; zero production authorship; no browser, build, or native test run",
+  "scope": "EXT-D-0094 owner-scoped Profile read and EXT-D-0095 failure/identity repair",
+  "inspected_snapshot": {
+    "base_commit": "dfcf8d71133a47e0927c37e4dee3943dd8d9abea",
+    "prior_d94_product_commit": "dccc196abb1945664b8ac756825526a5a9a6c7c5",
+    "uncommitted_diff_sha256": "01a6e063870117f746e181c717ccdb8e4f2350fc3ce625bb8ea92a59e71798b7",
+    "diff_paths": ["src/hooks/use-user-profile.ts", "src/features/profile/ProfileView.tsx", "src/lib/supabase/user-profile.read.test.ts"],
+    "new_identity_test_sha256": "40c38260525e42a105520d7c77a1c8a20bfdffbc7fd10eddb82e26b9d27dfa59",
+    "new_view_test_sha256": "5d3e63128d352680dde5c0b3df0297733e783e17312e586a47ee0c3a977aa27b",
+    "binding_limit": "This is a pre-final worktree snapshot. A later builder commit requires fresh independent verification; this report does not approve that commit."
+  },
+  "verdict_a_requirements_source": {
+    "d94": "PASS_BOUNDED_SOURCE: Profile's only production caller uses the owner-filtered users.user_form_profile read; errors, absent row, and malformed response are distinct. Actual RLS and save/reopen/restoration still require the separate native CI receipt.",
+    "d95": "FAIL: the current change makes the initial failed read prominent with Retry and hides the form, and the hook resets a previous draft on identity change, but Save and late-response cases below violate failure/identity safety.",
+    "findings": [
+      {
+        "id": "A1",
+        "severity": "Important",
+        "evidence": "src/features/profile/ProfileView.tsx:255-276; src/hooks/use-user-profile.ts:50-59,95-107",
+        "finding": "The bottom dirty footer remains visible whenever draft differs from the last saved profile, including after a successful upsert followed by failed refetch. Its Save button is enabled while loadError is set. That offers a repeated write against an unknown baseline in the very error state D95 must make noneditable; the hook's save function itself has no loaded/read-success guard.",
+        "required_proof": "Fail a refetch after a dirty save; assert the failed-load state has no actionable Save anywhere and no additional upsert can occur until a successful owner read."
+      },
+      {
+        "id": "A2",
+        "severity": "Important",
+        "evidence": "src/hooks/use-user-profile.ts:42-76,95-108",
+        "finding": "The generation guard protects reads already in flight, but save() captures the old user and awaits upsert before calling its captured load(). If identity changes during that await, the old save can start a newer old-user read than the new user's read. Its response can then replace the new user's draft, or its failure can replace the new user's state.",
+        "required_proof": "Hold first-user upsert, switch to second user, settle second-user read, then settle first-user save and read; the second-user profile or second-user load error must remain authoritative and no prior-user draft may render."
+      },
+      {
+        "id": "A3",
+        "severity": "Important",
+        "evidence": "src/hooks/use-user-profile.ts:32-39,67-77; src/features/profile/ProfileView.tsx:42-49,90-114",
+        "finding": "The previous owner's draft is cleared in a passive effect after the first render under the next auth identity. State is not owner-tagged, so the first identity-transition render can still use the old draft and loaded state. The current test checks only after act/rerender flushes effects.",
+        "required_proof": "Bind displayed draft to its owner synchronously during render, or otherwise prove no prior-owner fields appear in the first render when auth identity changes."
+      }
+    ]
+  },
+  "verdict_b_quality": {
+    "result": "FAIL_IMPORTANT_FOLLOWUP",
+    "positives": [
+      "The D94 repair reuses the canonical usersDb accessor and does not reopen the unsafe server-only RPC.",
+      "The new presentation test checks alert prominence, absence of the Preferred editor, disabled header Save, and Retry invocation.",
+      "The identity test exercises a late old-user refresh after a second-user successful load."
+    ],
+    "findings": [
+      {
+        "id": "B1",
+        "severity": "Important",
+        "evidence": "src/hooks/use-user-profile.identity.test.tsx:1-68",
+        "finding": "The race guard tests a late refresh but not the real save continuation that starts a new old-owner read. It also resolves only a successful second-user read, leaving the second-user denied-read branch uncovered. Both fixture profiles are partial untyped objects.",
+        "required_proof": "Add save-in-flight and denied-second-read cases at the real hook seam; use complete typed profile fixtures where the contract is available."
+      },
+      {
+        "id": "B2",
+        "severity": "Important",
+        "evidence": "src/features/profile/ProfileView.load-error.test.tsx:1-41; src/features/profile/ProfileView.tsx:255-276",
+        "finding": "The view test fixes dirty=false in its mocked hook, so it cannot catch the enabled bottom Save footer. It proves Retry is invoked but does not prove that retry restores an editable profile after a successful owner read.",
+        "required_proof": "Exercise dirty=true/loadError and a failing-then-successful owner read through the hook/component boundary, including the restored edit/save state."
+      },
+      {
+        "id": "B3",
+        "severity": "Important",
+        "evidence": "src/lib/supabase/user-profile.read.test.ts:1-80; .research/profile-read-fix-peer.json; .research/profile-save-diagnosis.json",
+        "finding": "The D94 query test still uses partial Record<string, unknown> rows; it does not establish that a complete generated-contract row parses. The diagnosis file reports RED and one constant mutation, while the resource journal only records process exits; there is no independently inspectable assertion-level output or mutation transcript in this snapshot. Native acceptance remains the RLS proof.",
+        "required_proof": "Use a complete typed row fixture or record why the generated contract is unavailable, and preserve assertion-level RED and gut-check output alongside the guarded run."
+      }
+    ]
+  },
+  "runtime_limit": "No runtime acceptance or CI artifact is inspected here. EXT-F-1004-T25's historical RPC-failure fixture text is stale after D94 and must target the owner row read for native failure-recovery acceptance."
+}
