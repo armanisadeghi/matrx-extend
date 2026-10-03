@@ -66,7 +66,7 @@ async function snapshotState(panel) {
     return {
       ready: true,
       capturing: text.includes('Capturing…'),
-      rowCount: /\\b1 row\\b/.test(text) ? 1 : 0,
+      rowCount: table?.querySelectorAll('tbody tr').length ?? 0,
       titlePresent: Boolean(titleCell?.textContent.trim()),
       error: text.includes('Controlled Snapshot rejection'),
       buttonReady: [...active.querySelectorAll('button')]
