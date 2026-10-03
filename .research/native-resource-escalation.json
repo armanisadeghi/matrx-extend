@@ -54,7 +54,7 @@
     "Both workflow YAML files parsed; extracted setup shell passes bash -n.",
     "git diff --check passed."
   ],
-  "own_commits": ["b52378f25c301643baa0d7296c8067fe6fb0b12f"],
+  "own_commits": ["b52378f25c301643baa0d7296c8067fe6fb0b12f", "c7887ebd"],
   "files": [
     "scripts/hosted-resource-diagnostic.mjs",
     ".github/workflows/hosted-resource-diagnostic.yml",
