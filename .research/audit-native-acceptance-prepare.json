@@ -43,5 +43,38 @@
     "repair": "Keep the prelude registered until performance.timeOrigin changes, the new document shows Settings, and the prelude reports execution; fail with bounded diagnostics when any condition is absent. The plain T88/T89 reload uses the same distinct-document wait before checking persisted identity.",
     "red": "Guard audit-native-diagnostic-red-20261003 failed because the new safe classifier export was absent; this is a source-wiring RED, not a mutation of the prior swallowed-error behavior. The real diagnostic native receipt is the original behavior RED for reload synchronization.",
     "green": "Guarded audit-native-reload-final-20261003 passed 8/8 focused helper and reload seam tests, resource-valid. Fresh native proof remains pending peer acceptance."
+  },
+  "t86_repair_evidence": {
+    "diagnostic_receipt": {
+      "path": ".research/audit-native-repair-evidence/diagnostic-20261003.json",
+      "sha256": "c9a58be6e22522c848729d738df88f1369fa86b19b0478ddbcb3ebbd2b8d8370",
+      "raw_copy_identical": true
+    },
+    "resource_journals": {
+      "audit-native-diagnostic-20261003.jsonl": "c940a91ebb6d84cb08f290596a15c584c35400daf10f3cf9ce3c1d33d66f0623",
+      "audit-native-diagnostic-red-20261003.jsonl": "3071bb4dd03065757e9e1cc92ee907c3a3f5c3705d84713628f57077ad4d2941",
+      "audit-native-diagnostic-green-20261003.jsonl": "a9c61e4e1910be373b79969db5c4bcaad78e2d8c495a1193ffa710ff3527d6b6",
+      "audit-native-reload-green-20261003.jsonl": "fad55726bbd83da4afda88cfa5ded8d5bab74a5deedec490b52ed7cdc7044c55",
+      "audit-native-reload-final-20261003.jsonl": "d2c5f39b00902b9e9402c1b82965899b53e652de0b77387e95216f0d9a86eb73"
+    }
+  },
+  "t86_corrected_native_followup": {
+    "run_id": "audit-native-reload-20261003",
+    "status": "fail_before_T86_case; zero cases recorded",
+    "failure_stage": "details_failure/reload_with_prelude",
+    "failure_code": "audit_reload_with_prelude_failed",
+    "actual_helper_exception": "Unavailable: the runner did not retain the lower-level exception.",
+    "observation": "The card and fault state were unavailable while the panel remained visible. This is a harness/setup result, not a product failure. The bounded code does not yet separate CDP prelude install, reload, new-document wait, marker check, or removal.",
+    "raw_receipt": {
+      "path": ".research/audit-native-repair-evidence/reload-followup-20261003.json",
+      "sha256": "1f414e3a92f99d04cf19ea42d8115581aad4ed13c48873928bff550c922ae70e",
+      "raw_copy_identical": true
+    },
+    "resource_journal": {
+      "path": "docs/stabilization/resource-journals/audit-native-reload-20261003.jsonl",
+      "sha256": "a18a7142d06e0183605a7a7f3e09605d2d64a4ad9f2331668e556a55a365e3ff",
+      "terminal": "child_failed; resourceInvalid=false"
+    },
+    "next_gate": "Fresh repair lane should distinguish the failing operation inside reloadAuditPrelude without forwarding CDP messages, then reverify. No further native attempt in this lane."
   }
 }
