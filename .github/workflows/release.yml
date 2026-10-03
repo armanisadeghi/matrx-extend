@@ -191,6 +191,14 @@ jobs:
             matrx-extend/.output/release-receipt.json
             matrx-extend/tmp/release-logs/latest.log
 
+      - name: Upload sanitized failure diagnosis
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: matrx-extend-failure-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: ignore
+          path: matrx-extend/tmp/release-logs/diagnostics.txt
+
       - name: Publish candidate identity
         shell: bash
         run: |

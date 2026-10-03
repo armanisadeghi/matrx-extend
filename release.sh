@@ -262,6 +262,15 @@ base_tree() {  # sets BASE, BASE_TREE, PARENTS
         hard_stop "local commits conflict with $REMOTE/$BRANCH — resolve the conflict before release; no commits were discarded or pushed"
     fi
 }
+verify_installed_dependency_inputs() {
+    # Snapshots borrow this checkout's node_modules. A newer main or a push
+    # race may change dependency inputs after pnpm installed them on the runner.
+    # Stop before generation/check/build instead of validating mismatched bytes.
+    if ! git diff --quiet "$LOCAL_HEAD^{tree}" "$BASE_TREE" -- \
+        package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc .pnpmfile.cjs patches; then
+        hard_stop "merged candidate changes dependency inputs since installation; refresh packages on the updated main and retry — nothing was pushed"
+    fi
+}
 # ── Regenerate the committed artifacts ──────────────────────────────────────
 REGEN_INFO=""   # `git update-index --index-info` lines for the regenerated paths
 regen_artifacts() {
@@ -379,6 +388,24 @@ run_checks() {
         rc=$?
         { echo "--- check $name (exit $rc) ---"; cat "$JOBS/check-$name.out"; } >> "$RELEASE_LOG_FILE"
         if [[ "$rc" != 0 ]]; then
+            {
+                printf 'gate=%s exit=%s candidate=%s\n' "$name" "$rc" "$NEW_TAG"
+                if [[ "$name" == matrx-packages ]]; then
+                    # Parse only known package/version fields. Never copy raw
+                    # command output into a workflow artifact or job summary.
+                    node - "$JOBS/check-$name.out" <<'NODE'
+const fs = require('node:fs');
+const input = fs.readFileSync(process.argv[2], 'utf8');
+for (const line of input.split('\n')) {
+  const match = line.match(/^\s*-\s*(PIN|STALE(?: \(upstream pin\))?|DUPLICATE):\s+(@ai-matrx\/[\w.-]+)(?:@(\d+\.\d+\.\d+(?:-[\w.-]+)?))?/);
+  if (!match) continue;
+  const latest = line.match(/npm latest is (\d+\.\d+\.\d+(?:-[\w.-]+)?)/)?.[1];
+  console.log(`${match[1]} ${match[2]}${match[3] ? ` installed=${match[3]}` : ''}${latest ? ` latest=${latest}` : ''}`);
+}
+NODE
+                fi
+            } > "$RELEASE_LOG_DIR/diagnostics.txt"
+            cat "$RELEASE_LOG_DIR/diagnostics.txt"
             finding "ERROR" "Checks" "$name failed (exit $rc); candidate $NEW_TAG was not published" "$cmd"
             return 1
         fi
@@ -417,6 +444,7 @@ while (( RACES < SHIP_PUSH_ATTEMPTS )); do
     # A foreign main advance changes the candidate. Re-merge, regenerate,
     # bump, check and build from the beginning; old verdicts never transfer.
     base_tree
+    verify_installed_dependency_inputs
     log "release tree assembled on ${BASE:0:9}"
     REGEN_INFO=""
     regen_artifacts
