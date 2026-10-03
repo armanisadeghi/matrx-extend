@@ -13,6 +13,7 @@ import {
 import {
   recordLocalDevBuild,
   requireLocalDevReceipt,
+  sourcePackageVersion,
 } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 
@@ -346,7 +347,10 @@ it('binds the native result to unchanged CI evidence and freshly classifies sour
   await mkdir(fakeBin);
   await writeFile(
     join(fakeBin, 'git'),
-    '#!/bin/sh\ncase "$1 $2" in\n  "show "*) printf \'%s\\n\' \'{"version":"0.0.123"}\';;\n  "fetch --quiet") exit 0;;\n  "rev-parse origin/main") printf "%s\\n" "$FAKE_ORIGIN_SHA";;\n  "rev-parse HEAD") printf "%s\\n" "$FAKE_LOCAL_SHA";;\n  "status --porcelain") printf "%s" "$FAKE_TRACKED_DIRT";;\n  "ls-files --others") printf "%s" "$FAKE_UNTRACKED_RUNNER";;\n  *) exit 3;;\nesac\n',
+    '#!/bin/sh\ncase "$1 $2" in\n  "show $FAKE_SOURCE_SHA:package.json") printf \'%s\\n\' \'{"version":"0.0.123"}\';;\n  "fetch --quiet") exit 0;;\n  "rev-parse origin/main") printf "%s\\n" "$FAKE_ORIGIN_SHA";;\n  "rev-parse HEAD") printf "%s\\n" "$FAKE_LOCAL_SHA";;\n  "status --porcelain") printf "%s" "$FAKE_TRACKED_DIRT";;\n  "ls-files --others") printf "%s" "$FAKE_UNTRACKED_RUNNER";;\n  *) exit 3;;\nesac\n'.replace(
+      '$FAKE_SOURCE_SHA',
+      sourceSha,
+    ),
     { mode: 0o700 },
   );
   const oldPath = process.env.PATH;
@@ -379,6 +383,7 @@ it('binds the native result to unchanged CI evidence and freshly classifies sour
     assert.deepEqual(untracked.source.untrackedRunnerInputs, [
       'tests/browser/seo-guest-acceptance-local.mjs',
     ]);
+    assert.throws(() => sourcePackageVersion('b'.repeat(40)), /Command failed/);
     await writeFile(join(target, 'ci-receipt.json'), 'changed');
     await assert.rejects(
       verifyImportedNativeEvidence(build, localReceiptPath),
