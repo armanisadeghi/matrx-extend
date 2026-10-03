@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "review_type": "fresh zero-authorship source readiness review; no browser, build, heavy test, or database execution",
+  "runner_commits_reviewed": [
+    "0cda7f8792dbfd24f035612cdc3e36672dc77d36",
+    "53c3d56a010d1ac3c2394efe6534fdf9f0aa4dbf",
+    "cac80a37727d06e73f9f12db2a67dfffe44e3f6d",
+    "179fcbf67d93f21c1f2ff4cc58fe161f42da0773",
+    "d1857cadc8fefd66949a017d1b37c6851cbf05b1"
+  ],
+  "scope": {
+    "inventory": "EXT-F-1004",
+    "runner": "admin warm EXT-F-1004-T02 Back and EXT-F-1004-T04 Discard/Save/restore",
+    "excluded_from_this_runner": "The remaining Profile cases, section controls in T22, and genuine post-extension-reload rows are not exercised by this warm runner. Reopening Profile after Back is a warm remount and read, not a Chrome extension reload."
+  },
+  "verdict_a_acceptance_readiness": "PASS_FOR_BOUNDED_SOURCE_LAUNCH",
+  "verdict_a_basis": [
+    "The runner binds the imported 0.2.177 development artifact to source SHA 2274cc2fc929f7682c61f1a137e472a87caa2114, run 37145482483, and artifact 11282375130 before launching Chrome. The shared importer verifies receipt, provenance, manifest, version, and tree; the native harness verifies an owned process, expected extension identity, and actual SIDE_PANEL context.",
+    "The admin sign-in helper authenticates through the real web and extension UI. The runner checks matching first-party identity, admin role, and presence of a device organization without writing user or organization UUIDs to its report.",
+    "T02 changes Preferred in the rendered Profile, clicks Back, then reopens Profile and requires the original value with no dirty state. T04 requires Discard to restore the original value and disable Save, then saves a different synthetic value, reopens Profile to observe persistence, and saves/reopens the original value before marking either branch passed.",
+    "The two visible Save and Discard controls are handled by a unique header-scoped trusted CDP pointer target. Profile save errors are read from the actual Profile error banner. Full Profile screenshots were removed because the shared admin profile may contain private data.",
+    "The exact node command is allowlisted in docs/stabilization/resource-policy.json. Execution still requires the parent operator's complete installed Playwright/Chrome paths, PROFILE_* environment, and one guarded foreground heavy lease; those belong in the launch record."
+  ],
+  "verdict_b_quality": "PASS_FOR_BOUNDED_SCOPE_WITH_LIMITATIONS",
+  "verdict_b_basis": [
+    "The runner mutates only Preferred through the real Profile UI. It records the pre-run value privately, uses unique synthetic drafts, and fails the overall run if restoration or post-restoration reopening fails. Case pass rows are appended only after restoration succeeds.",
+    "Credentials are read privately from the existing aidream environment file and are not placed in arguments or receipts. The report retains only email, role, boolean identity checks, artifact metadata, launch paths, and outcome booleans; no profile field values or user/organization identifiers are recorded.",
+    "The product Profile component is not mocked. Reopening Profile remounts it, and useUserProfile fetches saved context on mount, so the post-save check reaches persisted state rather than merely echoing the draft.",
+    "The receipt has no per-case evidence_refs. Its bounded DOM observations can support a native UI run once actually executed, but they cannot close the full inventory matrix by themselves. The harness may retain its initial guest screenshot; the runner no longer captures the sensitive Profile screen."
+  ],
+  "required_runtime_truth": "No runtime acceptance was executed in this peer review. The source-ready verdict is not a Profile acceptance pass. Keep all EXT-F-1004 inventory rows unverified until a guarded run on the verified artifact yields a valid receipt and independent examination of the actual UI observations. Do not count this warm run as extension-reload or section-expander coverage.",
+  "source_anchors": [
+    "tests/browser/profile-native-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/admin-settings-signin.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "scripts/current-test-artifact.mjs",
+    "docs/stabilization/resource-policy.json",
+    "docs/stabilization/inventory.json",
+    "src/features/profile/ProfileView.tsx",
+    "src/hooks/use-user-profile.ts",
+    ".research/current-development-artifact-refresh.json"
+  ]
+}
