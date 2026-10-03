@@ -11,12 +11,12 @@
     "For native acceptance, invoke a read-only Records guide and a parameterized list/read through the published Chrome extension, then confirm the displayed result reflects the requested topic and arguments."
   ],
   "expected": "Server delegation preserves or normalizes the Records args envelope so the published Chrome handler receives its declared flat arguments and applies the requested guide topic, read parameters, and list limit.",
-  "actual": "Source trace showed browser-dom projecting the live DB tool row into InlineToolSpec input_schema.properties, then merge_request_tools stashing a request-local ToolDefinition from only that projection. ToolExecutor.execute preferred that projected definition over the DB registry row, so $envelope/$variants were absent and args unwrapping was skipped. Aidream source repair 549b4064d1 preserves registry dispatch metadata; independent source acceptance 8266fee4 accepted the scoped fix. Hosted deployment run 37097006365 integrated source 230532757f; live deployment verification remains pending. Native reproduction and acceptance are pending. The independent oracle confirmed the canonical guide-parity assertion does not establish Chrome handler compatibility. This is separate from the repaired initial Chat-start failure.",
+  "actual": "Source trace showed browser-dom projecting the live DB tool row into InlineToolSpec input_schema.properties, then merge_request_tools stashing a request-local ToolDefinition from only that projection. ToolExecutor.execute preferred that projected definition over the DB registry row, so $envelope/$variants were absent and args unwrapping was skipped. Aidream source repair 549b4064d1 preserves registry dispatch metadata; independent source acceptance 8266fee4 accepted the scoped fix. Hosted deployment run 37097006365 integrated source 23053275714b3401ff514339706635f8fc051d0d; live deployment verification remains pending. Native reproduction and acceptance are pending. The independent oracle confirmed the canonical guide-parity assertion does not establish Chrome handler compatibility. This is separate from the repaired initial Chat-start failure.",
   "evidence": [
     ".research/guest-live-incident-extension.json",
     ".research/guest-live-incident-server.json",
     ".research/records-oracle-peer.json",
-    "Aidream source repair 549b4064d1; independent source acceptance 8266fee4; hosted deployment run 37097006365 integrated source 230532757f (live server deployment verification pending).",
+    "Aidream source repair 549b4064d1; independent source acceptance 8266fee4; hosted deployment run 37097006365 integrated source 23053275714b3401ff514339706635f8fc051d0d (live server deployment verification pending).",
     "src/lib/tools/handlers/records.ts",
     "https://github.com/AI-Matrix-Engine/aidream/commit/c01faa52660a2720fcc888af3e10210688bc80cc"
   ],
