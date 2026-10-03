@@ -1,0 +1,35 @@
+{
+  "reviewed_commit": "25845342da89df4da2827eba0235e7cb06736058",
+  "role": "fresh source peer; no implementation authorship",
+  "verdict_A_proof": {
+    "status": "SOURCE_PASS_RUNTIME_UNKNOWN",
+    "evidence": [
+      "Hosted workflow runs package, browser, and acceptance as three sequential stabilization-resource run commands with distinct run IDs and one runner-local runtime directory.",
+      "The workflow has no continue-on-error on those steps. A refused admission, failed measurement, failed package install, or failed browser install prevents the acceptance step from starting; setup output is not a product verdict.",
+      "Acceptance checks playwright-core package version 1.56.1, chromium.executablePath(), and the matching Chromium revision's INSTALLATION_COMPLETE marker before artifact preparation. The acceptance branch contains no install command.",
+      "Published Store mode downloads the public 0.2.130 CRX, matches the fixed SHA-256, verifies its CRX3 signing key and ID, and writes a temporary manifest.key only to its unpacked copy. The native harness verifies the extension ID and receipt, launches the full Chromium executable with that extension, and requires two grounded terminal guest answers separated by an actual panel reload."
+    ],
+    "unverified": [
+      "No hosted run, local install, build, or browser execution was performed in this peer review; the first Store guest answer and distinct answer after reload remain unknown.",
+      "The source does not establish that a fresh macos-15-intel host will meet resource admission or complete inside the 15-minute job timeout."
+    ]
+  },
+  "verdict_B_quality": {
+    "status": "PASS_WITH_OBSERVATION",
+    "evidence": [
+      "The guard's exact allowlist includes node scripts/hosted-guest-acceptance.mjs; it injects MATRX_RESOURCE_OWNER into the child process and owns its process group and descendants. npm, Playwright CLI, and native acceptance are spawned by that child without environment replacement.",
+      "The guard policy file was not changed by the reviewed commit, so its admission and watchdog thresholds remain unchanged. The three workflow steps are serialized, each with a fresh admission; the runtime directory persists only as data on that same runner.",
+      "CI cancellation is conditional on pull_request. Main and tag runs keep their active verification; later same-ref runs can queue under the existing concurrency group.",
+      "Read-only top diagnosis exits nonzero on command failure, and a later guard measurement failure refuses admission. Resource journals are uploaded even when a step fails."
+    ],
+    "observation": "The top diagnostic reports an empty CPU-line array without failing when top itself exits zero; the guard's own CPU parser still refuses a missing reading before admission. This limits diagnostic detail but does not create an unsafe pass.",
+    "blocking_findings": []
+  },
+  "checks": {
+    "node_check_hosted_helper": "PASS",
+    "ruby_yaml_load_both_workflows": "PASS",
+    "git_show_check_25845342": "PASS",
+    "heavy_execution": "NOT_RUN_BY_PEER"
+  },
+  "next_gate": "A guarded hosted published_store_crx guest-chat run may start from this reviewed source. Treat its resource receipt and native acceptance JSON/screenshots as the runtime verdict; keep any refused or invalid setup result separate from product acceptance."
+}
