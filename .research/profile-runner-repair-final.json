@@ -4,6 +4,7 @@
   "status": "source_ready_for_independent_review",
   "changes": [
     "Removed the private owner user ID from the report.",
+    "Removed the stable email-derived member account fingerprint from the report; retained only boolean first-party and rendered identity proofs.",
     "Report Profile acceptance as unverified and refuse mutation when the initial owner row is absent because this runner has no verified exact delete-and-restore path.",
     "Require Chrome to emit destruction of the exact original worker target and creation of the replacement worker target during extension reload, with the original targets absent from a fresh target list."
   ],
@@ -18,5 +19,10 @@
   "unknowns": [
     "Chrome target lifecycle evidence has not been exercised in a guarded native run.",
     "An account whose Profile row is initially absent is deliberately refused before persistent mutation; save/discard acceptance for that account remains unverified."
+  ],
+  "existing_red_evidence": [
+    ".research/profile-owner-red-01.log: real Profile hook regression tests failed on prior-owner draft display, stale-owner reread after save, and write after failed reload.",
+    ".research/profile-refresh-save-red-01.log: Profile hook regression failed when Save proceeded after refresh invalidated the loaded baseline.",
+    ".research/profile-native-execution.json: earlier real admin native reproduction reached Profile; the save/restoration wait failed, and separate observed owner write 200 plus context read 403/42501 identified D94. This did not exercise member or extension reload."
   ]
 }

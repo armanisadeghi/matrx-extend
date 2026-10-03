@@ -614,7 +614,10 @@ try {
         identity = { userId: member.profileId, email: member.email };
         selectedOrg = member.organization_selected;
         report.member_authentication = {
-          account_fingerprint: member.account_fingerprint,
+          first_party_identity_verified:
+            member.web_signed_in &&
+            member.extension_signed_in &&
+            member.rendered_identity.profile_matches_first_party,
           canonical_nonadmin_check: member.canonical_nonadmin_check,
           rendered_identity: member.rendered_identity,
         };
