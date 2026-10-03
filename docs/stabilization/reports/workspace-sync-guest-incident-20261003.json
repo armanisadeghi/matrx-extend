@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-10-03T06:31:50.369590+00:00",
-  "last_all_remotes_fetched": "2026-10-03T06:31:50.369590+00:00",
-  "baseline": "842051d7 prior report",
+  "observed_at": "2026-10-03T07:29:32.839535+00:00",
+  "last_all_remotes_fetched": "2026-10-03T07:29:32.839535+00:00",
+  "baseline": "06:31UTC prior ledger",
   "repositories": [
     {
       "repo": "workspace",
@@ -21,19 +21,17 @@
     },
     {
       "repo": "aidream",
-      "origin_main": "c971bc631497ca836e2923f0631755b69ce88c55",
-      "last_update": "2026-10-02T23:25:21-07:00",
-      "files_modified_since_prior_ledger": 21,
+      "origin_main": "a8f1b805cfa7edf47f5d78757fa0881225332ee5",
+      "last_update": "2026-10-03T06:42:33Z",
+      "files_modified_since_prior_ledger": 6,
       "branch": "main",
       "ahead_behind": "0\t0",
-      "dirty_paths": [
-        "M apps/shared/records/templates/fitness_beauty_wellness/ashcombe-row-spa-team-files-and-certifications.json"
-      ],
+      "dirty_paths": [],
       "stashes": [],
       "other_branches": ["main"],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/aidream",
-        "HEAD 32aeec1feaee753c06a0d8cd151d4dd899490f66",
+        "HEAD a8f1b805cfa7edf47f5d78757fa0881225332ee5",
         "branch refs/heads/main"
       ]
     },
@@ -41,7 +39,7 @@
       "repo": "ai-matrx",
       "origin_main": "e116da6762a58bfdc967e8655b464d928ed87371",
       "last_update": "2026-10-02T22:52:53-07:00",
-      "files_modified_since_prior_ledger": 150,
+      "files_modified_since_prior_ledger": 0,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -49,23 +47,32 @@
       "other_branches": ["main"],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/ai-matrx",
-        "HEAD 356ff6e2d4106d9da1ee105922a5ed34598f01bd",
+        "HEAD e116da6762a58bfdc967e8655b464d928ed87371",
         "branch refs/heads/main"
       ]
     },
     {
       "repo": "matrx-extend",
-      "origin_main": "41670d8df5052fa3e47a9b3e89a015f2cfaded6c",
-      "last_update": "2026-10-02T23:31:40-07:00",
-      "files_modified_since_prior_ledger": 70,
+      "origin_main": "3fe608d949a06aa10bfea57b43c9b05638386bc1",
+      "last_update": "2026-10-03T00:28:13-07:00",
+      "files_modified_since_prior_ledger": 48,
       "branch": "main",
-      "ahead_behind": "0\t0",
-      "dirty_paths": [],
+      "ahead_behind": "4\t0",
+      "dirty_paths": [
+        "M .github/workflows/hosted-guest-acceptance.yml",
+        " M .research/member-release-readiness.json",
+        " M scripts/stabilization-resource-safety.mjs",
+        " M scripts/stabilization-resource-test-measurements.mjs",
+        " M scripts/stabilization-resource.mjs",
+        " M scripts/test-stabilization-resource-safety.mjs",
+        " M tests/browser/prepare-reviewer-magic-link.mjs",
+        " M tests/browser/reviewer-chat-store-acceptance.mjs"
+      ],
       "stashes": [],
       "other_branches": ["main"],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-extend",
-        "HEAD 71db3b6823d6c09d904391de83cc33374b49fb86",
+        "HEAD b73fadc46a343892b58c1918214bb153077ef06f",
         "branch refs/heads/main"
       ]
     },
