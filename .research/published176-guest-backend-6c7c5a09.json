@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "scope": "Fresh native headless Chromium guest Chat regression retest on exact frozen published release 0.2.176 after live aidream backend refresh. First grounded answer and grounded follow-up after a real side-panel reload. This does not assert the Chrome Web Store installed lifecycle.",
+  "backend": {
+    "health_url": "https://server.app.matrxserver.com/health/version",
+    "before": {
+      "git_sha": "6c7c5a09a84e2e0111732505bb666f37a77b56e8",
+      "built_at": "2026-10-03T16:53:36Z"
+    },
+    "after": {
+      "git_sha": "6c7c5a09a84e2e0111732505bb666f37a77b56e8",
+      "built_at": "2026-10-03T16:53:36Z",
+      "captured_at": "2026-10-03T17:39:47Z"
+    }
+  },
+  "release_artifact": {
+    "release_run_id": 37105966615,
+    "github_artifact_id": 11267544261,
+    "version": "0.2.176",
+    "embedded_release_source_sha": "3fe608d949a06aa10bfea57b43c9b05638386bc1",
+    "store_zip_sha256": "813715b8dcd6421d4ee001c04e99c3729f6dad439064f8bf5922e6fb38ce09f8",
+    "keyed_tree_sha256_before": "755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272",
+    "keyed_tree_sha256_after": "755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272",
+    "input_artifact_unchanged": true,
+    "receipt_kind": "release; native run exercised the exact unpacked local ZIP; Store installation/update lifecycle not exercised"
+  },
+  "runner": {
+    "command": "node scripts/hosted-guest-acceptance.mjs",
+    "acceptance_case": "guest-chat",
+    "run_id": "published176-guest-backend-6c7c5a09-02",
+    "resource_decision": "valid",
+    "exit_code": 0,
+    "resource_journal": "docs/stabilization/resource-journals/published176-guest-backend-6c7c5a09-02.jsonl",
+    "raw_files": {
+      "receipt": {
+        "path": "raw/guest-chat.receipt.json",
+        "sha256": "2b41b2ec5e060afe662fd61e60f2d22c228f03e66627e565322fc94154b0e536"
+      },
+      "opening_screenshot": {
+        "path": "raw/guest-chat-real-answer.png",
+        "sha256": "44573bc821a6de8994fbafb5cc84d38a4a99f0261097b2fb079045e2b43dcd95"
+      },
+      "followup_screenshot": {
+        "path": "raw/guest-chat-real-followup-answer.png",
+        "sha256": "ffee3391a6c92ff4506a5e90f037a2806e01bcc0faea0173722cde34eb537f2b"
+      },
+      "resource_journal": {
+        "path": "raw/resource-journal.jsonl",
+        "sha256": "ce5bd62dea635eb229b1ac94a1d975dfacbe714e30574515fe2204d2132e0d3c"
+      },
+      "initial_guard_refusal_journal": {
+        "path": "raw/initial-guard-refusal-journal.jsonl",
+        "sha256": "f9d8d4622c503181b30899431d485471ef2159514be2ca7217b2fa2579e22b74"
+      }
+    },
+    "initial_command_refusal": {
+      "run_id": "published176-guest-backend-6c7c5a09",
+      "decision": "refused before admission; command allowlist saw env assignments as the child command; no browser started and no product verdict. Corrected by inheriting environment from parent; the accepted child argv was exactly node scripts/hosted-guest-acceptance.mjs."
+    },
+    "invocation_recipe": {
+      "parent_environment": {
+        "PATH": "/Volumes/Samsung2TB/.codex-guest-runtime/node/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "PLAYWRIGHT_BROWSERS_PATH": "/Volumes/Samsung2TB/.codex-guest-runtime/browsers",
+        "MATRX_HOSTED_BROWSER_RUNTIME_DIR": "/Volumes/Samsung2TB/.codex-guest-runtime/node",
+        "MATRX_HOSTED_RELEASE_ARTIFACT_DIR": "/Volumes/Samsung2TB/.codex-guest-runtime/acceptance/release176-artifact-37105966615/.output",
+        "MATRX_HOSTED_RELEASE_SHA": "3fe608d949a06aa10bfea57b43c9b05638386bc1",
+        "MATRX_HOSTED_GUEST_OUTPUT_DIR": "/Volumes/Samsung2TB/.codex-guest-runtime/acceptance/published176-guest-backend-6c7c5a09-output",
+        "MATRX_HOSTED_PHASE": "acceptance",
+        "MATRX_HOSTED_ACCEPTANCE_CASE": "guest-chat"
+      },
+      "guard": "node scripts/stabilization-resource.mjs run --run-id published176-guest-backend-6c7c5a09-02 --profile-dir /Volumes/Samsung2TB/.codex-guest-runtime/acceptance/published176-guest-backend-6c7c5a09-output -- node scripts/hosted-guest-acceptance.mjs",
+      "note": "Set the parent environment before invoking the resource guard. Do not insert env assignments or another launcher between -- and the exact allowlisted child command."
+    }
+  },
+  "guest_acceptance": {
+    "fresh_profile": true,
+    "guest_visible": true,
+    "opening_terminal_answer": true,
+    "opening_answer_contains_unpredictable_page_code": true,
+    "opening_answer_names_capture_understand_use_in_order": true,
+    "real_side_panel_reload": true,
+    "guest_visible_after_reload": true,
+    "auth_profile_and_organization_absent_after_reload": true,
+    "followup_terminal_answer": true,
+    "followup_contains_distinct_unpredictable_page_code": true,
+    "followup_names_fixture_heading": true,
+    "login_paywall_or_error": false,
+    "guest_ai_requests": 0,
+    "grounding": {
+      "opening": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": true
+      },
+      "followup": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": true
+      }
+    }
+  },
+  "cleanup": {
+    "heavy_lease_present": false,
+    "unsafe_hold_present": false,
+    "owned_runner_or_pinned_browser_processes_remaining": 0
+  },
+  "verification": {
+    "native_guest_run": "pass: first grounded terminal answer and post-panel-reload grounded follow-up",
+    "release_tree_hash": "pass: unchanged before and after",
+    "backend_sha": "same before and after native run",
+    "resource_journal": "valid admission, healthy watcher, child exit 0, final decision valid"
+  }
+}
