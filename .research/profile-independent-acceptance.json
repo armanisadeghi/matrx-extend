@@ -6,8 +6,8 @@
     "dccc196abb1945664b8ac756825526a5a9a6c7c5",
     "ac49ac2f8fb9f9c3d538aef81149a1c4a6eb2418"
   ],
-  "verdict_a_scope": "PASS_BOUNDED_SOURCE_FOR_SIGNED_IN_OWNER; NATIVE_UNVERIFIED",
-  "verdict_b_quality": "PASS_BOUNDED_SOURCE_EVIDENCE; NATIVE_UNVERIFIED",
+  "verdict_a_scope": "PASS_BOUNDED_ADMIN_NATIVE_FOR_D94_AND_D95_T25; CROSS_IDENTITY_AND_MEMBER_UNVERIFIED",
+  "verdict_b_quality": "PASS_BOUNDED_INDEPENDENT_SOURCE_AND_NATIVE_EVIDENCE; NO_WHOLE_PROFILE_PASS",
   "source_findings": [
     "Profile reads users.user_form_profile through usersDb, filtered by the current authenticated owner's user_id. A denied read, missing row, and malformed row have distinct outcomes; the restricted context RPC is not used.",
     "The hook binds loaded state to an owner lifetime and read sequence. The first render after identity change masks the prior draft, a stale save continuation cannot start an old-owner read, and a same-tick refresh invalidates the loaded baseline before Save.",
@@ -28,10 +28,24 @@
     }
   },
   "native": {
-    "status": "pending_successful_exact_ci_artifact_and_sole_heavy_permit",
+    "status": "passed_bounded_admin_warm_cases",
+    "run_id": "profile-independent-20261003-01",
     "ci_run_id": 37150495327,
+    "artifact_id": 11283802431,
     "source_sha": "ac49ac2f8fb9f9c3d538aef81149a1c4a6eb2418",
-    "required": "Admin T02 and T04 real save/reopen/restore; denied owner-row read and Retry through a real browser network boundary; identity transition remains partial if real UI cannot be exercised."
+    "imported_tree_sha256": "9cc1d6a77f7f2f0314a9ecee8dae6b73bc2bc6bb472e94d05e6b0aea43f75fdf",
+    "import_verification": "Authenticated current-test-artifact import matched the successful main-push CI run, artifact digest, source SHA and tree; verifyImportedNativeEvidence passed before and after Chrome.",
+    "resource_decision": "valid; admitted, child exit 0, permit finalized",
+    "runtime": "Owned Chrome for Testing and SIDE_PANEL context; first-party admin sign-in and selected device organization verified without recording identity IDs.",
+    "t02": "PASS admin warm: dirty draft was discarded by Back, and reopen returned original Preferred without an error or dirty state.",
+    "t04": "PASS admin warm: Discard restored original; real owner-row POST 200 save persisted after reopen; original Preferred restored through another POST 200 and read back after reopen. Only Preferred was changed.",
+    "t25": "PASS admin warm: CDP Fetch.failRequest refused four real GET requests to users.user_form_profile; failure rendered zero Profile editors, disabled header Save, no enabled Save or dirty footer. Interception was disabled, Retry made a successful owner-row GET 200, and original Preferred returned without error.",
+    "original_preferred_empty": true,
+    "restoration_verified": true,
+    "raw_receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-independent-20261003-01/evidence/profile-native-profile-independent-20261003-01.json",
+    "raw_receipt_sha256": "e22cac1dd62631c2e525fd23ad581e3a4fb3cb5e0ff2d2c4c066d03efbac4671",
+    "resource_journal": "docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl",
+    "resource_journal_sha256": "dddcab9788d9c56e12b442cf9921bc5a4ca9244276ebc0f557449551decc8db0"
   },
-  "limits": "Mocked source tests cannot prove RLS or native persistence. No overall Profile inventory pass is claimed. Member behavior and real cross-identity UI remain unverified."
+  "limits": "The native run proves the bounded admin warm T02/T04/T25 paths on the repaired artifact. It does not exercise a real account switch while Profile remains mounted, member identity, extension reload, or the rest of EXT-F-1004. No overall Profile inventory pass is claimed."
 }
