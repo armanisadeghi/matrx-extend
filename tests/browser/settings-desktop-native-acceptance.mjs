@@ -63,6 +63,10 @@ function safeCode(error) {
     'desktop_refused_reset_removed_session_key',
     'desktop_refused_reset_changed_local_value',
     'desktop_refused_reset_changed_session_value',
+    'desktop_reset_guest_ui_missing',
+    'desktop_reset_token_survived',
+    'desktop_reset_profile_survived',
+    'desktop_reset_admin_gate_survived',
   ])
     if (message.includes(code)) return code;
   if (/^(desktop_|native_sidepanel_)[a-z0-9_]+$/.test(message)) return message;
@@ -171,7 +175,8 @@ async function storageCensus(panel, baseline = null) {
             result.unexplainedKeys.push(prior.label);
           }
         } else if (['guest', 'instance', 'discovery'].includes(prior.category) ||
-          (prior.category === 'chat' && now.freshDefault)) result.allowedFresh++;
+          (prior.category === 'chat' && now.freshDefault) ||
+          (prior.category === 'guest_admin_gate' && now.guestAdminGate)) result.allowedFresh++;
         else {
           result.unexplained++;
           result.unexplainedKeys.push(prior.label);
@@ -768,8 +773,17 @@ try {
         30000,
       );
       await reload(panel, true);
-      assert.equal((await state(panel)).portSaved, null);
-      assert.equal((await panelIdentity(panel)).accessTokenPresent, false);
+      const signedOutState = await state(panel);
+      assert.equal(signedOutState.portSaved, null);
+      assert.equal(
+        signedOutState.guest && signedOutState.signInVisible,
+        true,
+        'desktop_reset_guest_ui_missing',
+      );
+      const signedOutIdentity = await panelIdentity(panel);
+      assert.equal(signedOutIdentity.accessTokenPresent, false, 'desktop_reset_token_survived');
+      assert.equal(signedOutIdentity.profileId, null, 'desktop_reset_profile_survived');
+      assert.equal(signedOutIdentity.isAdmin !== true, true, 'desktop_reset_admin_gate_survived');
       const clearedCensus = await storageCensus(panel, beforeReset.baseline);
       report.reset_census = {
         local: clearedCensus.local,

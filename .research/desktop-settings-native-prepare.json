@@ -81,5 +81,11 @@
     "scope": "Formatter disabled only for the four byte-identical native receipt JSON files; linter and all other files retain the repository defaults.",
     "validation": "Biome check passed on the four receipts, biome.json, and this report; an unlisted scratch copy of the same raw receipt failed the formatter as expected and was removed.",
     "raw_receipt_hashes_preserved": true
+  },
+  "admin_reset_oracle_repair": {
+    "trigger": "Independent admin native run reached reset after port and pair cases, then the prior census rejected a changed matrx.user.isAdmin true-to-false value.",
+    "source": "src/hooks/use-auth.ts applyCanonicalSession writes the false admin gate for the guest state after sign-out.",
+    "rule": "Accept matrx.user.isAdmin overlap only when the post-reset value is exactly false, whether the prior value was true or false. Retained true still fails. After reload also require visible guest and Sign in UI, absent access token and profile, and no true admin gate.",
+    "verification": "Source and exact-file Biome checks only in this lane; an independent native worker owns the next guarded runtime verdict."
   }
 }
