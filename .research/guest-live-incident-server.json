@@ -1,6 +1,6 @@
 {
   "incident": "EXT-D-0088",
-  "status": "server_fix_pushed_awaiting_live_deploy_and_guest_retest",
+  "status": "primary_guest_chat_restored; delegated_records_envelope_followup_in_progress",
   "live_server_before_fix": {
     "git_sha": "41aff687f768a1c0997dce70f595ea978a4f326c",
     "built_at": "2026-10-03T02:48:47Z"
@@ -24,12 +24,18 @@
     ],
     "verification": "The new guard failed before the repair with the captured InlineToolSpec validation error, then passed after it. Focused browser-dom and envelope suites: 19 passed, 12 skipped. Ruff and git diff --check passed."
   },
+  "live_acceptance": {
+    "deployed_git_sha": "c01faa52660a2720fcc888af3e10210688bc80cc",
+    "health_samples": "Three consecutive /health/version reads returned the fixed SHA.",
+    "first_guest_turn": "HTTP 200, 3.85 seconds, SSE completion and end reason=complete, no error event.",
+    "same_guest_followup": "HTTP 200, 4.07 seconds, assistant produced a browser-help sentence, completion.status=success, end reason=complete, no error event.",
+    "new_guest_conversation": "HTTP 200, 9.35 seconds, assistant output 'Hello! Hope you're having a great day.', completion.status=success, end reason=complete, no error event."
+  },
   "provenance": {
     "git_introduction": "81876a58e7 added $envelope to the records definition file on 2026-10-02T16:43:51-07:00",
     "qualification": "Git authoring and a row update time do not establish who deployed the row or when guests first failed."
   },
   "remaining": [
-    "Wait for hosted aidream deployment to report c01faa5266 or a descendant at /health/version.",
-    "Repeat a real guest Store 0.2.130 chat after deployment and confirm stream content plus terminal success; inspect system_error for a new regression."
+    "Repair the separate delegated records args-envelope metadata loss (EXT-D-0089); InlineToolSpec projection drops $envelope before executor argument unwrapping."
   ]
 }
