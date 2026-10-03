@@ -1,0 +1,17 @@
+{
+  "reviewed_commit": "741927f83774658827df4938fd2605d4fb59c18f",
+  "scope": "Independent source-only review of the records-guide generation repair after hosted release run 37094898802 failed Biome format for src/lib/tools/generated/records-guide.json; no local generation, build, tests, install, browser, or hosted rerun",
+  "verdict_A_actual_flow": "PASS_SOURCE_ONLY_WITH_RUNTIME_GAP: release.yml requires a full immutable aidream SHA, checks that the checkout HEAD equals it, and verifies the canonical matrx_records args.py and definition.py import files exist. The generator invokes guide_for over RECORD_ACTIONS and captures empty/unknown fallbacks, then passes that JSON through Biome using the checked-in artifact path before either write or --check comparison. Therefore generation and comparison share the formatter's deterministic output. Data projection expressions are unchanged by this commit; formatting is applied to JSON text, with no source transformation of values. release.sh's strict checks, lint, packaging, and publication flow are unchanged. No hosted green release or data preservation at runtime is claimed.",
+  "verdict_B_quality": "PASS_WITH_TEST_COVERAGE_LIMIT: the existing parity test exercises --check against the canonical source and fails after removal of a worked example; the new assertion verifies the committed artifact is Biome-clean. Together these guard the reported format mismatch and canonical payload parity at source level. They do not directly exercise generator write mode with a deliberately long/format-sensitive canonical fixture, so a narrow write-mode regression would make the exact hosted failure class more forcing.",
+  "prior_failure": {
+    "run": "37094898802",
+    "cause": "After mandatory artifact regeneration, lint found the Python json.dumps(indent=2) output for records-guide.json did not match repository Biome formatting.",
+    "repair_review": "The generator now formats canonical server JSON before both write and --check comparison; its canonical field/action projection is otherwise unchanged."
+  },
+  "release_gate_review": "No release.yml, release.sh, package scripts, or generated data file changes are part of this commit. The existing release source still checks out the requested immutable server revision and runs generated artifact production before candidate validation. No bypass or weaker gate was introduced by the commit.",
+  "limits": [
+    "Inspected exact commit diff, generator, parity test, release generator path, and hosted release workflow source.",
+    "The canonical source was not checked out locally and generation was not executed, as required by this review lane.",
+    "No claim that hosted release, browser behavior, or runtime data preservation has been verified."
+  ]
+}
