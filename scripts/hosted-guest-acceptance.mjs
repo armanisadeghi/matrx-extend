@@ -199,9 +199,13 @@ async function preparePublishedStoreCrx(outputDir) {
 async function run({ extensionDir, relocatedReceipt, kind }) {
   const acceptanceCase = process.env.MATRX_HOSTED_ACCEPTANCE_CASE ?? 'guest-chat';
   assert.ok(
-    ['guest-chat', 'settings-controls', 'settings-persistence', 'member-chat'].includes(
-      acceptanceCase,
-    ),
+    [
+      'guest-chat',
+      'settings-controls',
+      'settings-persistence',
+      'member-chat',
+      'prepare-stale-results',
+    ].includes(acceptanceCase),
   );
   if (acceptanceCase === 'settings-controls')
     assert.equal(kind, 'ci_development_test', 'Settings controls requires CI development receipt');
@@ -213,13 +217,28 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
     );
   if (acceptanceCase === 'member-chat')
     assert.equal(kind, 'published_release', 'Member Chat requires exact published release receipt');
+  if (acceptanceCase === 'prepare-stale-results')
+    assert.equal(kind, 'ci_development_test', 'Prepare requires exact CI development receipt');
   const memberLinkPath = join(dirname(relocatedReceipt), 'member-magic-link-private.json');
+  const adminCredentialsPath = join(runtimeDir, 'prepare-admin-credentials-private.json');
+  let adminCredentialsCreated = false;
   if (acceptanceCase === 'member-chat') {
     assert.ok(process.env.MATRX_HOSTED_MEMBER_LINK_JSON, 'member link secret required');
     await writeFile(memberLinkPath, process.env.MATRX_HOSTED_MEMBER_LINK_JSON, {
       mode: 0o600,
       flag: 'wx',
     });
+  }
+  if (acceptanceCase === 'prepare-stale-results') {
+    assert.ok(process.env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON, 'Prepare admin secret required');
+    const parsed = JSON.parse(process.env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON);
+    assert.equal(parsed.email, 'admin@admin.com', 'Prepare admin identity required');
+    assert.ok(
+      typeof parsed.password === 'string' && parsed.password,
+      'Prepare admin password required',
+    );
+    await writeFile(adminCredentialsPath, JSON.stringify(parsed), { mode: 0o600, flag: 'wx' });
+    adminCredentialsCreated = true;
   }
   const childEnv = {
     ...process.env,
@@ -230,6 +249,13 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
       ? { MATRX_D87_EXTENSION_DIR: extensionDir, MATRX_D87_RECEIPT: relocatedReceipt }
       : {}),
     ...(acceptanceCase === 'member-chat' ? { MATRX_REVIEWER_MAGIC_LINK_FILE: memberLinkPath } : {}),
+    ...(acceptanceCase === 'prepare-stale-results'
+      ? {
+          MATRX_PREPARE_EXTENSION_DIR: extensionDir,
+          MATRX_PREPARE_RECEIPT: relocatedReceipt,
+          MATRX_PREPARE_ADMIN_CREDENTIALS_FILE: adminCredentialsPath,
+        }
+      : {}),
     ...(acceptanceCase === 'settings-controls'
       ? {
           SETTINGS_DEV_EXTENSION_DIR: extensionDir,
@@ -241,6 +267,7 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
       : { MATRX_GUEST_CHAT_RELEASE_RECEIPT: relocatedReceipt }),
   };
   childEnv.MATRX_HOSTED_MEMBER_LINK_JSON = undefined;
+  childEnv.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON = undefined;
   childEnv.MATRX_REVIEWER_CREDENTIALS_FILE = undefined;
   try {
     const child = spawn(
@@ -252,9 +279,11 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
             ? 'tests/browser/settings-local-controls-acceptance.mjs'
             : acceptanceCase === 'settings-persistence'
               ? 'tests/browser/settings-d87-native-acceptance.mjs'
-              : acceptanceCase === 'member-chat'
-                ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
-                : 'tests/browser/guest-chat-store-acceptance.mjs',
+              : acceptanceCase === 'prepare-stale-results'
+                ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
+                : acceptanceCase === 'member-chat'
+                  ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
+                  : 'tests/browser/guest-chat-store-acceptance.mjs',
         ),
       ],
       {
@@ -274,6 +303,7 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
     );
   } finally {
     if (acceptanceCase === 'member-chat') await unlink(memberLinkPath);
+    if (adminCredentialsCreated) await unlink(adminCredentialsPath);
   }
 }
 

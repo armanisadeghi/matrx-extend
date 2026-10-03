@@ -1,0 +1,291 @@
+#!/usr/bin/env node
+/** Receipt-bound native acceptance for EXT-D-0058/0059 Prepare ordering. */
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+import { readFile, stat, writeFile } from 'node:fs/promises';
+import { join, resolve } from 'node:path';
+import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
+
+const REPO = resolve(import.meta.dirname, '../..');
+const EXTENSION_DIR = process.env.MATRX_PREPARE_EXTENSION_DIR;
+const RECEIPT = process.env.MATRX_PREPARE_RECEIPT;
+const CREDENTIALS = process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE;
+const OUTPUT = join(REPO, 'test-results', `prepare-stale-result-native-${randomUUID()}.json`);
+const WEB_ORIGIN = 'https://www.aimatrx.com';
+const DEMO = `${WEB_ORIGIN}/matrx-extend-demo`;
+const report = {
+  schema_version: 1,
+  defects: ['EXT-D-0058', 'EXT-D-0059'],
+  status: 'unverified',
+  artifact: null,
+  cases: [],
+  stage: 'inputs',
+  failure_code: null,
+};
+
+function stage(value) {
+  report.stage = value;
+}
+
+async function credentials() {
+  assert.ok(CREDENTIALS, 'prepare_private_credentials_required');
+  const metadata = await stat(CREDENTIALS);
+  assert.equal(metadata.mode & 0o077, 0, 'prepare_private_credentials_permissions');
+  const value = JSON.parse(await readFile(CREDENTIALS, 'utf8'));
+  assert.equal(value.email, 'admin@admin.com', 'prepare_admin_identity_required');
+  assert.ok(
+    typeof value.password === 'string' && value.password,
+    'prepare_admin_password_required',
+  );
+  return value;
+}
+
+async function signIn(page, panel) {
+  const web = await page.context().newPage();
+  try {
+    await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+    assert.equal(new URL(web.url()).pathname, '/login', 'prepare_web_login_path');
+    const secret = await credentials();
+    await web.locator('input[name="email"]').fill(secret.email);
+    await web.locator('input[name="password"]').fill(secret.password);
+    await Promise.all([
+      web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname === '/dashboard', {
+        timeout: 90_000,
+      }),
+      web.getByRole('button', { name: 'Sign in', exact: true }).click(),
+    ]);
+    await click(panel, 'title', 'Settings');
+    await click(panel, 'button', 'Sign in');
+    await waitFor(
+      'prepare_admin_ready',
+      () =>
+        evaluate(
+          panel,
+          `(() => {
+      const account = [...document.querySelectorAll('button[aria-expanded]')]
+        .find((button) => button.textContent.trim() === 'Account');
+      const section = account?.parentElement?.nextElementSibling;
+      const row = (label) => [...(section?.querySelectorAll('span') ?? [])]
+        .find((span) => span.textContent.trim() === label)?.parentElement?.textContent.trim();
+      return row('Email') === 'Emailadmin@admin.com' && row('Role')?.toLowerCase() === 'roleadmin';
+    })()`,
+        ),
+      Boolean,
+      90_000,
+    );
+  } finally {
+    await web.close();
+    await page.bringToFront();
+  }
+}
+
+async function prepareState(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+    const trigger = [...document.querySelectorAll('button[role="tab"][data-state="active"]')]
+      .find((button) => button.textContent.trim() === 'Prepare');
+    const active = trigger?.getAttribute('aria-controls')
+      ? document.getElementById(trigger.getAttribute('aria-controls')) : null;
+    if (active?.getAttribute('data-state') !== 'active') return { ready: false };
+    const text = active?.innerText ?? '';
+    return {
+      ready: Boolean(active),
+      preparing: text.includes('Preparing…'),
+      success: /Prepared in [0-9]+ms/.test(text),
+      failed: text.includes('Controlled Prepare rejection'),
+      buttonReady: [...(active?.querySelectorAll('button') ?? [])]
+        .some((button) => button.textContent.trim() === 'Prepare page' && !button.disabled),
+    };
+  })()`,
+  );
+}
+
+async function installFault(panel, mode) {
+  const installed = await evaluate(
+    panel,
+    `(() => {
+    if (window.__prepareFault) return false;
+    const original = chrome.scripting.executeScript;
+    const native = original.bind(chrome.scripting);
+    const fault = { calls: 0, held: false, release: null };
+    const wrapper = (details) => {
+      if (!details?.target?.documentIds || !details?.args?.[0] ||
+          typeof details.args[0].scrollToBottom !== 'boolean') return native(details);
+      fault.calls++;
+      if (fault.calls !== 1) return native(details);
+      if (${JSON.stringify(mode)} === 'reject')
+        return Promise.reject(new Error('Controlled Prepare rejection'));
+      return native(details).then((result) => new Promise((resolve, reject) => {
+        fault.held = true;
+        fault.release = () => {
+          fault.held = false;
+          if (${JSON.stringify(mode)} === 'hold_reject') reject(new Error('Controlled Prepare rejection'));
+          else resolve(result);
+        };
+      }));
+    };
+    chrome.scripting.executeScript = wrapper;
+    if (chrome.scripting.executeScript !== wrapper) return false;
+    window.__prepareFault = {
+      state: () => ({ calls: fault.calls, held: fault.held }),
+      release: () => fault.release?.(),
+      restore: () => { chrome.scripting.executeScript = original; },
+    };
+    return true;
+  })()`,
+  );
+  assert.equal(installed, true, 'prepare_fault_boundary_unavailable');
+}
+
+async function faultState(panel) {
+  return evaluate(panel, '(() => window.__prepareFault?.state() ?? null)()');
+}
+
+async function releaseFault(panel) {
+  await evaluate(
+    panel,
+    '(() => { window.__prepareFault?.release(); window.__prepareFault?.restore(); delete window.__prepareFault; return true; })()',
+  );
+  // Let the pending hook continuation and React paint complete before inspecting
+  // the old document's result. A pre-settlement empty state is not evidence.
+  await evaluate(
+    panel,
+    'new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve(true))))',
+  );
+}
+
+try {
+  assert.ok(EXTENSION_DIR && RECEIPT && CREDENTIALS, 'prepare_inputs_required');
+  const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
+  assert.equal(hashReleaseTree(EXTENSION_DIR), receipt.treeSha256, 'prepare_receipt_tree_mismatch');
+  const manifest = JSON.parse(await readFile(join(EXTENSION_DIR, 'manifest.json'), 'utf8'));
+  assert.equal(manifest.version, receipt.version, 'prepare_receipt_version_mismatch');
+  report.artifact = {
+    version: receipt.version,
+    source_sha: receipt.sourceSha ?? null,
+    tree_sha256: receipt.treeSha256,
+    kind: receipt.kind ?? 'release',
+  };
+  stage('native_panel');
+  await runNativeSidepanelQa({
+    extensionDir: EXTENSION_DIR,
+    expectedRelease: receipt,
+    releaseReceiptPath: RECEIPT,
+    ...(receipt.kind === 'local_dev_unpacked' && { localDevReceiptPath: RECEIPT }),
+    publicDemoUrl: DEMO,
+    exercisePanel: async ({ page, panel }) => {
+      stage('admin_signin');
+      await signIn(page, panel);
+      stage('prepare_ready');
+      await click(panel, 'title', 'Showcase (admin only)');
+      await click(panel, 'button-text', 'Prepare');
+      await waitFor(
+        'prepare_ready',
+        () => prepareState(panel),
+        (value) => value?.ready && value.buttonReady,
+      );
+
+      stage('initial_success');
+      await click(panel, 'button-text', 'Prepare page');
+      await waitFor(
+        'prepare_initial_success',
+        () => prepareState(panel),
+        (value) => value?.success && value.buttonReady,
+        30_000,
+      );
+
+      stage('failed_retry');
+      await installFault(panel, 'hold_reject');
+      await click(panel, 'button-text', 'Prepare page');
+      await waitFor(
+        'prepare_failed_retry_held',
+        () => faultState(panel),
+        (value) => value?.calls === 1 && value.held,
+        30_000,
+      );
+      const pendingRetry = await prepareState(panel);
+      assert.equal(pendingRetry.preparing, true, 'prepare_retry_not_pending');
+      assert.equal(pendingRetry.success, false, 'prepare_previous_success_visible_during_retry');
+      await releaseFault(panel);
+      const retry = await waitFor(
+        'prepare_failed_retry',
+        () => prepareState(panel),
+        (value) => value?.failed && value.buttonReady,
+      );
+      assert.equal(retry.success, false, 'prepare_old_success_visible_after_failure');
+      report.cases.push({ case: 'failed_retry_after_success', status: 'pass' });
+
+      for (const mode of ['hold_success', 'hold_reject']) {
+        stage(mode);
+        await installFault(panel, mode);
+        await click(panel, 'button-text', 'Prepare page');
+        await waitFor(
+          `prepare_${mode}_held`,
+          () => faultState(panel),
+          (value) => value?.calls === 1 && value.held,
+          30_000,
+        );
+        assert.equal(
+          (await prepareState(panel)).preparing,
+          true,
+          'prepare_not_pending_before_reload',
+        );
+        const before = await page.evaluate(() => performance.timeOrigin);
+        await page.reload({ waitUntil: 'domcontentloaded' });
+        await waitFor(
+          `prepare_${mode}_new_document`,
+          () => page.evaluate(() => performance.timeOrigin),
+          (value) => value !== before,
+        );
+        await waitFor(
+          `prepare_${mode}_cleared`,
+          () => prepareState(panel),
+          (value) =>
+            value?.ready &&
+            value.buttonReady &&
+            !value.success &&
+            !value.failed &&
+            !value.preparing,
+        );
+        await releaseFault(panel);
+        const after = await waitFor(
+          `prepare_${mode}_late_ignored`,
+          () => prepareState(panel),
+          (value) =>
+            value?.ready &&
+            value.buttonReady &&
+            !value.success &&
+            !value.failed &&
+            !value.preparing,
+        );
+        assert.equal(after.success, false);
+        report.cases.push({
+          case: `old_document_late_${mode === 'hold_success' ? 'success' : 'rejection'}`,
+          status: 'pass',
+        });
+      }
+      stage('fresh_document_success');
+      await click(panel, 'button-text', 'Prepare page');
+      await waitFor(
+        'prepare_fresh_document_success',
+        () => prepareState(panel),
+        (value) => value?.success && value.buttonReady,
+        30_000,
+      );
+      report.cases.push({ case: 'fresh_document_prepare', status: 'pass' });
+    },
+  });
+  report.status = 'pass_bounded';
+  stage('complete');
+  process.stdout.write('PASS prepare_stale_result_native\n');
+} catch {
+  report.status = 'unverified';
+  report.failure_code = `${report.stage}_failed`;
+  process.stderr.write(`UNVERIFIED prepare_stale_result_native stage=${report.stage}\n`);
+  process.exitCode = 1;
+} finally {
+  await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
+}
