@@ -1,0 +1,2236 @@
+{
+  "source_sha": "7522aed74361f88002acd090e7a0aa3e65e7419e",
+  "source": "matrx_records.agent.args.RecordsArgs.model_json_schema()",
+  "purpose": "Full execution schema; provider projection stays separate. Schema annotations excluded with property names preserved. Snapshot only, not wired into runtime.",
+  "schema": {
+    "$defs": {
+      "BookingProposeWire": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "booking_propose",
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "table": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "table_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "description": {
+            "default": "",
+            "type": "string"
+          },
+          "fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "questions": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "availability": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "intro": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "thank_you": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "submit_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "submission_cap": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "notify": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": true
+          },
+          "home": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "publish": {
+            "default": true,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "action",
+          "title"
+        ],
+        "type": "object"
+      },
+      "CaptureProposeWire": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "capture_propose",
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "table": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "table_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "description": {
+            "default": "",
+            "type": "string"
+          },
+          "fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "questions": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "intro": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "thank_you": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "notify": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "home": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "open_to_crew": {
+            "default": true,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "action",
+          "title"
+        ],
+        "type": "object"
+      },
+      "ChecklistProposeWire": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "checklist_propose",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "steps": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "table": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "table_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "description": {
+            "default": "",
+            "type": "string"
+          },
+          "fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "roles": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "trigger": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "start_for": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "checklist_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "home": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "action",
+          "name",
+          "steps"
+        ],
+        "type": "object"
+      },
+      "DashboardProposeWire": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "dashboard_propose",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "table": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "table_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "description": {
+            "default": "",
+            "type": "string"
+          },
+          "fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "blocks": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "home": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "presentation": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "dashboard_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "action",
+          "name",
+          "blocks"
+        ],
+        "type": "object"
+      },
+      "DocumentProposeWire": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "document_propose",
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "table_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "table": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "description": {
+            "default": "",
+            "type": "string"
+          },
+          "fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "record_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "template_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "letterhead": {
+            "default": true,
+            "type": "boolean"
+          },
+          "home": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "action",
+          "title",
+          "body"
+        ],
+        "type": "object"
+      },
+      "EnrichProposeWire": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "enrich_propose",
+            "type": "string"
+          },
+          "columns": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "table": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "table_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "description": {
+            "default": "",
+            "type": "string"
+          },
+          "home": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "enable": {
+            "default": true,
+            "type": "boolean"
+          },
+          "run": {
+            "default": true,
+            "type": "boolean"
+          },
+          "preview_only": {
+            "default": false,
+            "type": "boolean"
+          },
+          "rows": {
+            "default": 25,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "action",
+          "columns"
+        ],
+        "type": "object"
+      },
+      "EntityReadWire": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "entity_read",
+            "type": "string"
+          },
+          "entity": {
+            "type": "string"
+          },
+          "record_id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "action",
+          "entity",
+          "record_id"
+        ],
+        "type": "object"
+      },
+      "EntityWriteWire": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "entity_write",
+            "type": "string"
+          },
+          "entity": {
+            "type": "string"
+          },
+          "record_id": {
+            "type": "string"
+          },
+          "values": {
+            "additionalProperties": true,
+            "type": "object"
+          }
+        },
+        "required": [
+          "action",
+          "entity",
+          "record_id",
+          "values"
+        ],
+        "type": "object"
+      },
+      "FieldProposeWire": {
+        "additionalProperties": false,
+        "examples": [
+          {
+            "field_type": "select",
+            "name": "status",
+            "options": [
+              "New",
+              "Done"
+            ],
+            "table_id": "<id>"
+          }
+        ],
+        "properties": {
+          "action": {
+            "const": "field_propose",
+            "type": "string"
+          },
+          "table_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "field_type": {
+            "default": "text",
+            "type": "string"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "description": {
+            "default": "",
+            "type": "string"
+          },
+          "sensitivity": {
+            "default": "internal",
+            "type": "string"
+          },
+          "context_policy": {
+            "default": "include",
+            "type": "string"
+          },
+          "config": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "unit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "options_table_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "options": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "relation_target": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "action",
+          "table_id",
+          "name"
+        ],
+        "type": "object"
+      },
+      "FormProposeWire": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "form_propose",
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "table": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "table_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "description": {
+            "default": "",
+            "type": "string"
+          },
+          "fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "questions": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "intro": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "thank_you": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "flow": {
+            "default": "one-at-a-time",
+            "type": "string"
+          },
+          "submit_label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "submission_cap": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "notify": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": true
+          },
+          "home": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "publish": {
+            "default": true,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "action",
+          "title"
+        ],
+        "type": "object"
+      },
+      "GuideWire": {
+        "additionalProperties": false,
+        "examples": [
+          {
+            "topic": "record_write"
+          }
+        ],
+        "properties": {
+          "action": {
+            "const": "guide",
+            "type": "string"
+          },
+          "topic": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "type": "object"
+      },
+      "ImportProposeWire": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "import_propose",
+            "type": "string"
+          },
+          "table": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "table_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "rows": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "csv_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "source_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "file_hash": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "dedupe_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "on_duplicate": {
+            "default": "skip",
+            "type": "string"
+          },
+          "unmapped": {
+            "default": "propose",
+            "type": "string"
+          },
+          "date_order": {
+            "default": "mdy",
+            "type": "string"
+          },
+          "home": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "mapping": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "type": "object"
+      },
+      "MetadataSearchWire": {
+        "additionalProperties": false,
+        "examples": [
+          {
+            "query": "referrals"
+          }
+        ],
+        "properties": {
+          "action": {
+            "const": "metadata_search",
+            "type": "string"
+          },
+          "query": {
+            "type": "string"
+          },
+          "limit": {
+            "default": 50,
+            "type": "integer"
+          },
+          "organization_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "action",
+          "query"
+        ],
+        "type": "object"
+      },
+      "PipelineProposeWire": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "pipeline_propose",
+            "type": "string"
+          },
+          "table": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "table_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "description": {
+            "default": "",
+            "type": "string"
+          },
+          "fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "home": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "stage_field": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "transitions": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "requires": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "who": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "limits": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "integer"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "on_entry": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "measure": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "view_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "action",
+          "stage_field"
+        ],
+        "type": "object"
+      },
+      "PortalProposeWire": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "portal_propose",
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "client_table": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "client_table_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "client_fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "tables": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "invite": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "home": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "action",
+          "title",
+          "tables"
+        ],
+        "type": "object"
+      },
+      "RecordAggregateWire": {
+        "additionalProperties": false,
+        "examples": [
+          {
+            "group_by": "status",
+            "measure": "count",
+            "table_id": "<id>"
+          }
+        ],
+        "properties": {
+          "action": {
+            "const": "record_aggregate",
+            "type": "string"
+          },
+          "table_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "table": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "measure": {
+            "default": "count",
+            "type": "string"
+          },
+          "group_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "field_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "match": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "as_of": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "bucket": {
+            "anyOf": [
+              {
+                "enum": [
+                  "day",
+                  "week",
+                  "month",
+                  "quarter",
+                  "year"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "related_to": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "order": {
+            "default": "count_desc",
+            "enum": [
+              "count_desc",
+              "measure_desc",
+              "measure_asc"
+            ],
+            "type": "string"
+          },
+          "limit": {
+            "default": 50,
+            "type": "integer"
+          },
+          "organization_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "type": "object"
+      },
+      "RecordDeleteWire": {
+        "additionalProperties": false,
+        "examples": [
+          {
+            "record_id": "<id>"
+          }
+        ],
+        "properties": {
+          "action": {
+            "const": "record_delete",
+            "type": "string"
+          },
+          "record_id": {
+            "type": "string"
+          },
+          "undo": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "action",
+          "record_id"
+        ],
+        "type": "object"
+      },
+      "RecordHistoryWire": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "record_history",
+            "type": "string"
+          },
+          "record_id": {
+            "type": "string"
+          },
+          "field_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "limit": {
+            "default": 50,
+            "type": "integer"
+          },
+          "organization_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "action",
+          "record_id"
+        ],
+        "type": "object"
+      },
+      "RecordReadWire": {
+        "additionalProperties": false,
+        "examples": [
+          {
+            "match": {
+              "status": "New"
+            },
+            "table_id": "<id>"
+          }
+        ],
+        "properties": {
+          "action": {
+            "const": "record_read",
+            "type": "string"
+          },
+          "record_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "table_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "table": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "match": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "limit": {
+            "default": 200,
+            "type": "integer"
+          },
+          "id_keyed": {
+            "default": false,
+            "type": "boolean"
+          },
+          "organization_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "type": "object"
+      },
+      "RecordRestoreVersionWire": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "record_restore_version",
+            "type": "string"
+          },
+          "record_id": {
+            "type": "string"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "field_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "action",
+          "record_id",
+          "version"
+        ],
+        "type": "object"
+      },
+      "RecordWriteWire": {
+        "additionalProperties": false,
+        "examples": [
+          {
+            "records": [
+              {
+                "patient_name": "Dana Whitfield",
+                "status": "New"
+              },
+              {
+                "record_id": "<id>",
+                "status": "Contacted"
+              }
+            ],
+            "table_id": "<id>"
+          }
+        ],
+        "properties": {
+          "action": {
+            "const": "record_write",
+            "type": "string"
+          },
+          "values": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "records": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "table_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "record_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "expected_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "type": "object"
+      },
+      "SignatureRequestWire": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "signature_request",
+            "type": "string"
+          },
+          "record_id": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          },
+          "signer_email": {
+            "type": "string"
+          },
+          "signer_name": {
+            "type": "string"
+          },
+          "template_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "render_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "expires_days": {
+            "default": 14,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "action",
+          "record_id",
+          "field",
+          "signer_email",
+          "signer_name"
+        ],
+        "type": "object"
+      },
+      "SubscriptionProposeWire": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "subscription_propose",
+            "type": "string"
+          },
+          "table_id": {
+            "type": "string"
+          },
+          "watch": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "view_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "view_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "tell": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "action",
+          "table_id",
+          "tell"
+        ],
+        "type": "object"
+      },
+      "TableListWire": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "const": "table_list",
+            "type": "string"
+          },
+          "limit": {
+            "default": 50,
+            "type": "integer"
+          },
+          "organization_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "include_app_tables": {
+            "default": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "type": "object"
+      },
+      "TableProposeWire": {
+        "additionalProperties": false,
+        "examples": [
+          {
+            "fields": [
+              {
+                "name": "patient name",
+                "type": "text"
+              },
+              {
+                "name": "status",
+                "options": [
+                  "New",
+                  "Contacted"
+                ],
+                "type": "select"
+              },
+              {
+                "name": "physician",
+                "relation_target": "<that table's table_id>",
+                "type": "relation"
+              }
+            ],
+            "name": "Referral Queue"
+          }
+        ],
+        "properties": {
+          "action": {
+            "const": "table_propose",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "type": "string"
+          },
+          "fields": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "home": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "spec": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "organization_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "action",
+          "name"
+        ],
+        "type": "object"
+      }
+    },
+    "discriminator": {
+      "mapping": {
+        "booking_propose": "#/$defs/BookingProposeWire",
+        "capture_propose": "#/$defs/CaptureProposeWire",
+        "checklist_propose": "#/$defs/ChecklistProposeWire",
+        "dashboard_propose": "#/$defs/DashboardProposeWire",
+        "document_propose": "#/$defs/DocumentProposeWire",
+        "enrich_propose": "#/$defs/EnrichProposeWire",
+        "entity_read": "#/$defs/EntityReadWire",
+        "entity_write": "#/$defs/EntityWriteWire",
+        "field_propose": "#/$defs/FieldProposeWire",
+        "form_propose": "#/$defs/FormProposeWire",
+        "guide": "#/$defs/GuideWire",
+        "import_propose": "#/$defs/ImportProposeWire",
+        "metadata_search": "#/$defs/MetadataSearchWire",
+        "pipeline_propose": "#/$defs/PipelineProposeWire",
+        "portal_propose": "#/$defs/PortalProposeWire",
+        "record_aggregate": "#/$defs/RecordAggregateWire",
+        "record_delete": "#/$defs/RecordDeleteWire",
+        "record_history": "#/$defs/RecordHistoryWire",
+        "record_read": "#/$defs/RecordReadWire",
+        "record_restore_version": "#/$defs/RecordRestoreVersionWire",
+        "record_write": "#/$defs/RecordWriteWire",
+        "signature_request": "#/$defs/SignatureRequestWire",
+        "subscription_propose": "#/$defs/SubscriptionProposeWire",
+        "table_list": "#/$defs/TableListWire",
+        "table_propose": "#/$defs/TableProposeWire"
+      },
+      "propertyName": "action"
+    },
+    "oneOf": [
+      {
+        "$ref": "#/$defs/TableListWire"
+      },
+      {
+        "$ref": "#/$defs/MetadataSearchWire"
+      },
+      {
+        "$ref": "#/$defs/RecordReadWire"
+      },
+      {
+        "$ref": "#/$defs/RecordAggregateWire"
+      },
+      {
+        "$ref": "#/$defs/RecordWriteWire"
+      },
+      {
+        "$ref": "#/$defs/RecordDeleteWire"
+      },
+      {
+        "$ref": "#/$defs/RecordHistoryWire"
+      },
+      {
+        "$ref": "#/$defs/RecordRestoreVersionWire"
+      },
+      {
+        "$ref": "#/$defs/FieldProposeWire"
+      },
+      {
+        "$ref": "#/$defs/TableProposeWire"
+      },
+      {
+        "$ref": "#/$defs/FormProposeWire"
+      },
+      {
+        "$ref": "#/$defs/CaptureProposeWire"
+      },
+      {
+        "$ref": "#/$defs/ImportProposeWire"
+      },
+      {
+        "$ref": "#/$defs/DashboardProposeWire"
+      },
+      {
+        "$ref": "#/$defs/PipelineProposeWire"
+      },
+      {
+        "$ref": "#/$defs/DocumentProposeWire"
+      },
+      {
+        "$ref": "#/$defs/ChecklistProposeWire"
+      },
+      {
+        "$ref": "#/$defs/EnrichProposeWire"
+      },
+      {
+        "$ref": "#/$defs/PortalProposeWire"
+      },
+      {
+        "$ref": "#/$defs/SignatureRequestWire"
+      },
+      {
+        "$ref": "#/$defs/SubscriptionProposeWire"
+      },
+      {
+        "$ref": "#/$defs/BookingProposeWire"
+      },
+      {
+        "$ref": "#/$defs/EntityReadWire"
+      },
+      {
+        "$ref": "#/$defs/EntityWriteWire"
+      },
+      {
+        "$ref": "#/$defs/GuideWire"
+      }
+    ]
+  }
+}
