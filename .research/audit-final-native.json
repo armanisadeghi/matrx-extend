@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "defect": "EXT-D-0093",
-  "status": "native_pass_pending_independent_review",
+  "status": "independent_native_pass_pending_coordinator_audit",
   "scope": "One fresh, guarded headed native acceptance on the exact imported CI development artifact in an owned disposable Chrome profile.",
   "source": {
     "sha": "991385d9816b31a568619522e4795c001b4d3a06",
@@ -64,5 +64,5 @@
     "preflight_refusal_journal_sha256": "76673546ca35067c1492fe7bc7270924c4e414728ecc8f9dc1f55f4c63469d51",
     "runner_native_artifacts": "test-results/native-sidepanel-qa-pBW14v"
   },
-  "independent_review": "Source peer review passed before the runtime lane; native artifact receipt and resource journal are preserved for the final independent review."
+  "independent_review": "This is the independent native runtime pass. The source peer accepted the implementation before execution; coordinator audit of the preserved receipt and resource journals is the remaining review step."
 }
