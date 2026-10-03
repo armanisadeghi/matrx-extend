@@ -1,6 +1,9 @@
 /** The existing one-tool test door executes a registered server tool in the person's seat. */
-import { apiGet, buildHeaders, getApiBaseUrl } from '@/lib/api/client';
+import { apiGet, buildHeaders, getApiBaseUrl, readSessionBearer } from '@/lib/api/client';
+import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { streamFetch } from '@/lib/api/stream';
+import { getAccessToken } from '@/lib/auth/flow';
+import { getActiveOrganizationId } from '@/lib/org/active-org';
 
 export interface ServerToolDefinition {
   parameters: Record<string, unknown>;
@@ -20,8 +23,30 @@ export async function runManualServerTool(
   name: string,
   args: Record<string, unknown>,
 ): Promise<unknown> {
-  const headers = await buildHeaders();
   const url = `${await getApiBaseUrl()}/tools/test/execute`;
+  // The tool-test door requires a signed-in person. Its stream has the same
+  // held organization choice and actor-stability rule as a chat stream.
+  let headers: Record<string, string> | null = null;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const token = await readSessionBearer();
+    if (!token) throw new Error('Sign in to run this tool.');
+    const organizationId = await requireRequestOrganizationId();
+    const candidate = await buildHeaders(
+      { Accept: 'text/event-stream' },
+      { token, organizationId },
+    );
+    const [currentToken, currentOrganizationId] = await Promise.all([
+      getAccessToken(),
+      getActiveOrganizationId(),
+    ]);
+    if (currentToken === token && currentOrganizationId === organizationId) {
+      headers = candidate;
+      break;
+    }
+  }
+  if (!headers) {
+    throw new Error('Your sign-in or organization changed. Try again.');
+  }
   let completion: Record<string, unknown> | undefined;
   let failure: string | undefined;
   await streamFetch({
