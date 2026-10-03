@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-03T09:29:41.693616+00:00",
+  "observed_at": "2026-10-03T09:30:45.571932+00:00",
   "last_all_remotes_fetched": "2026-10-03T09:29:41.693616+00:00",
   "baseline": "2026-10-03T08:21:53.534740+00:00",
   "repositories": [
@@ -63,14 +63,16 @@
     },
     {
       "repo": "matrx-extend",
-      "origin_main": "6aa7dfb7076615c1d91ce945cbf5498b60c97090",
-      "last_update": "2026-10-03T02:25:25-07:00",
+      "origin_main": "1be7deadb523407419a191f4107fc1b73847497a",
+      "last_update": "2026-10-03T02:29:49-07:00",
       "files_modified_since_prior_ledger": 28,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [
-        "M tests/browser/native-sidepanel-qa-harness.mjs",
-        "M tests/browser/native-sidepanel-qa-harness.test.mjs"
+        "M ests/browser/native-sidepanel-qa-harness.mjs",
+        "M tests/browser/native-sidepanel-qa-harness.test.mjs",
+        "M tests/browser/vault-owned-cdp.cjs",
+        "M tests/browser/vault-owned-cdp.test.cjs"
       ],
       "stashes": [],
       "other_branches": [
@@ -78,7 +80,7 @@
       ],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-extend",
-        "HEAD 6aa7dfb7076615c1d91ce945cbf5498b60c97090",
+        "HEAD 1be7deadb523407419a191f4107fc1b73847497a",
         "branch refs/heads/main"
       ]
     },
