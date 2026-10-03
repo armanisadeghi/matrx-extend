@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0093",
+  "role": "fresh source reviewer, zero authorship",
+  "reviewed_commit": "750c1107",
+  "verdict_a": {
+    "reload_boundary": "source-pass",
+    "native_acceptance": "unverified",
+    "evidence": [
+      "The earlier native receipt failed at T86 with a normal Audit key card and no fault marker after reload; this is evidence of the old-document race, not a product failure.",
+      "reloadAuditPrelude now keeps the CDP new-document script registered until performance.timeOrigin differs, Settings appears in the new document, and its prelude marker confirms execution; missing prelude fails closed.",
+      "The sibling plain reloadCard path for T88 and T89 also waits for a distinct document before identity, card, and persistence checks. The runner has no other Page.reload call site.",
+      "The focused guard presents an old Settings DOM and rejects it before allowing prelude removal; the new-document-without-prelude case rejects."
+    ],
+    "remaining": [
+      "Fresh headed admin Chrome run must establish T86 recovery and the later cases; no native execution was permitted in this review lane.",
+      "T87, T89, and T90 still lack product-signed receipt verification; T90 also lacks post-reload verification and altered-receipt rejection. The runner deliberately exits partial."
+    ]
+  },
+  "verdict_b": {
+    "quality": "pass-with-concerns",
+    "evidence": [
+      "Fault interception stays at the disposable document's Chrome storage and clipboard API boundaries. WebCrypto, Web Locks, product modules, and persistent storage remain real.",
+      "The reload guard tests the changed-document predicate rather than merely asserting that a helper exists; both runner call sites use that helper.",
+      "Failure codes are allowlisted by step or wait label. The optional diagnostic carries only card booleans, a public key ID, fault counts, and visibility; no key material, URL, credentials, or raw exception text is written.",
+      "git show --check 750c1107 passed. No heavy test or browser run was performed by this reviewer."
+    ],
+    "concerns": [
+      "The focused guard proves helper behavior while call-site wiring is established by source review; it would not itself catch removing the helper from reloadCard.",
+      "A fresh native run remains necessary before any claim that the changed-document condition is observed by CDP in headed Chrome."
+    ]
+  }
+}
