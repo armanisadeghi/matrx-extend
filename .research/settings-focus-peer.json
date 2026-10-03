@@ -1,0 +1,22 @@
+{
+  "review": "D87 signed-in native Settings source candidate",
+  "source_commit": "b23a5a8ce4cfd0a578b8b22411f6f88c1fa9549c",
+  "verdict_a_actual_runtime": {
+    "status": "PENDING",
+    "evidence": "The recorded D87 run proves authentication and the first theme save, then fails on the next menu open while the sidepanel document is hidden and body pointer-events is none. Candidate b23a5a8c has not been run natively.",
+    "constraint": "No native trial run; heavy/native permit remains with the parent."
+  },
+  "verdict_b_source_quality": {
+    "status": "PASS",
+    "ownership_and_provenance": "The callback closes over panelTarget.targetId only after the harness verifies the spawned profile, extension worker, distinct normal page, exact chrome-extension panel URL, and sidepanel execution context. It activates that target through CDP; it does not accept an arbitrary target id.",
+    "activation_semantics": "Signed-in flows call Target.activateTarget after signInSettings returns, then require document.visibilityState === visible before Settings pointer actions. This is a real browser target activation and visibility precondition, not a DOM/CSS/timer/pointer bypass. Guest behavior is unchanged.",
+    "assertions": "The original theme/menu trusted-input path and acceptance predicates remain intact. The new visibility observation only gates readiness; it does not convert failed pointer evidence into success.",
+    "diagnostic_safety": "pointerBoundary emits bounded visibility, booleans, and counts; it records no page text, credentials, token, organization name, or raw DOM. Existing auth report strips profile id/email/organization id before persistence.",
+    "breakage_review": "No source-level new breakage found. Target activation may focus the sidepanel window as intended; runtime behavior and the following repeated theme selections remain unverified."
+  },
+  "review_basis": [
+    "tests/browser/native-sidepanel-qa-harness.mjs: target discovery, exact extension URL/context checks, and activation callback",
+    "tests/browser/settings-d87-native-acceptance.mjs: post-auth visibility gate, unchanged UI cases, bounded diagnostic",
+    ".research/settings-pointer-boundary-diagnosis.json: authenticated first-choice pass and hidden-panel pointer boundary"
+  ]
+}
