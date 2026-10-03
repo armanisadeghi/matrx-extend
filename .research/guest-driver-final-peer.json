@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "review": "independent narrow test-only review",
+  "verdicts": {
+    "A_bounded_runtime_proof": "PASS",
+    "B_test_quality": "PASS_WITH_LIMITATIONS"
+  },
+  "scope": [
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/browser/guest-allowance-native-acceptance.mjs"
+  ],
+  "runtime_evidence": {
+    "receipt": "test-results/guest-allowance-native-fd57b9e2-0d6d-4d12-b9e1-01e145b283eb.json",
+    "result": "pass",
+    "artifact": "0.2.181 Store ZIP; original ZIP hash and tree verified; only manifest.json public-key adaptation for unpacked loading",
+    "observations": "four active-chat sends had visible enabled targets; guest banner present; access token and profile absent; three answers and fourth-turn allowance response observed; no owner-table GET recorded",
+    "scope_limit": "not installed from Web Store or published; panel-visible behavior does not establish offscreen fetch HTTP status"
+  },
+  "test_quality": {
+    "preserved_title": "recognizes data-matrx-title when tooltip removes native title",
+    "pointer_action": "continues viewport/clipping hit testing, stable target sampling, and trusted CDP mouse press/release; no DOM click shortcut found",
+    "routing": "active-chat-send remains scoped to the unique active Chat tab panel",
+    "safe_metadata": "new receipt observations contain only booleans, counts, dimensions, focus state, and input length; no user text or credential values",
+    "limitations": [
+      "The acceptance was not rerun by this reviewer; saved runtime evidence was inspected.",
+      "The per-send readiness state locates the Chat tab without requiring it to be active; the click driver and captured receipt independently establish active-panel targeting in this run.",
+      "No mutation test was run under the explicitly test-only review scope; the report establishes regression-oriented behavior but not the full forcing-function mutation bar."
+    ]
+  },
+  "diff_check": "clean",
+  "reviewer_edits": "this report only"
+}
