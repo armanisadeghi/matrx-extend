@@ -14,11 +14,11 @@
   "actual": "Fresh Chrome profile allowed initial command-line load but disabled the unpacked extension on management Reload. The harness reported worker-retirement failure without capturing Chrome disable reason.",
   "severity": "S2: blocks reliable extension reload acceptance; isolated test-environment defect, not demonstrated Store product failure.",
   "priority": "P1: blocks remaining Profile reload acceptance.",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "reload_lifecycle_escalation",
   "evidence": [
     ".research/reload-lifecycle-repair.json",
-    ".research/reload-lifecycle-escalation.json (worker final report pending)",
+    ".research/reload-lifecycle-escalation.json",
     "docs/stabilization/resource-journals/reload-escalation-01.jsonl",
     "docs/stabilization/resource-journals/reload-escalation-02.jsonl"
   ],
@@ -40,7 +40,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Developer-mode UI setup restores original strict reload oracle in builder run02; final source/independent acceptance pending."
+    },
+    {
+      "at": "2026-10-03T23:55:53.006587+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Native UI Developer-mode setup passed original strict native reload in builder run02. Final enabled-state assertions plus three red mutation guards committed28e862c5; independent final native retest pending."
     }
   ],
-  "closure_requirement": "Fresh independent source and guarded native verification of final setup, preserved strict target lifecycle and runtime predicates, and proven guard rejecting omitted developer-mode setup. No product feature blanket pass."
+  "closure_requirement": "Fresh independent source and guarded native verification of final setup, preserved strict target lifecycle and runtime predicates, and proven guard rejecting omitted developer-mode setup. No product feature blanket pass.",
+  "fix_commits": ["28e862c5"]
 }
