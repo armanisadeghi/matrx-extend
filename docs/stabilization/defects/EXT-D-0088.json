@@ -11,7 +11,7 @@
     "Observe immediate error; correlate server stream_crash for source_app matrx-extend and source_feature chat."
   ],
   "expected": "Signed-out users receive a streamed Chat response without a paid account or login.",
-  "actual": "Original server startup crash repaired. Version 0.2.176 is Published - public. Fresh exact176 unpacked release native Chromium smoke against server6c7c5a09 passed signed-out grounded first answer and distinct follow-up after real panel reload, with unchanged artifact tree and valid resource exit. This retest does not certify Store installation/update lifecycle or broader Chat features.",
+  "actual": "Original server startup crash repaired. Version 0.2.176 is Published - public. Fresh exact176 unpacked release native Chromium smoke against server82af43a3 passed signed-out grounded first answer and distinct follow-up after real panel reload, with unchanged artifact tree and valid resource exit. This retest does not certify Store installation/update lifecycle or broader Chat features.",
   "evidence": [
     ".research/guest-live-incident-server.json",
     ".research/guest-live-incident-extension.json",
@@ -27,7 +27,8 @@
     ".research/member176-receipt-retest.json",
     ".research/publisher-session-restore.json",
     ".research/published176-guest-server-refresh.json",
-    ".research/published176-guest-backend-6c7c5a09.json"
+    ".research/published176-guest-backend-6c7c5a09.json",
+    ".research/published176-guest-backend-82af43a3.json"
   ],
   "severity": "S0: public core no-login Chat fails immediately",
   "priority": "P0: supersedes deferred Chat sequencing; restore live guest promise now",
@@ -74,15 +75,15 @@
   "deployed_server_sha": "9bd979a894ba71141d6548069d621aa59a526bde",
   "published_extension_version": "0.2.176",
   "bounded_retest": "Published130 functional guest initial/reload evidence retained with explicit Google metadata-only integrity distinction. Exact release176 guest37106907229 PASSED first/reload answers and unchangedtree; independent member37107947183 PASSED real web+extension auth, nonadmin authority, explicit org and real answer. Both resource-valid. Member tree checked before load only; guest separately rehashed identical release after interaction.",
-  "latest_verified_server_sha": "6c7c5a09a84e2e0111732505bb666f37a77b56e8",
+  "latest_verified_server_sha": "82af43a337e848da4d2ffebc7915fc76da8ea2b8",
   "latest_bounded_retest": {
-    "run_id": "published176-guest-backend-6c7c5a09-02",
-    "report": ".research/published176-guest-backend-6c7c5a09.json",
-    "commit": "3f812e1c",
+    "run_id": "published176-guest-backend-82af43a3",
+    "report": ".research/published176-guest-backend-82af43a3.json",
+    "commit": "14306f02",
     "resource_exit": 0,
     "resource_invalid": false,
-    "scope": "Exact published176 unpacked ZIP in native headless Chromium. First grounded guest answer and follow-up after real panel reload. Not Store installation/update lifecycle.",
-    "owner_verification": "Five raw hashes independently matched; follow-up screenshot visibly shows guest banner and grounded answer."
+    "scope": "Exact published176 unpacked ZIP, native headless Chromium, guest first grounded answer and post-panel-reload grounded follow-up against live82af43a3 unchanged before/after at18:09UTC. Not installed Store lifecycle.",
+    "owner_verification": "Root independently matched all four raw hashes and opened guest follow-up screenshot."
   },
   "prior_bounded_retests": [
     {
@@ -94,6 +95,15 @@
       "resource_invalid": false,
       "scope": "Headless native Chromium with exact unpacked release artifact; actual guest replies and Settings-independent panel reload. Not installed Store lifecycle.",
       "owner_verification": "Receipt/journal SHA-256 recomputed and matched; follow-up screenshot opened and visibly showed guest banner with actual answer."
+    },
+    {
+      "run_id": "published176-guest-backend-6c7c5a09-02",
+      "report": ".research/published176-guest-backend-6c7c5a09.json",
+      "commit": "3f812e1c",
+      "resource_exit": 0,
+      "resource_invalid": false,
+      "scope": "Exact published176 unpacked ZIP in native headless Chromium. First grounded guest answer and follow-up after real panel reload. Not Store installation/update lifecycle.",
+      "owner_verification": "Five raw hashes independently matched; follow-up screenshot visibly shows guest banner and grounded answer."
     }
   ]
 }

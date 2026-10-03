@@ -93,5 +93,6 @@
     "release_tree": "unchanged before and after",
     "backend": "same requested SHA before and after run",
     "resource_journal": "admitted, watcher healthy, exit 0, decision valid"
-  }
+  },
+  "evidence_root": "docs/stabilization/reports/published176-guest-backend-82af43a3"
 }
