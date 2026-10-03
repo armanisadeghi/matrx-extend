@@ -26,7 +26,10 @@
     "src/features/settings/SettingsView.about.test.tsx",
     ".research/settings-failure-repair.json",
     ".research/settings-initial-read-peer.json",
-    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37093887851"
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37093887851",
+    ".research/desktop-settings-native-prepare.json",
+    ".research/desktop-settings-source-peer.json",
+    ".research/desktop-settings-repair-peer.json"
   ],
   "severity": "S2: a desktop setting can revert to an older choice",
   "priority": "P1: preserve Settings choice under overlapping saves",
@@ -57,5 +60,6 @@
       "reason": "cf0877f1 and17b8ea9d source repair accepted by independent1120b813. HostedCI37093887851 passed20Settings tests; fullCI has separate release recovery failure. Native exact-build and pre-fixRED remain pending."
     }
   ],
-  "closure_requirement": "Hosted controlled caller regression, independent repair review, and exact-build native save/reload acceptance; no closure from source inspection or an unexecuted test."
+  "closure_requirement": "Hosted controlled caller regression, independent repair review, and exact-build native save/reload acceptance; no closure from source inspection or an unexecuted test.",
+  "current_work": "Bounded actual guest native port/pair persistence refusal, retry and ordered-write cases passed on source991385d9 CI37129518563/artifact11275878549. Stronger reset-only retry passed with a trusted-UI nondefault draft cleared and exact fresh guest defaults. Fresh independent guest/member/admin lane is active. HTTP-only pair removal, actual desktop connection/rediscovery and broader mapped control criteria remain unverified; no defect closure or Store acceptance."
 }
