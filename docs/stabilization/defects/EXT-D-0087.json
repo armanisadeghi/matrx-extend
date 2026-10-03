@@ -1,0 +1,75 @@
+{
+  "id": "EXT-D-0087",
+  "feature_id": "EXT-F-1003",
+  "case_ids": [
+    "EXT-F-1003-T04",
+    "EXT-F-1003-T05",
+    "EXT-F-1003-T06",
+    "EXT-F-1003-T07",
+    "EXT-F-1003-T08",
+    "EXT-F-1003-T09",
+    "EXT-F-1003-T10",
+    "EXT-F-1003-T11",
+    "EXT-F-1003-T12",
+    "EXT-F-1003-T13",
+    "EXT-F-1003-T14",
+    "EXT-F-1003-T15",
+    "EXT-F-1003-T16",
+    "EXT-F-1003-T17",
+    "EXT-F-1003-T18",
+    "EXT-F-1003-T19",
+    "EXT-F-1003-T20",
+    "EXT-F-1003-T21",
+    "EXT-F-1003-T31",
+    "EXT-F-1003-T32",
+    "EXT-F-1003-T33",
+    "EXT-F-1003-T34",
+    "EXT-F-1003-T35",
+    "EXT-F-1003-T36",
+    "EXT-F-1003-T37",
+    "EXT-F-1003-T38",
+    "EXT-F-1003-T39",
+    "EXT-F-1003-T40",
+    "EXT-F-1003-T41",
+    "EXT-F-1003-T42",
+    "EXT-F-1003-T67",
+    "EXT-F-1003-T68",
+    "EXT-F-1003-T69"
+  ],
+  "surface": "Settings persisted preferences",
+  "auth_mode": "guest/member/admin",
+  "title": "Preference changes can appear saved when Chrome storage rejects them",
+  "reproduction": [
+    "Open Settings with a persisted Theme preference, then make chrome.storage.local.set reject for matrx.settings.v1.",
+    "Choose a different Theme and inspect the immediate control value, visible error feedback, and the actual persisted blob.",
+    "Reload Settings after storage recovers and compare the displayed choice with the previous in-memory choice; repeat with two rapid preference changes whose writes settle out of order."
+  ],
+  "expected": "Each preference control reports failed persistence and offers a retry; rapid choices persist the latest successful intent and reload shows the saved choice.",
+  "actual": "Source shows Settings controls call void-returning Zustand setters. The store updates in-memory state before persist calls async chromeLocalStorage.setItem; the setter does not return that Promise to the control or expose a save error. Rapid writes are not ordered at this boundary. Runtime RED and reload behavior have not yet been observed.",
+  "reproduction_status": "source-confirmed unobserved persistence boundary; controlled runtime reproduction pending",
+  "evidence": [
+    "src/state/settings.ts",
+    "src/lib/storage/zustand-adapter.ts",
+    "src/features/settings/SettingsView.tsx",
+    "node_modules/zustand/middleware.js",
+    ".research/settings-overlap-peer.json"
+  ],
+  "severity": "S2: a visible preference can fail to survive reload",
+  "priority": "P1: make Settings preference persistence truthful",
+  "state": "triaged",
+  "transition_history": [
+    {
+      "at": "2026-10-03T03:39:17.879520+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Independent source peer identified unobserved async Zustand preference writes across Settings controls."
+    },
+    {
+      "at": "2026-10-03T03:39:17.879520+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Caller, store, adapter, and installed Zustand persist boundary traced; runtime rejection and rapid-write reproduction remain required."
+    }
+  ],
+  "closure_requirement": "Controlled failing-then-passing component/store regression for storage rejection, retry, and rapid writes; independent review; exact-build browser reload acceptance. Do not close from source alone or from D86 desktop-control repair."
+}
