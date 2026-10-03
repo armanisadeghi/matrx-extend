@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "candidate_packaged_native_acceptance_pending_not_submitted",
+  "status": "submitted_pending_review",
   "hosted_run_id": 37155938434,
   "hosted_conclusion": "success",
   "artifact_id": 11286485029,
@@ -14,5 +14,29 @@
   "provenance_limit": "Publisher receipt tree represents keyed local build, not Store ZIP. Actual Store and local bundles differ. Native Store-payload acceptance must validate exact Store bytes with only explicitly recorded manifest.key adaptation. No Store-installation or publication claim.",
   "fix_ancestry_verified": ["b54877e7", "62e1ce4c"],
   "release_gate_result": "Hosted strict release contract succeeded; mandate references remain advisory warnings.",
-  "store_upload": "not_started"
+  "native_acceptance": {
+    "status": "bounded_pass",
+    "evidence": [
+      ".research/guest-store-native-escalation.json",
+      ".research/guest-driver-final-peer.json"
+    ],
+    "store_payload": "Original Store ZIP SHA-256 and tree verified; only matching local public key copied into manifest.json for unpacked extension identity. Original ZIP unchanged.",
+    "guest": "Three live Chat answers, fourth-turn allowance remedy without generic access denial or Retry, public demo and page-grounded reload passed; no owner-table GET after observer attachment.",
+    "member": "Existing non-admin member signed in and completed a real Chat answer; D96 owner-table HTTP 200 read remains unverified.",
+    "limit": "Native unpacked candidate, not Store installation or publication; Network observer did not cover startup or offscreen HTTP status."
+  },
+  "store_upload": "submitted_for_review",
+  "store_submission": {
+    "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "submission_window_approx_utc": ["2026-10-03T22:27:00Z", "2026-10-03T22:28:00Z"],
+    "dashboard_confirmed_at_approx_utc": "2026-10-03T22:29:00Z",
+    "confirmation": "Your extension was submitted for review",
+    "status": "Pending review",
+    "draft_version": "0.2.181",
+    "published_version": "0.2.176",
+    "automatic_publication_enabled": true,
+    "dashboard_screenshot": "docs/stabilization/evidence/release181/store-pending-review.png",
+    "changed_store_fields": ["package", "detailed description", "reviewer instructions"],
+    "classification": "routine; approved manifest policy surface unchanged"
+  }
 }
