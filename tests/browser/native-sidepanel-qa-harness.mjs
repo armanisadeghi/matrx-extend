@@ -359,15 +359,19 @@ function testPage(extensionId) {
     </script>`;
 }
 
-function sanitizedBrowserDiagnostic(value) {
-  return String(value)
-    .replace(/https?:\/\/[^\s"'<>]+/gi, '[URL]')
-    .replace(/Bearer\s+\S+/gi, 'Bearer [REDACTED]')
-    .replace(/eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, '[JWT]')
-    .replace(
-      /((?:password|passwd|secret|token|api[_-]?key|authorization)\s*[=:]\s*)(?:"[^"]*"|'[^']*'|[^\s,;]+)/gi,
-      '$1[REDACTED]',
-    );
+function browserDiagnosticFlags(value) {
+  // Never emit arbitrary Chromium output: even a bounded tail can start inside
+  // a credential and lose the label needed by a text redactor.
+  const text = String(value);
+  return {
+    hadStderr: text.length > 0,
+    codeSignature: /code sign|codesign|signature|signed resource/i.test(text),
+    dynamicLoader: /dyld|library not loaded|symbol not found/i.test(text),
+    permissionDenied: /permission denied|operation not permitted/i.test(text),
+    sandbox: /sandbox/i.test(text),
+    crash: /fatal|crash|segmentation|illegal instruction/i.test(text),
+    devtoolsListening: /DevTools listening on/i.test(text),
+  };
 }
 
 export async function runNativeSidepanelQa({
@@ -446,11 +450,8 @@ export async function runNativeSidepanelQa({
       const startupDiagnostic = {
         exitCode: child.exitCode,
         signalCode: child.signalCode,
-        executable: chromeExecutable,
-        launchError: launchError
-          ? { name: launchError.name, code: launchError.code ?? null }
-          : null,
-        stderr: sanitizedBrowserDiagnostic(chromeStderr),
+        launchFailed: Boolean(launchError),
+        stderrFlags: browserDiagnosticFlags(chromeStderr),
       };
       // Guest result summaries truncate errors; preserve bounded startup evidence
       // in the runner log before forwarding the unchanged failure.
@@ -464,7 +465,10 @@ export async function runNativeSidepanelQa({
     try {
       extensionWorker = await waitForExpectedExtension(cdp, expectedExtensionId);
     } catch (error) {
-      throw new Error(sanitizedBrowserDiagnostic(`${error.message}:${chromeStderr}`));
+      process.stderr.write(
+        `BROWSER_EXTENSION_FAILURE ${JSON.stringify(browserDiagnosticFlags(chromeStderr))}\n`,
+      );
+      throw error;
     }
     requireSpawnedProfileOwner(await readlink(join(profile, 'SingletonLock')), child.pid);
     verified = true;
