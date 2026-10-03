@@ -18,7 +18,12 @@ describe('drift check reads a union-shaped local schema as one flat contract', (
       ['action', 'description', 'name', 'parameters', 'tab_id'].sort(),
     );
     expect(flat.required).toEqual(['action']);
-    expect(flat.properties.action?.enum?.slice().sort()).toEqual(['discard', 'start', 'status', 'stop']);
+    expect(flat.properties.action?.enum?.slice().sort()).toEqual([
+      'discard',
+      'start',
+      'status',
+      'stop',
+    ]);
     expect(flat.properties.action).not.toHaveProperty('const');
   });
 
@@ -28,6 +33,9 @@ describe('drift check reads a union-shaped local schema as one flat contract', (
       properties: { url: { type: 'string' } },
       required: ['url'],
     };
-    expect(flattenLocalSchema(schema)).toEqual({ properties: schema.properties, required: ['url'] });
+    expect(flattenLocalSchema(schema)).toEqual({
+      properties: schema.properties,
+      required: ['url'],
+    });
   });
 });
