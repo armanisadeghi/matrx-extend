@@ -316,17 +316,23 @@ async function acquireLiveExtensionPanel({ cdp, page, extensionId }) {
     const { targetInfos } = await cdp.send('Target.getTargets');
     const target = targetInfos.find((item) => item.type === 'page' && item.url === panelUrl);
     if (target) {
-      const panel = await attachTargetSession(cdp, target.targetId);
+      let panel;
+      let verified = false;
       try {
+        panel = await attachTargetSession(cdp, target.targetId);
         const identity = await panel.send('Runtime.evaluate', {
           expression: 'chrome.runtime.id',
           returnByValue: true,
         });
-        if (identity.result?.value === extensionId) return panel;
+        if (identity.result?.value === extensionId) {
+          verified = true;
+          return panel;
+        }
       } catch {
         // Reload can destroy this target between discovery and attachment.
+      } finally {
+        if (panel && !verified) await panel.detach();
       }
-      await panel.detach();
     } else if (attempt === 0) {
       await page.bringToFront();
       await page.locator('#open-panel').click();

@@ -2,9 +2,9 @@
 /** Receipt-bound native Profile acceptance in an owned Chrome profile. */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { mkdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
+import { mkdir, open, readFile, rename, stat, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { signInAdminSettings } from './admin-settings-signin.mjs';
@@ -70,12 +70,21 @@ async function profileApiConfig() {
 async function persistPrivateOwnership(record, create = false) {
   assert.ok(PRIVATE_OWNERSHIP_RECEIPT?.startsWith('/'), 'private_ownership_receipt_required');
   const payload = `${JSON.stringify(record)}\n`;
-  if (create) {
-    await writeFile(PRIVATE_OWNERSHIP_RECEIPT, payload, { mode: 0o600, flag: 'wx' });
-  } else {
-    const temporary = `${PRIVATE_OWNERSHIP_RECEIPT}.${randomUUID()}`;
-    await writeFile(temporary, payload, { mode: 0o600, flag: 'wx' });
-    await rename(temporary, PRIVATE_OWNERSHIP_RECEIPT);
+  const path = create ? PRIVATE_OWNERSHIP_RECEIPT : `${PRIVATE_OWNERSHIP_RECEIPT}.${randomUUID()}`;
+  const file = await open(path, 'wx', 0o600);
+  try {
+    await file.writeFile(payload);
+    await file.sync();
+  } finally {
+    await file.close();
+  }
+  if (!create) await rename(path, PRIVATE_OWNERSHIP_RECEIPT);
+  // The directory sync makes the new or replaced name durable before the next UI write.
+  const directory = await open(dirname(PRIVATE_OWNERSHIP_RECEIPT), 'r');
+  try {
+    await directory.sync();
+  } finally {
+    await directory.close();
   }
   assert.equal(
     (await stat(PRIVATE_OWNERSHIP_RECEIPT)).mode & 0o077,
@@ -824,6 +833,16 @@ try {
           const row = await readProfileOwnerRow(panel, ownerConfig, identity.userId);
           ownedDeleteUrl(ownerConfig.url, owned, row, 3);
           ownedVersion = 3;
+          await persistPrivateOwnership({
+            run_id: RUN_ID,
+            original_row_absent: true,
+            user_id: owned.userId,
+            organization_id: owned.organizationId,
+            marker: owned.marker,
+            created_at: owned.createdAt,
+            expected_version: 3,
+            state: 'warm_save_verified',
+          });
         }
         await caseT25(panel, original, identity.email, AUTH_MODE, 'warm');
         report.stage = 'extension_reload';
@@ -848,6 +867,16 @@ try {
           const row = await readProfileOwnerRow(reloaded.panel, ownerConfig, identity.userId);
           ownedDeleteUrl(ownerConfig.url, owned, row, 5);
           ownedVersion = 5;
+          await persistPrivateOwnership({
+            run_id: RUN_ID,
+            original_row_absent: true,
+            user_id: owned.userId,
+            organization_id: owned.organizationId,
+            marker: owned.marker,
+            created_at: owned.createdAt,
+            expected_version: 5,
+            state: 'reload_save_verified',
+          });
         }
         await caseT25(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
       } catch (error) {
@@ -897,13 +926,14 @@ try {
             .slice(0, 100),
         };
         if (report.first_save) report.first_save.status = 'cleanup_unverified';
+        report.cleanup_failure_code = report.restoration.failure_code;
         cleanupError = error;
       } finally {
         if (reacquiredPanel) await reacquiredPanel.detach();
         if (reloadedPanel) await reloadedPanel.detach();
       }
-      if (cleanupError) throw cleanupError;
       if (executionError) throw executionError;
+      if (cleanupError) throw cleanupError;
     },
   });
   report.native = {

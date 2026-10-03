@@ -33,8 +33,12 @@
   "source_candidate": {
     "private_ownership_receipt_before_first_save": true,
     "private_ownership_receipt_updated_after_verified_insert": true,
+    "private_ownership_receipt_file_and_directory_synced_before_save": true,
+    "receipt_expected_version_advanced_after_verified_warm_and_reload_writes": true,
     "live_extension_panel_reacquisition_on_reload_failure": true,
+    "transient_panel_attachment_race_retried": true,
     "original_execution_failure_recorded_separately": true,
+    "original_execution_failure_kept_primary_when_cleanup_also_fails": true,
     "cleanup_failure_does_not_claim_restoration": true,
     "targeted_biome_and_node_syntax": "passed",
     "native_execution": "not_run_pending_independent_review",
