@@ -35,5 +35,13 @@
     "Full T90 product-signed receipt creation and verification from both activated keys after reload, plus altered-receipt rejection. Existing browser UI/runtime path not yet proven; runner exits incomplete rather than claim T90 pass.",
     "Guarded authenticated import of the exact CI artifact if absent, then headed browser acceptance under a fresh resource permit",
     "Independent native tester verdict; failures remain setup/product distinguished by the structured result"
-  ]
+  ],
+  "t86_first_failure_repair": {
+    "original_native": "audit-native-independent-20261003-02 stopped at details_failure with only generic audit_native_unverified; no case result.",
+    "diagnostic_native": "audit-native-diagnostic-20261003 identified card_failed_load/audit_load_failure_not_observed: real card had a normal public ID, no details error, and window.__auditNativeFault was absent. Admin sign-in and rendered identity had already passed.",
+    "cause": "Page.reload acknowledged before the old document disappeared. reloadWithPrelude saw the old Settings button, removed its Page.addScriptToEvaluateOnNewDocument registration, then the new document loaded without the fault.",
+    "repair": "Keep the prelude registered until performance.timeOrigin changes, the new document shows Settings, and the prelude reports execution; fail with bounded diagnostics when any condition is absent. The plain T88/T89 reload uses the same distinct-document wait before checking persisted identity.",
+    "red": "Guard audit-native-diagnostic-red-20261003 failed because the new safe classifier export was absent; this is a source-wiring RED, not a mutation of the prior swallowed-error behavior. The real diagnostic native receipt is the original behavior RED for reload synchronization.",
+    "green": "Guarded audit-native-reload-final-20261003 passed 8/8 focused helper and reload seam tests, resource-valid. Fresh native proof remains pending peer acceptance."
+  }
 }

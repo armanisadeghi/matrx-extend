@@ -101,3 +101,74 @@ export function auditFaultSource(mode) {
     return true;
   })()`;
 }
+
+// Keep native acceptance receipts useful without forwarding CDP exception
+// text, wait snapshots, URLs, credential fields, or audit key material.
+const DETAIL_STEPS = new Set([
+  'reload_with_prelude',
+  'verify_identity_after_reload',
+  'open_advanced_section',
+  'card_failed_load',
+  'read_storage_after_failure',
+  'restore_read_fault',
+  'click_details_retry',
+  'card_recovered',
+  'compare_storage_after_retry',
+]);
+const WAIT_LABELS = new Set([
+  'audit_new_document',
+  'audit_settings_after_reload',
+  'd87_rendered_identity',
+  'Advanced agent capabilities_section_ready',
+  'Advanced agent capabilities_expanded',
+  'audit_load_failure',
+  'audit_load_recovered',
+]);
+
+export function classifyAuditNativeFailure(stage, step, error) {
+  if (stage !== 'details_failure' || !DETAIL_STEPS.has(step)) return 'audit_native_unverified';
+  const message = typeof error?.message === 'string' ? error.message : '';
+  const label = message.split('_not_observed:', 1)[0];
+  if (WAIT_LABELS.has(label)) return `${label.replaceAll(' ', '_')}_not_observed`;
+  return `audit_${step}_failed`;
+}
+
+// Page.reload acknowledges the request before the old document disappears.
+// Keep the early browser-API fault installed until a distinct document has
+// loaded and confirms the prelude executed there.
+export async function reloadAuditPrelude(panel, source, { evaluate, waitFor }) {
+  const previousOrigin = await evaluate(panel, 'performance.timeOrigin');
+  const wrappedSource = `(() => {
+    const installed = ${source};
+    window.__auditPreludeInstalled = installed !== false;
+  })()`;
+  const installed = await panel.send('Page.addScriptToEvaluateOnNewDocument', {
+    source: wrappedSource,
+  });
+  try {
+    await panel.send('Page.reload', { ignoreCache: true });
+    const next = await awaitAuditNewDocument(panel, previousOrigin, { evaluate, waitFor });
+    if (!next.preludeInstalled) throw new Error('audit_prelude_not_installed');
+  } finally {
+    await panel.send('Page.removeScriptToEvaluateOnNewDocument', {
+      identifier: installed.identifier,
+    });
+  }
+}
+
+export async function awaitAuditNewDocument(panel, previousOrigin, { evaluate, waitFor }) {
+  return waitFor(
+    'audit_new_document',
+    () =>
+      evaluate(
+        panel,
+        `(() => ({
+          newDocument: performance.timeOrigin !== ${JSON.stringify(previousOrigin)},
+          settingsReady: !!document.querySelector('button[title="Settings"]'),
+          preludeInstalled: window.__auditPreludeInstalled === true,
+        }))()`,
+      ),
+    (state) => state?.newDocument && state.settingsReady,
+    30000,
+  );
+}

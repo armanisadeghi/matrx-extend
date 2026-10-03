@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
-import { auditFaultSource } from './audit-key-native-faults.mjs';
+import {
+  auditFaultSource,
+  awaitAuditNewDocument,
+  classifyAuditNativeFailure,
+  reloadAuditPrelude,
+} from './audit-key-native-faults.mjs';
 
 const ACTIVE = 'matrx.audit.deviceKey';
 const HISTORY = 'matrx.audit.publicKeyHistory';
@@ -103,4 +108,94 @@ test('clipboard failure clears only on a second real write; restore reinstates n
   assert.equal(await b.window.__auditNativeFault.copiedPublicJwk(), false);
   b.window.__auditNativeFault.restore();
   assert.equal(b.navigator.clipboard.writeText, b.original.writeText);
+});
+
+test('native details failure reports a bounded step and wait label without observation data', () => {
+  assert.equal(
+    classifyAuditNativeFailure(
+      'details_failure',
+      'card_failed_load',
+      new Error('audit_load_failure_not_observed:{"privateKeyJwk":{"d":"secret"}}'),
+    ),
+    'audit_load_failure_not_observed',
+  );
+  assert.equal(
+    classifyAuditNativeFailure(
+      'details_failure',
+      'reload_with_prelude',
+      new Error('Protocol error with sensitive URL'),
+    ),
+    'audit_reload_with_prelude_failed',
+  );
+});
+
+test('reload keeps fault prelude installed until the old document is gone', async () => {
+  let origin = 1000;
+  let removed = false;
+  const panel = {
+    async send(method, payload) {
+      if (method === 'Page.addScriptToEvaluateOnNewDocument') {
+        assert.match(payload.source, /__auditPreludeInstalled/);
+        return { identifier: 'prelude-1' };
+      }
+      if (method === 'Page.reload') return {};
+      if (method === 'Page.removeScriptToEvaluateOnNewDocument') {
+        assert.equal(payload.identifier, 'prelude-1');
+        assert.equal(origin, 2000, 'must not remove while old Settings DOM is still visible');
+        removed = true;
+        return {};
+      }
+      throw new Error('unexpected protocol command');
+    },
+  };
+  const evaluate = async (_panel, expression) => {
+    if (expression === 'performance.timeOrigin') return origin;
+    assert.match(expression, /performance\.timeOrigin !== 1000/);
+    return { newDocument: origin === 2000, settingsReady: true, preludeInstalled: true };
+  };
+  const waitFor = async (_label, read, accept) => {
+    assert.equal(accept(await read()), false, 'old Settings button cannot satisfy reload');
+    origin = 2000;
+    const current = await read();
+    assert.equal(accept(current), true);
+    return current;
+  };
+  await reloadAuditPrelude(panel, auditFaultSource('read-once'), { evaluate, waitFor });
+  assert.equal(removed, true);
+});
+
+test('reload refuses a new document where fault prelude did not execute', async () => {
+  const commands = [];
+  const panel = {
+    send: async (method) => {
+      commands.push(method);
+      return method === 'Page.addScriptToEvaluateOnNewDocument' ? { identifier: 'prelude-2' } : {};
+    },
+  };
+  const evaluate = async (_panel, expression) =>
+    expression === 'performance.timeOrigin' ? 1000 : null;
+  const waitFor = async () => ({ newDocument: true, settingsReady: true, preludeInstalled: false });
+  await assert.rejects(
+    reloadAuditPrelude(panel, auditFaultSource('read-once'), { evaluate, waitFor }),
+    /audit_prelude_not_installed/,
+  );
+  assert.equal(commands.at(-1), 'Page.removeScriptToEvaluateOnNewDocument');
+});
+
+test('plain panel reload waits for a distinct document without requiring a prelude', async () => {
+  let origin = 5;
+  const evaluate = async (_panel, expression) => {
+    assert.match(expression, /performance\.timeOrigin !== 5/);
+    return { newDocument: origin === 6, settingsReady: true, preludeInstalled: false };
+  };
+  const waitFor = async (_label, read, accept) => {
+    assert.equal(accept(await read()), false);
+    origin = 6;
+    const next = await read();
+    assert.equal(accept(next), true);
+    return next;
+  };
+  const result = await awaitAuditNewDocument({}, 5, { evaluate, waitFor });
+  assert.equal(result.newDocument, true);
+  assert.equal(result.preludeInstalled, false);
 });

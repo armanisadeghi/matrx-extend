@@ -5,7 +5,12 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
-import { auditFaultSource } from './audit-key-native-faults.mjs';
+import {
+  auditFaultSource,
+  awaitAuditNewDocument,
+  classifyAuditNativeFailure,
+  reloadAuditPrelude,
+} from './audit-key-native-faults.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { signInSettings, verifyCurrentSettingsIdentity } from './settings-native-auth-driver.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
@@ -32,6 +37,7 @@ const report = {
   failure_code: null,
 };
 let stage = 'input';
+let detailStep = null;
 
 function auditSnapshotSource() {
   return `chrome.storage.local.get(['matrx.audit.deviceKey', 'matrx.audit.publicKeyHistory'])
@@ -98,30 +104,13 @@ async function rotate(panel) {
   await click(panel, 'button-text', 'Rotate key');
 }
 async function reloadWithPrelude(panel, source) {
-  const installed = await panel.send('Page.addScriptToEvaluateOnNewDocument', { source });
-  try {
-    await panel.send('Page.reload', { ignoreCache: true });
-    await waitFor(
-      'audit_settings_after_reload',
-      () => evaluate(panel, `(() => !!document.querySelector('button[title="Settings"]'))()`),
-      Boolean,
-      30000,
-    );
-  } finally {
-    await panel.send('Page.removeScriptToEvaluateOnNewDocument', {
-      identifier: installed.identifier,
-    });
-  }
+  await reloadAuditPrelude(panel, source, { evaluate, waitFor });
   await click(panel, 'title', 'Settings');
 }
 async function reloadCard(panel, identity) {
+  const previousOrigin = await evaluate(panel, 'performance.timeOrigin');
   await panel.send('Page.reload', { ignoreCache: true });
-  await waitFor(
-    'audit_settings_after_reload',
-    () => evaluate(panel, `(() => !!document.querySelector('button[title="Settings"]'))()`),
-    Boolean,
-    30000,
-  );
+  await awaitAuditNewDocument(panel, previousOrigin, { evaluate, waitFor });
   await click(panel, 'title', 'Settings');
   await verifyCurrentSettingsIdentity({
     panel,
@@ -198,33 +187,55 @@ try {
       // The card is mounted even inside a closed Collapsible, so install at
       // document creation before React mounts and reload the real panel.
       stage = 'details_failure';
-      await reloadWithPrelude(panel, auditFaultSource('read-once'));
-      await verifyCurrentSettingsIdentity({
-        panel,
-        mode: 'admin',
-        email: identity.email,
-        profileId: identity.profileId,
-        organizationId: identity.organizationId,
-      });
-      await openSection(panel, 'Advanced agent capabilities');
-      const failedLoad = await expectCard(
-        panel,
-        'audit_load_failure',
-        (value) => value?.detailsUnavailable && value.retryDetails && value.keyId === '—',
-      );
-      const beforeLoadRetry = await snapshot(panel);
-      assert.equal((await fault(panel)).activeWrites, 0);
-      await restore(panel);
-      await click(panel, 'button-text', 'Retry audit details');
-      const recovered = await expectCard(
-        panel,
-        'audit_load_recovered',
-        (value) => value?.keyId === beforeLoadRetry.activeId && !value.detailsUnavailable,
-      );
-      assert.deepEqual(await snapshot(panel), beforeLoadRetry);
-      pass('T86 details read failure and read-only retry', failedLoad, recovered, {
-        activeWrites: 0,
-      });
+      try {
+        detailStep = 'reload_with_prelude';
+        await reloadWithPrelude(panel, auditFaultSource('read-once'));
+        detailStep = 'verify_identity_after_reload';
+        await verifyCurrentSettingsIdentity({
+          panel,
+          mode: 'admin',
+          email: identity.email,
+          profileId: identity.profileId,
+          organizationId: identity.organizationId,
+        });
+        detailStep = 'open_advanced_section';
+        await openSection(panel, 'Advanced agent capabilities');
+        detailStep = 'card_failed_load';
+        const failedLoad = await expectCard(
+          panel,
+          'audit_load_failure',
+          (value) => value?.detailsUnavailable && value.retryDetails && value.keyId === '—',
+        );
+        detailStep = 'read_storage_after_failure';
+        const beforeLoadRetry = await snapshot(panel);
+        assert.equal((await fault(panel)).activeWrites, 0);
+        detailStep = 'restore_read_fault';
+        await restore(panel);
+        detailStep = 'click_details_retry';
+        await click(panel, 'button-text', 'Retry audit details');
+        detailStep = 'card_recovered';
+        const recovered = await expectCard(
+          panel,
+          'audit_load_recovered',
+          (value) => value?.keyId === beforeLoadRetry.activeId && !value.detailsUnavailable,
+        );
+        detailStep = 'compare_storage_after_retry';
+        assert.deepEqual(await snapshot(panel), beforeLoadRetry);
+        pass('T86 details read failure and read-only retry', failedLoad, recovered, {
+          activeWrites: 0,
+        });
+      } catch (error) {
+        report.failure_code = classifyAuditNativeFailure(stage, detailStep, error);
+        report.detail_diagnostic = {
+          step: detailStep,
+          card: await card(panel).catch(() => null),
+          fault: await fault(panel).catch(() => null),
+          panel_visible: await evaluate(panel, 'document.visibilityState === "visible"').catch(
+            () => null,
+          ),
+        };
+        throw error;
+      }
 
       stage = 'export_failure';
       await inject(panel, 'clipboard-once');
@@ -508,7 +519,7 @@ try {
 } catch (error) {
   report.status = 'fail';
   report.failure_stage = stage;
-  report.failure_code = /^[a-z0-9_]+$/.test(error?.message ?? '')
+  report.failure_code ??= /^[a-z0-9_]+$/.test(error?.message ?? '')
     ? error.message
     : (error?.driverFailure?.code ?? 'audit_native_unverified');
   process.exitCode = 1;
