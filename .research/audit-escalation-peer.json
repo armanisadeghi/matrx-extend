@@ -7,7 +7,7 @@
     "66df64db",
     "db2fd888"
   ],
-  "scope": "Independent source review followed by one guarded native acceptance run against the exact imported artifact.",
+  "scope": "Independent source review followed by one guarded native acceptance run against the exact imported artifact; raw receipt and guard journal are preserved as durable evidence.",
   "contract": [
     "A: PARTIAL; final native acceptance remains pending.",
     "B: PASS with one minor test-specificity concern.",
@@ -69,11 +69,14 @@
       "T90": "incomplete: stopped at lock_unavailable"
     },
     "reload_boundaries": "Page.enable, previous-document read, preload installation, reload, new-document and Settings-ready probes, marker check, and script cleanup all completed; marker and readiness were true on the accepted new document.",
-    "receipt_path": "test-results/audit-key-native-73b7b2ba-4c6f-402f-b1df-72a5d53f174f.json",
+    "receipt_path": ".research/audit-escalation-peer-evidence/native-receipt.json",
     "receipt_sha256": "f0e24b3613981c0839bc2041573a0a0f397f58a31e42968d00de2bb7d42270e2",
     "resource_journal_path": "docs/stabilization/resource-journals/audit-escalation-peer-native-20261003.jsonl",
     "resource_journal_sha256": "08c6c3314a5fc9729c8ea465f0c61f8ec379d87ff4c7195ed23a6c1d5828d494",
     "resource_decision": "valid, admitted, child exit 1, resourceInvalid false",
-    "cleanup": "No hosted acceptance process remained; private admin credential file absent."
+    "cleanup": "No acceptance, guard, or matching Chromium process remained; heavy resource lease absent; private admin credential file absent; receipt copy is byte-identical to generated raw receipt.",
+    "artifact_tree_sha256_after_run": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+    "artifact_tree_sha256_expected": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+    "auth_proof": "The accepted run reached T86 after admin sign-in returned admin_role=true and current settings identity gates matched first-party rendered email, role, profile, and organization. The raw receipt contains no credentials or identity payload."
   }
 }
