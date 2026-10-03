@@ -19,6 +19,7 @@
  */
 
 import {
+  DeviceKeyLockUnavailableError,
   DeviceKeyOutcomeUnknownError,
   exportPublicKeyJwk,
   rotateDeviceKey,
@@ -67,10 +68,20 @@ export function AuditKeyCard() {
   const [rotateOpen, setRotateOpen] = useState(false);
   const [failureCount, setFailureCount] = useState(0);
   const [detailsError, setDetailsError] = useState(false);
-  const [operationError, setOperationError] = useState<'export' | 'rotate' | 'unknown' | null>(
-    null,
-  );
+  const [operationError, setOperationError] = useState<
+    'export' | 'rotate' | 'unknown' | 'unavailable' | null
+  >(null);
   const [rotationSucceeded, setRotationSucceeded] = useState(false);
+
+  const showLockUnavailable = useCallback(() => {
+    setPublicKeyId(null);
+    setCreatedAt(null);
+    setCount(null);
+    setRecent([]);
+    setFailureCount(0);
+    setDetailsError(true);
+    setOperationError((current) => (current === 'unknown' ? current : 'unavailable'));
+  }, []);
 
   const refresh = useCallback(async () => {
     try {
@@ -86,9 +97,15 @@ export function AuditKeyCard() {
       setRecent(r);
       setFailureCount(f);
       setDetailsError(false);
-      setOperationError((current) => (current === 'unknown' ? null : current));
+      setOperationError((current) =>
+        current === 'unknown' || current === 'unavailable' ? null : current,
+      );
     } catch (err) {
       log.error('ui', 'Audit key details could not load', safeErrorKind(err));
+      if (err instanceof DeviceKeyLockUnavailableError) {
+        showLockUnavailable();
+        return;
+      }
       setPublicKeyId(null);
       setCreatedAt(null);
       setCount(null);
@@ -96,7 +113,7 @@ export function AuditKeyCard() {
       setFailureCount(0);
       setDetailsError(true);
     }
-  }, []);
+  }, [showLockUnavailable]);
 
   useEffect(() => {
     void refresh();
@@ -126,6 +143,8 @@ export function AuditKeyCard() {
         setCount(null);
         setRecent([]);
         setOperationError('unknown');
+      } else if (err instanceof DeviceKeyLockUnavailableError) {
+        showLockUnavailable();
       } else {
         setOperationError('rotate');
       }
@@ -136,7 +155,7 @@ export function AuditKeyCard() {
 
   const handleExport = async () => {
     setBusy('export');
-    setOperationError(null);
+    setOperationError((current) => (current === 'unknown' ? current : null));
     setCopied(false);
     try {
       const pk = await exportPublicKeyJwk();
@@ -144,7 +163,11 @@ export function AuditKeyCard() {
       setCopied(true);
     } catch (err) {
       log.error('ui', 'Audit public key export failed', safeErrorKind(err));
-      setOperationError('export');
+      if (err instanceof DeviceKeyLockUnavailableError) {
+        showLockUnavailable();
+      } else {
+        setOperationError((current) => (current === 'unknown' ? current : 'export'));
+      }
     } finally {
       setBusy(null);
     }
@@ -176,7 +199,7 @@ export function AuditKeyCard() {
       {rotationSucceeded && (
         <output className="text-xs text-emerald-700 dark:text-emerald-400">Key rotated.</output>
       )}
-      {detailsError && operationError !== 'unknown' && (
+      {detailsError && operationError !== 'unknown' && operationError !== 'unavailable' && (
         <div className="space-y-1">
           <div
             role="alert"
@@ -227,6 +250,20 @@ export function AuditKeyCard() {
           </Button>
         </div>
       )}
+      {operationError === 'unavailable' && (
+        <div className="space-y-1">
+          <div
+            role="alert"
+            aria-label="Audit key locking unavailable"
+            className="text-xs text-destructive"
+          >
+            Audit key needs Web Locks here. Update Chrome, then retry audit details.
+          </div>
+          <Button type="button" size="sm" variant="ghost" onClick={() => void refresh()}>
+            Retry audit details
+          </Button>
+        </div>
+      )}
 
       <div className="flex items-center justify-end gap-2 pt-1">
         <Button
@@ -234,7 +271,7 @@ export function AuditKeyCard() {
           size="sm"
           variant="ghost"
           onClick={() => void handleExport()}
-          disabled={busy !== null}
+          disabled={busy !== null || operationError === 'unavailable'}
           className="h-7 gap-1.5 rounded-full px-3 text-xs"
         >
           {copied ? <Check className="size-3" /> : <Copy className="size-3" />}
@@ -245,7 +282,9 @@ export function AuditKeyCard() {
           size="sm"
           variant="outline"
           onClick={() => setRotateOpen(true)}
-          disabled={busy !== null || operationError === 'unknown'}
+          disabled={
+            busy !== null || operationError === 'unknown' || operationError === 'unavailable'
+          }
           className="h-7 rounded-full px-3 text-xs"
         >
           {busy === 'rotate' ? 'Rotating…' : 'Re-key'}

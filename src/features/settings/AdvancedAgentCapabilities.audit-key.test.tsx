@@ -1,5 +1,8 @@
 import { AdvancedAgentCapabilities } from '@/features/settings/AdvancedAgentCapabilities';
-import { DeviceKeyOutcomeUnknownError } from '@/lib/audit/device-key';
+import {
+  DeviceKeyLockUnavailableError,
+  DeviceKeyOutcomeUnknownError,
+} from '@/lib/audit/device-key';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -14,6 +17,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('@/lib/audit/device-key', () => ({
+  DeviceKeyLockUnavailableError: class extends Error {},
   DeviceKeyOutcomeUnknownError: class extends Error {},
   exportPublicKeyJwk: mocks.exportKey,
   rotateDeviceKey: mocks.rotateKey,
@@ -133,6 +137,78 @@ describe('Settings admin audit key', () => {
     expect((screen.getByRole('button', { name: 'Re-key' }) as HTMLButtonElement).disabled).toBe(
       false,
     );
+    expect(mocks.rotateKey).toHaveBeenCalledTimes(1);
+  });
+
+  it('blocks re-key after locking becomes unavailable during rotation until details load', async () => {
+    render(<AdvancedAgentCapabilities />);
+    await screen.findByText('isolated-key');
+    mocks.rotateKey.mockRejectedValueOnce(new DeviceKeyLockUnavailableError());
+    fireEvent.click(screen.getByRole('button', { name: 'Re-key' }));
+    fireEvent.click(
+      within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Rotate key' }),
+    );
+    const alert = await screen.findByRole('alert', { name: /audit key locking unavailable/i });
+    expect(alert.textContent).toMatch(/Web Locks/i);
+    expect(screen.queryByRole('alert', { name: /audit key rotation failed/i })).toBeNull();
+    expect((screen.getByRole('button', { name: 'Re-key' }) as HTMLButtonElement).disabled).toBe(
+      true,
+    );
+    expect(screen.getByRole('button', { name: /retry audit details/i })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /retry audit details/i }));
+    await waitFor(() =>
+      expect(screen.queryByRole('alert', { name: /audit key locking unavailable/i })).toBeNull(),
+    );
+    expect((screen.getByRole('button', { name: 'Re-key' }) as HTMLButtonElement).disabled).toBe(
+      false,
+    );
+    expect(mocks.rotateKey).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports unavailable locking on initial details load without inviting re-key', async () => {
+    mocks.exportKey.mockRejectedValueOnce(new DeviceKeyLockUnavailableError());
+    render(<AdvancedAgentCapabilities />);
+    expect(
+      await screen.findByRole('alert', { name: /audit key locking unavailable/i }),
+    ).toBeTruthy();
+    expect((screen.getByRole('button', { name: 'Re-key' }) as HTMLButtonElement).disabled).toBe(
+      true,
+    );
+    fireEvent.click(screen.getByRole('button', { name: /retry audit details/i }));
+    expect(await screen.findByText('isolated-key')).toBeTruthy();
+    expect((screen.getByRole('button', { name: 'Re-key' }) as HTMLButtonElement).disabled).toBe(
+      false,
+    );
+  });
+
+  it('reports unavailable locking during export without inviting re-key', async () => {
+    render(<AdvancedAgentCapabilities />);
+    await screen.findByText('isolated-key');
+    mocks.exportKey.mockRejectedValueOnce(new DeviceKeyLockUnavailableError());
+    fireEvent.click(screen.getByRole('button', { name: 'Export public key' }));
+    expect(
+      await screen.findByRole('alert', { name: /audit key locking unavailable/i }),
+    ).toBeTruthy();
+    expect(screen.queryByRole('alert', { name: /export public key failed/i })).toBeNull();
+    expect((screen.getByRole('button', { name: 'Re-key' }) as HTMLButtonElement).disabled).toBe(
+      true,
+    );
+  });
+
+  it('keeps ordinary rotation errors retryable after a new confirmation', async () => {
+    render(<AdvancedAgentCapabilities />);
+    await screen.findByText('isolated-key');
+    mocks.rotateKey.mockRejectedValueOnce(new Error('isolated key generation failure'));
+    fireEvent.click(screen.getByRole('button', { name: 'Re-key' }));
+    fireEvent.click(
+      within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Rotate key' }),
+    );
+    expect(await screen.findByRole('alert', { name: /audit key rotation failed/i })).toBeTruthy();
+    expect((screen.getByRole('button', { name: 'Re-key' }) as HTMLButtonElement).disabled).toBe(
+      false,
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Re-key' }));
+    expect(screen.getByRole('alertdialog')).toBeTruthy();
     expect(mocks.rotateKey).toHaveBeenCalledTimes(1);
   });
 });

@@ -1730,7 +1730,10 @@ Every entry follows this shape:
      details does not rotate again. A failed rotation reports failure and
      requires a fresh Re-key confirmation. If storage cannot confirm whether
      the key changed, "Key status unknown" blocks Re-key until "Retry audit
-     details" succeeds.
+     details" succeeds. If Web Locks is unavailable during details load,
+     public-key export, or rotation, the card names the missing capability,
+     blocks Re-key, and offers a details-only retry; a successful details
+     read restores Re-key without rotating again.
   7. Run another tool. Verify the new receipt's `publicKeyId` matches
      the new active key. Open an old receipt — it still shows
      "Signature valid" (verified against the retired key in history).

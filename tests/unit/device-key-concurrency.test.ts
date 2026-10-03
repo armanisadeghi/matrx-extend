@@ -128,7 +128,7 @@ it('refuses unsupported cross-context locking without changing persistent keys',
   const a = await context();
   const initial = await a.getOrCreateDeviceKey();
   vi.stubGlobal('navigator', {});
-  await expect(a.rotateDeviceKey()).rejects.toThrow(/locking is unavailable/);
+  await expect(a.rotateDeviceKey()).rejects.toBeInstanceOf(a.DeviceKeyLockUnavailableError);
   expect((storage.values.get(ACTIVE) as { publicKeyId: string }).publicKeyId).toBe(
     initial.publicKeyId,
   );

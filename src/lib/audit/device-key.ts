@@ -68,6 +68,14 @@ export class DeviceKeyOutcomeUnknownError extends Error {
   }
 }
 
+/** Cross-context storage safety cannot be guaranteed in this browser context. */
+export class DeviceKeyLockUnavailableError extends Error {
+  constructor() {
+    super('Audit key storage locking is unavailable in this browser context');
+    this.name = 'DeviceKeyLockUnavailableError';
+  }
+}
+
 let cached: DeviceKey | null = null;
 
 // Web Locks coordinate the service worker and every extension page by origin.
@@ -76,7 +84,7 @@ let cached: DeviceKey | null = null;
 async function withDeviceKeyLock<T>(operation: () => Promise<T>): Promise<T> {
   const locks = typeof navigator !== 'undefined' ? navigator.locks : undefined;
   if (!locks?.request) {
-    throw new Error('Audit key storage locking is unavailable in this browser context');
+    throw new DeviceKeyLockUnavailableError();
   }
   return locks.request('matrx:audit:device-key', { mode: 'exclusive' }, operation);
 }
