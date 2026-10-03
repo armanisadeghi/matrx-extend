@@ -1,0 +1,49 @@
+{
+  "status": "PENDING_BOUNDED_HOSTED_DIAGNOSTIC",
+  "scope": "Published Store 0.2.130 guest acceptance and artifact provenance; no receipt or resource guard weakening",
+  "started_at": "2026-10-03T06:57:00Z",
+  "limit": "20 minutes active elapsed, maximum two runtime attempts; no subagents",
+  "diagnostic_commits": ["393dd1ee", "f4c9e93e", "42aad142"],
+  "hypotheses": [
+    {
+      "cause": "Downloaded local Chromium startup is killed or cannot load its signed resources",
+      "prediction": "Bounded startup capture reports process signal/exit and relevant stderr before owned CDP is available",
+      "test": "Instrumented fresh owned-profile launch if hosted runtime cannot provide evidence",
+      "state": "Untested; codesign missing resources clue only"
+    },
+    {
+      "cause": "Chrome changes only Google installation metadata in unpacked CRX",
+      "prediction": "Post-browser before/after inventory lists only metadata paths; all payload hashes remain equal",
+      "test": "Fresh resource-admitted hosted run using existing strict receipt and changed-file diagnostics",
+      "state": "Pending"
+    },
+    {
+      "cause": "Payload is mutated during native use",
+      "prediction": "Changed-file inventory identifies manifest/script/assets beyond declared prelaunch manifest.key adaptation",
+      "test": "Same strict hosted run",
+      "state": "Pending"
+    },
+    {
+      "cause": "Hosted host resource saturation prevents any product test",
+      "prediction": "Unchanged preflight refuses before native startup",
+      "test": "One fresh hosted environment; no repeat after CPU refusal",
+      "state": "Pending"
+    }
+  ],
+  "local_static_evidence": {
+    "crx_sha256": "9964183901e06c92c1a41e68294332bf27e3564ef0df1d860297d533829885b1",
+    "adapted_tree_sha256": "725e732b6861550a0f288e6ac8b53779dab57c50fedf148fd495ac0fed1835ae",
+    "comparison": "Previous local extracted tree versus original ZIP: only manifest.json differs by predeclared key adaptation; no added/deleted files. Does not explain hosted mismatch.",
+    "codesign": "code has no resources but signature indicates they must be present; no _CodeSignature directory. Not proven launch cause."
+  },
+  "guard_refusal": {
+    "run_id": "guest-escalation-startup-20261003",
+    "reason": "RESOURCE_COMMAND_NOT_ALLOWED",
+    "admitted": false,
+    "resourceInvalid": false,
+    "product_ran": false,
+    "guard_changed": false
+  },
+  "runtime_attempts": [],
+  "verdict": "UNVERIFIED; no new actual guest evidence yet"
+}
