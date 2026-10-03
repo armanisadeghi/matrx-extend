@@ -1,8 +1,9 @@
 {
   "status": "READY_FOR_PEER_REVIEW",
-  "scope": "Hosted macOS native side-panel guest reply and post-reload follow-up on exact validated release artifact",
-  "browser_result": "UNMEASURED: release run 37097382594 remains in progress; no validated artifact was available for dispatch",
+  "scope": "Hosted macOS native side-panel guest reply and post-reload follow-up on exact validated release or CI development artifact",
+  "browser_result": "UNMEASURED: release runs 37097382594 and 37097488341 failed before validated artifact; development artifact run pending",
   "release_input": "Successful Hosted release run only; one versioned artifact, published receipt, remote tag/source SHA, both ZIP hashes and unpacked tree hash are required",
+  "development_input": "Successful main-push CI run and exact artifact ID, imported and reverified by current-test-artifact.mjs; explicitly ineligible for Store",
   "runtime": "Pinned Playwright CDP client and bundled Chromium install inside the guarded helper; existing native side-panel harness opens a fresh owned profile",
   "resources": "Existing macOS stabilization guard preflights and owns ZIP extraction, runtime install and browser execution with memory, CPU, swap and disk watchdogs",
   "checks": "Node syntax, YAML parse, all workflow shell blocks bash -n, targeted Biome, policy JSON and diff whitespace pass",

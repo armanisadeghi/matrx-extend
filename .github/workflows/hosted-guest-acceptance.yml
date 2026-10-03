@@ -5,7 +5,15 @@ on:
     inputs:
       release_run_id:
         description: Successful Hosted release run whose exact validated artifact will be tested
-        required: true
+        required: false
+        type: string
+      development_run_id:
+        description: Successful CI main-push run for interim development-build evidence
+        required: false
+        type: string
+      development_artifact_id:
+        description: Exact CI development artifact ID, verified by the existing importer
+        required: false
         type: string
 
 permissions:
@@ -32,6 +40,7 @@ jobs:
 
       - name: Require a successful published release artifact
         id: release
+        if: inputs.release_run_id != ''
         shell: bash
         env:
           RELEASE_RUN_ID: ${{ inputs.release_run_id }}
@@ -55,6 +64,20 @@ jobs:
           source_sha="$(git rev-parse "v${version}^{commit}")"
           echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
 
+      - name: Require exactly one artifact provenance mode
+        shell: bash
+        env:
+          RELEASE_RUN_ID: ${{ inputs.release_run_id }}
+          DEVELOPMENT_RUN_ID: ${{ inputs.development_run_id }}
+          DEVELOPMENT_ARTIFACT_ID: ${{ inputs.development_artifact_id }}
+        run: |
+          set -euo pipefail
+          if [[ -n "$RELEASE_RUN_ID" ]]; then
+            [[ -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" ]] || exit 1
+          else
+            [[ "$DEVELOPMENT_RUN_ID" =~ ^[1-9][0-9]*$ && "$DEVELOPMENT_ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]] || exit 1
+          fi
+
       - name: Exercise the actual signed-out Chrome side panel
         shell: bash
         env:
@@ -64,6 +87,8 @@ jobs:
           MATRX_HOSTED_RELEASE_ARTIFACT_DIR: ${{ steps.release.outputs.artifact_dir }}
           MATRX_HOSTED_GUEST_OUTPUT_DIR: ${{ runner.temp }}/guest-acceptance
           MATRX_HOSTED_RELEASE_SHA: ${{ steps.release.outputs.source_sha }}
+          MATRX_HOSTED_DEV_RUN_ID: ${{ inputs.development_run_id }}
+          MATRX_HOSTED_DEV_ARTIFACT_ID: ${{ inputs.development_artifact_id }}
         run: |
           mkdir -p "$RUNNER_TEMP/guest-resource-profile"
           node scripts/stabilization-resource.mjs run --run-id "hosted-guest-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs

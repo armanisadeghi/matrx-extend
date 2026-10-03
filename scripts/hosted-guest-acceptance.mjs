@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { verifyImportedNativeEvidence } from './current-test-artifact.mjs';
 import { hashReleaseTree } from './sync-unpacked-release.mjs';
 
 const repo = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -76,10 +77,37 @@ async function prepare(artifactDir, outputDir, expectedSha) {
   const relocatedReceipt = join(outputDir, 'release-receipt.json');
   await writeFile(relocatedReceipt, `${JSON.stringify(receipt, null, 2)}\n`, { mode: 0o600 });
   process.stdout.write(`PREPARED ${receipt.version} ${receipt.sourceSha} ${receipt.treeSha256}\n`);
-  return { extensionDir, relocatedReceipt };
+  return { extensionDir, relocatedReceipt, kind: 'published_release' };
 }
 
-async function run({ extensionDir, relocatedReceipt }) {
+async function prepareDevelopment(runId, artifactId) {
+  assert.match(runId, /^[1-9][0-9]*$/);
+  assert.match(artifactId, /^[1-9][0-9]*$/);
+  const imported = await ownedProcess(process.execPath, [
+    join(repo, 'scripts/current-test-artifact.mjs'),
+    'import',
+    runId,
+    artifactId,
+  ]);
+  assert.equal(imported.code, 0, 'authenticated CI development artifact import failed');
+  const sourceRoot = join(repo, 'test-results/ci-artifacts');
+  const sourceShas = await readdir(sourceRoot);
+  assert.equal(sourceShas.length, 1, 'expected one imported CI source');
+  assert.match(sourceShas[0], /^[a-f0-9]{40}$/);
+  const attempts = await readdir(join(sourceRoot, sourceShas[0]));
+  assert.equal(attempts.length, 1, 'expected one imported CI run attempt');
+  assert.match(attempts[0], new RegExp(`^${runId}-[1-9][0-9]*$`));
+  const target = join(sourceRoot, sourceShas[0], attempts[0]);
+  const extensionDir = join(target, 'chrome-mv3');
+  const relocatedReceipt = join(target, 'local-dev-receipt.json');
+  const evidence = await verifyImportedNativeEvidence(extensionDir, relocatedReceipt);
+  assert.equal(evidence.eligibleStore, false);
+  assert.equal(evidence.sourceSha, sourceShas[0]);
+  process.stdout.write(`PREPARED_DEVELOPMENT ${evidence.sourceSha} ${evidence.treeSha256}\n`);
+  return { extensionDir, relocatedReceipt, kind: 'ci_development_test' };
+}
+
+async function run({ extensionDir, relocatedReceipt, kind }) {
   const child = spawn(
     process.execPath,
     [join(repo, 'tests/browser/guest-chat-store-acceptance.mjs')],
@@ -89,7 +117,9 @@ async function run({ extensionDir, relocatedReceipt }) {
       env: {
         ...process.env,
         MATRX_GUEST_CHAT_EXTENSION_DIR: extensionDir,
-        MATRX_GUEST_CHAT_RELEASE_RECEIPT: relocatedReceipt,
+        ...(kind === 'ci_development_test'
+          ? { MATRX_GUEST_CHAT_DEV_RECEIPT: relocatedReceipt }
+          : { MATRX_GUEST_CHAT_RELEASE_RECEIPT: relocatedReceipt }),
       },
     },
   );
@@ -107,13 +137,18 @@ async function run({ extensionDir, relocatedReceipt }) {
 const artifactDirArg = process.env.MATRX_HOSTED_RELEASE_ARTIFACT_DIR;
 const outputDirArg = process.env.MATRX_HOSTED_GUEST_OUTPUT_DIR;
 const expectedSha = process.env.MATRX_HOSTED_RELEASE_SHA;
-if (!artifactDirArg || !outputDirArg || !expectedSha) {
+const devRunId = process.env.MATRX_HOSTED_DEV_RUN_ID;
+const devArtifactId = process.env.MATRX_HOSTED_DEV_ARTIFACT_ID;
+const releaseMode = Boolean(artifactDirArg && expectedSha && !devRunId && !devArtifactId);
+const developmentMode = Boolean(!artifactDirArg && !expectedSha && devRunId && devArtifactId);
+if (!outputDirArg || !(releaseMode || developmentMode)) {
   throw new Error('hosted_guest_configuration_missing');
 }
-const artifactDir = resolve(artifactDirArg);
 const outputDir = resolve(outputDirArg);
 await mkdir(outputDir, { recursive: true });
-const prepared = await prepare(artifactDir, outputDir, expectedSha);
+const prepared = releaseMode
+  ? await prepare(resolve(artifactDirArg), outputDir, expectedSha)
+  : await prepareDevelopment(devRunId, devArtifactId);
 const runtimeDir = resolve(process.env.MATRX_HOSTED_BROWSER_RUNTIME_DIR ?? '');
 if (!process.env.MATRX_HOSTED_BROWSER_RUNTIME_DIR || !process.env.PLAYWRIGHT_BROWSERS_PATH) {
   throw new Error('hosted_browser_runtime_configuration_missing');
