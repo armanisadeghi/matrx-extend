@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "status": "READINESS_CAUSE_CONFIRMED_SCOPED_FIX_AWAITS_NATIVE_RETEST",
+  "reviewed_commit": "88027f53422db0e15a2e14727ecb3d7cfe765794",
+  "verdict_a_real_runtime": {
+    "outcome": "FAIL_AT_RUNNER_READINESS",
+    "evidence": "Account is present and expanded; all three safe snapshots report sign_in_count=2, sign_in_enabled=false, no admin identity, no error/retry/loading. No Prepare cases ran.",
+    "limits": "The source fix has not been rerun natively; EXT-D-0058 and EXT-D-0059 remain open."
+  },
+  "verdict_b_source": {
+    "outcome": "PASS_WITH_LIMITS",
+    "scope": "Independent review of 88027f53 with zero authorship.",
+    "findings": [],
+    "evidence": [
+      "Distinct Settings, Account, guest Sign in readiness, click, and authenticated identity stages preserve the original flow.",
+      "Observations return fixed booleans/counts only, without raw DOM text, credentials, auth URLs, or browser exception details.",
+      "Exact admin email and admin role predicate, real website login, artifact tree validation, and original Prepare case assertions remain.",
+      "node --check and focused Biome check passed against reviewed runner and diagnostic report."
+    ],
+    "limits": [
+      "Instrumentation localizes the next failure; it cannot reconstruct missing state from the prior run.",
+      "A successful source review is not evidence that auth or Prepare works."
+    ]
+  },
+  "working_sibling_comparison": {
+    "siblings": [
+      "tests/browser/isolated-admin-signin-acceptance.mjs",
+      "tests/browser/debug-log-controls-acceptance.mjs",
+      "tests/browser/screenshot-admin-readonly-acceptance.mjs"
+    ],
+    "difference": "Working siblings open Settings and Account on the owned demo tab before opening the website login tab; Prepare opens them after website /dashboard while the website tab remains foreground.",
+    "interpretation": "Plausible native-panel lifecycle/input difference, not yet proven causal. Both current and pinned source render Account expanded by default and Sign in in an independent footer."
+  },
+  "hypotheses": [
+    {
+      "cause": "Settings click did not activate the panel while another tab was foreground",
+      "prediction": "admin_extension_account_open failure with account_present=false"
+    },
+    {
+      "cause": "The Account controls rendered but guest Sign in was absent or disabled",
+      "prediction": "admin_extension_signin_ready failure with Account present and sign_in_count != 1 or enabled=false"
+    },
+    {
+      "cause": "Extension OAuth or admin identity completion failed",
+      "prediction": "Only supported if extension click and admin_extension_auth_completion stages are reached"
+    }
+  ],
+  "run": {
+    "id": 37115862246,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37115862246",
+    "workflow_source_sha": "88027f53422db0e15a2e14727ecb3d7cfe765794",
+    "development_run_id": 37107627454,
+    "development_artifact_id": 11268886169,
+    "development_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "release_run_id": "",
+    "published_store_crx": false,
+    "conclusion": "failure",
+    "acceptance_artifact_id": 11271531298
+  },
+  "credential_handling": {
+    "provisioning": "Existing admin identity/password parsed privately from aidream .env and passed to gh secret set through stdin only after root granted the sole heavy permit.",
+    "cleanup": "Deleted MATRX_PREPARE_ADMIN_CREDENTIALS_JSON immediately after terminal failure; gh secret list filtered count was 0."
+  },
+  "product_changes": [],
+  "defects_closed": [],
+  "pending_store_review": "0.2.176 untouched",
+  "native_receipt": {
+    "path": "/tmp/prepare-readiness-37115862246/test-results/prepare-stale-result-native-c6621e9b-a9f2-4416-ba8b-38cd32a9462e.json",
+    "sha256": "49b681abfcba2dd221becf719b8181054e102a233251aa470412fa2504febd24",
+    "result": {
+      "schema_version": 1,
+      "defects": ["EXT-D-0058", "EXT-D-0059"],
+      "status": "unverified",
+      "artifact": {
+        "version": "0.2.176",
+        "source_sha": null,
+        "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+        "kind": "local_dev_unpacked"
+      },
+      "cases": [],
+      "stage": "admin_extension_signin_ready",
+      "failure_code": "admin_extension_signin_ready_failed",
+      "signin_observations": {
+        "web_dashboard_reached": true,
+        "extension_after_account_open": {
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": false,
+          "admin_role": false,
+          "sign_in_count": 2,
+          "sign_in_enabled": false,
+          "sign_out_present": false,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        },
+        "extension_signin_last": {
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": false,
+          "admin_role": false,
+          "sign_in_count": 2,
+          "sign_in_enabled": false,
+          "sign_out_present": false,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        },
+        "extension_failure": {
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": false,
+          "admin_role": false,
+          "sign_in_count": 2,
+          "sign_in_enabled": false,
+          "sign_out_present": false,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        }
+      }
+    }
+  },
+  "cause": {
+    "confirmed": "The runner required exactly one Sign in button across the whole document. The pinned build keeps Chat mounted and renders a guest Sign in there as well as Settings, so the count is two.",
+    "source_evidence": [
+      "src/entrypoints/sidepanel/App.tsx forceMount Chat TabsContent",
+      "src/features/chat/ChatView.tsx mounts GuestBanner",
+      "src/components/GuestBanner.tsx renders Sign in",
+      "src/features/settings/SettingsView.tsx renders Sign in footer"
+    ],
+    "ruled_out": "Settings/Account readiness failure is contradicted by present/expanded=true. OAuth failure is not evidenced because the click was never reached."
+  },
+  "repair": {
+    "files": [
+      "tests/browser/settings-panel-driver.mjs",
+      "tests/browser/prepare-stale-result-native-acceptance.mjs"
+    ],
+    "behavior": "Shared activeTabPanelExpression resolves exactly one active tab by title and its linked active tabpanel. Prepare auth observations and settings-button trusted-pointer resolution both use that expression. All pointer visibility, stability, occlusion, and input checks remain; admin email and role predicate is unchanged.",
+    "sibling_census": "Only Prepare had a document-wide exact-one Sign in readiness predicate. Other native auth helpers use some/find or the pointer driver visible-target filter, so they do not share this exact readiness defect; their generic sign-in clicks were not changed.",
+    "independent_review": "Pending fresh seat; verdict_b_source above applies only to zero-authorship review of 88027f53, not this repair."
+  },
+  "resource": {
+    "admitted": true,
+    "resourceInvalid": false,
+    "decision": "child_failed",
+    "childExitCode": 1,
+    "journal": "docs/stabilization/resource-journals/hosted-guest-37115862246-1.jsonl",
+    "interpretation": "One CPU-busy sample was followed by a healthy sample; resource limits were unchanged."
+  },
+  "verification": {
+    "checks": [
+      "node --check on both changed runners passed",
+      "Biome check on both changed runners passed",
+      "Bounded happy-dom reproduction: old document-wide count=2, shared scoped count=1; inactive Settings and ambiguous active Settings tabs resolve no panel; document-root mutant fails refusal assertions."
+    ],
+    "limits": "DOM reproduction is source-level evidence only, not a native browser or product pass. No retry launched; fresh independent review and root permit required before native retest."
+  },
+  "next_minimal_action": "Fresh independent source review, then one permitted native Prepare run on the same pinned development artifact using the scoped readiness and trusted click."
+}

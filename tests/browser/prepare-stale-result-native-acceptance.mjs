@@ -6,7 +6,13 @@ import { readFile, stat, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
+import {
+  activeTabPanelExpression,
+  click,
+  evaluate,
+  openSection,
+  waitFor,
+} from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
 const EXTENSION_DIR = process.env.MATRX_PREPARE_EXTENSION_DIR;
@@ -47,17 +53,19 @@ async function extensionAuthState(panel) {
   return evaluate(
     panel,
     `(() => {
-      const account = [...document.querySelectorAll('button[aria-expanded]')]
+      const settings = ${activeTabPanelExpression('Settings')};
+      const account = [...(settings?.querySelectorAll('button[aria-expanded]') ?? [])]
         .find((button) => button.textContent.trim() === 'Account');
       const section = account?.parentElement?.nextElementSibling;
       const row = (label) => [...(section?.querySelectorAll('span') ?? [])]
         .find((span) => span.textContent.trim() === label)?.parentElement?.textContent.trim() ?? null;
       const email = row('Email');
       const role = row('Role');
-      const buttons = [...document.querySelectorAll('button')];
+      const buttons = [...(settings?.querySelectorAll('button') ?? [])];
       const signIn = buttons.filter((button) => button.textContent.trim() === 'Sign in');
       const retry = buttons.find((button) => button.textContent.trim() === 'Try again');
       return {
+        settings_panel_active: Boolean(settings),
         account_present: Boolean(account),
         account_expanded: account?.getAttribute('aria-expanded') === 'true',
         email_row_present: email !== null,
@@ -134,7 +142,7 @@ async function signIn(page, panel) {
     }
     stage('admin_extension_click');
     try {
-      await click(panel, 'button', 'Sign in');
+      await click(panel, 'settings-button', 'Sign in');
     } catch (error) {
       const failure = error?.driverFailure;
       const knownCodes = new Set([
