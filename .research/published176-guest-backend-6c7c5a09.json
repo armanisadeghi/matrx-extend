@@ -114,5 +114,7 @@
     "release_tree_hash": "pass: unchanged before and after",
     "backend_sha": "same before and after native run",
     "resource_journal": "valid admission, healthy watcher, child exit 0, final decision valid"
-  }
+  },
+  "evidence_root": "docs/stabilization/reports/published176-guest-backend-6c7c5a09",
+  "owner_verification": "Root recomputed all five raw SHA-256 hashes and opened the follow-up screenshot; guest banner and grounded answer visible."
 }

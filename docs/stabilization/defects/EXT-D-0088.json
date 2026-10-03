@@ -73,15 +73,26 @@
   "deployed_server_sha": "9bd979a894ba71141d6548069d621aa59a526bde",
   "published_extension_version": "0.2.176",
   "bounded_retest": "Published130 functional guest initial/reload evidence retained with explicit Google metadata-only integrity distinction. Exact release176 guest37106907229 PASSED first/reload answers and unchangedtree; independent member37107947183 PASSED real web+extension auth, nonadmin authority, explicit org and real answer. Both resource-valid. Member tree checked before load only; guest separately rehashed identical release after interaction.",
-  "latest_verified_server_sha": "4ec65fdb63a8d15e7c11d4404e0516317ebfaabd",
+  "latest_verified_server_sha": "6c7c5a09a84e2e0111732505bb666f37a77b56e8",
   "latest_bounded_retest": {
-    "run_id": "published176-guest-server-refresh-20261003-01",
-    "report": ".research/published176-guest-server-refresh.json",
-    "commit": "031ccb34",
-    "report_correction": "b224611d",
+    "run_id": "published176-guest-backend-6c7c5a09-02",
+    "report": ".research/published176-guest-backend-6c7c5a09.json",
+    "commit": "3f812e1c",
     "resource_exit": 0,
     "resource_invalid": false,
-    "scope": "Headless native Chromium with exact unpacked release artifact; actual guest replies and Settings-independent panel reload. Not installed Store lifecycle.",
-    "owner_verification": "Receipt/journal SHA-256 recomputed and matched; follow-up screenshot opened and visibly showed guest banner with actual answer."
-  }
+    "scope": "Exact published176 unpacked ZIP in native headless Chromium. First grounded guest answer and follow-up after real panel reload. Not Store installation/update lifecycle.",
+    "owner_verification": "Five raw hashes independently matched; follow-up screenshot visibly shows guest banner and grounded answer."
+  },
+  "prior_bounded_retests": [
+    {
+      "run_id": "published176-guest-server-refresh-20261003-01",
+      "report": ".research/published176-guest-server-refresh.json",
+      "commit": "031ccb34",
+      "report_correction": "b224611d",
+      "resource_exit": 0,
+      "resource_invalid": false,
+      "scope": "Headless native Chromium with exact unpacked release artifact; actual guest replies and Settings-independent panel reload. Not installed Store lifecycle.",
+      "owner_verification": "Receipt/journal SHA-256 recomputed and matched; follow-up screenshot opened and visibly showed guest banner with actual answer."
+    }
+  ]
 }
