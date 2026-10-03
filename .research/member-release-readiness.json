@@ -17,7 +17,7 @@
     "interpretation": "The existing account is a real, currently enabled nonadmin identity. The read-only query does not validate a password or prove a fresh browser session."
   },
   "credential_readiness": {
-    "status": "UNVERIFIED_AUTHORIZED_VAULT_SCOPE_NOT_REACHED",
+    "status": "UNVERIFIED_OWNER_VAULT_BROWSER_CONTROL_UNAVAILABLE",
     "containment_source": "docs/stabilization/reports/reviewer-credential-containment-20261002.json",
     "prior_login_result": "rejected",
     "private_sources_checked": [
@@ -37,7 +37,16 @@
       "exact_reviewer_email_metadata_matches": 0,
       "boundary": "The admin identity cannot see the reviewer credential in its personal, shared, or selected-organization Vault scope. The existing credential may be in Arman's personal Vault; no Arman session or token was available to this non-browser API probe. Direct browser-login materialize additionally requires a registered extension fill-device signature."
     },
-    "result": "No existing valid reviewer password was recovered. The authorized admin Vault API worked, but its scoped inventory did not contain the reviewer identity. No password value, auth token, or account identifier was printed or copied. No reviewer credential was retried, reset, rotated, or committed.",
+    "existing_owner_browser_probe": {
+      "browser": "Existing personal Chrome profile; no new profile or sign-in",
+      "observed_tabs": "Two existing signed-in AI Matrx web tabs were listed by browser metadata (Chat and Data). The Chat tab was claimed without navigation.",
+      "failure": "Browser tab DOM snapshot, read-only page evaluation, accessibility read, and direct CDP Runtime.evaluate all failed before page inspection while setting CDP focus emulation. The failure was repeated on a second existing AI Matrx tab at selection; no Vault UI was reached.",
+      "secret_exposure": false,
+      "vault_reveal_attempted": false,
+      "browser_mutation": false,
+      "next_recovery": "Restore the existing Chrome browser-control connection, then inspect the owner's authenticated Vault tab/page through browser-scoped controls. Keep password reveal and any response in private process memory; never request a native app re-selection or accessibility capture while plaintext is visible."
+    },
+    "result": "No existing valid reviewer password was recovered. The authorized admin Vault API worked, but its scoped inventory did not contain the reviewer identity; existing owner Chrome tabs were present but page control failed before Vault inspection. No password value, auth token, or account identifier was printed or copied. No reviewer credential was retried, reset, rotated, or committed.",
     "next_safe_source": "Use the existing authenticated Vault account that owns the reviewer item, or a private owner-readable credential file. Keep any Vault reveal response in process memory and write only a mode-0600 runner input file if required. Establish the same fingerprint and a successful real web session before claiming readiness. Do not use the native CUA app-selection path from EXT-D-0079."
   },
   "candidate_acceptance": {
@@ -58,6 +67,7 @@
     "Fresh read-only Supabase auth/admin count and enabled-state query succeeded",
     "Local private-source metadata and file permissions checked without emitting values",
     "Fresh admin Auth and first-party Vault personal/shared/organization/inventory read APIs succeeded; scoped metadata contained no exact reviewer identity",
+    "Existing owner Chrome Chat/Data tab metadata was observed; browser page reads failed before dispatch at CDP focus-emulation setup",
     "Hosted helper and guard allowlist inspected; reviewer runner is locally allowlisted, hosted helper does not support it"
   ]
 }
