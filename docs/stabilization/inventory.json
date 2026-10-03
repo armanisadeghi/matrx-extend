@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T08:17:48.179147+00:00",
+  "updated_at": "2026-10-03T10:19:18+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -3577,14 +3577,34 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "guest-theme-001",
-              "evidence": "docs/stabilization/runs/guest-theme-001.json",
-              "detail": "Light/Dark/System each visibly applied and persisted through separate full extension Reloads on0.2.51. OriginalSystem restored; resource healthy."
+              "status": "partial",
+              "run_id": "hosted-settings-37115406435",
+              "native_run_status": "pass",
+              "scope": "D87 guest persistence retest on exact development artifact 0.2.176; six native cases cover Light/System saves, rejected-write feedback/retry, rapid-write ordering, and Settings panel reload persistence.",
+              "build_version": "0.2.176",
+              "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+              "build_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+              "evidence": [
+                ".research/settings-acceptance-record.json",
+                ".research/settings-final-native.json"
+              ],
+              "detail": "All six receipt-recorded native guest assertions passed. Reload evidence is a Settings panel reload, not full Chrome extension Reload. Earlier full-extension-reload theme matrix remains retained in result_history; this retest does not cover member/admin or all Settings controls."
             }
           },
           "linked_defects": [
             "EXT-D-0087"
+          ],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "guest-theme-001",
+                "evidence": "docs/stabilization/runs/guest-theme-001.json",
+                "detail": "Light/Dark/System each visibly applied and persisted through separate full extension Reloads on0.2.51. OriginalSystem restored; resource healthy."
+              },
+              "retained_reason": "Earlier evidence covered Light, Dark, and System across separate full extension Reloads; the bounded D87 retest below used Settings panel reload only."
+            }
           ]
         },
         {

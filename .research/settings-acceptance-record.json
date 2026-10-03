@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0087",
+  "audit": "independent raw-receipt, artifact-provenance, runner-assertion, and resource-journal audit",
+  "A_actual_bounded_outcome": {
+    "status": "PASS_BOUNDED_GUEST_NATIVE_RETEST",
+    "run_id": 37115406435,
+    "artifact_id": 11270464051,
+    "receipt_sha256": "0d5e97229e70a390b9e7a19fe588b4b8fbc0279ca520915d1e2681963b7bee5c",
+    "scope": "receipt-bound Chrome-for-Testing native Settings panel; guest; six cases",
+    "cases": [
+      "Light changed choice saved through UI",
+      "System choice saved through UI",
+      "rejected write exposed with retry while stored System remains",
+      "retry persisted and observed after Settings panel reload",
+      "latest rapid System choice persisted after held Light write released",
+      "latest rapid System choice survived Settings panel reload"
+    ],
+    "post_interaction_tree_check": "PASS; runner asserts hashReleaseTree(extensionDir) === receipt.treeSha256 after all cases and before setting receipt.status=pass.",
+    "scope_limit": "Guest only; this is panel-reload evidence. It does not cover member/admin, every Settings control, or full extension Reload. Earlier full-extension-reload theme evidence remains recorded in inventory result_history.",
+    "product_fix_vs_frozen_store": "The tested 0.2.176 development artifact contains the product fix; frozen Store 0.2.176 was not replaced and no release/Store claim follows."
+  },
+  "B_evidence_quality": {
+    "status": "PASS",
+    "hosted_run": {
+      "workflow": "Hosted guest side-panel acceptance",
+      "workflow_source_sha": "4e08df5549a84ce26a7d53c262b1fe0caef15866",
+      "branch": "main",
+      "conclusion": "success",
+      "settings_step": "success",
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37115406435"
+    },
+    "acceptance_artifact": {
+      "name": "hosted-guest-37115406435-1",
+      "expired": false,
+      "artifact_zip_sha256": "517efc4f7c7e7c40b4fb92b07beaec793629fe94fd335ac58ea1503d06e80555",
+      "raw_receipt_path_in_artifact": "test-results/settings-d87-native-705dd6c4-7f75-48c1-b0f6-fb5409a83fa1.json",
+      "raw_receipt_sha256_recomputed": "0d5e97229e70a390b9e7a19fe588b4b8fbc0279ca520915d1e2681963b7bee5c",
+      "reported_receipt_sha256_matches_raw": true
+    },
+    "development_artifact_provenance": {
+      "run_id": 37107627454,
+      "artifact_id": 11268886169,
+      "artifact_name": "matrx-extend-development-test-3092444e73094cb0023f6086202869ccbd22978b-37107627454-1",
+      "expired": false,
+      "workflow": ".github/workflows/ci.yml",
+      "event": "push",
+      "ref": "refs/heads/main",
+      "run_attempt": 1,
+      "conclusion": "success",
+      "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+      "version": "0.2.176",
+      "receipt_kind": "local_dev_unpacked",
+      "published_store_crx": false,
+      "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+      "hosted_import_log": "DEVELOPMENT_TEST_IMPORTED \u2026 exact_pushed_commit_only; receipt and tree hash match the native receipt."
+    },
+    "resource_journal": {
+      "sha256_recomputed": "1a647df0a0ed65eeb1c62c4b10282dff5f44029ab582f50a340d258da577f205",
+      "admission": "RESOURCE_ADMITTED with no reasons",
+      "watcher": "RESOURCE_WATCH_HEALTHY with no reasons",
+      "child_exit_code": 0,
+      "resource_invalid": false,
+      "final_decision": "valid"
+    },
+    "runner_repair_review": {
+      "baseline_repair_peer": ".research/settings-baseline-peer.json",
+      "injector_diagnosis": ".research/settings-overlap-reload-diagnosis.json",
+      "fresh_injector_source_peer": ".research/settings-injector-peer.json",
+      "reviewed_fix_commit": "250d39fc87a6d3534496cbf99fb930cc9e4dd02c",
+      "assessment_limit": "Fresh peer review was source/focused-test only; native validity comes from the raw hosted receipt and resource journal audited here."
+    },
+    "screenshot_limit": "Artifact screenshots show generic native-panel QA and the normal target after open; no screenshot captures the final post-exercise D87 Settings state. The raw receipt carries the final UI/storage observations."
+  },
+  "independent_checks": [
+    "Downloaded raw acceptance artifact by run and verified receipt SHA-256 against .research/settings-final-native.json.",
+    "Queried GitHub run/artifact metadata and inspected the downloaded CI development provenance and build receipts.",
+    "Verified hosted import log, exact source/tree/artifact identity, native PASS log, and post-interaction tree assertion location.",
+    "Recomputed acceptance resource journal SHA-256 and checked admission, watcher, child exit, and final decision."
+  ]
+}

@@ -1,12 +1,12 @@
 # Extension stabilization status
 
-Generated 2026-10-03 08:17 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T08:17:48.179147+00:00. 205 features · 740 cases · 1324 controls · 92 linked defect records.
+Generated 2026-10-03 10:20 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T10:19:18+00:00. 205 features · 740 cases · 1324 controls · 92 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1186** — Pass: 62 · Partial: 47 · Fail: 4 · Unverified: 1072 · N/A: 1.
+Applicable case-by-role slots: **1186** — Pass: 61 · Partial: 48 · Fail: 4 · Unverified: 1072 · N/A: 1.
 Unverified splits into **122 explicitly marked unverified** and **950 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
@@ -20,7 +20,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 11 pass · 1 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 7 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | pass 18, partial 1, fail 0, unverified 53, n/a 1 | 3 |
+| [Settings](#settings) | 1 | 10 pass · 2 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 7 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | pass 17, partial 2, fail 0, unverified 53, n/a 1 | 3 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 32, n/a 0 | 0 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -356,7 +356,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1003-T01 guest: Organization selector | Pass | N/A | N/A | EXT-F-1003-C01 |
 | EXT-F-1003-T02 member: Organization selector | N/A | Unverified | N/A | EXT-F-1003-C01 |
 | EXT-F-1003-T03 admin: Organization selector | N/A | N/A | Pass | EXT-F-1003-C01 |
-| EXT-F-1003-T04 guest: Theme | Pass | N/A | N/A | EXT-F-1003-C02 |
+| EXT-F-1003-T04 guest: Theme | Partial | N/A | N/A | EXT-F-1003-C02 |
 | EXT-F-1003-T05 member: Theme | N/A | Unverified | N/A | EXT-F-1003-C02 |
 | EXT-F-1003-T06 admin: Theme | N/A | N/A | Pass | EXT-F-1003-C02 |
 | EXT-F-1003-T07 guest: Default agent | Pass | N/A | N/A | EXT-F-1003-C03 |
@@ -432,8 +432,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: guest-settings-007, docs/stabilization/runs/guest-settings-007.json
 - EXT-F-1003-T03 · admin: Pass. Initialunset did not chooseimplicitly; explicitfixture selected, Actingas and fullreload persistence verified. Nonexistent clear-step corrected from source/UI.
   Evidence / build / date recorded: admin-org-001, docs/stabilization/runs/admin-org-001.json
-- EXT-F-1003-T04 · guest: Pass. Light/Dark/System each visibly applied and persisted through separate full extension Reloads on0.2.51. OriginalSystem restored; resource healthy.
-  Evidence / build / date recorded: guest-theme-001, docs/stabilization/runs/guest-theme-001.json
+- EXT-F-1003-T04 · guest: Partial. All six receipt-recorded native guest assertions passed. Reload evidence is a Settings panel reload, not full Chrome extension Reload. Earlier full-extension-reload theme matrix remains retained in result_history; this retest does not cover member/admin or all Settings controls.
+  Evidence / build / date recorded: hosted-settings-37115406435, ['.research/settings-acceptance-record.json', '.research/settings-final-native.json']
 - EXT-F-1003-T06 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.
   Evidence / build / date recorded: admin-settings-local-001, docs/stabilization/runs/admin-settings-local-001.json
 - EXT-F-1003-T07 · guest: Pass. Native Chrome guest controls matched all expected criteria warm and after full extension Reload; ID/path/version0.2.51 verified, resource healthy.
