@@ -208,7 +208,7 @@ async function restoreFault(panel) {
   );
 }
 
-async function replaceInput(panel, kind, value) {
+async function replaceInput(panel, kind, value, expectedValue = value) {
   if (kind === 'port') await click(panel, 'port', 'Local engine port');
   else {
     // Locate and focus the real visible pair field with a trusted mouse click.
@@ -269,7 +269,10 @@ async function replaceInput(panel, kind, value) {
   await waitFor(
     'desktop_input_changed',
     () => state(panel),
-    (s) => (kind === 'port' ? s?.portInput === value : s?.pairInputPresent === Boolean(value)),
+    (s) =>
+      kind === 'port'
+        ? s?.portInput === expectedValue
+        : s?.pairInputPresent === Boolean(expectedValue),
   );
 }
 
@@ -513,24 +516,28 @@ try {
           () => state(panel),
           (s) => s?.portSaved === 65535,
         );
+        stage = 'desktop_port_zero';
         await savePort(panel, 0);
         await waitFor(
           'desktop_port_zero_rejected',
           () => state(panel),
           (s) => s?.portSaved === 65535 && s.portInput === '0' && s.portRangeError,
         );
+        stage = 'desktop_port_high';
         await savePort(panel, 65536);
         await waitFor(
           'desktop_port_high_rejected',
           () => state(panel),
           (s) => s?.portSaved === 65535 && s.portInput === '65536' && s.portRangeError,
         );
-        await replaceInput(panel, 'port', '12x3');
+        stage = 'desktop_port_nondigit';
+        await replaceInput(panel, 'port', '12x3', '123');
         await waitFor(
           'desktop_port_nondigit_filtered',
           () => state(panel),
           (s) => s?.portInput === '123' && s.portSaved === 65535,
         );
+        stage = 'desktop_port_blank';
         await savePort(panel, '');
         await waitFor(
           'desktop_port_blank_cleared',
