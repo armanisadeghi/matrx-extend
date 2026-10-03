@@ -1,10 +1,7 @@
 {
   "id": "EXT-D-0094",
   "feature_id": "EXT-F-1004",
-  "case_ids": [
-    "EXT-F-1004-T02",
-    "EXT-F-1004-T04"
-  ],
+  "case_ids": ["EXT-F-1004-T02", "EXT-F-1004-T04", "EXT-F-1004-T25"],
   "surface": "Profile",
   "auth_mode": "admin proven; member unverified",
   "title": "Authenticated Profile load is rejected by get_user_form_context",
@@ -22,7 +19,8 @@
     ".research/profile-native-execution.json",
     "docs/stabilization/resource-journals/profile-diagnostic-20261003-04.jsonl",
     "Live run profile-diagnostic-20261003-04 on source 2274cc2fc929f7682c61f1a137e472a87caa2114; write HTTP 200 and read HTTP 403/42501 reported by coordinator",
-    "Read-only Supabase inspection of users.user_form_profile and get_user_form_context EXECUTE privileges; no database writes or grants"
+    "Read-only Supabase inspection of users.user_form_profile and get_user_form_context EXECUTE privileges; no database writes or grants",
+    "Product repair: dccc196a (owner-filtered users.user_form_profile read); independent source review: .research/profile-read-fix-peer.json, evidence commit 7d53b131."
   ],
   "transition_history": [
     {
@@ -41,10 +39,10 @@
       "at": "2026-10-03T19:31:00Z",
       "from": "triaged",
       "to": "in-fix",
-      "reason": "The assigned native_empty_input_fix worker has begun implementation in src/hooks/use-user-profile.ts and src/lib/supabase/user-profile.ts and added src/lib/supabase/user-profile.read.test.ts. No database grant is planned."
+      "reason": "The assigned native_empty_input_fix worker began the owner-filtered read repair with focused regression coverage; source repair is committed at dccc196a and independently accepted in .research/profile-read-fix-peer.json (evidence commit 7d53b131). No database grant is planned. Native save/reopen/restoration acceptance remains pending."
     }
   ],
-  "current_work": "The native_empty_input_fix worker is implementing the owner-filtered table read path. The detailed diagnosis report has not yet been committed. No database grant has been made or approved; member-mode impact and repaired native acceptance remain unverified.",
+  "current_work": "The owner-filtered users.user_form_profile read repair is committed at dccc196a and independently accepted at source level in .research/profile-read-fix-peer.json (peer evidence commit 7d53b131). Native save, reopen and restoration acceptance remains pending; member behavior is unverified.",
   "closure_requirement": "Confirm the intended authenticated access path without broadening execute privileges; independently verify authorized Profile load, save, reopen and restoration on the exact repaired artifact. Keep member coverage unverified until tested as an existing member.",
-  "acceptance_note": "The prior T02 observation in .research/profile-native-execution.json is historical and invalidated for acceptance because a failed profile load can appear blank. No inventory pass was promoted."
+  "acceptance_note": "The prior T02 observation in .research/profile-native-execution.json is invalidated for acceptance because the then-current failed read could render a blank profile. The source repair is independently accepted, but native acceptance on the repaired artifact remains pending. No inventory pass was promoted."
 }

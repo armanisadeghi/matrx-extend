@@ -34,9 +34,16 @@
       "PROFILE_OUTPUT_DIR": "/Volumes/Samsung2TB/code/.stabilization-scratch/<PROFILE_RUN_ID>/evidence"
     },
     "guard_argv_template": [
-      "node", "scripts/stabilization-resource.mjs", "run", "--run-id", "<PROFILE_RUN_ID>",
-      "--profile-dir", "/Volumes/Samsung2TB/code/.stabilization-scratch/<PROFILE_RUN_ID>/permit-profile",
-      "--", "node", "tests/browser/profile-native-acceptance.mjs"
+      "node",
+      "scripts/stabilization-resource.mjs",
+      "run",
+      "--run-id",
+      "<PROFILE_RUN_ID>",
+      "--profile-dir",
+      "/Volumes/Samsung2TB/code/.stabilization-scratch/<PROFILE_RUN_ID>/permit-profile",
+      "--",
+      "node",
+      "tests/browser/profile-native-acceptance.mjs"
     ],
     "policy_command_exact": ["node", "tests/browser/profile-native-acceptance.mjs"],
     "permit_limit": 1,
@@ -72,19 +79,28 @@
   ],
   "case_observations": [
     {
-      "id": "EXT-F-1004-T02", "mode": "admin", "dimension": "warm", "branch": "default",
-      "observation": "passed_in_second_run",
+      "id": "EXT-F-1004-T02",
+      "mode": "admin",
+      "dimension": "warm",
+      "branch": "default",
+      "observation": "invalidated_for_acceptance_by_failed_initial_read",
       "evidence_ref": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-native-20261003-02/evidence/profile-native-profile-20261003-02.json#cases[0]",
-      "details": "Synthetic Preferred draft showed Unsaved changes and Discard; Back selected Chat; reopened Profile displayed the original blank input with no dirty state."
+      "details": "This historical blank-input observation is invalid for acceptance because the initial Profile read failure could render the same blank value. D94 source repair is independently reviewed; native acceptance on the repaired artifact remains pending."
     },
     {
-      "id": "EXT-F-1004-T04", "mode": "admin", "dimension": "warm", "branch": "discard-draft",
+      "id": "EXT-F-1004-T04",
+      "mode": "admin",
+      "dimension": "warm",
+      "branch": "discard-draft",
       "observation": "discard_predicate_observed_but_branch_unverified",
       "evidence_ref": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-native-20261003-02/evidence/profile-native-profile-20261003-02.json#failure_code",
       "details": "The Discard wait preceded the try/finally block and therefore passed. The whole run later failed, and no completed per-branch row was emitted. Peer must not promote this branch."
     },
     {
-      "id": "EXT-F-1004-T04", "mode": "admin", "dimension": "warm", "branch": "save-draft",
+      "id": "EXT-F-1004-T04",
+      "mode": "admin",
+      "dimension": "warm",
+      "branch": "save-draft",
       "observation": "unverified_due_to_masked_try_error_and_restoration_wait_failure",
       "evidence_ref": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-native-20261003-02/evidence/profile-native-profile-20261003-02.json#failure_code",
       "details": "The finally restoration wait timed out and could have masked an earlier save or reopen failure. The receipt does not establish whether synthetic Preferred persisted. No completed per-branch row was emitted."
@@ -107,7 +123,11 @@
     "active_permit": false,
     "profile_fields_other_than_preferred_changed": false
   },
-  "source_files": ["tests/browser/profile-native-acceptance.mjs", "docs/stabilization/resource-policy.json"],
+  "source_files": [
+    "tests/browser/profile-native-acceptance.mjs",
+    "docs/stabilization/resource-policy.json"
+  ],
   "source_commits": ["0cda7f87", "53c3d56a", "cac80a37", "179fcbf6", "d1857cad", "410c3bb9"],
-  "next_owner": "Fresh native_empty_input_fix owns diagnosis/repair of clearing an empty Preferred input and preserving the last redacted DOM wait state; no third broad runner attempt in this lane."
+  "next_owner": "Fresh native_empty_input_fix owns diagnosis/repair of clearing an empty Preferred input and preserving the last redacted DOM wait state; no third broad runner attempt in this lane.",
+  "acceptance_note": "The prior T02 blank-input observation is invalidated for acceptance: the same blank form can result from a failed initial read. No inventory outcome was promoted. The repair and required native retest are tracked by EXT-D-0094."
 }

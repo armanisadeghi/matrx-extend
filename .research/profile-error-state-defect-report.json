@@ -1,0 +1,20 @@
+{
+  "id": "profile-error-state-defect-report",
+  "defect_id": "EXT-D-0095",
+  "feature_id": "EXT-F-1004",
+  "case_ids": ["EXT-F-1004-T25"],
+  "source_repair_commit": "dccc196a",
+  "independent_evidence_commit": "7d53b131",
+  "peer_report": ".research/profile-read-fix-peer.json",
+  "source_verdict": "source_confirmed_followup",
+  "runtime_verdict": "unverified_no_cross_identity_run",
+  "findings": [
+    "Initial Profile read failure can render a blank editable form with the error below the sections.",
+    "A failed load for a newly signed-in user can retain and display the previous user draft while Profile remains mounted."
+  ],
+  "status": "registered_open_triaged_in_fix",
+  "assigned_owner": "native_empty_input_fix",
+  "severity": "S2: unsafe failure UI and possible prior-user draft exposure",
+  "priority": "P1: active Profile repair lane",
+  "acceptance": "No runtime cross-identity behavior claimed. D94 stays in-fix pending native save/reopen/restoration acceptance. Earlier T02 blank-input observation invalidated for acceptance."
+}

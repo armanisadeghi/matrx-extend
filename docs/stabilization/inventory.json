@@ -11314,11 +11314,15 @@
           "steps": [
             "Open Profile with a controlled disposable read-failure fixture enabled and capture request status without secrets.",
             "Wait for loading to stop; record exact visible error and whether saved fields are displayed.",
-            "Restore the service, navigate to Chat, and reopen Profile. Record whether data loads successfully."
+            "Restore the service, navigate to Chat, and reopen Profile. Record whether data loads successfully.",
+            "With Profile still mounted, switch from the first existing test identity to a second existing test identity and force only the second identity's read to fail; observe which draft, if any, is visible.",
+            "Repeat the transition after entering a synthetic unsaved draft for the first identity; verify the second identity failure cannot expose the first identity's draft."
           ],
           "expected": [
             "Loading ends and visible error identifies profile load failure; saved data is not presented as an empty profile.",
-            "Loading ends with the visible \u201cCould not load your profile: \u2026\u201d error; a failed read is not silently presented as a successful empty profile. After restoring service, reopening Profile starts a fresh load."
+            "Loading ends with the visible \u201cCould not load your profile: \u2026\u201d error; a failed read is not silently presented as a successful empty profile. After restoring service, reopening Profile starts a fresh load.",
+            "After an initial read failure, Profile presents a prominent non-editable error state; no blank editable form or Save action is available.",
+            "After an identity change whose read fails, no field from the previous identity's draft is displayed or saved."
           ],
           "dimensions": [
             "warm",
@@ -11326,11 +11330,13 @@
           ],
           "source_anchors": [
             "src/hooks/use-user-profile.ts:42-61",
-            "src/features/profile/ProfileView.tsx:89-98"
+            "src/features/profile/ProfileView.tsx:89-98",
+            ".research/profile-read-fix-peer.json"
           ],
           "procedure_readiness": "requires_fixture",
           "procedure_gaps": [
-            "Source exposes refresh internally but ProfileView renders no retry button; the controlled RPC/network failure mechanism is not specified."
+            "Source exposes refresh internally but ProfileView renders no retry button; the controlled RPC/network failure mechanism is not specified.",
+            "Identity-transition failure needs an existing second test identity and controlled read failure; this path is source-confirmed only and has no runtime evidence."
           ],
           "procedure_execution_matrix": [
             {
@@ -11436,6 +11442,110 @@
               "evidence_refs": [],
               "status": "unverified",
               "readiness": "requires_fixture"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "warm",
+              "branch": "initial-load-non-editable-error",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "warm",
+              "branch": "identity-switch-read-failure-no-prior-draft",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "reload",
+              "branch": "initial-load-non-editable-error",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "reload",
+              "branch": "identity-switch-read-failure-no-prior-draft",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "warm",
+              "branch": "initial-load-non-editable-error",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "warm",
+              "branch": "identity-switch-read-failure-no-prior-draft",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "reload",
+              "branch": "initial-load-non-editable-error",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "reload",
+              "branch": "identity-switch-read-failure-no-prior-draft",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
             }
           ],
           "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
@@ -11445,7 +11555,11 @@
             "report": ".research/popup-profile-acceptance-peer.json",
             "scope": "Source-reviewed procedure only; no runtime acceptance."
           },
-          "required_fixture": "A controlled disposable profile-read failure fixture must force get_user_form_context RPC failure and then restore service. ProfileView exposes no retry control; after restoring service, the supported recovery step is navigate to Chat and reopen Profile."
+          "required_fixture": "A controlled disposable profile-read failure fixture must force get_user_form_context RPC failure and then restore service. ProfileView exposes no retry control; after restoring service, the supported recovery step is navigate to Chat and reopen Profile. For identity-negative coverage, use two existing authorized test identities and force only the second user read to fail; no role changes or real profile writes.",
+          "linked_defects": [
+            "EXT-D-0095",
+            "EXT-D-0094"
+          ]
         },
         {
           "id": "EXT-F-1004-T26",

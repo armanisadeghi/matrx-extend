@@ -1,0 +1,53 @@
+{
+  "id": "EXT-D-0095",
+  "feature_id": "EXT-F-1004",
+  "case_ids": [
+    "EXT-F-1004-T25"
+  ],
+  "surface": "Profile",
+  "auth_mode": "admin source-observed; member unverified",
+  "title": "Profile read failure leaves an editable blank form and can retain a prior user draft",
+  "reproduction": [
+    "With a signed-in user whose Profile read fails on initial load, open Profile. The current source renders the empty editable form and places the error below the Profile sections, where it can fall below the viewport.",
+    "While Profile remains mounted, change the signed-in user and make the new user's Profile read fail. The current source can retain and display the previous user's draft.",
+    "These are source-confirmed behaviors reviewed against dccc196a; no cross-identity runtime run was performed. See .research/profile-read-fix-peer.json and evidence commit 7d53b131."
+  ],
+  "expected": "A failed initial read shows a prominent load-error state and does not permit editing or saving against an unknown baseline. On identity change, the prior user's draft is cleared or isolated before the next user's read; a failed transition never displays the prior user's data.",
+  "actual": "A failed initial read may appear as a blank editable form with an error below the sections. If a new user's read fails while Profile remains mounted, the previous user's draft can remain visible.",
+  "severity": "S2: Profile failure presents an unsafe empty/editable state and may expose prior-user draft data after an identity transition.",
+  "priority": "P1: repair in the active Profile lane before relying on Profile failure recovery or identity-transition behavior.",
+  "state": "in-fix",
+  "evidence": [
+    ".research/profile-read-fix-peer.json",
+    "Source review at dccc196a; review evidence commit 7d53b131.",
+    "No cross-identity runtime behavior is claimed."
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-03T20:00:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Independent source review found an editable blank Profile after initial read failure and possible retention of the previous user draft after an identity change with a failed new read."
+    },
+    {
+      "at": "2026-10-03T20:00:00Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Separate safety and identity-isolation defect linked to EXT-F-1004-T25; source-confirmed, native behavior unverified. Severity reflects user impact; priority reflects the active Profile repair lane."
+    },
+    {
+      "at": "2026-10-03T20:00:00Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "The assigned native_empty_input_fix builder owns the source and focused regression repair; no cross-identity runtime claim is made."
+    }
+  ],
+  "current_work": "The assigned native_empty_input_fix builder owns the failure-state and identity-isolation repair. Required outcomes: initial failure is prominent and non-editable with save unavailable; failed identity transition cannot expose the prior user draft. Native verification remains pending.",
+  "closure_requirement": "Add a focused regression for failed initial load showing a non-editable error state with saving unavailable, and a failed user transition that cannot display the prior user draft. Independently verify T25 and the identity-negative path on the exact repaired artifact before closure.",
+  "independent_source_review": {
+    "commit": "b4e9dd44",
+    "report": ".research/profile-read-fix-peer.json",
+    "quality_verdict": "source_confirmed_followup",
+    "runtime_verdict": "unverified_no_cross_identity_run"
+  }
+}
