@@ -198,9 +198,19 @@ async function preparePublishedStoreCrx(outputDir) {
 
 async function run({ extensionDir, relocatedReceipt, kind }) {
   const acceptanceCase = process.env.MATRX_HOSTED_ACCEPTANCE_CASE ?? 'guest-chat';
-  assert.ok(['guest-chat', 'settings-controls', 'member-chat'].includes(acceptanceCase));
+  assert.ok(
+    ['guest-chat', 'settings-controls', 'settings-persistence', 'member-chat'].includes(
+      acceptanceCase,
+    ),
+  );
   if (acceptanceCase === 'settings-controls')
     assert.equal(kind, 'ci_development_test', 'Settings controls requires CI development receipt');
+  if (acceptanceCase === 'settings-persistence')
+    assert.equal(
+      kind,
+      'ci_development_test',
+      'Settings persistence requires CI development receipt',
+    );
   if (acceptanceCase === 'member-chat')
     assert.equal(kind, 'published_release', 'Member Chat requires exact published release receipt');
   const memberLinkPath = join(dirname(relocatedReceipt), 'member-magic-link-private.json');
@@ -216,6 +226,9 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
     MATRX_GUEST_CHAT_EXTENSION_DIR: extensionDir,
     MATRX_REVIEWER_EXTENSION_DIR: extensionDir,
     MATRX_REVIEWER_RELEASE_RECEIPT: relocatedReceipt,
+    ...(acceptanceCase === 'settings-persistence'
+      ? { MATRX_D87_EXTENSION_DIR: extensionDir, MATRX_D87_RECEIPT: relocatedReceipt }
+      : {}),
     ...(acceptanceCase === 'member-chat' ? { MATRX_REVIEWER_MAGIC_LINK_FILE: memberLinkPath } : {}),
     ...(acceptanceCase === 'settings-controls'
       ? {
@@ -237,9 +250,11 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
           repo,
           acceptanceCase === 'settings-controls'
             ? 'tests/browser/settings-local-controls-acceptance.mjs'
-            : acceptanceCase === 'member-chat'
-              ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
-              : 'tests/browser/guest-chat-store-acceptance.mjs',
+            : acceptanceCase === 'settings-persistence'
+              ? 'tests/browser/settings-d87-native-acceptance.mjs'
+              : acceptanceCase === 'member-chat'
+                ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
+                : 'tests/browser/guest-chat-store-acceptance.mjs',
         ),
       ],
       {

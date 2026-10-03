@@ -28,6 +28,7 @@ on:
         options:
           - guest-chat
           - settings-controls
+          - settings-persistence
           - member-chat
 
 permissions:
@@ -90,6 +91,9 @@ jobs:
           set -euo pipefail
           if [[ "$ACCEPTANCE_CASE" == member-chat ]]; then
             [[ -n "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
+          fi
+          if [[ "$ACCEPTANCE_CASE" == settings-persistence ]]; then
+            [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
           if [[ "$PUBLISHED_STORE_CRX" == true ]]; then
             [[ -z "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" ]] || exit 1
@@ -166,5 +170,6 @@ jobs:
             docs/stabilization/resource-journals/hosted-*.jsonl
             test-results/guest-chat-store-*.json
             test-results/settings-local-controls-acceptance.json
+            test-results/settings-d87-native-*.json
             test-results/reviewer-chat-store-*.json
             test-results/native-sidepanel-qa-*/*.png
