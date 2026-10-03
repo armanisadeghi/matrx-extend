@@ -1,5 +1,5 @@
 {
-  "status": "UNVERIFIED: published guest answers measured, final artifact integrity gate failed; diagnostic rerun in progress",
+  "status": "UNVERIFIED: published guest answers measured, final artifact integrity gate failed; diagnostic rerun refused before browser admission",
   "target": "public Chrome Web Store version 0.2.130, extension ID hnfolienncfklkgmdjjmhhegglimlamg, native side panel and live server",
   "first_run": {
     "id": 37103324918,
@@ -14,6 +14,6 @@
     "server_sha_observed_after_run": "5318c105968feabd14ce1143f31506061aa4efc2"
   },
   "diagnostic": "Commit 19ad5046 adds pre-browser path/size/SHA inventory and changed-file report only on mismatch; strict receipt tree assertion retained; independent peers passed diagnostic scope",
-  "diagnostic_run": {"id": 37103982014, "status": "IN_PROGRESS", "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37103982014"},
-  "server_sha_during_diagnostic_setup": "5318c105968feabd14ce1143f31506061aa4efc2"
+  "diagnostic_run": {"id": 37103982014, "status": "RESOURCE_REFUSED_BEFORE_ACCEPTANCE", "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37103982014", "head_sha": "be5edf54956aaba253c8bd66a764a79883359c9d", "resource": "package/browser phases valid; acceptance preflight admitted=false, resourceInvalid=false, decision=refused, 60-second CPU busy=0.8376, normalized load=6.52 on 4 CPUs", "product": "NOT_RUN; no changed-file inventory, screenshots, or new guest answer", "uploaded_artifact": "hosted-guest-37103982014-1 (GitHub artifact 11267945141): three resource journals only"},
+  "server_sha_during_and_after_diagnostic": "5318c105968feabd14ce1143f31506061aa4efc2"
 }
