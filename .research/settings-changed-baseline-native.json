@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0087",
+  "status": "RESOURCE_ADMISSION_REFUSED_NATIVE_UNVERIFIED",
+  "product_verdict": null,
+  "hosted_run": {
+    "id": 37110879950,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37110879950",
+    "job_id": 111168391741,
+    "conclusion": "failure",
+    "workflow_runner_sha": "15535faeb38c3ff46491da1c8d43a0bbeb784988",
+    "started_at": "2026-10-03T08:47:41Z",
+    "completed_at": "2026-10-03T08:49:12Z"
+  },
+  "inputs": {
+    "acceptance_case": "settings-persistence",
+    "development_run_id": 37107627454,
+    "development_artifact_id": 11268886169,
+    "development_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "release_run_id": "",
+    "published_store_crx": false
+  },
+  "synchronized_main": {
+    "github_main_sha": "15535faeb38c3ff46491da1c8d43a0bbeb784988",
+    "local_origin_main_sha": "15535faeb38c3ff46491da1c8d43a0bbeb784988"
+  },
+  "artifact_provenance": {
+    "ci_conclusion": "success",
+    "ci_event": "push",
+    "ci_branch": "main",
+    "artifact_name": "matrx-extend-development-test-3092444e73094cb0023f6086202869ccbd22978b-37107627454-1",
+    "expired": false,
+    "artifact_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660"
+  },
+  "guarded_phases": [
+    {
+      "phase": "package",
+      "step": "Prepare pinned browser driver under an owned permit",
+      "status": "REFUSED_BEFORE_CHILD_START",
+      "resource_code": "RESOURCE_CPU_HIGH_LOAD_BUSY",
+      "decision_code": "RESOURCE_PREFLIGHT_REFUSED",
+      "final_code": "RESOURCE_FINAL_DECISION",
+      "exit_code": 2,
+      "decision": "refused",
+      "admitted": false,
+      "resource_invalid": false,
+      "measurement": {
+        "pressure_level": 1,
+        "available_memory_gib": 12.6,
+        "required_memory_gib": 4,
+        "one_minute_load": 10.33,
+        "logical_cpus": 4,
+        "cpu_busy_fraction": 0.6442857142857142,
+        "cpu_busy_samples": [0.95, 1, 1, 0.7, 0.34, 0.26, 0.26],
+        "swap_used_mib": 0,
+        "reasons": ["RESOURCE_CPU_HIGH_LOAD_BUSY"]
+      }
+    },
+    {
+      "phase": "chromium",
+      "status": "SKIPPED_AFTER_PACKAGE_REFUSAL"
+    },
+    {
+      "phase": "settings-persistence-native-case",
+      "status": "SKIPPED_AFTER_PACKAGE_REFUSAL"
+    }
+  ],
+  "native_case": {
+    "started": false,
+    "baseline_observed": false,
+    "light_choice_observed": false,
+    "persisted_light_observed": false,
+    "system_choice_observed": false,
+    "persisted_system_observed": false,
+    "downstream_rejection_observed": false,
+    "retry_observed": false,
+    "rapid_change_overlap_observed": false,
+    "reload_observed": false,
+    "post_hash_observed": false,
+    "native_result_report_present": false,
+    "screenshots_present": false
+  },
+  "failure_stage": "package_resource_admission",
+  "failure_code": "RESOURCE_PREFLIGHT_REFUSED",
+  "operation": "owned_package_permit_admission",
+  "product_boundary_observation": false,
+  "product_interaction_started": false,
+  "overall_status": "NO_PRODUCT_VERDICT",
+  "diagnosis": "The existing runner resource guard refused admission before package preparation started. Chromium preparation and all native Settings assertions were skipped. This records host admission failure only; it neither passes nor fails the Settings product behavior.",
+  "follow_up_attempts": [],
+  "repair_or_rerun_performed": false,
+  "downloaded_evidence": {
+    "artifact_id": 11269113561,
+    "artifact_name": "hosted-guest-37110879950-1",
+    "expired": false,
+    "root": ".research/settings-changed-baseline-run-37110879950",
+    "matching_run_files": [
+      "docs/stabilization/resource-journals/hosted-package-37110879950-1.jsonl"
+    ],
+    "native_result_report_present": false,
+    "screenshots_present": false,
+    "note": "Artifact contains resource journals only. Older unrelated run journals were preserved in the artifact and are not attributed to this run."
+  }
+}
