@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0093",
+  "status": "native_pass_pending_independent_review",
+  "scope": "One fresh, guarded headed native acceptance on the exact imported CI development artifact in an owned disposable Chrome profile.",
+  "source": {
+    "sha": "991385d9816b31a568619522e4795c001b4d3a06",
+    "version": "0.2.176",
+    "tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+    "post_run_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55"
+  },
+  "artifact": {
+    "ci_run_id": 37129518563,
+    "artifact_id": 11275878549,
+    "attempt": 1,
+    "imported_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+    "artifact_id_bound_by_runner": true
+  },
+  "attempts": [
+    {
+      "run_id": "audit-final-native-20261003",
+      "outcome": "resource refusal before admission",
+      "code": "RESOURCE_COMMAND_NOT_ALLOWED",
+      "acceptance_or_browser_started": false,
+      "retry_policy": "A corrected invocation was authorized after the exact allowlist argument mismatch was inspected; the refusal is preserved as a separate journal."
+    },
+    {
+      "run_id": "audit-final-native-20261003-02",
+      "outcome": "valid",
+      "resource_admitted": true,
+      "exit_code": 0,
+      "runner_status": "pass",
+      "runner_receipt": "test-results/audit-key-native-308d91aa-5f21-4eff-b44b-d6b8edcf9118.json"
+    }
+  ],
+  "cases": {
+    "T60": "pass",
+    "T86": "pass",
+    "T87": "pass; genuine pre-rotation receipt verified and tampered copy rejected",
+    "T88": "pass",
+    "T89": "pass; genuine pre-uncertain-write receipt verified and tampered copy rejected",
+    "T90": "pass; three product-signed receipt generations verified in both extension contexts after reload; tampered copies rejected in both contexts",
+    "T91": "pass within authenticated-shell boundary"
+  },
+  "boundaries": [
+    "T91 starts after admin authentication and Settings identity verification; it injects missing Web Locks while moving Chat\u2192Settings to remount the audit card. It does not claim cold-start shell behavior before authentication.",
+    "T90 is product-verifier proof from the loaded bundled verifier export, not a ToolReceiptDialog UI click.",
+    "The tested development artifact is bound to its exact CI source/run/artifact/tree provenance; this does not establish a Store release or extension update lifecycle."
+  ],
+  "admin_identity": "The actual Settings sign-in flow asserted admin_role=true and verified the displayed admin identity/profile/organization before audit operations; no credentials or private key bytes are included.",
+  "cleanup": {
+    "resource_final_decision": "valid",
+    "acceptance_browser_and_runner": "exited",
+    "resource_lease": "released",
+    "private_admin_credential_file": "removed by hosted wrapper",
+    "launcher_file": "removed after execution"
+  },
+  "evidence": {
+    "native_receipt_copy": ".research/audit-final-native-evidence/native-receipt.json",
+    "native_receipt_sha256": "35d2236944660a1aa54be8bc1313801fd19742541f2a89a6fa5633e6d7cc0dec",
+    "resource_journal_copy": ".research/audit-final-native-evidence/resource-journal.jsonl",
+    "resource_journal_sha256": "51f5ba6e213d5fff0f6cfe67e14fc195def25ff6806e00ad7aa9eeada36242c6",
+    "preflight_refusal_journal_copy": ".research/audit-final-native-evidence/preflight-refusal-journal.jsonl",
+    "preflight_refusal_journal_sha256": "76673546ca35067c1492fe7bc7270924c4e414728ecc8f9dc1f55f4c63469d51",
+    "runner_native_artifacts": "test-results/native-sidepanel-qa-pBW14v"
+  },
+  "independent_review": "Source peer review passed before the runtime lane; native artifact receipt and resource journal are preserved for the final independent review."
+}
