@@ -11,7 +11,7 @@
     "Observe immediate error; correlate server stream_crash for source_app matrx-extend and source_feature chat."
   ],
   "expected": "Signed-out users receive a streamed Chat response without a paid account or login.",
-  "actual": "Original server startup crash repaired. Published Google 0.2.130 application payload produced real guest initial and post-reload answers in two resource-valid native runs; independent byte comparison proved their integrity mismatch was only Chrome removal of Google verification metadata. Exact 0.2.176 guest initial/reload and independent nonadmin member acceptance subsequently passed. Version 0.2.176 is submitted and pending Google review; broader Chat coverage remains open.",
+  "actual": "Original server startup crash repaired. Version 0.2.176 is Published - public. Fresh exact176 unpacked release native Chromium smoke against server4ec65fdb passed signed-out grounded first answer and distinct follow-up after real panel reload, with unchanged artifact tree and valid resource exit. This retest does not certify Store installation/update lifecycle or broader Chat features.",
   "evidence": [
     ".research/guest-live-incident-server.json",
     ".research/guest-live-incident-extension.json",
@@ -24,7 +24,9 @@
     ".research/guest-provenance-escalation.json",
     ".research/release-acceptance-final-peer.json",
     ".research/candidate176-guest-acceptance.json",
-    ".research/member176-receipt-retest.json"
+    ".research/member176-receipt-retest.json",
+    ".research/publisher-session-restore.json",
+    ".research/published176-guest-server-refresh.json"
   ],
   "severity": "S0: public core no-login Chat fails immediately",
   "priority": "P0: supersedes deferred Chat sequencing; restore live guest promise now",
@@ -69,6 +71,17 @@
   ],
   "closure_requirement": "Original published guest request succeeds on deployed fix, real signed-out extension reply and reload verified, independent peer and surrounding member/guest regressions pass. Do not close from source or ordinary CI.",
   "deployed_server_sha": "9bd979a894ba71141d6548069d621aa59a526bde",
-  "published_extension_version": "0.2.130",
-  "bounded_retest": "Published130 functional guest initial/reload evidence retained with explicit Google metadata-only integrity distinction. Exact release176 guest37106907229 PASSED first/reload answers and unchangedtree; independent member37107947183 PASSED real web+extension auth, nonadmin authority, explicit org and real answer. Both resource-valid. Member tree checked before load only; guest separately rehashed identical release after interaction."
+  "published_extension_version": "0.2.176",
+  "bounded_retest": "Published130 functional guest initial/reload evidence retained with explicit Google metadata-only integrity distinction. Exact release176 guest37106907229 PASSED first/reload answers and unchangedtree; independent member37107947183 PASSED real web+extension auth, nonadmin authority, explicit org and real answer. Both resource-valid. Member tree checked before load only; guest separately rehashed identical release after interaction.",
+  "latest_verified_server_sha": "4ec65fdb63a8d15e7c11d4404e0516317ebfaabd",
+  "latest_bounded_retest": {
+    "run_id": "published176-guest-server-refresh-20261003-01",
+    "report": ".research/published176-guest-server-refresh.json",
+    "commit": "031ccb34",
+    "report_correction": "b224611d",
+    "resource_exit": 0,
+    "resource_invalid": false,
+    "scope": "Headless native Chromium with exact unpacked release artifact; actual guest replies and Settings-independent panel reload. Not installed Store lifecycle.",
+    "owner_verification": "Receipt/journal SHA-256 recomputed and matched; follow-up screenshot opened and visibly showed guest banner with actual answer."
+  }
 }
