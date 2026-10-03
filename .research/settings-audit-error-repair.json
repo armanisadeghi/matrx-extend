@@ -2,7 +2,7 @@
   "lead": "EXT-L-SETTINGS-002",
   "defect": "EXT-D-0093",
   "scope": "Admin Settings audit-key card through AdvancedAgentCapabilities",
-  "current_truth": "Initial source repair passed guarded tests; independent review found a late storage-write gap. Expanded primitive repair passed guarded focused tests 10/10 and guarded TypeScript compilation. Independent re-review and native behavior remain open. Defect remains in-fix.",
+  "current_truth": "Independent re-review confirmed a cross-context history-loss race, reproduced in the concurrency repair lane. Shared native Web Lock plus persisted-id cache validation passed final 24 focused tests and TypeScript compilation; mutation checks failed as expected and restored exactly. Completion remains pending fresh independent review and native exact-build evidence.",
   "diagnosis": {
     "boundary": "AuditKeyCard asynchronous operation handlers and first-load effect",
     "root_cause": "The first-load promise was not caught; export caught to console only; rotation joined the successful mutation and later refresh in one uncaught chain, so a failed refresh obscured a completed key change.",
@@ -37,7 +37,8 @@
     "native": "Not run in this lane; no real user/device key was rotated."
   },
   "open": [
-    "Independent source re-review",
-    "Exact-build native Settings verification with isolated key inputs and safe failure injection"
-  ]
+    "Fresh independent source re-review",
+    "New exact CI artifact and exact-build native Settings verification with isolated key inputs"
+  ],
+  "concurrency_repair_report": ".research/settings-audit-concurrency-repair.json"
 }

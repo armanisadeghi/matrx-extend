@@ -70,10 +70,21 @@ export class DeviceKeyOutcomeUnknownError extends Error {
 
 let cached: DeviceKey | null = null;
 
+// Web Locks coordinate the service worker and every extension page by origin.
+// All storage snapshots and read/modify/write sequences use this same lock;
+// helpers called inside it must never request it recursively.
+async function withDeviceKeyLock<T>(operation: () => Promise<T>): Promise<T> {
+  const locks = typeof navigator !== 'undefined' ? navigator.locks : undefined;
+  if (!locks?.request) {
+    throw new Error('Audit key storage locking is unavailable in this browser context');
+  }
+  return locks.request('matrx:audit:device-key', { mode: 'exclusive' }, operation);
+}
+
 // When the persisted keypair changes (e.g. the user re-keyed in another
 // context such as the Settings panel), drop our cached CryptoKey so the
-// next call re-imports. Without this the SW would keep signing with the
-// retired key after rotation.
+// next call re-imports. The locked persisted-id check below also covers
+// calls that arrive before this asynchronous notification.
 if (typeof chrome !== 'undefined' && chrome.storage?.onChanged) {
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== 'local') return;
@@ -171,17 +182,19 @@ async function importStored(stored: StoredDeviceKey): Promise<DeviceKey> {
  * cached `DeviceKey` survives within a single SW lifetime.
  */
 export async function getOrCreateDeviceKey(): Promise<DeviceKey> {
-  if (cached) return cached;
-  const stored = await getOne<StoredDeviceKey>(DEVICE_KEY_STORAGE);
-  if (stored && stored.privateKeyJwk && stored.publicKeyJwk && stored.publicKeyId) {
-    cached = await importStored(stored);
-    return cached;
-  }
-  const fresh = await generateNewKeyPair();
-  const imported = await importStored(fresh);
-  await prepareHistory(fresh, null);
-  await persistActiveKey(fresh, imported, null);
-  return imported;
+  return withDeviceKeyLock(async () => {
+    const stored = await getOne<StoredDeviceKey>(DEVICE_KEY_STORAGE);
+    if (stored && stored.privateKeyJwk && stored.publicKeyJwk && stored.publicKeyId) {
+      if (cached?.publicKeyId === stored.publicKeyId) return cached;
+      cached = await importStored(stored);
+      return cached;
+    }
+    const fresh = await generateNewKeyPair();
+    const imported = await importStored(fresh);
+    await prepareHistory(fresh, null);
+    await persistActiveKey(fresh, imported, null);
+    return imported;
+  });
 }
 
 /**
@@ -208,14 +221,16 @@ export async function exportPublicKeyJwk(): Promise<{
  * publicKeyId.
  */
 export async function rotateDeviceKey(): Promise<string> {
-  const previous = await getOne<StoredDeviceKey>(DEVICE_KEY_STORAGE);
-  const fresh = await generateNewKeyPair();
-  const imported = await importStored(fresh);
-  // Public lineage is written before the active key can sign. A failure
-  // here leaves the old active key in place, so another rotation is safe.
-  await prepareHistory(fresh, previous);
-  await persistActiveKey(fresh, imported, previous?.publicKeyId ?? null);
-  return fresh.publicKeyId;
+  return withDeviceKeyLock(async () => {
+    const previous = await getOne<StoredDeviceKey>(DEVICE_KEY_STORAGE);
+    const fresh = await generateNewKeyPair();
+    const imported = await importStored(fresh);
+    // Public lineage is written before the active key can sign. A failure
+    // here leaves the old active key in place, so another rotation is safe.
+    await prepareHistory(fresh, previous);
+    await persistActiveKey(fresh, imported, previous?.publicKeyId ?? null);
+    return fresh.publicKeyId;
+  });
 }
 
 async function prepareHistory(
@@ -277,14 +292,16 @@ async function persistActiveKey(
  * public key for a given receipt's `publicKeyId`. Newest first.
  */
 export async function getPublicKeyHistory(): Promise<PublicKeyHistoryEntry[]> {
-  const list = (await getOne<StoredHistoryEntry[]>(PUBLIC_KEY_HISTORY_STORAGE)) ?? [];
-  const active = await getOne<StoredDeviceKey>(DEVICE_KEY_STORAGE);
-  return list
-    .filter((entry) => !entry.pending || entry.publicKeyId === active?.publicKeyId)
-    .map(({ pending: _pending, ...entry }) =>
-      entry.publicKeyId === active?.publicKeyId ? { ...entry, retiredAt: null } : entry,
-    )
-    .reverse();
+  return withDeviceKeyLock(async () => {
+    const list = (await getOne<StoredHistoryEntry[]>(PUBLIC_KEY_HISTORY_STORAGE)) ?? [];
+    const active = await getOne<StoredDeviceKey>(DEVICE_KEY_STORAGE);
+    return list
+      .filter((entry) => !entry.pending || entry.publicKeyId === active?.publicKeyId)
+      .map(({ pending: _pending, ...entry }) =>
+        entry.publicKeyId === active?.publicKeyId ? { ...entry, retiredAt: null } : entry,
+      )
+      .reverse();
+  });
 }
 
 /**
@@ -293,13 +310,15 @@ export async function getPublicKeyHistory(): Promise<PublicKeyHistoryEntry[]> {
  * storage between signing and verification).
  */
 export async function getPublicKeyById(publicKeyId: string): Promise<JsonWebKey | null> {
-  const list = (await getOne<StoredHistoryEntry[]>(PUBLIC_KEY_HISTORY_STORAGE)) ?? [];
-  const match = list.find((entry) => entry.publicKeyId === publicKeyId);
-  if (match?.pending) {
-    const active = await getOne<StoredDeviceKey>(DEVICE_KEY_STORAGE);
-    if (active?.publicKeyId !== publicKeyId) return null;
-  }
-  return match?.publicKeyJwk ?? null;
+  return withDeviceKeyLock(async () => {
+    const list = (await getOne<StoredHistoryEntry[]>(PUBLIC_KEY_HISTORY_STORAGE)) ?? [];
+    const match = list.find((entry) => entry.publicKeyId === publicKeyId);
+    if (match?.pending) {
+      const active = await getOne<StoredDeviceKey>(DEVICE_KEY_STORAGE);
+      if (active?.publicKeyId !== publicKeyId) return null;
+    }
+    return match?.publicKeyJwk ?? null;
+  });
 }
 
 /**

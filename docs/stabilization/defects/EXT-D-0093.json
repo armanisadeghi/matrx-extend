@@ -9,14 +9,15 @@
     "EXT-F-1003-T88",
     "EXT-F-1003-T89"
   ],
-  "surface": "Settings → Advanced agent capabilities → Audit key",
+  "surface": "Settings \u2192 Advanced agent capabilities \u2192 Audit key",
   "auth_mode": "admin",
   "title": "Audit-key load, export, and rotation failures lack actionable UI",
   "reproduction": [
     "In an isolated component test, reject the audit details read during the actual Advanced agent capabilities mount: the original card remains at loading and raises an unhandled rejection.",
     "Reject clipboard writing after Export public key: the original card logs a warning but renders no failure or retry.",
     "Let rotation succeed but reject its follow-up details read: the original handler raises an unhandled rejection and gives no honest rotation outcome.",
-    "At the real storage boundary, let the active-key write persist then reject: the original primitive throws after the key has changed, so the UI can invite another rotation. Initial key creation has the same partial-write seam."
+    "At the real storage boundary, let the active-key write persist then reject: the original primitive throws after the key has changed, so the UI can invite another rotation. Initial key creation has the same partial-write seam.",
+    "Force two independent audit module contexts to overlap first activation or rotation; the previous code loses one activated public key from visible history and reuses a stale cache before storage change notification."
   ],
   "expected": "Every failure is visible with an action that retries only the failed operation. A successful rotation remains acknowledged when its refresh fails; retrying details never rotates again.",
   "actual": "The component initially had no failure state; load and rotation refresh rejected outside a catch, while export caught only to console. The primitive wrote history, active key, and imported key sequentially, so a late rejection could obscure a persisted key change.",
@@ -32,7 +33,10 @@
     "docs/stabilization/resource-journals/audit-key-history-final-20261003.jsonl",
     "docs/stabilization/resource-journals/audit-key-history-compile-2-20261003.jsonl",
     ".research/settings-audit-error-peer.json",
-    ".research/settings-audit-error-repair.json"
+    ".research/settings-audit-error-repair.json",
+    ".research/settings-audit-error-final-peer.json",
+    ".research/settings-audit-concurrency-repair.json",
+    "tests/unit/device-key-concurrency.test.ts"
   ],
   "transition_history": [
     {
@@ -54,6 +58,6 @@
       "reason": "Source repair committed; native acceptance remained pending."
     }
   ],
-  "current_work": "Connected component RED/GREEN passed with isolated key inputs. Independent source review found a late partial-write gap in rotation and initial creation; guarded real-primitive red reproduced both. Source repair now stages public history and crypto import before the active-key write, reads back ambiguous write outcomes, and hides unactivated prepared history. Final guarded focused tests passed 10/10, including failed-active-write-no-persist history equality and real retired-key signature verification across repeated rotations. Guarded TypeScript compile passed. Independent re-review and native exact-build verification are pending. Keep open.",
+  "current_work": "Concurrency finding CONFIRMED by guarded RED. Shared native Web Lock repair and persisted-id cache validation passed final 24 focused tests, including real Ed25519 signatures from both overlapping activations after module restart, and TypeScript compile. Lock-removal and constant-lookup mutations failed with byte-identical restoration. Fresh peer and new exact CI artifact/native Chrome verification remain pending. Keep in-fix.",
   "closure_requirement": "Independent review plus exact-build native Settings verification of actionable failures and single-rotation retry behavior without rotating real user/device keys."
 }
