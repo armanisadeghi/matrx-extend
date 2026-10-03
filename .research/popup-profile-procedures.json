@@ -104,7 +104,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "guest",
@@ -113,7 +114,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -159,7 +161,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -168,7 +171,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -214,7 +218,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -223,7 +228,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -256,7 +262,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "guest",
@@ -265,7 +272,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -337,7 +345,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -354,7 +363,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -371,7 +381,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -388,7 +399,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -405,7 +417,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -422,7 +435,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -439,7 +453,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -456,7 +471,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -473,7 +489,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -490,7 +507,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         }
       ],
       "readiness": "requires_fixture",
@@ -563,7 +581,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -580,7 +599,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -597,7 +617,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -614,7 +635,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -631,7 +653,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -648,7 +671,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -665,7 +689,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -682,7 +707,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -699,7 +725,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -716,7 +743,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         }
       ],
       "readiness": "requires_fixture",
@@ -755,7 +783,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "guest",
@@ -764,7 +793,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -796,7 +826,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -805,7 +836,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -837,7 +869,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -846,7 +879,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -855,23 +889,26 @@
     "EXT-F-1002-T10": {
       "preconditions": [
         "Use guest profile as applicable, plus a disposable Chrome profile or known test machine where microphone permission can be reset. Record Chrome site-permission state and whether an input device is connected.",
-        "Each matrix row resets and records the extension-origin microphone permission independently. A no-device row is unverified if the approved environment cannot confirm zero available audio inputs; do not substitute a permission denial."
+        "Reset and record extension-origin microphone permission per matrix row. For no-device, confirm zero audio inputs at the mic-grant Allow click and prove the popup stayed open; otherwise leave that branch unverified. For guest, a named guest-reachable launch fixture is required before any popup branch."
       ],
       "steps": [
-        "Open Chat and click the microphone control to open the extension mic-grant popup.",
-        "Grant path: with permission unset and a working input device, click Allow microphone and accept Chrome\u2019s prompt. Record prompt, page status, popup close timing, and Chat mic state.",
-        "Deny path: reset extension-origin microphone permission, repeat and deny the Chrome prompt; record status text and whether retry remains enabled.",
-        "No-device path: use a test environment with no available input device and permission allowed, repeat; record visible status. Do not report a scenario as exercised if the environment did not support it."
+        "As a guest, click Chat microphone and record the sign-in gate as a negative trigger observation; it does not open mic-grant or satisfy any popup branch.",
+        "Grant popup path, only after a demonstrated guest-reachable launch fixture opens the actual mic-grant window: with a working input, click Allow microphone and accept Chrome\u2019s prompt; record prompt, popup status/close timing, and Chat state.",
+        "Deny popup path, only after the same demonstrated guest-reachable launch fixture opens a fresh mic-grant window: deny Chrome\u2019s prompt and record popup status and retry control.",
+        "No-device popup path requires a controlled fixture that keeps the real mic-grant window open while making every audio input unavailable; click Allow microphone in that window and record its own no-microphone guidance. Permission allowed with no input at the initial Chat click yields offscreen NO_DEVICE and does not launch this window. A possible denial-trigger-then-remove-device sequence is only a source-based proposal until proven in Chrome."
       ],
       "expected": [
         "Grant reports \u201cGranted! Closing\u2026\u201d and closes after roughly 1.5 seconds; denial displays permission-denied recovery guidance and leaves Allow enabled; no device displays no-microphone guidance. Separate outcomes per scenario."
       ],
       "source_anchors": [
-        "src/features/chat/ChatView.tsx:1360-1445",
-        "src/entrypoints/mic-grant/index.ts:64-114"
+        "src/features/chat/ChatView.tsx:1374-1455",
+        "src/lib/audio/mic-recorder-offscreen.ts:425-445",
+        "src/entrypoints/mic-grant/index.ts:75-113"
       ],
       "gaps": [
-        "Inventory bundles three outcomes into one case; it does not specify whether one execution may satisfy it. Do not mark complete until each environment-supported branch has independent evidence."
+        "Inventory bundles three outcomes into one case; it does not specify whether one execution may satisfy it. Do not mark complete until each environment-supported branch has independent evidence.",
+        "Chat guest microphone returns a sign-in message before recording. Record it as negative trigger evidence only; a guest-reachable mic-grant launch fixture is unproven.",
+        "The controlled no-device popup route has not been demonstrated in Chrome; the offscreen NO_DEVICE result is not popup evidence."
       ],
       "inventory_criteria": {
         "preconditions": [
@@ -894,7 +931,9 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture",
+          "required_fixture": "A named, demonstrated guest-reachable route to the actual mic-grant popup for grant, deny, and no-device; Chat guest microphone is gated before recording. The no-device popup branch additionally needs a controlled zero-input fixture while the window stays open."
         },
         {
           "mode": "guest",
@@ -903,7 +942,9 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture",
+          "required_fixture": "A named, demonstrated guest-reachable route to the actual mic-grant popup for grant, deny, and no-device; Chat guest microphone is gated before recording. The no-device popup branch additionally needs a controlled zero-input fixture while the window stays open."
         },
         {
           "mode": "guest",
@@ -912,7 +953,9 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture",
+          "required_fixture": "A named, demonstrated guest-reachable route to the actual mic-grant popup for grant, deny, and no-device; Chat guest microphone is gated before recording. The no-device popup branch additionally needs a controlled zero-input fixture while the window stays open."
         },
         {
           "mode": "guest",
@@ -921,7 +964,9 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture",
+          "required_fixture": "A named, demonstrated guest-reachable route to the actual mic-grant popup for grant, deny, and no-device; Chat guest microphone is gated before recording. The no-device popup branch additionally needs a controlled zero-input fixture while the window stays open."
         },
         {
           "mode": "guest",
@@ -930,7 +975,9 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture",
+          "required_fixture": "A named, demonstrated guest-reachable route to the actual mic-grant popup for grant, deny, and no-device; Chat guest microphone is gated before recording. The no-device popup branch additionally needs a controlled zero-input fixture while the window stays open."
         },
         {
           "mode": "guest",
@@ -939,32 +986,37 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture",
+          "required_fixture": "A named, demonstrated guest-reachable route to the actual mic-grant popup for grant, deny, and no-device; Chat guest microphone is gated before recording. The no-device popup branch additionally needs a controlled zero-input fixture while the window stays open."
         }
       ],
-      "readiness": "ready",
-      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
+      "readiness": "requires_fixture",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file.",
+      "required_fixture": "A named, demonstrated guest-reachable route to the actual mic-grant popup for grant, deny, and no-device; Chat guest microphone is gated before recording. The no-device popup branch additionally needs a controlled zero-input fixture while the window stays open."
     },
     "EXT-F-1002-T11": {
       "preconditions": [
         "Use member profile as applicable, plus a disposable Chrome profile or known test machine where microphone permission can be reset. Record Chrome site-permission state and whether an input device is connected.",
-        "Each matrix row resets and records the extension-origin microphone permission independently. A no-device row is unverified if the approved environment cannot confirm zero available audio inputs; do not substitute a permission denial."
+        "Reset and record extension-origin microphone permission per matrix row. For no-device, confirm zero audio inputs at the mic-grant Allow click and prove the popup stayed open; otherwise leave that branch unverified. For guest, a named guest-reachable launch fixture is required before any popup branch."
       ],
       "steps": [
-        "Open Chat and click the microphone control to open the extension mic-grant popup.",
+        "With a working microphone and extension-origin microphone permission unset or denied, click Chat microphone. Confirm the offscreen PERMISSION_DENIED response opens the actual mic-grant popup before testing its controls.",
         "Grant path: with permission unset and a working input device, click Allow microphone and accept Chrome\u2019s prompt. Record prompt, page status, popup close timing, and Chat mic state.",
         "Deny path: reset extension-origin microphone permission, repeat and deny the Chrome prompt; record status text and whether retry remains enabled.",
-        "No-device path: use a test environment with no available input device and permission allowed, repeat; record visible status. Do not report a scenario as exercised if the environment did not support it."
+        "No-device popup path requires a controlled fixture that keeps the real mic-grant window open while making every audio input unavailable; click Allow microphone in that window and record its own no-microphone guidance. Permission allowed with no input at the initial Chat click yields offscreen NO_DEVICE and does not launch this window. A possible denial-trigger-then-remove-device sequence is only a source-based proposal until proven in Chrome."
       ],
       "expected": [
         "Grant reports \u201cGranted! Closing\u2026\u201d and closes after roughly 1.5 seconds; denial displays permission-denied recovery guidance and leaves Allow enabled; no device displays no-microphone guidance. Separate outcomes per scenario."
       ],
       "source_anchors": [
-        "src/features/chat/ChatView.tsx:1360-1445",
-        "src/entrypoints/mic-grant/index.ts:64-114"
+        "src/features/chat/ChatView.tsx:1374-1455",
+        "src/lib/audio/mic-recorder-offscreen.ts:425-445",
+        "src/entrypoints/mic-grant/index.ts:75-113"
       ],
       "gaps": [
-        "Inventory bundles three outcomes into one case; it does not specify whether one execution may satisfy it. Do not mark complete until each environment-supported branch has independent evidence."
+        "Inventory bundles three outcomes into one case; it does not specify whether one execution may satisfy it. Do not mark complete until each environment-supported branch has independent evidence.",
+        "The controlled no-device popup route has not been demonstrated in Chrome; the offscreen NO_DEVICE result is not popup evidence."
       ],
       "inventory_criteria": {
         "preconditions": [
@@ -987,7 +1039,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -996,7 +1049,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -1005,7 +1059,9 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture",
+          "required_fixture": "A named, demonstrated controlled zero-input fixture while the actual mic-grant popup stays open. Chat with permission allowed and no device cannot open that window. Grant and deny rows can use the permission-denied Chat trigger with a working input."
         },
         {
           "mode": "member",
@@ -1014,7 +1070,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -1023,7 +1080,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -1032,32 +1090,37 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture",
+          "required_fixture": "A named, demonstrated controlled zero-input fixture while the actual mic-grant popup stays open. Chat with permission allowed and no device cannot open that window. Grant and deny rows can use the permission-denied Chat trigger with a working input."
         }
       ],
-      "readiness": "ready",
-      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
+      "readiness": "requires_fixture",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file.",
+      "required_fixture": "A named, demonstrated controlled zero-input fixture while the actual mic-grant popup stays open. Chat with permission allowed and no device cannot open that window. Grant and deny rows can use the permission-denied Chat trigger with a working input."
     },
     "EXT-F-1002-T12": {
       "preconditions": [
         "Use admin profile as applicable, plus a disposable Chrome profile or known test machine where microphone permission can be reset. Record Chrome site-permission state and whether an input device is connected.",
-        "Each matrix row resets and records the extension-origin microphone permission independently. A no-device row is unverified if the approved environment cannot confirm zero available audio inputs; do not substitute a permission denial."
+        "Reset and record extension-origin microphone permission per matrix row. For no-device, confirm zero audio inputs at the mic-grant Allow click and prove the popup stayed open; otherwise leave that branch unverified. For guest, a named guest-reachable launch fixture is required before any popup branch."
       ],
       "steps": [
-        "Open Chat and click the microphone control to open the extension mic-grant popup.",
+        "With a working microphone and extension-origin microphone permission unset or denied, click Chat microphone. Confirm the offscreen PERMISSION_DENIED response opens the actual mic-grant popup before testing its controls.",
         "Grant path: with permission unset and a working input device, click Allow microphone and accept Chrome\u2019s prompt. Record prompt, page status, popup close timing, and Chat mic state.",
         "Deny path: reset extension-origin microphone permission, repeat and deny the Chrome prompt; record status text and whether retry remains enabled.",
-        "No-device path: use a test environment with no available input device and permission allowed, repeat; record visible status. Do not report a scenario as exercised if the environment did not support it."
+        "No-device popup path requires a controlled fixture that keeps the real mic-grant window open while making every audio input unavailable; click Allow microphone in that window and record its own no-microphone guidance. Permission allowed with no input at the initial Chat click yields offscreen NO_DEVICE and does not launch this window. A possible denial-trigger-then-remove-device sequence is only a source-based proposal until proven in Chrome."
       ],
       "expected": [
         "Grant reports \u201cGranted! Closing\u2026\u201d and closes after roughly 1.5 seconds; denial displays permission-denied recovery guidance and leaves Allow enabled; no device displays no-microphone guidance. Separate outcomes per scenario."
       ],
       "source_anchors": [
-        "src/features/chat/ChatView.tsx:1360-1445",
-        "src/entrypoints/mic-grant/index.ts:64-114"
+        "src/features/chat/ChatView.tsx:1374-1455",
+        "src/lib/audio/mic-recorder-offscreen.ts:425-445",
+        "src/entrypoints/mic-grant/index.ts:75-113"
       ],
       "gaps": [
-        "Inventory bundles three outcomes into one case; it does not specify whether one execution may satisfy it. Do not mark complete until each environment-supported branch has independent evidence."
+        "Inventory bundles three outcomes into one case; it does not specify whether one execution may satisfy it. Do not mark complete until each environment-supported branch has independent evidence.",
+        "The controlled no-device popup route has not been demonstrated in Chrome; the offscreen NO_DEVICE result is not popup evidence."
       ],
       "inventory_criteria": {
         "preconditions": [
@@ -1080,7 +1143,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -1089,7 +1153,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -1098,7 +1163,9 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture",
+          "required_fixture": "A named, demonstrated controlled zero-input fixture while the actual mic-grant popup stays open. Chat with permission allowed and no device cannot open that window. Grant and deny rows can use the permission-denied Chat trigger with a working input."
         },
         {
           "mode": "admin",
@@ -1107,7 +1174,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -1116,7 +1184,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -1125,11 +1194,14 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture",
+          "required_fixture": "A named, demonstrated controlled zero-input fixture while the actual mic-grant popup stays open. Chat with permission allowed and no device cannot open that window. Grant and deny rows can use the permission-denied Chat trigger with a working input."
         }
       ],
-      "readiness": "ready",
-      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
+      "readiness": "requires_fixture",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file.",
+      "required_fixture": "A named, demonstrated controlled zero-input fixture while the actual mic-grant popup stays open. Chat with permission allowed and no device cannot open that window. Grant and deny rows can use the permission-denied Chat trigger with a working input."
     },
     "EXT-F-1002-T13": {
       "preconditions": [
@@ -1169,7 +1241,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "guest",
@@ -1178,7 +1251,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -1222,7 +1296,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -1231,7 +1306,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -1275,7 +1351,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -1284,7 +1361,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -1323,7 +1401,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -1332,7 +1411,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -1371,7 +1451,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -1380,7 +1461,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -1422,7 +1504,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -1431,7 +1514,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -1440,7 +1524,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -1449,7 +1534,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -1491,7 +1577,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -1500,7 +1587,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -1509,7 +1597,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -1518,7 +1607,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -1559,7 +1649,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -1568,7 +1659,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -1609,7 +1701,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -1618,7 +1711,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -1660,7 +1754,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -1669,7 +1764,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -1711,7 +1807,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -1720,7 +1817,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -1760,7 +1858,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -1769,7 +1868,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -1809,7 +1909,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -1818,7 +1919,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -1856,7 +1958,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -1865,7 +1968,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -1903,7 +2007,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -1912,7 +2017,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -1952,7 +2058,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -1961,7 +2068,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -2001,7 +2109,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -2010,7 +2119,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -2051,7 +2161,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -2060,7 +2171,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -2101,7 +2213,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -2110,7 +2223,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -2146,7 +2260,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -2155,7 +2270,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -2191,7 +2307,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -2200,7 +2317,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -2241,7 +2359,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -2250,7 +2369,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -2291,7 +2411,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -2300,7 +2421,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -2335,7 +2457,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -2344,7 +2467,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -2379,7 +2503,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -2388,7 +2513,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -2396,12 +2522,12 @@
     },
     "EXT-F-1004-T23": {
       "preconditions": [
-        "Use an existing guest profile and a disposable Chrome profile. Before signing out, select Profile in sidepanel, then sign out using the account menu; retain Profile as persisted selection if the app does."
+        "Use an existing signed-in identity and disposable Chrome profile. For each row, select Profile through avatar > Profile before signing out; record whether Profile remains the persisted selection. Warm and reload require separate sign-out preparations."
       ],
       "steps": [
-        "Reload extension and reopen sidepanel while still guest.",
-        "Inspect avatar menu and tab strip; record whether Profile appears.",
-        "If stale selection still points to Profile, observe selected content after auth resolves and check whether any profile fields/data render."
+        "Warm row: while signed in, select Profile through avatar > Profile, sign out from the account menu, and reopen the sidepanel without reloading the extension. Inspect the guest avatar menu and tab strip, selected content after auth resolves, and whether any profile data renders.",
+        "Reload row: separately restore the signed-in Profile selection, sign out again, then reload the exact extension in chrome://extensions. Reopen the sidepanel as guest and repeat the menu, tab, selected-content, and data observations.",
+        "Record warm and post-extension-reload outcomes and evidence independently; a sidepanel reopen alone does not satisfy the reload row."
       ],
       "expected": [
         "Profile is absent from guest menu/tab navigation. A stale selected Profile resolves to an accessible destination and profile data is not rendered."
@@ -2412,7 +2538,7 @@
         "src/config/sidepanel-visibility.ts"
       ],
       "gaps": [
-        "How to seed persisted tab selection for the guest profile and expected first accessible tab are not stated in source anchors; record actual selected destination."
+        "Persisted Profile selection after sign-out and the first accessible guest tab must be observed in each run; source does not guarantee that stale selection survives sign-out."
       ],
       "inventory_criteria": {
         "preconditions": [
@@ -2434,7 +2560,8 @@
           "inventory_dimensions": ["warm", "reload", "role-change"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "guest",
@@ -2443,7 +2570,8 @@
           "inventory_dimensions": ["warm", "reload", "role-change"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -2487,7 +2615,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -2496,7 +2625,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -2505,7 +2635,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -2514,7 +2645,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -2523,7 +2655,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -2532,7 +2665,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -2541,7 +2675,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -2550,7 +2685,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -2559,7 +2695,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -2568,7 +2705,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -2577,7 +2715,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -2586,7 +2725,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -2631,7 +2771,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -2640,7 +2781,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -2649,7 +2791,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -2658,7 +2801,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -2667,7 +2811,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -2676,7 +2821,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -2685,7 +2831,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -2694,7 +2841,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         }
       ],
       "readiness": "requires_fixture",
@@ -2741,7 +2889,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -2750,7 +2899,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -2759,7 +2909,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -2768,7 +2919,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -2777,7 +2929,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -2786,7 +2939,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -2795,7 +2949,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -2804,7 +2959,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         }
       ],
       "readiness": "requires_fixture",
@@ -2849,7 +3005,8 @@
           "inventory_dimensions": ["save", "reload", "backend-error"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -2858,7 +3015,8 @@
           "inventory_dimensions": ["save", "reload", "backend-error"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -2867,7 +3025,8 @@
           "inventory_dimensions": ["save", "reload", "backend-error"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -2876,7 +3035,8 @@
           "inventory_dimensions": ["save", "reload", "backend-error"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -2885,7 +3045,8 @@
           "inventory_dimensions": ["save", "reload", "backend-error"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -2894,7 +3055,8 @@
           "inventory_dimensions": ["save", "reload", "backend-error"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -2946,7 +3108,8 @@
           "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -2955,7 +3118,8 @@
           "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -2964,7 +3128,8 @@
           "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -2973,7 +3138,8 @@
           "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -2982,7 +3148,8 @@
           "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -2991,7 +3158,8 @@
           "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -3000,7 +3168,8 @@
           "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -3009,7 +3178,8 @@
           "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -3018,7 +3188,8 @@
           "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -3027,7 +3198,8 @@
           "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -3036,7 +3208,8 @@
           "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -3045,7 +3218,8 @@
           "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         }
       ],
       "readiness": "requires_fixture",
@@ -3116,7 +3290,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -3134,7 +3309,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -3152,7 +3328,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -3170,7 +3347,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -3188,7 +3366,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -3206,7 +3385,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -3224,7 +3404,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "member",
@@ -3242,7 +3423,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         }
       ],
       "readiness": "requires_fixture",
@@ -3313,7 +3495,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -3331,7 +3514,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -3349,7 +3533,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -3367,7 +3552,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -3385,7 +3571,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -3403,7 +3590,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -3421,7 +3609,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         },
         {
           "mode": "admin",
@@ -3439,7 +3628,8 @@
           ],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "requires_fixture"
         }
       ],
       "readiness": "requires_fixture",
@@ -3494,7 +3684,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "guest",
@@ -3503,7 +3694,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -3557,7 +3749,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "member",
@@ -3566,7 +3759,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -3620,7 +3814,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         },
         {
           "mode": "admin",
@@ -3629,7 +3824,8 @@
           "inventory_dimensions": ["warm", "reload"],
           "observed_outcome": null,
           "evidence_refs": [],
-          "status": "unverified"
+          "status": "unverified",
+          "readiness": "ready"
         }
       ],
       "readiness": "ready",
@@ -3638,7 +3834,7 @@
   },
   "limitations": [
     "No browser, build, database write, or test was executed; this artifact is a procedure proposal, not a result.",
-    "Permission-denial and no-device branches need independent Chrome permission state/device preconditions for each mode and lifecycle dimension; unsupported environment branches remain unverified.",
+    "T10 guest Chat is gated before mic-grant; all its popup rows require a demonstrated launch fixture. T11/T12 no-device popup rows require a demonstrated controlled zero-input fixture while the actual window remains open. All remain unverified until observed.",
     "No named controlled failure harness is available in this proposal for popup internals or profile backend failures.",
     "T28 has no confirmed pre-existing user_form_profile row fixture evidence in the reviewed files; do not create or mutate account/membership fixtures to manufacture it."
   ],
@@ -3646,7 +3842,7 @@
   "inventory_source": "docs/stabilization/inventory.json; IDs, mode applicability, dimensions, and acceptance criteria are copied unchanged into each entry.",
   "entrypoint_preconditions": {
     "EXT-F-1002-T01-T09, T19-T20": "Local/unpacked build only: inspect loaded manifest and confirm popup.html is action.default_popup, then click the toolbar action. Opening popup.html as an extension URL in an ordinary tab is not a toolbar-popup test.",
-    "EXT-F-1002-T10-T12": "Open the Chat surface in the sidepanel as the case identity and click the microphone control; mic-grant is a separate extension popup window opened by the Chat permission flow, not the toolbar popup.",
+    "EXT-F-1002-T10-T12": "Mic-grant is a separate extension popup window. Member/admin Chat opens it only after an offscreen PERMISSION_DENIED response with a working input; guest Chat microphone stops at the sign-in gate. A guest-reachable launch fixture and a controlled in-popup no-device fixture remain unproven. The Chat NO_DEVICE toast is not popup coverage.",
     "EXT-F-1002-T13-T15": "Open chrome://extensions > the exact extension Details > Extension options. Verify the loaded options page; do not use the toolbar action or open options.html in an ordinary tab as a substitute.",
     "EXT-F-1002-T16-T18": "Chrome Web Store build only: inspect loaded manifest for exact Store ID/version; popup entrypoint is filtered out and toolbar action opens sidepanel. Click the toolbar action; do not open popup.html in a regular tab.",
     "EXT-F-1004-T01-T28": "Open the sidepanel and use avatar > Profile. The Profile screen is not the Options page and is not advertised in the direct tab strip. T23 starts from the existing guest route and exercises the stale/persisted Profile selection after sign-out."
@@ -3659,15 +3855,9 @@
     "EXT-F-1002-T07",
     "EXT-F-1002-T08",
     "EXT-F-1002-T09",
-    "EXT-F-1002-T10",
-    "EXT-F-1002-T11",
-    "EXT-F-1002-T12",
     "EXT-F-1002-T13",
     "EXT-F-1002-T14",
     "EXT-F-1002-T15",
-    "EXT-F-1002-T16",
-    "EXT-F-1002-T17",
-    "EXT-F-1002-T18",
     "EXT-F-1004-T01",
     "EXT-F-1004-T02",
     "EXT-F-1004-T03",
@@ -3692,16 +3882,22 @@
     "EXT-F-1004-T22",
     "EXT-F-1004-T23",
     "EXT-F-1004-T24",
-    "EXT-F-1004-T27"
+    "EXT-F-1004-T27",
+    "EXT-F-1002-T16",
+    "EXT-F-1002-T17",
+    "EXT-F-1002-T18"
   ],
   "requires_fixture_case_ids": [
     "EXT-F-1002-T05",
     "EXT-F-1002-T06",
-    "EXT-F-1002-T19",
-    "EXT-F-1002-T20",
+    "EXT-F-1002-T10",
+    "EXT-F-1002-T11",
+    "EXT-F-1002-T12",
     "EXT-F-1004-T25",
     "EXT-F-1004-T26",
-    "EXT-F-1004-T28"
+    "EXT-F-1004-T28",
+    "EXT-F-1002-T19",
+    "EXT-F-1002-T20"
   ],
   "verification": {
     "procedure_review": "source and inventory only",
