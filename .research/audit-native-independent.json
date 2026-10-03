@@ -2,12 +2,14 @@
   "schema_version": 1,
   "defect": "EXT-D-0093",
   "role": "independent native execution lane",
-  "status": "prepared_only",
+  "status": "native_fail_at_T86_details_failure",
   "execution": {
-    "native_run_started": false,
-    "artifact_imported": false,
+    "native_run_started": true,
+    "artifact_imported": true,
     "workflow_dispatched": false,
-    "reason": "The required explicit heavy-run permit transfer has not been received, and the source peer report has not accepted bounded readiness."
+    "permit": "Root transferred the single heavy/native permit after peer acceptance of bounded readiness.",
+    "run_id": "audit-native-independent-20261003-02",
+    "reason": "The exact artifact was imported and the headed admin runner stopped at its first failure in the T86 details-failure sequence. No native rerun was made."
   },
   "producer": {
     "commit": "23242714b911ed87303951738481d217acdcfc44",
@@ -19,9 +21,9 @@
   },
   "peer": {
     "report": ".research/audit-native-runner-peer.json",
-    "acceptance_readiness": "partial",
-    "native_runtime": "unverified",
-    "bounded_readiness_accepted": false,
+    "acceptance_readiness": "bounded_ready_with_scope_concerns",
+    "native_runtime": "run_failed_before_case_completion",
+    "bounded_readiness_accepted": true,
     "open_cases": {
       "T87": "Prior product-signed receipt verification after rotation is missing.",
       "T89": "Prior product-signed receipt verification after recovery is missing.",
@@ -30,20 +32,86 @@
     "additional_concern": "Peer notes Chrome foreground behavior and fail-closed handling of hidden or occluded controls are not established for the second-context sequence."
   },
   "independent_observation": {
-    "runner_scope": "Source inspection only; it targets the exact development artifact and run, validates imported tree/source identity, uses headed native Chrome, and scopes key operations to an owned disposable profile.",
-    "partial_verdict": "The runner deliberately records T87, T89, and T90 as partial and exits 2 after bounded checks; this cannot be reported as full acceptance.",
-    "first_error_policy": "No execution occurred, so no runtime stage or recovery was attempted. On an authorized run, stop at the first error stage and do not blindly retry."
+    "runner_scope": "The existing hosted wrapper imported the exact development artifact, validated provenance and tree identity, and launched headed native Chrome with a new owned temporary browser profile.",
+    "artifact_integrity": {
+      "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+      "version": "0.2.176",
+      "run_id": 37129518563,
+      "run_attempt": 1,
+      "artifact_id": 11275878549,
+      "artifact_digest": "sha256:a5fe6d1f2dd3b65faff8b74a512a25a2023870352d6b22d5999efb364891563d",
+      "tree_sha256_at_import": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+      "tree_sha256_after_run": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+      "post_run_verification": "hashReleaseTree recomputation matched the authenticated import status and local receipt."
+    },
+    "native_result": {
+      "status": "fail",
+      "failure_stage": "details_failure",
+      "failure_code": "audit_native_unverified",
+      "cases_recorded": 0,
+      "resource_guard_exit": "child_failed; resourceInvalid=false; no resource violation"
+    },
+    "inventory_case_results": {
+      "T60": "not_reached; runner stopped before clipboard export",
+      "T86": "fail; stopped during the details_failure sequence before a T86 result was recorded",
+      "T87": "not_reached",
+      "T88": "not_reached",
+      "T89": "not_reached",
+      "T90": "not_reached",
+      "T91": "not_reached"
+    },
+    "partial_verdict": "T87, T89, and T90 remain partial by design and were not reached. This run does not pass EXT-D-0093.",
+    "first_error_policy": "Stopped at the first native failure; no blind retry. The runner emitted only the bounded code audit_native_unverified for details_failure."
   },
   "evidence": {
     "owned_receipt_directory": ".research/audit-native-independent-receipts/",
-    "native_receipts": [],
-    "screenshots": [],
-    "journals": []
+    "native_receipts": [
+      ".research/audit-native-independent-receipts/native-run-output-02/audit-key-native-result.json",
+      ".research/audit-native-independent-receipts/native-run-output-02/import-status.json",
+      ".research/audit-native-independent-receipts/native-run-output-02/local-dev-receipt.json",
+      ".research/audit-native-independent-receipts/native-run-output-02/ci-receipt.json",
+      ".research/audit-native-independent-receipts/native-run-output-02/provenance.json"
+    ],
+    "screenshots": [
+      ".research/audit-native-independent-receipts/native-run-output-02/native-side-panel.png",
+      ".research/audit-native-independent-receipts/native-run-output-02/normal-target-after-open.png"
+    ],
+    "journals": [
+      ".research/audit-native-independent-receipts/native-run-output-02/audit-native-independent-20261003-01.jsonl",
+      ".research/audit-native-independent-receipts/native-run-output-02/audit-native-independent-20261003-02.jsonl"
+    ],
+    "copied_sha256": {
+      "audit-key-native-result.json": "7d51dfd43ebc317e21a008ea067d59b84d2585c6d21d189b527c765082772c85",
+      "audit-native-independent-20261003-01.jsonl": "2d30261bb93d76f41a0a7f3b5cff00b2c3013ac79a5f65d1e5b23b7256fb36f9",
+      "audit-native-independent-20261003-02.jsonl": "7ee47f4c9f763e72dbf3f1f8480a05887a2317e2a241633d7646a9082d6ad160",
+      "ci-receipt.json": "79a1c7c678b2875de2dc1d87f5cdaa7ccdb1a34645c64138fe01bf8eea97d70b",
+      "import-status.json": "23aca6fd48fa9002b9020e883d5261fe85172f642697c430a965e005b7163ee8",
+      "local-dev-receipt.json": "1a12985da0bcf2f01c175bd428585edb31b2943ec83bff758aea7e30f5b66e2a",
+      "native-side-panel.png": "07bc05a94dc8dd16227d3c6088bf03b6e32a15352f289292ae0bcc5be15a323f",
+      "normal-target-after-open.png": "33271f9da5b7c8919b1d69230710105d7fbec474a29e2a24ddd831fb2fa7cf87",
+      "provenance.json": "06110447db3f813c245415042ed6f8629242492003103c3bcdf1a0fe03a54185"
+    },
+    "byte_equality": "cmp confirmed each copied report, screenshot, import receipt, and resource journal exactly matches its source bytes."
+  },
+  "first_failure": {
+    "run_id": "audit-native-independent-20261003-01",
+    "stage": "resource command validation before admission",
+    "code": "RESOURCE_COMMAND_NOT_ALLOWED:see docs/stabilization/resource-policy.json",
+    "exit_code": 2,
+    "admitted": false,
+    "native_runner_started": false,
+    "cause": "The private credential launcher used `node -e` as the resource guard's owned child, which is outside the configured allowed-command set.",
+    "adjacent_recovery": "Root confirmed the same single permit remained available. A private Node launcher then spawned the guard with its exact allowlisted child `node scripts/hosted-guest-acceptance.mjs`; the wrapper used its mode-0600 credential file flow and removed that file after execution."
   },
   "limits": [
-    "No workflow dispatch, artifact download, browser launch, profile creation, or key mutation was performed.",
-    "No T60, T86, T87, T88, T89, T90, or T91 native result is claimed.",
-    "The peer report is a source review and does not establish native behavior."
+    "T60 and T87-T91 have no native result because the runner stopped during the T86 details-failure sequence.",
+    "T87, T89, and T90 remain partial by source design; full signed-receipt proof is still outstanding.",
+    "The native runner returned only audit_native_unverified; the exact lower-level UI failure is not present in its sanitized receipt."
   ],
-  "next_gate": "Wait for explicit permit transfer from root and a peer report accepting bounded readiness before any artifact import or headed native run."
+  "cleanup": {
+    "resource_guard": "Final journal decision is child_failed with resourceInvalid=false; no owned browser, runner, or guard process remained after completion.",
+    "heavy_lease": "No active heavy owner remains; the pre-existing stop marker from 2026-10-02 was preserved.",
+    "private_credentials": "The hosted wrapper's runtime credential file was removed in its finally block; no credential values were written to evidence."
+  },
+  "next_gate": "Do not rerun this native acceptance. Record the first T86 failure for a separately authorized repair lane."
 }

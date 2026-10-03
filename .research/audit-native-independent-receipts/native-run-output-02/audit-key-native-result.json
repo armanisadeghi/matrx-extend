@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0093",
+  "status": "fail",
+  "source": {
+    "sha": "991385d9816b31a568619522e4795c001b4d3a06",
+    "version": "0.2.176",
+    "tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55"
+  },
+  "artifact_id": 11275878549,
+  "run_id": 37129518563,
+  "cases": [],
+  "failure_stage": "details_failure",
+  "failure_code": "audit_native_unverified"
+}
