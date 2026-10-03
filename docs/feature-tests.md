@@ -23,10 +23,10 @@ extension ID or intended-folder hash alone does not establish the running build.
 - **When tests don't apply (e.g. internal-only utility):** still add an
   entry with a one-liner explaining why no manual test is meaningful
   and pointing to the unit test that covers it.
-- **For agent tools:** the canonical UI for manual testing is
-  **Side panel → Tools tab** — search the tool name, edit JSON args,
-  click Run. The Tools tab routes through the same dispatcher path
-  agents use, so it's a real end-to-end test.
+- **For agent tools:** use **Side panel → Tools tab** — search the tool name,
+  edit JSON args, click Run. Browser handlers run locally; Records runs through
+  the registered server tool test door under the signed-in person and selected
+  organization.
 
 ### Sidepanel browser module load and speech
 
@@ -782,8 +782,7 @@ Every entry follows this shape:
 ### Side panel — Tools tab
 - **What it does:** Visible catalog of every registered tool with
   search/filter, JSON argument editor, per-tool **Run** button.
-  Routes through the same dispatcher path agents use → it's the
-  canonical end-to-end manual test rig.
+  Browser handlers run locally; Records uses the registered server tool test door.
 - **Where to test:** Side panel → **Tools** tab.
 - **Steps:**
   1. Search for a tool by name.
@@ -798,6 +797,18 @@ Every entry follows this shape:
   With the network available, every canonical tool shows its `tool.definition`
   description; offline (or before the fetch resolves) it shows `—`, never
   a stale string.
+
+### Records manual run
+- **What it does:** Shows the active server Records action contract, including
+  every per-action variant, and runs one chosen action under the person's session.
+- **Where to test:** Side panel → Tools → search `records`.
+- **Steps:** Sign in and select an organization. Open Records and inspect the
+  `server action contract`. Run `{"action":"guide","args":{}}`, then run a
+  permitted write such as `form_propose` with its required arguments.
+- **Expected:** The contract includes `$variants` and all 25 actions. The guide
+  returns its server result; the write returns its real result or a named store
+  refusal. A rejected tool call appears as failed, never as completed. Without
+  sign-in, selected organization, or an active server definition, Run refuses.
 
 ### Tool descriptions read live from the DB (Rule 4)
 - **What it does:** No tool descriptions live in the extension's code — they
