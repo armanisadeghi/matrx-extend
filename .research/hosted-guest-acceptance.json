@@ -1,6 +1,6 @@
 {
   "status": "FAILED_GROUNDING",
-  "scope": "Hosted macOS native side-panel guest reply and post-reload follow-up on exact validated release or CI development artifact",
+  "scope": "Hosted macOS native side-panel guest reply and post-reload follow-up on a controlled article tab using an exact validated release or CI development artifact",
   "browser_result": "Hosted development-build attempt 2 opened the real signed-out native side panel and sent a question, but final reply lacked the unpredictable page code; post-reload follow-up was not reached",
   "release_input": "Successful Hosted release run only; one versioned artifact, published receipt, remote tag/source SHA, both ZIP hashes and unpacked tree hash are required",
   "development_input": "Successful main-push CI run and exact artifact ID, imported and reverified by current-test-artifact.mjs; explicitly ineligible for Store",
@@ -8,7 +8,7 @@
   "resources": "Existing macOS stabilization guard preflights and owns ZIP extraction, runtime install and browser execution with memory, CPU, swap and disk watchdogs",
   "checks": "Node syntax, YAML parse, all workflow shell blocks bash -n, targeted Biome, policy JSON and diff whitespace pass",
   "artifact_shape": "Existing local release ZIP has 541 root files including manifest.json, matching the promoted tree file count",
-  "remaining": "Diagnose why the public demo fixture URL and DOM disappear before first tool read; rerun full native guest answer and post-reload follow-up; separately test successful release candidate",
+  "remaining": "Owner review of the controlled article fixture change, full native guest answer and post-reload follow-up rerun, and separate successful release-candidate acceptance",
   "hosted_run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37097986885",
   "development_source_sha": "38bc59215ff12077b7949c34aaabcfe30c6a0274"
 }
