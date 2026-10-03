@@ -327,5 +327,23 @@
   ],
   "repair_peer_commits": ["54fc4663", "9777bd5c"],
   "elapsed_minutes_approx": 19,
-  "owned_browser_cleanup": "No Chromium executable processes remained after wrapper exit."
+  "owned_browser_cleanup": "No Chromium executable processes remained after wrapper exit.",
+  "committed_raw_evidence": [
+    {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/reports/prepare-native-20261003/acceptance-receipt.json",
+      "sha256": "74e8645c630989050098d964dc42b68c2536afec8021b1ff4d2e636998483937"
+    },
+    {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/reports/prepare-native-20261003/frame-timeout-receipt.json",
+      "sha256": "74d015cc2d6c1ed3462e5b083539188a21365aadab5470166dc8d9c9173586f0"
+    },
+    {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/reports/prepare-native-20261003/resource-journal.jsonl",
+      "sha256": "03e137d0f84ec9a98d237257b2c1efa82d5b99aa8dd82aa530a3cd14696045af"
+    },
+    {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/reports/prepare-native-20261003/acceptance.log",
+      "sha256": "a101cbac18d18a71404896aa90399996d96f91f1cf0612df9772ebefefe39914"
+    }
+  ]
 }
