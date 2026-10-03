@@ -40,7 +40,7 @@ jobs:
       WXT_EXTENSION_OAUTH_CLIENT_ID: ${{ secrets.WXT_EXTENSION_OAUTH_CLIENT_ID }}
       WXT_SAFARI_OAUTH_CLIENT_ID: ${{ secrets.WXT_SAFARI_OAUTH_CLIENT_ID }}
       WXT_DESKTOP_NATIVE_HOST: ${{ secrets.WXT_DESKTOP_NATIVE_HOST }}
-      AIDREAM_API_URL: https://server.app.matrxserver.com
+      AIDREAM_API_URL: https://server.app.matrxserver.com/api
       AIDREAM_GATE_USERNAME: ${{ secrets.AIDREAM_GATE_USERNAME }}
       AIDREAM_GATE_PASSWORD: ${{ secrets.AIDREAM_GATE_PASSWORD }}
       AIDREAM_GATE_ORGANIZATION_ID: ${{ secrets.AIDREAM_GATE_ORGANIZATION_ID }}
