@@ -21,6 +21,7 @@ const CREDENTIALS = process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE;
 const OUTPUT = join(REPO, 'test-results', `prepare-stale-result-native-${randomUUID()}.json`);
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const DEMO = `${WEB_ORIGIN}/matrx-extend-demo`;
+let transportFailureClass;
 const report = {
   schema_version: 1,
   defects: ['EXT-D-0058', 'EXT-D-0059'],
@@ -30,6 +31,9 @@ const report = {
   stage: 'inputs',
   failure_code: null,
   native_stage: null,
+  release_stage: null,
+  release_visibility: null,
+  transport_failure_class: null,
   signin_observations: {},
 };
 
@@ -268,16 +272,24 @@ async function faultState(panel) {
 }
 
 async function releaseFault(panel) {
+  report.release_stage = 'execute_release';
   await evaluate(
     panel,
     '(() => { window.__prepareFault?.release(); window.__prepareFault?.restore(); delete window.__prepareFault; return true; })()',
   );
+  report.release_stage = 'visibility';
+  report.release_visibility = await evaluate(
+    panel,
+    "['visible', 'hidden'].includes(document.visibilityState) ? document.visibilityState : 'other'",
+  );
+  report.release_stage = 'animation_frames';
   // Let the pending hook continuation and React paint complete before inspecting
   // the old document's result. A pre-settlement empty state is not evidence.
   await evaluate(
     panel,
     'new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve(true))))',
   );
+  report.release_stage = 'complete';
 }
 
 try {
@@ -302,7 +314,8 @@ try {
     onStage: (value) => {
       report.native_stage = value;
     },
-    exercisePanel: async ({ page, panel }) => {
+    exercisePanel: async ({ page, panel, transportFailureClass: readFailureClass }) => {
+      transportFailureClass = readFailureClass;
       stage('admin_signin');
       await signIn(page, panel);
       stage('prepare_ready');
@@ -416,6 +429,23 @@ try {
   stage('complete');
   process.stdout.write('PASS prepare_stale_result_native\n');
 } catch {
+  const category = transportFailureClass?.();
+  report.transport_failure_class = [
+    'none',
+    'protocol_shape',
+    'unknown_response',
+    'protocol_error',
+    'response_shape',
+    'listener',
+    'socket_error',
+    'unexpected_close',
+    'send_after_close',
+    'command_timeout',
+    'send_exception',
+    'close_failure',
+  ].includes(category)
+    ? category
+    : 'unclassified';
   report.status = 'unverified';
   report.failure_code = `${report.stage}_failed`;
   process.stderr.write(

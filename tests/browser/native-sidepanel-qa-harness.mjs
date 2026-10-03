@@ -573,6 +573,7 @@ export async function runNativeSidepanelQa({
           Object.freeze({
             page,
             panel,
+            transportFailureClass: () => cdp.failureClass,
             panelTarget,
             artifacts,
             attachWorker: () => attachTargetSession(cdp, extensionWorker.targetId),
