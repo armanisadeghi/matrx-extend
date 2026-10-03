@@ -1,7 +1,7 @@
 import { ToolsView } from '@/features/tools/ToolsView';
 import { CHANNELS } from '@/lib/messaging/schemas';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const h = vi.hoisted(() => ({ localRun: vi.fn(), serverRun: vi.fn(), broadcast: vi.fn() }));
 vi.mock('@/lib/tools/registry', async () => {
@@ -34,6 +34,7 @@ vi.mock('@/components/CopyMenu', () => ({ CopyButton: () => null }));
 vi.mock('@/lib/messaging/native', () => ({ broadcast: h.broadcast }));
 
 describe('manual Records in Tools', () => {
+  afterEach(cleanup);
   beforeEach(() => {
     h.localRun.mockReset();
     h.serverRun.mockReset().mockResolvedValue({ success: true, output: { form_id: 'f1' } });
