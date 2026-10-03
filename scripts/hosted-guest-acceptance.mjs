@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { readFile, readdir, writeFile, mkdir } from 'node:fs/promises';
+import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from './sync-unpacked-release.mjs';
@@ -31,7 +31,10 @@ async function prepare(artifactDir, outputDir, expectedSha) {
   const zipFiles = await readdir(artifactDir);
   for (const kind of ['local', 'store']) {
     const expectedName = `matrx-extend-${receipt.version}-${kind}.zip`;
-    assert.ok(zipFiles.includes(expectedName), `${kind} ZIP missing from selected release artifact`);
+    assert.ok(
+      zipFiles.includes(expectedName),
+      `${kind} ZIP missing from selected release artifact`,
+    );
     assert.equal(basename(receipt[`${kind}Zip`]?.path ?? ''), expectedName);
     assert.match(receipt[`${kind}Zip`].sha256, /^[a-f0-9]{64}$/);
     const actual = join(artifactDir, expectedName);
@@ -44,14 +47,26 @@ async function prepare(artifactDir, outputDir, expectedSha) {
   const listing = await new Promise((resolveList, reject) => {
     const child = spawn('unzip', ['-Z1', receipt.localZip.path]);
     let data = '';
-    child.stdout.on('data', (chunk) => { data += chunk; });
+    child.stdout.on('data', (chunk) => {
+      data += chunk;
+    });
     child.once('error', reject);
-    child.once('exit', (code) => code === 0 ? resolveList(data) : reject(new Error('local ZIP listing failed')));
+    child.once('exit', (code) =>
+      code === 0 ? resolveList(data) : reject(new Error('local ZIP listing failed')),
+    );
   });
   const entries = listing.trimEnd().split('\n');
   assert.ok(entries.includes('manifest.json'), 'local ZIP must contain root manifest');
-  assert.ok(entries.every((entry) => entry && !entry.startsWith('/') &&
-    !entry.split('/').includes('..') && !entry.includes('\\')), 'unsafe local ZIP entry');
+  assert.ok(
+    entries.every(
+      (entry) =>
+        entry &&
+        !entry.startsWith('/') &&
+        !entry.split('/').includes('..') &&
+        !entry.includes('\\'),
+    ),
+    'unsafe local ZIP entry',
+  );
   const unzip = await ownedProcess('unzip', ['-q', receipt.localZip.path, '-d', extensionDir]);
   assert.equal(unzip.code, 0, 'local ZIP extraction failed');
   const manifest = JSON.parse(await readFile(join(extensionDir, 'manifest.json'), 'utf8'));
@@ -65,20 +80,28 @@ async function prepare(artifactDir, outputDir, expectedSha) {
 }
 
 async function run({ extensionDir, relocatedReceipt }) {
-  const child = spawn(process.execPath, [join(repo, 'tests/browser/guest-chat-store-acceptance.mjs')], {
-    cwd: repo,
-    stdio: 'inherit',
-    env: {
-      ...process.env,
-      MATRX_GUEST_CHAT_EXTENSION_DIR: extensionDir,
-      MATRX_GUEST_CHAT_RELEASE_RECEIPT: relocatedReceipt,
+  const child = spawn(
+    process.execPath,
+    [join(repo, 'tests/browser/guest-chat-store-acceptance.mjs')],
+    {
+      cwd: repo,
+      stdio: 'inherit',
+      env: {
+        ...process.env,
+        MATRX_GUEST_CHAT_EXTENSION_DIR: extensionDir,
+        MATRX_GUEST_CHAT_RELEASE_RECEIPT: relocatedReceipt,
+      },
     },
-  });
+  );
   const result = await new Promise((resolveRun, reject) => {
     child.once('error', reject);
     child.once('exit', (code, signal) => resolveRun({ code, signal }));
   });
-  assert.equal(result.code, 0, `native side-panel guest acceptance exited ${result.code ?? result.signal}`);
+  assert.equal(
+    result.code,
+    0,
+    `native side-panel guest acceptance exited ${result.code ?? result.signal}`,
+  );
 }
 
 const artifactDirArg = process.env.MATRX_HOSTED_RELEASE_ARTIFACT_DIR;
