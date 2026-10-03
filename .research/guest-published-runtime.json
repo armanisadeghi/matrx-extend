@@ -1,5 +1,5 @@
 {
-  "status": "UNVERIFIED: published guest answers measured, final artifact integrity gate failed; diagnostic rerun refused before browser admission",
+  "status": "UNVERIFIED: published guest answers measured, final artifact integrity gate failed; hosted diagnostic admission refused and local diagnostic browser startup failed",
   "target": "public Chrome Web Store version 0.2.130, extension ID hnfolienncfklkgmdjjmhhegglimlamg, native side panel and live server",
   "first_run": {
     "id": 37103324918,
@@ -23,5 +23,15 @@
     "product": "NOT_RUN; no changed-file inventory, screenshots, or new guest answer",
     "uploaded_artifact": "hosted-guest-37103982014-1 (GitHub artifact 11267945141): three resource journals only"
   },
-  "server_sha_during_and_after_diagnostic": "5318c105968feabd14ce1143f31506061aa4efc2"
+  "server_sha_during_and_after_diagnostic": "5318c105968feabd14ce1143f31506061aa4efc2",
+  "local_attempt": {
+    "host": "macOS arm64, APFS external runtime/profile, Node 25.6.0, 33.17 GiB system free before setup; fresh owned profile only",
+    "runtime": "playwright-core 1.56.1 and its Chromium 1194 installed under /Volumes/Samsung2TB/.codex-guest-runtime inside unchanged guarded package/browser phases; INSTALLATION_COMPLETE present; executable was the external revision-1194 Chromium.app binary",
+    "resource": "local check and package/browser/acceptance phases each admitted=true, resourceInvalid=false; setup phases valid, acceptance child_failed; no owned heavy process or lease remains",
+    "receipt": "Published 0.2.130 CRX SHA and adapted tree SHA verified before browser startup; report test-results/guest-chat-store-c96421f5-6bf1-491d-980c-71d245d9da55.json",
+    "failure": "owned_profile: owned_cdp_endpoint_timeout before guest UI; Chrome stderr was not captured at this boundary, so startup cause remains unconfirmed. Read-only codesign --verify on downloaded Chromium.app said 'code has no resources but signature indicates they must be present'; this is a clue, not proven cause. No local product verdict or changed-file inventory.",
+    "server_sha_before": "5318c105968feabd14ce1143f31506061aa4efc2",
+    "server_sha_after": "9bd979a894ba71141d6548069d621aa59a526bde"
+  },
+  "handoff": "Fresh runtime owner should preserve strict tree/receipt and unchanged resource guard, diagnose Chromium startup with bounded stderr and exact changed-file evidence on a valid native run; no blind retry or product-failure claim"
 }
