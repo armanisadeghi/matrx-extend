@@ -30,16 +30,28 @@
     "artifactManifestMatchesApprovedPolicySurface": true,
     "exactTreeGuestAndNonAdminAcceptance": "Passed on v0.2.173 per reports/release-readiness-20261001.json and reports/guest-grounding-peer-20261001.json",
     "signedInToGuestPrivacyTransition": "Unverified",
-    "newerSourceReleaseGates": "Not run; no newer artifact was produced"
+    "newerSourceReleaseGates": "Hosted attempts ran and failed before publication; no new eligible Store artifact."
   },
   "hostedReleaseBlocker": {
-    "status": "credential blocker resolved; hosted strict verification running",
+    "status": "credential resolved; hosted setup repaired; package refresh and exact-dependency fixes awaiting reviewed retry",
     "workflow": ".github/workflows/release.yml",
-    "run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37092816878",
+    "run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37093086895",
     "reason": "Removed unsupported token-prefix restriction, retained required credential and all strict DB checks. Existing mode0600 CLI credential privately verified project access and read-only SELECT1, then supplied to the existing repository Actions secret through stdin.",
     "credentialDecision": "No new credential, rotation, or Supabase grant. Earlier request for a new scoped credential is no longer a prerequisite to release; no credential value recorded.",
     "localConstraint": "No local build/test launched below the20GiB floor; current explicit extension release mandate executed on hosted runner.",
-    "latestSecretCheck": "2026-10-03T03:20:35.197703+00:00 SUPABASE_ACCESS_TOKEN name exists"
+    "latestSecretCheck": "2026-10-03T03:20:35.197703+00:00 SUPABASE_ACCESS_TOKEN name exists",
+    "attempts": [
+      {
+        "run_id": 37092816878,
+        "conclusion": "failure",
+        "gate": "nested pnpm setup; corrected and passed on next run"
+      },
+      {
+        "run_id": 37093086895,
+        "conclusion": "failure",
+        "gate": "strict shared package freshness; refresh correction36d5c94f; subsequent review45cc5f06 awaiting independent acceptance"
+      }
+    ]
   },
   "latestDashboardObservation": {
     "observedAt": "2026-10-02T20:56:15.304049+00:00",
@@ -55,9 +67,9 @@
     "result": "Own stale pending-review title corrected to published130 with installed acceptance pending; publication-only observation metadata saved. Status remains submitted; no self-promotion or installed-acceptance claim."
   },
   "latest_integrated_ci": {
-    "source_sha": "7b0fedfa15cf340b0a955f487ae5c961efbd3442",
-    "run_id": 37063114646,
+    "source_sha": "11e2d7a4a13606ceb73adeff50eda6b9ecce6dac",
+    "run_id": 37093077293,
     "conclusion": "success",
-    "limits": "Full hosted CI plus three macOS guard process tests passed with zero guard skips. Development verification only; no Store ZIP uploaded; native acceptance and scoped release credential approval remain pending."
+    "limits": "Hosted CI success does not establish Store readiness or native acceptance. Newer Settings overlapping-write changes are under independent review and hosted CI37093686086."
   }
 }
