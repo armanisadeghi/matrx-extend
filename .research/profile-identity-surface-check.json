@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "scope": "Source-only reachability check for EXT-D-0095: change signed-in identity while Profile remains mounted",
+  "status": "no_deterministic_supported_ui_route_found",
+  "source_basis": "Current main source; no browser run, fixture mutation, or product edit",
+  "findings": [
+    {
+      "path": "Sidepanel Profile -> avatar menu Sign out -> sign in as another account",
+      "outcome": "Profile unmounts during the signed-out state before the second account can sign in; this route cannot verify an A-to-B transition in the same Profile mount.",
+      "anchors": [
+        "src/entrypoints/sidepanel/App.tsx:542 UserMenu remains visible while Profile is selected",
+        "src/components/UserMenu.tsx:100-109 Sign out invokes useAuth.signOut",
+        "src/hooks/use-auth.ts:291-300 signOut clears user and broadcasts signed-out state",
+        "src/config/sidepanel-visibility.ts:37,48-52 Profile requires signed-in audience",
+        "src/entrypoints/sidepanel/App.tsx:222-227 signed-out route switches to a public tab; 696-701 Profile TabsContent is conditional on access and is not forceMount",
+        "src/entrypoints/popup/main.tsx:108-149 popup shows Sign in only when user is absent"
+      ]
+    },
+    {
+      "path": "Expired/rejected session or failed token refresh while Profile is open",
+      "outcome": "A terminal refresh-token rejection clears local session and broadcasts an auth change; canonical reread becomes guest and removes Profile. A stale 401 against a superseded bearer is ignored. Neither path supplies a second authenticated identity in the mounted Profile.",
+      "anchors": [
+        "src/lib/auth/flow.ts:342-370 terminal refresh rejection compare-clears and broadcasts; a rotated token is adopted instead",
+        "src/lib/api/client.ts:818-838 exhausted 401 broadcasts only if rejected bearer is still current",
+        "src/hooks/use-auth.ts:229-243 auth broadcast rereads canonical session",
+        "src/hooks/use-auth.ts:80-132 unverified or mismatched saved identity resolves to guest",
+        "src/entrypoints/sidepanel/App.tsx:696-701 Profile is removed for guest"
+      ]
+    },
+    {
+      "path": "Another extension context completes a different-account OAuth sign-in while the first account's Profile is still open",
+      "outcome": "The auth mechanism can replace stored user and bearer and notify the mounted panel. Its listener rereads verified canonical identity and useUserProfile rotates the owner without requiring a tab change. This is a conditional code path, not an established reproducible user route: the current popup and Settings expose Sign in only when that context is signed out, and no account-switch control was found for an already signed-in context.",
+      "anchors": [
+        "src/lib/auth/flow.ts:458-478 successful OAuth commits bearer and USER_PROFILE together",
+        "src/hooks/use-auth.ts:257-271 successful sign-in publishes AUTH_STATE_CHANGED",
+        "src/hooks/use-auth.ts:229-243 receiver rereads verified canonical session; 161-170 sets the newly verified user directly",
+        "src/hooks/use-user-profile.ts:65-80 owner lifetime changes by user id and prior state is synchronously masked",
+        "src/features/settings/SettingsView.tsx:762-773 signed-in Settings offers Sign out; Sign in appears only for guest",
+        "src/entrypoints/popup/main.tsx:108-149 signed-in popup offers no Sign in"
+      ]
+    }
+  ],
+  "native_route": "No deterministic supported UI route established for A-to-B while the same ProfileView remains mounted. Ordinary sign-out/sign-in is a valid two-account UI test but it creates a new Profile mount and cannot satisfy D95's stated cross-identity condition.",
+  "remaining_native_unknowns": [
+    "Whether any real multi-context auth timing can deliver authenticated B directly while A's Profile remains mounted has not been observed.",
+    "D95 member behavior, failed second-owner read, and actual mounted cross-identity isolation remain unverified. Do not mark the criterion waived or the defect closed from source analysis."
+  ]
+}
