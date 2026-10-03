@@ -1,0 +1,38 @@
+{
+  "task": "Procedure completion for Store toolbar sidepanel entrypoint",
+  "selected_case_ids": ["EXT-F-1002-T16", "EXT-F-1002-T17", "EXT-F-1002-T18"],
+  "surface": "Popup / options / mic permission (Store build action path)",
+  "source_evidence": [
+    {
+      "path": "wxt.config.ts",
+      "finding": "MATRX_CWS_BUILD=1 filters out popup and includes sidepanel; Chrome manifest sets side_panel.default_path to sidepanel.html and action.default_title to Matrx Extend."
+    },
+    {
+      "path": "src/entrypoints/background.ts",
+      "finding": "Background startup configures Chrome action click to open the side panel."
+    },
+    {
+      "path": "src/lib/panel/adapter.ts",
+      "finding": "Chromium sidepanel opens through chrome.sidePanel.open; API refusal is surfaced by callers."
+    },
+    {
+      "path": "src/config/identity.ts",
+      "finding": "Store runtime identity is hnfolienncfklkgmdjjmhhegglimlamg; dev ID is distinct."
+    },
+    {
+      "path": "src/hooks/use-auth.ts",
+      "finding": "Sidepanel cold-open restores and verifies canonical session; role state is refreshed before UI relies on it."
+    },
+    {
+      "path": "docs/stabilization/PLAN.md",
+      "finding": "Each procedure uses a resource permit/build receipt; extension reload is required after relevant extension update, and actual sidepanel/UI is the runtime oracle."
+    }
+  ],
+  "changes": "Added Store-ID/version verification, update reload completion, close-existing-panel reset, per-mode profile/role setup, toolbar action observation in the initiating window, auth-hydration observation, and bounded expected behavior. Existing result/status/evidence/defect fields were preserved.",
+  "remaining_gaps": [
+    "No live Chrome UI was exercised in this lane; guest/member/admin results remain at their existing statuses.",
+    "Member/admin account role and device organization must be established in the actual test profile; member is explicitly ordinary member.",
+    "A source procedure cannot verify the currently published Store package contains this manifest behavior; use the exact loaded Store version and record receipt during runtime execution."
+  ],
+  "source_only": true
+}

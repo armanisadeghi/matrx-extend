@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T10:19:18+00:00",
+  "updated_at": "2026-10-03T11:05:43+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -3098,13 +3098,17 @@
           ],
           "build_variant": "store",
           "preconditions": [
-            "Install Chrome Web Store build, which excludes popup entrypoint."
+            "Start with a fresh resource permit and build receipt for the Chrome Web Store artifact; install or update that exact Store build, then use chrome://extensions to confirm the loaded item is Matrx Extend with Store ID hnfolienncfklkgmdjjmhhegglimlamg and record its version. After an update, click Reload once, wait for the extension to finish reloading, close any already-open Matrx sidepanel, and confirm this guest profile is signed out. Keep an ordinary web tab active, then click the Matrx Extend toolbar action once."
           ],
           "steps": [
-            "Click the extension toolbar action."
+            "Open chrome://extensions and verify the loaded Matrx Extend ID is hnfolienncfklkgmdjjmhhegglimlamg; record the exact Store version in the build receipt. A development ID or a popup-bearing unpacked artifact is not this case.",
+            "If the extension was just installed or updated, click its Reload control once, wait for reload completion, and close any existing Matrx sidepanel so this run begins from a fresh panel open.",
+            "Use the guest profile state specified in Preconditions. Leave a normal web tab active and note its window/tab identity.",
+            "Click the Matrx Extend toolbar action once; observe whether a popup document appears and whether the sidepanel opens in that same browser window.",
+            "Inspect the first rendered panel state and record its visible identity/role marker alongside the build receipt."
           ],
           "expected": [
-            "Sidepanel opens directly, with no popup page."
+            "Chrome opens the Matrx sidepanel directly for the active browser window; no popup document opens. The panel shows the guest Sign in entry. Record the loaded Store ID/version and resulting panel state; this procedure does not claim sign-in or authenticated access."
           ],
           "dimensions": [
             "warm",
@@ -3122,13 +3126,17 @@
           ],
           "build_variant": "store",
           "preconditions": [
-            "Install Chrome Web Store build, which excludes popup entrypoint."
+            "Start with a fresh resource permit and build receipt for the Chrome Web Store artifact; install or update that exact Store build, then use chrome://extensions to confirm the loaded item is Matrx Extend with Store ID hnfolienncfklkgmdjjmhhegglimlamg and record its version. After an update, click Reload once, wait for the extension to finish reloading, close any already-open Matrx sidepanel, and sign in as an ordinary member (not an admin); record the member role and selected device organization without recording credentials. Keep an ordinary web tab active, then click the Matrx Extend toolbar action once."
           ],
           "steps": [
-            "Click the extension toolbar action."
+            "Open chrome://extensions and verify the loaded Matrx Extend ID is hnfolienncfklkgmdjjmhhegglimlamg; record the exact Store version in the build receipt. A development ID or a popup-bearing unpacked artifact is not this case.",
+            "If the extension was just installed or updated, click its Reload control once, wait for reload completion, and close any existing Matrx sidepanel so this run begins from a fresh panel open.",
+            "Use the member profile state specified in Preconditions. Leave a normal web tab active and note its window/tab identity.",
+            "Click the Matrx Extend toolbar action once; observe whether a popup document appears and whether the sidepanel opens in that same browser window.",
+            "Inspect the first rendered panel state and record its visible identity/role marker alongside the build receipt."
           ],
           "expected": [
-            "Sidepanel opens directly, with no popup page."
+            "Chrome opens the Matrx sidepanel directly for the active browser window; no popup document opens. The panel restores the signed-in ordinary-member identity and renders the member shell. Record the loaded Store ID/version and role. This case covers the toolbar entrypoint only, not member access to every panel feature."
           ],
           "dimensions": [
             "warm",
@@ -3146,13 +3154,17 @@
           ],
           "build_variant": "store",
           "preconditions": [
-            "Install Chrome Web Store build, which excludes popup entrypoint."
+            "Start with a fresh resource permit and build receipt for the Chrome Web Store artifact; install or update that exact Store build, then use chrome://extensions to confirm the loaded item is Matrx Extend with Store ID hnfolienncfklkgmdjjmhhegglimlamg and record its version. After an update, click Reload once, wait for the extension to finish reloading, close any already-open Matrx sidepanel, and sign in as admin; record the admin role and selected device organization without recording credentials. Keep an ordinary web tab active, then click the Matrx Extend toolbar action once."
           ],
           "steps": [
-            "Click the extension toolbar action."
+            "Open chrome://extensions and verify the loaded Matrx Extend ID is hnfolienncfklkgmdjjmhhegglimlamg; record the exact Store version in the build receipt. A development ID or a popup-bearing unpacked artifact is not this case.",
+            "If the extension was just installed or updated, click its Reload control once, wait for reload completion, and close any existing Matrx sidepanel so this run begins from a fresh panel open.",
+            "Use the admin profile state specified in Preconditions. Leave a normal web tab active and note its window/tab identity.",
+            "Click the Matrx Extend toolbar action once; observe whether a popup document appears and whether the sidepanel opens in that same browser window.",
+            "Inspect the first rendered panel state and record its visible identity/role marker alongside the build receipt."
           ],
           "expected": [
-            "Sidepanel opens directly, with no popup page."
+            "Chrome opens the Matrx sidepanel directly for the active browser window; no popup document opens. The panel restores the admin identity and renders the admin shell. Record the loaded Store ID/version and role. This case covers the toolbar entrypoint only, not admin access to every panel feature."
           ],
           "dimensions": [
             "warm",
