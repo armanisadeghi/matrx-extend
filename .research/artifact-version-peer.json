@@ -1,0 +1,17 @@
+{
+  "status": "reviewed_with_concern",
+  "reviewed_commit": "726c0cd7d27aaf5d67c20a22503c0c175d8a72be",
+  "scope": "Immutable imported CI artifact version validation; source review only, no native browser run",
+  "verdict_A_source_acceptance": "PASS_WITH_RUNTIME_UNVERIFIED: import and native verification read package.json at the recorded source SHA, so the historical 0.2.176 artifact is evaluated against its own commit while current main is 0.2.177. Imported local receipt creation uses the SHA encoded in the run-qualified path. The existing checks still bind run ID, attempt, artifact ID, GitHub digest, provenance, receipt hashes, manifest, and full tree hash. The existing source-state claim distinguishes current pushed source from a historical exact commit. Native browser acceptance was not run in this review.",
+  "verdict_B_quality": "IMPORTANT_TEST_GAP: the new fake git `show` branch returns version 0.0.123 for every argument. The test passes even if production requests package.json at the wrong valid SHA, so it does not force the new immutable-source lookup. A strict stub that recognizes only `${sourceSha}:package.json`, plus a wrong or unavailable source refusal case, is needed for the regression guard. Production code itself fails closed if git show fails and ordinary local development still compares against the checkout package.json.",
+  "evidence": {
+    "historical_source": "git show 991385d9:package.json reports 0.2.176; 991385d9 is an ancestor of origin/main; checkout package.json reports 0.2.177",
+    "unit": "pnpm exec vitest run tests/unit/current-test-artifact-receipt.test.ts --maxWorkers=1: 10 passed",
+    "format": "pnpm exec biome check scripts/current-test-artifact.mjs scripts/record-local-dev-build.mjs scripts/record-local-dev-build.d.mts tests/unit/current-test-artifact-receipt.test.ts: passed",
+    "red_green": "Builder committed resource journal exit 1 before fix and exit 0 after fix; journal records process outcomes only and does not itself prove the assertion that went red. A strict wrong-SHA mutation was not run in this review."
+  },
+  "limits": [
+    "No native browser or live CI artifact import performed by this reviewer.",
+    "No finding on unrelated concurrent native acceptance edits."
+  ]
+}
