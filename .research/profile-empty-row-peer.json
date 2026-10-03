@@ -1,0 +1,28 @@
+{
+  "reviewed_commit": "0e32778c6502c0026c37e6acba4b4db1764fc17a",
+  "scope": "Independent source-only review of bounded ordinary-member Profile first-save, warm save/discard, reload, and original-absence restoration; no browser run or database mutation.",
+  "A_launch_readiness": {
+    "verdict": "ready_for_guarded_native_run",
+    "basis": [
+      "The prior member evidence records a verified nonadmin identity and an absent owner profile row before any profile write.",
+      "The runner independently rechecks owner-row absence before the first UI save and binds cleanup DELETE to owner, device organization, unique marker, original creation timestamp, and exact observed version.",
+      "DELETE requires one returned owner row and a subsequent empty owner read. Cleanup exceptions make the overall report fail and mark restoration unverified.",
+      "No service-role credential or member token is written into the runner report; the owner token is read inside the extension panel."
+    ],
+    "limits": [
+      "Live grants, RLS, version trigger, and current row absence were reported by the builder but were not independently queried in this source-only review; the native preflight and run must establish runtime truth.",
+      "If an unexpected write advances the version, the runner refuses deletion and may leave its owned row. This is a truthful, safe failure, not restoration proof."
+    ]
+  },
+  "B_quality": {
+    "verdict": "bounded_source_candidate_with_test_gap",
+    "findings": [
+      "The new unit tests verify first-insert ownership and all conditional DELETE filters, including owner, organization, marker, timestamp, and version mismatches.",
+      "Those tests do not drive profile-native-acceptance.mjs through a failed first save, failed reload, or cleanup failure; they therefore cannot independently prove the report's no-false-pass behavior. The source branches appear fail-closed, but native execution remains required.",
+      "The initial row's version 1 and later versions 3 and 5 are contract assumptions. A differing live trigger behavior will fail before deletion and preserve the row; this must not be reported as a passing restoration."
+    ],
+    "blocking_for_native_run": false,
+    "blocking_for_final_acceptance": "No native run has yet verified member first save, warm and reload behavior, exact absence restoration, and report truthfulness."
+  },
+  "data_handling": "This review artifact contains no account identifiers, credentials, marker values, or raw row data."
+}
