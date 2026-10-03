@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "scope": "Independent full native admin Settings persistence acceptance for EXT-D-0084 and EXT-D-0086",
+  "source_review": {
+    "runtime_runner_commit": "733caf33ec3df10cbcea4462ba78b951843469fa",
+    "artifact_source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+    "reviewed_runner": "tests/browser/settings-desktop-native-acceptance.mjs",
+    "runtime_verdict": "PARTIAL",
+    "quality_verdict": "PASS",
+    "admin_reset_oracle": "Accepts the matrx.user.isAdmin overlap only when the post-reset value is exactly false. After reload, separately asserts guest UI with visible Sign in, no access token, no profile, and no true admin gate. A retained true gate remains unexplained and fails.",
+    "guard_proof_review": {
+      "commit": "0ed6ddea92cb1d4bb377e3d5c55eb05d92e02247",
+      "report": ".research/desktop-settings-guard-proof.json",
+      "verdict": "PASS",
+      "findings": "The proof runner has three fixed, named D84/D86 fault cases and invokes the sanctioned forcing-function plant.py with an explicit expected-red assertion. The report records 21/21 green before and after restoration, a causal red for each planted fault, and SHA-256 restoration checks for production SettingsView.tsx after each case and at exit. The resource policy adds one exact runner allowlist entry. No broad test selection or production source change was introduced.",
+      "limits": "This source audit relies on the committed proof report and source diff; the proof suite was not rerun in this lane."
+    }
+  },
+  "runtime": {
+    "status": "partial",
+    "resource_decision": "valid; admitted; child exit 0; resourceInvalid=false",
+    "run_id": "desktop-settings-admin-final-20261003-01",
+    "artifact": {
+      "kind": "CI development build, not a published Store release",
+      "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+      "ci_run_id": 37129518563,
+      "artifact_id": 11275878549,
+      "tree_sha256_before_and_after": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+      "version": "0.2.176",
+      "browser": "local pinned Playwright 1.56.1 and Chromium revision 1194",
+      "headed_native_ui": true
+    },
+    "identity": {
+      "account_fingerprint": "5edfa2692bdacc5e",
+      "web_and_extension_signed_in": true,
+      "rendered_admin_role_matches": true,
+      "rendered_email_matches_first_party": true,
+      "profile_matches_first_party": true,
+      "selected_organization_matches_stored_uuid_and_name": true
+    },
+    "passed": [
+      "Port save through trusted Settings UI",
+      "Rejected port write preserves prior value, shows error, retries, and survives reload",
+      "Overlapping port writes complete in order and persist the later value",
+      "Held initial port read preserves the user's edit and settles before its save",
+      "Pair save refusal preserves input and retries; overlapping pair saves persist the later value",
+      "Rejected reset preserves confirmation and all 15 prior local plus 3 session value fingerprints",
+      "Reset retry and reload: 10 prior local keys and all 3 session keys removed; 5 named fresh local defaults allowed; zero unexplained overlaps; fixture removed; signed-out state verified"
+    ],
+    "unverified": [
+      "Pair-code removal refusal/retry: the HTTP transport and native profile did not expose the product Forget control."
+    ],
+    "receipt": {
+      "path": ".research/desktop-settings-admin-final-evidence/raw/admin-receipt.json",
+      "sha256": "de1388a0a9256c8040ba634df97c054e7e1d7e4301a15ce2fd7bf5ecd1e0d21b",
+      "runner_output": "test-results/settings-desktop-native-3e4db6be-c87f-42c7-90f3-bc2fecab6627.json"
+    },
+    "screenshots": [
+      {
+        "path": ".research/desktop-settings-admin-final-evidence/raw/native-sidepanel-qa-3wRCIr/native-side-panel.png",
+        "sha256": "07bc05a94dc8dd16227d3c6088bf03b6e32a15352f289292ae0bcc5be15a323f"
+      },
+      {
+        "path": ".research/desktop-settings-admin-final-evidence/raw/native-sidepanel-qa-3wRCIr/normal-target-after-open.png",
+        "sha256": "33271f9da5b7c8919b1d69230710105d7fbec474a29e2a24ddd831fb2fa7cf87"
+      }
+    ],
+    "resource_journal": {
+      "path": ".research/desktop-settings-admin-final-evidence/raw/admin-resource.jsonl",
+      "canonical_path": "docs/stabilization/resource-journals/desktop-settings-admin-final-20261003-01.jsonl",
+      "sha256": "fb3106c776700d26e99501ecb5c85f6a10dd5761d686e5eb41d3ab09543b731c"
+    }
+  },
+  "limits": [
+    "Storage fault injection validates the real Settings handlers and Chrome storage boundary; it does not prove a healthy desktop engine, actual pairing acceptance, or rediscovery.",
+    "HTTP-only Forget was unavailable, so the native acceptance remains partial.",
+    "This is bounded D84/D86 persistence coverage and does not satisfy full EXT-F-1003 T43-T51 inventory."
+  ],
+  "cleanup": {
+    "admin_credentials": "Loaded privately from aidream/.env into the wrapper environment; wrapper-created mode-0600 credential file was removed on exit. No credential value was printed or stored in evidence.",
+    "owned_browser_profile": "Harness-owned temporary profile removed after run; explicit resource profile directory is empty and will be removed.",
+    "resource_lease": "Absent after valid final decision.",
+    "evidence": "Receipt, canonical journal, and screenshots copied byte-for-byte into the raw evidence folder; original runner outputs remain available at their recorded paths."
+  },
+  "forbidden_claims": [
+    "D84/D86 closed",
+    "All T43-T51 passed",
+    "Real desktop connectivity or rediscovery verified",
+    "Store release verified"
+  ]
+}

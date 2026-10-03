@@ -104,6 +104,10 @@
       "formatter": { "enabled": false }
     },
     {
+      "include": [".research/desktop-settings-admin-final-evidence/raw/admin-receipt.json"],
+      "formatter": { "enabled": false }
+    },
+    {
       "include": [
         "tests/browser/vault-authenticator-preservation.test.cjs",
         "tests/browser/vault-owned-cdp.cjs"
