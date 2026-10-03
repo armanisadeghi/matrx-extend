@@ -153,7 +153,7 @@ const RecordsArgs = z.object({
   mapping: nullDefault(unknownObject()),
   match: nullDefault(unknownObject()),
   /** record_aggregate */
-  measure: z.string().default('count'),
+  measure: z.enum(['count', 'sum', 'avg', 'min', 'max']).default('count'),
   name: z.string().optional(),
   notify: trueDefaultObject(),
   on_duplicate: z.string().default('skip'),
@@ -473,6 +473,13 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
             reason: 'records.record_aggregate requires `table_id`.',
           };
         }
+        if (args.measure !== 'count' && !args.field_key) {
+          return {
+            ok: false,
+            action: 'record_aggregate',
+            reason: `${args.measure} needs field_key. No aggregate was computed.`,
+          };
+        }
         // The package runs it in the organization that owns the table; each row names it.
         const result = await spanning.recordAggregate({
           table_id: args.table_id as string,
@@ -482,7 +489,7 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
             ? { bucket: { key: args.group_by, by: args.bucket } }
             : {}),
           ...(args.measure !== 'count'
-            ? { measures: [{ operation: args.measure, key: args.field_key ?? null }] }
+            ? { measures: [{ op: args.measure, key: args.field_key! }] }
             : {}),
           limit: args.limit,
         });

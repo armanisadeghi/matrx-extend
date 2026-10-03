@@ -202,13 +202,7 @@ export interface SpanningDoors {
       }
     | { ok: false; error: RecordsErrorLike }
   >;
-  recordAggregate(args: {
-    table_id: string;
-    organization_id?: string | null;
-    groupBy?: string[];
-    measures?: unknown;
-    limit?: number;
-  }): Promise<{ ok: true; data: unknown[] } | { ok: false; error: RecordsErrorLike }>;
+  recordAggregate: RecordsClient['recordAggregate'];
 }
 type RecordsErrorLike = { code: string; message: string; hint?: string };
 export type SpanningClient = Omit<RecordsClient, 'metadataSearch' | 'recordAggregate'> &
@@ -302,12 +296,12 @@ function withSpanningDoors(
     });
     const target = owner.ok && owner.data ? owner.data : (organization_id ?? null);
     const home = target ? await recordsClientFor(target, actor) : client;
-    const result = await home.recordAggregate(rest as never);
+    const result = await home.recordAggregate(rest);
     return result.ok
       ? {
           ok: true,
-          data: (result.data as unknown[]).map((r) => ({
-            ...(r as object),
+          data: result.data.map((r) => ({
+            ...r,
             organization_id: target,
           })),
         }
