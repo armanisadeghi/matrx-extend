@@ -252,10 +252,17 @@ try {
       try {
         stage = 'baseline';
         await openSettings(panel);
+        await chooseTheme(panel, 'light');
+        const initialSave = await settledTheme(panel, 'light');
+        report.cases.push({
+          name: 'first changed choice saved through UI',
+          status: 'pass',
+          observation: initialSave,
+        });
         await chooseTheme(panel, 'system');
         const baseline = await settledTheme(panel, 'system');
         report.cases.push({
-          name: 'baseline saved through UI',
+          name: 'system choice saved through UI',
           status: 'pass',
           observation: baseline,
         });
