@@ -171,9 +171,9 @@
       "repo": "matrx-common-docs",
       "prior_origin_main": "fbefbc156372a9a02e5e4099bc205fa5d221502f",
       "origin_main": "23cbbc2356054b892111a13134ed95d544f84e27",
-      "last_update": "2026-10-03T18:39:00Z",
+      "last_update": "2026-10-03T11:39:00-07:00",
       "files_modified_since_prior_ledger": 3,
-      "pushed_to_main": "2026-10-03T18:39:00Z",
+      "pushed_to_main": "2026-10-03T11:39:00-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -270,9 +270,9 @@
     },
     {
       "Repository": "matrx-common-docs",
-      "Last update": "2026-10-03T18:39:00Z",
+      "Last update": "2026-10-03T11:39:00-07:00",
       "Files modified since prior ledger": 3,
-      "Pushed to main": "2026-10-03T18:39:00Z",
+      "Pushed to main": "2026-10-03T11:39:00-07:00",
       "Not included on main / reason": "unmerged remote branches: origin/claude/codec-subscriptions-integration-uzewe1"
     },
     {
