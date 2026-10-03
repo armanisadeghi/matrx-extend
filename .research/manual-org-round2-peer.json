@@ -1,0 +1,23 @@
+{
+  "role": "fresh_zero_authorship_manual_records_final_peer_round_2",
+  "reviewed_commits": [
+    "07a573cbf9e3238a76006ab46e9efb399e3b0a03",
+    "a511016c94b3a096cffcaeef0bed90cfbadf6ae5"
+  ],
+  "evidence_commit": "6d9e7fcd7568dc8fb06b9d8958c4179f07349885",
+  "verdict_A_behavior": "PASS",
+  "verdict_B_source_quality": "PASS",
+  "evidence": [
+    "No selected organization: runManualServerTool awaits requireRequestOrganizationId before dispatch. That delegates to requireActiveOrganizationId/holdForActiveOrganizationId, whose empty-selection path requests the canonical picker and waits for the user's selection. The orchestration test verifies no stream begins while the hold is pending and the call resumes after selection.",
+    "Malformed stored organization: buildHeaders catches the kernel validation refusal and returns headers without the organization context. runManualServerTool now compares the canonical ORGANIZATION_CONTEXT_HEADER value to the resolved organization id and throws before streamFetch if they differ. manual-server-real-header.test.ts exercises the real buildHeaders implementation with a malformed stored id and asserts zero stream calls.",
+    "No fallback: the manual server path requires a signed-in bearer before building headers, uses the explicitly held active organization, and refuses a header that did not bind that exact id. No guest-fingerprint or first-organization fallback is reachable in this path.",
+    "Exact submitted arguments are preserved in the tool execution body. The held-call test asserts the action and nested args survive organization selection unchanged. Actor changes during preparation trigger a header rebuild; a second change fails before stream dispatch.",
+    "Test isolation fix: tests/unit/records-manual-tools-view.test.tsx now calls cleanup after every test. This directly addresses the duplicated rendered-button failure in prior CI while preserving the UI assertions. The earlier hosted run 37101616207 failed at Unit tests; that run predates both the real-header guard and cleanup change.",
+    "Latest hosted checks on current main head 5363405f615075cd797f595531c2b8930514b8eb were still running at report time: typecheck, schema routing, picker guards, lint and resource-guard integration had passed; Unit tests were in progress. Run: https://github.com/armanisadeghi/matrx-extend/actions/runs/37101952374. The intermediate run for 6d9e7fcd was cancelled by later commits."
+  ],
+  "limits": [
+    "Source and test review only; no product source edits, local tests, typecheck, browser session, or install run, per disk-floor constraint.",
+    "The code path and tests establish the held request contract, but this review makes no actual UI/live picker claim.",
+    "Strict Records flat-schema drift remains open; this organization fix does not establish D91 closure."
+  ]
+}
