@@ -1,0 +1,4 @@
+{"schema":1,"at":"2026-10-03T12:58:19.658Z","runId":"settings-signedin-admin-20261003-01","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-03T12:59:20.956Z","runId":"settings-signedin-admin-20261003-01","signal":"SIGINT","code":"RESOURCE_STOP_REQUESTED"}
+{"schema":1,"at":"2026-10-03T12:59:26.871Z","runId":"settings-signedin-admin-20261003-01","code":"RESOURCE_STOP_REQUESTED"}
+{"schema":1,"at":"2026-10-03T12:59:26.879Z","runId":"settings-signedin-admin-20261003-01","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}
