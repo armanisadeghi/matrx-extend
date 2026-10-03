@@ -129,6 +129,21 @@ jobs:
         working-directory: matrx-extend
         run: pnpm install --frozen-lockfile
 
+      - name: Refresh shared packages in the release candidate
+        working-directory: matrx-extend
+        shell: bash
+        run: |
+          set -euo pipefail
+          pnpm -s sync:matrx-packages
+          git add -- package.json pnpm-lock.yaml
+          if ! git diff --cached --quiet -- package.json pnpm-lock.yaml; then
+            git commit -m 'chore: refresh @ai-matrx packages' -- package.json pnpm-lock.yaml
+          fi
+          if [[ -n "$(git status --porcelain --untracked-files=all)" ]]; then
+            echo 'Package refresh left uncommitted paths outside the release candidate.' >&2
+            exit 1
+          fi
+
       - name: Release through the repository contract
         working-directory: matrx-extend
         shell: bash
