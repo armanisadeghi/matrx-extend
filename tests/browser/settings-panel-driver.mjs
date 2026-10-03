@@ -126,6 +126,13 @@ export async function click(panel, kind, label) {
     let candidates;
     if (kind === 'title') candidates = [...document.querySelectorAll('button[title]')]
       .filter((el) => el.title === label);
+    else if (kind === 'context-values') {
+      const chatTab = [...document.querySelectorAll('button[role="tab"][title="Chat"]')]
+        .find((el) => el.getAttribute('aria-selected') === 'true');
+      const chatPanel = chatTab ? document.getElementById(chatTab.getAttribute('aria-controls') ?? '') : null;
+      candidates = [...(chatPanel?.querySelectorAll('button[aria-label]') ?? [])]
+        .filter((el) => /^[0-9]+ included$/.test(el.getAttribute('aria-label') ?? ''));
+    }
     else if (kind === 'settings-button') candidates = [...(${activeTabPanelExpression('Settings')}?.querySelectorAll('button') ?? [])]
       .filter((el) => el.textContent.trim() === label);
     else if (kind === 'screenshot-open') {

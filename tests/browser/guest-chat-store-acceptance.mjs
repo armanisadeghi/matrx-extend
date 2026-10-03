@@ -62,6 +62,8 @@ const report = {
   schema_version: 1,
   scope:
     'fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat answer and post-reload guest follow-up',
+  context_rule_read_observation_scope:
+    'CDP observer attaches after panel load and runs through Values chip open, both guest sends, and panel reload; it cannot establish requests before attachment',
   status: 'unverified',
   build: null,
   guest: null,
@@ -73,6 +75,7 @@ const report = {
   failure_reason: null,
   stage_progress: [],
   guest_ai_requests: [],
+  context_rule_reads: [],
   grounding_diagnostics: {},
 };
 
@@ -261,6 +264,72 @@ async function watchGuestAiRequests(panel) {
       offResponse();
     },
   };
+}
+
+async function watchGuestContextRuleReads(panel) {
+  await panel.send('Network.enable');
+  let stage = 'observer_attached';
+  const requests = new Map();
+  const path = '/rest/v1/user_surface_state';
+  const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
+    try {
+      const url = new URL(request?.url);
+      if (!url.pathname.endsWith(path)) return;
+      const headers = request?.headers ?? {};
+      const authorization = Object.keys(headers).find(
+        (key) => key.toLowerCase() === 'authorization',
+      );
+      const profile = Object.keys(headers).find((key) => key.toLowerCase() === 'accept-profile');
+      requests.set(requestId, {
+        stage,
+        method: typeof request?.method === 'string' ? request.method : 'unknown',
+        usersSchema:
+          typeof profile === 'string' && String(headers[profile]).toLowerCase() === 'users',
+        authorizationPresent: Boolean(authorization && headers[authorization]),
+        status: null,
+      });
+    } catch {
+      // Keep only safe, classified metadata for the one owner-only table.
+    }
+  });
+  const offResponse = panel.on('Network.responseReceived', ({ requestId, response }) => {
+    const request = requests.get(requestId);
+    if (request) request.status = Number.isFinite(response?.status) ? response.status : null;
+  });
+  return {
+    arm(next) {
+      stage = next;
+    },
+    snapshot() {
+      return [...requests.values()].map((request) => ({ ...request }));
+    },
+    stop() {
+      offRequest();
+      offResponse();
+    },
+  };
+}
+
+async function openAndCloseGuestValuesChip(panel) {
+  const readChip = () =>
+    evaluate(
+      panel,
+      `(() => {
+    const chat = document.querySelector('button[role="tab"][title="Chat"][aria-selected="true"]');
+    const pane = chat ? document.getElementById(chat.getAttribute('aria-controls') ?? '') : null;
+    const matches = [...(pane?.querySelectorAll('button[aria-label]') ?? [])]
+      .filter((button) => /^[0-9]+ included$/.test(button.getAttribute('aria-label') ?? ''));
+    return matches.length === 1 ? {
+      count: 1,
+      expanded: matches[0].getAttribute('aria-expanded'),
+    } : { count: matches.length, expanded: null };
+  })()`,
+    );
+  assert.equal((await readChip())?.count, 1, 'guest Values chip must be uniquely present');
+  await click(panel, 'context-values', '');
+  await waitFor('guest_values_chip_open', readChip, (state) => state?.expanded === 'true');
+  await click(panel, 'context-values', '');
+  await waitFor('guest_values_chip_closed', readChip, (state) => state?.expanded === 'false');
 }
 
 async function installPageFixture(page, existingFixture = null) {
@@ -548,6 +617,8 @@ try {
     }),
     ...(receipt.kind === 'local_dev_unpacked' && { localDevReceiptPath: RECEIPT }),
     exercisePanel: async ({ page, panel, artifacts, attachWorker }) => {
+      const contextReadWatch = await watchGuestContextRuleReads(panel);
+      contextReadWatch.arm('observer_attached');
       markStage('fresh_guest');
       const initial = await waitFor(
         'fresh_guest_chat_visible',
@@ -584,6 +655,7 @@ try {
         await requireActiveFixtureTab(attachWorker, web, fixture);
 
         markStage('guest_chat_open');
+        contextReadWatch.arm('chat_open');
         await click(panel, 'title', 'Chat');
         const before = await waitFor(
           'guest_chat_composer',
@@ -592,6 +664,16 @@ try {
           30_000,
         );
         assert.equal(before.replyCount, 0, 'fresh guest must have no prior reply');
+
+        markStage('guest_values_chip_open');
+        contextReadWatch.arm('chip_open');
+        await openAndCloseGuestValuesChip(panel);
+        report.context_rule_reads = contextReadWatch.snapshot();
+        assert.equal(
+          report.context_rule_reads.some((request) => request.method === 'GET'),
+          false,
+          'guest panel/chat/Values chip must not issue an owner-table GET',
+        );
 
         markStage('guest_question');
         networkWatch = await watchGuestAiRequests(panel);
@@ -614,6 +696,7 @@ try {
         );
         await installStreamTrace(panel, fixture, fixtureTabId);
         networkWatch.arm('opening');
+        contextReadWatch.arm('opening_send');
         await submitQuestion(panel, FIRST_QUESTION, 'opening_question');
 
         markStage('real_guest_answer');
@@ -630,6 +713,12 @@ try {
         report.opening_turn_timeline = openingTurn.timeline;
         report.failure_observation = diagnosticState(answered, fixture);
         report.guest_ai_requests = networkWatch.snapshot();
+        report.context_rule_reads = contextReadWatch.snapshot();
+        assert.equal(
+          report.context_rule_reads.some((request) => request.method === 'GET'),
+          false,
+          'guest send must not issue an owner-table GET',
+        );
         assert.ok(
           openingTurn.verdict === 'terminal_answer' &&
             answered.answerContainsNonce &&
@@ -689,6 +778,7 @@ try {
         );
         markStage('guest_followup_question');
         networkWatch.arm('post_reload_new_conversation');
+        contextReadWatch.arm('post_reload_send');
         const fixtureSurvivedReload = await readableFixturePresent(web, fixture);
         if (!fixtureSurvivedReload) {
           await installPageFixture(web, fixture);
@@ -731,6 +821,12 @@ try {
         report.followup_turn_timeline = followupTurn.timeline;
         report.failure_observation = diagnosticState(followup, fixture);
         report.guest_ai_requests = networkWatch.snapshot();
+        report.context_rule_reads = contextReadWatch.snapshot();
+        assert.equal(
+          report.context_rule_reads.some((request) => request.method === 'GET'),
+          false,
+          'post-reload guest send must not issue an owner-table GET',
+        );
         assert.ok(
           followupTurn.verdict === 'terminal_answer' &&
             followup.answerContainsNonce &&
@@ -774,6 +870,8 @@ try {
         }
         throw error;
       } finally {
+        report.context_rule_reads = contextReadWatch?.snapshot() ?? [];
+        contextReadWatch?.stop();
         networkWatch?.stop();
         await web.close();
       }
