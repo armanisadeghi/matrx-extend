@@ -33,9 +33,9 @@
     "newerSourceReleaseGates": "Hosted attempts ran and failed before publication; no new eligible Store artifact."
   },
   "hostedReleaseBlocker": {
-    "status": "credential resolved; hosted setup repaired; package refresh and exact-dependency fixes awaiting reviewed retry",
+    "status": "hosted retry37094898802 running after independent source review; no candidate published",
     "workflow": ".github/workflows/release.yml",
-    "run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37093086895",
+    "run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37094898802",
     "reason": "Removed unsupported token-prefix restriction, retained required credential and all strict DB checks. Existing mode0600 CLI credential privately verified project access and read-only SELECT1, then supplied to the existing repository Actions secret through stdin.",
     "credentialDecision": "No new credential, rotation, or Supabase grant. Earlier request for a new scoped credential is no longer a prerequisite to release; no credential value recorded.",
     "localConstraint": "No local build/test launched below the20GiB floor; current explicit extension release mandate executed on hosted runner.",
@@ -50,6 +50,11 @@
         "run_id": 37093086895,
         "conclusion": "failure",
         "gate": "strict shared package freshness; refresh correction36d5c94f; subsequent review45cc5f06 awaiting independent acceptance"
+      },
+      {
+        "run_id": 37093887750,
+        "conclusion": "failure",
+        "gate": "candidate lint; sourceCI lint passed, safe diagnostic extraction added for retry; no publication"
       }
     ]
   },
@@ -71,5 +76,13 @@
     "run_id": 37093077293,
     "conclusion": "success",
     "limits": "Hosted CI success does not establish Store readiness or native acceptance. Newer Settings overlapping-write changes are under independent review and hosted CI37093686086."
+  },
+  "guest_live_incident": {
+    "defect_id": "EXT-D-0088",
+    "published_extension": "0.2.130",
+    "server_fix_sha": "c01faa52660a2720fcc888af3e10210688bc80cc",
+    "deployment_run": 37094559311,
+    "status": "queued behind prior server deployment; live guest request must pass before recovery claim",
+    "evidence": ".research/guest-live-incident-server.json"
   }
 }
