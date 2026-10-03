@@ -23,7 +23,12 @@
     ".research/records-routing-peer.json",
     ".research/records-canonical-escalation.json",
     "https://github.com/armanisadeghi/matrx-extend/commit/41670d8d",
-    "https://github.com/AI-Matrix-Engine/aidream/commit/c971bc6314"
+    "https://github.com/AI-Matrix-Engine/aidream/commit/c971bc6314",
+    ".research/records-current-evidence.json",
+    ".research/release176-artifact.json",
+    ".research/records-canonical-independent-check.json",
+    ".research/records-manual-contract.json",
+    ".research/records-canonical-escalation.json"
   ],
   "transition_history": [
     {
@@ -62,5 +67,5 @@
     "entity_read",
     "entity_write"
   ],
-  "current_work": "Source41670d8d removes duplicate local executor, preserves server Records discovery and manual UI, and requires live canonical contract proof. Aidream c971bc6314 exposes that proof through existing tool detail. Guarded types and focused tests passed. Source review, explicit server test CI, deployed endpoint, strict gate and native acceptance remain pending; not closed."
+  "current_work": "Release 0.2.176 (source 3fe608d949a06aa10bfea57b43c9b05638386bc1) includes extension commit 41670d8d; aidream source c971bc6314 supplies the canonical server contract. The release artifact records strict release gates exiting 0, and source review confirms the executor retirement, retained discovery/manual UI, and complete contract gate. This supersedes the stale claim that source review and the strict gate are still pending. D91 remains in-fix: the retained independent live check predates server deployment, no post-deployment Records user result is recorded, and the focused native Manual Tools Records read-only case is still not executed. Do not infer all-action acceptance from the strict gate or unrelated guest/member Chat runs."
 }

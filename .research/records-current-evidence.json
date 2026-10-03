@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-10-03",
+  "defect_id": "EXT-D-0091",
+  "status": "in-fix",
+  "current_truth": {
+    "extension_release": {
+      "version": "0.2.176",
+      "source_sha": "3fe608d949a06aa10bfea57b43c9b05638386bc1",
+      "contains_d91_repair": true,
+      "release_run": "37105966615",
+      "artifact_id": "11267544261",
+      "strict_release_gates": "exit 0 per retained release artifact",
+      "publication": "submitted for review; public version remains 0.2.130"
+    },
+    "server": {
+      "repair_source_sha": "c971bc6314",
+      "deployed": true,
+      "limits": "The retained independent Records endpoint review predates this server deployment and does not supply a post-deployment Records execution receipt."
+    },
+    "source_review": {
+      "result": "pass by inspection",
+      "evidence": ".research/records-canonical-independent-check.json",
+      "scope": "Retired duplicate browser Records executor; preserved discovery and manual Tools route; strict gate checks live canonical parameters, resolver/binding, server validation, and all generated action variants.",
+      "limit": "Source inspection and release-gate success do not prove a native Manual Tools result."
+    },
+    "unrelated_runtime": {
+      "evidence": ".research/release176-artifact.json",
+      "result": "Guest and signed-in nonadmin Chat acceptance passed for release 0.2.176.",
+      "limit": "These are Chat results, not Manual Tools Records executions."
+    }
+  },
+  "remaining_acceptance": {
+    "inventory_case": "EXT-F-4130-T01",
+    "role": "Authenticated nonadmin member with an explicitly selected authorized organization; admin may be a separate coverage case, guest is not applicable because Tools requires sign-in.",
+    "read_only_action": "record_read through the native Tools panel Run control, using the current unflattened server Records contract and a controlled test-owned record.",
+    "observe": [
+      "The actual panel request preserves the canonical action and action-specific args through the existing authenticated server test endpoint.",
+      "The response is a real completed server tool receipt with the expected controlled record fields; no mocked or synthetic success is accepted.",
+      "The request uses the selected organization and existing signed-in actor; no guest downgrade, authorization bypass, write, or unrelated external effect occurs."
+    ],
+    "current_inventory_gap": "T01 still has design_status=needed, empty steps and expected arrays, and lists all 25 actions; this report scopes the minimum read-only proof and does not mark the entire 25-action case complete.",
+    "closure_still_requires": [
+      "Post-deployment strict live drift check evidence for the deployed server and released extension contract.",
+      "The actual native member Manual Tools read-only execution above, with its receipt and selected-organization evidence.",
+      "The remaining canonical action/authorization coverage and independent review required by EXT-D-0091 closure_requirement."
+    ]
+  },
+  "evidence_sources": [
+    ".research/release176-artifact.json",
+    ".research/records-canonical-independent-check.json",
+    ".research/records-manual-contract.json",
+    ".research/records-canonical-escalation.json",
+    "docs/stabilization/inventory.json: EXT-F-4130 / EXT-F-4130-T01",
+    "docs/stabilization/defects/EXT-D-0091.json"
+  ],
+  "limitations": [
+    "No browser, native acceptance, tests, or live Records endpoint was run for this reconciliation.",
+    "The release and Chat acceptance evidence supersedes stale source/gate-pending text, but does not establish end-to-end D91 closure."
+  ]
+}
