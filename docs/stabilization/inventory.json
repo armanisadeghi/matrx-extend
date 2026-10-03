@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T16:38:19.684027+00:00",
+  "updated_at": "2026-10-03T17:30:58.710417+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -5128,7 +5128,28 @@
           ],
           "linked_defects": [
             "EXT-D-0086"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "partial",
+              "run_id": "desktop-settings-guest-20261003-independent01",
+              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "evidence": [
+                ".research/desktop-settings-independent-native.json",
+                ".research/desktop-settings-guard-proof.json"
+              ],
+              "verified_substeps": [
+                "Actual pair-code storage rejection preserved input and prior value; explicit retry persisted; overlapping submissions preserved the newer input and final value after reload."
+              ],
+              "remaining_criteria": [
+                "HTTP-only Forget confirmation/cancel, failed removal and retry were unavailable in this profile.",
+                "Actual desktop pairing acceptance and resulting unpaired state remain unverified."
+              ],
+              "release_scope": "Exact CI development artifact; not frozen public176 or full Store installation/update acceptance."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T44",
@@ -5159,7 +5180,28 @@
           ],
           "linked_defects": [
             "EXT-D-0086"
-          ]
+          ],
+          "results": {
+            "member": {
+              "status": "partial",
+              "run_id": "desktop-settings-member-20261003-independent01",
+              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "evidence": [
+                ".research/desktop-settings-independent-native.json",
+                ".research/desktop-settings-guard-proof.json"
+              ],
+              "verified_substeps": [
+                "Actual pair-code storage rejection preserved input and prior value; explicit retry persisted; overlapping submissions preserved the newer input and final value after reload."
+              ],
+              "remaining_criteria": [
+                "HTTP-only Forget confirmation/cancel, failed removal and retry were unavailable in this profile.",
+                "Actual desktop pairing acceptance and resulting unpaired state remain unverified."
+              ],
+              "release_scope": "Exact CI development artifact; not frozen public176 or full Store installation/update acceptance."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T45",
@@ -5190,7 +5232,28 @@
           ],
           "linked_defects": [
             "EXT-D-0086"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "desktop-settings-admin-final-20261003-01",
+              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "evidence": [
+                ".research/desktop-settings-admin-final.json",
+                ".research/desktop-settings-guard-proof.json"
+              ],
+              "verified_substeps": [
+                "Actual pair-code storage rejection preserved input and prior value; explicit retry persisted; overlapping submissions preserved the newer input and final value after reload."
+              ],
+              "remaining_criteria": [
+                "HTTP-only Forget confirmation/cancel, failed removal and retry were unavailable in this profile.",
+                "Actual desktop pairing acceptance and resulting unpaired state remain unverified."
+              ],
+              "release_scope": "Exact CI development artifact; not frozen public176 or full Store installation/update acceptance."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T46",
@@ -5222,16 +5285,37 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "hosted-settings-37099860144",
-              "build_version": "0.2.175",
-              "source_sha": "2b554c62e5e52339ba2340636de2e84f57cd4522",
-              "build_tree_sha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
+              "status": "partial",
+              "run_id": "desktop-settings-guest-20261003-independent01",
+              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
               "evidence": [
-                "docs/stabilization/runs/hosted-settings-20261003.json",
-                ".research/settings-hosted-retest.json"
+                ".research/desktop-settings-independent-native.json",
+                ".research/desktop-settings-guard-proof.json"
               ],
-              "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
+              "verified_substeps": [
+                "Actual rejected port write showed error and preserved prior value; retry persisted after reload. Held initial read preserved the newer edit and preceded its save; overlapping submissions persisted the latest choice."
+              ],
+              "remaining_criteria": [
+                "This current-artifact run did not cover boundary ports 1/65535, blank clearing and invalid range.",
+                "Actual worker rediscovery and desktop connection remain unverified."
+              ],
+              "release_scope": "Exact CI development artifact; not frozen public176 or full Store installation/update acceptance.",
+              "prior_evidence": [
+                {
+                  "status": "pass",
+                  "run_id": "hosted-settings-37099860144",
+                  "build_version": "0.2.175",
+                  "source_sha": "2b554c62e5e52339ba2340636de2e84f57cd4522",
+                  "build_tree_sha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
+                  "evidence": [
+                    "docs/stabilization/runs/hosted-settings-20261003.json",
+                    ".research/settings-hosted-retest.json"
+                  ],
+                  "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
+                }
+              ]
             }
           },
           "linked_defects": [
@@ -5308,7 +5392,28 @@
           ],
           "linked_defects": [
             "EXT-D-0086"
-          ]
+          ],
+          "results": {
+            "member": {
+              "status": "partial",
+              "run_id": "desktop-settings-member-20261003-independent01",
+              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "evidence": [
+                ".research/desktop-settings-independent-native.json",
+                ".research/desktop-settings-guard-proof.json"
+              ],
+              "verified_substeps": [
+                "Actual rejected port write showed error and preserved prior value; retry persisted after reload. Held initial read preserved the newer edit and preceded its save; overlapping submissions persisted the latest choice."
+              ],
+              "remaining_criteria": [
+                "This current-artifact run did not cover boundary ports 1/65535, blank clearing and invalid range.",
+                "Actual worker rediscovery and desktop connection remain unverified."
+              ],
+              "release_scope": "Exact CI development artifact; not frozen public176 or full Store installation/update acceptance."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T48",
@@ -5340,22 +5445,43 @@
           ],
           "results": {
             "admin": {
-              "status": "unverified",
-              "run_id": "native-0258-port-verification",
-              "evidence": "docs/stabilization/runs/native-0258-port-verification.json",
+              "status": "partial",
+              "run_id": "desktop-settings-admin-final-20261003-01",
+              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "evidence": [
+                ".research/desktop-settings-admin-final.json",
+                ".research/desktop-settings-guard-proof.json"
+              ],
               "verified_substeps": [
-                "Valid port save and persistence",
-                "Invalid range preserves override",
-                "Same-view blank save clears override and obsolete error",
-                "Cleared state persists after reopening"
+                "Actual rejected port write showed error and preserved prior value; retry persisted after reload. Held initial read preserved the newer edit and preceded its save; overlapping submissions persisted the latest choice."
               ],
               "remaining_criteria": [
-                "Actual desktop worker rediscovery"
+                "This current-artifact run did not cover boundary ports 1/65535, blank clearing and invalid range.",
+                "Actual worker rediscovery and desktop connection remain unverified."
               ],
-              "defect_ids": [
-                "EXT-D-0012"
-              ],
-              "retest_status": "pass"
+              "release_scope": "Exact CI development artifact; not frozen public176 or full Store installation/update acceptance.",
+              "prior_evidence": [
+                {
+                  "status": "unverified",
+                  "run_id": "native-0258-port-verification",
+                  "evidence": "docs/stabilization/runs/native-0258-port-verification.json",
+                  "verified_substeps": [
+                    "Valid port save and persistence",
+                    "Invalid range preserves override",
+                    "Same-view blank save clears override and obsolete error",
+                    "Cleared state persists after reopening"
+                  ],
+                  "remaining_criteria": [
+                    "Actual desktop worker rediscovery"
+                  ],
+                  "defect_ids": [
+                    "EXT-D-0012"
+                  ],
+                  "retest_status": "pass"
+                }
+              ]
             }
           },
           "linked_defects": [
@@ -5390,19 +5516,39 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "guest-reset-009",
+              "status": "partial",
+              "run_id": "desktop-settings-guest-20261003-independent01",
+              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
               "evidence": [
-                "docs/stabilization/runs/guest-reset-009.json",
-                "docs/stabilization/reports/native-driver-final-peer.json"
+                ".research/desktop-settings-independent-native.json",
+                ".research/desktop-settings-guard-proof.json"
               ],
-              "detail": "Real native0.2.57 isolated guest Cancel/Confirm/reload acceptance after shared driver repair.",
+              "verified_substeps": [
+                "Rejected clear preserved complete prior local/session value census and confirmation. Retry cleared a trusted-UI nondefault draft and session fixture; reload showed signed-out identity and only explicitly checked fresh guest defaults."
+              ],
+              "remaining_criteria": [
+                "Cancel-without-clear was not rerun on this current artifact."
+              ],
+              "release_scope": "Exact CI development artifact; not frozen public176 or full Store installation/update acceptance.",
               "prior_evidence": [
                 {
                   "status": "pass",
-                  "run_id": "guest-reset-007",
-                  "evidence": "docs/stabilization/runs/guest-reset-007.json",
-                  "detail": "Frozen0.2.56 actual native guest sidepanel: Cancel preserves exact theme/port/session fixtures; Confirm clears all prior local/session keys; Reload shows guest/System and no prior overrides. Primary profile untouched."
+                  "run_id": "guest-reset-009",
+                  "evidence": [
+                    "docs/stabilization/runs/guest-reset-009.json",
+                    "docs/stabilization/reports/native-driver-final-peer.json"
+                  ],
+                  "detail": "Real native0.2.57 isolated guest Cancel/Confirm/reload acceptance after shared driver repair.",
+                  "prior_evidence": [
+                    {
+                      "status": "pass",
+                      "run_id": "guest-reset-007",
+                      "evidence": "docs/stabilization/runs/guest-reset-007.json",
+                      "detail": "Frozen0.2.56 actual native guest sidepanel: Cancel preserves exact theme/port/session fixtures; Confirm clears all prior local/session keys; Reload shows guest/System and no prior overrides. Primary profile untouched."
+                    }
+                  ]
                 }
               ]
             }
@@ -5467,7 +5613,27 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "member": {
+              "status": "partial",
+              "run_id": "desktop-settings-member-20261003-independent01",
+              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "evidence": [
+                ".research/desktop-settings-independent-native.json",
+                ".research/desktop-settings-guard-proof.json"
+              ],
+              "verified_substeps": [
+                "Rejected clear preserved complete prior local/session value census and confirmation. Retry cleared a trusted-UI nondefault draft and session fixture; reload showed signed-out identity and only explicitly checked fresh guest defaults."
+              ],
+              "remaining_criteria": [
+                "Cancel-without-clear was not rerun on this current artifact."
+              ],
+              "release_scope": "Exact CI development artifact; not frozen public176 or full Store installation/update acceptance."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T51",
@@ -5526,17 +5692,37 @@
           ],
           "results": {
             "admin": {
-              "status": "pass",
-              "run_id": "isolated-admin-reset-010",
+              "status": "partial",
+              "run_id": "desktop-settings-admin-final-20261003-01",
+              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
               "evidence": [
-                "docs/stabilization/runs/isolated-admin-reset-010.json",
-                "docs/stabilization/reports/admin-reset-final-peer.json"
+                ".research/desktop-settings-admin-final.json",
+                ".research/desktop-settings-guard-proof.json"
               ],
-              "detail": "Actual isolated admin 0.2.63: real sign-in and explicit device organization; Cancel preserves all prior key/value identities; Confirm empties local/session storage and signs out; reload remains guest/System with only narrowly verified fresh defaults and zero unexplained overlaps. Independent artifact/log review, not an independent browser replay.",
-              "defect_ids": [
-                "EXT-D-0015"
+              "verified_substeps": [
+                "Rejected clear preserved complete prior local/session value census and confirmation. Retry cleared a trusted-UI nondefault draft and session fixture; reload showed signed-out identity and only explicitly checked fresh guest defaults."
               ],
-              "retest_status": "pass"
+              "remaining_criteria": [
+                "Cancel-without-clear was not rerun on this current artifact."
+              ],
+              "release_scope": "Exact CI development artifact; not frozen public176 or full Store installation/update acceptance.",
+              "prior_evidence": [
+                {
+                  "status": "pass",
+                  "run_id": "isolated-admin-reset-010",
+                  "evidence": [
+                    "docs/stabilization/runs/isolated-admin-reset-010.json",
+                    "docs/stabilization/reports/admin-reset-final-peer.json"
+                  ],
+                  "detail": "Actual isolated admin 0.2.63: real sign-in and explicit device organization; Cancel preserves all prior key/value identities; Confirm empties local/session storage and signs out; reload remains guest/System with only narrowly verified fresh defaults and zero unexplained overlaps. Independent artifact/log review, not an independent browser replay.",
+                  "defect_ids": [
+                    "EXT-D-0015"
+                  ],
+                  "retest_status": "pass"
+                }
+              ]
             }
           }
         },
@@ -7146,7 +7332,8 @@
             "guest-settings-local-005",
             "guest-settings-local-006",
             "guest-settings-dev089-001",
-            "hosted-settings-37115406435"
+            "hosted-settings-37115406435",
+            "desktop-settings-guest-20261003-independent01"
           ],
           "retest_status": "not-run"
         },
@@ -7160,7 +7347,8 @@
             "EXT-D-0087"
           ],
           "run_ids": [
-            "settings-mounted-member-full6-20261003-01"
+            "settings-mounted-member-full6-20261003-01",
+            "desktop-settings-member-20261003-independent01"
           ],
           "retest_status": "not-run"
         },
@@ -7191,7 +7379,8 @@
             "isolated-permission-denial-006",
             "settings-mounted-admin-full6-20261003-01",
             "audit-escalation-peer-native-20261003",
-            "audit-final-native-20261003-02"
+            "audit-final-native-20261003-02",
+            "desktop-settings-admin-final-20261003-01"
           ],
           "retest_status": "not-run"
         }
@@ -7291,6 +7480,33 @@
           "independent_review": "docs/stabilization/reports/native-0272-reload.json",
           "environment_followup": "docs/stabilization/reports/bridge0272-prerequisite.json",
           "detail": "Native reload preservesadmin/org/autoport/fouroptionalpermissionsOFF; bridgeNotconnectedimmediateand30s. Laterreadonlyhostprobe findsnoengine/discoveryfile/scanportroute; no historicalcause or fullpairing/bridgehealth claim."
+        },
+        {
+          "run_id": "desktop-settings-guest-20261003-independent01",
+          "mode": "guest",
+          "build": "0.2.176",
+          "status": "partial",
+          "report": ".research/desktop-settings-independent-native.json",
+          "proven": "Independent native desktop Settings persistence/error/retry/ordering and local reset census.",
+          "limits": "Full mapped controls, HTTP-only pair removal and actual desktop engine connection/rediscovery remain unverified."
+        },
+        {
+          "run_id": "desktop-settings-member-20261003-independent01",
+          "mode": "member",
+          "build": "0.2.176",
+          "status": "partial",
+          "report": ".research/desktop-settings-independent-native.json",
+          "proven": "Independent native desktop Settings persistence/error/retry/ordering and local reset census.",
+          "limits": "Full mapped controls, HTTP-only pair removal and actual desktop engine connection/rediscovery remain unverified."
+        },
+        {
+          "run_id": "desktop-settings-admin-final-20261003-01",
+          "mode": "admin",
+          "build": "0.2.176",
+          "status": "partial",
+          "report": ".research/desktop-settings-admin-final.json",
+          "proven": "Independent native desktop Settings persistence/error/retry/ordering and local reset census.",
+          "limits": "Full mapped controls, HTTP-only pair removal and actual desktop engine connection/rediscovery remain unverified."
         }
       ],
       "source_audit_sha": "6f4e9d0211315949f50a3d11b35dfa732822abec"
