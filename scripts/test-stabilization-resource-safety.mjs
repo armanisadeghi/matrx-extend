@@ -3,7 +3,43 @@ import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { diskIsLow, sampleDiskSpace, writeSafetyState } from './stabilization-resource-safety.mjs';
+import {
+  cpuBusyFraction,
+  diskIsLow,
+  sampleDiskSpace,
+  writeSafetyState,
+} from './stabilization-resource-safety.mjs';
+
+test('CPU sampler uses the second interval and refuses a missing reading', async () => {
+  const rows = [
+    '      cpu    load average\n us sy id   1m   5m   15m\n  9  4 87  2.61 2.60 2.84\n 12  7 80  2.61 2.60 2.84',
+    '      cpu    load average\n us sy id   1m   5m   15m\n  9  4 87  2.61 2.60 2.84\n 35 10 55  2.61 2.60 2.84',
+  ];
+  for (const [index, raw] of rows.entries()) {
+    assert.equal(
+      await cpuBusyFraction(async (command, args) => {
+        assert.equal(command, '/usr/sbin/iostat');
+        assert.deepEqual(args, ['-c', '2', '-w', '1', '-n', '0']);
+        return raw;
+      }),
+      index === 0 ? 0.2 : 0.45,
+    );
+  }
+  await assert.rejects(
+    cpuBusyFraction(async () => rows[0].split('\n').slice(0, 3).join('\n')),
+    /RESOURCE_MEASUREMENT_INVALID:cpu-busy/,
+  );
+  await assert.rejects(
+    cpuBusyFraction(async () => rows[0].replace(' 12  7 80 ', ' 12  7 101 ')),
+    /RESOURCE_MEASUREMENT_INVALID:cpu-idle/,
+  );
+  await assert.rejects(
+    cpuBusyFraction(async () => {
+      throw Object.assign(new Error('timed out'), { killed: true, signal: 'SIGTERM' });
+    }),
+    /timed out/,
+  );
+});
 
 test('a full system volume refuses despite external repo, profile and lease volumes', async () => {
   const paths = {
