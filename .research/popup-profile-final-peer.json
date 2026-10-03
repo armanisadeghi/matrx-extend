@@ -1,0 +1,76 @@
+{
+  "reviewed_commits": ["443eceab", "58f83704"],
+  "artifact": ".research/popup-profile-procedures.json",
+  "review_type": "fresh zero-authorship source and inventory review; no browser, build, database write, or test execution",
+  "verdict_a_requirements_readiness": "PARTIAL",
+  "verdict_a_findings": [
+    {
+      "disposition": "CONFIRMED_CORRECTION",
+      "ids": "EXT-F-1002-T01-T20; EXT-F-1004-T01-T28",
+      "finding": "All 48 original cases are present; inventory criteria are copied exactly. The 176 distinct mode/lifecycle/branch rows each have independent null outcome, empty evidence references, and unverified status. Warm/reload setup now requires separate extension runs and the entrypoint route is conditional."
+    },
+    {
+      "disposition": "CONFIRMED_GAP",
+      "ids": "EXT-F-1002-T10-T12",
+      "finding": "The no-device steps require permission already allowed, then say clicking the Chat mic opens mic-grant. The offscreen recorder maps missing device to NO_DEVICE, while Chat opens mic-grant only on PERMISSION_DENIED; the stated route cannot observe the no-device popup branch. A plausible controlled sequence is to trigger permission denial with a microphone present so the real mic-grant window opens, then remove/disable input before clicking Allow; this must be verified on Chrome before declaring a runnable fixture. Chat's guest mic action returns a sign-in error before recording, so T10 has no Chat-to-popup path. Preserve the popup's no-device acceptance criterion and leave all unsupported rows unverified."
+    },
+    {
+      "disposition": "CONFIRMED_GAP",
+      "ids": "EXT-F-1004-T23",
+      "finding": "The case has separate warm and reload rows but its only step begins by reloading the extension. The warm row needs a distinct no-immediate-reload sign-out/reopen path before the post-extension-reload run."
+    },
+    {
+      "disposition": "CONFIRMED_LIMITATION",
+      "ids": "EXT-F-1002-T05-T06,T19-T20; EXT-F-1004-T25-T26,T28",
+      "finding": "Seven explicit requires_fixture cases correctly retain internal/fault/database assertions without a pass claim. Their controlled context, fault, or pre-existing disposable-row fixtures are unnamed; they are safe as inventory instructions but not ready to execute or close."
+    }
+  ],
+  "verdict_b_quality_doctrine": "PARTIAL",
+  "verdict_b_findings": [
+    {
+      "disposition": "CONFIRMED",
+      "finding": "No role or account provisioning/mutation is prescribed. Profile writes use synthetic values and restoration; T28 forbids making account, membership, or row fixtures. UI-only evidence is separated from internal assertions in T05-T06. The profile path uses avatar > Profile, and options and Store action paths reflect source."
+    },
+    {
+      "disposition": "CONFIRMED_GAP",
+      "finding": "T10-T12 and T23 are labeled ready despite non-runnable branch steps. A green test result could be assigned to a route that never exercised the named outcome; the row status must remain unverified until corrected and observed."
+    },
+    {
+      "disposition": "REFUTED_PRIOR_CONCERN",
+      "finding": "The earlier 46-case count and generic-entrypoint warning no longer apply: inventory has 20 popup plus 28 profile cases, and the corrected proposal names local toolbar, mic-grant, options, Store toolbar, and avatar Profile entrypoints separately. Emergency-contact email is type=email in current ProfileView; T24 still appropriately records native behavior instead of assuming backend validation."
+    }
+  ],
+  "safe_to_integrate": "The 48-case proposal is safe to integrate as an unverified procedure inventory, provided T10-T12 and T23 are flagged for procedure correction before execution. Integration does not change inventory status or prove a browser result.",
+  "not_ready_to_execute_branches": [
+    "EXT-F-1002-T10:grant/deny/no-device",
+    "EXT-F-1002-T11:no-device",
+    "EXT-F-1002-T12:no-device",
+    "EXT-F-1004-T23:warm",
+    "EXT-F-1002-T05",
+    "EXT-F-1002-T06",
+    "EXT-F-1002-T19",
+    "EXT-F-1002-T20",
+    "EXT-F-1004-T25",
+    "EXT-F-1004-T26",
+    "EXT-F-1004-T28"
+  ],
+  "branch_next_actions": {
+    "EXT-F-1002-T10": "Provide an actual guest-reachable mic-grant launch route or a named controlled browser fixture; the guest Chat mic is gated. Do not replace the popup criterion with the Chat sign-in message.",
+    "EXT-F-1002-T11-T12:no-device": "Use a named controlled path that keeps the real mic-grant window open while making audio input unavailable, then click its Allow button and observe its own no-device remedy. A permission-denied Chat trigger followed by device removal is only a source-based proposal until demonstrated. Do not count the Chat NO_DEVICE toast as mic-grant coverage.",
+    "EXT-F-1004-T23:warm": "Sign out from selected Profile and reopen the sidepanel without an immediate extension reload; observe stale-selection resolution. Then perform the separate extension reload and repeat for its reload row.",
+    "seven_requires_fixture_cases": "Retain as unverified inventory guidance until each controlled context/fault/row fixture has a named setup and an observable result. No account or role alteration is authorized by the proposal."
+  },
+  "source_anchors_checked": [
+    "docs/stabilization/inventory.json",
+    "src/features/chat/ChatView.tsx:700,1378-1397,1447-1455",
+    "src/lib/audio/mic-recorder-offscreen.ts:425-445",
+    "src/entrypoints/mic-grant/index.ts:75-113",
+    "src/entrypoints/sidepanel/App.tsx:225-227",
+    "src/features/profile/ProfileView.tsx:48-230,579-589",
+    "src/hooks/use-user-profile.ts:42-108",
+    "src/lib/supabase/user-profile.ts:130-190",
+    "src/entrypoints/popup/main.tsx:16-134",
+    "wxt.config.ts:10-33,159-170"
+  ],
+  "limitations": "Source and inventory only. No executable UI outcome, branch fault, loaded artifact, role fixture, or database state was independently observed."
+}
