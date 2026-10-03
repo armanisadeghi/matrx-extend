@@ -5,7 +5,7 @@
   "patch_id": "tool-procedures-next-batch-20261003",
   "source": {
     "source_inventory": "docs/stabilization/inventory.json",
-    "scope": "Ten existing non-mutating registered-tool cases with empty steps/expected. Procedure design only; no cases executed and no test status is changed.",
+    "scope": "Ten existing non-mutating registered-tool T01 cases, revised after independent source review. Procedures only; no case executed and no test status changed.",
     "source_files_reviewed": [
       "docs/stabilization/INVENTORY-CONTRACT.md",
       "docs/stabilization/PLAN.md",
@@ -15,7 +15,8 @@
       "src/lib/tools/handlers/inspect.ts",
       "src/lib/tools/handlers/tabs.ts",
       "src/lib/tools/handlers/browser-data.ts",
-      "types/tool-catalog.json"
+      "types/tool-catalog.json",
+      "src/lib/scrape/pipeline.ts"
     ]
   },
   "selectedFeatureIDs": [
@@ -51,18 +52,21 @@
       "design_status": "procedure-ready-unverified",
       "preconditions": [
         "Complete shared receipt-bound build/profile/reload setup.",
-        "Open public https://example.org/ in the active tab and confirm it is fully loaded; use no logged-in or personal page."
+        "Open public https://example.org/ in the active tab and confirm it is fully loaded; use no logged-in or personal page.",
+        "Warm/reload repetition: Run once on the warm loaded page; then reload extension, panel, and same target tab and rerun both filter calls."
       ],
       "steps": [
+        "Warm execution: perform the following tool action(s) once before any case-specific extension/tab reload and record the inline result for comparison.",
         "In Tools, open read_page and run with {\"filter\":\"all\",\"include_text\":true,\"include_bounds\":false,\"max_nodes\":200}.",
         "Inspect the inline result for the active page title/URL and returned element roles, names/text, and refs. Confirm the visible heading text appears; do not enable lazy-load or hidden-element collection for this baseline.",
-        "Run again with {\"filter\":\"interactive\",\"include_text\":true,\"max_nodes\":200} and compare the returned elements."
+        "Run again with {\"filter\":\"interactive\",\"include_text\":true,\"max_nodes\":200} and compare the returned elements.",
+        "After this warm pass, reload the extension, close/reopen Tools, and reload the same public tab. Repeat both read_page calls and apply the same heading/filter checks; compare visible content rather than refs."
       ],
       "expected": [
-        "The all-elements result contains visible page content and element metadata, including the public heading; the interactive result is limited to interactive elements. No page content is edited and no navigation occurs.",
+        "The all-elements result includes visible page content and element metadata, including the public heading; the interactive result contains only interactive elements. Visible page text and navigation remain unchanged. read_page clears/reapplies data-matrx-ref attributes in the DOM, so this is a visible-content-preserving read with a DOM metadata side effect.",
         "If the tab is unsupported or scripting access is unavailable, the tool returns a visible refusal/error; do not count an empty/error result as a successful content read."
       ],
-      "dimensions": ["valid-input", "filter", "reload"],
+      "dimensions": ["warm", "valid-input", "filter", "reload"],
       "auth_notes": "Inventory says guest is not applicable because Tools requires sign-in. Member/admin are applicable. Manual Run bypasses dispatcher authorization; this case does not cover Ask/Act.",
       "source_evidence": [
         "src/lib/tools/handlers/page-refs.ts:185",
@@ -71,67 +75,85 @@
         "src/features/tools/ToolsView.tsx:1"
       ],
       "limits": [
-        "Exact node count and refs can vary with page/browser rendering; assert visible heading and role/filter behavior, not a fixed whole-page scrape."
+        "Exact node count and refs can vary with page/browser rendering; assert visible heading and role/filter behavior, not a fixed whole-page scrape.",
+        "The handler removes stale data-matrx-ref attributes and stamps current refs; do not describe the call as causing zero DOM mutation."
       ]
     },
     "EXT-F-4023-T01": {
       "feature_id": "EXT-F-4023",
-      "title": "Find a known heading on the active public page",
+      "title": "Find a known heading on the active public page before and after reload",
       "control_ids": ["EXT-F-4023-C01"],
       "modes": ["member", "admin"],
       "design_status": "procedure-ready-unverified",
       "preconditions": [
         "Complete shared setup; active tab is loaded https://example.org/.",
-        "Confirm the visible page heading before using its text as the search query."
+        "Confirm the visible page heading before using its text as the search query.",
+        "A preceding read_page call on the active tab must return a candidate ref for the visible heading. Preserve that candidate evidence for checking find output; AI availability is required for this positive result path.",
+        "Warm/reload repetition: Warm run: acquire the heading candidate with read_page before find. Reload extension, panel, and target tab; reacquire a fresh candidate with read_page before the second find run."
       ],
       "steps": [
-        "In Tools, open find and run {\"query\":\"Example Domain\",\"include_content\":true,\"limit\":5}.",
-        "Inspect matches and note whether used_cache is true or false; do not treat cache choice as a correctness requirement.",
-        "Run {\"query\":\"zz-no-such-visible-heading-zz\",\"include_content\":true,\"limit\":5} as a no-match control."
+        "Warm execution: perform this sequence once before any case-specific extension/tab reload and record the inline results.",
+        "In Tools, run read_page on the active public target with {\"filter\":\"all\",\"include_text\":true,\"max_nodes\":200}; record the returned ref and candidate text/role for the visible Example Domain heading.",
+        "In Tools, run find with {\"query\":\"Example Domain\",\"include_content\":true,\"limit\":5}. Compare returned match refs against the current read_page candidate refs and check the matched candidate text/role is the visible heading.",
+        "Inspect used_cache and mode. A successful positive case requires a returned match whose ref is among current candidates and whose candidate text/role identifies the heading; a refusal, unavailable AI, missing match, or invented/unknown ref is not a pass.",
+        "For the separate reloaded run, reload the extension, close/reopen Tools, and reload the public tab. Run read_page again to reacquire the current heading candidate/ref, then repeat the same find query and candidate/ref/text check."
       ],
       "expected": [
-        "The first result returns a match associated with the visible heading or its text. The no-match control returns an empty matches list; neither run changes page state.",
-        "A tool refusal/error is visible and is not a pass. Match ordering or score details may vary; assert the known heading match and no-match shape only."
+        "For both warm and reloaded runs, find returns a match tied to a current read_page candidate ref whose candidate text/role identifies the visible Example Domain heading. Require the specific known match; any nonempty match list is insufficient.",
+        "If AI is unavailable/refuses, the expected result is an explicit unsuccessful/unverified run, not a pass. Do not assert an empty result for arbitrary no-match text: source sends zero-score candidates to AI, which can select one."
       ],
-      "dimensions": ["known-match", "no-match", "cache", "reload"],
+      "dimensions": ["known-match", "ai-availability", "candidate-ref-validity", "warm", "reload"],
       "auth_notes": "Member/admin applicable; guest not applicable at Tools surface. Manual execution does not exercise the dispatcher gate.",
       "source_evidence": [
         "src/lib/tools/handlers/page-refs.ts:521",
-        "src/lib/tools/handlers/page-refs.ts:530",
-        "src/lib/tools/handlers/page-refs.ts:547",
-        "src/features/tools/ToolsView.tsx:1"
+        "src/lib/tools/handlers/page-refs.ts:577",
+        "src/lib/tools/handlers/page-refs.ts:606",
+        "src/lib/tools/handlers/page-refs.ts:648",
+        "src/lib/tools/handlers/page-refs.ts:657"
       ],
       "limits": [
-        "The cache may be warm after read_page/find or expire; either path is valid if the same query result is correct."
+        "AI-backed ranking can vary. The pass oracle is specifically a returned current candidate ref mapped to the visible known heading; record model refusal or a wrong/unknown ref as non-pass."
       ]
     },
     "EXT-F-4027-T01": {
       "feature_id": "EXT-F-4027",
-      "title": "Read a concise summary of the assigned active page",
+      "title": "Capture structured data from the assigned active page",
       "control_ids": ["EXT-F-4027-C01"],
       "modes": ["member", "admin"],
       "design_status": "procedure-ready-unverified",
       "preconditions": [
-        "Complete shared setup; with the Tools panel open, leave https://example.org/ as the active browser tab. Confirm its title and URL."
+        "Complete shared setup; with the Tools panel open, leave https://example.org/ as the active browser tab. Confirm its title and URL.",
+        "Warm/reload repetition: Run shallow/deep on the warm loaded target. Reload extension, panel, and target tab before repeating both captures."
       ],
       "steps": [
+        "Warm execution: perform the following tool action(s) once before any case-specific extension/tab reload and record the inline result for comparison.",
         "In Tools, open read_active_page and run with {} (deep defaults to false).",
-        "Inspect the inline result for the page title, URL, and concise visible text/metadata.",
-        "Run {\"deep\":true} and inspect whether the result includes the deeper page representation."
+        "Inspect the inline SoupResult for url, capturedAt, metadata, article fields (title/content/excerpt), and arrays such as links/images; do not describe it as a concise summary.",
+        "Run {\"deep\":true}; this requests scrollToLoadLazy before capture. Verify it still captures the same public URL and valid structured fields, without requiring output to differ from shallow mode.",
+        "After extension and target reload, repeat the shallow and deep calls and check the same required structured fields and URL."
       ],
       "expected": [
-        "Both successful results refer to the same active public target; deep=true requests the deeper read. Neither execution changes the page.",
-        "A missing assigned/active tab or unsupported Chrome page yields an explicit {ok:false, reason} style refusal; record it as blocked/setup mismatch, not a positive read."
+        "Both successful calls return a structured SoupResult for the same public URL, including url, capturedAt, metadata, article, and media/link/structured-data collections as defined by SoupResult. The deep=true call first requests a bounded lazy-load scroll; identical shallow/deep content is acceptable.",
+        "Blocked Chrome pages, no active assigned tab, or capture failures return an explicit refusal/error; these do not count as a successful capture."
       ],
-      "dimensions": ["shallow", "deep", "unsupported-target", "reload"],
+      "dimensions": [
+        "structured-capture",
+        "shallow",
+        "deep-lazy-load-request",
+        "unsupported-target",
+        "warm",
+        "reload"
+      ],
       "auth_notes": "Inventory applicability is member/admin only. Tools manual run targets the focused tab and skips dispatcher permission checks; this is not proof of per-turn assigned-tab behavior.",
       "source_evidence": [
         "src/lib/tools/handlers/read.ts:85",
         "src/lib/tools/handlers/read.ts:90",
-        "src/features/tools/ToolsView.tsx:1"
+        "src/lib/tools/handlers/read.ts:103",
+        "src/lib/tools/handlers/read.ts:111",
+        "src/lib/scrape/pipeline.ts:33"
       ],
       "limits": [
-        "Do not assert exact generated summary wording or byte count; assert target identity and the shallow/deep response distinction."
+        "Do not expect a summary string or require deep output to differ. Lazy-loaded content and collection sizes vary by page/runtime."
       ]
     },
     "EXT-F-4035-T01": {
@@ -141,18 +163,21 @@
       "modes": ["member", "admin"],
       "design_status": "procedure-ready-unverified",
       "preconditions": [
-        "Complete shared setup; active target is https://example.org/ and contains no private or credential fields."
+        "Complete shared setup; active target is https://example.org/ and contains no private or credential fields.",
+        "Warm/reload repetition: Run on the warm loaded target. After extension, panel, and target reload, reacquire the heading ref with read_page; never reuse the old ref."
       ],
       "steps": [
+        "Warm execution: perform the following tool action(s) once before any case-specific extension/tab reload and record the inline result for comparison.",
         "Run read_page with {\"filter\":\"all\",\"include_text\":true,\"max_nodes\":200}.",
         "Choose the returned ref attached to the visible Example Domain heading and copy that exact ref into get_element_details; do not invent a selector or reuse a ref after navigation.",
-        "Run get_element_details with {\"ref\":\"<returned-ref>\",\"include_html\":false,\"include_styles\":false} and inspect the result."
+        "Run get_element_details with {\"ref\":\"<returned-ref>\",\"include_html\":false,\"include_styles\":false} and inspect the result.",
+        "After extension and target reload, run read_page again to obtain a fresh heading ref, then rerun get_element_details using only that newly returned ref."
       ],
       "expected": [
-        "The result identifies the element tag and text, attributes, bounding rectangle, visibility, and child count. It reports visible=true for the on-screen heading. No HTML/styles are requested and no page state changes.",
+        "The result identifies the heading tag/text, attributes, bounding rectangle, visible=true, and child count. HTML/styles are not requested. This is an inspection; read_page may stamp data-matrx-ref attributes, but the visible page content is unchanged.",
         "If the ref is absent/stale, an explicit no-element result is a failed setup for this positive case; reload the public target and create a fresh ref before retrying."
       ],
-      "dimensions": ["fresh-ref", "visible-element", "reload"],
+      "dimensions": ["warm", "fresh-ref", "visible-element", "reload"],
       "auth_notes": "Member/admin applicable, guest not applicable at Tools. Catalog permission list is empty for this handler; manual run still does not establish any dispatcher permission behavior.",
       "source_evidence": [
         "src/lib/tools/handlers/inspect.ts:418",
@@ -170,18 +195,21 @@
       "modes": ["member", "admin"],
       "design_status": "procedure-ready-unverified",
       "preconditions": [
-        "Complete shared setup in the disposable profile. Open https://example.org/ and one other public tab; no personal tabs should be present."
+        "Complete shared setup in the disposable profile. Open https://example.org/ and one other public tab; no personal tabs should be present.",
+        "Warm/reload repetition: Run on the warm disposable profile. After extension/panel and both target-tab reloads, repeat both tab-list calls."
       ],
       "steps": [
+        "Warm execution: perform the following tool action(s) once before any case-specific extension/tab reload and record the inline result for comparison.",
         "Run list_open_tabs with {\"all_windows\":true,\"loaded_only\":true}.",
         "Verify the result contains the two known public tabs and note count, titles, URLs, status, and active flag.",
-        "Run {\"all_windows\":true,\"url\":\"https://example.org/*\",\"loaded_only\":true} and inspect the filtered result."
+        "Run {\"all_windows\":true,\"url\":\"https://example.org/*\",\"loaded_only\":true} and inspect the filtered result.",
+        "After this warm pass, reload the extension, close/reopen Tools, and reload both known public tabs. Repeat both list_open_tabs queries and check the same target-membership/filter criteria."
       ],
       "expected": [
         "The first result includes loaded tabs in the profile and count equals the returned tabs array length. The URL-filtered call includes the matching example.org tab and excludes the other target. The tool does not open, close, or modify tabs.",
         "If Chrome URL matching semantics or a wildcard differs, record actual filter behavior as a catalog/handler mismatch rather than asserting a guessed match."
       ],
-      "dimensions": ["all-tabs", "url-filter", "loaded-only", "reload"],
+      "dimensions": ["warm", "all-tabs", "url-filter", "loaded-only", "reload"],
       "auth_notes": "Inventory lists tabs permission; member/admin applicable. Manual Run bypasses permission gate, so no permission-denial result can be required here.",
       "source_evidence": [
         "src/lib/tools/handlers/tabs.ts:38",
@@ -200,17 +228,20 @@
       "modes": ["member", "admin"],
       "design_status": "procedure-ready-unverified",
       "preconditions": [
-        "Complete shared setup in a disposable Chrome profile. If a group already exists, record its displayed title/color and one member tab; do not change group state."
+        "Complete shared setup in a disposable Chrome profile. If a group already exists, record its displayed title/color and one member tab; do not change group state.",
+        "Warm/reload repetition: Run on the warm disposable Chrome profile, then after extension reload and Tools reopen repeat the group query and visible group comparison."
       ],
       "steps": [
+        "Warm execution: perform the following tool action(s) once before any case-specific extension/tab reload and record the inline result for comparison.",
         "Run get_tab_groups with {}.",
-        "Inspect count and groups. If the isolated profile already has a group, compare its id/title/color/collapsed/window_id/tab_ids with Chrome's visible group and tabs. If there are no groups, record the empty state."
+        "Inspect count and groups. If the isolated profile already has a group, compare its id/title/color/collapsed/window_id/tab_ids with Chrome's visible group and tabs. If there are no groups, record the empty state.",
+        "After this warm pass, reload the extension and reopen Tools, then run get_tab_groups again and compare the current visible Chrome groups using the same count/membership criteria."
       ],
       "expected": [
         "On supported Chrome, result contains count equal to groups array length; each reported tab_ids entry belongs to that group. Zero groups is a valid observed empty state.",
         "If chrome.tabGroups is unavailable, handler returns {ok:false,reason:'tabGroups API unavailable'}; report browser capability mismatch, not a successful empty result."
       ],
-      "dimensions": ["populated-or-empty", "browser-api-availability", "reload"],
+      "dimensions": ["warm", "populated-or-empty", "browser-api-availability", "reload"],
       "auth_notes": "Inventory lists tabs and tabGroups permissions; handler advertises Chrome support only. Member/admin applicable. Manual run does not exercise authorization gate.",
       "source_evidence": [
         "src/lib/tools/handlers/tabs.ts:73",
@@ -229,18 +260,21 @@
       "modes": ["member", "admin"],
       "design_status": "procedure-ready-unverified",
       "preconditions": [
-        "Complete shared setup in the disposable profile. Use list_open_tabs to obtain the numeric id for the open https://example.org/ tab."
+        "Complete shared setup in the disposable profile. Use list_open_tabs to obtain the numeric id for the open https://example.org/ tab.",
+        "Warm/reload repetition: Warm run: obtain tab ID from list_open_tabs immediately before lookup. After extension, panel, and target reload, reacquire the ID from list_open_tabs before the second lookup."
       ],
       "steps": [
+        "Warm execution: perform the following tool action(s) once before any case-specific extension/tab reload and record the inline result for comparison.",
         "Run get_tab_info with {\"tab_id\":<numeric ID returned by list_open_tabs>}.",
         "Compare returned id, URL, title, active/pinned state, status, and window_id against list_open_tabs and Chrome's tab strip.",
-        "Do not use an ID from a previous profile or earlier browser session."
+        "Do not use an ID from a previous profile or earlier browser session.",
+        "After this warm pass, reload the extension, close/reopen Tools, and reload the target tab. Run list_open_tabs again to reacquire the current numeric tab ID, then rerun get_tab_info and compare current metadata."
       ],
       "expected": [
         "The returned record describes the same open target and its current state. No tab is changed.",
         "A stale/unknown ID returns {ok:false,reason:<Chrome error>} and should be recorded as a stale-fixture input, not a successful lookup."
       ],
-      "dimensions": ["valid-tab-id", "stale-id-negative", "reload"],
+      "dimensions": ["warm", "valid-tab-id", "stale-id-negative", "reload"],
       "auth_notes": "Inventory lists tabs permission; member/admin applicable. Manual run skips dispatcher permission gate.",
       "source_evidence": [
         "src/lib/tools/handlers/tabs.ts:106",
@@ -257,18 +291,21 @@
       "modes": ["member", "admin"],
       "design_status": "procedure-ready-unverified",
       "preconditions": [
-        "Complete shared setup. Prepare an isolated test profile with a small known set of bookmarks to public example.org URLs, including one titled 'Matrx public fixture alpha'; do not use the everyday profile."
+        "Complete shared setup. Prepare an isolated test profile with a small known set of bookmarks to public example.org URLs, including one titled 'Matrx public fixture alpha'; do not use the everyday profile.",
+        "Warm/reload repetition: Run in the same isolated profile before and after extension reload/Tools reopen; do not switch to an everyday profile."
       ],
       "steps": [
+        "Warm execution: perform the following tool action(s) once before any case-specific extension/tab reload and record the inline result for comparison.",
         "Run search_bookmarks with {\"query\":\"Matrx public fixture alpha\",\"limit\":10}.",
         "Compare returned count, total_match, title and URL with the single synthetic bookmark you created for this isolated test profile.",
-        "Run {\"query\":\"zz-no-such-test-bookmark-zz\",\"limit\":10} to inspect the no-match response."
+        "Run {\"query\":\"zz-no-such-test-bookmark-zz\",\"limit\":10} to inspect the no-match response.",
+        "After this warm pass, reload the extension and reopen Tools, then rerun both bookmark queries in the same isolated profile and compare the known fixture bookmark and no-match response."
       ],
       "expected": [
         "The first result includes the synthetic bookmark and total_match reflects the full match count; count is capped at limit. The second returns zero matches. This tool only reads bookmarks.",
         "An API-unavailable or permission error is visible and is not equivalent to an empty successful result. Do not expose bookmark data from other profiles in evidence."
       ],
-      "dimensions": ["known-match", "no-match", "limit", "reload"],
+      "dimensions": ["warm", "known-match", "no-match", "limit", "reload"],
       "auth_notes": "Inventory lists bookmarks permission; member/admin applicable. Manual Run skips dispatcher permission checks; this is a read of profile-local personal data, restricted to the isolated fixture profile.",
       "source_evidence": [
         "src/lib/tools/handlers/browser-data.ts:26",
@@ -287,18 +324,21 @@
       "modes": ["member", "admin"],
       "design_status": "procedure-ready-unverified",
       "preconditions": [
-        "Complete shared setup. In the isolated profile, identify a test bookmark folder containing only public example.org URLs and record its folder ID; do not point at a personal profile's tree."
+        "Complete shared setup. In the isolated profile, identify a test bookmark folder containing only public example.org URLs and record its folder ID; do not point at a personal profile's tree.",
+        "Warm/reload repetition: Run in the same isolated profile before and after extension reload/Tools reopen. If profile recreation changes folder IDs, reacquire the fixture folder ID before the second query."
       ],
       "steps": [
+        "Warm execution: perform the following tool action(s) once before any case-specific extension/tab reload and record the inline result for comparison.",
         "Run list_bookmark_tree with {\"folder_id\":\"<isolated-test-folder-id>\",\"max_depth\":2}.",
         "Inspect the returned tree for the known folder and fixture bookmark titles/URLs. Confirm traversal stops at the requested depth.",
-        "If testing default-root behavior, run {} only in this isolated profile and compare it to the small known fixture tree."
+        "If testing default-root behavior, run {} only in this isolated profile and compare it to the small known fixture tree.",
+        "After this warm pass, reload the extension and reopen Tools, then rerun list_bookmark_tree with the same isolated folder ID and depth. If the profile was recreated, reacquire the folder ID from that profile before running."
       ],
       "expected": [
         "The result contains tree nodes with id/title/date_added and public URL values for bookmark nodes; child traversal is bounded by max_depth. The handler does not modify bookmarks.",
         "A missing folder ID returns an explicit API error; do not substitute a guessed ID or treat an unrelated root as success."
       ],
-      "dimensions": ["folder-scope", "depth-limit", "reload"],
+      "dimensions": ["warm", "folder-scope", "depth-limit", "reload"],
       "auth_notes": "Inventory lists bookmarks permission; member/admin applicable. Manual run bypasses dispatcher gate. Restrict use to the isolated synthetic profile because a full tree can reveal personal data.",
       "source_evidence": [
         "src/lib/tools/handlers/browser-data.ts:48",
@@ -318,18 +358,21 @@
       "modes": ["member", "admin"],
       "design_status": "procedure-ready-unverified",
       "preconditions": [
-        "Complete shared setup in a disposable profile. Visit https://example.org/ and a second public example.org URL in that profile so both entries are known; do not use the everyday profile. Record a run start time in UTC/milliseconds."
+        "Complete shared setup in a disposable profile. Before seeding visits, record start_time_ms as the current Unix epoch timestamp in milliseconds. Then visit https://example.org/ and https://example.org/?matrx-history-fixture=2 in that profile; do not use the everyday profile. Immediately before the first tool invocation, record end_time_ms as current Unix epoch milliseconds. Use those recorded numeric values in both query objects.",
+        "Warm/reload repetition: Run in the same isolated profile before and after extension reload/Tools reopen, reusing the recorded numeric time bounds exactly."
       ],
       "steps": [
-        "Run search_history with {\"query\":\"example.org\",\"start_time_ms\":<visit-window-start-ms>,\"end_time_ms\":<run-start-ms>,\"max_results\":100}.",
-        "Inspect count and items; confirm the known public URLs appear with title/last_visit_ms metadata and visit times within the requested window.",
-        "Run {\"query\":\"zz-no-such-test-history-zz\",\"start_time_ms\":<visit-window-start-ms>,\"end_time_ms\":<run-start-ms>,\"max_results\":100} as a no-match control."
+        "Warm execution: perform this sequence once before any case-specific extension reload and record the inline results.",
+        "Run search_history with {\"query\":\"example.org\",\"start_time_ms\":<recorded-numeric-start-ms>,\"end_time_ms\":<recorded-numeric-end-ms>,\"max_results\":100}. Both numeric bounds are Unix epoch milliseconds; start was recorded before seeding visits and end immediately before this invocation.",
+        "Inspect count/items; require the two seeded public URLs to appear with last_visit_ms between the recorded bounds.",
+        "Run the no-match query {\"query\":\"zz-no-such-test-history-zz\",\"start_time_ms\":<same-recorded-start-ms>,\"end_time_ms\":<same-recorded-end-ms>,\"max_results\":100}.",
+        "After extension reload, reopen Tools and rerun both queries with the exact same numeric bounds; verify the seeded visits remain in-window and the sentinel query remains empty."
       ],
       "expected": [
-        "The first result contains matching synthetic-profile visits in the requested window and count equals returned items length; the no-match control returns an empty items array. The tool does not navigate or alter browser history.",
-        "A missing history capability/error is explicit. Do not interpret an empty result as success until the isolated profile's known visits and time bounds are confirmed."
+        "The positive query returns the two seeded public-profile URLs within the explicitly recorded numeric millisecond interval and count equals items.length; the sentinel query returns no items matching its unique query. The tool itself does not navigate or change history.",
+        "A missing history capability/error is explicit. Do not interpret an empty positive result as success until the isolated profile's known visits and recorded bounds are confirmed."
       ],
-      "dimensions": ["known-visit", "time-window", "no-match", "reload"],
+      "dimensions": ["warm", "known-visit", "time-window", "no-match", "reload"],
       "auth_notes": "Inventory lists history permission; member/admin applicable. Manual Run bypasses dispatcher gating. History is personal data, so run only in the disposable profile seeded with public targets; never inspect ordinary browsing history.",
       "source_evidence": [
         "src/lib/tools/handlers/browser-data.ts:84",
@@ -339,14 +382,14 @@
         "src/lib/tools/handlers/browser-data.ts:110"
       ],
       "limits": [
-        "Chrome visit timing and result order vary. Verify URL membership and time-window inclusion rather than exact counts; seeded targets must have been visited after the lower bound."
+        "Record start before visiting https://example.org/ and https://example.org/?matrx-history-fixture=2; record end immediately before the first query, both as Unix epoch milliseconds. Require those exact seeded URLs and in-window last_visit_ms values. Repeat with identical bounds after reload."
       ]
     }
   },
   "ambiguities_and_limits": [
-    "The inventory contract requests feature applicability/case updates while this deliverable preserves stable IDs and proposes case fields only; root must merge these fields into the authoritative inventory.",
-    "The Tools manual runner explicitly skips the permission gate. These cases cannot establish dispatcher permission behavior; a separate authorized dispatch case is needed if that contract is under test.",
-    "Catalog permissions and handler source may differ as catalog changes. Reconcile the live catalog/registry before execution, especially get_element_details and tabGroups API support; do not infer denial behavior from the manual runner.",
-    "All ten procedures are design-only and remain unexecuted/unverified. No tests, browser, build, network, database, or application runs were performed."
+    "Only the ten selected T01 cases are proposed here. Separate inventory access/permission negative cases and readiness gaps remain outstanding and must stay unchanged when root merges these procedure fields.",
+    "The Tools manual runner explicitly skips the permission gate. These cases cannot establish dispatcher authorization; gated/access cases require their own procedure and authorized execution path.",
+    "Catalog permissions and handler source may differ as catalog changes. Reconcile live catalog/registry before execution; manual runs cannot establish permission denial.",
+    "All procedures are design-only and remain unexecuted/unverified. No tests, browser, build, network, database, or app runs were performed."
   ]
 }
