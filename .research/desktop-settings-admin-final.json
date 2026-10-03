@@ -14,6 +14,14 @@
       "verdict": "PASS",
       "findings": "The proof runner has three fixed, named D84/D86 fault cases and invokes the sanctioned forcing-function plant.py with an explicit expected-red assertion. The report records 21/21 green before and after restoration, a causal red for each planted fault, and SHA-256 restoration checks for production SettingsView.tsx after each case and at exit. The resource policy adds one exact runner allowlist entry. No broad test selection or production source change was introduced.",
       "limits": "This source audit relies on the committed proof report and source diff; the proof suite was not rerun in this lane."
+    },
+    "d86_specific_closure_assessment": {
+      "assessment": "The defect record's stated D86 evidence elements are present: hosted controlled caller regression, independent repair review, and exact-build native save/reload acceptance. No D86 ordering, delayed-read, or latest-pair-value criterion remains unverified in the combined record.",
+      "hosted_regression": "CI run 37093887851 is recorded in docs/stabilization/defects/EXT-D-0086.json as passing 20 Settings tests. SettingsView.about.test.tsx explicitly resolves the old pair write, asserts the newer input remains, then resolves and checks the latest stored value.",
+      "independent_review": ".research/desktop-settings-repair-peer.json records PASS for the initial read revision guard/read-before-write ordering, serialized port and pair writes, and latest-value persistence.",
+      "native_acceptance": "Guest, member, and admin receipts all use source 991385d9816b31a568619522e4795c001b4d3a06 and pass ordered port writes, delayed initial read/read-before-write, and overlapping pair writes with latest value after reload.",
+      "native_observation_limit": "The native runner verifies newer pair input is still present before releasing the first write and verifies the latest stored code after reload; the intermediate input state after the first completion but before the second completion is asserted by the controlled component regression, not separately observed in native Chrome.",
+      "state_boundary": "This is a D86 evidence-scope assessment only; defect-state ownership remains with the coordinator. D84's unavailable HTTP Forget and broader T43-T51 criteria remain open."
     }
   },
   "runtime": {
@@ -83,7 +91,7 @@
     "evidence": "Receipt, canonical journal, and screenshots copied byte-for-byte into the raw evidence folder; original runner outputs remain available at their recorded paths."
   },
   "forbidden_claims": [
-    "D84/D86 closed",
+    "Both D84 and D86 are closed based on this combined report",
     "All T43-T51 passed",
     "Real desktop connectivity or rediscovery verified",
     "Store release verified"
