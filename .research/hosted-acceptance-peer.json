@@ -1,0 +1,10 @@
+{
+  "reviewed_commits": ["508e05c985d50d2c696ba3933b6df254caee179e", "5de4bfaff75afe1f31def8bc8530d0a1f3de887d"],
+  "verdict_A_outcome_readiness": "UNMEASURED: no hosted native-browser result, receipt, or screenshots yet; source path is wired but original workflow has one confirmed readiness defect",
+  "verdict_B_quality": "CHANGES_REQUESTED on original commits: Playwright and Chromium installation occurred outside the single guarded resource run; builder is repairing this concurrently",
+  "confirmed_chain": "workflow_dispatch selects successful Hosted release run and unique versioned artifact; helper verifies tag/source SHA, published receipt, both ZIP hashes and unpacked tree hash, relocates ZIP paths; existing native side-panel harness opens fresh owned Chromium profile and checks real guest answer plus grounded post-panel-reload follow-up",
+  "confirmed_defect": "A standalone resource check released its permit before npm install and Playwright Chromium download; only the later browser test was owned by stabilization-resource run, so install was unguarded heavy work",
+  "runtime_provenance": "Playwright pinned to 1.56.1; browser-runtime.mjs honors the absolute MATRX_PLAYWRIGHT_MODULE and PLAYWRIGHT_BROWSERS_PATH; local ZIP has root manifest; relocated receipt paths satisfy downstream store ZIP verification",
+  "evidence_limit": "Node syntax and diff whitespace passed; no local browser, build, install, or heavy test run because internal free disk is below the 20 GiB gate; source proof is not live acceptance",
+  "next_gate": "After repair, rerun static workflow/helper checks, then one guarded hosted run on a successful release artifact; inspect uploaded JSON and native-panel screenshots before promotion"
+}
