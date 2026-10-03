@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0093",
+  "status": "fail",
+  "source": {
+    "sha": "991385d9816b31a568619522e4795c001b4d3a06",
+    "version": "0.2.176",
+    "tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55"
+  },
+  "artifact_id": 11275878549,
+  "run_id": 37129518563,
+  "cases": [],
+  "failure_stage": "details_failure",
+  "failure_code": "audit_reload_check_marker",
+  "reload_boundaries": [
+    {
+      "boundary": "read_previous_document",
+      "outcome": "started"
+    },
+    {
+      "boundary": "read_previous_document",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "install_script",
+      "outcome": "started"
+    },
+    {
+      "boundary": "install_script",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "request_reload",
+      "outcome": "started"
+    },
+    {
+      "boundary": "request_reload",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "wait_new_document",
+      "outcome": "started"
+    },
+    {
+      "boundary": "document_probe",
+      "outcome": "completed",
+      "newDocument": true,
+      "settingsReady": false,
+      "preludeInstalled": false
+    },
+    {
+      "boundary": "document_probe",
+      "outcome": "completed",
+      "newDocument": true,
+      "settingsReady": true,
+      "preludeInstalled": false
+    },
+    {
+      "boundary": "wait_new_document",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "check_marker",
+      "outcome": "started"
+    },
+    {
+      "boundary": "check_marker",
+      "outcome": "failed"
+    },
+    {
+      "boundary": "remove_script",
+      "outcome": "started"
+    },
+    {
+      "boundary": "remove_script",
+      "outcome": "completed"
+    }
+  ],
+  "detail_diagnostic": {
+    "step": "reload_with_prelude",
+    "card": null,
+    "fault": null,
+    "panel_visible": true
+  }
+}

@@ -104,7 +104,12 @@ async function rotate(panel) {
   await click(panel, 'button-text', 'Rotate key');
 }
 async function reloadWithPrelude(panel, source) {
-  await reloadAuditPrelude(panel, source, { evaluate, waitFor });
+  report.reload_boundaries = [];
+  await reloadAuditPrelude(panel, source, {
+    evaluate,
+    waitFor,
+    onBoundary: (event) => report.reload_boundaries.push(event),
+  });
   await click(panel, 'title', 'Settings');
 }
 async function reloadCard(panel, identity) {
@@ -187,6 +192,7 @@ try {
       // The card is mounted even inside a closed Collapsible, so install at
       // document creation before React mounts and reload the real panel.
       stage = 'details_failure';
+      let beforeLoadRetry;
       try {
         detailStep = 'reload_with_prelude';
         await reloadWithPrelude(panel, auditFaultSource('read-once'));
@@ -207,7 +213,7 @@ try {
           (value) => value?.detailsUnavailable && value.retryDetails && value.keyId === '—',
         );
         detailStep = 'read_storage_after_failure';
-        const beforeLoadRetry = await snapshot(panel);
+        beforeLoadRetry = await snapshot(panel);
         assert.equal((await fault(panel)).activeWrites, 0);
         detailStep = 'restore_read_fault';
         await restore(panel);
@@ -238,30 +244,39 @@ try {
       }
 
       stage = 'export_failure';
+      detailStep = 'inject_clipboard_fault';
       await inject(panel, 'clipboard-once');
+      detailStep = 'click_export';
       await click(panel, 'button-text', 'Export public key');
+      detailStep = 'observe_export_failure';
       const failedExport = await expectCard(
         panel,
         'audit_export_failure',
         (value) => value?.exportFailed && value.retryExport && !value.copied,
       );
+      detailStep = 'check_export_fault';
       const exportFault = await fault(panel);
       assert.equal(exportFault.clipboardWrites, 1);
       assert.equal(exportFault.clipboardSucceeded, 0);
       await evaluate(panel, '(() => { window.__auditNativeFault.disarm(); return true; })()');
+      detailStep = 'retry_export';
       await click(panel, 'button-text', 'Retry export');
+      detailStep = 'observe_export_recovery';
       const retriedExport = await expectCard(
         panel,
         'audit_export_recovered',
         (value) => value?.copied && !value.exportFailed && !value.retryExport,
       );
+      detailStep = 'verify_copied_public_jwk';
       assert.equal((await fault(panel)).clipboardSucceeded, 1);
       assert.equal(
         await evaluate(panel, 'window.__auditNativeFault.copiedPublicJwk()'),
         true,
         'audit_copied_public_jwk_mismatch',
       );
+      detailStep = 'restore_export_fault';
       await restore(panel);
+      detailStep = 'compare_export_storage';
       assert.deepEqual(await snapshot(panel), beforeLoadRetry);
       pass('T60 export failure and retry', failedExport, retriedExport, exportFault);
 
@@ -518,6 +533,15 @@ try {
   process.exitCode = 2;
 } catch (error) {
   report.status = 'fail';
+  if (stage === 'export_failure') {
+    report.export_diagnostic = {
+      step: detailStep,
+      errorType: ['ReferenceError', 'AssertionError', 'TypeError', 'Error'].includes(error?.name)
+        ? error.name
+        : 'other',
+    };
+    report.failure_code = `audit_export_${detailStep}_failed`;
+  }
   report.failure_stage = stage;
   report.failure_code ??= /^[a-z0-9_]+$/.test(error?.message ?? '')
     ? error.message

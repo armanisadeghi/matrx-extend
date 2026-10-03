@@ -127,6 +127,7 @@ const WAIT_LABELS = new Set([
 
 export function classifyAuditNativeFailure(stage, step, error) {
   if (stage !== 'details_failure' || !DETAIL_STEPS.has(step)) return 'audit_native_unverified';
+  if (/^audit_reload_[a-z_]+$/.test(error?.auditBoundaryCode ?? '')) return error.auditBoundaryCode;
   const message = typeof error?.message === 'string' ? error.message : '';
   const label = message.split('_not_observed:', 1)[0];
   if (WAIT_LABELS.has(label)) return `${label.replaceAll(' ', '_')}_not_observed`;
@@ -136,24 +137,84 @@ export function classifyAuditNativeFailure(stage, step, error) {
 // Page.reload acknowledges the request before the old document disappears.
 // Keep the early browser-API fault installed until a distinct document has
 // loaded and confirms the prelude executed there.
-export async function reloadAuditPrelude(panel, source, { evaluate, waitFor }) {
-  const previousOrigin = await evaluate(panel, 'performance.timeOrigin');
+export async function reloadAuditPrelude(
+  panel,
+  source,
+  { evaluate, waitFor, onBoundary = () => {} },
+) {
+  let failure;
+  const run = async (name, operation) => {
+    onBoundary({ boundary: name, outcome: 'started' });
+    try {
+      const result = await operation();
+      onBoundary({ boundary: name, outcome: 'completed' });
+      return result;
+    } catch {
+      onBoundary({ boundary: name, outcome: 'failed' });
+      const failure = new Error(`audit_reload_${name}`);
+      failure.auditBoundaryCode = failure.message;
+      throw failure;
+    }
+  };
+  // The Page agent is session-scoped; registering a script alone does not enable it.
+  await run('enable_page', () => panel.send('Page.enable'));
+  const previousOrigin = await run('read_previous_document', () =>
+    evaluate(panel, 'performance.timeOrigin'),
+  );
   const wrappedSource = `(() => {
     const installed = ${source};
     window.__auditPreludeInstalled = installed !== false;
   })()`;
-  const installed = await panel.send('Page.addScriptToEvaluateOnNewDocument', {
-    source: wrappedSource,
-  });
+  const installed = await run('install_script', () =>
+    panel.send('Page.addScriptToEvaluateOnNewDocument', {
+      source: wrappedSource,
+    }),
+  );
   try {
-    await panel.send('Page.reload', { ignoreCache: true });
-    const next = await awaitAuditNewDocument(panel, previousOrigin, { evaluate, waitFor });
-    if (!next.preludeInstalled) throw new Error('audit_prelude_not_installed');
-  } finally {
-    await panel.send('Page.removeScriptToEvaluateOnNewDocument', {
-      identifier: installed.identifier,
+    await run('request_reload', () => panel.send('Page.reload', { ignoreCache: true }));
+    const next = await run('wait_new_document', () =>
+      awaitAuditNewDocument(panel, previousOrigin, {
+        evaluate: async (target, expression) => {
+          try {
+            const state = await evaluate(target, expression);
+            onBoundary({
+              boundary: 'document_probe',
+              outcome: 'completed',
+              newDocument: state?.newDocument === true,
+              settingsReady: state?.settingsReady === true,
+              preludeInstalled: state?.preludeInstalled === true,
+            });
+            return state;
+          } catch (error) {
+            onBoundary({
+              boundary: 'document_probe',
+              outcome: 'failed',
+              contextDestroyed: /context.*(destroyed|not found)|Cannot find context/i.test(
+                error?.message ?? '',
+              ),
+            });
+            throw error;
+          }
+        },
+        waitFor,
+      }),
+    );
+    await run('check_marker', () => {
+      if (!next.preludeInstalled) throw new Error('audit_prelude_not_installed');
     });
+  } catch (error) {
+    failure = error;
   }
+  try {
+    await run('remove_script', () =>
+      panel.send('Page.removeScriptToEvaluateOnNewDocument', {
+        identifier: installed.identifier,
+      }),
+    );
+  } catch (error) {
+    failure ??= error;
+  }
+  if (failure) throw failure;
 }
 
 export async function awaitAuditNewDocument(panel, previousOrigin, { evaluate, waitFor }) {

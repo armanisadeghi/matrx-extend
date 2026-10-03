@@ -132,13 +132,19 @@ test('native details failure reports a bounded step and wait label without obser
 test('reload keeps fault prelude installed until the old document is gone', async () => {
   let origin = 1000;
   let removed = false;
+  let pageEnabled = false;
   const panel = {
     async send(method, payload) {
+      if (method === 'Page.enable') {
+        pageEnabled = true;
+        return {};
+      }
       if (method === 'Page.addScriptToEvaluateOnNewDocument') {
+        assert.equal(pageEnabled, true, 'Page agent must be enabled in the same session');
         assert.match(payload.source, /__auditPreludeInstalled/);
         return { identifier: 'prelude-1' };
       }
-      if (method === 'Page.reload') return {};
+      if (method === 'Page.enable' || method === 'Page.reload') return {};
       if (method === 'Page.removeScriptToEvaluateOnNewDocument') {
         assert.equal(payload.identifier, 'prelude-1');
         assert.equal(origin, 2000, 'must not remove while old Settings DOM is still visible');
@@ -177,7 +183,7 @@ test('reload refuses a new document where fault prelude did not execute', async 
   const waitFor = async () => ({ newDocument: true, settingsReady: true, preludeInstalled: false });
   await assert.rejects(
     reloadAuditPrelude(panel, auditFaultSource('read-once'), { evaluate, waitFor }),
-    /audit_prelude_not_installed/,
+    /audit_reload_check_marker/,
   );
   assert.equal(commands.at(-1), 'Page.removeScriptToEvaluateOnNewDocument');
 });
@@ -198,4 +204,45 @@ test('plain panel reload waits for a distinct document without requiring a prelu
   const result = await awaitAuditNewDocument({}, 5, { evaluate, waitFor });
   assert.equal(result.newDocument, true);
   assert.equal(result.preludeInstalled, false);
+});
+
+for (const method of [
+  'Page.enable',
+  'Page.addScriptToEvaluateOnNewDocument',
+  'Page.reload',
+  'Page.removeScriptToEvaluateOnNewDocument',
+]) {
+  test(`reload retains safe boundary for ${method}`, async () => {
+    const events = [];
+    const panel = {
+      send: async (name) => {
+        if (name === method) throw new Error('private protocol details');
+        return { identifier: 'script' };
+      },
+    };
+    await assert.rejects(
+      reloadAuditPrelude(panel, 'true', {
+        evaluate: async () => 1,
+        waitFor: async () => ({ preludeInstalled: true }),
+        onBoundary: (event) => events.push(event),
+      }),
+      /^Error: audit_reload_(enable_page|install_script|request_reload|remove_script)$/,
+    );
+    assert.equal(JSON.stringify(events).includes('private'), false);
+    assert.ok(events.some((event) => event.outcome === 'failed'));
+  });
+}
+
+test('cleanup failure does not mask the first failed reload boundary', async () => {
+  const panel = {
+    send: async (name) => {
+      if (name === 'Page.reload' || name === 'Page.removeScriptToEvaluateOnNewDocument')
+        throw new Error('private');
+      return { identifier: 'script' };
+    },
+  };
+  await assert.rejects(
+    reloadAuditPrelude(panel, 'true', { evaluate: async () => 1, waitFor: async () => null }),
+    /audit_reload_request_reload/,
+  );
 });
