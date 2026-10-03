@@ -1,13 +1,68 @@
 {
   "status": "PARTIAL_SOURCE_VERIFIED; routing class repair identified, D91 remains open",
   "commit": "2ea9860f461503839c788b89201f3f1f723ccac9",
-  "changes": ["Preserve aggregate match; avoid raw-date grouping when bucket set", "Registered-list fixture proves hide/include behavior", "CI guide pin7522aed743 verified against current artifact; catalogs regenerated"],
-  "verification": ["21 focused tests pass; native TypeScript pass; Biome no errors", "filter-drop and raw-date-group mutants fail and restore identically", "CI37099813858 superseded by37100038099"],
+  "changes": [
+    "Preserve aggregate match; avoid raw-date grouping when bucket set",
+    "Registered-list fixture proves hide/include behavior",
+    "CI guide pin7522aed743 verified against current artifact; catalogs regenerated"
+  ],
+  "verification": [
+    "21 focused tests pass; native TypeScript pass; Biome no errors",
+    "filter-drop and raw-date-group mutants fail and restore identically",
+    "CI37099813858 superseded by37100038099"
+  ],
   "contract": "Full25-member Pydantic schema frozen in records-full-action-contract.json; schema-position-aware annotation removal preserves every property and required key. Not runtime-wired. Provider projection stays separate.",
-  "unsupported_actions": ["form_propose", "booking_propose", "import_propose", "dashboard_propose", "pipeline_propose", "document_propose", "checklist_propose", "capture_propose", "enrich_propose", "portal_propose", "signature_request", "subscription_propose", "entity_read", "entity_write"],
+  "unsupported_actions": [
+    "form_propose",
+    "booking_propose",
+    "import_propose",
+    "dashboard_propose",
+    "pipeline_propose",
+    "document_propose",
+    "checklist_propose",
+    "capture_propose",
+    "enrich_propose",
+    "portal_propose",
+    "signature_request",
+    "subscription_propose",
+    "entity_read",
+    "entity_write"
+  ],
   "routing_correction": "records IS code-declared native/aidream in aidream/tools/_generated_declarations.py. Canonical resolver selects server. browser_dom creates InlineToolSpec anyway; merge drops server-owned inline without adding registered availability. Use existing resolver to emit RegisteredToolSpec; test visibility and dispatch. No DB binding edits.",
-  "shared_dependencies": ["Live custom.entity_row_write absent despite typed method", "sign_request_create live but no TS method; enrich run is server orchestration", "Other named proposal doors verified present; do not duplicate Python orchestration"],
+  "shared_dependencies": [
+    "Live custom.entity_row_write absent despite typed method",
+    "sign_request_create live but no TS method; enrich run is server orchestration",
+    "Other named proposal doors verified present; do not duplicate Python orchestration"
+  ],
   "package": "npm latest0.61.1; source0.63.0; c2ca494da7 integrated. Auto nomination37099325113 pending; adoption blocked until publish. Clone now has record_change_many in21-door template allowlist; no mutation needed.",
-  "groups": {"forms": ["formDeclare+anonPublish", "bookingDeclare+anonPublish", "captureSheetDeclare+capturePublish"], "views": ["dashboardDeclare/dashboardRun", "pipelineDeclare", "checklistDeclare/checklistStart", "subscriptionDeclare"], "docs_access": ["docTemplateSave/docRenderDocument", "portalDeclare/portalInvite", "signature_request requires shared TS API"], "data": ["importPlan/Begin/DeclareColumns/Rows/Finish", "entityRecordRead", "entityRowWrite missing DB door", "enrichDeclare plus server run"]},
-  "open": ["Routing class repair and fresh peer", "Manual Tools per-action schema/execution remains14unsupported", "Full-model union retained separately from lossy DB parameter projection (notify bool|object)", "Package publish/adopt, strict gate, actual read-only replay and Store130 guest retest remain unverified"]
+  "groups": {
+    "forms": [
+      "formDeclare+anonPublish",
+      "bookingDeclare+anonPublish",
+      "captureSheetDeclare+capturePublish"
+    ],
+    "views": [
+      "dashboardDeclare/dashboardRun",
+      "pipelineDeclare",
+      "checklistDeclare/checklistStart",
+      "subscriptionDeclare"
+    ],
+    "docs_access": [
+      "docTemplateSave/docRenderDocument",
+      "portalDeclare/portalInvite",
+      "signature_request requires shared TS API"
+    ],
+    "data": [
+      "importPlan/Begin/DeclareColumns/Rows/Finish",
+      "entityRecordRead",
+      "entityRowWrite missing DB door",
+      "enrichDeclare plus server run"
+    ]
+  },
+  "open": [
+    "Routing class repair and fresh peer",
+    "Manual Tools per-action schema/execution remains14unsupported",
+    "Full-model union retained separately from lossy DB parameter projection (notify bool|object)",
+    "Package publish/adopt, strict gate, actual read-only replay and Store130 guest retest remain unverified"
+  ]
 }

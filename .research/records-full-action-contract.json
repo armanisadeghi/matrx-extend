@@ -158,10 +158,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "action",
-          "title"
-        ],
+        "required": ["action", "title"],
         "type": "object"
       },
       "CaptureProposeWire": {
@@ -284,10 +281,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "action",
-          "title"
-        ],
+        "required": ["action", "title"],
         "type": "object"
       },
       "ChecklistProposeWire": {
@@ -412,11 +406,7 @@
             "default": null
           }
         },
-        "required": [
-          "action",
-          "name",
-          "steps"
-        ],
+        "required": ["action", "name", "steps"],
         "type": "object"
       },
       "DashboardProposeWire": {
@@ -512,11 +502,7 @@
             "default": null
           }
         },
-        "required": [
-          "action",
-          "name",
-          "blocks"
-        ],
+        "required": ["action", "name", "blocks"],
         "type": "object"
       },
       "DocumentProposeWire": {
@@ -611,11 +597,7 @@
             "default": null
           }
         },
-        "required": [
-          "action",
-          "title",
-          "body"
-        ],
+        "required": ["action", "title", "body"],
         "type": "object"
       },
       "EnrichProposeWire": {
@@ -686,10 +668,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "action",
-          "columns"
-        ],
+        "required": ["action", "columns"],
         "type": "object"
       },
       "EntityReadWire": {
@@ -706,11 +685,7 @@
             "type": "string"
           }
         },
-        "required": [
-          "action",
-          "entity",
-          "record_id"
-        ],
+        "required": ["action", "entity", "record_id"],
         "type": "object"
       },
       "EntityWriteWire": {
@@ -731,12 +706,7 @@
             "type": "object"
           }
         },
-        "required": [
-          "action",
-          "entity",
-          "record_id",
-          "values"
-        ],
+        "required": ["action", "entity", "record_id", "values"],
         "type": "object"
       },
       "FieldProposeWire": {
@@ -745,10 +715,7 @@
           {
             "field_type": "select",
             "name": "status",
-            "options": [
-              "New",
-              "Done"
-            ],
+            "options": ["New", "Done"],
             "table_id": "<id>"
           }
         ],
@@ -850,11 +817,7 @@
             "default": null
           }
         },
-        "required": [
-          "action",
-          "table_id",
-          "name"
-        ],
+        "required": ["action", "table_id", "name"],
         "type": "object"
       },
       "FormProposeWire": {
@@ -1003,10 +966,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "action",
-          "title"
-        ],
+        "required": ["action", "title"],
         "type": "object"
       },
       "GuideWire": {
@@ -1033,9 +993,7 @@
             "default": null
           }
         },
-        "required": [
-          "action"
-        ],
+        "required": ["action"],
         "type": "object"
       },
       "ImportProposeWire": {
@@ -1164,9 +1122,7 @@
             "default": null
           }
         },
-        "required": [
-          "action"
-        ],
+        "required": ["action"],
         "type": "object"
       },
       "MetadataSearchWire": {
@@ -1200,10 +1156,7 @@
             "default": null
           }
         },
-        "required": [
-          "action",
-          "query"
-        ],
+        "required": ["action", "query"],
         "type": "object"
       },
       "PipelineProposeWire": {
@@ -1369,10 +1322,7 @@
             "default": null
           }
         },
-        "required": [
-          "action",
-          "stage_field"
-        ],
+        "required": ["action", "stage_field"],
         "type": "object"
       },
       "PortalProposeWire": {
@@ -1456,11 +1406,7 @@
             "default": null
           }
         },
-        "required": [
-          "action",
-          "title",
-          "tables"
-        ],
+        "required": ["action", "title", "tables"],
         "type": "object"
       },
       "RecordAggregateWire": {
@@ -1551,13 +1497,7 @@
           "bucket": {
             "anyOf": [
               {
-                "enum": [
-                  "day",
-                  "week",
-                  "month",
-                  "quarter",
-                  "year"
-                ],
+                "enum": ["day", "week", "month", "quarter", "year"],
                 "type": "string"
               },
               {
@@ -1582,11 +1522,7 @@
           },
           "order": {
             "default": "count_desc",
-            "enum": [
-              "count_desc",
-              "measure_desc",
-              "measure_asc"
-            ],
+            "enum": ["count_desc", "measure_desc", "measure_asc"],
             "type": "string"
           },
           "limit": {
@@ -1605,9 +1541,7 @@
             "default": null
           }
         },
-        "required": [
-          "action"
-        ],
+        "required": ["action"],
         "type": "object"
       },
       "RecordDeleteWire": {
@@ -1630,10 +1564,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "action",
-          "record_id"
-        ],
+        "required": ["action", "record_id"],
         "type": "object"
       },
       "RecordHistoryWire": {
@@ -1673,10 +1604,7 @@
             "default": null
           }
         },
-        "required": [
-          "action",
-          "record_id"
-        ],
+        "required": ["action", "record_id"],
         "type": "object"
       },
       "RecordReadWire": {
@@ -1759,9 +1687,7 @@
             "default": null
           }
         },
-        "required": [
-          "action"
-        ],
+        "required": ["action"],
         "type": "object"
       },
       "RecordRestoreVersionWire": {
@@ -1789,11 +1715,7 @@
             "default": null
           }
         },
-        "required": [
-          "action",
-          "record_id",
-          "version"
-        ],
+        "required": ["action", "record_id", "version"],
         "type": "object"
       },
       "RecordWriteWire": {
@@ -1879,9 +1801,7 @@
             "default": null
           }
         },
-        "required": [
-          "action"
-        ],
+        "required": ["action"],
         "type": "object"
       },
       "SignatureRequestWire": {
@@ -1930,13 +1850,7 @@
             "type": "integer"
           }
         },
-        "required": [
-          "action",
-          "record_id",
-          "field",
-          "signer_email",
-          "signer_name"
-        ],
+        "required": ["action", "record_id", "field", "signer_email", "signer_name"],
         "type": "object"
       },
       "SubscriptionProposeWire": {
@@ -1991,11 +1905,7 @@
             "type": "array"
           }
         },
-        "required": [
-          "action",
-          "table_id",
-          "tell"
-        ],
+        "required": ["action", "table_id", "tell"],
         "type": "object"
       },
       "TableListWire": {
@@ -2025,9 +1935,7 @@
             "type": "boolean"
           }
         },
-        "required": [
-          "action"
-        ],
+        "required": ["action"],
         "type": "object"
       },
       "TableProposeWire": {
@@ -2041,10 +1949,7 @@
               },
               {
                 "name": "status",
-                "options": [
-                  "New",
-                  "Contacted"
-                ],
+                "options": ["New", "Contacted"],
                 "type": "select"
               },
               {
@@ -2118,10 +2023,7 @@
             "default": null
           }
         },
-        "required": [
-          "action",
-          "name"
-        ],
+        "required": ["action", "name"],
         "type": "object"
       }
     },

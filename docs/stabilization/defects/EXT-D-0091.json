@@ -8,17 +8,19 @@
   "reproduction": [
     "After D90 row validation repair, run strict live tool catalog comparison; records schema mismatch remains.",
     "Compare live records $variants per-action schemas with the actual extension RecordsArgs schema and dispatcher. Pass a supported canonical field such as include_app_tables to its applicable action and observe that the flat Zod schema omits it.",
-    "Inspect an advertised action rejected by the Records handler: the published registry advertises25 action variants, while the extension explicitly lacks12 actions. Exact action census and runtime replay are required before closure."
+    "Compare all25 advertised actions against extension handler dispatch. Exact unsupported-action census is14, listed in unsupported_actions; original12count omitted entity_read and entity_write."
   ],
   "expected": "Each advertised action accepts its canonical per-action arguments and executes its declared behavior; the gate compares the actual executor contract after server envelope handling.",
-  "actual": "Source/live-schema comparison found5 DB-only fields (include_app_tables, as_of, order, bucket, related_to),7 conflicting field schemas across action variants, and12 unsupported actions. A flat union cannot preserve action-dependent rows type, defaults, or required fields. Initial startup recovery is separate.",
+  "actual": "Source/live-schema comparison found5 DB-only fields (include_app_tables, as_of, order, bucket, related_to),7 conflicting field schemas across action variants, and14 unsupported actions. A flat union cannot preserve action-dependent rows type, defaults, or required fields. Initial startup recovery is separate.",
   "severity": "S1: advertised Records requests can silently lose inputs or fail as unsupported",
   "priority": "P1: real release-blocking contract drift; do not skip gate or hide capability",
   "state": "in-fix",
   "evidence": [
     "scripts/check-tool-db-drift.ts",
     "src/lib/tools/handlers/records.ts",
-    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37097488341"
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37097488341",
+    ".research/records-contract-escalation.json",
+    ".research/records-routing-peer.json"
   ],
   "transition_history": [
     {
@@ -40,5 +42,22 @@
       "reason": "Implementation lane investigating canonical shared executor/validation; fresh escalation unavailable due agent thread limit."
     }
   ],
-  "closure_requirement": "Canonical per-action validation and implementation, all advertised action census, meaningful regression guards, independent review, strict live drift pass, actual supported read-only Records execution with parameter preservation. No union-flattening or exclusions to manufacture pass."
+  "closure_requirement": "Canonical per-action validation and implementation, all advertised action census, meaningful regression guards, independent review, strict live drift pass, actual supported read-only Records execution with parameter preservation. No union-flattening or exclusions to manufacture pass.",
+  "unsupported_actions": [
+    "form_propose",
+    "booking_propose",
+    "import_propose",
+    "dashboard_propose",
+    "pipeline_propose",
+    "document_propose",
+    "checklist_propose",
+    "capture_propose",
+    "enrich_propose",
+    "portal_propose",
+    "signature_request",
+    "subscription_propose",
+    "entity_read",
+    "entity_write"
+  ],
+  "current_work": "Aggregate filter and date-bucket defects repaired2ea9860f, static independent acceptance1d46880e; native unverified. Canonical server already owns Records, but browser autoload creates inline spec and merge drops it. Existing-resolver RegisteredToolSpec repair in progress; manual Tools execution gaps remain separately open."
 }
