@@ -48,7 +48,8 @@ async function state(panel) {
       back:buttons.some(b=>b.title==='Back'), chat:!!document.querySelector('button[role="tab"][title="Chat"][data-state="active"]'),
       preferred:input?.value ?? null, dirty:(document.body.innerText??'').includes('Unsaved changes'),
       discard:buttons.some(b=>b.textContent.trim()==='Discard'), saveEnabled:buttons.some(b=>b.textContent.trim()==='Save'&&!b.disabled),
-      error:(document.querySelector('[role="alert"]')?.textContent??'').slice(0,160) };
+      error:([...document.querySelectorAll('div')].find(el=>el.classList.contains('text-destructive')&&
+        el.classList.contains('rounded-xl')&&el.classList.contains('border-destructive/40'))?.textContent??'').slice(0,160) };
   })()`);
 }
 async function openProfile(panel) {
