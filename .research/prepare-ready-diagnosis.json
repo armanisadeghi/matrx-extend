@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "status": "EXTENSION_READINESS_CAUSE_UNOBSERVED_DIAGNOSTIC_CAPTURE_NARROWED",
+  "scope": "Diagnose the extension-side authentication readiness boundary in hosted run 37114892944; no browser launch.",
+  "evidence": {
+    "run_id": 37114892944,
+    "workflow_source_sha": "1f056b5b6cbc5b96e34395d36ecd343e90c2155e",
+    "development_artifact_id": 11268886169,
+    "development_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "development_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "native_receipt": "/tmp/prepare-click-37114892944/hosted-guest-37114892944-1/test-results/prepare-stale-result-native-ca2f398c-c5b1-47a7-a2a6-c3e9c1ec8e11.json",
+    "failure": {
+      "stage": "admin_extension_ready",
+      "failure_code": "admin_extension_ready_failed",
+      "cases": [],
+      "signin_observations": {
+        "web_dashboard_reached": true
+      }
+    },
+    "resource": "Permit valid, resourceInvalid=false; one unsafe sample was followed by a healthy sample before child exit.",
+    "credential_handling": "Temporary secret was deleted after the run; receipt contains no credential values."
+  },
+  "boundary_analysis": {
+    "runner_order": [
+      "Click extension Settings",
+      "Open Account",
+      "Wait for exactly one enabled extension Sign in button",
+      "Click extension Sign in",
+      "Wait for authenticated admin identity and role"
+    ],
+    "failure_location": "The receipt's stage is set before opening Account and remains unchanged through the extension Sign in readiness wait. Thus the failure occurred before the extension Sign in click and before final admin identity checks. The evidence cannot distinguish Account navigation from missing/disabled guest Sign in readiness.",
+    "actual_extension_auth_state": "Unavailable: the prior runner recorded only web_dashboard_reached=true and discarded the safe DOM state at this boundary. Reaching the website dashboard in a separate tab does not prove extension authentication.",
+    "not_supported": [
+      "An extension OAuth/server callback failure: the extension Sign in click was not reached according to the runner stage ordering.",
+      "An admin allowlist or role failure: no extension sign-in completion or role observation occurred.",
+      "A resource permit rejection: the resource wrapper recorded a valid permit and child_failed after the acceptance process exited."
+    ]
+  },
+  "repair": {
+    "file": "tests/browser/prepare-stale-result-native-acceptance.mjs",
+    "behavior": "Split extension Settings click, Account expansion, Sign in readiness, Sign in click, and authenticated admin completion into distinct stages. Capture a fixed, credential-free auth-state summary when an extension stage fails, including Account expanded state, expected-admin match and role booleans, Sign in count/enabled, Sign out, alert/retry, and loading indicators.",
+    "sensitive_data": "The new observation returns only fixed booleans and counts. It does not return email text, tokens, URLs, DOM text, or exception messages.",
+    "product_changes": "None. No auth contract or identity predicate was relaxed."
+  },
+  "hypotheses": [
+    {
+      "hypothesis": "Settings navigation or Account expansion failed before guest auth controls were ready.",
+      "prediction": "A later receipt reports stage admin_extension_settings_click or admin_extension_account_open and a missing/collapsed Account observation.",
+      "status": "Consistent with the broad old stage but unverified; new stage and safe snapshot distinguish it."
+    },
+    {
+      "hypothesis": "Account opened, but the extension did not render exactly one enabled Sign in control.",
+      "prediction": "A later receipt reports admin_extension_signin_ready with a safe state showing absent, duplicate, or disabled Sign in controls, possibly with an alert/loading indicator.",
+      "status": "Consistent with the broad old stage but unverified; new readiness observation distinguishes it."
+    },
+    {
+      "hypothesis": "The extension Sign in flow or admin authorization rejected the session.",
+      "prediction": "This requires the Sign in click and later authenticated identity check to be reached; the current receipt reports neither.",
+      "status": "Not supported for this run by stage ordering; no server-side auth diagnosis is justified."
+    }
+  ],
+  "verification": {
+    "checks": "PASS: node --check tests/browser/prepare-stale-result-native-acceptance.mjs; Biome format/check on the runner and report; git diff --check. No browser launch, hosted rerun, or credential access was performed in this diagnostic turn.",
+    "runtime": "No Prepare acceptance cases passed or ran in run 37114892944."
+  },
+  "limits": [
+    "This change makes a future failure attributable; it does not establish the missing extension auth state from run 37114892944.",
+    "A guarded hosted rerun requires a separate permit and fresh review after the report/source commit."
+  ]
+}

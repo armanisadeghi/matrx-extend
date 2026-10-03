@@ -43,6 +43,38 @@ async function credentials() {
   return value;
 }
 
+async function extensionAuthState(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+      const account = [...document.querySelectorAll('button[aria-expanded]')]
+        .find((button) => button.textContent.trim() === 'Account');
+      const section = account?.parentElement?.nextElementSibling;
+      const row = (label) => [...(section?.querySelectorAll('span') ?? [])]
+        .find((span) => span.textContent.trim() === label)?.parentElement?.textContent.trim() ?? null;
+      const email = row('Email');
+      const role = row('Role');
+      const buttons = [...document.querySelectorAll('button')];
+      const signIn = buttons.filter((button) => button.textContent.trim() === 'Sign in');
+      const retry = buttons.find((button) => button.textContent.trim() === 'Try again');
+      return {
+        account_present: Boolean(account),
+        account_expanded: account?.getAttribute('aria-expanded') === 'true',
+        email_row_present: email !== null,
+        expected_admin_email: email === 'Emailadmin@admin.com',
+        admin_role: role?.toLowerCase() === 'roleadmin',
+        sign_in_count: signIn.length,
+        sign_in_enabled: signIn.length === 1 && !signIn[0].disabled,
+        sign_out_present: buttons.some((button) => button.textContent.trim() === 'Sign out'),
+        auth_error_present: Boolean(document.querySelector('[role="alert"]')),
+        auth_retry_present: Boolean(retry),
+        auth_retry_disabled: retry?.disabled ?? false,
+        loading_present: Boolean(document.querySelector('[role="progressbar"], [aria-busy="true"]')),
+      };
+    })()`,
+  );
+}
+
 async function signIn(page, panel) {
   const web = await page.context().newPage();
   try {
@@ -82,23 +114,24 @@ async function signIn(page, panel) {
       throw new Error('admin_web_submit_unverified');
     }
     report.signin_observations.web_dashboard_reached = true;
-    stage('admin_extension_settings');
+    stage('admin_extension_settings_click');
     await click(panel, 'title', 'Settings');
-    stage('admin_extension_ready');
+    stage('admin_extension_account_open');
     await openSection(panel, 'Account');
-    report.signin_observations.extension_guest_ready = await waitFor(
-      'prepare_extension_signin_ready',
-      () =>
-        evaluate(
-          panel,
-          `(() => {
-      const buttons = [...document.querySelectorAll('button')]
-        .filter((button) => button.textContent.trim() === 'Sign in');
-      return { signin_count: buttons.length, signin_enabled: buttons.length === 1 && !buttons[0].disabled };
-    })()`,
-        ),
-      (value) => value?.signin_count === 1 && value.signin_enabled,
-    );
+    report.signin_observations.extension_after_account_open = await extensionAuthState(panel);
+    stage('admin_extension_signin_ready');
+    try {
+      report.signin_observations.extension_guest_ready = await waitFor(
+        'prepare_extension_signin_ready',
+        () => extensionAuthState(panel),
+        (value) => value?.sign_in_count === 1 && value.sign_in_enabled,
+      );
+    } catch {
+      report.signin_observations.extension_signin_last = await extensionAuthState(panel).catch(
+        () => null,
+      );
+      throw new Error('prepare_extension_signin_not_ready');
+    }
     stage('admin_extension_click');
     try {
       await click(panel, 'button', 'Sign in');
@@ -138,35 +171,24 @@ async function signIn(page, panel) {
       };
       throw error;
     }
-    stage('admin_extension_wait');
+    stage('admin_extension_auth_completion');
     await waitFor(
       'prepare_admin_ready',
       async () => {
-        const observed = await evaluate(
-          panel,
-          `(() => {
-      const account = [...document.querySelectorAll('button[aria-expanded]')]
-        .find((button) => button.textContent.trim() === 'Account');
-      const section = account?.parentElement?.nextElementSibling;
-      const row = (label) => [...(section?.querySelectorAll('span') ?? [])]
-        .find((span) => span.textContent.trim() === label)?.parentElement?.textContent.trim();
-      return {
-        account_present: Boolean(account),
-        account_expanded: account?.getAttribute('aria-expanded') === 'true',
-        email_match: row('Email') === 'Emailadmin@admin.com',
-        admin_role: row('Role')?.toLowerCase() === 'roleadmin',
-        sign_out_present: [...document.querySelectorAll('button')]
-          .some((button) => button.textContent.trim() === 'Sign out'),
-        alert_present: Boolean(document.querySelector('[role="alert"]')),
-      };
-    })()`,
-        );
+        const observed = await extensionAuthState(panel);
         report.signin_observations.extension_last = observed;
         return observed;
       },
-      (value) => value?.email_match && value.admin_role,
+      (value) => value?.expected_admin_email && value.admin_role,
       90_000,
     );
+  } catch {
+    if (report.stage.startsWith('admin_extension_')) {
+      report.signin_observations.extension_failure = await extensionAuthState(panel).catch(
+        () => null,
+      );
+    }
+    throw new Error(`${report.stage}_failed`);
   } finally {
     await web.close();
     await page.bringToFront();
