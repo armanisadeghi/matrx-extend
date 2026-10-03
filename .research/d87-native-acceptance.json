@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "defect": "EXT-D-0087",
+  "status": "SETUP_NOT_ADMITTED",
+  "native_acceptance": "NOT_RUN",
+  "product_verdict": null,
+  "hosted_run": {
+    "id": 37108409909,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37108409909",
+    "job_id": 111161344083,
+    "job_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37108409909/job/111161344083",
+    "conclusion": "failure",
+    "workflow_runner_sha": "40c659ae85019bae133db1a9dbf9e43ede60c0ee",
+    "started_at": "2026-10-03T08:03:28Z",
+    "completed_at": "2026-10-03T08:04:51Z"
+  },
+  "inputs": {
+    "acceptance_case": "settings-persistence",
+    "development_run_id": 37107627454,
+    "development_artifact_id": 11268886169,
+    "development_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "release_run_id": "",
+    "published_store_crx": false
+  },
+  "development_artifact_provenance": {
+    "ci_conclusion": "success",
+    "ci_event": "push",
+    "ci_branch": "main",
+    "artifact_name": "matrx-extend-development-test-3092444e73094cb0023f6086202869ccbd22978b-37107627454-1",
+    "expired": false
+  },
+  "guarded_phases": [
+    {
+      "phase": "package",
+      "status": "REFUSED_BEFORE_CHILD_START",
+      "resource_code": "RESOURCE_CPU_HIGH_LOAD_BUSY",
+      "decision": "refused",
+      "exit_code": 2,
+      "measurement": {
+        "pressure_level": 1,
+        "available_memory_gib": 12.74,
+        "required_memory_gib": 4,
+        "one_minute_load": 31.02,
+        "logical_cpus": 4,
+        "cpu_busy_fraction": 0.6742857142857143,
+        "swap_used_mib": 0,
+        "repo_free_gib": 107.71697998046875,
+        "profile_free_gib": 107.71697998046875,
+        "safety_free_gib": 107.71697998046875,
+        "system_free_gib": 107.71697998046875
+      }
+    },
+    {
+      "phase": "chromium",
+      "status": "SKIPPED_AFTER_PACKAGE_REFUSAL"
+    },
+    {
+      "phase": "settings-persistence-native-case",
+      "status": "SKIPPED_AFTER_PACKAGE_REFUSAL"
+    }
+  ],
+  "downloaded_evidence": {
+    "artifact_id": 11268608177,
+    "artifact_name": "hosted-guest-37108409909-1",
+    "expired": false,
+    "matching_run_files": [
+      "docs/stabilization/resource-journals/hosted-package-37108409909-1.jsonl"
+    ],
+    "native_result_report_present": false,
+    "screenshots_present": false,
+    "note": "The upload also contained journals for hosted run 37105304739; they were excluded from this run's evidence."
+  },
+  "defect_record_updated": false,
+  "reason": "The first owned resource-guarded package phase refused admission because CPU busy fraction and one-minute load exceeded the existing thresholds. The guard exited before package preparation; Chromium preparation and all native UI/storage assertions were skipped. This is setup evidence only, not a product pass or failure."
+}
