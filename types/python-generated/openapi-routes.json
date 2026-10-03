@@ -2979,7 +2979,22 @@
    "application/json"
   ]
  },
+ "/google-integrations/tasks/create": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/google-integrations/tasks/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/tasks/write/apply": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/tasks/write/preview": {
   "post": [
    "application/json"
   ]
