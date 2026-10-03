@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "report_id": "settings-audit-concurrency-peer-20261003",
+  "reviewed_head": "43d28aa0",
+  "lane": "fresh independent source/test review; zero authorship; no native/browser run",
+  "verdict_a_runtime_outcome": {
+    "status": "PARTIAL — exact-build native Settings outcome remains pending",
+    "evidence": [
+      "Unknown active-key persistence outcome clears displayed key details, blocks Re-key, and offers a details-only retry; refresh clears the block only after all details load successfully.",
+      "A confirmed unchanged active id leaves the ordinary rotation error retryable. Missing Web Locks fails before storage access, so retry cannot mutate key or history.",
+      "Native Chrome interactions and cross-context Web Locks behavior were not exercised in this review; exact-build Settings acceptance remains unverified."
+    ]
+  },
+  "verdict_b_source_quality": {
+    "status": "PASS with one minor unsupported-browser recovery wording issue",
+    "prior_findings": [
+      {
+        "finding": "Late active-key write rejection could conceal a successful rotation and invite a second rotation.",
+        "status": "ADDRESSED: active-key write is read back; an unconfirmable outcome clears cache and raises DeviceKeyOutcomeUnknownError; Settings blocks re-key until details refresh."
+      },
+      {
+        "finding": "Concurrent key writers can lose a receipt-verification link.",
+        "status": "ADDRESSED in source: creation, rotation, cache validation, and history snapshots share one exclusive origin lock; a forced overlap test checks each activated key's signature after module restart."
+      },
+      {
+        "finding": "Failure interactions lacked explicit stabilization inventory coverage.",
+        "status": "ADDRESSED in EXT-D-0093 and feature-test inventory; native acceptance remains pending."
+      }
+    ],
+    "new_findings": [
+      {
+        "severity": "Minor",
+        "finding": "An unavailable Web Locks API is rendered as a retryable generic failure in Settings, although the core explicitly knows locking is unavailable and retries cannot help until the browser context changes.",
+        "evidence": "src/lib/audit/device-key.ts:76-81 rejects before storage access; src/features/settings/AuditKeyCard.tsx:120-131 maps every non-unknown error to operationError='rotate', whose copy at lines 210-214 says 'Try Re-key again.' The unsupported test checks storage safety but not the user-facing recovery message.",
+        "impact": "No key/history mutation or receipt loss; the user may repeat a permanently unavailable operation."
+      }
+    ],
+    "coverage_notes": [
+      "No stale imports or unused old history helpers remain in device-key.ts; grep shows production callers use the updated public functions.",
+      "No nested lock acquisition: rotate and first-use paths call only unlocked internal helpers while holding the lock; receipt creation obtains the active key, and later rotations promote its pending history entry to retained history before that key can be hidden.",
+      "Prepared history entries remain hidden unless their id is active. If a history write commits then rejects, a pending orphan can remain in storage, but it is invisible to verification/history and does not displace the active key; no cleanup is present.",
+      "The overlap test uses independently imported modules, isolated storage, forced active-write barriers, and real Ed25519 signatures. It uses native Node Web Locks when available and a serialized dependency double otherwise; neither proves actual Chrome extension service-worker/page origin coordination. The separate native Settings lane must establish that.",
+      "The UI unknown-outcome test exercises the Settings component with mocked device-key/storage boundaries; it establishes rendered state transitions, not native key storage or browser lock semantics."
+    ],
+    "verification": "Reviewed commits 29435a28 and 43d28aa0, source, focused tests, repair report, journals, and Settings component. No tests or native/browser run performed in this review lane."
+  },
+  "files_changed_by_reviewer": [".research/settings-audit-concurrency-peer.json"]
+}
