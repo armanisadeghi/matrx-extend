@@ -151,6 +151,7 @@
     ["node", "tests/browser/auth-role-failure-acceptance.mjs"],
     ["node", "tests/browser/notes-native-acceptance.mjs"],
     ["node", "tests/browser/profile-native-acceptance.mjs"],
+    ["node", "tests/browser/profile-reload-readonly.mjs"],
     ["node", "tests/browser/profile-member-row-recovery.mjs"],
     ["node", "tests/browser/files-saved-native-acceptance.mjs"],
     ["node", "tests/browser/screenshot-capture-acceptance.mjs"],

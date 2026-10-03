@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "task": "profile-reload-readonly",
+  "status": "reload_failed_observed",
+  "recorded_at_utc": "2026-10-03T23:32:12Z",
+  "scope": "One guarded, read-only guest side-panel lifecycle probe against the already imported development artifact. No Profile data access or writes.",
+  "artifact": {
+    "source_sha": "9dfb5911cd7fef18f8c36b1cefd273096e866bbf",
+    "ci_run_id": 37159097093,
+    "artifact_id": 11286822448,
+    "development_version": "0.2.184",
+    "tree_sha256": "2e99c4093efb34e2981f76581cc0c1bc66cdea7888e8296e2d47629e5a1cccb4"
+  },
+  "probe": {
+    "run_id": "profile-reload-readonly-01",
+    "probe_source": "tests/browser/profile-reload-readonly.mjs",
+    "probe_source_sha256": "da72d0fa0ab9b96a6692e55db3872c6d026c42416da9dacd7643550d525b21a6",
+    "probe_source_review": "not independently reviewed; syntax, policy JSON, and diff checks passed",
+    "source_checkout_sha": "df9ad6a2f848bd069c57e694bbb70949a9e207fd",
+    "started_at_utc": "2026-10-03T23:30:46Z",
+    "finished_at_utc": "2026-10-03T23:32:12Z",
+    "native_harness": "runNativeSidepanelQa guest side-panel startup and reloadExtension callback",
+    "guest_panel_startup_verified": true,
+    "reload_attempted": true,
+    "failure_stage": "extension_reload",
+    "failure_code": "native_extension_worker_retirement_unverified",
+    "transport_failure_class": "none",
+    "old_targets_retired": null,
+    "worker_replaced": null,
+    "panel_replaced": null,
+    "target_boolean_limit": "reloadExtension threw before returning its lifecycle booleans; the existing callback exposes no per-target state after that failure. Null means unobserved, not false.",
+    "resource_journal": "docs/stabilization/resource-journals/profile-reload-readonly-01.jsonl",
+    "resource_journal_sha256": "00f4aebf507ff22e49a4f4e4ec8a7fe811e8e4fb7d23e224be28e02b6a057eb5",
+    "resource_decision": "valid; admitted=true, resourceInvalid=false, exitCode=0",
+    "runner_report_external": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-reload-readonly-01/evidence/profile-reload-readonly-profile-reload-readonly-01.json",
+    "runner_report_sha256": "97e3a34b98e26cddb0bb3995227853689265260766e04df75a1b163acc15a2a3",
+    "screenshots_external": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-reload-readonly-01/evidence/native-sidepanel-qa-PEhj4o/",
+    "screenshots_committed": false
+  },
+  "diagnosis": {
+    "confirmed": "The current reload helper could not verify service-worker retirement/replacement during a real guest side-panel extension reload. Its failure occurred with the CDP transport still healthy (`none`).",
+    "relation_to_prior_profile_run": "Consistent with the prior cleanup error masking a reload-stage failure, but that run did not retain its original execution error, so the relationship is not proven.",
+    "not_established": "Which internal worker/panel target predicate failed; the existing helper does not expose its target event sets when it throws."
+  },
+  "safety": {
+    "profile_authentication": "guest only",
+    "profile_or_database_requests": 0,
+    "profile_or_database_writes": 0,
+    "runner_status": "reload_failed_observed; not a product acceptance pass"
+  }
+}
