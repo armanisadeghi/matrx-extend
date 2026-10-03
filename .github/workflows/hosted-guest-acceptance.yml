@@ -107,6 +107,17 @@ jobs:
             [[ "$DEVELOPMENT_RUN_ID" =~ ^[1-9][0-9]*$ && "$DEVELOPMENT_ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]] || exit 1
           fi
 
+      - name: Disable indexing on the disposable hosted VM
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$RUNNER_ENVIRONMENT" == github-hosted && "$RUNNER_OS" == macOS ]] || exit 1
+          sudo /usr/bin/mdutil -a -i off
+          status="$(/usr/bin/mdutil -a -s)"
+          printf '%s\n' "$status"
+          [[ "$status" == *"Indexing disabled."* ]] || exit 1
+          [[ "$status" != *"Indexing enabled."* ]] || exit 1
+
       - name: Wait for measured package readiness
         run: node scripts/hosted-resource-readiness.mjs
 
