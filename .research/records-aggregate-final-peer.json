@@ -1,0 +1,15 @@
+{
+  "status": "PARTIAL_WITH_CONCERN",
+  "scope": "Fresh source-only peer review of extension 15d457e7+bbde92a0 and aidream c2ca494da7; no native, database, package-publish, or full D91 certification",
+  "original_finding": "ADDRESSED at source: SpanningDoors.recordAggregate now uses RecordsClient['recordAggregate']; fallback passes the complete typed rest argument to the owner client, including bucket",
+  "verdict_a_execution": "PASS for reviewed mappings: table_list default asks tableListEverywhere() for canonical app-table visibility; include_app_tables=true retains the spanning list; bucket maps to {key:group_by,by:bucket}; non-count measure maps to [{op,key}] and missing field refuses; historical recordAggregateAsOf resolves the table owner and calls registered record_aggregate_as_of with p_recorded_at, p_measure, p_field_key, p_group_by and p_match. PARTIAL for D91 overall: unsupported as_of/order/related_to and 25 action/schema gaps remain; no live execution was performed.",
+  "verdict_b_quality": "FAIL release lint gate in changed extension test: Biome requires formatting of records-orgs.test.ts lines 175, 184 and 193 (two from 15d457e7, one from bbde92a0). CI run 37099032763 reports one error with diagnostics overflow; targeted Biome check reproduced the error. The changed records.ts also has a noNonNullAssertion warning at line 492, which is not the error.",
+  "new_breakage": "No new execution breakage found in reviewed source paths; the changed test formatting blocks pnpm lint. Installed @ai-matrx/records is 0.58.126 while aidream source declares 0.63.0, so the new historical method is not verified as adopted here.",
+  "evidence": [
+    "git show 15d457e7 bbde92a0 c2ca494da7",
+    "canonical RecordsClient.recordAggregate and recordAggregateAsOf source",
+    "store.generated.ts registered door signature",
+    "targeted pnpm exec biome check",
+    "gh run view 37099032763 --log-failed"
+  ]
+}
