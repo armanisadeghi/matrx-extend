@@ -24,5 +24,15 @@
     "first_guest_answer": "UNVERIFIED",
     "distinct_answer_after_reload": "UNVERIFIED"
   },
-  "remaining": "Fresh independent source peer then guarded hosted workflow dispatch. No browser, build, or installation was run locally or remotely by this tranche."
+  "remaining": "Fresh independent source peer then guarded hosted workflow dispatch. No browser, build, or installation was run locally or remotely by this tranche.",
+  "resume_attempt": {
+    "source_peer": "1763ed18 .research/guarded-phases-peer.json: source pass only",
+    "dispatch": "GitHub HTTP 422 before allocation: runner.temp unavailable in job env expression context",
+    "repair_commit": "add82a35cf789b7cb8755c1ea20383037c7dd494",
+    "repair": "Moved runtime path variables unchanged from job env into package/browser step env. Acceptance already defines them in step env. No JS/guard semantic change.",
+    "checks": "Ruby Psych syntax parsing passed; this is not GitHub expression-context validation. Await fresh delta peer before redispatch.",
+    "heavy_attempts": 0,
+    "server_start": "5318c105968feabd14ce1143f31506061aa4efc2",
+    "local_runtime": "Only cached chromium-1228 found; pinned revision1194/runtime unavailable, no installation attempted."
+  }
 }
