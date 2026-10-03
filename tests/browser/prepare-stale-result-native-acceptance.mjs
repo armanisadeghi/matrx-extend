@@ -23,6 +23,7 @@ const report = {
   cases: [],
   stage: 'inputs',
   failure_code: null,
+  signin_observations: {},
 };
 
 function stage(value) {
@@ -45,23 +46,51 @@ async function credentials() {
 async function signIn(page, panel) {
   const web = await page.context().newPage();
   try {
+    stage('admin_web_navigation');
     await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+    stage('admin_web_route');
     assert.equal(new URL(web.url()).pathname, '/login', 'prepare_web_login_path');
+    stage('admin_credentials_read');
     const secret = await credentials();
+    stage('admin_web_form_fill');
     await web.locator('input[name="email"]').fill(secret.email);
     await web.locator('input[name="password"]').fill(secret.password);
-    await Promise.all([
-      web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname === '/dashboard', {
-        timeout: 90_000,
-      }),
-      web.getByRole('button', { name: 'Sign in', exact: true }).click(),
-    ]);
+    stage('admin_web_submit');
+    try {
+      await Promise.all([
+        web.waitForURL((url) => url.origin === WEB_ORIGIN && url.pathname === '/dashboard', {
+          timeout: 90_000,
+        }),
+        web.getByRole('button', { name: 'Sign in', exact: true }).click(),
+      ]);
+    } catch {
+      report.signin_observations.web_after_submit = {
+        route:
+          new URL(web.url()).origin !== WEB_ORIGIN
+            ? 'other_origin'
+            : new URL(web.url()).pathname === '/login'
+              ? 'login'
+              : new URL(web.url()).pathname === '/dashboard'
+                ? 'dashboard'
+                : 'other_path',
+        alert_present: await web
+          .locator('[role="alert"]')
+          .count()
+          .then((count) => count > 0)
+          .catch(() => null),
+      };
+      throw new Error('admin_web_submit_unverified');
+    }
+    report.signin_observations.web_dashboard_reached = true;
+    stage('admin_extension_settings');
     await click(panel, 'title', 'Settings');
+    stage('admin_extension_click');
     await click(panel, 'button', 'Sign in');
+    stage('admin_extension_wait');
     await waitFor(
       'prepare_admin_ready',
-      () =>
-        evaluate(
+      async () => {
+        const observed = await evaluate(
           panel,
           `(() => {
       const account = [...document.querySelectorAll('button[aria-expanded]')]
@@ -69,10 +98,21 @@ async function signIn(page, panel) {
       const section = account?.parentElement?.nextElementSibling;
       const row = (label) => [...(section?.querySelectorAll('span') ?? [])]
         .find((span) => span.textContent.trim() === label)?.parentElement?.textContent.trim();
-      return row('Email') === 'Emailadmin@admin.com' && row('Role')?.toLowerCase() === 'roleadmin';
+      return {
+        account_present: Boolean(account),
+        account_expanded: account?.getAttribute('aria-expanded') === 'true',
+        email_match: row('Email') === 'Emailadmin@admin.com',
+        admin_role: row('Role')?.toLowerCase() === 'roleadmin',
+        sign_out_present: [...document.querySelectorAll('button')]
+          .some((button) => button.textContent.trim() === 'Sign out'),
+        alert_present: Boolean(document.querySelector('[role="alert"]')),
+      };
     })()`,
-        ),
-      Boolean,
+        );
+        report.signin_observations.extension_last = observed;
+        return observed;
+      },
+      (value) => value?.email_match && value.admin_role,
       90_000,
     );
   } finally {

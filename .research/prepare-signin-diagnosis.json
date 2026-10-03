@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "status": "diagnostic_instrumentation_ready_native_verdict_pending",
+  "source_run": 37109492705,
+  "source_result": "admin_signin_failed; cases=[]; no post-exercise screenshot or granular failure was saved",
+  "finding": "The recorded evidence cannot identify whether web login, extension sign-in, or the admin-state wait failed.",
+  "ruled_out": "Settings Account defaults open, and the Sign in action is outside that section; absence of openSection is not a proven cause.",
+  "change": "Prepare runner now names each sign-in substep and saves only fixed route categories and bounded account-state booleans.",
+  "secret_handling": "No password, auth URL, token, raw browser error, console, or network body is recorded.",
+  "native_execution": "Not run in this lane; sole native permit remains with the D87 run owner.",
+  "next_check": "After fresh peer review and root permit, one hosted Prepare diagnostic run should distinguish the failing boundary before any product repair is claimed.",
+  "defects_closed": []
+}
