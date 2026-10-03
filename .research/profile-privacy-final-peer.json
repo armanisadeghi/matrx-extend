@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "2dc81edb42bcc84f34d36fc827ec241a82821d3a",
+  "review_type": "fresh narrow source/privacy review; no browser or native execution",
+  "verdict_a_source_privacy": {
+    "status": "PASS",
+    "finding": "The emitted member_authentication report contains only a combined first-party identity boolean, canonical nonadmin check booleans, and rendered identity booleans. It no longer copies the member email, profile UUID, organization UUID, or stable email-derived fingerprint.",
+    "identity_proof_preserved": "signInSettings still verifies the first-party web identity against the configured member fingerprint, confirms the extension profile ID matches that identity, verifies the canonical admin assignment query returns zero rows for that exact ID, and confirms rendered email/profile/role/organization match. profile-native-acceptance emits only the derived boolean and nonidentifying proof fields.",
+    "serialization_scope": "The runner keeps raw identity locally for same-session assertions and Profile navigation. The inspected report assignments do not serialize those identity values. Profile request diagnostics retain route, method, status, outcome, error code, and row-presence only."
+  },
+  "verdict_b_quality": {
+    "status": "PASS_SOURCE_ONLY",
+    "finding": "The change removes the stable account fingerprint from the emitted report while retaining positive first-party, extension, and rendered member identity evidence. The separate exact member checks in the auth helper remain intact.",
+    "native": "UNVERIFIED; no browser, extension, or native acceptance run was performed."
+  },
+  "source_anchors_checked": [
+    "tests/browser/profile-native-acceptance.mjs:600-644",
+    "tests/browser/settings-native-auth-driver.mjs:16-20,96-115,166-228,240-330",
+    "tests/browser/member-native-auth-proof.mjs:1-17,91-114"
+  ]
+}
