@@ -1,30 +1,30 @@
 # Stabilization checklist
 
-Generated 2026-10-03 19:43 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-10-03T19:30:00Z.
+Generated 2026-10-03 20:25 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-10-03T20:20:51Z.
 
 ## Current truth
 
 - Scope: 205 feature records, 759 cases, 1331 controls, 1205 applicable case-role slots.
-- Case results: pass 70, partial 56, fail 4, unverified 1074, n/a 1; 121 explicitly unverified and 953 with no result record. Missing results count as unverified, including later-wave surfaces.
+- Case results: pass 70, partial 59, fail 4, unverified 1071, n/a 1; 121 explicitly unverified and 950 with no result record. Missing results count as unverified, including later-wave surfaces.
 - Fully verified feature-role pairs: 0/394 under the rule that every applicable case passes and every control maps to a case.
 - Procedure gaps: 148 missing steps; 147 missing expected outcomes; 31 missing control links.
-- Defect states: closed 57, retest-pass 2, fixed 27, in-fix 7, open 1. A fixed or closed defect is not a feature-level UI pass.
+- Defect states: closed 58, retest-pass 2, fixed 28, in-fix 5, open 1. A fixed or closed defect is not a feature-level UI pass.
 
 ## Current-build evidence
 
-- **Release 0.2.176:** Chrome Web Store 0.2.176 is Published - public, confirmed by the authenticated dashboard recheck at 16:09 UTC on October 3 (.research/daily-store-20261003.json). Hosted release 37105966615 passed its strict gates. Main is 0.2.177. Its development artifact at source 2274cc2f, run 37145482483, artifact 11282375130 was imported and provenance-verified; native acceptance was not run. No eligible newer Store artifact or publication is established. D91 manual Records execution and broader stabilization coverage remain open.
-- **Artifact:** The frozen 0.2.176 release ZIP SHA-256 is 813715b8dcd6421d4ee001c04e99c3729f6dad439064f8bf5922e6fb38ce09f8; keyed tree SHA-256 is 755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272. The exact unpacked ZIP and tree were unchanged before and after native guest run published176-guest-backend-82af43a3. The separate 0.2.177 development artifact has tree SHA-256 a366b2b34045412b9866929cea59ab9d872d7be373ba08562705e4bcce8d3b23 (.research/current-development-artifact-refresh.json); it is not a Store candidate or a native acceptance result.
-- **Scoped native acceptance:** Exact 0.2.176 unpacked-ZIP native headless Chromium guest run published176-guest-backend-82af43a3 passed a grounded first answer and grounded follow-up after real side-panel reload against live aidream 82af43a337e848da4d2ffebc7915fc76da8ea2b8, unchanged before and after the run (.research/published176-guest-backend-82af43a3.json). This did not exercise Chrome Web Store installation/update lifecycle. Historical development175 and Store130 results retain their original evidence; no full Chat, Records, or overall product-health claim follows from this bounded run.
+- **Release 0.2.176:** Chrome Web Store 0.2.176 remains the last observed public version, confirmed by the authenticated dashboard at 16:09 UTC on October 3 (.research/daily-store-20261003.json); no 0.2.177 submission is established. Current native development artifact is exact CI 37150495327 / artifact 11283802431, source ac49ac2f8fb9f9c3d538aef81149a1c4a6eb2418, imported tree 9cc1d6a7. D94 is closed only for the original admin reproduction; D95 remains fixed pending member and cross-identity retest. No overall Profile, extension, or Store acceptance is claimed.
+- **Artifact:** Current verified native development artifact: CI 37150495327, artifact 11283802431, source ac49ac2f8fb9f9c3d538aef81149a1c4a6eb2418, imported tree SHA-256 9cc1d6a77f7f2f0314a9ecee8dae6b73bc2bc6bb472e94d05e6b0aea43f75fdf. This is a development artifact, not a Store candidate. Frozen public 0.2.176 ZIP and tree hashes remain 813715b8dcd6421d4ee001c04e99c3729f6dad439064f8bf5922e6fb38ce09f8 and 755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272.
+- **Scoped native acceptance:** On exact development artifact ac49ac2f, independent admin warm native paths passed: T02 Back/discard/reopen; T04 Discard, save/reopen, and restoration/readback; T25 owner-row read denial produced a non-editable error with Save disabled, then Retry succeeded. Root reverified native receipt/journal hashes and restoration at 2026-10-03T20:16:36Z. T02/T04 full cases remain partial because extension reload was not exercised. D95 remains fixed pending member and cross-identity runtime retest; no overall Profile pass follows. Latest bounded guest Chat proof remains exact frozen public 0.2.176 run published176-guest-backend-b350b372, backend b350b372 unchanged before/after; native run evidence captured 20:14 UTC in .research/published176-guest-backend-b350b372.json. It does not prove Store installation/update lifecycle.
 - These receipts establish only the named checks on the named artifact. Other inventory passes keep their recorded historical build boundary.
 
 ## Inventory freshness review
 
-Since inventory source `528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b`, **264 `src/` paths changed** through `d44d930dfb8604d1df861fdfe15b4805e8016531`. A direct path-anchor comparison matched 32 and left 232 without an exact inventory anchor.
+Since inventory source `528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b`, **268 `src/` paths changed** through `28b65aed688a142e44db3e003eef222edd3e1cfb`. A direct path-anchor comparison matched 32 and left 236 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities
 
-- **Coverage model / all contained surfaces** — 0 of 394 applicable feature-role pairs meet the full-verification rule. The inventory records 70 pass, 121 explicit unverified, 56 partial, 4 fail, 1 not applicable, and 953 slots with no result. A pass retains its original build boundary. Next: Continue recording bounded runs by exact build and role; do not infer whole-feature health from a repaired defect or scoped pass.
+- **Coverage model / all contained surfaces** — 0 of 394 applicable feature-role pairs meet the full-verification rule. The inventory records 70 pass, 121 explicit unverified, 59 partial, 4 fail, 1 not applicable, and 950 slots with no result. A pass retains its original build boundary. Next: Continue recording bounded runs by exact build and role; do not infer whole-feature health from a repaired defect or scoped pass.
 - **Executable test procedures** — 148 cases lack steps, 147 lack expected outcomes, and 31 lack control links. The registered-executor surface has 173 cases; its live catalog parity does not prove runtime behavior. Next: Design each missing case from the live advertised tool contract and safe real fixtures before execution.
 - **Current install and native breadth** — Strict exact 0.2.176 release gates passed and the frozen published artifact has bounded native guest acceptance. The separate 0.2.177 development artifact is provenance-verified, with native acceptance not run. Guest Chat grounding/reload, signed-in non-admin Chat, admin Files error/Retry and admin Saved captures selection race have narrow native passes. Personal Chrome reload, broad guest/member/admin sidepanel/content-script/service-worker/offscreen coverage and signout privacy remain unverified. Next: Bind native runs to current artifact receipt, real user surface and persona; preserve admission guard.
 - **Notes, Files, Saved captures** — Notes D61/D62/D63/D67/D68 have scoped exact139 admin native verification; feature/member breadth remains open. On exact173, D64 Files admin read-error/Retry passed for Library and Screenshots, and D65 Saved captures admin last-click race passed for late success and late failure. Member behavior, full search/pagination/edit/delete controls and full feature cases remain unverified. Next: Run the remaining current-build member and admin controls; do not count the exact-ID backend test-fixture cleanup as Saved captures UI deletion coverage.
@@ -45,7 +45,7 @@ Pass and partial counts are recorded results; unverified includes explicit unver
 | Navigation / shell | 1 | 1 | 6 | 0 | 17 | 0 |
 | Popup / options / mic permission | 1 | 0 | 0 | 0 | 20 | 0 |
 | Settings | 1 | 26 | 10 | 0 | 55 | 1 |
-| Profile | 1 | 0 | 0 | 0 | 32 | 0 |
+| Profile | 1 | 0 | 3 | 0 | 29 | 0 |
 | Debug log | 1 | 4 | 1 | 0 | 46 | 0 |
 | Debug bridges | 1 | 0 | 0 | 0 | 28 | 0 |
 | Scrape | 1 | 1 | 0 | 0 | 87 | 0 |

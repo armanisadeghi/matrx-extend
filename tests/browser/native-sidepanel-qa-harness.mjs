@@ -226,6 +226,68 @@ async function waitForExpectedExtension(cdp, extensionId) {
   throw new Error('native_sidepanel_expected_extension_missing');
 }
 
+async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelId }) {
+  const details = await context.newPage();
+  try {
+    await details.goto(`chrome://extensions/?id=${extensionId}`, {
+      waitUntil: 'domcontentloaded',
+      timeout: 30000,
+    });
+    const reload = details.locator('extensions-detail-view #dev-reload-button');
+    if ((await reload.count()) !== 1 || !(await reload.isVisible()))
+      throw new Error('native_extension_management_reload_unavailable');
+    const before = (await cdp.send('Target.getTargets')).targetInfos;
+    const workerUrlPrefix = `chrome-extension://${extensionId}/`;
+    const currentWorkers = before.filter(
+      (target) => target.type === 'service_worker' && target.url.startsWith(workerUrlPrefix),
+    );
+    if (currentWorkers.length !== 1) throw new Error('native_extension_current_worker_unverified');
+    const oldWorkerId = currentWorkers[0].targetId;
+    const panelUrl = `${workerUrlPrefix}sidepanel.html`;
+    if (!before.some((target) => target.targetId === oldPanelId && target.url === panelUrl))
+      throw new Error('native_extension_current_panel_unverified');
+    await reload.click(); // Chrome's own extension-management UI, using trusted input.
+    let replacementWorker;
+    for (let attempt = 0; attempt < ATTEMPTS; attempt += 1) {
+      const { targetInfos } = await cdp.send('Target.getTargets');
+      const ids = new Set(targetInfos.map((target) => target.targetId));
+      replacementWorker = targetInfos.find(
+        (target) =>
+          target.type === 'service_worker' &&
+          target.url.startsWith(workerUrlPrefix) &&
+          target.targetId !== oldWorkerId,
+      );
+      if (!ids.has(oldWorkerId) && !ids.has(oldPanelId) && replacementWorker) break;
+      replacementWorker = undefined;
+      await wait(WAIT_MS);
+    }
+    if (!replacementWorker) throw new Error('native_extension_replacement_worker_unverified');
+    await page.bringToFront();
+    await page.locator('#open-panel').click();
+    let replacementPanel;
+    for (let attempt = 0; attempt < ATTEMPTS; attempt += 1) {
+      const { targetInfos } = await cdp.send('Target.getTargets');
+      replacementPanel = targetInfos.find(
+        (target) =>
+          target.type === 'page' && target.url === panelUrl && target.targetId !== oldPanelId,
+      );
+      if (replacementPanel) break;
+      await wait(WAIT_MS);
+    }
+    if (!replacementPanel) throw new Error('native_extension_replacement_panel_unverified');
+    requireSidePanelContext(await sidePanelContexts(cdp, replacementWorker.targetId), panelUrl);
+    return {
+      panel: await attachTargetSession(cdp, replacementPanel.targetId),
+      worker_replaced: replacementWorker.targetId !== oldWorkerId,
+      panel_replaced: replacementPanel.targetId !== oldPanelId,
+      old_targets_retired: true,
+      management_reload_clicked: true,
+    };
+  } finally {
+    await details.close().catch(() => {});
+  }
+}
+
 async function sidePanelContexts(cdp, serviceWorkerTargetId) {
   const worker = await attachTargetSession(cdp, serviceWorkerTargetId);
   try {
@@ -579,6 +641,14 @@ export async function runNativeSidepanelQa({
             panelTarget,
             artifacts,
             attachWorker: () => attachTargetSession(cdp, extensionWorker.targetId),
+            reloadExtension: () =>
+              reloadOwnedExtension({
+                cdp,
+                context,
+                page,
+                extensionId: expectedExtensionId,
+                oldPanelId: panelTarget.targetId,
+              }),
           }),
         );
       } finally {

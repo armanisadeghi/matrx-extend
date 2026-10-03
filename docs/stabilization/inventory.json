@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T19:30:00Z",
+  "updated_at": "2026-10-03T20:20:51Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -9499,9 +9499,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "PASS: warm admin Back discarded the draft; reopening Profile showed the original Preferred value with no error or dirty state. Extension reload dimension remains unverified.",
+              "evidence_refs": [
+                ".research/profile-independent-acceptance.json",
+                "docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl"
+              ],
+              "status": "pass",
               "readiness": "ready"
             },
             {
@@ -9527,7 +9530,23 @@
           },
           "linked_defects": [
             "EXT-D-0094"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "profile-independent-20261003-01",
+              "build_variant": "receipt-bound development artifact; CI 37150495327 / artifact 11283802431 / source ac49ac2f",
+              "verified_substeps": [
+                "Warm Back discarded the unsaved draft.",
+                "Reopened Profile showed original Preferred value without error or dirty state."
+              ],
+              "remaining_criteria": [
+                "Post-extension-reload run not performed."
+              ],
+              "evidence": ".research/profile-independent-acceptance.json; docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl",
+              "verified_at": "2026-10-03T20:16:36Z"
+            }
+          }
         },
         {
           "id": "EXT-F-1004-T03",
@@ -9672,9 +9691,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "PASS: warm admin Discard restored the original Preferred value. Extension reload dimension remains unverified.",
+              "evidence_refs": [
+                ".research/profile-independent-acceptance.json",
+                "docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl"
+              ],
+              "status": "pass",
               "readiness": "ready"
             },
             {
@@ -9685,9 +9707,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "PASS: warm admin Discard restored original Preferred; Save persisted the synthetic value after reopening Profile, then restoration to the original empty value was saved and read back after reopening. Extension reload dimension remains unverified.",
+              "evidence_refs": [
+                ".research/profile-independent-acceptance.json",
+                "docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl"
+              ],
+              "status": "pass",
               "readiness": "ready"
             },
             {
@@ -9726,7 +9751,23 @@
           },
           "linked_defects": [
             "EXT-D-0094"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "profile-independent-20261003-01",
+              "build_variant": "receipt-bound development artifact; CI 37150495327 / artifact 11283802431 / source ac49ac2f",
+              "verified_substeps": [
+                "Warm Discard restored the original Preferred value.",
+                "Save persisted and reopened successfully; restoration to original empty Preferred was persisted and read back after reopening."
+              ],
+              "remaining_criteria": [
+                "Post-extension-reload run not performed."
+              ],
+              "evidence": ".research/profile-independent-acceptance.json; docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl",
+              "verified_at": "2026-10-03T20:16:36Z"
+            }
+          }
         },
         {
           "id": "EXT-F-1004-T05",
@@ -11335,8 +11376,9 @@
           ],
           "procedure_readiness": "requires_fixture",
           "procedure_gaps": [
-            "ProfileView exposes Retry; native acceptance still requires a controlled network fault on the users.user_form_profile owner-row GET, including the refetch after a successful save.",
-            "Identity-transition failure needs an existing second test identity and controlled read failure; this path is source-confirmed only and has no runtime evidence."
+            "Admin warm owner-row read denial and Retry passed on exact development artifact; reopening Profile after Retry remains unverified.",
+            "Member, failed cross-identity runtime paths, and extension-reload dimensions remain unverified.",
+            "Other initial/post-save error branches remain unverified."
           ],
           "procedure_execution_matrix": [
             {
@@ -11355,6 +11397,19 @@
             {
               "mode": "member",
               "lifecycle_dimension": "warm",
+              "branch": "retry-after-service-restored",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "warm",
               "branch": "reopen-after-service-restored",
               "inventory_dimensions": [
                 "warm",
@@ -11369,6 +11424,19 @@
               "mode": "member",
               "lifecycle_dimension": "reload",
               "branch": "profile-owner-row-read-failure",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "reload",
+              "branch": "retry-after-service-restored",
               "inventory_dimensions": [
                 "warm",
                 "reload"
@@ -11399,9 +11467,28 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "PASS: four real owner-row GET requests were denied; Profile showed the load error, zero editors, and disabled header Save with no enabled Save or dirty footer. Identity-transition behavior remains unverified.",
+              "evidence_refs": [
+                ".research/profile-independent-acceptance.json",
+                "docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl"
+              ],
+              "status": "pass",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "warm",
+              "branch": "retry-after-service-restored",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": "PASS: after the denied owner-row GETs, interception was disabled and Retry performed a successful owner-row GET; the original Preferred value returned without error. Profile was not left and reopened after recovery.",
+              "evidence_refs": [
+                ".research/profile-independent-acceptance.json",
+                "docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl"
+              ],
+              "status": "pass",
               "readiness": "requires_fixture"
             },
             {
@@ -11421,6 +11508,19 @@
               "mode": "admin",
               "lifecycle_dimension": "reload",
               "branch": "profile-owner-row-read-failure",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "reload",
+              "branch": "retry-after-service-restored",
               "inventory_dimensions": [
                 "warm",
                 "reload"
@@ -11503,9 +11603,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "PASS: four real owner-row GET requests were denied; Profile showed the load error, zero editors, and disabled header Save with no enabled Save or dirty footer. Identity-transition behavior remains unverified.",
+              "evidence_refs": [
+                ".research/profile-independent-acceptance.json",
+                "docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl"
+              ],
+              "status": "pass",
               "readiness": "requires_fixture"
             },
             {
@@ -11555,11 +11658,30 @@
             "report": ".research/popup-profile-acceptance-peer.json",
             "scope": "Source-reviewed procedure only; no runtime acceptance."
           },
-          "required_fixture": "A controlled disposable profile-read failure fixture must force get_user_form_context RPC failure and then restore service. ProfileView exposes no retry control; after restoring service, the supported recovery step is navigate to Chat and reopen Profile. For identity-negative coverage, use two existing authorized test identities and force only the second user read to fail; no role changes or real profile writes.",
+          "required_fixture": "For remaining cross-identity acceptance, use two existing authorized test identities and force only the second user owner-row GET to fail; no role changes or real profile writes. Run member and extension-reload dimensions separately.",
           "linked_defects": [
             "EXT-D-0095",
             "EXT-D-0094"
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "profile-independent-20261003-01",
+              "build_variant": "receipt-bound development artifact; CI 37150495327 / artifact 11283802431 / source ac49ac2f",
+              "verified_substeps": [
+                "Denied four real users.user_form_profile owner-row GET requests; failure UI showed zero editors, disabled header Save, no enabled Save or dirty footer.",
+                "Disabled interception; Retry completed a successful owner-row GET and restored original Preferred without error."
+              ],
+              "remaining_criteria": [
+                "Profile was not left and reopened after Retry.",
+                "Member identity untested.",
+                "Real cross-identity failure while Profile remains mounted untested.",
+                "Full reload dimension and remaining T25 error branches untested."
+              ],
+              "evidence": ".research/profile-independent-acceptance.json; docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl",
+              "verified_at": "2026-10-03T20:16:36Z"
+            }
+          }
         },
         {
           "id": "EXT-F-1004-T26",
@@ -12093,17 +12215,21 @@
         },
         "member": {
           "test_status": "unverified",
-          "defect_ids": [],
+          "defect_ids": [
+            "EXT-D-0095"
+          ],
           "run_ids": [],
           "retest_status": "not-run"
         },
         "admin": {
-          "test_status": "unverified",
+          "test_status": "partial",
           "defect_ids": [
-            "EXT-D-0094"
+            "EXT-D-0095"
           ],
-          "run_ids": [],
-          "retest_status": "not-run"
+          "run_ids": [
+            "profile-independent-20261003-01"
+          ],
+          "retest_status": "partial"
         }
       },
       "inventory_status": "complete",
