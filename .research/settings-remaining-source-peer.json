@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "review": "independent source-only review of exact commit 92d09b3ab61eaa71a6ad448e9c8a33825371bf26",
+  "scope": "settings-desktop-native-acceptance.mjs additions; original EXT-F-1003 T43-T51 criteria; harness and storage-fault contracts",
+  "verdict_a": {
+    "result": "PASS_SOURCE_READINESS",
+    "runtime": "UNVERIFIED_BY_THIS_REVIEWER; native guest/member/admin run is ongoing",
+    "findings": [
+      "CASE=remaining admits guest, member, and admin, preserves per-mode sign-in and identity assertions, and receipt-binds to source 991385d9 / run 37129518563 / artifact 11275878549.",
+      "Port assertions cover 1 and 65535 acceptance, 0 and 65536 rejection while preserving prior saved value, nondigit filtering, blank clear, and reload persistence.",
+      "Forget assertions drive the rendered confirmation and Cancel, then real Chrome storage.remove rejection with visible error/preserved code, followed by real successful removal and retry.",
+      "Reset Cancel compares complete local/session census against pre-dialog values and verifies saved port remains before proceeding to existing confirmed reset and sign-out assertions.",
+      "T43-T45 pairing rejection/real connection semantics remain partial: the new branch attempts pairing but does not assert the pair-attempt rejection result; the fake availability state is only for exposing Forget and is explicitly not connectivity evidence."
+    ]
+  },
+  "verdict_b": {
+    "result": "PASS_WITH_LIMITS",
+    "findings": [
+      "The controlled failure wraps the external Chrome storage boundary, leaving Settings event handlers, React UI, confirmation flow, storage sequencing, and subsequent real storage mutation intact; rejection call count is asserted.",
+      "The owned worker is provided by the native harness and detached in finally. Synthetic availability is sent only within the disposable profile; profile/process cleanup is owned by the existing harness.",
+      "Storage fault wrappers are restored in finally after refusal paths; HTTP availability and pairing data cannot escape the disposable browser profile.",
+      "No production code changed. Exact commit inspection used git show for the named SHA rather than a moving range."
+    ],
+    "limitations": [
+      "No browser, build, or test execution was performed by this source reviewer.",
+      "The receipt-bound native outcomes across all three modes are still required before T43-T51 can be updated from partial.",
+      "Static PAIR_A is synthetic and appropriate only because the profile is disposable; no assertion treats it as a valid engine credential."
+    ]
+  },
+  "source_commit": "92d09b3ab61eaa71a6ad448e9c8a33825371bf26",
+  "report_path": ".research/settings-remaining-source-peer.json"
+}
