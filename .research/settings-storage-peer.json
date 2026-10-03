@@ -1,0 +1,37 @@
+{
+  "reviewed_commit": "39ee192bc9f63d25d48456b641f666bba5994e14",
+  "defect": "EXT-D-0084",
+  "lane": "independent source peer; zero implementation authorship",
+  "verdict_a_behavior": {
+    "status": "PARTIAL",
+    "met": [
+      "A rejected port save or removal keeps enginePortSaved unchanged, displays an error, and permits retry.",
+      "A rejected pair-code save keeps the entered code available and displays an error.",
+      "A rejected local or session clear keeps the reset dialog open and prevents sign-out."
+    ],
+    "missing": [
+      "Rejected pair-code removal still escapes without visible recovery or retry feedback."
+    ],
+    "unverified": [
+      "Native exact-build storage rejection and successful retry remain pending.",
+      "Hosted CI and red-before-green test evidence remain pending."
+    ]
+  },
+  "verdict_b_quality": {
+    "status": "FAIL",
+    "important": [
+      "The sibling census missed SettingsView's Forget pair code path: confirmDestructive propagates clearPairToken rejection and the caller discards the promise. The new test mocks clearPairToken but does not invoke or assert it."
+    ],
+    "minor": [
+      "Pair-code input and port Save remain active while writes are pending; an earlier completion can clear a newer code or show a saved port that differs from the last completed storage write. The new tests cover only sequential retry."
+    ]
+  },
+  "source_evidence": [
+    "src/features/settings/SettingsView.tsx:141-171 catches port and reset failures after awaiting persistence.",
+    "src/features/settings/SettingsView.tsx:527-549 retains pair input on failed setPairToken.",
+    "src/features/settings/SettingsView.tsx:562-575 discards confirmDestructive promise around clearPairToken.",
+    "src/lib/destructive/confirm.tsx:68-89 documents and implements rejection propagation.",
+    "src/features/settings/SettingsView.about.test.tsx:367-493 covers rejected port set/remove, pair set, and local/session clear, but not pair removal."
+  ],
+  "verification": "Source and installed design-system inspection only; no local build, tests, or browser run because disk is below the stated threshold. Targeted Biome format check applies only to this report."
+}
