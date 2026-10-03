@@ -1,0 +1,52 @@
+{
+  "id": "EXT-D-0084",
+  "feature_id": "EXT-F-1003",
+  "case_ids": [
+    "EXT-F-1003-T43",
+    "EXT-F-1003-T44",
+    "EXT-F-1003-T45",
+    "EXT-F-1003-T46",
+    "EXT-F-1003-T47",
+    "EXT-F-1003-T48",
+    "EXT-F-1003-T49",
+    "EXT-F-1003-T50",
+    "EXT-F-1003-T51"
+  ],
+  "surface": "Settings desktop connection and local reset",
+  "auth_mode": "guest/member/admin",
+  "title": "Settings persistence failures escape without recoverable feedback",
+  "reproduction": [
+    "Render current Settings with a saved engine port and open its desktop connection section.",
+    "Make the real port persistence boundary reject its next storage write; enter another valid port and click Save.",
+    "Inspect the displayed saved value, error feedback, unhandled rejection, and retry behavior.",
+    "Repeat rejected storage boundaries for pair-code save/clear and confirmed local reset; check visible error and successful retry without credential reflection."
+  ],
+  "expected": "Failed persistence leaves the prior saved value intact, displays a recoverable error, and allows a later successful save and rediscovery.",
+  "actual": "Pre-fix handler awaited setEnginePortOverride without a rejection handler; source shows failed persistence escapes without setting enginePortError. Controlled runtime reproduction is pending hosted CI; native failure is not yet exercised.",
+  "reproduction_status": "source-confirmed boundary; controlled runtime regression pending",
+  "evidence": ["src/features/settings/SettingsView.tsx", ".research/settings-failure-repair.json"],
+  "severity": "S2: connection setting silently fails to save",
+  "priority": "P1: contained Settings persistence repair",
+  "state": "in-fix",
+  "transition_history": [
+    {
+      "at": "2026-10-03T03:10:33.412336+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Source inspection identified unhandled persistence rejection."
+    },
+    {
+      "at": "2026-10-03T03:10:33.412336+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Caller and storage failure boundary identified; repeatable controlled reproduction specified."
+    },
+    {
+      "at": "2026-10-03T03:10:33.412336+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Implementation lane owns caller repair and causal regression; native acceptance remains pending."
+    }
+  ],
+  "closure_requirement": "Controlled failing-then-passing caller regression plus successful retry, independent review, and native exact-build persistence/error acceptance; no closure from source alone."
+}
