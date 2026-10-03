@@ -1,0 +1,42 @@
+{
+  "id": "EXT-D-0085",
+  "feature_id": "EXT-F-0003",
+  "surface": "Hosted release setup",
+  "auth_mode": "not-applicable",
+  "title": "Hosted release reads package manager version outside its nested checkout",
+  "reproduction": [
+    "Run Hosted release from synchronized main with a valid immutable aidream SHA and existing required repository secrets.",
+    "Credential preflight and both nested checkouts succeed.",
+    "pnpm/action-setup runs at workspace root without package_json_file although extension package.json is in matrx-extend/; observe setup failure before dependency installation."
+  ],
+  "expected": "The hosted runner selects the package manager declared by the checked-out extension and proceeds to strict release verification.",
+  "actual": "Run37092816878 failed with No pnpm version is specified at pnpm/action-setup; no package was produced.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37092816878",
+    ".research/release-blocker-revalidation.json"
+  ],
+  "severity": "S1: blocks all hosted releases",
+  "priority": "P0: restore authorized release path",
+  "state": "in-fix",
+  "transition_history": [
+    {
+      "at": "2026-10-03T03:21:56.508881+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual hosted release setup failure."
+    },
+    {
+      "at": "2026-10-03T03:21:56.508881+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Nested checkout location does not match action default package manifest path."
+    },
+    {
+      "at": "2026-10-03T03:21:56.508881+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Release implementation lane owns narrow path correction and sibling environment census."
+    }
+  ],
+  "closure_requirement": "Independent source review and actual hosted rerun passes package-manager setup; full release remains separately required."
+}

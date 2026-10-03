@@ -1,0 +1,11 @@
+{
+  "commit": "fbf5ae69c040b5c2e9e70e72fe2b2b4bd5494005",
+  "scope": "Static independent review only; no local build, test, browser, or hosted dispatch.",
+  "verdict_a": "PARTIAL — source fix addresses the observed setup failure, but no hosted pass is proven.",
+  "verdict_a_evidence": "Both checkouts use paths under GITHUB_WORKSPACE; package.json is therefore at matrx-extend/package.json. pnpm/action-setup@v4 action.yml accepts package_json_file relative to GITHUB_WORKSPACE. That file declares pnpm@10.30.3. Existing setup-node cache path and install working-directory also target matrx-extend.",
+  "verdict_b": "PASS — narrow repair, release gates retained.",
+  "verdict_b_evidence": "Diff only supplies the nested package manifest to pnpm/action-setup and installs uv. scripts/generate-records-guide.ts invokes uv run python; release.sh regenerates the guide from the checked-out aidream source before checks. CI already uses astral-sh/setup-uv@v5. No release check, secret requirement, or publication validation was removed.",
+  "remaining": "Hosted rerun must confirm pnpm setup/install and all strict release gates, including live Database Read access. Source proof is not hosted success.",
+  "evidence": "git show fbf5ae69 -- .github/workflows/release.yml; package.json packageManager; scripts/generate-records-guide.ts; release.sh; .github/workflows/ci.yml; pnpm/action-setup v4 action.yml https://github.com/pnpm/action-setup/blob/v4/action.yml",
+  "commit_quality": "git diff fbf5ae69^ fbf5ae69 --check passed."
+}
