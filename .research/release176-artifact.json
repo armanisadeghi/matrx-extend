@@ -1,0 +1,18 @@
+{
+  "observed_at": "2026-10-03T07:28:03.466261+00:00",
+  "status": "packaged_not_submitted",
+  "release_run": "37105966615",
+  "artifact_id": "11267544261",
+  "version": "0.2.176",
+  "source_sha": "3fe608d949a06aa10bfea57b43c9b05638386bc1",
+  "store_sha256": "813715b8dcd6421d4ee001c04e99c3729f6dad439064f8bf5922e6fb38ce09f8",
+  "local_sha256": "2bb4ddc89f113897829271d5125e46b438a625c60cf28017dd1c6f35838cbb93",
+  "tree_sha256": "755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272",
+  "owner_verification": [
+    "Both downloaded ZIP digests match receipt",
+    "Both manifest versions0.2.176; Store has no key, local has key",
+    "Release log:1923 tests passed,5 skipped; strict gates exit0; manifest policy unchanged from published0.2.130"
+  ],
+  "runtime_acceptance": "Guest and nonadmin on exact176 pending; not overall health evidence",
+  "publication": "Tag pushed; no GitHub Release object; artifacts in Actions. Not uploaded or submitted to Google."
+}

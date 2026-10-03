@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "scope": "One guarded hosted published 0.2.130 Store CRX guest-chat final retest",
+  "status": "guard_refused_before_product_run",
+  "workflow": {
+    "run_id": 37106015241,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37106015241",
+    "head_sha": "7faa2849407654ee052599f9b924d822a456868e",
+    "conclusion": "failure",
+    "artifact_id": 11267454227,
+    "artifact_name": "hosted-guest-37106015241-1",
+    "artifact_zip_sha256": "cda473998215ae67982c88751163dec15d3829b29bff8aad1cf3423745040317"
+  },
+  "selection": {
+    "published_store_crx": true,
+    "acceptance_case": "guest-chat",
+    "source": "origin/main at reviewed preparation commit 7faa2849407654ee052599f9b924d822a456868e"
+  },
+  "guard": {
+    "stage": "Diagnose host measurement readiness",
+    "admitted": false,
+    "reason": "top measurement process exceeded 5 second timeout",
+    "measurement": "top",
+    "code": 0,
+    "signal": "SIGTERM",
+    "killed": true,
+    "stderr": "",
+    "cpu_samples": [],
+    "package_phase_started": false,
+    "browser_phase_started": false,
+    "product_phase_started": false
+  },
+  "product_evidence": {
+    "crx_downloaded_or_prepared": false,
+    "immutable_receipt_created": false,
+    "guest_chat_exercised": false,
+    "screenshots": [],
+    "application_result": null,
+    "acceptance_claim": "none"
+  },
+  "prior_runtime_context": {
+    "run_id": 37105304739,
+    "two_real_guest_answers": true,
+    "application_payload_unchanged": true,
+    "metadata_fix_runtime_verified": false
+  },
+  "validation": {
+    "git_diff_check": "passed",
+    "biome_check_scripts_hosted_guest_acceptance": "failed: formatter reports existing layout differences in scripts/hosted-guest-acceptance.mjs; left file unchanged per retest scope"
+  },
+  "follow_up": "Do not blindly rerun; this attempt was refused before the three guarded phases and produced no product evidence."
+}
