@@ -156,6 +156,7 @@
     ["node", "tests/browser/screenshot-full-page-acceptance.mjs"],
     ["node", "tests/browser/screenshot-gallery-failure-acceptance.mjs"],
     ["node", "tests/browser/guest-chat-store-acceptance.mjs"],
+    ["node", "tests/browser/guest-allowance-native-acceptance.mjs"],
     ["node", "scripts/hosted-guest-acceptance.mjs"],
     ["node", "tests/browser/guest-chat-store-screenshot.mjs"],
     ["node", "tests/browser/reviewer-chat-store-acceptance.mjs"],
