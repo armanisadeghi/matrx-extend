@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T23:14:01.024268+00:00",
+  "updated_at": "2026-10-03T23:21:36.467048+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -519,6 +519,11 @@
           "id": "EXT-F-0002-C08",
           "label": "Preserve safe failed-operation diagnostics",
           "action": "Persist known operation and allowlisted error metadata without raw error or credential data"
+        },
+        {
+          "id": "EXT-F-0002-C09",
+          "label": "Restore test-owned persistent fixtures after failures",
+          "action": "Preserve durable private ownership and per-write progress; restore original absence only through atomic owner-authorized comparisons."
         }
       ],
       "source_anchors": [
@@ -1020,6 +1025,50 @@
               "detail": "Native test-process failure: app re-selection automatically emitted an unmasked accessibility tree containing Store reviewer credentials before redaction. Containment was applied and no credential value is retained in repository evidence. The login was rejected; member identity and Notes setup/operations were never verified. This is an infrastructure failure only; no Notes product failure is claimed."
             }
           }
+        },
+        {
+          "id": "EXT-F-0002-T09",
+          "title": "Persistent fixture cleanup survives write, assertion, and extension reload failures",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0002-C09"
+          ],
+          "preconditions": [
+            "Use exact verified unpacked artifact and guarded owned browser; record genuine authenticated identity privately.",
+            "Use only a runner-created row whose original absence was verified; never delete an existing or concurrently changed record."
+          ],
+          "steps": [
+            "Record private durable ownership before first UI save.",
+            "Exercise successful own writes followed by an assertion failure and failed extension reload.",
+            "Recover the live owner context and conditionally restore original absence.",
+            "Attempt cleanup with mismatched owner, organization, marker, creation time or unexpected version; require refusal."
+          ],
+          "expected": [
+            "Original execution and cleanup failures both remain visible in sanitized evidence.",
+            "Exact owned row is removed and authenticated reread is absent when ownership and known write progress match.",
+            "Preexisting or concurrently changed data is preserved; cleanup uncertainty cannot yield an overall pass."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "failure-after-write",
+            "concurrent-change"
+          ],
+          "linked_defects": [
+            "EXT-D-0098"
+          ],
+          "results": {
+            "member": {
+              "status": "fail",
+              "evidence": ".research/profile-member-native-next.json; .research/profile-cleanup-final-review.json",
+              "remaining_criteria": [
+                "Fix and independently verify failure-path restoration."
+              ]
+            }
+          }
         }
       ],
       "cells": {
@@ -1034,11 +1083,12 @@
           "retest_status": "partial: EXT-D-0025 and EXT-D-0051 passed; remaining infrastructure cases unverified"
         },
         "member": {
-          "test_status": "unverified",
+          "test_status": "fail",
           "defect_ids": [
             "EXT-D-0025",
             "EXT-D-0051",
-            "EXT-D-0056"
+            "EXT-D-0056",
+            "EXT-D-0098"
           ],
           "run_ids": [],
           "retest_status": "partial: EXT-D-0025 and EXT-D-0051 passed; remaining infrastructure cases unverified"
@@ -1049,7 +1099,8 @@
             "EXT-D-0025",
             "EXT-D-0051",
             "EXT-D-0056",
-            "EXT-D-0073"
+            "EXT-D-0073",
+            "EXT-D-0098"
           ],
           "run_ids": [],
           "retest_status": "partial: EXT-D-0025 and EXT-D-0051 passed; remaining infrastructure cases unverified"

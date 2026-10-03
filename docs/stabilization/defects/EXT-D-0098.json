@@ -1,0 +1,47 @@
+{
+  "id": "EXT-D-0098",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T09"],
+  "surface": "Native Profile test fixture lifecycle",
+  "auth_mode": "member; shared authenticated fixture cleanup",
+  "title": "Profile acceptance can lose cleanup authority after reload or successful writes followed by failure",
+  "reproduction": [
+    "Run profile-native-acceptance as the designated nonadmin member with no original owner Profile row, using source0e32778c and exact developmentartifact9dfb5911. It creates a marked row through the UI and performs warm save/restore.",
+    "When extension reload fails before returning a new panel, cleanup uses the detached old panel and fails owned_cdp_transport_failed; run profile-member-native-next-04 records restoration unverified and a remaining owned row.",
+    "In revised source18ef4a37, make caseSaveDiscard fail after a successful Save or restoration write. Its thrown error bypasses the outer version advancement; cleanup still expects version1 or3 despite verified own writes and refuses deletion. This later branch is source-confirmed and requires executable falsification."
+  ],
+  "expected": "Keep durable private ownership and known write progress across failures; preserve original and cleanup failures separately; restore only the exact unchanged test-owned record through authenticated conditional cleanup. Never delete preexisting or concurrently changed data and never claim pass without restoration.",
+  "actual": "Run04 left its test-created row because cleanup lost the panel; separate guarded recovery05 restored absence. Current source fixes transport retry/provenance but can retain a stale expected version after a helper writes and then throws.",
+  "severity": "S2: test-created data can remain after failed acceptance; no customer data loss demonstrated.",
+  "priority": "P1: blocks trustworthy member/reload acceptance.",
+  "state": "in-fix",
+  "owner": "profile_recovery_escalation",
+  "evidence": [
+    ".research/profile-member-native-next.json",
+    ".research/profile-member-reload-recovery.json",
+    ".research/profile-reload-cleanup-peer.json",
+    ".research/profile-cleanup-final-review.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-03T23:21:36.467048+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Consolidated observed run04 cleanup failure and source-confirmed failed-write-progress gap."
+    },
+    {
+      "at": "2026-10-03T23:21:36.467048+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Reproduction and owner-recovery evidence establish fixture lifecycle defect; current remaining path separately source-confirmed."
+    },
+    {
+      "at": "2026-10-03T23:21:36.467048+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Fresh Astra escalation after repeated implementation/source-review rounds; no mutating acceptance authorized until reviewed."
+    }
+  ],
+  "current_work": "Prior owned row recovered and absent. Fix per-write failure provenance and cleanup authority; diagnose actual reload failure read-only where practical.",
+  "closure_requirement": "Independent source review and meaningful failure-path falsification, then guarded real member acceptance with successful exact original-absence restoration; concurrent or preexisting records remain protected."
+}
