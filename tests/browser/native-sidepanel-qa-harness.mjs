@@ -573,8 +573,19 @@ export async function runNativeSidepanelQa({
           Object.freeze({
             page,
             panel,
-            activatePanel: () =>
-              cdp.send('Target.activateTarget', { targetId: panelTarget.targetId }),
+            activatePanel: async () => {
+              // A sidepanel is browser UI: activating its CDP target alone does
+              // not reopen it after a web authentication tab takes focus.
+              await page.bringToFront();
+              await page.locator('#open-panel').click();
+              const reopened = await waitForPanelTarget(cdp, panelUrl);
+              if (reopened.targetId !== panelTarget.targetId)
+                throw new Error('native_sidepanel_reopened_target_changed');
+              requireSidePanelContext(
+                await sidePanelContexts(cdp, extensionWorker.targetId),
+                panelUrl,
+              );
+            },
             transportFailureClass: () => cdp.failureClass,
             panelTarget,
             artifacts,
