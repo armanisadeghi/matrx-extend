@@ -1382,11 +1382,11 @@
   "current_verified_checkpoint": {
     "source_release": "0.2.173",
     "release_commit": "d6d6d6b83c937652525f473082ac2f2492c9eabe",
-    "release_claim": "Last frozen validated candidate is0.2.173 at the receipt/tag shown (1862 tests,5skipped and strict gates passed). Primary Store0.2.130 is Published-public, verified October2 13:12UTC. Main is0.2.175 plus newer fixes, with no matching ZIP; latest hosted packaging awaits scoped credential approval. Candidate173 is not latestmain and has not been uploaded.",
-    "local_artifact": "Frozen 0.2.173 keyed tree SHA256 494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064; Store ZIP SHA256 1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff. Candidate receipt/hash verified; no personal Chrome runtime claim. Current development-only175 artifact11236112494 from CI37027762568/sourceb41fd0b3 imported with tree a7f9728b45d9dcc407e392092c15383cd541de030d71330322d08617524e73ba; not Store-eligible.",
-    "native_notes": "Exact173: D64 Files admin/member error and Retry passed, closed; D65 member pending. Exact development175/sourceb41fd0b3: guest SEO17 targets passed including Airbnb auto/manual audit and hreflang/schema links; independent0c84ddbd verified receipt chain and D76 guest spinner closed. One Wikipedia metadata-door candidate unavailable; broader SEO remains partial. D58 native active; D59 and D74 native pending. Chat/Pilot breadth, signout privacy, full modes/controls remain unverified.",
-    "supersession": "Current checkpoint updated October2; historical audit counts and historical major-gap notes below remain October1 snapshots. Current totals come from inventory and defects, not those old counts.",
-    "updated_at": "2026-10-02T15:54:10.715760+00:00"
+    "release_claim": "Last frozen validated Store candidate remains 0.2.173 at this receipt/tag. Published Store version is 0.2.130. Main development version is 0.2.175 with newer fixes, but no newer Store package has passed all release gates or been uploaded. Hosted credentials are working; current release blocker is genuine Records contract drift (D91), after D90 validator repair.",
+    "local_artifact": "Frozen Store candidate173 keyed tree494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064 and Store ZIP1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff remain unchanged. Guest development175 artifact11264666911 tree54162a180ed723dd4eb4b18cfbe6c0d9253be6d72b545c722cb4ed4a68a35068 is not Store-eligible.",
+    "native_notes": "Hosted run37098718754 passed actual signed-out first answer and reload-followup with unpredictable page codes on exact CI development175/source38bc59215ff12077b7949c34aaabcfe30c6a0274, artifact11264666911. This is controlled-article evidence, not Store130, public demo, next Store candidate, Records execution, signed-in or whole Chat acceptance. Server startup repair and delegated-envelope repair are live in23053275714b3401ff514339706635f8fc051d0d. Original Store130 native retest remains open. Settings run37099617740 refused CPU preflight before cases; fresh-host retry pending. Broad coverage remains unverified; historical passes retain their build boundaries.",
+    "supersession": "Only this current checkpoint is updated; historical audit counts below remain dated snapshots. Current coverage totals are generated from inventory and defect records.",
+    "updated_at": "2026-10-03T05:28:51.300734+00:00"
   },
   "major_gaps_and_next_actions": [
     {
@@ -1427,7 +1427,7 @@
     },
     {
       "priority": "P2",
-      "scope": "D69\u2013D71 latest batch",
+      "scope": "D69–D71 latest batch",
       "gap": "D69 archived org visibility is bounded native-verified, but archived/stale choice and held-request paths remain open. D70 Guidance read-error/retry and D71 records cross-org runtime scope are source/release-verified; current native behavior remains unverified.",
       "next": "Use the current checkpoint/report to run only the unverified paths."
     },

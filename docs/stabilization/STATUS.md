@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-03 05:17 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T05:17:26.738743+00:00. 205 features · 739 cases · 1323 controls · 91 linked defect records.
+Generated 2026-10-03 05:28 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T05:17:26.738743+00:00. 205 features · 739 cases · 1323 controls · 91 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -57,9 +57,9 @@ Role counts include only case-role combinations listed in each case. The all-rol
 
 ## Current artifact and bounded acceptance
 
-**Release:** 0.2.173 at `d6d6d6b83c937652525f473082ac2f2492c9eabe`. Last frozen validated candidate is0.2.173 at the receipt/tag shown (1862 tests,5skipped and strict gates passed). Primary Store0.2.130 is Published-public, verified October2 13:12UTC. Main is0.2.175 plus newer fixes, with no matching ZIP; latest hosted packaging awaits scoped credential approval. Candidate173 is not latestmain and has not been uploaded.
-**Local artifact:** Frozen 0.2.173 keyed tree SHA256 494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064; Store ZIP SHA256 1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff. Candidate receipt/hash verified; no personal Chrome runtime claim. Current development-only175 artifact11236112494 from CI37027762568/sourceb41fd0b3 imported with tree a7f9728b45d9dcc407e392092c15383cd541de030d71330322d08617524e73ba; not Store-eligible.
-**Native evidence:** Exact173: D64 Files admin/member error and Retry passed, closed; D65 member pending. Exact development175/sourceb41fd0b3: guest SEO17 targets passed including Airbnb auto/manual audit and hreflang/schema links; independent0c84ddbd verified receipt chain and D76 guest spinner closed. One Wikipedia metadata-door candidate unavailable; broader SEO remains partial. D58 native active; D59 and D74 native pending. Chat/Pilot breadth, signout privacy, full modes/controls remain unverified.
+**Release:** 0.2.173 at `d6d6d6b83c937652525f473082ac2f2492c9eabe`. Last frozen validated Store candidate remains 0.2.173 at this receipt/tag. Published Store version is 0.2.130. Main development version is 0.2.175 with newer fixes, but no newer Store package has passed all release gates or been uploaded. Hosted credentials are working; current release blocker is genuine Records contract drift (D91), after D90 validator repair.
+**Local artifact:** Frozen Store candidate173 keyed tree494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064 and Store ZIP1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff remain unchanged. Guest development175 artifact11264666911 tree54162a180ed723dd4eb4b18cfbe6c0d9253be6d72b545c722cb4ed4a68a35068 is not Store-eligible.
+**Native evidence:** Hosted run37098718754 passed actual signed-out first answer and reload-followup with unpredictable page codes on exact CI development175/source38bc59215ff12077b7949c34aaabcfe30c6a0274, artifact11264666911. This is controlled-article evidence, not Store130, public demo, next Store candidate, Records execution, signed-in or whole Chat acceptance. Server startup repair and delegated-envelope repair are live in23053275714b3401ff514339706635f8fc051d0d. Original Store130 native retest remains open. Settings run37099617740 refused CPU preflight before cases; fresh-host retry pending. Broad coverage remains unverified; historical passes retain their build boundaries.
 These current-build checks supplement the inventory matrix; they do not promote unobserved cases or certify whole features.
 
 ## Development installation
