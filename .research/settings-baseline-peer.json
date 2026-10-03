@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0087",
+  "reviewed_runner_sha": "0b8c43e8bc5d0fe5de77bbbb997dcc3f886e4509",
+  "A_native_readiness": "UNVERIFIED",
+  "B_source_quality": "PASS",
+  "cause_supported": "Fresh mkdtemp profile; store default is system; Settings uses controlled Select; installed Radix suppresses same-value controlled changes.",
+  "baseline": "Light is a real changed choice and settledTheme checks the rendered label plus chrome.storage.local state.theme; System then restores the intended baseline.",
+  "downstream": "Rejection still changes system→dark; retry checks dark storage and reload; overlap still holds light then changes to system, verifies stale dark storage before release and latest system storage/reload after release. Assertions after baseline are unchanged from the parent commit.",
+  "artifact_checks": "Receipt, imported source ancestry, import-status identity, version, and release-tree checks are unchanged; repair note pins product artifact 3092444e / 0.2.176 / tree 025e7931…35660.",
+  "evidence": "native-sidepanel-qa-harness.mjs:409 creates a fresh temp profile; settings.ts defaults theme to system; SettingsView.tsx passes it as controlled value; installed useControllableState compares nextValue !== prop.",
+  "limitation": "No native browser run here; this is source quality only and assigns no product verdict."
+}
