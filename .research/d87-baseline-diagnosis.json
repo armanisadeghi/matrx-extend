@@ -1,0 +1,7 @@
+{
+  "status": "baseline_unverified_diagnostic_repaired",
+  "evidence": ["Hosted run 37108672704 admitted the exact 3092444e73094cb0023f6086202869ccbd22978b artifact and opened the guest side panel.", "Its screenshot predates exercisePanel; the report has baseline/cases[] and a generic failure code.", "The runner discarded the underlying operation, pointer category, and bounded Settings state, so product versus driver failure cannot be distinguished from that run."],
+  "owncommits": ["d6b94f2e"],
+  "files": ["tests/browser/settings-d87-native-acceptance.mjs", ".research/d87-baseline-diagnosis.json"],
+  "questions": ["Fresh peer and resource permit are required before a new native run can identify the baseline substep."]
+}
