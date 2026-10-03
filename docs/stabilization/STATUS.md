@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-03 11:15 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T11:05:43+00:00. 205 features · 740 cases · 1324 controls · 92 linked defect records.
+Generated 2026-10-03 12:05 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T12:05:20+00:00. 205 features · 740 cases · 1324 controls · 92 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -998,8 +998,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 - EXT-F-1012-T04 · admin: Partial.
   Evidence / build / date recorded: showcase-installed-d43-001, docs/stabilization/runs/showcase-installed-d43-001.json
-- EXT-F-1012-T08 · admin: Partial. Actual Chrome owned profile and loaded175 folder/version verified before/after extension Reload. Withheld Prepare recovered through exact-origin Allow plus separate Reload; fresh Prepare757ms/3steps. Completed Prepare and Snapshot clear on same-URL reload. Admin Deny, controlled late results, failure retry and broad remaining controls unverified.
-  Evidence / build / date recorded: siteaccess-prepare-pathchecked-sol-20261002-01, docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json
+- EXT-F-1012-T08 · admin: Partial. Exact imported CI development artifact 0.2.176, authenticated admin, owned native profile, and valid resource receipt. All four original Prepare cases passed: failed retry after success; old-document late success and rejection after same-tab/same-URL reload; fresh-document Prepare. Current tree still hashes to the loaded artifact after the run. This does not cover the separately documented different-URL A-to-B navigation, Snapshot on this artifact, all Showcase controls, or a Store/public-release build.
+  Evidence / build / date recorded: prepare-local-native-20261003-07, .research/prepare-native-acceptance-peer.json
 - EXT-F-1012-T09 · admin: Partial. Actual Chrome owned profile and loaded175 folder/version verified before/after extension Reload. Withheld Prepare recovered through exact-origin Allow plus separate Reload; fresh Prepare757ms/3steps. Completed Prepare and Snapshot clear on same-URL reload. Admin Deny, controlled late results, failure retry and broad remaining controls unverified.
   Evidence / build / date recorded: siteaccess-prepare-pathchecked-sol-20261002-01, docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json
 - EXT-F-1012-T10 · admin: Partial. Type chip and blank/matching/nonexistent filters verified on actual Google Article page. Auth-transition, service-error and broader chips remain unverified.

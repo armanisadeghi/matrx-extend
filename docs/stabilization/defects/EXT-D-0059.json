@@ -46,9 +46,10 @@
     "docs/stabilization/reports/list-picker-source-peer.json",
     "docs/stabilization/reports/picker-navigation-escalation.json",
     "docs/stabilization/reports/d59-pattern-probe-ownership-20261002.json",
-    "docs/stabilization/reports/d59-pattern-probe-final-peer-20261002.json"
+    "docs/stabilization/reports/d59-pattern-probe-final-peer-20261002.json",
+    ".research/prepare-native-acceptance-peer.json"
   ],
-  "verification_status": "Fresh exact-loaded-path175 native repeat proves completed Prepare/Snapshot same-URL clearing only. Original late-settlement/failed-retry and broad class closure remain pending.",
+  "verification_status": "The exact 0.2.176 CI development artifact now has bounded native admin evidence that same-tab/same-URL reload clears prior Prepare state and ignores controlled old-document late success and rejection. D59 remains in-fix: this run covers Prepare only; Snapshot on the current artifact and broader shared document-identity consumers remain open.",
   "transition_history": [
     {
       "at": "2026-09-28T15:30:38.553635+00:00",
@@ -78,10 +79,18 @@
     "unverified": "Controlled old invocation completion/rejection, failed retry after success, pending Snapshot, broader D59 consumers. Neither defect closes.",
     "correction": "Admin clone retained frozen173 registration; runtime path was not established. These observations do not verify imported175. See docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
   },
-  "current_native_evidence": {
+  "previous_native_evidence": {
     "report": "docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json",
     "status": "partial",
     "verified": "Path-verified imported175 completed Prepare and Snapshot clear on same-tab/same-URL reload.",
     "unverified": "Failed retry, controlled late completion/rejection, pending Snapshot and broader D59 consumers."
+  },
+  "current_native_evidence": {
+    "report": ".research/prepare-native-acceptance-peer.json",
+    "run": "prepare-local-native-20261003-07",
+    "status": "partial",
+    "artifact": "CI development test run 37107627454 artifact 11268886169; source 3092444e73094cb0023f6086202869ccbd22978b; tree 025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "verified": "Prepare on the actual native extension panel: same-URL reload after a controlled held operation followed by its late success or rejection leaves the new document without stale success/error; failed retry after success and fresh-document Prepare also passed.",
+    "scope_limit": "This is a current-artifact Prepare result only. It does not cover Snapshot or the remaining shared live consumers named in the D59 scope; do not close D59."
   }
 }
