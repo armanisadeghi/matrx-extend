@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "status": "passed_live_guest_initial_and_followup",
+  "verified_at_utc": "2026-10-03T10:55:48.797423+00:00",
+  "published_version": "0.2.176",
+  "published_source": "3fe608d949a06aa10bfea57b43c9b05638386bc1",
+  "endpoint": "https://server.app.matrxserver.com/v2/ai/mandates/extend.browser_chat",
+  "server_health_before_and_after": {
+    "git_sha": "de91e2c3f93b3c1faf6c6439eebb74f3713ccee6",
+    "built_at": "2026-10-03T10:23:27Z"
+  },
+  "request_contract": "Frozen use-chat-stream.ts, build-browser-dom-state.ts, context/v2-bundled.ts and context/request-context.ts: Store extension identity, full browser-dom state, client context content/label envelope, source_app matrx-extend, source_feature chat, required conversation_id/is_new/store. No bearer, organization, account, email or password. Empty-page guest context, no model override.",
+  "same_guest_continuity": "One fresh ephemeral fingerprint and client-minted conversation ID reused in both requests; is_new true then false. No retries.",
+  "consumer_compatibility": "The actual published lockfile version @ai-matrx/agents@0.43.6 was downloaded to scratch and its readMatrxNdjsonStream consumed retained response bytes. Published stream.ts dispatch maps chunk.data.text to visible answer and forwards completion/end.",
+  "turns": [
+    {
+      "label": "first",
+      "utc_started": "2026-10-03T10:54:28.159435+00:00",
+      "http_status": 200,
+      "curl_exit": 0,
+      "duration_ms": 3427,
+      "content_type": "application/x-ndjson",
+      "response_bytes": 10072,
+      "parser": "@ai-matrx/agents@0.43.6 readMatrxNdjsonStream (published lockfile version)",
+      "event_counts": {
+        "phase": 4,
+        "info": 3,
+        "data": 3,
+        "record_reserved": 5,
+        "init": 1,
+        "chunk": 5,
+        "record_update": 6,
+        "context_state": 1,
+        "completion": 1,
+        "end": 1
+      },
+      "answer_characters": 88,
+      "answer_nonempty": true,
+      "answer_browser_relevance": true,
+      "completion_statuses": ["success"],
+      "end_reasons": ["complete"],
+      "error_events": 0,
+      "malformed_lines": 0,
+      "unknown_envelopes": 0,
+      "passed": true
+    },
+    {
+      "label": "followup",
+      "utc_started": "2026-10-03T10:55:09.486267+00:00",
+      "http_status": 200,
+      "curl_exit": 0,
+      "duration_ms": 4043,
+      "content_type": "application/x-ndjson",
+      "response_bytes": 11226,
+      "parser": "@ai-matrx/agents@0.43.6 readMatrxNdjsonStream (published lockfile version)",
+      "event_counts": {
+        "phase": 4,
+        "info": 3,
+        "data": 3,
+        "record_reserved": 5,
+        "init": 1,
+        "chunk": 5,
+        "record_update": 6,
+        "context_state": 1,
+        "context_trimmed": 1,
+        "completion": 1,
+        "end": 1
+      },
+      "answer_characters": 82,
+      "answer_nonempty": true,
+      "answer_browser_relevance": true,
+      "completion_statuses": ["success"],
+      "end_reasons": ["complete"],
+      "error_events": 0,
+      "malformed_lines": 0,
+      "unknown_envelopes": 0,
+      "passed": true
+    }
+  ],
+  "verdict": "Both requests returned nonempty browser-relevant answer text, completion status success, end reason complete, no error events and no malformed or unknown envelopes. The prior SSE-only parser failure was a verification defect, not an observed product failure.",
+  "limits": [
+    "Direct live API verification using published source-derived wire; not native extension UI verification.",
+    "No browser tooling, active-page context, sign-in, account defaults or Google Store install exercised.",
+    "Follow-up proves the same guest conversation accepts and completes another turn; it does not assert semantic recall of the first answer.",
+    "Health changed since earlier 7207d2ad attempts; these results apply to de91e2c3 only."
+  ],
+  "privacy": "Raw bytes and response headers retained only in mode-0600 scratch until classification; raw responses, request input, identifiers and credentials excluded from this report and removed after classification."
+}
