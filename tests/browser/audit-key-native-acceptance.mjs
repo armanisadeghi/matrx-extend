@@ -11,6 +11,12 @@ import {
   classifyAuditNativeFailure,
   reloadAuditPrelude,
 } from './audit-key-native-faults.mjs';
+import {
+  assertSignedReadResponse,
+  completedReceiptSource,
+  productVerificationSource,
+  startSignedRead,
+} from './audit-key-native-receipts.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { signInSettings, verifyCurrentSettingsIdentity } from './settings-native-auth-driver.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
@@ -80,6 +86,31 @@ function cardSource() {
 const card = (panel) => evaluate(panel, cardSource());
 const snapshot = (panel) => evaluate(panel, auditSnapshotSource());
 const fault = (panel) => evaluate(panel, 'window.__auditNativeFault?.state() ?? null');
+async function signedRead(page, panel, expectedPublicKeyId) {
+  const call = startSignedRead(page);
+  await assertSignedReadResponse(call);
+  return completedSignedReceipt(panel, call.callId, expectedPublicKeyId);
+}
+async function completedSignedReceipt(panel, callId, expectedPublicKeyId) {
+  const row = await waitFor(
+    'audit_completed_signed_receipt',
+    () => evaluate(panel, completedReceiptSource(callId)),
+    (value) => value?.completed && value.publicKeyId === expectedPublicKeyId,
+    20_000,
+  );
+  assert.equal(row.origin, 'webmcp');
+  return row;
+}
+async function verifySignedReceipt(panel, row, read = evaluate) {
+  const result = await read(panel, productVerificationSource(row.callId));
+  assert.equal(result?.code, 'verified', 'audit_product_verifier_unavailable');
+  assert.equal(result.callId, row.callId);
+  assert.equal(result.publicKeyId, row.publicKeyId);
+  assert.equal(result.origin, 'webmcp');
+  assert.equal(result.originalValid, true, 'audit_prior_receipt_verification_failed');
+  assert.equal(result.tamperedRejected, true, 'audit_tampered_receipt_accepted');
+  return { publicKeyId: result.publicKeyId, originalValid: true, tamperedRejected: true };
+}
 async function inject(panel, mode) {
   assert.equal(await evaluate(panel, auditFaultSource(mode)), true, `audit_${mode}_inject_failed`);
 }
@@ -133,10 +164,6 @@ const lockUnavailableSource = `(() => {
 function pass(name, before, after, boundary) {
   report.cases.push({ name, status: 'pass', before, after, boundary });
 }
-function partial(name, before, after, boundary, missing) {
-  report.cases.push({ name, status: 'partial', before, after, boundary, missing });
-}
-
 try {
   assert.ok(EXTENSION_DIR && RECEIPT_PATH, 'audit_artifact_inputs_required');
   const extensionDir = resolve(EXTENSION_DIR);
@@ -282,8 +309,11 @@ try {
       pass('T60 export failure and retry', failedExport, retriedExport, exportFault);
 
       stage = 'rotation_failure';
-      await inject(panel, 'reject-history');
       const beforeFailure = await snapshot(panel);
+      stage = 'T87_prior_signed_receipt';
+      const priorRotationReceipt = await signedRead(page, panel, beforeFailure.activeId);
+      stage = 'rotation_failure';
+      await inject(panel, 'reject-history');
       await rotate(panel);
       const failedRotation = await expectCard(
         panel,
@@ -302,13 +332,13 @@ try {
       );
       const afterSuccess = await snapshot(panel);
       assert.ok(afterSuccess.historyIds.includes(beforeFailure.activeId));
-      partial(
-        'T87 failed pre-mutation rotation needs fresh confirmation',
-        failedRotation,
-        success,
-        failureFault,
-        'product-signed prior receipt verification after rotation',
-      );
+      await reloadCard(panel, identity);
+      stage = 'T87_verify_prior_receipt';
+      const rotationVerification = await verifySignedReceipt(panel, priorRotationReceipt);
+      pass('T87 failed pre-mutation rotation needs fresh confirmation', failedRotation, success, {
+        ...failureFault,
+        prior_receipt: rotationVerification,
+      });
 
       stage = 'rotation_refresh_failure';
       await inject(panel, 'after-active-read');
@@ -346,8 +376,11 @@ try {
       );
 
       stage = 'unknown_write';
-      await inject(panel, 'unknown-write');
       const beforeUnknown = await snapshot(panel);
+      stage = 'T89_prior_signed_receipt';
+      const priorUnknownReceipt = await signedRead(page, panel, beforeUnknown.activeId);
+      stage = 'unknown_write';
+      await inject(panel, 'unknown-write');
       await rotate(panel);
       const uncertain = await expectCard(
         panel,
@@ -374,13 +407,12 @@ try {
         (value) => value?.keyId === afterUnknown.activeId && !value.unknown,
       );
       assert.deepEqual(await snapshot(panel), afterUnknown);
-      partial(
-        'T89 uncertain active write blocks mutation until read',
-        uncertain,
-        known,
-        unknownFault,
-        'product-signed prior receipt verification after recovery',
-      );
+      stage = 'T89_verify_prior_receipt';
+      const unknownVerification = await verifySignedReceipt(panel, priorUnknownReceipt);
+      pass('T89 uncertain active write blocks mutation until read', uncertain, known, {
+        ...unknownFault,
+        prior_receipt: unknownVerification,
+      });
 
       stage = 'lock_unavailable';
       await verifyCurrentSettingsIdentity({
@@ -507,13 +539,15 @@ try {
       // Lock manager. Hold the first active write; the second confirmation
       // must queue and both activated public IDs must survive in history.
       stage = 'cross_context';
+      const preConcurrent = await snapshot(panel);
+      const originalReceipt = await signedRead(page, panel, preConcurrent.activeId);
       detailStep = 'create_sibling';
       const sibling = await page.context().newPage();
       try {
         detailStep = 'navigate_sibling';
         await sibling.goto('chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html');
         detailStep = 'open_sibling_settings';
-        await sibling.getByRole('button', { name: 'Settings' }).click();
+        await sibling.locator('button[role="tab"][title="Settings"]').click();
         detailStep = 'open_sibling_advanced';
         await sibling.getByRole('button', { name: 'Advanced agent capabilities' }).click();
         detailStep = 'observe_sibling_card';
@@ -538,6 +572,20 @@ try {
           () => fault(panel),
           (value) => value?.held && value.activeWrites === 1,
         );
+        detailStep = 'queue_signer_behind_first_write';
+        const queuedSigner = startSignedRead(page);
+        await waitFor(
+          'audit_signer_lock_queued',
+          () =>
+            sibling.evaluate(
+              async () =>
+                (await navigator.locks.query()).pending.filter(
+                  (request) =>
+                    request.name === 'matrx:audit:device-key' && request.mode === 'exclusive',
+                ).length,
+            ),
+          (count) => count >= 1,
+        );
         detailStep = 'read_sibling_before_release';
         const firstBeforeRelease = await sibling.evaluate(auditSnapshotSource());
         detailStep = 'activate_sibling';
@@ -555,13 +603,14 @@ try {
         await waitFor(
           'audit_second_lock_queued',
           () =>
-            sibling.evaluate(async () =>
-              (await navigator.locks.query()).pending.some(
-                (request) =>
-                  request.name === 'matrx:audit:device-key' && request.mode === 'exclusive',
-              ),
+            sibling.evaluate(
+              async () =>
+                (await navigator.locks.query()).pending.filter(
+                  (request) =>
+                    request.name === 'matrx:audit:device-key' && request.mode === 'exclusive',
+                ).length,
             ),
-          Boolean,
+          (count) => count >= 2,
         );
         detailStep = 'compare_queued_snapshot';
         const queued = await sibling.evaluate(auditSnapshotSource());
@@ -579,6 +628,13 @@ try {
         detailStep = 'read_first_activated';
         const firstActivated = await snapshot(panel);
         assert.notEqual(firstActivated.activeId, firstBeforeRelease.activeId);
+        detailStep = 'observe_queued_signed_receipt';
+        await assertSignedReadResponse(queuedSigner);
+        const firstActivatedReceipt = await completedSignedReceipt(
+          panel,
+          queuedSigner.callId,
+          firstActivated.activeId,
+        );
         detailStep = 'release_second_write';
         await sibling.evaluate('window.__auditNativeFault.release()');
         detailStep = 'observe_second_rotation';
@@ -589,16 +645,40 @@ try {
         assert.equal(final.historyIds.length, firstBeforeRelease.historyIds.length + 2);
         assert.ok(final.historyIds.includes(firstBeforeRelease.activeId));
         assert.ok(final.historyIds.includes(firstActivated.activeId));
-        report.cases.push({
-          name: 'T90 two same-origin activations retain key history',
-          status: 'partial',
-          before: firstBeforeRelease,
-          first_activated_id: firstActivated.activeId,
-          after: final,
-          boundary: { first_write_held: true, second_lock_queued: true, second_write_held: true },
-          missing:
-            'product-signed receipts from both keys, post-reload verification and tamper rejection',
-        });
+        detailStep = 'sign_after_second_activation';
+        const secondActivatedReceipt = await signedRead(page, panel, final.activeId);
+        detailStep = 'restore_faults_before_reload';
+        await restore(panel);
+        await sibling.evaluate('window.__auditNativeFault?.restore()');
+        detailStep = 'reload_first_context';
+        await activatePanel();
+        await reloadCard(panel, identity);
+        detailStep = 'reload_sibling_context';
+        await sibling.reload();
+        const receipts = [originalReceipt, firstActivatedReceipt, secondActivatedReceipt];
+        detailStep = 'verify_first_context_receipts';
+        const firstVerifications = [];
+        for (const row of receipts) firstVerifications.push(await verifySignedReceipt(panel, row));
+        detailStep = 'verify_sibling_context_receipts';
+        const siblingVerifications = [];
+        for (const row of receipts)
+          siblingVerifications.push(
+            await verifySignedReceipt(sibling, row, (target, source) => target.evaluate(source)),
+          );
+        pass(
+          'T90 two same-origin activations retain and verify signed key history',
+          firstBeforeRelease,
+          final,
+          {
+            first_write_held: true,
+            signer_queued_before_second_rotation: true,
+            second_lock_queued: true,
+            second_write_held: true,
+            first_activated_id: firstActivated.activeId,
+            first_context_receipts: firstVerifications,
+            sibling_context_receipts: siblingVerifications,
+          },
+        );
       } catch (error) {
         report.cross_context_diagnostic = {
           step: detailStep,
@@ -620,10 +700,7 @@ try {
   });
   assert.equal(hashReleaseTree(extensionDir), receipt.treeSha256, 'audit_tree_changed');
   report.artifacts = run.artifacts;
-  report.status = 'partial';
-  report.failure_stage = 'T90_product_receipt_verification_unavailable';
-  report.failure_code = 'audit_T90_incomplete';
-  process.exitCode = 2;
+  report.status = 'pass';
 } catch (error) {
   report.status = 'fail';
   if (stage === 'export_failure') {

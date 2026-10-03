@@ -1,0 +1,403 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0093",
+  "status": "pass",
+  "source": {
+    "sha": "991385d9816b31a568619522e4795c001b4d3a06",
+    "version": "0.2.176",
+    "tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55"
+  },
+  "artifact_id": 11275878549,
+  "run_id": 37129518563,
+  "cases": [
+    {
+      "name": "T86 details read failure and read-only retry",
+      "status": "pass",
+      "before": {
+        "keyId": "—",
+        "detailsUnavailable": true,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": true,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "after": {
+        "keyId": "279945213ab8e10e",
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "boundary": {
+        "activeWrites": 0
+      }
+    },
+    {
+      "name": "T60 export failure and retry",
+      "status": "pass",
+      "before": {
+        "keyId": "279945213ab8e10e",
+        "detailsUnavailable": false,
+        "exportFailed": true,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": true,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "after": {
+        "keyId": "279945213ab8e10e",
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": true,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "boundary": {
+        "mode": "clipboard-once",
+        "activeWrites": 0,
+        "historyWrites": 0,
+        "activeReads": 1,
+        "clipboardWrites": 1,
+        "clipboardSucceeded": 0,
+        "faulted": 1,
+        "held": false
+      }
+    },
+    {
+      "name": "T87 failed pre-mutation rotation needs fresh confirmation",
+      "status": "pass",
+      "before": {
+        "keyId": "279945213ab8e10e",
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": true,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": true,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "after": {
+        "keyId": "1bd5cc82e9e4ded9",
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": true,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": true,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "boundary": {
+        "mode": "reject-history",
+        "activeWrites": 0,
+        "historyWrites": 1,
+        "activeReads": 1,
+        "clipboardWrites": 0,
+        "clipboardSucceeded": 0,
+        "faulted": 1,
+        "held": false,
+        "prior_receipt": {
+          "publicKeyId": "279945213ab8e10e",
+          "originalValid": true,
+          "tamperedRejected": true
+        }
+      }
+    },
+    {
+      "name": "T88 successful rotation and failed refresh never re-rotates",
+      "status": "pass",
+      "before": {
+        "keyId": "—",
+        "detailsUnavailable": true,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": true,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": true,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "after": {
+        "keyId": "eeaf9e624c8ebe96",
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": true,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "boundary": {
+        "mode": "after-active-read",
+        "activeWrites": 1,
+        "historyWrites": 1,
+        "activeReads": 3,
+        "clipboardWrites": 0,
+        "clipboardSucceeded": 0,
+        "faulted": 1,
+        "held": false
+      }
+    },
+    {
+      "name": "T89 uncertain active write blocks mutation until read",
+      "status": "pass",
+      "before": {
+        "keyId": "—",
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": true,
+        "lockUnavailable": false,
+        "retryDetails": true,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": true,
+        "exportDisabled": false
+      },
+      "after": {
+        "keyId": "82cb4dc662b051c9",
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "boundary": {
+        "mode": "unknown-write",
+        "activeWrites": 1,
+        "historyWrites": 1,
+        "activeReads": 2,
+        "clipboardWrites": 0,
+        "clipboardSucceeded": 0,
+        "faulted": 2,
+        "held": false,
+        "prior_receipt": {
+          "publicKeyId": "eeaf9e624c8ebe96",
+          "originalValid": true,
+          "tamperedRejected": true
+        }
+      }
+    },
+    {
+      "name": "T91 unsupported Web Locks blocks and read-only retry recovers",
+      "status": "pass",
+      "before": {
+        "keyId": "—",
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": true,
+        "retryDetails": true,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": true,
+        "exportDisabled": true
+      },
+      "after": {
+        "keyId": "—",
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": true,
+        "retryDetails": true,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": true,
+        "exportDisabled": true
+      },
+      "boundary": {
+        "details_recovered": true,
+        "history_unchanged": true
+      }
+    },
+    {
+      "name": "T90 two same-origin activations retain and verify signed key history",
+      "status": "pass",
+      "before": {
+        "activeId": "82cb4dc662b051c9",
+        "historyIds": [
+          "279945213ab8e10e",
+          "1bd5cc82e9e4ded9",
+          "eeaf9e624c8ebe96",
+          "82cb4dc662b051c9"
+        ]
+      },
+      "after": {
+        "activeId": "4f6d574bf4e5a2dc",
+        "historyIds": [
+          "279945213ab8e10e",
+          "1bd5cc82e9e4ded9",
+          "eeaf9e624c8ebe96",
+          "82cb4dc662b051c9",
+          "4ef36b5ce451a3ae",
+          "4f6d574bf4e5a2dc"
+        ]
+      },
+      "boundary": {
+        "first_write_held": true,
+        "signer_queued_before_second_rotation": true,
+        "second_lock_queued": true,
+        "second_write_held": true,
+        "first_activated_id": "4ef36b5ce451a3ae",
+        "first_context_receipts": [
+          {
+            "publicKeyId": "82cb4dc662b051c9",
+            "originalValid": true,
+            "tamperedRejected": true
+          },
+          {
+            "publicKeyId": "4ef36b5ce451a3ae",
+            "originalValid": true,
+            "tamperedRejected": true
+          },
+          {
+            "publicKeyId": "4f6d574bf4e5a2dc",
+            "originalValid": true,
+            "tamperedRejected": true
+          }
+        ],
+        "sibling_context_receipts": [
+          {
+            "publicKeyId": "82cb4dc662b051c9",
+            "originalValid": true,
+            "tamperedRejected": true
+          },
+          {
+            "publicKeyId": "4ef36b5ce451a3ae",
+            "originalValid": true,
+            "tamperedRejected": true
+          },
+          {
+            "publicKeyId": "4f6d574bf4e5a2dc",
+            "originalValid": true,
+            "tamperedRejected": true
+          }
+        ]
+      }
+    }
+  ],
+  "failure_stage": null,
+  "failure_code": null,
+  "reload_boundaries": [
+    {
+      "boundary": "enable_page",
+      "outcome": "started"
+    },
+    {
+      "boundary": "enable_page",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "read_previous_document",
+      "outcome": "started"
+    },
+    {
+      "boundary": "read_previous_document",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "install_script",
+      "outcome": "started"
+    },
+    {
+      "boundary": "install_script",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "request_reload",
+      "outcome": "started"
+    },
+    {
+      "boundary": "request_reload",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "wait_new_document",
+      "outcome": "started"
+    },
+    {
+      "boundary": "document_probe",
+      "outcome": "completed",
+      "newDocument": true,
+      "settingsReady": false,
+      "preludeInstalled": true
+    },
+    {
+      "boundary": "document_probe",
+      "outcome": "completed",
+      "newDocument": true,
+      "settingsReady": true,
+      "preludeInstalled": true
+    },
+    {
+      "boundary": "wait_new_document",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "check_marker",
+      "outcome": "started"
+    },
+    {
+      "boundary": "check_marker",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "remove_script",
+      "outcome": "started"
+    },
+    {
+      "boundary": "remove_script",
+      "outcome": "completed"
+    }
+  ],
+  "artifacts": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-4bkgzV"
+}

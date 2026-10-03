@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0093",
+  "status": "native_pass_pending_independent_review",
+  "scope": "Exact imported development artifact in owned native Chrome profile; actual admin Settings identity, WebMCP product signer, stored completed receipts, and bundled ToolReceiptDialog verifier export.",
+  "source": {
+    "sha": "991385d9816b31a568619522e4795c001b4d3a06",
+    "version": "0.2.176",
+    "tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55"
+  },
+  "run_id": 37129518563,
+  "artifact_id": 11275878549,
+  "cases": {
+    "T86": "pass",
+    "T60": "pass",
+    "T87": "pass",
+    "T88": "pass",
+    "T89": "pass",
+    "T91": "pass",
+    "T90": "pass"
+  },
+  "t90_key_ids": ["82cb4dc662b051c9", "4ef36b5ce451a3ae", "4f6d574bf4e5a2dc"],
+  "native_receipt_path": ".research/audit-capability-finish-evidence/native-receipt.json",
+  "native_receipt_sha256": "5ce19ac9a250e9c8b3fc4a4e11125783f8ad0cc7c82ef22953d919a611b08c3b",
+  "resource_journal": "docs/stabilization/resource-journals/audit-capability-signed-20261003.jsonl",
+  "resource_final_decision": "valid",
+  "provenance": "Imported CI artifact 11275878549 from run 37129518563; SHA and full tree verified before and after native execution.",
+  "verifier_mapping": "Exact artifact sidepanel-XsPrsCk5.js exports Tg as D; ToolReceiptDialog imports D as wn and calls it. Native runner dynamically imports the already loaded entry in each real extension document and invokes D on stored signed rows and in-memory tampered copies.",
+  "limits": [
+    "T91 covers audit-card load after authenticated shell startup; global Web Locks absence before the auth shell starts is outside this native claim.",
+    "The WebMCP calls do not render a chat ToolTimelineRow, so this is a real product verifier code-path proof rather than a ToolReceiptDialog UI click.",
+    "Independent peer verification remains pending."
+  ]
+}
