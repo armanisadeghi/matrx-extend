@@ -1,0 +1,20 @@
+{
+  "incident": "EXT-D-0089",
+  "role": "independent source reviewer; no production-code authorship",
+  "reviewed_commit": "aidream 549b4064d1307d42b34a585b8ecfd9fa395609d8",
+  "A_actual_outcome": {
+    "verdict": "SOURCE_PATH_PASS; LIVE_UNVERIFIED",
+    "evidence": [
+      "browser_dom._build_auto_load_specs and bundle_lister._build_spec_for now construct registry-backed InlineToolSpec objects with lean provider input_schema and private full registry parameters.",
+      "merge_request_tools stashes the full request-local ToolDefinition before inline dedup; ToolExecutor.execute consults that projection before its process-global registry and unwraps the args envelope before validation and delegated event emission.",
+      "The new regression test traverses auto-load, merge, executor and tool_delegated, asserting the delegated arguments are flat: action, patient, minutes. Builder reports its focused run as 31 passed, 12 skipped; reviewer did not rerun tests under the one-heavy-test guard."
+    ],
+    "unverified": "No reviewer-observed deployed server, signed-out Chrome Store 0.2.130 browser run, provider response, or actual extension dispatch/resume result for a delegated records action."
+  },
+  "B_quality": {
+    "verdict": "PASS_WITH_LIVE_EVIDENCE_GAP",
+    "blocking_source_defects": [],
+    "test_assessment": "The new test exercises the real owned merge and executor path rather than asserting only a helper result. Its event emitter and registry fixture are controlled external boundaries. It checks one action payload and relies on existing envelope tests for rejection and alternate action behavior; the builder's reported red-first failure was invalid_arguments. The reviewer did not independently execute a constant-return gut check or mutation pass.",
+    "remaining_gate": "Observe a live signed-out Store 0.2.130 chat invoking a delegated records action, with valid provider schema, a tool_delegated event carrying flat arguments, accepted extension execution, and completed resume."
+  }
+}
