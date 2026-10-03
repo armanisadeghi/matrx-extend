@@ -21,6 +21,7 @@ const REPO = resolve(import.meta.dirname, '..', '..');
 const EXTENSION_DIR = process.env.MATRX_DESKTOP_SETTINGS_EXTENSION_DIR;
 const RECEIPT_PATH = process.env.MATRX_DESKTOP_SETTINGS_RECEIPT;
 const MODE = process.env.MATRX_DESKTOP_SETTINGS_AUTH_MODE ?? 'guest';
+const CASE = process.env.MATRX_DESKTOP_SETTINGS_CASE ?? 'full';
 const OUTPUT = join(REPO, 'test-results', `settings-desktop-native-${randomUUID()}.json`);
 const STORAGE_SALT = randomUUID();
 const SOURCE = '991385d9816b31a568619522e4795c001b4d3a06';
@@ -37,6 +38,7 @@ const report = {
   schema_version: 1,
   defects: ['EXT-D-0084', 'EXT-D-0086'],
   scope: 'native side-panel storage behavior in an owned disposable profile',
+  case: CASE,
   role: MODE,
   status: 'unverified',
   build: null,
@@ -144,6 +146,7 @@ async function storageCensus(panel, baseline = null) {
     };
     const entries = async (area, values) => Promise.all(Object.entries(values).map(async ([key, value]) => ({
       key: await digest([area, key]), value: await digest([area, key, value]),
+      label: key,
       category: category(area, key), freshDefault: key === 'matrx.chat.v1' && freshChatDefault(value),
     })));
     const current = { local: await entries('local', local), session: await entries('session', session) };
@@ -152,16 +155,22 @@ async function storageCensus(panel, baseline = null) {
       sessionFixturePresent: Object.hasOwn(session, 'matrx.qa.desktopSettings.session') };
     const compare = (area) => {
       const result = { before: baseline[area].length, missing: 0, identical: 0,
-        allowedFresh: 0, unexplained: 0 };
+        allowedFresh: 0, unexplained: 0, unexplainedKeys: [] };
       for (const prior of baseline[area]) {
         const now = current[area].find((item) => item.key === prior.key);
         if (!now) { result.missing++; continue; }
         if (now.value === prior.value) {
           result.identical++;
-          if (!['chat'].includes(prior.category) || !now.freshDefault) result.unexplained++;
+          if (!['chat'].includes(prior.category) || !now.freshDefault) {
+            result.unexplained++;
+            result.unexplainedKeys.push(prior.label);
+          }
         } else if (['guest', 'instance', 'discovery'].includes(prior.category) ||
           (prior.category === 'chat' && now.freshDefault)) result.allowedFresh++;
-        else result.unexplained++;
+        else {
+          result.unexplained++;
+          result.unexplainedKeys.push(prior.label);
+        }
       }
       return result;
     };
@@ -309,6 +318,12 @@ async function assertIdentity(panel) {
   if (MODE === 'guest') {
     const identity = await panelIdentity(panel);
     assert.equal(identity.accessTokenPresent, false, 'desktop_guest_identity_failed');
+    report.authentication = {
+      mode: 'guest',
+      access_token_absent: true,
+      profile_absent: identity.profileId === null,
+      admin_flag_absent: identity.isAdmin !== true,
+    };
   } else {
     await verifyCurrentSettingsIdentity({ panel, mode: MODE, ...expectedIdentity });
   }
@@ -337,6 +352,8 @@ function passed(name, observation) {
 
 try {
   assert.ok(['guest', 'member', 'admin'].includes(MODE), 'desktop_auth_mode_invalid');
+  assert.ok(['full', 'reset-census'].includes(CASE), 'desktop_case_invalid');
+  if (CASE === 'reset-census') assert.equal(MODE, 'guest', 'desktop_reset_diagnostic_guest_only');
   assert.ok(EXTENSION_DIR && RECEIPT_PATH, 'desktop_artifact_inputs_required');
   const extensionDir = resolve(EXTENSION_DIR);
   const receiptPath = resolve(RECEIPT_PATH);
@@ -406,214 +423,227 @@ try {
       stage = 'desktop_port';
       await openSettings(panel);
       await assertIdentity(panel);
-      await savePort(panel, 65001);
-      await waitFor(
-        'desktop_port_baseline',
-        () => state(panel),
-        (s) => s?.portSaved === 65001,
-      );
-      passed('baseline port saved through trusted UI', { persisted: true });
-
-      await fault(panel, 'set', PORT_KEY, 'reject');
-      try {
-        await savePort(panel, 65002);
+      if (CASE === 'full') {
+        await savePort(panel, 65001);
         await waitFor(
-          'desktop_port_refusal',
+          'desktop_port_baseline',
           () => state(panel),
-          (s) => s?.portSaved === 65001 && s.portInput === '65002' && s.portError,
+          (s) => s?.portSaved === 65001,
         );
-        assert.equal((await faultState(panel)).calls, 1);
-        passed('port refusal preserves prior value and offers retry', {
-          prior_saved: true,
-          error_visible: true,
-        });
-      } finally {
-        await restoreFault(panel);
-      }
-      await click(panel, 'button', 'Save');
-      await waitFor(
-        'desktop_port_retry',
-        () => state(panel),
-        (s) => s?.portSaved === 65002 && !s.portError,
-      );
-      await reload(panel);
-      assert.equal((await state(panel)).portInput, '65002');
-      passed('port retry survives panel reload', { persisted: true });
+        passed('baseline port saved through trusted UI', { persisted: true });
 
-      await fault(panel, 'set', PORT_KEY, 'hold');
-      try {
-        await savePort(panel, 65003);
-        await waitFor(
-          'desktop_first_port_held',
-          () => faultState(panel),
-          (s) => s?.held && s.calls === 1,
-        );
-        await savePort(panel, 65004);
-        assert.equal((await faultState(panel)).calls, 1, 'desktop_later_port_write_started_early');
-        assert.equal((await state(panel)).portSaved, 65002);
-        await evaluate(panel, 'window.__desktopSettingsFault.release()');
-        await waitFor(
-          'desktop_later_port_persisted',
-          () => state(panel),
-          (s) => s?.portSaved === 65004,
-        );
-        assert.equal((await faultState(panel)).calls, 2);
-      } finally {
-        await restoreFault(panel);
-      }
-      await reload(panel);
-      assert.equal((await state(panel)).portInput, '65004');
-      passed('overlapping port submissions persist latest after reload', {
-        ordered: true,
-        persisted: true,
-      });
-
-      stage = 'desktop_initial_read';
-      await click(panel, 'title', 'Chat');
-      await fault(panel, 'get', PORT_KEY, 'hold');
-      try {
-        await click(panel, 'title', 'Settings');
-        await waitFor(
-          'desktop_initial_read_held',
-          () => faultState(panel),
-          (s) => s?.calls === 1 && s.held,
-        );
-        await openSection(panel, 'Desktop bridge');
-        await savePort(panel, 65005);
-        const beforeRead = await state(panel);
-        assert.equal(beforeRead.portInput, '65005');
-        assert.equal(beforeRead.portSaved, 65004, 'desktop_write_ran_before_initial_read');
-        await evaluate(panel, 'window.__desktopSettingsFault.release()');
-        await waitFor(
-          'desktop_initial_read_write_finished',
-          () => state(panel),
-          (s) => s?.portSaved === 65005 && s.portInput === '65005',
-        );
-      } finally {
-        await restoreFault(panel);
-      }
-      await reload(panel);
-      assert.equal((await state(panel)).portInput, '65005');
-      passed('delayed initial read preserves edited port and precedes write', {
-        edit_preserved: true,
-        write_ordered: true,
-        persisted: true,
-      });
-
-      stage = 'desktop_pair';
-      const pairAvailable = (await state(panel)).pairAvailable;
-      if (pairAvailable) {
-        await fault(panel, 'set', PAIR_KEY, 'reject');
+        await fault(panel, 'set', PORT_KEY, 'reject');
         try {
-          await replaceInput(panel, 'pair', PAIR_A);
-          await click(panel, 'button', 'Pair');
+          await savePort(panel, 65002);
           await waitFor(
-            'desktop_pair_refusal',
+            'desktop_port_refusal',
             () => state(panel),
-            (s) => s?.pairSaveError && s.pairInputPresent && !s.pairStored,
+            (s) => s?.portSaved === 65001 && s.portInput === '65002' && s.portError,
           );
           assert.equal((await faultState(panel)).calls, 1);
-          passed('pair refusal keeps input and visible retry', {
+          passed('port refusal preserves prior value and offers retry', {
+            prior_saved: true,
             error_visible: true,
-            prior_value_preserved: true,
           });
         } finally {
           await restoreFault(panel);
         }
-        await click(panel, 'button', 'Pair');
+        await click(panel, 'button', 'Save');
         await waitFor(
-          'desktop_pair_retry',
+          'desktop_port_retry',
           () => state(panel),
-          (s) => s?.pairIsA && !s.pairSaveError && !s.pairInputPresent,
+          (s) => s?.portSaved === 65002 && !s.portError,
         );
-        passed('pair retry persisted synthetic value', { persisted: true });
+        await reload(panel);
+        assert.equal((await state(panel)).portInput, '65002');
+        passed('port retry survives panel reload', { persisted: true });
 
-        await fault(panel, 'set', PAIR_KEY, 'hold');
+        await fault(panel, 'set', PORT_KEY, 'hold');
         try {
-          await replaceInput(panel, 'pair', PAIR_B);
-          await click(panel, 'button', 'Pair');
+          await savePort(panel, 65003);
           await waitFor(
-            'desktop_first_pair_held',
+            'desktop_first_port_held',
             () => faultState(panel),
             (s) => s?.held && s.calls === 1,
           );
-          await replaceInput(panel, 'pair', PAIR_C);
-          await click(panel, 'button', 'Pair');
+          await savePort(panel, 65004);
           assert.equal(
             (await faultState(panel)).calls,
             1,
-            'desktop_later_pair_write_started_early',
+            'desktop_later_port_write_started_early',
           );
-          assert.equal(
-            (await state(panel)).pairInputPresent,
-            true,
-            'desktop_older_pair_cleared_newer_input',
-          );
+          assert.equal((await state(panel)).portSaved, 65002);
           await evaluate(panel, 'window.__desktopSettingsFault.release()');
           await waitFor(
-            'desktop_later_pair_persisted',
+            'desktop_later_port_persisted',
             () => state(panel),
-            (s) => s?.pairIsC && !s.pairInputPresent,
+            (s) => s?.portSaved === 65004,
           );
           assert.equal((await faultState(panel)).calls, 2);
         } finally {
           await restoreFault(panel);
         }
         await reload(panel);
-        assert.equal((await state(panel)).pairIsC, true);
-        passed('overlapping pair submissions persist latest after reload', {
+        assert.equal((await state(panel)).portInput, '65004');
+        passed('overlapping port submissions persist latest after reload', {
           ordered: true,
           persisted: true,
         });
-      } else {
-        report.cases.push({
-          name: 'pair-code entry',
-          status: 'not_applicable',
-          reason: 'native transport hides pair-code input',
-        });
-      }
-      if ((await state(panel)).forgetVisible) {
-        await fault(panel, 'remove', PAIR_KEY, 'reject');
+
+        stage = 'desktop_initial_read';
+        await click(panel, 'title', 'Chat');
+        await fault(panel, 'get', PORT_KEY, 'hold');
         try {
+          await click(panel, 'title', 'Settings');
+          await waitFor(
+            'desktop_initial_read_held',
+            () => faultState(panel),
+            (s) => s?.calls === 1 && s.held,
+          );
+          await openSection(panel, 'Desktop bridge');
+          await savePort(panel, 65005);
+          const beforeRead = await state(panel);
+          assert.equal(beforeRead.portInput, '65005');
+          assert.equal(beforeRead.portSaved, 65004, 'desktop_write_ran_before_initial_read');
+          await evaluate(panel, 'window.__desktopSettingsFault.release()');
+          await waitFor(
+            'desktop_initial_read_write_finished',
+            () => state(panel),
+            (s) => s?.portSaved === 65005 && s.portInput === '65005',
+          );
+        } finally {
+          await restoreFault(panel);
+        }
+        await reload(panel);
+        assert.equal((await state(panel)).portInput, '65005');
+        passed('delayed initial read preserves edited port and precedes write', {
+          edit_preserved: true,
+          write_ordered: true,
+          persisted: true,
+        });
+
+        stage = 'desktop_pair';
+        const pairAvailable = (await state(panel)).pairAvailable;
+        if (pairAvailable) {
+          await fault(panel, 'set', PAIR_KEY, 'reject');
+          try {
+            await replaceInput(panel, 'pair', PAIR_A);
+            await click(panel, 'button', 'Pair');
+            await waitFor(
+              'desktop_pair_refusal',
+              () => state(panel),
+              (s) => s?.pairSaveError && s.pairInputPresent && !s.pairStored,
+            );
+            assert.equal((await faultState(panel)).calls, 1);
+            passed('pair refusal keeps input and visible retry', {
+              error_visible: true,
+              prior_value_preserved: true,
+            });
+          } finally {
+            await restoreFault(panel);
+          }
+          await click(panel, 'button', 'Pair');
+          await waitFor(
+            'desktop_pair_retry',
+            () => state(panel),
+            (s) => s?.pairIsA && !s.pairSaveError && !s.pairInputPresent,
+          );
+          passed('pair retry persisted synthetic value', { persisted: true });
+
+          await fault(panel, 'set', PAIR_KEY, 'hold');
+          try {
+            await replaceInput(panel, 'pair', PAIR_B);
+            await click(panel, 'button', 'Pair');
+            await waitFor(
+              'desktop_first_pair_held',
+              () => faultState(panel),
+              (s) => s?.held && s.calls === 1,
+            );
+            await replaceInput(panel, 'pair', PAIR_C);
+            await click(panel, 'button', 'Pair');
+            assert.equal(
+              (await faultState(panel)).calls,
+              1,
+              'desktop_later_pair_write_started_early',
+            );
+            assert.equal(
+              (await state(panel)).pairInputPresent,
+              true,
+              'desktop_older_pair_cleared_newer_input',
+            );
+            await evaluate(panel, 'window.__desktopSettingsFault.release()');
+            await waitFor(
+              'desktop_later_pair_persisted',
+              () => state(panel),
+              (s) => s?.pairIsC && !s.pairInputPresent,
+            );
+            assert.equal((await faultState(panel)).calls, 2);
+          } finally {
+            await restoreFault(panel);
+          }
+          await reload(panel);
+          assert.equal((await state(panel)).pairIsC, true);
+          passed('overlapping pair submissions persist latest after reload', {
+            ordered: true,
+            persisted: true,
+          });
+        } else {
+          report.cases.push({
+            name: 'pair-code entry',
+            status: 'not_applicable',
+            reason: 'native transport hides pair-code input',
+          });
+        }
+        if ((await state(panel)).forgetVisible) {
+          await fault(panel, 'remove', PAIR_KEY, 'reject');
+          try {
+            await click(panel, 'button', 'Forget pair code');
+            await waitFor(
+              'desktop_pair_forget_dialog',
+              () => state(panel),
+              (s) => s?.pairDialog,
+            );
+            await confirmPairForget(panel);
+            await waitFor(
+              'desktop_pair_forget_refusal',
+              () => state(panel),
+              (s) => s?.pairForgetError && s.pairStored,
+            );
+            assert.equal((await faultState(panel)).calls, 1);
+            passed('pair removal refusal preserves pairing and shows retry', {
+              prior_value_preserved: true,
+              error_visible: true,
+            });
+          } finally {
+            await restoreFault(panel);
+          }
           await click(panel, 'button', 'Forget pair code');
           await waitFor(
-            'desktop_pair_forget_dialog',
+            'desktop_pair_forget_retry_dialog',
             () => state(panel),
             (s) => s?.pairDialog,
           );
           await confirmPairForget(panel);
           await waitFor(
-            'desktop_pair_forget_refusal',
+            'desktop_pair_forget_retry',
             () => state(panel),
-            (s) => s?.pairForgetError && s.pairStored,
+            (s) => s?.pairStored === false && !s.pairForgetError,
           );
-          assert.equal((await faultState(panel)).calls, 1);
-          passed('pair removal refusal preserves pairing and shows retry', {
-            prior_value_preserved: true,
-            error_visible: true,
+          passed('pair removal retry clears browser pairing', { pairing_cleared: true });
+        } else {
+          report.cases.push({
+            name: 'pair-code removal refusal and retry',
+            status: 'unverified',
+            reason: 'HTTP transport and product confirmation are unavailable in this profile',
           });
-        } finally {
-          await restoreFault(panel);
         }
-        await click(panel, 'button', 'Forget pair code');
-        await waitFor(
-          'desktop_pair_forget_retry_dialog',
-          () => state(panel),
-          (s) => s?.pairDialog,
-        );
-        await confirmPairForget(panel);
-        await waitFor(
-          'desktop_pair_forget_retry',
-          () => state(panel),
-          (s) => s?.pairStored === false && !s.pairForgetError,
-        );
-        passed('pair removal retry clears browser pairing', { pairing_cleared: true });
       } else {
-        report.cases.push({
-          name: 'pair-code removal refusal and retry',
-          status: 'unverified',
-          reason: 'HTTP transport and product confirmation are unavailable in this profile',
-        });
+        await savePort(panel, 65005);
+        await waitFor(
+          'desktop_diagnostic_port_seed',
+          () => state(panel),
+          (s) => s?.portSaved === 65005,
+        );
       }
 
       stage = 'desktop_reset';

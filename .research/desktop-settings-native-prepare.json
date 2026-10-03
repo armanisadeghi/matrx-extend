@@ -1,5 +1,5 @@
 {
-  "status": "prepared_not_executed",
+  "status": "guest_partial_native_evidence_reset_census_diagnostic_pending",
   "scope": "EXT-D-0084 and EXT-D-0086 native Settings storage acceptance in an owned disposable Chrome profile",
   "runner": "tests/browser/settings-desktop-native-acceptance.mjs",
   "storage_fault_helper": "tests/browser/settings-desktop-storage-faults.mjs",
@@ -20,11 +20,28 @@
     "Local reset rejected clear keeps confirmation and prior storage, then retry clears storage and signs out"
   ],
   "audience": "Guest, member, and admin are parameterized through the shared native Settings authentication driver; each mode still needs its own runtime result.",
+  "native_evidence": {
+    "preflight_refusal": ".research/desktop-settings-guest-resource-run01.jsonl",
+    "guest_run_02": ".research/desktop-settings-guest-native-run02.json",
+    "guest_run_03": ".research/desktop-settings-guest-native-run03.json",
+    "resource_journals": [
+      ".research/desktop-settings-guest-resource-run02.jsonl",
+      ".research/desktop-settings-guest-resource-run03.jsonl"
+    ],
+    "passed_bounded_cases": [
+      "Port saved through trusted UI, rejected write with error and retry, persisted after reload",
+      "Port writes submitted while first held complete in order with latest value after reload",
+      "Delayed initial port read preserves user edit and settles before write",
+      "Pair save rejection and retry, then overlapping synthetic pair saves preserve newest input and persisted value",
+      "Rejected local reset leaves dialog open and all seven prior local and one session key/value fingerprints unchanged"
+    ],
+    "failed_boundary": "Successful reset retry after reload: prior local-key comparison found two identical unexplained overlaps among seven prior keys; one session fixture was removed. Safe key-name diagnostic is prepared."
+  },
   "limits": [
-    "No native browser run has occurred in this preparation lane; syntax checks only.",
+    "Guest runtime results are partial, not defect closure. Member and admin have not run.",
     "The storage fault helper wraps the panel Chrome API in an owned profile. It cannot establish a healthy desktop engine, actual pairing acceptance, or actual rediscovery.",
     "Pair-code clear is marked unverified when native or disconnected transport hides Forget; a synthetic stored code alone does not make the HTTP-only control applicable.",
     "The imported artifact belongs to the D84/D86 repair source but is an interim CI development build, not a published Store release."
   ],
-  "next": "Wire a hosted case, run the exact artifact in all three auth modes under resource permits, inspect sanitized receipts, then obtain an independent peer verdict before any defect closure."
+  "next": "Run the authorized reset-census-only guest diagnostic once to identify the two overlap key names without values; compare with source reinitialization, then decide whether reset has a product defect. Member/admin and real desktop connection remain separate later coverage."
 }
