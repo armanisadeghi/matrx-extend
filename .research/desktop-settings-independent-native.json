@@ -13,7 +13,7 @@
     "verdict": "PARTIAL",
     "artifact": {
       "kind": "CI development build, not a published Store release",
-      "source_sha": "991385d9816b31b568619522e4795c001b4d3a06",
+      "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
       "ci_run_id": 37129518563,
       "artifact_id": 11275878549,
       "tree_sha256_before_and_after_each_run": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
@@ -125,8 +125,9 @@
     "no_runner_or_product_edits": true,
     "member_link": "Minted once for the existing reviewer identity, passed privately to the wrapper, and temporary file removed before native launch.",
     "admin_credentials": "Loaded privately from aidream/.env into the wrapper environment; wrapper wrote and removed its mode-0600 temporary file. No credentials were logged or included in evidence.",
-    "cleanup": "Resource guard final decisions were valid/child_failed/valid as recorded in journals; no heavy lease remains. Harness-created browser profiles were removed on exit (no matrx-native-sidepanel-qa profile directories remained under /tmp). Intentional native screenshot artifact directories remain at the output paths named in the raw receipts.",
+    "cleanup": "Journal decisions: guest valid/exit0; member valid/exit0; admin child_failed/exit1 with no resource invalidation. All owned browser profiles and private auth files were removed; heavy lease absent at transfer. Receipt-linked screenshot artifact directories remain as evidence.",
     "member_parent_setup_note": "One initial Node stdin wrapper invocation stopped at parse time before importing the magic-link helper or launching a browser; the corrected wrapper then minted one link and completed the single member run.",
     "source_tree_at_report_start": "e5b2f7437b70576fffaeb27243e807e85e966cf9"
-  }
+  },
+  "coordinator_audit": "Recomputed all six immutable receipt/journal hashes and matched each raw artifact source. Corrected one transcription error in the summary artifact SHA; raw evidence unchanged."
 }
