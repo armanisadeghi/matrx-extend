@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "source repaired; full CI pending",
+  "self_introduced_by": "43d28aa0: incomplete Web Locks fixture installed globally",
+  "failed_ci": {
+    "run": 37127065220,
+    "head": "3334490b",
+    "result": "13/16 save-never-loses-input tests failed; 276 other files passed; prior 24 focused checks were insufficient breadth."
+  },
+  "root_cause": "The fixture accepted only request(name, options, callback). A valid two-argument request supplied undefined as the Promise.then callback, silently skipping capture persistence.",
+  "reproduction": "Guarded audit-lock-fixture-red-20261003-02 reproduced the exact 13/16 capture failures plus 3/3 new helper contract failures. First attempted run was refused RESOURCE_HEAVY_BUSY; no child launched.",
+  "census": {
+    "repo": "save-capture uses request(name, callback); audit and auth use request(name, {mode: exclusive}, callback).",
+    "dependencies": "Installed @supabase/auth-js navigatorLock uses signal, ifAvailable, steal, lock metadata and query. A limited fixture must not be installed globally."
+  },
+  "repair": "Both typed request overloads now execute callbacks and propagate values/rejections, with exclusive lock metadata and per-name serialization. Unsupported options fail explicitly. Removed the global setup installation; only device-key-partial-write, receipt, and save-never-loses-input suites explicitly install the fixture. The concurrency suite keeps its own native-or-fixture setup. Capture assertions are unchanged and still exercise the repaired two-argument path.",
+  "production_changes": "None; audit primitive, capture implementation and browser contracts unchanged.",
+  "verification": {
+    "first_green": "audit-lock-fixture-green-20261003: 53/53 across 8 relevant helper/capture/audit/auth suites.",
+    "final_scoped_green": "audit-lock-fixture-scoped-green-20261003: same 53/53 after explicit fixture scoping. Includes all 16 original capture cases.",
+    "gut": "audit-lock-fixture-gut-20261003: replacing request with constant capture-persisted result fails 4/4 guards; plant.py reports byte-identical restoration.",
+    "compile": "audit-lock-fixture-compile-20261003: pnpm exec tsc --noEmit exit0, resource-valid.",
+    "full_ci": "Pending automatic push-triggered checks; not closed."
+  },
+  "journals": [
+    "docs/stabilization/resource-journals/audit-lock-fixture-red-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-lock-fixture-red-20261003-02.jsonl",
+    "docs/stabilization/resource-journals/audit-lock-fixture-green-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-lock-fixture-scoped-green-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-lock-fixture-gut-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-lock-fixture-compile-20261003.jsonl"
+  ],
+  "limits": "No native browser work, real key rotation, manual build/release/deploy or migration. D93 native/independent-review requirements remain open."
+}

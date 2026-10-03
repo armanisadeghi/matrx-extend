@@ -7,6 +7,7 @@ import {
   rotateDeviceKey,
 } from '@/lib/audit/device-key';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { installWebLocksForTest } from '../helpers/web-locks';
 
 const storage = vi.hoisted(() => ({
   values: new Map<string, unknown>(),
@@ -140,3 +141,5 @@ describe('audit device key partial storage writes', () => {
     }
   });
 });
+
+installWebLocksForTest();

@@ -1,6 +1,5 @@
 import { configure } from '@testing-library/react';
 import { vi } from 'vitest';
-import { createWebLocks } from './helpers/web-locks';
 
 /**
  * Test setup. Add chrome.* mocks here as we add tests that need them.
@@ -60,5 +59,3 @@ vi.waitFor = ((callback, options) =>
     callback,
     typeof options === 'number' ? options : { ...options, timeout: options?.timeout ?? WAIT_MS },
   )) as typeof vi.waitFor;
-
-Object.defineProperty(navigator, 'locks', { configurable: true, value: createWebLocks() });
