@@ -6,6 +6,9 @@ const mocks = vi.hoisted(() => ({
   getEnginePortOverride: vi.fn(),
   setEnginePortOverride: vi.fn(),
   setPairToken: vi.fn(),
+  clearPairToken: vi.fn(),
+  confirm: vi.fn(),
+  desktopTransport: 'none' as 'none' | 'http',
   signOut: vi.fn(),
   clearLocal: vi.fn(),
   clearSession: vi.fn(),
@@ -47,14 +50,14 @@ vi.mock('@/hooks/use-auth', () => ({
   useAuth: () => ({ user: mocks.user, signIn: vi.fn(), signOut: mocks.signOut, isAdmin: false }),
 }));
 vi.mock('@/hooks/use-desktop', () => ({
-  useDesktopBridge: () => ({ transport: 'none', health: null }),
+  useDesktopBridge: () => ({ transport: mocks.desktopTransport, health: null }),
 }));
 vi.mock('@/lib/desktop/discovery', () => ({
   getEnginePortOverride: mocks.getEnginePortOverride,
   setEnginePortOverride: mocks.setEnginePortOverride,
 }));
 vi.mock('@/lib/desktop/http', () => ({
-  clearPairToken: vi.fn(),
+  clearPairToken: mocks.clearPairToken,
   setPairToken: mocks.setPairToken,
 }));
 vi.mock('@/lib/desktop/types', () => ({
@@ -62,7 +65,7 @@ vi.mock('@/lib/desktop/types', () => ({
   engineHealthState: () => 'ok',
   formatDesktopConnectionLabel: () => 'Not connected',
 }));
-vi.mock('@/lib/destructive/confirm', () => ({ confirmDestructive: vi.fn() }));
+vi.mock('@ai-matrx/kit/confirm-opener', () => ({ confirm: mocks.confirm }));
 vi.mock('@/lib/mandates', () => ({ DEFAULT_CHAT_MANDATE_KEY: 'test' }));
 vi.mock('@/lib/messaging/native', () => ({ send: mocks.send }));
 vi.mock('@/lib/messaging/schemas', () => ({ CHANNELS: { DESKTOP_REDISCOVER: 'rediscover' } }));
@@ -422,6 +425,9 @@ describe('SettingsView desktop pair code', () => {
   beforeEach(() => {
     mocks.getEnginePortOverride.mockReset().mockResolvedValue(null);
     mocks.setPairToken.mockReset();
+    mocks.clearPairToken.mockReset();
+    mocks.confirm.mockReset().mockResolvedValue(true);
+    mocks.desktopTransport = 'none';
     setChromeRuntime({});
   });
 
@@ -444,6 +450,32 @@ describe('SettingsView desktop pair code', () => {
     await waitFor(() => expect(mocks.setPairToken).toHaveBeenCalledTimes(2));
     await waitFor(() => expect(input.value).toBe(''));
     expect(section.queryByText('Could not save pair code. Try again.')).toBeNull();
+  });
+
+  it('reports a rejected removal and only clears the error after a confirmed retry', async () => {
+    mocks.desktopTransport = 'http';
+    mocks.clearPairToken
+      .mockRejectedValueOnce(new Error('storage unavailable'))
+      .mockResolvedValueOnce(undefined);
+    render(<SettingsView />);
+    const section = within(screen.getByRole('region', { name: 'Desktop bridge' }));
+    const forget = section.getByRole('button', { name: 'Forget pair code' });
+
+    fireEvent.click(forget);
+    expect(await section.findByText('Could not forget pair code. Try again.')).toBeTruthy();
+    expect(mocks.clearPairToken).toHaveBeenCalledTimes(1);
+
+    mocks.confirm.mockResolvedValueOnce(false);
+    fireEvent.click(forget);
+    await waitFor(() => expect(mocks.confirm).toHaveBeenCalledTimes(2));
+    expect(mocks.clearPairToken).toHaveBeenCalledTimes(1);
+    expect(section.getByText('Could not forget pair code. Try again.')).toBeTruthy();
+
+    fireEvent.click(forget);
+    await waitFor(() => expect(mocks.clearPairToken).toHaveBeenCalledTimes(2));
+    await waitFor(() =>
+      expect(section.queryByText('Could not forget pair code. Try again.')).toBeNull(),
+    );
   });
 });
 

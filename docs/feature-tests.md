@@ -3454,10 +3454,10 @@ Every entry follows this shape:
 
 ### Settings reports local storage failures
 
-- **What it does:** failed port and pair-code writes, port reads, and local-data reset show an error at the control that failed.
+- **What it does:** failed port and pair-code writes/removal, port reads, and local-data reset show an error at the control that failed.
 - **Where to test:** Settings → Desktop bridge and Data & reset in an isolated profile with Chrome storage calls made to reject.
-- **Steps:** save a different local engine port while storage rejects; then retry after storage recovers. Repeat when clearing the port. Enter a pair code, reject its storage write, then retry. Reload Settings while the port read rejects. Finally, confirm Clear local data while its storage clear rejects, then retry after recovery.
-- **Expected:** a failed port save leaves the previous override in place, skips rediscovery, and shows a retry error. A successful retry clears the error. A rejected pair code stays in the input until saved. A rejected read is reported. A rejected local-data clear leaves its confirmation open and does not sign out; a successful retry closes it and signs out.
+- **Steps:** save a different local engine port while storage rejects; then retry after storage recovers. Repeat when clearing the port. Enter a pair code, reject its storage write, then retry. Confirm Forget pair code while removal rejects, cancel one retry, then confirm another after recovery. Reload Settings while the port read rejects. Finally, confirm Clear local data while its storage clear rejects, then retry after recovery.
+- **Expected:** a failed port save leaves the previous override in place, skips rediscovery, and shows a retry error. A successful retry clears the error. A rejected pair code stays in the input until saved. A rejected removal shows an error; cancellation does not remove the code and a confirmed successful retry clears the error. A rejected read is reported. A rejected local-data clear leaves its confirmation open and does not sign out; a successful retry closes it and signs out.
 - **Covered by:** `src/features/settings/SettingsView.about.test.tsx` (Settings component with rejected storage boundaries). Installed-browser failure injection remains unverified.
 
 ### DevTools console is not a firehose

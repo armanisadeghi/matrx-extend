@@ -10,6 +10,7 @@
   "sibling_census": [
     "Port read, replacement, and removal: repaired in SettingsView.",
     "Manual desktop pair-code write: repaired in SettingsView.",
+    "Confirmed desktop pair-code removal: repaired in SettingsView; rejected removal reports failure and keeps retry available.",
     "Clear local data: repaired in SettingsView; confirmation remains open until clear and sign-out succeed.",
     "Zustand persisted preferences write asynchronously through a shared adapter; this repair does not claim to cover that different persistence path."
   ],

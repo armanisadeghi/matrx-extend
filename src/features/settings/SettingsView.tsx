@@ -560,7 +560,7 @@ export function SettingsView() {
               {desktop.transport === 'http' && (
                 <ActionRow
                   label="Forget pair code"
-                  onClick={() =>
+                  onClick={() => {
                     void confirmDestructive({
                       title: 'Forget the desktop pair code?',
                       consequence:
@@ -570,7 +570,11 @@ export function SettingsView() {
                       confirmLabel: 'Forget pair code',
                       run: () => clearPairToken(),
                     })
-                  }
+                      .then((confirmed) => {
+                        if (confirmed) setPairTokenError(null);
+                      })
+                      .catch(() => setPairTokenError('Could not forget pair code. Try again.'));
+                  }}
                 />
               )}
               <div className="flex items-center gap-2 px-3.5 py-2">
