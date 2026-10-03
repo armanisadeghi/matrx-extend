@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "task": "profile-member-native-next",
+  "status": "unverified_safe_refusal",
+  "recorded_at_utc": "2026-10-03T22:48:00Z",
+  "scope": "Existing non-admin member Profile warm and extension-reload acceptance; no inventory status promoted.",
+  "artifact": {
+    "source_sha": "9dfb5911cd7fef18f8c36b1cefd273096e866bbf",
+    "ci_run_id": 37159097093,
+    "artifact_id": 11286822448,
+    "development_version": "0.2.184",
+    "tree_sha256": "2e99c4093efb34e2981f76581cc0c1bc66cdea7888e8296e2d47629e5a1cccb4",
+    "imported_with": "scripts/current-test-artifact.mjs import",
+    "import_verdict": "exact_pushed_commit_only",
+    "current_main_comparison": "9dfb5911..544154cd changes package version 0.2.184 to 0.2.185 and generated metadata; no src/, runner, config, or lockfile changes. Runtime claim is limited to the exact imported 0.2.184 artifact."
+  },
+  "native_run": {
+    "run_id": "profile-member-native-next-03",
+    "guarded": true,
+    "resource_journal": "docs/stabilization/resource-journals/profile-member-native-next-03.jsonl",
+    "runner_report_sha256": "96eb507e16b7ed5d7c5816b84333c0d4e52c6a6829df5abcdf09c534ffc45ea4",
+    "runner_report_external": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-member-native-next-03/evidence/profile-native-profile-member-native-next-03.json",
+    "member_authentication": {
+      "first_party_identity_verified": true,
+      "extension_profile_matched_first_party": true,
+      "canonical_admin_assignment_read_http_status": 200,
+      "canonical_admin_assignment_rows": 0,
+      "rendered_nonadmin_role_verified": true,
+      "selected_organization_verified": true
+    },
+    "initial_profile_row_present": false,
+    "refusal": "profile_original_row_absent_mutation_refused",
+    "cases_executed": [],
+    "warm_profile_actions": "not_run",
+    "extension_reload": "not_run",
+    "resource_admission": "admitted; child exited 1 on the explicit no-mutation safety refusal; resourceInvalid=false"
+  },
+  "pre_admission_setup_refusals": [
+    {
+      "run_id": "profile-member-native-next-01",
+      "reason": "RESOURCE_MEASUREMENT_FAILED: required external profile directory was absent",
+      "resource_journal": "docs/stabilization/resource-journals/profile-member-native-next-01.jsonl",
+      "admitted": false,
+      "runner_started": false
+    },
+    {
+      "run_id": "profile-member-native-next-02",
+      "reason": "RESOURCE_MEASUREMENT_FAILED: required external profile directory was absent",
+      "resource_journal": "docs/stabilization/resource-journals/profile-member-native-next-02.jsonl",
+      "admitted": false,
+      "runner_started": false
+    }
+  ],
+  "data_safety": {
+    "profile_mutation_attempted": false,
+    "row_absence_left_unchanged": true,
+    "magic_link": "single-use first-party link generated for the existing verified member; not included in report; ephemeral file deleted after run"
+  },
+  "evidence_hashes": {
+    "resource_journal_profile_member_native_next_01": "de538702e27620c8577d77a2464a47d187f8c6f3ffc188c9cd0bb4dcd7c60c98",
+    "resource_journal_profile_member_native_next_02": "1387180042b65d1f711d37e220039b8aa9a89edb6686987d16c2feeeffa083c5",
+    "resource_journal_profile_member_native_next_03": "886de3db0f5ced0d2b0e82699ae9e984d6e757d3113cee3e21052538f18f6fea"
+  },
+  "unknowns": [
+    "Member warm save/discard/reopen behavior remains unverified because the original owner row was absent.",
+    "Member denied-read/retry behavior and genuine extension worker replacement/reload remain unverified.",
+    "The newer 0.2.185 artifact was not used; it was not needed for this bounded UI-runtime claim because the intervening changes were version/generated metadata only."
+  ]
+}
