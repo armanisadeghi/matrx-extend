@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0087",
+  "status": "source_ready_peer_gate_pending",
+  "scope": "Six existing native Settings persistence cases in guest, authenticated admin, and existing non-admin member modes",
+  "exact_development_artifact": {
+    "workflow_run_id": 37107627454,
+    "artifact_id": 11268886169,
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660"
+  },
+  "product_paths_unchanged_from_source": true,
+  "auth_contract": {
+    "guest": "Existing default, six UI/storage/reload cases retained",
+    "admin": "The Prepare runner and D87 use the same actual first-party web-to-extension sign-in helper; D87 additionally matches first-party user UUID to extension storage and requires the admin role",
+    "member": "D87 and reviewer share first-party whoami identity and canonical admin.admins zero-row proof for the same extension user; D87 requires the existing member fingerprint and an authorized selected organization",
+    "private_inputs": "The hosted wrapper creates mode-specific mode-0600 files from existing CI secrets and deletes them after the child exits; no credential or magic-link values enter receipts"
+  },
+  "verification": {
+    "biome": "pass on all owned JavaScript files after final edit",
+    "node_syntax": "pass on owned runners/helpers",
+    "compile": "pnpm compile pass",
+    "member_proof_test": "node --test tests/browser/member-native-auth-proof.test.mjs pass: matching zero-row read accepted, admin row or wrong user refused",
+    "product_diff_check": "git diff --exit-code 3092444e73094cb0023f6086202869ccbd22978b -- src/features/settings src/lib/settings src/hooks/use-settings pass"
+  },
+  "runtime_verdict": {
+    "guest": "Prior six-case native pass in .research/settings-final-native.json; not rerun in this source lane",
+    "admin": "not_run_peer_gate_pending",
+    "member": "not_run_peer_gate_pending"
+  },
+  "limits": [
+    "No browser was launched in this source lane; signed-in UI/storage/reload behavior remains unverified until peer approval and an owned native run",
+    "The existing member magic link is one-time; the execution owner must supply a fresh authorized link through the existing private CI input without creating an account or sending mail"
+  ]
+}

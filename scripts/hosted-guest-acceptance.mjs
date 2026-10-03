@@ -208,13 +208,15 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
       'guest-chat',
       'settings-controls',
       'settings-persistence',
+      'settings-persistence-admin',
+      'settings-persistence-member',
       'member-chat',
       'prepare-stale-results',
     ].includes(acceptanceCase),
   );
   if (acceptanceCase === 'settings-controls')
     assert.equal(kind, 'ci_development_test', 'Settings controls requires CI development receipt');
-  if (acceptanceCase === 'settings-persistence')
+  if (acceptanceCase.startsWith('settings-persistence'))
     assert.equal(
       kind,
       'ci_development_test',
@@ -227,14 +229,17 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
   const memberLinkPath = join(dirname(relocatedReceipt), 'member-magic-link-private.json');
   const adminCredentialsPath = join(runtimeDir, 'prepare-admin-credentials-private.json');
   let adminCredentialsCreated = false;
-  if (acceptanceCase === 'member-chat') {
+  if (acceptanceCase === 'member-chat' || acceptanceCase === 'settings-persistence-member') {
     assert.ok(process.env.MATRX_HOSTED_MEMBER_LINK_JSON, 'member link secret required');
     await writeFile(memberLinkPath, process.env.MATRX_HOSTED_MEMBER_LINK_JSON, {
       mode: 0o600,
       flag: 'wx',
     });
   }
-  if (acceptanceCase === 'prepare-stale-results') {
+  if (
+    acceptanceCase === 'prepare-stale-results' ||
+    acceptanceCase === 'settings-persistence-admin'
+  ) {
     assert.ok(process.env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON, 'Prepare admin secret required');
     const parsed = JSON.parse(process.env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON);
     assert.equal(parsed.email, 'admin@admin.com', 'Prepare admin identity required');
@@ -250,11 +255,23 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
     MATRX_GUEST_CHAT_EXTENSION_DIR: extensionDir,
     MATRX_REVIEWER_EXTENSION_DIR: extensionDir,
     MATRX_REVIEWER_RELEASE_RECEIPT: relocatedReceipt,
-    ...(acceptanceCase === 'settings-persistence'
-      ? { MATRX_D87_EXTENSION_DIR: extensionDir, MATRX_D87_RECEIPT: relocatedReceipt }
+    ...(acceptanceCase.startsWith('settings-persistence')
+      ? {
+          MATRX_D87_EXTENSION_DIR: extensionDir,
+          MATRX_D87_RECEIPT: relocatedReceipt,
+          MATRX_D87_AUTH_MODE:
+            acceptanceCase === 'settings-persistence-admin'
+              ? 'admin'
+              : acceptanceCase === 'settings-persistence-member'
+                ? 'member'
+                : 'guest',
+        }
       : {}),
-    ...(acceptanceCase === 'member-chat' ? { MATRX_REVIEWER_MAGIC_LINK_FILE: memberLinkPath } : {}),
-    ...(acceptanceCase === 'prepare-stale-results'
+    ...(acceptanceCase === 'member-chat' || acceptanceCase === 'settings-persistence-member'
+      ? { MATRX_REVIEWER_MAGIC_LINK_FILE: memberLinkPath }
+      : {}),
+    ...(acceptanceCase === 'prepare-stale-results' ||
+    acceptanceCase === 'settings-persistence-admin'
       ? {
           MATRX_PREPARE_EXTENSION_DIR: extensionDir,
           MATRX_PREPARE_RECEIPT: relocatedReceipt,
@@ -282,7 +299,7 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
           repo,
           acceptanceCase === 'settings-controls'
             ? 'tests/browser/settings-local-controls-acceptance.mjs'
-            : acceptanceCase === 'settings-persistence'
+            : acceptanceCase.startsWith('settings-persistence')
               ? 'tests/browser/settings-d87-native-acceptance.mjs'
               : acceptanceCase === 'prepare-stale-results'
                 ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
@@ -307,7 +324,8 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
       `native side-panel acceptance exited ${result.code ?? result.signal}`,
     );
   } finally {
-    if (acceptanceCase === 'member-chat') await unlink(memberLinkPath);
+    if (acceptanceCase === 'member-chat' || acceptanceCase === 'settings-persistence-member')
+      await unlink(memberLinkPath);
     if (adminCredentialsCreated) await unlink(adminCredentialsPath);
   }
 }

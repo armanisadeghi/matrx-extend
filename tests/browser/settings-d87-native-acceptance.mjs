@@ -7,6 +7,7 @@ import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { storageFaultInstallerSource } from './d87-storage-fault-injector.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { panelIdentity, signInSettings } from './settings-native-auth-driver.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 // EXT-D-0087: trusted Settings choices, real Chrome storage reads, and one
@@ -14,6 +15,7 @@ import { click, evaluate, openSection, waitFor } from './settings-panel-driver.m
 const REPO = resolve(import.meta.dirname, '..', '..');
 const EXTENSION_DIR = process.env.MATRX_D87_EXTENSION_DIR;
 const RECEIPT_PATH = process.env.MATRX_D87_RECEIPT;
+const AUTH_MODE = process.env.MATRX_D87_AUTH_MODE ?? 'guest';
 const OUTPUT = join(REPO, 'test-results', `settings-d87-native-${randomUUID()}.json`);
 const KEY = 'matrx.settings.v1';
 const LABELS = { system: 'System', light: 'Light', dark: 'Dark' };
@@ -42,7 +44,14 @@ const OBSERVATION_CODES = new Set([
   'd87_rejection_visible',
   'd87_first_write_held',
   'd87_both_writes_finished',
-  'd87_reloaded_guest',
+  'd87_reloaded_identity',
+  'd87_extension_identity',
+  'd87_member_organization',
+  'd87_member_organization_selected',
+  'd87_canonical_nonadmin',
+  'd87_web_identity',
+  'd87_extension_signin_ready',
+  'd87_expected_identity',
 ]);
 const POINTER_CODES = new Set([
   'pointer_initial_evaluation_failed',
@@ -56,7 +65,9 @@ const POINTER_CODES = new Set([
 const report = {
   schema_version: 1,
   defect: 'EXT-D-0087',
-  scope: 'receipt-bound owned Chrome-for-Testing native Settings panel; guest',
+  scope: `receipt-bound owned Chrome-for-Testing native Settings panel; ${AUTH_MODE}`,
+  auth_mode: AUTH_MODE,
+  authentication: null,
   status: 'unverified',
   build: null,
   cases: [],
@@ -65,6 +76,7 @@ const report = {
 };
 let stage = 'receipt';
 let operation = 'receipt_validation';
+let expectedProfileId = null;
 
 function failureCode(error) {
   if (SAFE_CODES.has(error?.message)) return error.message;
@@ -104,6 +116,21 @@ async function observation(panel) {
   );
 }
 
+async function assertExpectedIdentity(panel) {
+  return waitFor(
+    'd87_expected_identity',
+    () => panelIdentity(panel),
+    (identity) =>
+      AUTH_MODE === 'guest'
+        ? identity?.accessTokenPresent === false
+        : identity?.accessTokenPresent === true &&
+          identity.profileId === expectedProfileId &&
+          (AUTH_MODE === 'admin' ? identity.isAdmin === true : identity.isAdmin !== true) &&
+          (AUTH_MODE !== 'member' || identity.organizationSelected === true),
+    30_000,
+  );
+}
+
 async function openSettings(panel) {
   operation = 'settings_click';
   await click(panel, 'title', 'Settings');
@@ -111,8 +138,9 @@ async function openSettings(panel) {
   await waitFor(
     'd87_settings_ready',
     () => observation(panel),
-    (state) => state?.settingsActive && state.guest,
+    (state) => state?.settingsActive && state.guest === (AUTH_MODE === 'guest'),
   );
+  await assertExpectedIdentity(panel);
   operation = 'appearance_open';
   await openSection(panel, 'Appearance');
 }
@@ -142,20 +170,21 @@ async function settledTheme(panel, theme) {
 async function reload(panel, expectedTheme) {
   operation = 'panel_reload';
   await panel.send('Page.reload', { ignoreCache: true });
-  operation = 'reloaded_guest';
+  operation = 'reloaded_identity';
   await waitFor(
-    'd87_reloaded_guest',
+    'd87_reloaded_identity',
     () => observation(panel),
-    (state) => state?.guest,
+    (state) => state?.guest === (AUTH_MODE === 'guest'),
   );
   await openSettings(panel);
+  await assertExpectedIdentity(panel);
   operation = 'reloaded_theme';
   return waitFor(
     `d87_${expectedTheme}_saved`,
     () => observation(panel),
     (state) =>
       state?.settingsActive &&
-      state.guest &&
+      state.guest === (AUTH_MODE === 'guest') &&
       state.theme === LABELS[expectedTheme] &&
       state.storedTheme === expectedTheme &&
       !state.error,
@@ -183,6 +212,7 @@ async function restoreFault(panel) {
 }
 
 try {
+  assert.ok(['guest', 'admin', 'member'].includes(AUTH_MODE), 'd87_auth_mode_invalid');
   assert.ok(EXTENSION_DIR && RECEIPT_PATH, 'd87_artifact_inputs_required');
   const extensionDir = resolve(EXTENSION_DIR);
   const receiptPath = resolve(RECEIPT_PATH);
@@ -225,8 +255,25 @@ try {
     expectedRelease: receipt,
     releaseReceiptPath: receiptPath,
     ...(receipt.kind === 'local_dev_unpacked' && { localDevReceiptPath: receiptPath }),
-    exercisePanel: async ({ panel }) => {
+    exercisePanel: async ({ page, panel }) => {
       try {
+        if (AUTH_MODE !== 'guest') {
+          stage = 'authentication';
+          const authentication = await signInSettings({
+            mode: AUTH_MODE,
+            page,
+            panel,
+            repo: REPO,
+            adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
+            memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
+            onStage: (value) => {
+              operation = value;
+            },
+          });
+          const { profileId, ...safeAuthentication } = authentication;
+          expectedProfileId = profileId;
+          report.authentication = safeAuthentication;
+        }
         stage = 'baseline';
         await openSettings(panel);
         await chooseTheme(panel, 'light');

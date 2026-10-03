@@ -29,6 +29,8 @@ on:
           - guest-chat
           - settings-controls
           - settings-persistence
+          - settings-persistence-admin
+          - settings-persistence-member
           - member-chat
           - prepare-stale-results
 
@@ -93,7 +95,7 @@ jobs:
           if [[ "$ACCEPTANCE_CASE" == member-chat ]]; then
             [[ -n "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
-          if [[ "$ACCEPTANCE_CASE" == settings-persistence ]]; then
+          if [[ "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member ]]; then
             [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
           if [[ "$ACCEPTANCE_CASE" == prepare-stale-results ]]; then
