@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "status": "RUNNER_DUPLICATE_IMPORT_REPAIRED_ACCEPTANCE_PENDING",
+  "defects": ["EXT-D-0058", "EXT-D-0059"],
+  "requested_artifact": {
+    "run_id": 37107627454,
+    "artifact_id": 11268886169,
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "kind": "ci_development_test"
+  },
+  "first_after_keychain_attempt": {
+    "run_id": "prepare-local-native-20261003-02",
+    "resource_decision": "child_failed, resource valid",
+    "failure_stage": "authenticated CI development artifact import before browser launch",
+    "failure": "test_artifact_operation_failed from EEXIST on already authenticated immutable import target",
+    "prepared_development": false,
+    "browser_started": false,
+    "signin_started": false,
+    "cases": [],
+    "credentials_file_removed": true,
+    "log_path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-after-keychain.log",
+    "resource_journal_path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-after-keychain-resource-journal.jsonl",
+    "log_sha256": "4ea01d18902751f39ce14dda607b916753dd8c024e3fdd8e6269556b8a42ebe5",
+    "resource_journal_sha256": "4ca1608d9a16fa3101d4cc4f931d481691d8078559abcd0bddb49a6397fde4bb"
+  },
+  "runner_repair": {
+    "behavior": "Select unique existing run/artifact target and pass unchanged verifyImportedNativeEvidence before native run; call authenticated importer only when no matching target exists. Existing imports remain immutable and are never deleted or replaced.",
+    "red": "Original actual guarded run failed at duplicate target reservation; existing withReservedImportTarget filesystem test also confirms EEXIST without mutation.",
+    "green": "Focused real-filesystem test reuses exact target, refuses wrong/ambiguous/incomplete selections and tampered CI receipt, and imports when missing; real preflight verified exact existing run/artifact/source/tree with no reimport.",
+    "checks": [
+      "Focused vitest 10/10 passed",
+      "pnpm compile passed",
+      "Focused Biome and git diff --check passed"
+    ]
+  },
+  "product_verdict": "NONE; no Prepare cases or sign-in steps reached in this attempt. Native acceptance pending peer review of runner repair and one fresh guarded run."
+}

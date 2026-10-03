@@ -7,7 +7,10 @@ import { access, mkdir, readFile, readdir, unlink, writeFile } from 'node:fs/pro
 import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { matchingCrx3RsaKey } from './crx3-identity.mjs';
-import { verifyImportedNativeEvidence } from './current-test-artifact.mjs';
+import {
+  selectOrImportNativeTarget,
+  verifyImportedNativeEvidence,
+} from './current-test-artifact.mjs';
 import { hashReleaseTree } from './sync-unpacked-release.mjs';
 
 const repo = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -89,26 +92,21 @@ async function prepare(artifactDir, outputDir, expectedSha) {
 async function prepareDevelopment(runId, artifactId) {
   assert.match(runId, /^[1-9][0-9]*$/);
   assert.match(artifactId, /^[1-9][0-9]*$/);
-  const imported = await ownedProcess(process.execPath, [
-    join(repo, 'scripts/current-test-artifact.mjs'),
-    'import',
+  const sourceRoot = join(repo, 'test-results/ci-artifacts');
+  const { target, sourceSha } = await selectOrImportNativeTarget(
+    sourceRoot,
     runId,
     artifactId,
-  ]);
-  assert.equal(imported.code, 0, 'authenticated CI development artifact import failed');
-  const sourceRoot = join(repo, 'test-results/ci-artifacts');
-  const sourceShas = (await readdir(sourceRoot)).filter((name) => /^[a-f0-9]{40}$/.test(name));
-  const targets = [];
-  for (const sourceSha of sourceShas) {
-    for (const attempt of await readdir(join(sourceRoot, sourceSha))) {
-      if (!new RegExp(`^${runId}-[1-9][0-9]*$`).test(attempt)) continue;
-      const target = join(sourceRoot, sourceSha, attempt);
-      const status = JSON.parse(await readFile(join(target, 'import-status.json'), 'utf8'));
-      if (status.artifactId === Number(artifactId)) targets.push({ target, sourceSha });
-    }
-  }
-  assert.equal(targets.length, 1, 'expected one import matching selected CI run and artifact');
-  const { target, sourceSha } = targets[0];
+    async () => {
+      const imported = await ownedProcess(process.execPath, [
+        join(repo, 'scripts/current-test-artifact.mjs'),
+        'import',
+        runId,
+        artifactId,
+      ]);
+      assert.equal(imported.code, 0, 'authenticated CI development artifact import failed');
+    },
+  );
   const extensionDir = join(target, 'chrome-mv3');
   const relocatedReceipt = join(target, 'local-dev-receipt.json');
   const evidence = await verifyImportedNativeEvidence(extensionDir, relocatedReceipt);

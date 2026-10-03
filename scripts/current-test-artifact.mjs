@@ -191,6 +191,37 @@ export async function withReservedImportTarget(sha, runId, attempt, writeImport)
     throw error;
   }
 }
+
+export async function selectOrImportNativeTarget(sourceRoot, runId, artifactId, importMissing) {
+  if (!DECIMAL.test(String(runId)) || !DECIMAL.test(String(artifactId)))
+    fail('test_artifact_selector_refused');
+  const find = async () => {
+    const targets = [];
+    const sourceShas = (
+      await readdir(sourceRoot).catch((error) => {
+        if (error.code === 'ENOENT') return [];
+        throw error;
+      })
+    ).filter((name) => SHA.test(name));
+    for (const sourceSha of sourceShas) {
+      for (const attempt of await readdir(join(sourceRoot, sourceSha))) {
+        if (!new RegExp(`^${runId}-[1-9][0-9]*$`).test(attempt)) continue;
+        const target = join(sourceRoot, sourceSha, attempt);
+        assertNoSymlinkParents(target);
+        const status = await json(join(target, 'import-status.json'));
+        if (status.artifactId === Number(artifactId)) targets.push({ target, sourceSha });
+      }
+    }
+    if (targets.length > 1) fail('test_artifact_matching_import_ambiguous');
+    return targets[0];
+  };
+  const existing = await find();
+  if (existing) return existing;
+  await importMissing();
+  const imported = await find();
+  if (!imported) fail('test_artifact_matching_import_missing');
+  return imported;
+}
 async function sourceState(sha) {
   execFileSync('git', ['fetch', '--quiet', 'origin', 'main'], { cwd: REPO });
   const originMain = git('rev-parse', 'origin/main');

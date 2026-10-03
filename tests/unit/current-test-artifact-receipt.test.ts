@@ -4,6 +4,7 @@ import { mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
 import { afterEach, it } from 'vitest';
 import {
+  selectOrImportNativeTarget,
   verifyDownloadedTree,
   verifyGitHubMetadata,
   verifyImportedNativeEvidence,
@@ -173,6 +174,68 @@ it('refuses an occupied import path without changing its existing bytes', async 
   );
   assert.equal(entered, false);
   assert.deepEqual(await readFile(existing), original);
+  const target = resolve(existing, '../..');
+  await writeFile(join(target, 'import-status.json'), JSON.stringify({ artifactId: artifact.id }));
+  const reused = await selectOrImportNativeTarget(
+    join(repo, 'test-results', 'ci-artifacts'),
+    String(run.id),
+    String(artifact.id),
+    async () => {
+      throw new Error('duplicate import must not run');
+    },
+  );
+  assert.equal(reused.target, target);
+  assert.deepEqual(await readFile(existing), original);
+  let importedWrongArtifact = false;
+  await assert.rejects(
+    selectOrImportNativeTarget(
+      join(repo, 'test-results', 'ci-artifacts'),
+      String(run.id),
+      String(artifact.id + 1),
+      async () => {
+        importedWrongArtifact = true;
+        throw new Error('wrong artifact unavailable');
+      },
+    ),
+    /wrong artifact unavailable/,
+  );
+  assert.equal(importedWrongArtifact, true);
+});
+
+it('imports a missing exact target and refuses incomplete or ambiguous matches', async () => {
+  const source = randomBytes(20).toString('hex');
+  const root = join(repo, 'test-results', 'ci-artifacts');
+  const first = join(root, source, `${run.id}-1`);
+  owned.push(join(root, source));
+  let imports = 0;
+  const importMissing = async () => {
+    imports += 1;
+    await mkdir(first, { recursive: true });
+    await writeFile(join(first, 'import-status.json'), JSON.stringify({ artifactId: artifact.id }));
+  };
+  const selected = await selectOrImportNativeTarget(
+    root,
+    String(run.id),
+    String(artifact.id),
+    importMissing,
+  );
+  assert.equal(selected.target, first);
+  assert.equal(imports, 1);
+  const secondSource = randomBytes(20).toString('hex');
+  const second = join(root, secondSource, `${run.id}-1`);
+  owned.push(join(root, secondSource));
+  await mkdir(second, { recursive: true });
+  await writeFile(join(second, 'import-status.json'), JSON.stringify({ artifactId: artifact.id }));
+  await assert.rejects(
+    selectOrImportNativeTarget(root, String(run.id), String(artifact.id), importMissing),
+    /test_artifact_matching_import_ambiguous/,
+  );
+  await rm(join(second, 'import-status.json'));
+  await assert.rejects(
+    selectOrImportNativeTarget(root, String(run.id), String(artifact.id), importMissing),
+    { code: 'ENOENT' },
+  );
+  assert.equal(imports, 1);
 });
 
 it('refuses a symlink at the run-qualified import destination', async () => {
