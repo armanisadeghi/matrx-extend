@@ -33458,7 +33458,7 @@
           "expected": [
             "Chat remains visible and usable without login; real responses ground in current page; no private account state is carried into guest."
           ],
-          "defect_ids": ["EXT-D-0096"],
+          "defect_ids": ["EXT-D-0096", "EXT-D-0097"],
           "results": {
             "guest": {
               "status": "pass",
