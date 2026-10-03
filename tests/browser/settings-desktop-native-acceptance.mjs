@@ -88,7 +88,8 @@ async function state(panel) {
       pairIsA: local[${JSON.stringify(PAIR_KEY)}] === ${JSON.stringify(PAIR_A)},
       pairIsB: local[${JSON.stringify(PAIR_KEY)}] === ${JSON.stringify(PAIR_B)},
       pairIsC: local[${JSON.stringify(PAIR_KEY)}] === ${JSON.stringify(PAIR_C)},
-      pairError: text.includes('Could not save pair code. Try again.'),
+      pairSaveError: text.includes('Could not save pair code. Try again.'),
+      pairForgetError: text.includes('Could not forget pair code. Try again.'),
       forgetVisible: [...(pane?.querySelectorAll('button') ?? [])].some((item) => item.textContent.trim() === 'Forget pair code'),
       pairDialog: !!pairDialog,
       resetDialog: !!dialog,
@@ -438,7 +439,7 @@ try {
           await waitFor(
             'desktop_pair_refusal',
             () => state(panel),
-            (s) => s?.pairError && s.pairInputPresent && !s.pairStored,
+            (s) => s?.pairSaveError && s.pairInputPresent && !s.pairStored,
           );
           assert.equal((await faultState(panel)).calls, 1);
           passed('pair refusal keeps input and visible retry', {
@@ -452,7 +453,7 @@ try {
         await waitFor(
           'desktop_pair_retry',
           () => state(panel),
-          (s) => s?.pairIsA && !s.pairError && !s.pairInputPresent,
+          (s) => s?.pairIsA && !s.pairSaveError && !s.pairInputPresent,
         );
         passed('pair retry persisted synthetic value', { persisted: true });
 
@@ -513,7 +514,7 @@ try {
           await waitFor(
             'desktop_pair_forget_refusal',
             () => state(panel),
-            (s) => s?.pairError && s.pairStored,
+            (s) => s?.pairForgetError && s.pairStored,
           );
           assert.equal((await faultState(panel)).calls, 1);
           passed('pair removal refusal preserves pairing and shows retry', {
@@ -533,7 +534,7 @@ try {
         await waitFor(
           'desktop_pair_forget_retry',
           () => state(panel),
-          (s) => s?.pairStored === false && !s.pairError,
+          (s) => s?.pairStored === false && !s.pairForgetError,
         );
         passed('pair removal retry clears browser pairing', { pairing_cleared: true });
       } else {
@@ -586,7 +587,7 @@ try {
   });
   assert.equal(hashReleaseTree(extensionDir), receipt.treeSha256, 'desktop_tree_mismatch');
   report.artifacts = run.artifacts;
-  report.status = 'pass';
+  report.status = report.cases.some((item) => item.status === 'unverified') ? 'partial' : 'pass';
 } catch (error) {
   report.status = 'fail';
   report.failure_stage = stage;
