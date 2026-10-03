@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-02",
+  "scope": "Signed-in nonadmin Chat acceptance preparation for the next exact Store candidate",
+  "status": "IDENTITY_VERIFIED_CREDENTIAL_AND_EXACT_CANDIDATE_PENDING",
+  "identity": {
+    "fingerprint_algorithm": "first 16 hex characters of SHA-256(lowercase email)",
+    "reviewer_fingerprint": "3d6137db6c081c07",
+    "project_ref": "brsgrqvjdzwihsvnfqkf",
+    "current_read_only_supabase_result": {
+      "matching_auth_users": 1,
+      "email_confirmed": true,
+      "currently_banned": false,
+      "admin_admins_assignments": 0,
+      "last_sign_in_at_utc": "2026-10-02T13:48:00.167697Z"
+    },
+    "interpretation": "The existing account is a real, currently enabled nonadmin identity. The read-only query does not validate a password or prove a fresh browser session."
+  },
+  "credential_readiness": {
+    "status": "UNVERIFIED_AUTHORIZED_VAULT_SCOPE_NOT_REACHED",
+    "containment_source": "docs/stabilization/reports/reviewer-credential-containment-20261002.json",
+    "prior_login_result": "rejected",
+    "private_sources_checked": [
+      "test-results/reviewer-account-recovery-private.json: identity and fingerprint only, mode 0600",
+      "test-results/files-saved-private-config.json: organization and fingerprint only, mode 0600",
+      "local aidream, matrx-frontend, and matrx-extend environment key names: no reviewer password key",
+      "private JSON metadata under test-results and stabilization scratch: no reviewer email/password credential pair",
+      "macOS internet-password item metadata for aimatrx.com and www.aimatrx.com: no matching item"
+    ],
+    "authenticated_vault_probe": {
+      "method": "Fresh real admin password grant against the configured Supabase Auth endpoint, then first-party Vault REST reads with the selected organization header and a browser user agent; response bodies stayed in private process memory",
+      "admin_auth_succeeded": true,
+      "personal_item_count": 45,
+      "shared_item_count": 0,
+      "browser_login_inventory_count": 83,
+      "selected_organization_item_count": 0,
+      "exact_reviewer_email_metadata_matches": 0,
+      "boundary": "The admin identity cannot see the reviewer credential in its personal, shared, or selected-organization Vault scope. The existing credential may be in Arman's personal Vault; no Arman session or token was available to this non-browser API probe. Direct browser-login materialize additionally requires a registered extension fill-device signature."
+    },
+    "result": "No existing valid reviewer password was recovered. The authorized admin Vault API worked, but its scoped inventory did not contain the reviewer identity. No password value, auth token, or account identifier was printed or copied. No reviewer credential was retried, reset, rotated, or committed.",
+    "next_safe_source": "Use the existing authenticated Vault account that owns the reviewer item, or a private owner-readable credential file. Keep any Vault reveal response in process memory and write only a mode-0600 runner input file if required. Establish the same fingerprint and a successful real web session before claiming readiness. Do not use the native CUA app-selection path from EXT-D-0079."
+  },
+  "candidate_acceptance": {
+    "status": "PENDING_CANDIDATE_FREEZE_AND_CREDENTIAL",
+    "runner": "tests/browser/reviewer-chat-store-acceptance.mjs",
+    "prior_scoped_proof": "docs/stabilization/reports/candidate-native-20261001.json: exact 0.2.173 reviewer sign-in and Chat passed before the later rejected login; this is historical, not proof for the next candidate",
+    "local_path": [
+      "After the release owner freezes the candidate, verify its original release receipt, source SHA, ZIP hashes, keyed unpacked tree hash, manifest version, and extension ID.",
+      "Reserve the sole guarded native browser permit; stage the exact keyed extension and receipt outside the repository.",
+      "Use the existing mode-0600 credential-file interface. The runner enters credentials into the real www.aimatrx.com login form, then checks the first-party web session, extension OAuth identity, selected organization, and completed real Chat answer.",
+      "Compare the run report's fingerprint with this identity, independently recheck zero admin assignments, retain only fixed booleans and panel-only screenshots, and rehash the exact artifact after the run."
+    ],
+    "hosted_path": "scripts/hosted-guest-acceptance.mjs currently admits guest-chat and settings-controls only. A signed-in reviewer hosted run needs a reviewed, guarded runner path and a private secret injection mechanism; no hosted member acceptance is claimed.",
+    "safety_limit": "EXT-D-0079 native accessibility capture remains open. Do not inspect a real credential through CUA app re-selection; any capture-path retest uses synthetic or disposable credentials only."
+  },
+  "verification": [
+    "Read D79 containment and existing reviewer runner; no browser or heavy process launched",
+    "Fresh read-only Supabase auth/admin count and enabled-state query succeeded",
+    "Local private-source metadata and file permissions checked without emitting values",
+    "Fresh admin Auth and first-party Vault personal/shared/organization/inventory read APIs succeeded; scoped metadata contained no exact reviewer identity",
+    "Hosted helper and guard allowlist inspected; reviewer runner is locally allowlisted, hosted helper does not support it"
+  ]
+}
