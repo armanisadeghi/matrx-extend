@@ -35,7 +35,7 @@ permissions:
 
 jobs:
   guest:
-    runs-on: macos-latest
+    runs-on: macos-15-intel
     timeout-minutes: 15
     concurrency:
       group: hosted-guest-side-panel
