@@ -53,8 +53,10 @@
     "next_safe_source": "The first-party ai-matrx app/api/admin/users/auth-link/route.ts supports super-admin generation of a single-use magic link for an existing user with send:false. Use the confirmed existing nonadmin user ID, keep the returned action_link private, and navigate it through the official Supabase verify/auth callback in the isolated acceptance browser; then use the extension's normal OAuth path. This avoids password rotation, account creation, email transmission, token injection, and admin masquerading. It does not establish password sign-in readiness. Do not use the native CUA app-selection path from EXT-D-0079."
   },
   "candidate_acceptance": {
-    "status": "PENDING_CANDIDATE_FREEZE_AND_CREDENTIAL",
+    "status": "EXACT_0_2_176_HOSTED_ATTEMPT_STOPPED_BEFORE_BROWSER_INTERACTION",
     "runner": "tests/browser/reviewer-chat-store-acceptance.mjs",
+    "exact_176_hosted_attempt": "Hosted member run 37107334126 stopped at owned_profile before account or Chat interaction. Source review found the reviewer runner read the relocated release receipt itself but omitted releaseReceiptPath when calling runNativeSidepanelQa; that harness defaults to the repository .output/release-receipt.json path and reads it before browser launch. The hosted setup only staged its receipt under the owned temporary output directory. Runner now passes releaseReceiptPath: RECEIPT, matching the guest runner. No member acceptance is claimed from the failed attempt.",
+    "failure_diagnostics": "The runner now records failure_code only when the caught message exactly matches a fixed allowlist of safe harness receipt/provenance codes; every other error becomes unclassified_failure. It never writes an arbitrary message, link, URL, token, or secret to the report.",
     "prior_scoped_proof": "docs/stabilization/reports/candidate-native-20261001.json: exact 0.2.173 reviewer sign-in and Chat passed before the later rejected login; this is historical, not proof for the next candidate",
     "local_path": [
       "After the release owner freezes the candidate, verify its original release receipt, source SHA, ZIP hashes, keyed unpacked tree hash, manifest version, and extension ID.",
@@ -92,6 +94,8 @@
     "Private bootstrap helper dry-run used the existing Supabase secret environment in-process; live Auth getUserById and admin.admins zero-assignment check passed without generating a link or emitting credentials",
     "Peer review found the nonadmin Role row absent by design; runner source now requires fixed whoami fingerprint, whoami user_id equals extension profile ID, and a successful zero-row canonical admin.admins GET for that ID",
     "Live read-only service-role check found one active iam.memberships organization for the reviewer identity; its iam.organizations name matches the runner's explicit Matrx's Org selection",
+    "Harness receipt boundary checked without browser launch: an absent explicit path yields native_sidepanel_release_receipt_missing, while a supplied invalid receipt yields native_sidepanel_release_receipt_refused; reviewer source now passes the same relocated path used by its own receipt read",
+    "Census of native harness call sites found guest, files-saved, and reviewer as the receipt-relocation callers; guest and files-saved already forward their explicit receipt path, and reviewer was the sole hosted-relocation omission",
     "Hosted helper and guard allowlist inspected; reviewer runner is locally allowlisted, hosted helper does not support it"
   ]
 }

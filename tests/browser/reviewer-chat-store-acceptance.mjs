@@ -27,6 +27,13 @@ const INTERACTIVE_REVIEWER_EMAIL = process.env.MATRX_REVIEWER_EMAIL?.trim() || n
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const DEMO_PATH = '/matrx-extend-demo';
 const QUESTION = 'What are the three workflow stages on this page?';
+const SAFE_FAILURE_CODES = new Set([
+  'native_sidepanel_release_receipt_missing',
+  'native_sidepanel_release_receipt_refused',
+  'native_sidepanel_override_provenance_refused',
+  'native_sidepanel_local_build_receipt_missing',
+  'native_sidepanel_local_build_provenance_refused',
+]);
 const REVIEWER_FINGERPRINT = '3d6137db6c081c07';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -41,6 +48,7 @@ const report = {
   chat: null,
   screenshots: null,
   failure_stage: null,
+  failure_code: null,
 };
 
 function hash(value) {
@@ -388,6 +396,7 @@ try {
     headed: INTERACTIVE_REVIEWER,
     extensionDir: EXTENSION_DIR,
     expectedRelease: receipt,
+    releaseReceiptPath: RECEIPT,
     ...(receipt.kind === 'local_dev_unpacked' && { localDevReceiptPath: RECEIPT }),
     exercisePanel: async ({ page, panel, artifacts }) => {
       stage = MAGIC_LINK ? 'open_reviewer_magic_link' : 'open_reviewer_web_login';
@@ -612,8 +621,11 @@ try {
   });
   report.build.extension_id = run.extensionId;
   report.status = 'pass';
-} catch {
+} catch (error) {
   report.failure_stage = stage;
+  report.failure_code = SAFE_FAILURE_CODES.has(error?.message)
+    ? error.message
+    : 'unclassified_failure';
   report.status = 'unverified';
 }
 await mkdir(dirname(OUTPUT), { recursive: true, mode: 0o700 });
