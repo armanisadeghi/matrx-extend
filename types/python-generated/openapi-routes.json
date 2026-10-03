@@ -1504,6 +1504,23 @@
  "/coding-sessions/hosted/runtime": {
   "get": []
  },
+ "/coding-sessions/own-plan/{provider}": {
+  "get": []
+ },
+ "/coding-sessions/own-plan/{provider}/cancel": {
+  "post": []
+ },
+ "/coding-sessions/own-plan/{provider}/code": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/coding-sessions/own-plan/{provider}/sign-in": {
+  "post": []
+ },
+ "/coding-sessions/own-plan/{provider}/sign-out": {
+  "post": []
+ },
  "/coding-sessions/raw-transcripts": {
   "get": []
  },
