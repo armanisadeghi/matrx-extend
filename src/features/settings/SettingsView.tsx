@@ -27,6 +27,7 @@ import { confirmDestructive } from '@/lib/destructive/confirm';
 import { DEFAULT_CHAT_MANDATE_KEY } from '@/lib/mandates';
 import { send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { retrySettingsSave, useSettingsSaveState } from '@/lib/settings/persistence';
 import { cn } from '@/lib/utils';
 import { useSettingsStore } from '@/state/settings';
 import { AgentListDropdown } from '@ai-matrx/agents/catalog/react';
@@ -111,6 +112,7 @@ export function SettingsView() {
   const { user, signIn, signOut, isAdmin } = useAuth();
   const desktop = useDesktopBridge();
   const settings = useSettingsStore();
+  const settingsSaveState = useSettingsSaveState();
   const [pairTokenInput, setPairTokenInput] = useState('');
   const [pairTokenError, setPairTokenError] = useState<string | null>(null);
   const pairWritePending = useRef(Promise.resolve());
@@ -346,6 +348,23 @@ export function SettingsView() {
               />
             </Card>
           </Collapsible>
+
+          {settingsSaveState === 'error' && (
+            <div
+              role="alert"
+              className="flex items-center justify-between gap-2 px-3 text-xs text-destructive"
+            >
+              <span>Could not save preferences. Retry before closing Settings.</span>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => void retrySettingsSave()}
+              >
+                Retry save
+              </Button>
+            </div>
+          )}
 
           <Collapsible label="Chat">
             <Card>

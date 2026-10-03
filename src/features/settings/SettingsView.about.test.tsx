@@ -1,3 +1,4 @@
+import { settingsStorage } from '@/lib/settings/persistence';
 import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -214,6 +215,22 @@ describe('SettingsView About', () => {
   afterEach(() => {
     cleanup();
     setUserAgent('Mozilla/5.0 Chrome/130.0.0.0 Safari/537.36');
+  });
+
+  it('shows a retry control when preference storage rejects a save', async () => {
+    setChromeRuntime({ requestUpdateCheck: mocks.requestUpdateCheck });
+    const save = vi
+      .fn()
+      .mockRejectedValueOnce(new Error('storage unavailable'))
+      .mockResolvedValue(undefined);
+    chrome.storage.local.set = save;
+    render(<SettingsView />);
+
+    await settingsStorage.setItem('matrx.settings.v1', '{"state":{"theme":"dark"},"version":6}');
+    expect((await screen.findByRole('alert')).textContent).toContain('Could not save preferences');
+    fireEvent.click(screen.getByRole('button', { name: 'Retry save' }));
+    await waitFor(() => expect(screen.queryByRole('alert')).toBeNull());
+    expect(save).toHaveBeenCalledTimes(2);
   });
 
   it('shows installed details, local API availability, and a browser-scoped no-update result', () => {

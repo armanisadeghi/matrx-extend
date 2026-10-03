@@ -1,0 +1,8 @@
+{
+  "defect": "EXT-D-0087",
+  "cause": "Zustand persist launched unordered Chrome writes and hid async rejection from Settings controls.",
+  "red": "Real store test persisted light after the user selected dark when Chrome writes completed in reverse order.",
+  "repair": "Serialize settings writes; expose save failure; retry the latest serialized preference blob from Settings.",
+  "green": "Focused store race/rejection/retry tests and SettingsView retry test pass; TypeScript compile passes.",
+  "open": "Independent review and exact-build browser reload acceptance remain; defect stays in_progress."
+}

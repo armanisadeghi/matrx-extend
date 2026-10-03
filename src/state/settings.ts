@@ -1,6 +1,6 @@
 import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import { SETTINGS_PERSIST_VERSION, migrateDefaultBrowserAgent } from '@/lib/settings/migrate';
-import { chromeLocalStorage } from '@/lib/storage/zustand-adapter';
+import { SETTINGS_STORAGE_KEY, settingsStorage } from '@/lib/settings/persistence';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
@@ -149,8 +149,8 @@ export const useSettingsStore = create<SettingsState>()(
       setScrapeAutoMode: (scrapeAutoMode) => set({ scrapeAutoMode }),
     }),
     {
-      name: 'matrx.settings.v1',
-      storage: createJSONStorage(() => chromeLocalStorage),
+      name: SETTINGS_STORAGE_KEY,
+      storage: createJSONStorage(() => settingsStorage),
       // Bump when the schema changes in a way that needs rewriting old
       // persisted state.
       //   v2 → v3 (2026-08-17): fresh installs use the server-resolved
