@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "task": "independent native guest allowance acceptance for the pushed Store package",
+  "status": "unverified",
+  "product_verdict": "no conclusion; native flow did not reach the fourth turn",
+  "artifact": {
+    "version": "0.2.181",
+    "source_sha": "bcf1d1615e90f873cada20209eae7ddce742ecf4",
+    "publisher_receipt_sha256": "fc236a96872d1da6eb25ab079750db03f38a571898f55e1b38e73e5059edc1e0",
+    "store_zip_sha256": "b816f01b1f2bbc3c5dae378415c701f2e73233e18998af6adc72fa2b87ab987c",
+    "store_zip_unpacked_tree_sha256": "827d1a10c42955cf83e007039d4768e3d33b25dc97521b3a97c6ab56eab45cf8",
+    "store_payload_files": 526,
+    "matching_local_zip_sha256": "2dbff0975150a4ec5dfa183796176930f6b5ba966b8bc29529da4feb2ec8078c",
+    "unpacked_test_tree_sha256_after_key_adaptation": "c4326432d01842271b6722d35b61e6d456ee95dee7f9e8afed7a7e110f489e8b",
+    "adaptation": "copied only the public manifest.key from the same-version local ZIP into the owned unpacked scratch copy; exact Store manifest matched after removing only that key; file inventory showed only manifest.json changed; original Store ZIP remained unchanged",
+    "store_installed": false,
+    "store_published": false
+  },
+  "native_runs": [
+    {
+      "run_id": "guest-allowance-store181-20261003-peer",
+      "result": "resource admission refused before browser launch",
+      "reason": "the external profile measurement directory did not exist",
+      "timestamp_utc": "2026-10-03T21:57:30.774Z"
+    },
+    {
+      "run_id": "guest-allowance-store181-20261003-peer-02",
+      "result": "admitted; one real guest answer verified, then test-driver failure before turn 2 send",
+      "test_failure_stage": "turn_2",
+      "test_failure_code": "unique_visible_pointer_target",
+      "evidence": "test-results/guest-allowance-native-e6eea63e-bcd3-4b25-9599-4b50dd803bc4.json",
+      "resource_journal": "docs/stabilization/resource-journals/guest-allowance-store181-20261003-peer-02.jsonl"
+    },
+    {
+      "run_id": "guest-allowance-store181-20261003-peer-03",
+      "result": "admitted; one real guest answer verified, then same test-driver failure before turn 2 send",
+      "test_failure_stage": "turn_2",
+      "test_failure_code": "unique_visible_pointer_target",
+      "evidence": "test-results/guest-allowance-native-aa7ee706-1572-430b-96e7-c742c1f19a2b.json",
+      "resource_journal": "docs/stabilization/resource-journals/guest-allowance-store181-20261003-peer-03.jsonl"
+    }
+  ],
+  "observation_limits": {
+    "owner_table_gets_after_observer_attachment": 0,
+    "observer_horizon": "panel Network observer attached before turn 1 and ran through the turn 2 test-driver failure",
+    "offscreen_http_status_observed": false,
+    "fourth_turn_recovery_copy_verified": false,
+    "nonadmin_member_chat_verified": false
+  },
+  "test_source_commits": [
+    "b99b4238 test(chat): verify guest allowance recovery in Store payload",
+    "52c7883f test(stabilization): allow guest allowance native acceptance",
+    "ccf2034f test(chat): scope allowance sends to active panel"
+  ],
+  "validation": {
+    "node_check": "passed",
+    "biome": "passed",
+    "production_code_changed": false
+  },
+  "handoff": "The narrowed active-Chat pointer selector still failed with the same unique_visible_pointer_target at turn 2. Stop this verifier lane; a fresh diagnostic seat must inspect live DOM and selector state before another native attempt. This is a test-driver failure, not a product failure."
+}
