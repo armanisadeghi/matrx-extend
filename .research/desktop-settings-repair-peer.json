@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Fresh source-only re-verification of 4eaadb01 and 229e599e atop e15aac6a and b02b04ba; D84/D86 native Settings persistence harness only.",
+  "findings": [
+    {
+      "id": "pair_forget_error_observed_separately",
+      "status": "ADDRESSED",
+      "evidence": "tests/browser/settings-desktop-native-acceptance.mjs state() distinguishes pairSaveError from pairForgetError; refusal/retry predicates for Forget use pairForgetError (roughly lines 94-95, 575-600). Matches SettingsView.tsx:626."
+    },
+    {
+      "id": "missing_pair_controls_must_not_pass",
+      "status": "ADDRESSED",
+      "evidence": "When pair input is absent, entry is explicitly not_applicable, and the separate Forget branch records unverified when its control is absent; final report.status becomes partial if any case is unverified (lines 558-607, 691). SettingsView.tsx:559-566 and 610-629 couple those controls to transport, so absent pair entry also hides Forget for native transport; HTTP exposes both."
+    },
+    {
+      "id": "reset_must_census_prior_local_and_session_state",
+      "status": "ADDRESSED",
+      "evidence": "storageCensus hashes key/value pairs for both storage areas; reset refusal requires every prior key retained and every prior value identical (lines 105-160, 635-652). Successful reset checks no unexplained prior entries remain and requires removal of its explicit session fixture (lines 673-685). Values and keys are reported as salted digests/categories, not raw data."
+    },
+    {
+      "id": "observer_must_not_consume_held_initial_port_read",
+      "status": "ADDRESSED",
+      "evidence": "state() now reads chrome.storage.local.get(null) (line 73), while the injected wrapper only faults targeted reads whose argument includes PORT_KEY; storage fault helper targets arrays containing the key or exact-key reads (settings-desktop-storage-faults.mjs targets()). The observer cannot consume that held operation."
+    }
+  ],
+  "verdict_a_acceptance": {
+    "status": "PARTIAL — source establishes intended cases and honest partial reporting; native acceptance remains unverified",
+    "evidence": [
+      "Port and pair operations use actual Settings UI controls and Chrome storage; reset compares actual local/session contents before and after the refusal and retry.",
+      "No native run receipt/runtime execution was reviewed or run in this lane, so this does not prove the handlers work in Chrome or close D84/D86."
+    ],
+    "limits": [
+      "Scope is bounded persistence and ordering; it does not prove a healthy desktop-engine connection, full desktop discovery, every Settings control, or all inventory T43-T51 behavior.",
+      "Census proves preservation/removal of keys present at baseline plus the owned session fixture; it is not a general census of keys created after the baseline."
+    ]
+  },
+  "verdict_b_quality": {
+    "status": "PASS WITH LIMITS — prior source defects are repaired; forcing-function proof is still unmeasured",
+    "evidence": [
+      "Faults wrap the Chrome storage boundary, preserving real Settings handlers and trusted panel UI interactions.",
+      "Error assertions are specific to the relevant save, forget, or reset outcome; report status no longer says pass when an unverified required case is recorded.",
+      "Reset refusal requires full prior-value preservation across local and session; successful retry rejects unexplained surviving baseline data."
+    ],
+    "limits": [
+      "No test, browser, build, mutation, or heavy execution was performed as required; RED-to-GREEN and return-expected forcing-function mutation remain unverified.",
+      "Exact native artifact, role coverage, and runtime execution remain unverified."
+    ]
+  },
+  "reviewed_commits": ["4eaadb01", "229e599e", "e15aac6a", "b02b04ba"],
+  "reviewed_sources": [
+    "tests/browser/settings-desktop-native-acceptance.mjs",
+    "tests/browser/settings-desktop-storage-faults.mjs",
+    "src/features/settings/SettingsView.tsx",
+    "docs/stabilization/defects/EXT-D-0084.json",
+    "docs/stabilization/defects/EXT-D-0086.json",
+    ".research/desktop-settings-source-peer.json"
+  ]
+}
