@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "status": "FAIL_INSTALLED_GUEST_CHAT",
+  "observed_window_utc": ["2026-10-03T21:18:55Z", "2026-10-03T21:23:25Z"],
+  "observer": "root native Chrome UI",
+  "extension": {
+    "version": "0.2.176",
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "source": "Chrome Web Store; verified Chrome Details",
+    "auth": "Visible guest banner; no extension sign-in"
+  },
+  "reproduction": [
+    "Use same installed profile as .research/urgent-installed-guest-20261003.json, without clearing data. Three earlier messages had completed.",
+    "Enable initially disabled extension, open https://www.aimatrx.com/matrx-extend-demo, open Matrx Extend from toolbar.",
+    "In empty guest chat send What is two plus two?"
+  ],
+  "expected": "Guest receives answer or an accurate actionable explanation of any legitimate allowance boundary.",
+  "actual": [
+    "Error: You don\u2019t have access to this chat. Sign in and try again.",
+    "The response was interrupted by an error.",
+    "Retry and Dismiss controls shown."
+  ],
+  "backend_before_and_after": {
+    "git_sha": "59f1e995f11d301386cb665af42836664fccee01",
+    "built_at": "2026-10-03T21:01:20Z"
+  },
+  "resource": {
+    "run_id": "urgent-installed-guest-fourth-20261003-01",
+    "decision": "valid",
+    "journal": "docs/stabilization/resource-journals/urgent-installed-guest-fourth-20261003-01.jsonl",
+    "sha256": "f16caf0e044a1e440cea94e16a3a603eb1f65d72a895cd2169a59ce75c85b3a3"
+  },
+  "restoration": "Original extension OFF restored; root-created diagnostic tab closed. No guest state or conversations deleted.",
+  "limitations": [
+    "Fourth message is an observed sequence, not proof quota caused rejection.",
+    "Worker lifetime reset by enable/disable.",
+    "Exact installed package bytes not hashed; version/source/identity confirmed in Chrome.",
+    "No claim this is definitively identical to the user report until exact user error is known."
+  ],
+  "next": "Implementation agent urgent_live_guest tracing exact rejection; preserve separate Context Rules defect EXT-D-0096."
+}
