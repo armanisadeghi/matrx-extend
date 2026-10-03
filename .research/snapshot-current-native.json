@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "status": "PASS_BOUNDED",
+  "case_id": "EXT-F-1012-T09",
+  "defect": "EXT-D-0059",
+  "target": {
+    "kind": "CI development test artifact",
+    "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+    "run_id": 37129518563,
+    "artifact_id": 11275878549,
+    "version": "0.2.176",
+    "tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+    "provenance": "verifyImportedNativeEvidence passed read-only after native run; local-dev receipt source_sha is null and is not source proof"
+  },
+  "attempts": [
+    {
+      "run_id": "snapshot-d59-native-20261003-01",
+      "result": "unverified",
+      "stage": "initial_success",
+      "resource": "admitted; resourceInvalid=false; child exit 1; decision child_failed",
+      "finding": "Rendered title cell existed and capture had ended, but text regex row-count oracle returned zero. This was a runner-oracle mismatch; corrected to count rendered tbody rows before rerun."
+    },
+    {
+      "run_id": "snapshot-d59-native-20261003-02",
+      "result": "pass_bounded",
+      "stage": "complete",
+      "resource": "admitted; resourceInvalid=false; child exit 0; decision valid",
+      "cases": [
+        {
+          "case": "current_document_snapshot",
+          "status": "pass"
+        },
+        {
+          "case": "completed_same_url_reload",
+          "status": "pass",
+          "document_id_changed": true
+        },
+        {
+          "case": "old_document_late_success",
+          "status": "pass",
+          "document_id_changed": true
+        },
+        {
+          "case": "old_document_late_rejection",
+          "status": "pass",
+          "document_id_changed": true
+        },
+        {
+          "case": "fresh_document_snapshot",
+          "status": "pass"
+        }
+      ]
+    }
+  ],
+  "evidence": {
+    "attempt-01-receipt.json": {
+      "path": ".research/snapshot-current-native-evidence/raw/attempt-01-receipt.json",
+      "sha256": "82e64784fec4a2b014ca38a48d0137debbaba55bb6211cb3a71af1b1221dd635"
+    },
+    "attempt-01-resource.jsonl": {
+      "path": ".research/snapshot-current-native-evidence/raw/attempt-01-resource.jsonl",
+      "sha256": "3d7e4fc0d5fd83f2d157c1a7a70748178ccb144361992f7d74a838641ff4d0a7"
+    },
+    "attempt-01.log": {
+      "path": ".research/snapshot-current-native-evidence/raw/attempt-01.log",
+      "sha256": "8b2b1c69053d08f7ba922a88a2a303a51df01142bb60770fb2789d7ad207e2e5"
+    },
+    "attempt-02-receipt.json": {
+      "path": ".research/snapshot-current-native-evidence/raw/attempt-02-receipt.json",
+      "sha256": "500094f1542cf15e288ea223745d3204367e98a867ecf06ca7777534cce9af10"
+    },
+    "attempt-02-resource.jsonl": {
+      "path": ".research/snapshot-current-native-evidence/raw/attempt-02-resource.jsonl",
+      "sha256": "7c6d5dd6840f8186fea6cbfce9cf8941aae75e88478e8317572a035ffe83d460"
+    },
+    "attempt-02.log": {
+      "path": ".research/snapshot-current-native-evidence/raw/attempt-02.log",
+      "sha256": "7fa72dd38b60df16a8b5927311a1a498536469de09771da15c15ec0f9d0864ec"
+    }
+  },
+  "verification": "Actual native Chrome admin side panel; controlled interception holds only the real Snapshot executeScript response. Same tab and URL were observed with a changed Chrome top-frame documentId before releasing old success and rejection. Product UI cleared pending/rows/errors, ignored late settlements, and a fresh capture rendered one titled row.",
+  "cleanup": {
+    "private_admin_credentials_removed": true,
+    "owned_chromium_processes": "zero observed after wrapper exit",
+    "resource_permit": "released by valid resource decisions"
+  },
+  "limits": [
+    "Bounded to admin Snapshot on the imported CI development artifact and one public demo page.",
+    "Does not close the broader D59 shared document-identity consumer census or full T09 auth-transition/service-error dimensions.",
+    "Initial unguarded prepare-fault-driver test was a diagnostic only and is not counted as admitted verification.",
+    "No Store/public release, build, deployment, product source change, or Prepare corpus rerun."
+  ],
+  "review": "Fresh prelaunch source peer passed original runner; final evidence and corrected row oracle await independent peer review.",
+  "runner_commits": [
+    "5ca1c63f test: add receipt-bound native Snapshot document acceptance",
+    "b94912ea test: count rendered Snapshot rows in native oracle"
+  ]
+}
