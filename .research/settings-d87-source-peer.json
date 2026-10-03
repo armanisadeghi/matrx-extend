@@ -1,0 +1,36 @@
+{
+  "defect": "EXT-D-0087",
+  "lane": "fresh independent source review; zero implementation authorship",
+  "reviewed_commits": [
+    "c3aece612cdcd9536cba548902a9bb517f1d8bfa",
+    "5f0b5a734e5b253bf5c439b5f15393086db3346e"
+  ],
+  "verdict_a_source_readiness": {
+    "source_status": "PASS",
+    "targets": {
+      "storage_rejection_is_visible": "PASS: persistence publishes error state; SettingsView renders an alert and Retry save control.",
+      "retry_persists_latest_blob": "PASS: retry submits the most recently serialized Zustand preference value through the same queue; success clears the alert.",
+      "rapid_newer_intent_survives": "PASS: each setItem is appended to a rejection-recovering promise queue, so an older completion cannot overwrite a later choice within this settings storage instance.",
+      "reload_acceptance": "PENDING: source and focused tests do not establish that the exact candidate build reloads with the latest choice in Chrome."
+    },
+    "live_outcome": "UNVERIFIED: exact-build browser reload and failure-injection acceptance remain pending."
+  },
+  "verdict_b_quality": {
+    "status": "PASS",
+    "rejection_path": "The queue consumes write rejection while publishing an error only for the newest revision; later queued writes can still succeed and clear the error.",
+    "test_quality": "Focused store tests exercise actual Zustand setters with Chrome storage as the mocked external boundary, inspect the persisted blob after overlap/rejection/retry, and assert saved/error UI through the rendered SettingsView. The UI test directly triggers the storage boundary, so its UI assertion alone does not prove a control-originated failure; the store test supplies that link.",
+    "scope_and_siblings": "D-0084 and D-0086 records and their persistence paths are untouched by these commits. No D84/D86 regression is apparent in the narrow SettingsView insertion; their live acceptance remains governed by their own open closure requirements.",
+    "findings": []
+  },
+  "evidence": [
+    "src/lib/settings/persistence.ts",
+    "src/state/settings.ts",
+    "src/state/settings.persistence.test.ts",
+    "src/features/settings/SettingsView.tsx",
+    "src/features/settings/SettingsView.about.test.tsx",
+    "docs/stabilization/defects/EXT-D-0084.json",
+    "docs/stabilization/defects/EXT-D-0086.json",
+    "docs/stabilization/defects/EXT-D-0087.json"
+  ],
+  "verification": "Read-only commit and source/test review. No tests, build, browser, or release run in this source-only lane."
+}
