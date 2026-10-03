@@ -63,6 +63,7 @@ import {
   isDbBundleMemberRow,
   isDbSurfaceDefaultsRow,
   isDbToolRow,
+  toolParameterProperties,
 } from './_tool-db-row-validation';
 
 interface LocalTool {
@@ -253,9 +254,7 @@ function compareTool(local: LocalTool, db: DbToolRow): string[] {
   // Parameter shape comparison
   const localProps = local.input_schema?.properties ?? {};
   // `$`-prefixed keys ($variants, …) are contract metadata, NOT tool parameters.
-  const dbProps = Object.fromEntries(
-    Object.entries(db.parameters ?? {}).filter(([k]) => !k.startsWith('$')),
-  );
+  const dbProps = toolParameterProperties(db.parameters);
   // Zod's JSON-schema emitter marks a `.default(null)` property as required,
   // even though Zod accepts an omitted value and supplies the default. JSON
   // Schema's `default` also describes an omission, not a required input. Do
