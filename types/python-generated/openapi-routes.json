@@ -2346,6 +2346,31 @@
  "/eptura-visitor/public/status": {
   "get": []
  },
+ "/esign/signing/envelope/{envelope_id}/act": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/esign/signing/outsider/act": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/esign/signing/outsider/code": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/esign/signing/outsider/open": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/esign/signing/outsider/verify": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/europe-pmc/public/publication": {
   "get": []
  },
