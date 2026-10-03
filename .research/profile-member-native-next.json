@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "task": "profile-member-native-next",
-  "status": "unverified_safe_refusal",
-  "recorded_at_utc": "2026-10-03T22:48:00Z",
-  "scope": "Existing non-admin member Profile warm and extension-reload acceptance; no inventory status promoted.",
+  "status": "cleanup_unverified_owner_recovery_routed",
+  "recorded_at_utc": "2026-10-03T23:05:00Z",
+  "scope": "Existing non-admin member Profile first-save, warm behavior, denied-read recovery, and extension-reload acceptance; no inventory status promoted.",
   "artifact": {
     "source_sha": "9dfb5911cd7fef18f8c36b1cefd273096e866bbf",
     "ci_run_id": 37159097093,
@@ -12,7 +12,7 @@
     "tree_sha256": "2e99c4093efb34e2981f76581cc0c1bc66cdea7888e8296e2d47629e5a1cccb4",
     "imported_with": "scripts/current-test-artifact.mjs import",
     "import_verdict": "exact_pushed_commit_only",
-    "current_main_comparison": "9dfb5911..544154cd changes package version 0.2.184 to 0.2.185 and generated metadata; no src/, runner, config, or lockfile changes. Runtime claim is limited to the exact imported 0.2.184 artifact."
+    "current_main_comparison": "The product runtime source in imported 9dfb5911 is the source under test. Subsequent source updates in this lane change only the Profile test runner/helper; the product source did not change. Runtime claim is limited to the exact imported 0.2.184 artifact."
   },
   "native_run": {
     "run_id": "profile-member-native-next-03",
@@ -35,6 +35,50 @@
     "extension_reload": "not_run",
     "resource_admission": "admitted; child exited 1 on the explicit no-mutation safety refusal; resourceInvalid=false"
   },
+  "follow_up_run": {
+    "run_id": "profile-member-native-next-04",
+    "guarded": true,
+    "started_at_utc": "2026-10-03T23:02:10Z",
+    "finished_at_utc": "2026-10-03T23:04:03Z",
+    "resource_journal": "docs/stabilization/resource-journals/profile-member-native-next-04.jsonl",
+    "resource_admission": "admitted; child exit 1; resourceInvalid=false",
+    "runner_report_external": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-member-native-next-04/evidence/profile-native-profile-member-native-next-04.json",
+    "runner_report_sha256": "ff4d98d4ee5ed004b074be61f7e2d27d492cac338c9b7b33bf57e767704f33d7",
+    "source_candidate": "0e32778c6502c0026c37e6acba4b4db1764fc17a",
+    "independent_source_review": ".research/profile-empty-row-peer.json",
+    "member_authentication": {
+      "first_party_identity_verified": true,
+      "extension_profile_matched_first_party": true,
+      "canonical_admin_assignment_read_http_status": 200,
+      "canonical_admin_assignment_rows": 0,
+      "rendered_nonadmin_role_verified": true,
+      "selected_organization_verified": true
+    },
+    "initial_profile_row_present": false,
+    "first_save": {
+      "case_id": "EXT-F-1004-T28",
+      "bounded_branch": "new-row-with-device-organization",
+      "row_created_by_ui": true,
+      "owner_and_device_organization_match_verified_member": true,
+      "status": "cleanup_unverified"
+    },
+    "warm_cases": [
+      { "id": "EXT-F-1004-T01", "status": "passed" },
+      { "id": "EXT-F-1004-T03", "branch": "discard-draft", "status": "passed" },
+      { "id": "EXT-F-1004-T03", "branch": "save-draft", "status": "passed" },
+      { "id": "EXT-F-1004-T25", "status": "passed" }
+    ],
+    "extension_reload": "not_verified; report has no reload receipt or native result",
+    "restoration": {
+      "verified": false,
+      "original_absence_restored": false,
+      "owned_row_may_remain": true,
+      "failure_code": "owned_cdp_transport_failed",
+      "owner_recovery": "routed to /root/record_submission181; do not claim restored until verified"
+    },
+    "original_execution_error": "not captured; cleanup error masked it in the runner report",
+    "preserved_private_evidence": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-member-native-next-04/evidence/ and /Volumes/Samsung2TB/code/.stabilization-scratch/profile-member-native-next-04/permit-profile/; not committed"
+  },
   "pre_admission_setup_refusals": [
     {
       "run_id": "profile-member-native-next-01",
@@ -52,18 +96,21 @@
     }
   ],
   "data_safety": {
-    "profile_mutation_attempted": false,
-    "row_absence_left_unchanged": true,
-    "magic_link": "single-use first-party link generated for the existing verified member; not included in report; ephemeral file deleted after run"
+    "initial_row_absent": true,
+    "test_row_inserted": true,
+    "original_absence_restoration_verified": false,
+    "magic_link": "fresh single-use first-party link generated privately; link file deleted after run"
   },
   "evidence_hashes": {
     "resource_journal_profile_member_native_next_01": "de538702e27620c8577d77a2464a47d187f8c6f3ffc188c9cd0bb4dcd7c60c98",
     "resource_journal_profile_member_native_next_02": "1387180042b65d1f711d37e220039b8aa9a89edb6686987d16c2feeeffa083c5",
-    "resource_journal_profile_member_native_next_03": "886de3db0f5ced0d2b0e82699ae9e984d6e757d3113cee3e21052538f18f6fea"
+    "resource_journal_profile_member_native_next_03": "886de3db0f5ced0d2b0e82699ae9e984d6e757d3113cee3e21052538f18f6fea",
+    "resource_journal_profile_member_native_next_04": "a13b99468947a74effe6fa70c91127f2438baa61b71c42296d8307939f7f08c4"
   },
   "unknowns": [
-    "Member warm save/discard/reopen behavior remains unverified because the original owner row was absent.",
-    "Member denied-read/retry behavior and genuine extension worker replacement/reload remain unverified.",
-    "The newer 0.2.185 artifact was not used; it was not needed for this bounded UI-runtime claim because the intervening changes were version/generated metadata only."
+    "The first-save test row may remain; owner recovery is in progress and the original absence is unverified.",
+    "Warm member T01/T03/T25 branches passed, but the runner report failed during cleanup and cannot be treated as an overall pass.",
+    "Genuine extension worker replacement/reload is unverified because no reload receipt was emitted.",
+    "The runner's cleanup error masked any earlier execution error; the report does not preserve that first failure boundary."
   ]
 }
