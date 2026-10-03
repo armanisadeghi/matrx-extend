@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "a367abc0242b76f2782a6729ee1d2e568042c1fc",
+  "lane": "independent source/evidence review; zero authorship; no browser launch",
+  "verdict_a_startup_red_green": {
+    "status": "PASS_WITH_EVIDENCE_LIMITS",
+    "red": {
+      "result": "The retained startup diagnosis records two unchanged Chromium launches that initialized the fresh profile but produced no DevToolsActivePort within 5.217 seconds. A one-second stack sample found all 703 samples on Chromium's main thread in SecItemCopyMatching → SecKeychainItemCopyContent → SecurityServer decrypt wait.",
+      "basis": ".research/local-browser-startup-diagnosis.json, completed before the candidate change"
+    },
+    "green": {
+      "result": "The committed report records ready=true, 728 ms, ownerVerified=true, DevToolsActivePort present, no launch error, and child exit 0 after cleanup. I independently verified the reported scratch script SHA-256 (`e3f3ec2c1889002db387d0eb41036dab37944b85c63997b280c6903bd91facef`) and confirmed the corresponding fresh mock-profile directory contains DevToolsActivePort. The exact stdout is retained only in the worker's tool transcript, not as a durable artifact; the 728 ms and ownerVerified values are therefore reviewed as reported and corroborated by the endpoint file, not independently replayed from stored stdout.",
+      "basis": ".research/local-browser-startup-diagnosis.json and `/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/diagnose-mock-keychain.mjs`"
+    },
+    "causal_comparison": "The red and green diagnostic scripts use the same official Chromium executable, pinned extension artifact, headless/automation/debugging switches, fresh isolated profile shape and unchanged 5,000 ms connectOwnedCdp deadline. The only Chromium argument added by the green script is --use-mock-keychain. Its script SHA matches the report, and the fresh profile endpoint corroborates the startup outcome.",
+    "limit": "This establishes a local native Chromium startup correction only. No sidepanel interaction, Prepare case, authenticated flow, or product acceptance was run. A fresh guarded Prepare acceptance remains necessary."
+  },
+  "verdict_b_scope_safety_ownership": {
+    "status": "PASS",
+    "evidence": [
+      "The candidate changes one argument in tests/browser/native-sidepanel-qa-harness.mjs. The harness creates a fresh mkdtemp profile for each run, creates it mode 0700, prepares it through prepareOwnedProfile, and starts Chromium with that exact user-data-dir.",
+      "After startup, unchanged connectOwnedCdp verifies the DevTools endpoint belongs to the expected Chromium executable and owned profile before the harness attaches. Existing extension artifact, expected-ID and command-line validation remain in place.",
+      "The new switch is the pinned Playwright Core 1.56.1 Chromium default at packages/playwright-core/src/server/chromium/chromiumSwitches.ts in the official v1.56.1 source: https://github.com/microsoft/playwright/blob/v1.56.1/packages/playwright-core/src/server/chromium/chromiumSwitches.ts (line 499 in the tagged source).",
+      "The candidate does not add --password-store=basic, alter the existing five-second readiness deadline, change Keychain entries or security settings, modify quarantine/signatures, reuse a user profile, or change product/browser acceptance predicates.",
+      "Resource and artifact guards remain responsible for the later Prepare acceptance. The diagnostic's valid resource-permit record is not represented as product acceptance evidence."
+    ],
+    "scope_limit": "The flag applies to the harness's owned ephemeral Chromium profiles. The patch does not establish behavior of system Keychain-backed Chrome or credentials in a personal profile."
+  },
+  "verification": {
+    "source_review": "Compared candidate a367abc0 with the retained baseline/green diagnostic scripts, script digest, mock profile, resource journal, pinned Playwright source, and the unchanged native harness ownership checks.",
+    "resource_journal_note": "The wrapper journal contains SIGINT and RESOURCE_BROWSER_STOP_CONFIRMED, then a valid final decision. That is a guard-holder stop record; it does not contradict the diagnostic's separately reported Chromium child exit status.",
+    "browser": "Not run by this reviewer. No Prepare/product case result is claimed.",
+    "status_promotion": "None."
+  }
+}
