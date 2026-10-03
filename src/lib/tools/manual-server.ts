@@ -1,5 +1,11 @@
 /** The existing one-tool test door executes a registered server tool in the person's seat. */
-import { apiGet, buildHeaders, getApiBaseUrl, readSessionBearer } from '@/lib/api/client';
+import {
+  ORGANIZATION_CONTEXT_HEADER,
+  apiGet,
+  buildHeaders,
+  getApiBaseUrl,
+  readSessionBearer,
+} from '@/lib/api/client';
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { streamFetch } from '@/lib/api/stream';
 import { getAccessToken } from '@/lib/auth/flow';
@@ -35,6 +41,11 @@ export async function runManualServerTool(
       { Accept: 'text/event-stream' },
       { token, organizationId },
     );
+    // buildHeaders deliberately catches the kernel's malformed-id refusal for
+    // REST callers. A raw stream has no later rawRequest admission check.
+    if (candidate[ORGANIZATION_CONTEXT_HEADER] !== organizationId) {
+      throw new Error('Choose a valid organization and try again.');
+    }
     const [currentToken, currentOrganizationId] = await Promise.all([
       getAccessToken(),
       getActiveOrganizationId(),

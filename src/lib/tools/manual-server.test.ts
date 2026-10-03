@@ -10,6 +10,7 @@ const h = vi.hoisted(() => ({
   organizationId: 'org' as string | null,
 }));
 vi.mock('@/lib/api/client', () => ({
+  ORGANIZATION_CONTEXT_HEADER: 'X-Organization-Id',
   apiGet: (...args: unknown[]) => h.get(...args),
   buildHeaders: (...args: unknown[]) => h.headers(...args),
   getApiBaseUrl: async () => 'https://server.invalid/api',
@@ -117,6 +118,14 @@ describe('manual server tool contract', () => {
       runManualServerTool('records', { action: 'guide', args: {} }),
     ).resolves.toMatchObject({ success: true });
     expect(h.headers).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not open a stream when the header builder cannot bind the organization', async () => {
+    h.headers.mockResolvedValueOnce({ Authorization: 'Bearer token' });
+    await expect(runManualServerTool('records', { action: 'guide', args: {} })).rejects.toThrow(
+      'valid organization',
+    );
+    expect(h.stream).not.toHaveBeenCalled();
   });
 
   it('surfaces a stream refusal and refuses a missing completion', async () => {
