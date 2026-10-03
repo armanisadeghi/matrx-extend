@@ -1,0 +1,21 @@
+{
+  "reviewed_commit": "cbf07b362e68146d528bd89ece7ecb2d6cf9b3d0",
+  "date": "2026-10-02",
+  "scope": "Independent source review of the committed hosted release credential change and read-only revalidation evidence. No credential values, local build, browser, release, or workflow dispatch were used.",
+  "verdict_a_source_change": "PASS: The committed workflow diff removes only the sbp_fc token-prefix rejection. It still requires a nonempty SUPABASE_ACCESS_TOKEN and the other production secrets before installation or release. The release script still invokes check:migrations:strict and catalog:tools:drift:strict; their Management API fallback uses a single read-only SELECT and fails closed if the live database cannot be verified. No secret value or rotation appears in the committed diff.",
+  "verdict_b_hosted_release": "PARTIAL: The parent reports a private, read-only Management API SELECT 1 request returned HTTP 201 with the expected row using the existing credential, and that the GitHub secret name is present. This supports actual Database Read without rotation, but this reviewer did not handle the credential or reproduce the request. The hosted workflow and its two strict release gates still need an observed successful run.",
+  "observations": [
+    "The workflow checks out extension main, so the committed change must reach origin/main before a hosted run uses it; local HEAD was cbf07b36 while local origin/main was 67b8eb9b at review time.",
+    "The workflow still invokes ./release.sh without deprecated skip flags, and release.sh retains the strict migration and tool-drift checks.",
+    "The Management API helper takes the token from process configuration in CI, sends it as a Bearer header, sets read_only: true, and accepts only one SELECT statement."
+  ],
+  "evidence": [
+    "git show cbf07b36 -- .github/workflows/release.yml",
+    ".github/workflows/release.yml:33-76",
+    "release.sh:319-338",
+    "scripts/check-migrations.ts:107-150",
+    "scripts/check-tool-db-drift.ts:326-367",
+    "scripts/_supabase-management.ts:43-98",
+    ".research/release-blocker-revalidation.json"
+  ]
+}
