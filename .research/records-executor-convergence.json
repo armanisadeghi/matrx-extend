@@ -1,0 +1,18 @@
+{
+  "status": "BLOCKED_ON_CANONICAL_OWNERSHIP_CONVERGENCE",
+  "date": "2026-10-02",
+  "finding": "Server source 5318 resolves Records as RegisteredToolSpec and runs the native aidream implementation even when its Chrome binding remains for discovery. The extension still registers a flat-Zod local handler that refuses 14 of the advertised 25 actions. The strict drift gate compares that stale handler against the DB's action+args root while ignoring the full $variants contract.",
+  "verified_source": [
+    "aidream/packages/matrx-ai/matrx_ai/capabilities/browser_dom.py uses ToolRegistry.resolve_executor_binding before choosing RegisteredToolSpec",
+    "aidream/aidream/tools/tests/test_browser_records_routing.py checks registration, execution, and absence of tool_delegated in both autoload and bundle paths",
+    "matrx-extend/src/lib/tools/manual-server.ts executes only the manual Run endpoint, which creates a separate server tool-test conversation and requires signed-in actor plus selected-organization headers",
+    "matrx-extend/scripts/check-tool-db-drift.ts serializes the local handler and compares only root fields, not $variants"
+  ],
+  "unsafe_shortcuts_rejected": [
+    "Changing local Zod to action+args makes the root comparison pass while leaving 25 action variants unverified and local execution wrong",
+    "Calling /tools/test/execute from a delegated chat handler changes conversation and authorization semantics",
+    "Excluding Records from the gate or dropping its Chrome binding without replacement would hide a real ownership or discovery defect"
+  ],
+  "required_next": "Retire the stale Chrome executor after live native routing is proven; retain the Chrome binding for discovery, change the extension gate to verify the resolved server-owned contract through the canonical runtime or generated model-derived artifact including all 25 variants, and preserve manual Tools execution through its existing server endpoint. Verify signed-in and guest chat turns, manual run, strict gate, and peer review.",
+  "limits": "No live Records call or strict-gate rerun in this lane; local heavy tests were prohibited by the 20 GiB disk floor (18 GiB available). No product source, DB, or gate mutation was made."
+}
