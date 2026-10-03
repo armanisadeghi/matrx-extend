@@ -36,7 +36,7 @@
     "builder_checks": [
       "Node harness regression passed",
       "Focused Biome passed",
-      "pnpm compile passed before the helper-specific test addition"
+      "pnpm compile passed after the helper addition (builder-provided command exit 0)"
     ]
   },
   "limitations": [
