@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-03 05:28 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T05:17:26.738743+00:00. 205 features · 739 cases · 1323 controls · 91 linked defect records.
+Generated 2026-10-03 05:35 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T05:35:54.114220+00:00. 205 features · 739 cases · 1323 controls · 91 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -441,8 +441,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: admin-settings-local-001, docs/stabilization/runs/admin-settings-local-001.json
 - EXT-F-1003-T16 · guest: Unverified.
   Evidence / build / date recorded: guest-settings-002, docs/stabilization/runs/guest-settings-002.json
-- EXT-F-1003-T22 · guest: Pass. Guest admin-only section and controls absent warm and after real panel reload.
-  Evidence / build / date recorded: guest-settings-dev089-001, ['docs/stabilization/runs/guest-settings-dev089-001.json', 'docs/stabilization/reports/guest-settings-dev089-001-peer.json']
+- EXT-F-1003-T22 · guest: Pass. Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches.
+  Evidence / build / date recorded: hosted-settings-37099860144, ['docs/stabilization/runs/hosted-settings-20261003.json', '.research/settings-hosted-retest.json']
 - EXT-F-1003-T25 · guest: N/A. Audit key is admin-only: source isAdmin gate and actual guest T22 evidence confirm absence. Negative access remains covered byT22/T63; this does not waive member/direct-state checks.
   Evidence / build / date recorded: ['docs/stabilization/reports/guest-settings-applicability.json', 'docs/stabilization/runs/guest-settings-local-003.json']
 - EXT-F-1003-T28 · guest: Pass.
@@ -453,12 +453,12 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: guest-settings-002, docs/stabilization/runs/guest-settings-002.json
 - EXT-F-1003-T34 · guest: Unverified.
   Evidence / build / date recorded: guest-settings-002, docs/stabilization/runs/guest-settings-002.json
-- EXT-F-1003-T37 · guest: Pass. Coming-soon preference toggles and persists after reload; functional deep cleaning is not implemented or verified by this case.
-  Evidence / build / date recorded: guest-settings-dev089-001, ['docs/stabilization/runs/guest-settings-dev089-001.json', 'docs/stabilization/reports/guest-settings-dev089-001-peer.json']
+- EXT-F-1003-T37 · guest: Pass. Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches.
+  Evidence / build / date recorded: hosted-settings-37099860144, ['docs/stabilization/runs/hosted-settings-20261003.json', '.research/settings-hosted-retest.json']
 - EXT-F-1003-T40 · guest: Partial. Actual profile and Loaded from path verified before and after reload. Auto-scrape On persisted; no-send context preview displayed Page content/count only. Restored Off and Capture.
   Evidence / build / date recorded: guest-autoscrape-native-20261002-01, docs/stabilization/reports/guest-autoscrape-native-20261002.json
-- EXT-F-1003-T46 · guest: Pass. Valid override saves and survives reload, real Save-bounded worker rediscovery observed, invalid range preserves value, blank clears value/error and persists; isolated probe returns503, no healthy desktop claim.
-  Evidence / build / date recorded: guest-settings-dev089-001, ['docs/stabilization/runs/guest-settings-dev089-001.json', 'docs/stabilization/reports/guest-settings-dev089-001-peer.json']
+- EXT-F-1003-T46 · guest: Pass. Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches.
+  Evidence / build / date recorded: hosted-settings-37099860144, ['docs/stabilization/runs/hosted-settings-20261003.json', '.research/settings-hosted-retest.json']
 - EXT-F-1003-T48 · admin: Unverified.
   Evidence / build / date recorded: native-0258-port-verification, docs/stabilization/runs/native-0258-port-verification.json
 - EXT-F-1003-T49 · guest: Pass. Real native0.2.57 isolated guest Cancel/Confirm/reload acceptance after shared driver repair.
@@ -477,8 +477,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: permissions-auth-native-sol, docs/stabilization/runs/permissions-auth-native-sol.json
 - EXT-F-1003-T67 · guest: Pass. Capture and Scroll & capture each persisted after full extension Reload. Restored Capture and verified after final reload.
   Evidence / build / date recorded: guest-autoscrape-native-20261002-01, docs/stabilization/reports/guest-autoscrape-native-20261002.json
-- EXT-F-1003-T70 · guest: Unverified. Identity/readiness and real no-update result observed; API-unavailable, update-available, throttled, and error alternatives remain unverified.
-  Evidence / build / date recorded: guest-settings-dev089-001, ['docs/stabilization/runs/guest-settings-dev089-001.json', 'docs/stabilization/reports/guest-settings-dev089-001-peer.json']
+- EXT-F-1003-T70 · guest: Unverified. Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches.
+  Evidence / build / date recorded: hosted-settings-37099860144, ['docs/stabilization/runs/hosted-settings-20261003.json', '.research/settings-hosted-retest.json']
 - EXT-F-1003-T72 · admin: Unverified.
   Evidence / build / date recorded: release-native-verification, docs/stabilization/runs/release-native-verification.json
 

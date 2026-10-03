@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T05:17:26.738743+00:00",
+  "updated_at": "2026-10-03T05:35:54.114220+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -4069,42 +4069,59 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "guest-settings-dev089-001",
-              "build_version": "0.2.89",
-              "build_tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
-              "detail": "Guest admin-only section and controls absent warm and after real panel reload.",
+              "run_id": "hosted-settings-37099860144",
+              "build_version": "0.2.175",
+              "source_sha": "2b554c62e5e52339ba2340636de2e84f57cd4522",
+              "build_tree_sha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
               "evidence": [
-                "docs/stabilization/runs/guest-settings-dev089-001.json",
-                "docs/stabilization/reports/guest-settings-dev089-001-peer.json"
+                "docs/stabilization/runs/hosted-settings-20261003.json",
+                ".research/settings-hosted-retest.json"
               ],
-              "prior_evidence": [
-                {
-                  "status": "pass",
-                  "run_id": "guest-settings-local-007",
-                  "detail": "Real isolated native0.2.57 guest warm/reload criteria passed; independent evidence peer a005b2e. Deep clean functional implementation not claimed beyond coming-soon preference.",
-                  "evidence": [
-                    "docs/stabilization/runs/guest-settings-local-007.json",
-                    "docs/stabilization/reports/occlusion-capture-peer.json"
-                  ],
-                  "prior_evidence": [
-                    {
-                      "status": "pass",
-                      "run_id": "guest-settings-007",
-                      "evidence": "docs/stabilization/runs/guest-settings-007.json",
-                      "detail": "Native Chrome guest controls matched all expected criteria warm and after full extension Reload; ID/path/version0.2.51 verified, resource healthy."
-                    },
-                    {
-                      "run_id": "guest-settings-local-001",
-                      "evidence": [
-                        "docs/stabilization/runs/guest-settings-local-001.json",
-                        "docs/stabilization/reports/guest-local-evidence-peer.json"
-                      ]
-                    }
-                  ]
-                }
-              ]
+              "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "guest-settings-dev089-001",
+                "build_version": "0.2.89",
+                "build_tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+                "detail": "Guest admin-only section and controls absent warm and after real panel reload.",
+                "evidence": [
+                  "docs/stabilization/runs/guest-settings-dev089-001.json",
+                  "docs/stabilization/reports/guest-settings-dev089-001-peer.json"
+                ],
+                "prior_evidence": [
+                  {
+                    "status": "pass",
+                    "run_id": "guest-settings-local-007",
+                    "detail": "Real isolated native0.2.57 guest warm/reload criteria passed; independent evidence peer a005b2e. Deep clean functional implementation not claimed beyond coming-soon preference.",
+                    "evidence": [
+                      "docs/stabilization/runs/guest-settings-local-007.json",
+                      "docs/stabilization/reports/occlusion-capture-peer.json"
+                    ],
+                    "prior_evidence": [
+                      {
+                        "status": "pass",
+                        "run_id": "guest-settings-007",
+                        "evidence": "docs/stabilization/runs/guest-settings-007.json",
+                        "detail": "Native Chrome guest controls matched all expected criteria warm and after full extension Reload; ID/path/version0.2.51 verified, resource healthy."
+                      },
+                      {
+                        "run_id": "guest-settings-local-001",
+                        "evidence": [
+                          "docs/stabilization/runs/guest-settings-local-001.json",
+                          "docs/stabilization/reports/guest-local-evidence-peer.json"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T23",
@@ -4538,44 +4555,61 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "guest-settings-dev089-001",
-              "build_version": "0.2.89",
-              "build_tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
-              "detail": "Coming-soon preference toggles and persists after reload; functional deep cleaning is not implemented or verified by this case.",
+              "run_id": "hosted-settings-37099860144",
+              "build_version": "0.2.175",
+              "source_sha": "2b554c62e5e52339ba2340636de2e84f57cd4522",
+              "build_tree_sha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
               "evidence": [
-                "docs/stabilization/runs/guest-settings-dev089-001.json",
-                "docs/stabilization/reports/guest-settings-dev089-001-peer.json"
+                "docs/stabilization/runs/hosted-settings-20261003.json",
+                ".research/settings-hosted-retest.json"
               ],
-              "prior_evidence": [
-                {
-                  "status": "pass",
-                  "run_id": "guest-settings-local-007",
-                  "detail": "Real isolated native0.2.57 guest warm/reload criteria passed; independent evidence peer a005b2e. Deep clean functional implementation not claimed beyond coming-soon preference.",
-                  "evidence": [
-                    "docs/stabilization/runs/guest-settings-local-007.json",
-                    "docs/stabilization/reports/occlusion-capture-peer.json"
-                  ],
-                  "prior_evidence": [
-                    {
-                      "status": "pass",
-                      "scope": "Visible state or preference persistence only; not full integration behavior",
-                      "run_id": "guest-settings-002",
-                      "evidence": "docs/stabilization/runs/guest-settings-002.json"
-                    },
-                    {
-                      "run_id": "guest-settings-local-001",
-                      "evidence": [
-                        "docs/stabilization/runs/guest-settings-local-001.json",
-                        "docs/stabilization/reports/guest-local-evidence-peer.json"
-                      ]
-                    }
-                  ]
-                }
-              ]
+              "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
             }
           },
           "linked_defects": [
             "EXT-D-0087"
+          ],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "guest-settings-dev089-001",
+                "build_version": "0.2.89",
+                "build_tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+                "detail": "Coming-soon preference toggles and persists after reload; functional deep cleaning is not implemented or verified by this case.",
+                "evidence": [
+                  "docs/stabilization/runs/guest-settings-dev089-001.json",
+                  "docs/stabilization/reports/guest-settings-dev089-001-peer.json"
+                ],
+                "prior_evidence": [
+                  {
+                    "status": "pass",
+                    "run_id": "guest-settings-local-007",
+                    "detail": "Real isolated native0.2.57 guest warm/reload criteria passed; independent evidence peer a005b2e. Deep clean functional implementation not claimed beyond coming-soon preference.",
+                    "evidence": [
+                      "docs/stabilization/runs/guest-settings-local-007.json",
+                      "docs/stabilization/reports/occlusion-capture-peer.json"
+                    ],
+                    "prior_evidence": [
+                      {
+                        "status": "pass",
+                        "scope": "Visible state or preference persistence only; not full integration behavior",
+                        "run_id": "guest-settings-002",
+                        "evidence": "docs/stabilization/runs/guest-settings-002.json"
+                      },
+                      {
+                        "run_id": "guest-settings-local-001",
+                        "evidence": [
+                          "docs/stabilization/runs/guest-settings-local-001.json",
+                          "docs/stabilization/reports/guest-local-evidence-peer.json"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
           ]
         },
         {
@@ -4843,42 +4877,59 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "guest-settings-dev089-001",
-              "build_version": "0.2.89",
-              "build_tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
-              "detail": "Valid override saves and survives reload, real Save-bounded worker rediscovery observed, invalid range preserves value, blank clears value/error and persists; isolated probe returns503, no healthy desktop claim.",
+              "run_id": "hosted-settings-37099860144",
+              "build_version": "0.2.175",
+              "source_sha": "2b554c62e5e52339ba2340636de2e84f57cd4522",
+              "build_tree_sha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
               "evidence": [
-                "docs/stabilization/runs/guest-settings-dev089-001.json",
-                "docs/stabilization/reports/guest-settings-dev089-001-peer.json"
+                "docs/stabilization/runs/hosted-settings-20261003.json",
+                ".research/settings-hosted-retest.json"
               ],
-              "prior_evidence": [
-                {
-                  "status": "pass",
-                  "run_id": "guest-settings-local-007",
-                  "evidence": [
-                    "docs/stabilization/runs/guest-settings-local-007.json",
-                    "docs/stabilization/reports/occlusion-capture-peer.json"
-                  ],
-                  "detail": "Actual guest0.2.63: valid save and persistence; exactly one Save-bounded worker handler entry/post-probe pair with successful resumes; invalid range preserves override; blank removes override and error; cleared state persists. Does not claim healthy desktop connection.",
-                  "defect_ids": [
-                    "EXT-D-0012"
-                  ],
-                  "retest_status": "pass",
-                  "prior_evidence": [
-                    {
-                      "run_id": "guest-settings-local-006",
-                      "evidence": [
-                        "docs/stabilization/runs/guest-settings-local-006.json",
-                        "docs/stabilization/reports/rediscovery-runtime-peer.json"
-                      ]
-                    }
-                  ]
-                }
-              ]
+              "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
             }
           },
           "linked_defects": [
             "EXT-D-0086"
+          ],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "guest-settings-dev089-001",
+                "build_version": "0.2.89",
+                "build_tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+                "detail": "Valid override saves and survives reload, real Save-bounded worker rediscovery observed, invalid range preserves value, blank clears value/error and persists; isolated probe returns503, no healthy desktop claim.",
+                "evidence": [
+                  "docs/stabilization/runs/guest-settings-dev089-001.json",
+                  "docs/stabilization/reports/guest-settings-dev089-001-peer.json"
+                ],
+                "prior_evidence": [
+                  {
+                    "status": "pass",
+                    "run_id": "guest-settings-local-007",
+                    "evidence": [
+                      "docs/stabilization/runs/guest-settings-local-007.json",
+                      "docs/stabilization/reports/occlusion-capture-peer.json"
+                    ],
+                    "detail": "Actual guest0.2.63: valid save and persistence; exactly one Save-bounded worker handler entry/post-probe pair with successful resumes; invalid range preserves override; blank removes override and error; cleared state persists. Does not claim healthy desktop connection.",
+                    "defect_ids": [
+                      "EXT-D-0012"
+                    ],
+                    "retest_status": "pass",
+                    "prior_evidence": [
+                      {
+                        "run_id": "guest-settings-local-006",
+                        "evidence": [
+                          "docs/stabilization/runs/guest-settings-local-006.json",
+                          "docs/stabilization/reports/rediscovery-runtime-peer.json"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
           ]
         },
         {
@@ -5784,24 +5835,41 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "guest-settings-dev089-001",
-              "build_version": "0.2.89",
-              "build_tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
-              "detail": "Identity/readiness and real no-update result observed; API-unavailable, update-available, throttled, and error alternatives remain unverified.",
+              "run_id": "hosted-settings-37099860144",
+              "build_version": "0.2.175",
+              "source_sha": "2b554c62e5e52339ba2340636de2e84f57cd4522",
+              "build_tree_sha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
               "evidence": [
-                "docs/stabilization/runs/guest-settings-dev089-001.json",
-                "docs/stabilization/reports/guest-settings-dev089-001-peer.json"
+                "docs/stabilization/runs/hosted-settings-20261003.json",
+                ".research/settings-hosted-retest.json"
               ],
-              "prior_evidence": [
-                {
-                  "status": "unverified",
-                  "run_id": "guest-settings-local-006",
-                  "evidence": "docs/stabilization/runs/guest-settings-local-006.json",
-                  "detail": "Actual no-update, current identity, API readiness and reload passed. Alternate API unavailable/update available/throttled/error outcomes remain unverified."
-                }
-              ]
+              "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "guest-settings-dev089-001",
+                "build_version": "0.2.89",
+                "build_tree_sha256": "78a508aee8e6dc1fab6bb452d3af5e1342a55917a8d4936266f1acc6d657fcd2",
+                "detail": "Identity/readiness and real no-update result observed; API-unavailable, update-available, throttled, and error alternatives remain unverified.",
+                "evidence": [
+                  "docs/stabilization/runs/guest-settings-dev089-001.json",
+                  "docs/stabilization/reports/guest-settings-dev089-001-peer.json"
+                ],
+                "prior_evidence": [
+                  {
+                    "status": "unverified",
+                    "run_id": "guest-settings-local-006",
+                    "evidence": "docs/stabilization/runs/guest-settings-local-006.json",
+                    "detail": "Actual no-update, current identity, API readiness and reload passed. Alternate API unavailable/update available/throttled/error outcomes remain unverified."
+                  }
+                ]
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T71",

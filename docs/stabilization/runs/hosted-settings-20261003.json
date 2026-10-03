@@ -1,0 +1,734 @@
+{
+  "schema_version": 1,
+  "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
+  "build": {
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "kind": "local_dev_unpacked",
+    "publishState": "not_published",
+    "version": "0.2.175",
+    "treeSha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
+    "verified": true
+  },
+  "preconditions": [
+    "Owned disposable profile",
+    "Extension receipt and tree hash verified",
+    "Guest panel settled before interaction"
+  ],
+  "cases": [
+    {
+      "id": "EXT-F-1003-T22",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Inspect guest Settings section list and admin controls",
+          "observation": {
+            "sections": [
+              "",
+              "G",
+              "",
+              "Compute",
+              "Ask before acting",
+              "",
+              "",
+              "Customize",
+              "Files",
+              "0",
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": []
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect guest Settings section list and admin controls",
+          "observation": {
+            "sections": [
+              "",
+              "G",
+              "",
+              "Compute",
+              "Ask before acting",
+              "",
+              "",
+              "Customize",
+              "Files",
+              "0",
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": []
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "warm admin section and controls absent",
+          "status": "pass",
+          "evidence": {
+            "sections": [
+              "",
+              "G",
+              "",
+              "Compute",
+              "Ask before acting",
+              "",
+              "",
+              "Customize",
+              "Files",
+              "0",
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": []
+          }
+        },
+        {
+          "name": "reload admin section and controls absent",
+          "status": "pass",
+          "evidence": {
+            "sections": [
+              "",
+              "G",
+              "",
+              "Compute",
+              "Ask before acting",
+              "",
+              "",
+              "Customize",
+              "Files",
+              "0",
+              "Account",
+              "Organization",
+              "Appearance",
+              "System",
+              "Chat",
+              "Ask before acting",
+              "Fast",
+              "Privacy",
+              "Scrape",
+              "Capture",
+              "Data",
+              "SEO",
+              "Desktop bridge",
+              "Data & reset",
+              "About"
+            ],
+            "advancedText": false,
+            "adminControls": []
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.175",
+        "treeSha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-IrtlcR"
+    },
+    {
+      "id": "EXT-F-1003-T37",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Observe initial Deep clean preference",
+          "observation": {
+            "count": 1,
+            "checked": "false",
+            "hint": "Deep cleancoming soon"
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Toggle Deep clean",
+          "observation": {
+            "count": 1,
+            "checked": "true",
+            "hint": "Deep cleancoming soon"
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect persisted state",
+          "observation": {
+            "count": 1,
+            "checked": "true",
+            "hint": "Deep cleancoming soon"
+          }
+        },
+        {
+          "phase": "cleanup",
+          "action": "Restore original preference",
+          "observation": {
+            "count": 1,
+            "checked": "false",
+            "hint": "Deep cleancoming soon"
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "visible coming-soon hint",
+          "status": "pass",
+          "evidence": {
+            "count": 1,
+            "checked": "false",
+            "hint": "Deep cleancoming soon"
+          }
+        },
+        {
+          "name": "toggle changes state",
+          "status": "pass",
+          "evidence": {
+            "count": 1,
+            "checked": "true",
+            "hint": "Deep cleancoming soon"
+          }
+        },
+        {
+          "name": "state and coming-soon hint persist after reload",
+          "status": "pass",
+          "evidence": {
+            "count": 1,
+            "checked": "true",
+            "hint": "Deep cleancoming soon"
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.175",
+        "treeSha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-IrtlcR"
+    },
+    {
+      "id": "EXT-F-1003-T46",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Record original engine port state",
+          "observation": {
+            "value": "",
+            "saved": null,
+            "button": ["Set"],
+            "override": false,
+            "error": null
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Save valid port",
+          "observation": {
+            "value": "49189",
+            "saved": 49189,
+            "button": ["Save"],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Observe worker rediscovery enter and reach post-probe broadcast after Save",
+          "observation": {
+            "saveStartedAt": 1791005360047,
+            "pauses": [
+              {
+                "reason": "other",
+                "hitBreakpoints": ["4:172:126906:5"],
+                "callFrames": [
+                  {
+                    "functionName": "",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 172,
+                      "columnNumber": 126906
+                    }
+                  },
+                  {
+                    "functionName": "i",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 1,
+                      "columnNumber": 24992
+                    }
+                  }
+                ],
+                "observedAt": 1791005360262
+              },
+              {
+                "reason": "other",
+                "hitBreakpoints": ["4:172:126982:5"],
+                "callFrames": [
+                  {
+                    "functionName": "",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 172,
+                      "columnNumber": 126982
+                    }
+                  }
+                ],
+                "observedAt": 1791005360280
+              }
+            ],
+            "entryBreakpoint": "4:172:126906:5",
+            "completionBreakpoint": "4:172:126982:5",
+            "resumeError": null,
+            "port": 49189,
+            "healthRequests": [
+              {
+                "method": "GET",
+                "path": "/health",
+                "observedAt": 1791005360274
+              }
+            ]
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect valid override after reload",
+          "observation": {
+            "value": "49189",
+            "saved": 49189,
+            "button": ["Save"],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Submit invalid range",
+          "observation": {
+            "value": "65536",
+            "saved": 49189,
+            "button": ["Save"],
+            "override": true,
+            "error": "Port must be 1–65535."
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Clear override without leaving the invalid-error view",
+          "observation": {
+            "value": "",
+            "saved": null,
+            "button": ["Set"],
+            "override": false,
+            "error": null
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect cleared override after reload",
+          "observation": {
+            "value": "",
+            "saved": null,
+            "button": ["Set"],
+            "override": false,
+            "error": null
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "valid port saved",
+          "status": "pass",
+          "evidence": {
+            "value": "49189",
+            "saved": 49189,
+            "button": ["Save"],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "name": "saved port triggers desktop worker rediscovery",
+          "status": "pass",
+          "evidence": {
+            "saveStartedAt": 1791005360047,
+            "pauses": [
+              {
+                "reason": "other",
+                "hitBreakpoints": ["4:172:126906:5"],
+                "callFrames": [
+                  {
+                    "functionName": "",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 172,
+                      "columnNumber": 126906
+                    }
+                  },
+                  {
+                    "functionName": "i",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 1,
+                      "columnNumber": 24992
+                    }
+                  }
+                ],
+                "observedAt": 1791005360262
+              },
+              {
+                "reason": "other",
+                "hitBreakpoints": ["4:172:126982:5"],
+                "callFrames": [
+                  {
+                    "functionName": "",
+                    "url": "",
+                    "location": {
+                      "scriptId": "5",
+                      "lineNumber": 172,
+                      "columnNumber": 126982
+                    }
+                  }
+                ],
+                "observedAt": 1791005360280
+              }
+            ],
+            "entryBreakpoint": "4:172:126906:5",
+            "completionBreakpoint": "4:172:126982:5",
+            "resumeError": null
+          }
+        },
+        {
+          "name": "valid override persists after reload",
+          "status": "pass",
+          "evidence": {
+            "value": "49189",
+            "saved": 49189,
+            "button": ["Save"],
+            "override": true,
+            "error": null
+          }
+        },
+        {
+          "name": "invalid range shows error and retains saved port",
+          "status": "pass",
+          "evidence": {
+            "value": "65536",
+            "saved": 49189,
+            "button": ["Save"],
+            "override": true,
+            "error": "Port must be 1–65535."
+          }
+        },
+        {
+          "name": "blank clears override and stale error",
+          "status": "pass",
+          "evidence": {
+            "value": "",
+            "saved": null,
+            "button": ["Set"],
+            "override": false,
+            "error": null
+          }
+        },
+        {
+          "name": "cleared override persists after reload",
+          "status": "pass",
+          "evidence": {
+            "value": "",
+            "saved": null,
+            "button": ["Set"],
+            "override": false,
+            "error": null
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.175",
+        "treeSha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-IrtlcR"
+    },
+    {
+      "id": "EXT-F-1003-T70",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Inspect About identity, API readiness, and update affordance",
+          "observation": {
+            "browser": "Chrome",
+            "version": "0.2.175",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.175",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": null,
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Request real browser update check",
+          "observation": {
+            "browser": "Chrome",
+            "version": "0.2.175",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.175",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": "Your browser did not find an update right now.",
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "phase": "reload",
+          "action": "Inspect current identity and API readiness",
+          "observation": {
+            "browser": "Chrome",
+            "version": "0.2.175",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.175",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": null,
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "identity matches running browser, manifest, receipt and runtime ID",
+          "status": "pass",
+          "evidence": {
+            "browser": "Chrome",
+            "version": "0.2.175",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.175",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": null,
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "name": "password-flow API readiness label and remedy",
+          "status": "pass",
+          "evidence": {
+            "browser": "Chrome",
+            "version": "0.2.175",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.175",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": null,
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "name": "password-flow API unavailable branch",
+          "status": "unverified",
+          "evidence": "No browser API was removed or mocked."
+        },
+        {
+          "name": "observed browser update result shown accurately",
+          "status": "pass",
+          "evidence": {
+            "browser": "Chrome",
+            "version": "0.2.175",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.175",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": "Your browser did not find an update right now.",
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "name": "no-update outcome",
+          "status": "pass",
+          "evidence": {
+            "browser": "Chrome",
+            "version": "0.2.175",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.175",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": "Your browser did not find an update right now.",
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        },
+        {
+          "name": "update available branch",
+          "status": "unverified",
+          "evidence": "No browser API or update result was fabricated."
+        },
+        {
+          "name": "throttled branch",
+          "status": "unverified",
+          "evidence": "No browser API or update result was fabricated."
+        },
+        {
+          "name": "update error branch",
+          "status": "unverified",
+          "evidence": "No browser API or update result was fabricated."
+        },
+        {
+          "name": "update API unavailable branch",
+          "status": "unverified",
+          "evidence": "No browser API or update result was fabricated."
+        },
+        {
+          "name": "identity and API readiness remain current after reload",
+          "status": "pass",
+          "evidence": {
+            "browser": "Chrome",
+            "version": "0.2.175",
+            "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "readiness": "Available",
+            "expectedBrowser": "Chrome",
+            "manifestVersion": "0.2.175",
+            "runtimeId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+            "passwordApis": true,
+            "updateApi": true,
+            "hasUpdateButton": true,
+            "updateText": null,
+            "browserManaged": false,
+            "unavailableRemedy": false
+          }
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.175",
+        "treeSha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-IrtlcR"
+    }
+  ],
+  "artifacts": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-IrtlcR",
+  "status": "unverified",
+  "run_id": "hosted-settings-37099860144",
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37099860144",
+  "resource_decision": "valid",
+  "source_sha": "2b554c62e5e52339ba2340636de2e84f57cd4522",
+  "ci_artifact_id": 11265247199,
+  "review": "Owner inspected structured observations and screenshot; no fresh independent runtime retest. D84/D86 original failure cases not exercised."
+}
