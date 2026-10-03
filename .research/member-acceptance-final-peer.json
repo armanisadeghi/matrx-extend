@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "reviewed_commits": ["9c6bc7b3", "9cc7393d"],
+  "method": "Fresh source review only; no live secret or browser run",
+  "verdict_a_live_acceptance": {
+    "status": "PENDING",
+    "reason": "The next exact release candidate and existing-member magic link have not been exercised in the hosted native browser. Current source would time out at the nonadmin role predicate.",
+    "prior_findings": {
+      "positive_nonadmin_role_required": "NOT_ADDRESSED: the new exact non_admin predicate is unreachable because Settings renders its Role row only for admins; nonadmins are observed as absent.",
+      "same_exact_release_artifact": "ADDRESSED_IN_SOURCE: member-chat requires the successful published release run and reuses receipt, ZIP, keyed-tree, version, source-SHA, and extension-ID checks. Live execution remains pending.",
+      "first_party_existing_member_auth": "ADDRESSED_IN_SOURCE: the helper validates an existing confirmed unbanned user with zero admin assignments, then uses Supabase Admin generateLink without email or password mutation; the runner navigates the first-party confirm URL and checks whoami, extension OAuth, organization, and real Chat. Live execution remains pending."
+    }
+  },
+  "verdict_b_source_quality": {
+    "status": "FAIL",
+    "important_findings": [
+      {
+        "id": "MEMBER-ROLE-1",
+        "location": "tests/browser/reviewer-chat-store-acceptance.mjs:153,344; src/features/settings/SettingsView.tsx:241",
+        "evidence": "accountObservation returns absent when the Role row is missing. SettingsView renders Role only for user && isAdmin, so a legitimate nonadmin can never satisfy observedRoleCategory === non_admin.",
+        "required_fix": "Reuse the existing member proof in tests/browser/notes-native-acceptance.mjs:194-330: bind /api/whoami user_id and fixed email fingerprint to the extension profile ID, then observe the extension's successful canonical admin.admins GET for that ID returning exactly zero rows. Make the browser acceptance predicate consistent with the actual nonadmin UI. Do not treat a missing Role row alone as proof."
+      },
+      {
+        "id": "MEMBER-BINDING-2",
+        "location": "scripts/hosted-guest-acceptance.mjs:222; tests/browser/reviewer-chat-store-acceptance.mjs:64",
+        "evidence": "Hosted acceptance accepts any syntactically valid same-origin magic-link JSON and checks whoami against the email supplied by that same JSON. It does not bind the run to the existing reviewer fingerprint in readiness or repeat the zero-admin-assignment check at acceptance time.",
+        "required_fix": "Require the fixed reviewer fingerprint 3d6137db6c081c07 from the signed-in /api/whoami email, and tie the whoami user_id to the extension profile ID and the observed zero-row canonical role read. app/api/whoami/route.ts in ai-matrx already returns signed_in, user_id, and email without tokens; src/lib/supabase/queries.ts:111-124 is the product role query. No service-role secret is needed in the hosted browser."
+      }
+    ],
+    "addressed_checks": [
+      "The hosted member case rejects development and published-Store-CRX modes, and the shared preparation validates source SHA, release receipt, ZIP hashes, keyed tree, and manifest version.",
+      "The browser runtime remains pinned to Playwright 1.56.1 and uses the existing resource permits and native harness.",
+      "The hosted link file is create-exclusive mode 0600 under RUNNER_TEMP/guest-acceptance, outside every upload glob; the raw secret is removed from the acceptance child environment, and normal-exit cleanup unlinks the file.",
+      "No source path captures the auth page, prints the link, injects an admin session, or sends email. The helper and runner suppress raw errors from their own reports."
+    ],
+    "remaining_limit": "The raw secret is still present in the outer GitHub step and resource-wrapper process environments until the acceptance child starts; source review cannot prove live secrecy or runtime behavior."
+  }
+}
