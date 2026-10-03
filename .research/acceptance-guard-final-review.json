@@ -1,11 +1,7 @@
 {
   "schema_version": 1,
   "method": "Fresh zero-authorship source review; no hosted or heavy browser run",
-  "reviewed_commits": [
-    "b111cb3f",
-    "a9f17f9e",
-    "53ec7df9"
-  ],
+  "reviewed_commits": ["b111cb3f", "a9f17f9e", "53ec7df9"],
   "verdict_a_live_acceptance": {
     "status": "PENDING",
     "source_readiness": "ACCEPTED_FOR_EXACT_CANDIDATE_RUN",
