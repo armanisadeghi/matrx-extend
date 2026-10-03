@@ -430,20 +430,22 @@ export async function runNativeSidepanelQa({
       cdp = await connectOwnedCdp({ preparedProfile, chromeExecutable });
       if (launchError) throw launchError;
     } catch (error) {
-      throw new Error(
-        `${error.message}:browser_startup:${JSON.stringify({
-          executable: chromeExecutable,
-          exitCode: child.exitCode,
-          signalCode: child.signalCode,
-          launchError: launchError?.message ?? null,
-          stderr: chromeStderr
-            .join('')
-            .slice(-2000)
-            .replace(/https?:\/\/[^\s"'<>]+/gi, '[URL]')
-            .replace(/Bearer\s+\S+/gi, 'Bearer [REDACTED]')
-            .replace(/eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, '[JWT]'),
-        })}`,
-      );
+      const startupDiagnostic = {
+        exitCode: child.exitCode,
+        signalCode: child.signalCode,
+        executable: chromeExecutable,
+        launchError: launchError?.message ?? null,
+        stderr: chromeStderr
+          .join('')
+          .slice(-2000)
+          .replace(/https?:\/\/[^\s"'<>]+/gi, '[URL]')
+          .replace(/Bearer\s+\S+/gi, 'Bearer [REDACTED]')
+          .replace(/eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, '[JWT]'),
+      };
+      // Guest result summaries truncate errors; preserve bounded startup evidence
+      // in the runner log before forwarding the unchanged failure.
+      process.stderr.write(`BROWSER_STARTUP_FAILURE ${JSON.stringify(startupDiagnostic)}\n`);
+      throw error;
     }
     const endpoint = await ownedEndpoint(profile);
     const commandLine = await cdp.send('Browser.getBrowserCommandLine');
