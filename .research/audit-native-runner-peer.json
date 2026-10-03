@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "role": "fresh zero-authorship source reviewer",
+  "defect": "EXT-D-0093",
+  "producer_commit": "23242714",
+  "hosted_entry": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml workflow_dispatch",
+    "acceptance_case": "audit-key-admin",
+    "development_run_id": 37129518563,
+    "development_artifact_id": 11275878549,
+    "wrapper": "scripts/hosted-guest-acceptance.mjs selects tests/browser/audit-key-native-acceptance.mjs and passes MATRX_AUDIT_EXTENSION_DIR, MATRX_AUDIT_RECEIPT, and MATRX_PREPARE_ADMIN_CREDENTIALS_FILE"
+  },
+  "verdict_a": {
+    "acceptance_readiness": "partial",
+    "native_runtime": "unverified",
+    "case_assessment": {
+      "T27": "partial: public ID is checked during recovery, but generated time, receipt count, and recent rows are not asserted",
+      "T60": "source-ready: visible clipboard failure, retry, successful write count, and public-JWK-only copied content are asserted; native execution pending",
+      "T86": "source-ready: first-load read fault is injected before React mounts and retry checks unchanged persisted active/history; native execution pending",
+      "T87": "partial: pre-mutation failure and separate confirmed rotation are asserted, but prior signed receipt verification is not",
+      "T88": "source-ready: success with refresh failure and details-only retry preserve active ID; native execution pending",
+      "T89": "partial: persisted-then-rejected active write plus rejected readback leads to unknown state and details-only recovery, but prior signed receipt verification is not asserted; native execution pending",
+      "T90": "partial by design: native Web Lock queue, two held writes, and both activated public IDs in history are checked, while signed receipts, reload verification, and tamper rejection are absent; runner exits 2 rather than claim a full pass",
+      "T91": "source-ready: separate unavailable-lock load, export, rotation attempts check disabled controls and unchanged storage, then details-only recovery; native execution pending"
+    },
+    "blockers": [
+      {
+        "id": "receipt-verification",
+        "severity": "important",
+        "evidence": "docs/stabilization/inventory.json T87/T89/T90 require genuine old receipts to verify after rotation and T90 requires altered receipts to fail after both contexts reload. tests/browser/audit-key-native-acceptance.mjs T87/T89 check history membership; T90 explicitly records status partial/missing and exits 2.",
+        "required_result": "Create product-signed sample receipts at each activated key, reload both extension documents, verify every genuine receipt and reject altered receipts using the actual product verifier."
+      }
+    ]
+  },
+  "verdict_b": {
+    "quality": "pass_with_concerns",
+    "evidence": [
+      "Fault helper replaces only Chrome storage/clipboard boundaries in the disposable document; Web Locks, WebCrypto, product code, and persisted storage stay native.",
+      "Native harness creates and validates an owned temporary profile and binds artifact tree hash, run ID, artifact ID, source SHA, extension identity, and admin Settings identity before key operations.",
+      "Hosted wrapper writes admin credentials to a private 0600 file, removes them from the child environment, and unlinks that file in finally after execution.",
+      "Four fault-helper guards failed under a no-op gut mutation; source checks and green evidence are recorded by the producer. These do not substitute for native acceptance.",
+      "Result JSON contains public IDs, counts, booleans, and bounded failure codes; clipboard JWK content is compared inside the isolated document and does not cross into result JSON."
+    ],
+    "concerns": [
+      "A successful bounded native run necessarily exits 2 while T87/T89/T90 receipt proof is partial, so the hosted workflow cannot represent complete D93 acceptance yet.",
+      "No independent native execution has occurred. Source-ready labels assess assertion design only."
+    ]
+  },
+  "review_limits": "Read-only source review of producer commit 23242714; no browser, workflow dispatch, build, or heavy test was run by this reviewer. Producer's resource-valid green fault journal and no-op gut journal were checked."
+}
