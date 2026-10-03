@@ -6,7 +6,7 @@ import { readFile, stat, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
+import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
 const EXTENSION_DIR = process.env.MATRX_PREPARE_EXTENSION_DIR;
@@ -84,8 +84,60 @@ async function signIn(page, panel) {
     report.signin_observations.web_dashboard_reached = true;
     stage('admin_extension_settings');
     await click(panel, 'title', 'Settings');
+    stage('admin_extension_ready');
+    await openSection(panel, 'Account');
+    report.signin_observations.extension_guest_ready = await waitFor(
+      'prepare_extension_signin_ready',
+      () =>
+        evaluate(
+          panel,
+          `(() => {
+      const buttons = [...document.querySelectorAll('button')]
+        .filter((button) => button.textContent.trim() === 'Sign in');
+      return { signin_count: buttons.length, signin_enabled: buttons.length === 1 && !buttons[0].disabled };
+    })()`,
+        ),
+      (value) => value?.signin_count === 1 && value.signin_enabled,
+    );
     stage('admin_extension_click');
-    await click(panel, 'button', 'Sign in');
+    try {
+      await click(panel, 'button', 'Sign in');
+    } catch (error) {
+      const failure = error?.driverFailure;
+      const knownCodes = new Set([
+        'pointer_initial_evaluation_failed',
+        'pointer_page_sample_failed',
+        'pointer_target_not_unique',
+        'pointer_followup_evaluation_failed',
+        'pointer_stable_hit_not_observed',
+        'pointer_press_dispatch_failed',
+        'pointer_release_dispatch_failed',
+      ]);
+      report.signin_observations.extension_click_failure = {
+        code: knownCodes.has(failure?.code) ? failure.code : 'other',
+        matched_target_count: Number.isInteger(failure?.matchedTargetCount)
+          ? failure.matchedTargetCount
+          : null,
+        visible_match_count: Number.isInteger(failure?.visibleMatchCount)
+          ? failure.visibleMatchCount
+          : null,
+        hit_target: failure?.hitTarget === true,
+        target_disabled: failure?.targetDisabled === true,
+        center_hit_category: [
+          'none',
+          'target',
+          'dialog',
+          'listbox',
+          'modal_overlay',
+          'target_ancestor',
+          'header_or_tabs',
+          'other_element',
+        ].includes(failure?.centerHitCategory)
+          ? failure.centerHitCategory
+          : 'unknown',
+      };
+      throw error;
+    }
     stage('admin_extension_wait');
     await waitFor(
       'prepare_admin_ready',
