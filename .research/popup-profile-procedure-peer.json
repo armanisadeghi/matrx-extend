@@ -1,0 +1,45 @@
+{
+  "reviewed_commit": "443eceab",
+  "artifact": ".research/popup-profile-procedures.json",
+  "scope": ["EXT-F-1002", "EXT-F-1004", "docs/stabilization/inventory.json", "current source"],
+  "verdict_a_requirements_readiness": "PARTIAL",
+  "verdict_a_findings": [
+    "All 46 inventory case IDs, controls and modes are represented. Popup versus Store reachability and guest/member/admin visibility are generally handled correctly; options heading and profile field behavior match current source.",
+    "Every inventory warm/reload case still has one undifferentiated procedure run. Shared setup says reload before first run and repeat after a second reload, but no per-case instruction requires separate warm and post-reload executions, evidence IDs, or observed outcomes. This loses the inventory dimensions for T01-T18, T23-T26; profile edits use reopen as a proxy without explicitly executing extension reload.",
+    "T10-T12 combine grant, denial, and no-device outcomes but do not independently run warm and reload for each branch. Split evidence by mode × dimension × branch; absent device/fault conditions must stay unverified, not pass.",
+    "T19-T20 and T25-T27 require controlled fault injection but give no runnable setup or fixture/harness reference. They cannot be executed from UI alone; retain inventory coverage and mark these branches blocked/unverified until a named controlled harness is available.",
+    "T28 would change device organization and persist profile data. Though it says disposable profiles, it gives no provisioned disposable principal/row instructions. Do not run on a real profile or live org; require dedicated disposable accounts and cleanup evidence first.",
+    "T13-T15 options cases promise only page heading/shared SettingsView; the inventory names only Options page entry point, so this is a reasonable observable floor, but the precondition's generic toolbar-popup instruction is inapplicable to these cases and mic-grant cases. Make entrypoint setup conditional per case."
+  ],
+  "verdict_b_quality_doctrine": "PARTIAL",
+  "verdict_b_findings": [
+    "Safety is sound for ordinary profile edits: synthetic values, capture originals, restore after saves; T28 remains unsafe without dedicated fixtures. No invented profile control or role mutation found.",
+    "T05-T06 correctly state context identity and ambiguous/missing context are not observable from UI; T19-T20 acknowledge harness need. Keep those assertions out of UI-pass claims until a harness exposes them.",
+    "T25 says use visible retry if present, then reopen; current ProfileView has no retry control and hook refresh is internal. The fallback reopen is source-consistent, but failure injection remains unspecified.",
+    "T01-T04 preserve guest visibility and signed-in actions; T07-T09 preserve sign-in visibility; T16-T18 preserve the Store direct-sidepanel action. No unsupported UI controls detected."
+  ],
+  "source_anchors_checked": [
+    "src/entrypoints/popup/main.tsx:16-134",
+    "src/entrypoints/options/main.tsx:1-31",
+    "src/entrypoints/mic-grant/index.ts:64-114",
+    "src/features/chat/ChatView.tsx:1360-1445",
+    "src/features/profile/ProfileView.tsx:48-230",
+    "src/hooks/use-user-profile.ts:42-108",
+    "wxt.config.ts:10-33,159-170",
+    "docs/stabilization/inventory.json: EXT-F-1002 and EXT-F-1004"
+  ],
+  "safe_to_integrate": [
+    "T01-T09",
+    "T13-T18",
+    "T01-T23 profile edits/visibility",
+    "T24",
+    "T27 with disposable fixture"
+  ],
+  "integrate_after_correction": [
+    "all warm/reload cases: explicit independent executions and outcomes",
+    "T10-T12: branch-by-dimension evidence",
+    "T19-T20,T25-T26: documented controlled harness/fault mechanism",
+    "T28: named disposable-account provisioning and cleanup"
+  ],
+  "execution_claim": "Source/procedure review only; no browser, build, or test run and no UI pass claims."
+}
