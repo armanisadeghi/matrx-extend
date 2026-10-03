@@ -69,7 +69,7 @@
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [
-        "M ests/browser/native-sidepanel-qa-harness.mjs",
+        "M tests/browser/native-sidepanel-qa-harness.mjs",
         "M tests/browser/native-sidepanel-qa-harness.test.mjs",
         "M tests/browser/vault-owned-cdp.cjs",
         "M tests/browser/vault-owned-cdp.test.cjs"
