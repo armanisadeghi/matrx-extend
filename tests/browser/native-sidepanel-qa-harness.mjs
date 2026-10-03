@@ -72,8 +72,12 @@ function resolveExpectedRelease({ receipt, extensionDir, expectedRelease, localD
     });
   }
   if (receipt?.kind === 'published_store_crx_unpacked') {
-    if (!extensionDir || !expectedRelease || expectedRelease.treeSha256 !== receipt.treeSha256 ||
-        expectedRelease.version !== receipt.version)
+    if (
+      !extensionDir ||
+      !expectedRelease ||
+      expectedRelease.treeSha256 !== receipt.treeSha256 ||
+      expectedRelease.version !== receipt.version
+    )
       throw new Error('native_sidepanel_store_crx_provenance_refused');
     return Object.freeze({
       kind: receipt.kind,
@@ -118,15 +122,18 @@ async function verifyReleasedArtifact(expected) {
     throw new Error('native_sidepanel_release_tree_refused');
   if (expected.kind === 'local_dev_unpacked') return;
   if (expected.kind === 'published_store_crx_unpacked') {
-    if (!/^[a-f0-9]{64}$/.test(expected.crxSha256 ?? '') ||
-        expected.extensionId !== 'hnfolienncfklkgmdjjmhhegglimlamg')
+    if (
+      !/^[a-f0-9]{64}$/.test(expected.crxSha256 ?? '') ||
+      expected.extensionId !== 'hnfolienncfklkgmdjjmhhegglimlamg'
+    )
       throw new Error('native_sidepanel_store_crx_receipt_refused');
     const crx = await readFile(expected.crxPath);
     if (sha256(crx) !== expected.crxSha256)
       throw new Error('native_sidepanel_store_crx_hash_refused');
     const key = Buffer.from(manifest.key ?? '', 'base64');
     const actualId = [...sha256(key).slice(0, 32)]
-      .map((digit) => String.fromCharCode(97 + Number.parseInt(digit, 16))).join('');
+      .map((digit) => String.fromCharCode(97 + Number.parseInt(digit, 16)))
+      .join('');
     if (actualId !== expected.extensionId)
       throw new Error('native_sidepanel_store_crx_identity_refused');
     return;
