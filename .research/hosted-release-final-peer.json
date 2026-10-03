@@ -1,0 +1,44 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Independent source-only review of hosted-release repair 45cc5f06c8df53191a1468f5dbebfe0f603f31ec; no local install, build, test, browser, or hosted rerun",
+  "reviewedHead": "45cc5f06c8df53191a1468f5dbebfe0f603f31ec",
+  "verdictA": {
+    "status": "PARTIAL",
+    "reason": "The release source preserves the strict checks and validates a candidate before atomic main/tag publication. A successful hosted candidate and native exact-package guest/member acceptance remain unobserved."
+  },
+  "verdictB": {
+    "status": "PASS_WITH_CONCERNS",
+    "reason": "Both prior Important source findings are addressed. The dependency guard fails closed before every generation/check/build attempt when the merged candidate changes tracked pnpm inputs. A failed mandatory check writes a restricted diagnostic file, and the workflow uploads it independently of the success-only validated ZIP/receipt artifact. Runtime confirmation and a dependency-changing race regression are still needed."
+  },
+  "priorFindings": [
+    {
+      "id": "HR-1",
+      "status": "ADDRESSED",
+      "evidence": "release.sh writes gate, exit code and candidate on strict-check failure; PIN, STALE and DUPLICATE package failures also yield parsed package/version fields. release.yml uploads diagnostics.txt on failure with a run-unique artifact name while validated artifacts remain default success-only. The parsed line patterns match the package gate source."
+    },
+    {
+      "id": "HR-2",
+      "status": "ADDRESSED_SOURCE_ONLY",
+      "evidence": "Each release loop assembles BASE_TREE and immediately compares package.json, pnpm-lock.yaml, pnpm-workspace.yaml, .npmrc, .pnpmfile.cjs and patches with LOCAL_HEAD, the checkout installed and refreshed by the hosted workflow. A difference exits before snapshots, regeneration, checks, build or push, including on a push-race retry. Current tracked dependency inputs are package.json, pnpm-lock.yaml and .npmrc."
+    }
+  ],
+  "newFindings": [
+    {
+      "severity": "Minor",
+      "title": "Ahead-of-registry package failures lose the package detail in the sanitized artifact",
+      "evidence": "scripts/check-matrx-packages.mjs emits AHEAD: lines for installed versions newer than npm latest. release.sh's diagnostic parser accepts only PIN, STALE and DUPLICATE, leaving just gate/exit/candidate in diagnostics.txt for this case.",
+      "action": "Add AHEAD to the allowlisted parser and prove the expected sanitized output. This is not a release-safety bypass."
+    },
+    {
+      "severity": "Verification gap",
+      "title": "Dependency-changing remote race has no forcing regression",
+      "evidence": "scripts/test-release-ship-path.sh exercises remote text-file races with stubbed pnpm, but does not change a dependency input and assert fail-closed behavior. No hosted rerun of 45cc5f06 was available in this lane.",
+      "action": "Exercise a dependency-input change on remote main and verify no candidate ZIP, tag or main publication follows; inspect the hosted failure artifact."
+    }
+  ],
+  "limits": [
+    "Read release.sh, release.yml, package gate, existing fixture and tracked input inventory; bash syntax check passed. No runtime release evidence was created.",
+    "The current shared checkout contains unrelated in-progress edits; this report alone was staged and committed.",
+    "No claim of hosted green release, native guest/member acceptance, signout privacy, Chrome Web Store submission or deployment."
+  ]
+}
