@@ -38,6 +38,44 @@ export async function installFault(panel, mode) {
   assert.equal(installed, true, 'prepare_fault_boundary_unavailable');
 }
 
+// Snapshot's runInPage function reads document.title and collects OG metadata.
+// Hold only its real executeScript response; detection and other modes stay native.
+export async function installSnapshotFault(panel, mode) {
+  const installed = await evaluate(
+    panel,
+    `(() => {
+    if (window.__prepareFault) return false;
+    const original = chrome.scripting.executeScript;
+    const native = original.bind(chrome.scripting);
+    const fault = { calls: 0, held: false, settled: false, release: null };
+    const wrapper = (details) => {
+      const source = String(details?.func ?? '');
+      if (!details?.target?.documentIds || !source.includes('document.title') ||
+          !source.includes('og:') || !source.includes('json_ld')) return native(details);
+      fault.calls++;
+      if (fault.calls !== 1) return native(details);
+      return native(details).then((result) => new Promise((resolve, reject) => {
+        fault.held = true;
+        fault.release = () => {
+          fault.held = false;
+          if (${JSON.stringify(mode)} === 'hold_reject') reject(new Error('Controlled Snapshot rejection'));
+          else resolve(result);
+        };
+      })).finally(() => { fault.settled = true; });
+    };
+    chrome.scripting.executeScript = wrapper;
+    if (chrome.scripting.executeScript !== wrapper) return false;
+    window.__prepareFault = {
+      state: () => ({ calls: fault.calls, held: fault.held, settled: fault.settled }),
+      release: () => fault.release?.(),
+      restore: () => { chrome.scripting.executeScript = original; },
+    };
+    return true;
+  })()`,
+  );
+  assert.equal(installed, true, 'snapshot_fault_boundary_unavailable');
+}
+
 export async function faultState(panel) {
   return evaluate(panel, '(() => window.__prepareFault?.state() ?? null)()');
 }

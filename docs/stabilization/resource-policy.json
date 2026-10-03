@@ -128,6 +128,7 @@
     ["bash", "release.sh", "--message", "EXT-D-0009 browser acceptance and synchronized fixes"],
     ["node", "tests/browser/settings-local-controls-acceptance.mjs"],
     ["node", "tests/browser/settings-desktop-native-acceptance.mjs"],
+    ["node", "tests/browser/snapshot-document-native-acceptance.mjs"],
     ["bash", "release.sh", "--message", "EXT-D-0012 clear stale port validation"],
     ["node", "tests/browser/isolated-admin-signin-acceptance.mjs"],
     ["bash", "release.sh", "--message", "EXT-D-0014 synchronized stabilization and remote fixes"],
