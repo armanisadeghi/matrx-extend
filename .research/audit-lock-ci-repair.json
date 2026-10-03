@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "source repaired; full CI pending",
+  "status": "CI fixture regression resolved; full CI green",
   "self_introduced_by": "43d28aa0: incomplete Web Locks fixture installed globally",
   "failed_ci": {
     "run": 37127065220,
@@ -20,7 +20,16 @@
     "final_scoped_green": "audit-lock-fixture-scoped-green-20261003: same 53/53 after explicit fixture scoping. Includes all 16 original capture cases.",
     "gut": "audit-lock-fixture-gut-20261003: replacing request with constant capture-persisted result fails 4/4 guards; plant.py reports byte-identical restoration.",
     "compile": "audit-lock-fixture-compile-20261003: pnpm exec tsc --noEmit exit0, resource-valid.",
-    "full_ci": "Pending automatic push-triggered checks; not closed."
+    "full_ci": {
+      "run": 37128201197,
+      "head": "8ea64d6e4b7d6ad312d5e106c8cb7ea38983eecd",
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37128201197",
+      "conclusion": "success",
+      "unit_tests": "1946 passed, 6 existing skipped; 278 files passed, 2 existing skipped",
+      "other_checks": "lint, TypeScript, resource guard integration, keyed development test build and artifact upload passed",
+      "code_commit": "03b80268b24de9904b99e90465affe838956e51e",
+      "intermediate_run": "37128064460 passed TypeScript but stopped before unit tests on unrelated peer-report JSON formatting; root whitespace-only fix 8ea64d6e allowed full CI to execute."
+    }
   },
   "journals": [
     "docs/stabilization/resource-journals/audit-lock-fixture-red-20261003.jsonl",
