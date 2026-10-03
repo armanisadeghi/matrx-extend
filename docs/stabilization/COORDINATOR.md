@@ -1,6 +1,14 @@
 # Matrx Extend stabilization: resume here
 
-## Active continuation — Profile bounded retest and contained-surface coverage
+## Active incident — reported immediate guest Chat failure
+
+The user reports that the live Store application fails immediately in guest Chat. This is the highest-priority incident; Profile execution is paused. Do not infer resolution from prior D88 closure or a passing smoke test. The exact reported terminal error remains unreproduced as of 20:48 UTC October 3. Root tested actual Chrome Web Store-installed 0.2.176, primary item, with the existing signed-out profile: ordinary greeting and public-page analysis produced terminal answers. Store-page analysis showed failed restricted-page reads before a successful Web-backed answer. Evidence: `.research/urgent-installed-guest-20261003.json` and its resource-valid journal. The extension was initially off and restored off; enabling it may have reset worker lifetime, so the pre-toggle state was not tested. Backend changed from b3a87d8b to 0d2c8772 during investigation. No full-health or incident-closure claim.
+
+The guest test also reproduced a separate owner-only Context Rules read permission failure. `urgent_live_guest` owns its repair and guarded verification; independent `profile_member_runner_peer` owns review with zero authorship. Exact reported error/trigger requested asynchronously; continue investigation without waiting. Published/draft Store version remains 0.2.176 in the authenticated dashboard observed during this incident; no 0.2.177 submission is established.
+
+Profile member/reload runner commits fc15a60e and 1aa16b6c are pushed but NOT executed. Source peer report `.research/profile-member-runner-peer.json` blocks launch on a private identity field in evidence and failure to restore an originally absent owner row. Imported dependency-refreshed product artifact: source2efd0e61 / CI37151712068 / artifact11283649857 / treeab10b6a8227b4288749ada2815ac4acf6eefccfcefe2cbf766235490d1d223a5. This import is not native acceptance. Resolve the runner blockers before resuming.
+
+## Previous verified continuation — Profile bounded retest and contained-surface coverage
 
 Current verified native development artifact for Profile: main CI `37150495327`, artifact `11283802431`, source `ac49ac2f8fb9f9c3d538aef81149a1c4a6eb2418`, imported tree `9cc1d6a77f7f2f0314a9ecee8dae6b73bc2bc6bb472e94d05e6b0aea43f75fdf`. Independent source/native evidence: `.research/profile-independent-acceptance.json`; sanitized native receipt `.research/profile-independent-native-receipt.sanitized.json` SHA-256 `5296aba7…`; resource journal `docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl`. Root independently verified the raw receipt/journal hashes, exact artifact/tree and all four observations/restoration at `2026-10-03T20:16:36Z`. A later remote dependency refresh merged as `15ef1627` (`c7966097` preserves it); it is not covered by the `ac49ac2f` native run. Next verify refreshed-main CI/import and the relevant retest before any release.
 
