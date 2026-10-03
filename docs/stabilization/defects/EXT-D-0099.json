@@ -1,0 +1,46 @@
+{
+  "id": "EXT-D-0099",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T02"],
+  "surface": "Development installation / isolated native acceptance harness",
+  "auth_mode": "guest reproduced; shared harness supports member/admin",
+  "title": "Chrome disables unpacked extension on reload when isolated profile Developer mode is off",
+  "reproduction": [
+    "Use the exact imported development0.2.184 artifact source9dfb5911, CI37159097093, artifact11286822448 and the read-only probe command/environment in .research/reload-lifecycle-repair.json. Create the external0700 profile and run through the resource guard.",
+    "Open the actual guest side panel in the new isolated profile, then use Chrome extension-management Reload without enabling Developer mode.",
+    "Observe old worker/panel disappear, Chrome developerPrivate state DISABLED with unsupportedDeveloperExtension=true, and the open-panel response: Could not establish connection. Receiving end does not exist."
+  ],
+  "expected": "Owned development profile explicitly enables Developer mode through Chrome UI; full Reload keeps extension enabled and strictly proves old-target retirement plus replacement worker/panel and SIDE_PANEL runtime.",
+  "actual": "Fresh Chrome profile allowed initial command-line load but disabled the unpacked extension on management Reload. The harness reported worker-retirement failure without capturing Chrome disable reason.",
+  "severity": "S2: blocks reliable extension reload acceptance; isolated test-environment defect, not demonstrated Store product failure.",
+  "priority": "P1: blocks remaining Profile reload acceptance.",
+  "state": "in-fix",
+  "owner": "reload_lifecycle_escalation",
+  "evidence": [
+    ".research/reload-lifecycle-repair.json",
+    ".research/reload-lifecycle-escalation.json (worker final report pending)",
+    "docs/stabilization/resource-journals/reload-escalation-01.jsonl",
+    "docs/stabilization/resource-journals/reload-escalation-02.jsonl"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-03T23:53:50.847870+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Guarded guest reload reproduces disabled unpacked extension."
+    },
+    {
+      "at": "2026-10-03T23:53:50.847870+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Root directly inspected raw Chrome state and reply evidence; unsupportedDeveloperExtension is the sole disable reason."
+    },
+    {
+      "at": "2026-10-03T23:53:50.847870+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Developer-mode UI setup restores original strict reload oracle in builder run02; final source/independent acceptance pending."
+    }
+  ],
+  "closure_requirement": "Fresh independent source and guarded native verification of final setup, preserved strict target lifecycle and runtime predicates, and proven guard rejecting omitted developer-mode setup. No product feature blanket pass."
+}
