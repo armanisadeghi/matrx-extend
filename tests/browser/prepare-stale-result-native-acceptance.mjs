@@ -231,6 +231,19 @@ async function prepareState(panel) {
   );
 }
 
+async function observedDocument(panel, expectedUrl) {
+  return evaluate(
+    panel,
+    `(async () => {
+      const matching = (await chrome.tabs.query({})).filter((tab) => tab.url === ${JSON.stringify(expectedUrl)});
+      if (matching.length !== 1) return null;
+      const frame = await chrome.webNavigation.getFrame({ tabId: matching[0].id, frameId: 0 });
+      return frame?.url === ${JSON.stringify(expectedUrl)} && frame.documentId
+        ? { url: frame.url, documentId: frame.documentId } : null;
+    })()`,
+  );
+}
+
 try {
   assert.ok(EXTENSION_DIR && RECEIPT && CREDENTIALS, 'prepare_inputs_required');
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
@@ -310,12 +323,23 @@ try {
       assert.equal(retry.success, false, 'prepare_old_success_visible_after_failure');
       report.cases.push({ case: 'failed_retry_after_success', status: 'pass' });
 
-      for (const mode of ['hold_success', 'hold_reject']) {
-        stage(mode);
+      const runLateResultCase = async (mode, crossUrl) => {
+        const label = crossUrl ? `cross_url_${mode}` : mode;
+        if (crossUrl) {
+          stage(`${label}_source_navigation`);
+          await page.goto(DEMO, { waitUntil: 'domcontentloaded' });
+          await page.locator('main article').waitFor({ state: 'visible' });
+          await waitFor(
+            `${label}_source_ready`,
+            () => prepareState(panel),
+            (value) => value?.ready && value.buttonReady && !value.preparing,
+          );
+        }
+        stage(label);
         await installFault(panel, mode);
         await click(panel, 'button-text', 'Prepare page');
         await waitFor(
-          `prepare_${mode}_held`,
+          `prepare_${label}_held`,
           () => faultState(panel),
           (value) => value?.calls === 1 && value.held,
           30_000,
@@ -323,17 +347,44 @@ try {
         assert.equal(
           (await prepareState(panel)).preparing,
           true,
-          'prepare_not_pending_before_reload',
+          'prepare_not_pending_before_navigation',
         );
-        const before = await page.evaluate(() => performance.timeOrigin);
-        await page.reload({ waitUntil: 'domcontentloaded' });
+        let navigationEvidence;
+        if (crossUrl) {
+          const sourceUrl = page.url();
+          const source = await waitFor(
+            `${label}_source_document`,
+            () => observedDocument(panel, sourceUrl),
+            (value) => Boolean(value?.documentId),
+          );
+          const destinationUrl = new URL(sourceUrl);
+          destinationUrl.searchParams.set('prepare-native-destination', mode);
+          assert.notEqual(destinationUrl.href, source.url, 'prepare_destination_url_unchanged');
+          await page.goto(destinationUrl.href, { waitUntil: 'domcontentloaded' });
+          assert.equal(page.url(), destinationUrl.href, 'prepare_destination_url_refused');
+          await page.locator('main article').waitFor({ state: 'visible' });
+          const destination = await waitFor(
+            `${label}_destination_document`,
+            () => observedDocument(panel, destinationUrl.href),
+            (value) => Boolean(value?.documentId && value.documentId !== source.documentId),
+          );
+          navigationEvidence = {
+            source_url: source.url,
+            destination_url: destination.url,
+            url_changed: true,
+            document_id_changed: true,
+          };
+        } else {
+          const before = await page.evaluate(() => performance.timeOrigin);
+          await page.reload({ waitUntil: 'domcontentloaded' });
+          await waitFor(
+            `prepare_${label}_new_document`,
+            () => page.evaluate(() => performance.timeOrigin),
+            (value) => value !== before,
+          );
+        }
         await waitFor(
-          `prepare_${mode}_new_document`,
-          () => page.evaluate(() => performance.timeOrigin),
-          (value) => value !== before,
-        );
-        await waitFor(
-          `prepare_${mode}_cleared`,
+          `prepare_${label}_cleared`,
           () => prepareState(panel),
           (value) =>
             value?.ready &&
@@ -350,7 +401,7 @@ try {
           },
         );
         const after = await waitFor(
-          `prepare_${mode}_late_ignored`,
+          `prepare_${label}_late_ignored`,
           () => prepareState(panel),
           (value) =>
             value?.ready &&
@@ -361,10 +412,12 @@ try {
         );
         assert.equal(after.success, false);
         report.cases.push({
-          case: `old_document_late_${mode === 'hold_success' ? 'success' : 'rejection'}`,
+          case: `${crossUrl ? 'cross_url_' : ''}old_document_late_${mode === 'hold_success' ? 'success' : 'rejection'}`,
           status: 'pass',
+          ...(navigationEvidence && { navigation: navigationEvidence }),
         });
-      }
+      };
+      for (const mode of ['hold_success', 'hold_reject']) await runLateResultCase(mode, false);
       stage('fresh_document_success');
       await click(panel, 'button-text', 'Prepare page');
       await waitFor(
@@ -374,6 +427,7 @@ try {
         30_000,
       );
       report.cases.push({ case: 'fresh_document_prepare', status: 'pass' });
+      for (const mode of ['hold_success', 'hold_reject']) await runLateResultCase(mode, true);
     },
   });
   report.status = 'pass_bounded';
