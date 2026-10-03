@@ -398,7 +398,7 @@ export interface CreateTaskInput {
  * choice, or the sole membership); with nothing set the create is HELD on the
  * picker and resumes with the person's choice. The old three-insert fallback
  * (for a DB without the RPC) is gone: it sent no organization at all, and the
- * RPC is live everywhere (common-docs/projects/no-db-assigned-org).
+ * RPC is live everywhere (common-docs/systems/architecture/database/projects/no-db-assigned-org/PLAN.md).
  */
 export async function createTask(input: CreateTaskInput): Promise<AgendaTask> {
   const organizationId = await requireActiveOrganizationId();

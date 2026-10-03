@@ -4,7 +4,7 @@
  * The agent asks for a login. It never learns the credential.
  *
  * Contract (cross-repo plan:
- * /Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/PLAN.md
+ * /Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/REGISTER.md
  * § "Agent-safe browser login" + Phase 4):
  *
  * Since the 2026-08-21 credential consolidation this is the ONE credential

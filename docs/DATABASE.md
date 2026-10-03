@@ -81,7 +81,7 @@ from the initiating request or an authoritatively loaded parent and is present
 before Supabase is called. A missing organization refuses client-side; a
 personal/system/active/default resolver and every database assignment trigger
 are defects. Emergency register:
-`/Users/armanisadeghi/code/common-docs/projects/no-db-assigned-org/PLAN.md`.
+`/Users/armanisadeghi/code/common-docs/systems/architecture/database/projects/no-db-assigned-org/PLAN.md`.
 
 ### Database migrations — the DB is the source of truth, NOT the files
 

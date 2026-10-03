@@ -1,6 +1,6 @@
 /**
  * Plaintext-leak test for `credential_login` (Phase 4 exit gate of
- * /Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/PLAN.md).
+ * /Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/REGISTER.md).
  *
  * The whole point of the tool is that the MODEL never sees the credential.
  * This suite proves it by running the real handler — real probe / fill /

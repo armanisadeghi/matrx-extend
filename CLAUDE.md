@@ -96,7 +96,7 @@ ask the server which org it "carried". A new sink attaches the header or refuses
 Only what the person set ON THIS DEVICE counts — a saved account-level default never builds a
 request and the organization created at signup is never a fallback; with nothing set the request
 HOLDS on `holdForActiveOrganizationId()`, the picker opens, and it resumes with their choice.
-Guard: `pnpm check:org-default-ban`. Register row EX-T05: `../common-docs/projects/no-db-assigned-org/PLAN.md`.
+Guard: `pnpm check:org-default-ban`. Register row EX-T05: `../common-docs/systems/architecture/database/projects/no-db-assigned-org/PLAN.md`.
 
 **Tool system.**
 - Canonical vocabulary (Tool / Registered / Inline / Executor / Binding / Surface /
@@ -131,7 +131,7 @@ Guard: `pnpm check:org-default-ban`. Register row EX-T05: `../common-docs/projec
 - Ownership columns differ per table (some `created_by`, some kept `user_id`, two have
   neither) — check [docs/DATABASE.md](./docs/DATABASE.md) before filtering; guessing
   corrupts data. Every org-scoped INSERT sends an explicit `organization_id`; database
-  assignment is forbidden. Emergency: `../common-docs/projects/no-db-assigned-org/PLAN.md`.
+  assignment is forbidden. Emergency: `../common-docs/systems/architecture/database/projects/no-db-assigned-org/PLAN.md`.
 - **Arman's preference (2026-09-18): change the database directly through the Supabase MCP** (project `brsgrqvjdzwihsvnfqkf`). The database is the source of truth, and type/model generation PULLS from it into the codebase. A migration FILE is fine only if you OWN it end to end: write it, apply it, regenerate, and confirm it broke nothing. If you will not own it end to end, use the MCP. **Never hand Arman a command to run — he does not use terminals.**
 - A `.sql` file in `migrations/` changes nothing until applied from aidream
   (`python db/apply_migrations.py --source matrx-extend`). Verify: `pnpm check:migrations`.
@@ -162,7 +162,7 @@ Both packages are exact public npm dependencies; committed package tarballs are 
 `common-docs/systems/architecture/content-ir/FEATURE.md`. Raw stream / markdown parsing
 ([src/lib/api/stream.ts](./src/lib/api/stream.ts),
 [src/components/markdown/block-parser.ts](./src/components/markdown/block-parser.ts)) is next to
-adopt the kernel — read `common-docs/projects/unified-content-pipeline/FEATURE.md` first. Stream-silence rule: any event that implies expected silence (like
+adopt the kernel — read `common-docs/systems/architecture/content-ir/projects/unified-content-pipeline/PLAN.md` first. Stream-silence rule: any event that implies expected silence (like
 `provider_retry` backoff) must `hold()` the stall watchdog
 ([src/lib/stream/provider-retry.ts](./src/lib/stream/provider-retry.ts)) or it reads
 as a hang and kills a healthy run.
@@ -186,10 +186,10 @@ as a hang and kills a healthy run.
 - `google_email_send`: the review card IS the authorization; never add a server
   binding or a consent-style argument. Repo detail:
   [/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md](/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md) § Reviewed Gmail send · cross-repo:
-  `/Users/armanisadeghi/code/common-docs/projects/google-oauth-verification/PRODUCTION-ROLLOUT.md`.
+  `/Users/armanisadeghi/code/common-docs/systems/integrations/google/FEATURE.md`.
 - `credential_login` + Vault: plaintext credentials never egress (grep-guarded tests);
   redaction contract in [src/lib/credentials/sensitive-fields.ts](./src/lib/credentials/sensitive-fields.ts).
-  Handoff: `/Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/HANDOFF.md`.
+  Handoff: `/Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/REGISTER.md`.
 - `capture_prospect`: posts to the platform's ONE prospect-import path; never a second
   create path, never a client-side normalizer. Contract:
   `/Users/armanisadeghi/code/common-docs/projects/outreach-system/INTEGRATION_MAP.md` (IC-10).
