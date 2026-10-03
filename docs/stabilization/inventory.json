@@ -11376,8 +11376,8 @@
           ],
           "procedure_readiness": "requires_fixture",
           "procedure_gaps": [
-            "Admin warm owner-row read denial and Retry passed on exact development artifact; post-extension-reload remains unverified.",
-            "Member and failed cross-identity runtime paths require existing authorized test identities and remain unverified.",
+            "Admin warm owner-row read denial and Retry passed on exact development artifact; reopening Profile after Retry remains unverified.",
+            "Member, failed cross-identity runtime paths, and extension-reload dimensions remain unverified.",
             "Other initial/post-save error branches remain unverified."
           ],
           "procedure_execution_matrix": [
@@ -11385,6 +11385,19 @@
               "mode": "member",
               "lifecycle_dimension": "warm",
               "branch": "profile-owner-row-read-failure",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "warm",
+              "branch": "retry-after-service-restored",
               "inventory_dimensions": [
                 "warm",
                 "reload"
@@ -11411,6 +11424,19 @@
               "mode": "member",
               "lifecycle_dimension": "reload",
               "branch": "profile-owner-row-read-failure",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "reload",
+              "branch": "retry-after-service-restored",
               "inventory_dimensions": [
                 "warm",
                 "reload"
@@ -11452,12 +11478,12 @@
             {
               "mode": "admin",
               "lifecycle_dimension": "warm",
-              "branch": "reopen-after-service-restored",
+              "branch": "retry-after-service-restored",
               "inventory_dimensions": [
                 "warm",
                 "reload"
               ],
-              "observed_outcome": "PASS: after interception was disabled, Retry performed a successful owner-row GET and the original Preferred value returned without error. Identity-transition behavior remains unverified.",
+              "observed_outcome": "PASS: after the denied owner-row GETs, interception was disabled and Retry performed a successful owner-row GET; the original Preferred value returned without error. Profile was not left and reopened after recovery.",
               "evidence_refs": [
                 ".research/profile-independent-acceptance.json",
                 "docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl"
@@ -11467,8 +11493,34 @@
             },
             {
               "mode": "admin",
+              "lifecycle_dimension": "warm",
+              "branch": "reopen-after-service-restored",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "admin",
               "lifecycle_dimension": "reload",
               "branch": "profile-owner-row-read-failure",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "requires_fixture"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "reload",
+              "branch": "retry-after-service-restored",
               "inventory_dimensions": [
                 "warm",
                 "reload"
@@ -11621,6 +11673,7 @@
                 "Disabled interception; Retry completed a successful owner-row GET and restored original Preferred without error."
               ],
               "remaining_criteria": [
+                "Profile was not left and reopened after Retry.",
                 "Member identity untested.",
                 "Real cross-identity failure while Profile remains mounted untested.",
                 "Full reload dimension and remaining T25 error branches untested."
