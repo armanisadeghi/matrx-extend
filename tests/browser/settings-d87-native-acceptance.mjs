@@ -120,7 +120,10 @@ async function observation(panel) {
     const retry = [...document.querySelectorAll('button')]
       .some((element) => element.textContent.trim() === 'Retry save');
     const theme = control?.textContent.trim() ?? null;
+    const settingsButton = document.querySelector('button[title="Settings"]');
+    const settingsRect = settingsButton?.getBoundingClientRect();
     return {
+      settingsAvailable: Boolean(settingsButton && !settingsButton.disabled && settingsRect.width > 0 && settingsRect.height > 0),
       settingsActive: !!document.querySelector('button[title="Settings"][data-state="active"]'),
       theme: ['System', 'Light', 'Dark'].includes(theme) ? theme : null,
       storedTheme: ['system', 'light', 'dark'].includes(storedTheme) ? storedTheme : null,
@@ -225,7 +228,7 @@ async function reload(page, panel, expectedTheme) {
     await waitFor(
       'd87_reloaded_identity',
       () => observation(panel),
-      (state) => state?.guest === (AUTH_MODE === 'guest'),
+      (state) => state?.settingsAvailable && state.guest === (AUTH_MODE === 'guest'),
     );
     const rendered = await openSettings(panel);
     if (AUTH_MODE !== 'guest') {
@@ -338,6 +341,7 @@ try {
   };
   stage = 'native_panel';
   const run = await runNativeSidepanelQa({
+    headed: true,
     onStage: (value) => {
       stage = `native_panel:${value}`;
     },
