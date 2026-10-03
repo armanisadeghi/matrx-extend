@@ -3106,6 +3106,14 @@
  "/groove/public/status": {
   "get": []
  },
+ "/group-chat/{anchor_type}/{anchor_id}": {
+  "get": []
+ },
+ "/group-chat/{anchor_type}/{anchor_id}/participants/{participant_id}/policy": {
+  "put": [
+   "application/json"
+  ]
+ },
  "/growth-loop/runs": {
   "post": [
    "application/json"
@@ -3697,6 +3705,11 @@
  },
  "/khoros/public/status": {
   "get": []
+ },
+ "/kind-outputs/save": {
+  "post": [
+   "application/json"
+  ]
  },
  "/kinsta/public/status": {
   "get": []
@@ -7800,8 +7813,19 @@
  "/v1/meet/webhooks/livekit": {
   "post": []
  },
+ "/v1/sql": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/v1/tables": {
-  "get": []
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/tables/{table}": {
+  "delete": []
  },
  "/v1/tables/{table}/aggregate": {
   "post": [
@@ -7809,7 +7833,16 @@
   ]
  },
  "/v1/tables/{table}/columns": {
+  "post": [
+   "application/json"
+  ],
   "get": []
+ },
+ "/v1/tables/{table}/columns/{column}": {
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
  },
  "/v1/tables/{table}/rows": {
   "get": [],

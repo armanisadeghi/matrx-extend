@@ -7,7 +7,7 @@
 > common-docs/systems/agents/agent-tools/STATE.md).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-10-03T15:29:19.665Z
+Generated: 2026-10-03T20:55:48.128Z
 Total tools: 82
 
 ## ai
@@ -695,6 +695,7 @@ Actions:
 - field_propose: add ONE field to an existing table
 - table_propose: a new table WITH all its fields in one call (a choice field takes `options`, a link takes `relation_target`: the other table's id)
 - import_propose: a spreadsheet, CSV or rows from the chat into a table
+- did rows fail to import / is this table complete: record_read with table_id (or table); the answer's import_note says what the last import refused and why, or is absent when nothing was
 - form_propose: a form anyone with the link can answer
 - capture_propose: the person's own crew logging on a phone, even offline
 - booking_propose: let people book a time

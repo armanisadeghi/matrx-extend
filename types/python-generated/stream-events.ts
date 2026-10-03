@@ -535,6 +535,17 @@ export interface ContextReceiptBlock {
   delivered: ContextDeliveredRef;
 }
 
+export interface ContextReceiptRoomView {
+  participant_id: string;
+  participant_key: string;
+  round: number;
+  policy_version: number;
+  included?: string[];
+  digested?: string[];
+  withheld?: ContextReceiptWithheldItem[];
+  error?: string | null;
+}
+
 export interface ContextReceiptRow {
   key: string;
   label: string;
@@ -555,6 +566,13 @@ export interface ContextReceiptRow {
   on_request?: ContextDeliveredRef | null;
 }
 
+export interface ContextReceiptWithheldItem {
+  message_id: string;
+  conversation_id: string;
+  speaker: string;
+  rule: string;
+}
+
 export interface ContextRule {
   include?: boolean | null;
   max_inline_chars?: number | null;
@@ -569,6 +587,7 @@ export interface ContextReceiptData {
   rows?: ContextReceiptRow[];
   rules_error?: string | null;
   blocks?: ContextReceiptBlock[];
+  room_view?: ContextReceiptRoomView | null;
 }
 
 export interface ConversationIdData {
@@ -4786,6 +4805,52 @@ export interface ContextInputPart {
   editable?: boolean | null;
 }
 
+export interface RemarkAnswer {
+  question: string;
+  answer: string | boolean | number | string[];
+  name?: string | null;
+  type: "noul" | "choice" | "score" | "text" | null;
+}
+
+export interface RemarkItem {
+  kind: "comment" | "choice" | "edit" | "answers" | "interaction";
+  target?: RemarkTarget | null;
+  quote?: string | null;
+  body?: string | null;
+  diff?: string | null;
+  answers?: RemarkAnswer[] | null;
+  title?: string | null;
+  comment_id?: string | null;
+  id?: string | null;
+  handle?: string | null;
+  thread?: RemarkThreadEntry[] | null;
+  metadata?: Record<string, unknown>;
+}
+
+export interface RemarkTarget {
+  message_id?: string | null;
+  record_token?: string | null;
+  record_id?: string | null;
+  record_title?: string | null;
+}
+
+export interface RemarkThreadEntry {
+  author_name: string;
+  author_kind: "person" | "agent";
+  body: string;
+  created_at?: string | null;
+}
+
+export interface RemarksInputPart {
+  metadata?: Record<string, unknown>;
+  type: "input_remarks";
+  items: RemarkItem[];
+  convert_to_text?: boolean;
+  optional_context?: boolean;
+  keep_fresh?: boolean;
+  editable?: boolean | null;
+}
+
 export interface DecisionQuestion {
   __kind?: string;
   name: string;
@@ -4874,6 +4939,7 @@ export type MessagePart =
   | ListInputPart
   | DataInputPart
   | ContextInputPart
+  | RemarksInputPart
   | DecisionQuestionsPart
   | DecisionAnswersPart
   | SpeechScriptPart;
@@ -7042,6 +7108,385 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
       "title": "ProjectInputPart",
       "type": "object"
     },
+    "RemarkAnswer": {
+      "additionalProperties": false,
+      "description": "One answered question. ``name``/``type`` reuse the decision_questions\nquestion vocabulary (snake_case output name; noul/choice/score) so a\nquestionnaire built from decision questions maps 1:1; ``text`` covers the\nfree-text questions a decision batch does not have.",
+      "properties": {
+        "question": {
+          "minLength": 1,
+          "title": "Question",
+          "type": "string"
+        },
+        "answer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            }
+          ],
+          "title": "Answer"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "type": {
+          "anyOf": [
+            {
+              "enum": [
+                "noul",
+                "choice",
+                "score",
+                "text"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Type"
+        }
+      },
+      "required": [
+        "question",
+        "answer"
+      ],
+      "title": "RemarkAnswer",
+      "type": "object"
+    },
+    "RemarkItem": {
+      "additionalProperties": false,
+      "description": "One staged remark. Structured on the wire and in storage; only the\nmodel-facing projection (``render_remark``) is text.",
+      "properties": {
+        "kind": {
+          "enum": [
+            "comment",
+            "choice",
+            "edit",
+            "answers",
+            "interaction"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "target": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RemarkTarget"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "quote": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Quote"
+        },
+        "body": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Body"
+        },
+        "diff": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Diff"
+        },
+        "answers": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/RemarkAnswer"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Answers"
+        },
+        "title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Title"
+        },
+        "comment_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Comment Id"
+        },
+        "id": {
+          "anyOf": [
+            {
+              "maxLength": 200,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Id"
+        },
+        "handle": {
+          "anyOf": [
+            {
+              "pattern": "^c[1-9][0-9]{0,5}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Handle"
+        },
+        "thread": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/RemarkThreadEntry"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Thread"
+        },
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "RemarkItem",
+      "type": "object"
+    },
+    "RemarkTarget": {
+      "additionalProperties": false,
+      "description": "What the remark is about. A chat reply (``message_id``) or any other\nplatform record (``record_token`` + ``record_id`` + ``record_title``).",
+      "properties": {
+        "message_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message Id"
+        },
+        "record_token": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Record Token"
+        },
+        "record_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Record Id"
+        },
+        "record_title": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Record Title"
+        }
+      },
+      "title": "RemarkTarget",
+      "type": "object"
+    },
+    "RemarkThreadEntry": {
+      "additionalProperties": false,
+      "description": "One message of an existing comment thread, snapshotted onto a remark\n(\"continue this thread in a new chat\"). Oldest first.",
+      "properties": {
+        "author_name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Author Name",
+          "type": "string"
+        },
+        "author_kind": {
+          "enum": [
+            "person",
+            "agent"
+          ],
+          "title": "Author Kind",
+          "type": "string"
+        },
+        "body": {
+          "minLength": 1,
+          "title": "Body",
+          "type": "string"
+        },
+        "created_at": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Created At"
+        }
+      },
+      "required": [
+        "author_name",
+        "author_kind",
+        "body"
+      ],
+      "title": "RemarkThreadEntry",
+      "type": "object"
+    },
+    "RemarksInputPart": {
+      "additionalProperties": false,
+      "properties": {
+        "metadata": {
+          "additionalProperties": true,
+          "title": "Metadata",
+          "type": "object"
+        },
+        "type": {
+          "const": "input_remarks",
+          "default": "input_remarks",
+          "title": "Type",
+          "type": "string"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/RemarkItem"
+          },
+          "minItems": 1,
+          "title": "Items",
+          "type": "array"
+        },
+        "convert_to_text": {
+          "default": true,
+          "title": "Convert To Text",
+          "type": "boolean"
+        },
+        "optional_context": {
+          "default": false,
+          "title": "Optional Context",
+          "type": "boolean"
+        },
+        "keep_fresh": {
+          "default": false,
+          "title": "Keep Fresh",
+          "type": "boolean"
+        },
+        "editable": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Editable"
+        }
+      },
+      "required": [
+        "items",
+        "type"
+      ],
+      "title": "RemarksInputPart",
+      "type": "object"
+    },
     "ResourceRefInput": {
       "anyOf": [
         {
@@ -8523,6 +8968,9 @@ const MESSAGE_PART_SCHEMA: MessagePartJsonSchema = {
     },
     {
       "$ref": "#/$defs/ContextInputPart"
+    },
+    {
+      "$ref": "#/$defs/RemarksInputPart"
     },
     {
       "$ref": "#/$defs/DecisionQuestionsPart"
