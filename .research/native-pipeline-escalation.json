@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "status": "NATIVE_EXECUTION_RESTORED_RETRY_RELEASE_BOUNDARY_UNVERIFIED",
+  "completed_at": "2026-10-03T11:44:41.938083+00:00",
+  "defects": ["EXT-D-0058", "EXT-D-0059"],
+  "attempts": 2,
+  "artifact": {
+    "run_id": 37107627454,
+    "artifact_id": 11268886169,
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660"
+  },
+  "confirmed": [
+    "Both guarded original acceptance runs opened native panel and completed real web and extension admin sign-in.",
+    "Both completed initial Prepare success and reached the first failed-retry case.",
+    "Second run proved fault held, pending Preparing state true, and previous success absent; failure was releaseFault before rejection observation.",
+    "Earlier generic native_panel failure did not reproduce; no causal fix claimed."
+  ],
+  "narrowed_boundary": {
+    "operation": "releaseFault",
+    "operations_inside": [
+      "Synchronous Runtime.evaluate releases controlled promise, restores original API, deletes fault handle.",
+      "Runtime.evaluate awaits double requestAnimationFrame with unchanged owned-CDP timeout."
+    ],
+    "hypothesis": "Native sidepanel animation frames pause, stranding frame-dependent settlement; shared settings-panel-driver already documents this observed failure class.",
+    "limitation": "The two releaseFault evaluate calls are not individually classified in retained -05 evidence. Exact failing inner call and CDP failure class remain unproven; no speculative fix or weakened settlement assertion applied.",
+    "next_discriminating_evidence": "Classify the two releaseFault operations separately and capture only fixed CDP failureClass plus fixed visible/hidden enum; if animation frame wait is confirmed, replace it with a semantic completion handshake that still proves late results settled before asserting absence."
+  },
+  "code_change": {
+    "commit": "23ed2dd6",
+    "behavior": "Static native boundary callback and exact retry-operation stages persist first failure location; no raw exception, URLs, credentials, gates, assertions, timeout or cleanup changes.",
+    "peer": "/root/native_launch_diagnostic_peer reviewed frozen commit; no blocker.",
+    "checks": [
+      "node tests/browser/native-sidepanel-qa-harness.test.mjs passed",
+      "pnpm compile passed",
+      "focused Biome and git diff --check passed"
+    ]
+  },
+  "runs": [
+    {
+      "run_id": "prepare-local-native-20261003-04",
+      "runner_commit": "eeea4611 + diagnostic working diff",
+      "runner_diff_sha256": "4e27c20db97915255d912701f703ba1cdaee66f736480c27ebcc3f1b75f107ab",
+      "resource_valid": true,
+      "exit_code": 1,
+      "stage": "failed_retry",
+      "native_stage": "exercise_panel",
+      "cases": [],
+      "signin_observations": {
+        "web_dashboard_reached": true,
+        "extension_after_account_open": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": false,
+          "admin_role": false,
+          "sign_in_count": 1,
+          "sign_in_enabled": true,
+          "sign_out_present": false,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        },
+        "extension_guest_ready": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": false,
+          "admin_role": false,
+          "sign_in_count": 1,
+          "sign_in_enabled": true,
+          "sign_out_present": false,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        },
+        "extension_last": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": true,
+          "admin_role": true,
+          "sign_in_count": 0,
+          "sign_in_enabled": false,
+          "sign_out_present": true,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        }
+      },
+      "evidence": [
+        {
+          "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-pipeline-boundary.log",
+          "sha256": "4140bde6ec3e0ecde3f87e222033b635a242cde738ddce64786f927a71f796de"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-pipeline-boundary-resource-journal.jsonl",
+          "sha256": "dc714dbc6d5d8b9b99534e60d4d544aa555abcb04521d7ffbca4ecf15196cab0"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/prepare-stale-result-native-740f520f-900b-488a-adfd-8263161e4c5c.json",
+          "sha256": "ad02ad04bd0786bf98cf6c5ab73ce4620761fbfdda194b9a82a476c59b4df6df"
+        }
+      ]
+    },
+    {
+      "run_id": "prepare-local-native-20261003-05",
+      "runner_commit": "23ed2dd6",
+      "runner_diff_sha256": null,
+      "resource_valid": true,
+      "exit_code": 1,
+      "stage": "failed_retry_release",
+      "native_stage": "exercise_panel",
+      "cases": [],
+      "signin_observations": {
+        "web_dashboard_reached": true,
+        "extension_after_account_open": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": false,
+          "admin_role": false,
+          "sign_in_count": 1,
+          "sign_in_enabled": true,
+          "sign_out_present": false,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        },
+        "extension_guest_ready": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": false,
+          "admin_role": false,
+          "sign_in_count": 1,
+          "sign_in_enabled": true,
+          "sign_out_present": false,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        },
+        "extension_last": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": true,
+          "admin_role": true,
+          "sign_in_count": 0,
+          "sign_in_enabled": false,
+          "sign_out_present": true,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        }
+      },
+      "evidence": [
+        {
+          "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-pipeline-retry-boundary.log",
+          "sha256": "86d363536c6a945e610474985b960b41d429f15e515808b3230678628040ebba"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-pipeline-retry-boundary-resource-journal.jsonl",
+          "sha256": "699223512c03e6f37597880d47bd142560d58d9fcbf9e2760d11becdf5d263b7"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/prepare-stale-result-native-074b7f0a-15c2-49d3-9fd0-47602556cd3f.json",
+          "sha256": "d812e6a91464d55f62c59371f38815fb4eededfcc45dd1cb46bfe4c450a27479"
+        }
+      ]
+    }
+  ],
+  "product_verdict": "NONE: zero completed cases. D58/59 remain open. Positive partial observations do not establish full acceptance.",
+  "credentials_file_removed": true,
+  "scope": "No app build, release, migration, signature, keychain or security changes. Two authorized bounded original runs; no further browser launch."
+}
