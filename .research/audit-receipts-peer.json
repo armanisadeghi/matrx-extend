@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0093",
+  "review_type": "fresh_source_only_peer",
+  "status": "source_accepted_pending_independent_native_execution",
+  "builder_commit": "5d8fb799",
+  "verdict_a": {
+    "status": "pass_for_source_and_builder_evidence",
+    "T87": "PASS: a completed WebMCP receipt is persisted under the old public ID before the rejected history write; the failed rotation leaves active key and history unchanged; a separately confirmed rotation preserves the original receipt, which the product verifier accepts after a new document loads, while rejecting an in-memory altered body.",
+    "T89": "PASS: a completed receipt is persisted before the post-write refusal; the uncertain UI state blocks mutation, details-only recovery and reload preserve the new key without another rotation, and the old receipt verifies while its altered copy fails.",
+    "T90": "PASS: a receipt is signed under the original key; the first active write is held while a WebMCP signer is queued before the second rotation starts; the completed queued receipt must bear the first activated ID before the second write is released; a third receipt bears the final ID. All three IDs differ in the committed native report, and original/tampered verdicts are checked in both reloaded extension documents.",
+    "artifact": "Runner checks CI source 991385d9816b31a568619522e4795c001b4d3a06, run 37129518563, artifact 11275878549, imported tree hash, and full tree hash before and after native use. Exact artifact sidepanel-XsPrsCk5.js exports Tg as D; ToolReceiptDialog imports D as wn and calls it.",
+    "evidence": ".research/audit-capability-finish-evidence/native-receipt.json is SHA256 5ce19ac9a250e9c8b3fc4a4e11125783f8ad0cc7c82ef22953d919a611b08c3b and reports overall pass with seven passing cases. This is builder execution evidence, not this reviewer's independent run.",
+    "limits": [
+      "WebMCP receipts cannot be opened through ToolReceiptDialog from the chat timeline. The runner invokes the same compiled product verifier export in each extension document; no receipt-dialog UI click is claimed.",
+      "T91 exercises missing Web Locks after the authenticated shell starts and the audit card is mounted. It does not cover a cold start without Web Locks.",
+      "A fresh native executor must independently reproduce the result before inventory status is flipped."
+    ]
+  },
+  "verdict_b": {
+    "status": "pass",
+    "quality": [
+      "The page call traverses the existing allowlisted localhost WebMCP content script and service-worker dispatcher to the real list_open_tabs handler, product signer, and persisted local receipt ring.",
+      "The verifier is resolved from the pinned artifact's already-loaded side-panel entry. The helper does not duplicate cryptography, inject a product test hook, or mock Web Locks.",
+      "The runner waits for a completed row with non-pending output hash, signature, expected public ID, and webmcp origin; it requires true product verification and a signature-mismatch rejection for a changed copy. Missing rows or verifier exports fail the run.",
+      "The queue count alone does not identify a pending lock owner, but the later first-key completed receipt while the second active write is held forces the intended signer-before-second-activation behavior."
+    ],
+    "critical_findings": [],
+    "important_findings": [],
+    "minor_findings": []
+  },
+  "review_limits": "No unit, native, browser, mutation, or other heavy tests were run in this source-only lane. No product files were changed."
+}
