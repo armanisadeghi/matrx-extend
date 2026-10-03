@@ -3098,17 +3098,19 @@
           ],
           "build_variant": "store",
           "preconditions": [
-            "Start with a fresh resource permit and build receipt for the Chrome Web Store artifact; install or update that exact Store build, then use chrome://extensions to confirm the loaded item is Matrx Extend with Store ID hnfolienncfklkgmdjjmhhegglimlamg and record its version. After an update, click Reload once, wait for the extension to finish reloading, close any already-open Matrx sidepanel, and confirm this guest profile is signed out. Keep an ordinary web tab active, then click the Matrx Extend toolbar action once."
+            "Use one unchanged loaded Store ID/version in the intended guest profile. Obtain a fresh resource permit and complete build receipt for each of the two executions below; give each execution its own run ID and preserve its permit, receipt, timestamp, window/tab identity, first panel state, toolbar/popup/panel observations, final identity/role evidence, and any auth alert or timeout. Confirm Store ID hnfolienncfklkgmdjjmhhegglimlamg and exact version in chrome://extensions before each execution. Do not count an install/update Reload as the post-reload execution.",
+            "Confirm the profile is signed out before the warm execution; do not sign in between executions.",
+            "Keep an ordinary web tab active in one browser window. Close the Matrx sidepanel before each toolbar click. Preserve all previously linked results and do not promote either dimension without its own live evidence."
           ],
           "steps": [
-            "Open chrome://extensions and verify the loaded Matrx Extend ID is hnfolienncfklkgmdjjmhhegglimlamg; record the exact Store version in the build receipt. A development ID or a popup-bearing unpacked artifact is not this case.",
-            "If the extension was just installed or updated, click its Reload control once, wait for reload completion, and close any existing Matrx sidepanel so this run begins from a fresh panel open.",
-            "Use the guest profile state specified in Preconditions. Leave a normal web tab active and note its window/tab identity.",
-            "Click the Matrx Extend toolbar action once; observe whether a popup document appears and whether the sidepanel opens in that same browser window.",
-            "Inspect the first rendered panel state and record its visible identity/role marker alongside the build receipt."
+            "Warm execution: without reloading the extension immediately before this click, close any existing Matrx sidepanel; with the ordinary web tab active, record the fresh permit/receipt/run ID, loaded Store ID/version and tab/window; click the toolbar action once. Record whether a popup appears and whether the sidepanel opens in that same window.",
+            "Within 30 seconds of each toolbar click, wait for the guest Chat banner with its Sign in action (GuestBanner is absent while auth status is unknown). Record the first rendered state and time to this signal. If an auth alert appears, preserve its exact visible text.",
+            "Post-extension-reload execution: close the sidepanel, click Reload for this exact extension in chrome://extensions, observe that Reload completes and the same Store ID/version remains loaded; return to the ordinary web tab. Obtain a new resource permit and complete build receipt and assign a distinct run ID. Click the toolbar action once; record popup absence/presence and sidepanel opening/window independently of the warm execution.",
+            "Within 30 seconds of each toolbar click, wait for the guest Chat banner with its Sign in action (GuestBanner is absent while auth status is unknown). Record the first rendered state and time to this signal. If an auth alert appears, preserve its exact visible text.",
+            "For each execution, record the final identity/role signal or the exact last visible state and elapsed time at the 30-second bound. A missing signal, auth alert, or timeout is evidence to classify, never a silent pass; link both distinct run IDs and receipts to their dimension results before changing case status."
           ],
           "expected": [
-            "Chrome opens the Matrx sidepanel directly for the active browser window; no popup document opens. The panel shows the guest Sign in entry. Record the loaded Store ID/version and resulting panel state; this procedure does not claim sign-in or authenticated access."
+            "In each of the two independently evidenced executions, the loaded Store action opens the Matrx sidepanel in the active browser window and opens no popup. Within the bounded auth readiness window, the panel shows the guest Sign in banner. Report the warm and post-extension-reload outcomes separately; this case covers only the toolbar entrypoint and visible identity shell."
           ],
           "dimensions": [
             "warm",
@@ -3126,17 +3128,19 @@
           ],
           "build_variant": "store",
           "preconditions": [
-            "Start with a fresh resource permit and build receipt for the Chrome Web Store artifact; install or update that exact Store build, then use chrome://extensions to confirm the loaded item is Matrx Extend with Store ID hnfolienncfklkgmdjjmhhegglimlamg and record its version. After an update, click Reload once, wait for the extension to finish reloading, close any already-open Matrx sidepanel, and sign in as an ordinary member (not an admin); record the member role and selected device organization without recording credentials. Keep an ordinary web tab active, then click the Matrx Extend toolbar action once."
+            "Use one unchanged loaded Store ID/version in the intended member profile. Obtain a fresh resource permit and complete build receipt for each of the two executions below; give each execution its own run ID and preserve its permit, receipt, timestamp, window/tab identity, first panel state, toolbar/popup/panel observations, final identity/role evidence, and any auth alert or timeout. Confirm Store ID hnfolienncfklkgmdjjmhhegglimlamg and exact version in chrome://extensions before each execution. Do not count an install/update Reload as the post-reload execution.",
+            "Sign in through the ordinary flow as a known non-admin member before the warm execution; record the account email and selected device organization without credentials. Keep that account signed in between executions.",
+            "Keep an ordinary web tab active in one browser window. Close the Matrx sidepanel before each toolbar click. Preserve all previously linked results and do not promote either dimension without its own live evidence."
           ],
           "steps": [
-            "Open chrome://extensions and verify the loaded Matrx Extend ID is hnfolienncfklkgmdjjmhhegglimlamg; record the exact Store version in the build receipt. A development ID or a popup-bearing unpacked artifact is not this case.",
-            "If the extension was just installed or updated, click its Reload control once, wait for reload completion, and close any existing Matrx sidepanel so this run begins from a fresh panel open.",
-            "Use the member profile state specified in Preconditions. Leave a normal web tab active and note its window/tab identity.",
-            "Click the Matrx Extend toolbar action once; observe whether a popup document appears and whether the sidepanel opens in that same browser window.",
-            "Inspect the first rendered panel state and record its visible identity/role marker alongside the build receipt."
+            "Warm execution: without reloading the extension immediately before this click, close any existing Matrx sidepanel; with the ordinary web tab active, record the fresh permit/receipt/run ID, loaded Store ID/version and tab/window; click the toolbar action once. Record whether a popup appears and whether the sidepanel opens in that same window.",
+            "Within 30 seconds of each toolbar click, open the account menu and wait for the known member email plus Profile and Preferences, with no Pilot admin tab and no role-check/auth alert; with network capture attached before the click, observe the admin-schema admins role-check request finish successfully with an empty result for this account. Record only request outcome/timing, never tokens or response secrets. The member fixture must already be independently known to be non-admin; an absent Pilot tab alone is not role proof. Record the first rendered state and time to this signal.",
+            "Post-extension-reload execution: close the sidepanel, click Reload for this exact extension in chrome://extensions, observe that Reload completes and the same Store ID/version remains loaded; return to the ordinary web tab. Obtain a new resource permit and complete build receipt and assign a distinct run ID. Click the toolbar action once; record popup absence/presence and sidepanel opening/window independently of the warm execution.",
+            "Within 30 seconds of each toolbar click, open the account menu and wait for the known member email plus Profile and Preferences, with no Pilot admin tab and no role-check/auth alert; with network capture attached before the click, observe the admin-schema admins role-check request finish successfully with an empty result for this account. Record only request outcome/timing, never tokens or response secrets. The member fixture must already be independently known to be non-admin; an absent Pilot tab alone is not role proof. Record the first rendered state and time to this signal.",
+            "For each execution, record the final identity/role signal or the exact last visible state and elapsed time at the 30-second bound. A missing signal, auth alert, or timeout is evidence to classify, never a silent pass; link both distinct run IDs and receipts to their dimension results before changing case status."
           ],
           "expected": [
-            "Chrome opens the Matrx sidepanel directly for the active browser window; no popup document opens. The panel restores the signed-in ordinary-member identity and renders the member shell. Record the loaded Store ID/version and role. This case covers the toolbar entrypoint only, not member access to every panel feature."
+            "In each of the two independently evidenced executions, the loaded Store action opens the Matrx sidepanel in the active browser window and opens no popup. Within the bounded auth readiness window, the panel shows the known ordinary-member email and member shell after the admin role-check request completes successfully with no admin row. Report the warm and post-extension-reload outcomes separately; this case covers only the toolbar entrypoint and visible identity shell."
           ],
           "dimensions": [
             "warm",
@@ -3154,17 +3158,19 @@
           ],
           "build_variant": "store",
           "preconditions": [
-            "Start with a fresh resource permit and build receipt for the Chrome Web Store artifact; install or update that exact Store build, then use chrome://extensions to confirm the loaded item is Matrx Extend with Store ID hnfolienncfklkgmdjjmhhegglimlamg and record its version. After an update, click Reload once, wait for the extension to finish reloading, close any already-open Matrx sidepanel, and sign in as admin; record the admin role and selected device organization without recording credentials. Keep an ordinary web tab active, then click the Matrx Extend toolbar action once."
+            "Use one unchanged loaded Store ID/version in the intended admin profile. Obtain a fresh resource permit and complete build receipt for each of the two executions below; give each execution its own run ID and preserve its permit, receipt, timestamp, window/tab identity, first panel state, toolbar/popup/panel observations, final identity/role evidence, and any auth alert or timeout. Confirm Store ID hnfolienncfklkgmdjjmhhegglimlamg and exact version in chrome://extensions before each execution. Do not count an install/update Reload as the post-reload execution.",
+            "Sign in through the ordinary flow as a known admin before the warm execution; record the account email and selected device organization without credentials. Keep that account signed in between executions.",
+            "Keep an ordinary web tab active in one browser window. Close the Matrx sidepanel before each toolbar click. Preserve all previously linked results and do not promote either dimension without its own live evidence."
           ],
           "steps": [
-            "Open chrome://extensions and verify the loaded Matrx Extend ID is hnfolienncfklkgmdjjmhhegglimlamg; record the exact Store version in the build receipt. A development ID or a popup-bearing unpacked artifact is not this case.",
-            "If the extension was just installed or updated, click its Reload control once, wait for reload completion, and close any existing Matrx sidepanel so this run begins from a fresh panel open.",
-            "Use the admin profile state specified in Preconditions. Leave a normal web tab active and note its window/tab identity.",
-            "Click the Matrx Extend toolbar action once; observe whether a popup document appears and whether the sidepanel opens in that same browser window.",
-            "Inspect the first rendered panel state and record its visible identity/role marker alongside the build receipt."
+            "Warm execution: without reloading the extension immediately before this click, close any existing Matrx sidepanel; with the ordinary web tab active, record the fresh permit/receipt/run ID, loaded Store ID/version and tab/window; click the toolbar action once. Record whether a popup appears and whether the sidepanel opens in that same window.",
+            "Within 30 seconds of each toolbar click, open the account menu and wait for the known admin email and the Pilot admin tab, with no role-check/auth alert. The Pilot tab is gated on isAdmin after the async role read. Record the first rendered state and time to this signal.",
+            "Post-extension-reload execution: close the sidepanel, click Reload for this exact extension in chrome://extensions, observe that Reload completes and the same Store ID/version remains loaded; return to the ordinary web tab. Obtain a new resource permit and complete build receipt and assign a distinct run ID. Click the toolbar action once; record popup absence/presence and sidepanel opening/window independently of the warm execution.",
+            "Within 30 seconds of each toolbar click, open the account menu and wait for the known admin email and the Pilot admin tab, with no role-check/auth alert. The Pilot tab is gated on isAdmin after the async role read. Record the first rendered state and time to this signal.",
+            "For each execution, record the final identity/role signal or the exact last visible state and elapsed time at the 30-second bound. A missing signal, auth alert, or timeout is evidence to classify, never a silent pass; link both distinct run IDs and receipts to their dimension results before changing case status."
           ],
           "expected": [
-            "Chrome opens the Matrx sidepanel directly for the active browser window; no popup document opens. The panel restores the admin identity and renders the admin shell. Record the loaded Store ID/version and role. This case covers the toolbar entrypoint only, not admin access to every panel feature."
+            "In each of the two independently evidenced executions, the loaded Store action opens the Matrx sidepanel in the active browser window and opens no popup. Within the bounded auth readiness window, the panel shows the known admin email and Pilot admin tab. Report the warm and post-extension-reload outcomes separately; this case covers only the toolbar entrypoint and visible identity shell."
           ],
           "dimensions": [
             "warm",

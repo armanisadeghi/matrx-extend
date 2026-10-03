@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "at": "2026-10-03T11:15:25.495727+00:00",
+  "scope": ["EXT-F-1002-T16", "EXT-F-1002-T17", "EXT-F-1002-T18"],
+  "source_basis": [
+    "src/hooks/use-auth.ts: initial canonical restore and admin role read are asynchronous",
+    "src/components/GuestBanner.tsx: guest banner absent while status unknown",
+    "src/components/UserMenu.tsx: known account email visible in account menu",
+    "src/entrypoints/sidepanel/App.tsx: Pilot tab gated on isAdmin",
+    "src/lib/supabase/queries.ts: successful empty admin.admins read distinguishes member from failed role read"
+  ],
+  "repair": [
+    "Each role now prescribes separate warm and post-extension-reload toolbar executions with separate resource permits, build receipts, run IDs and observations.",
+    "Each execution has a 30-second bounded, observable auth/role readiness condition; first state, elapsed time, alerts and timeout remain evidence.",
+    "Member completion requires an observed successful empty admin role query in addition to the known account email and member shell."
+  ],
+  "verification": {
+    "generator": "python3 scripts/generate-stabilization-tracker.py",
+    "live_browser": "not run in this source/procedure lane",
+    "status_promotion": "none; existing evidence and statuses preserved"
+  },
+  "limitations": [
+    "No Store artifact, loaded browser state, actual role read, or toolbar action was exercised."
+  ]
+}
