@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "status": "BOUNDED_GUEST_RUNTIME_PASS_USER_TERMINAL_ERROR_UNREPRODUCED",
+  "verdict_a_actual_runtime": "PASS_WITH_OBSERVATION_HORIZON_LIMIT",
+  "verdict_a_basis": {
+    "positive_control": {
+      "artifact": "published 0.2.176 local ZIP",
+      "tree_sha256": "755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272",
+      "resource_run": "urgent-context-rules-positive-176-01",
+      "resource_decision": "valid; child_failed as the expected red assertion",
+      "acceptance_result": "test-results/guest-chat-store-a72abe59-d70d-44f5-9302-ac9e8cc1c008.json",
+      "acceptance_sha256": "89de5e93914bea3e60284af843eb7950783c1efb125c145d2c78f4146487ed94",
+      "resource_journal": "docs/stabilization/resource-journals/urgent-context-rules-positive-176-01.jsonl",
+      "resource_journal_sha256": "f0e91a336bad2e343c7bff445f6ea244febd771d22c4c89afa1cad172e0caa46",
+      "observation": "After the actual Values chip opened, the guest made one GET to user_surface_state with users schema and HTTP 401. The guest had no extension access token; the request still had an Authorization header, consistent with an anon/publishable key. The failure was the intended owner-table GET assertion, not selector/setup. This HTTP 401 is not the backend SQLSTATE 42501."
+    },
+    "fixed_artifact": {
+      "ci_run_id": 37153902142,
+      "artifact_id": 11285197390,
+      "source_sha": "b895bdbcfff3c206c2c1058ad95aee56495ab30a",
+      "version": "0.2.178",
+      "tree_sha256": "7cba6861e39736b8716a380012311f74f2df116952ea05f80e51e416dcddf623",
+      "github_artifact_digest": "sha256:d27097da948008aeb0ad9d5739417c2346c41e0b214770dfca0e3d1d7b02beea",
+      "import_claim": "exact_pushed_commit_only",
+      "resource_run": "urgent-context-rules-fixed-ci-01",
+      "resource_decision": "valid; child exit 0",
+      "acceptance_result": "test-results/guest-chat-store-4ff5ad3c-cdd1-476b-8db4-640c649e6f16.json",
+      "acceptance_sha256": "0fbedb52ac0f5c29ffc8b743825b2f994939bb0da9469c52118cf6371a1ed0b4",
+      "resource_journal": "docs/stabilization/resource-journals/urgent-context-rules-fixed-ci-01.jsonl",
+      "resource_journal_sha256": "2c9c9eea962c56b5a5b0119ff910ab1b9bf448feeb484e98bc3f374026f42399",
+      "observed": [
+        "Fresh guest had no access token, profile, or organization.",
+        "The actual Values chip opened and closed.",
+        "Two real guest messages received terminal page-grounded answers, including a second answer after a panel reload.",
+        "No user_surface_state GET was observed from CDP observer attachment through chip open, sends, and panel reload; context_rule_reads was empty.",
+        "The loaded extension artifact tree remained unchanged."
+      ]
+    },
+    "limits": [
+      "The observer attached after sidepanel load, so it cannot rule out requests before attachment.",
+      "The native case proves two messages in a fresh profile. Root is separately testing the repeated-message edge that may explain the user's instant failure.",
+      "The signed-in non-admin positive-read path was not run.",
+      "This is a development CI artifact, not Store installation or release acceptance.",
+      "The user's reported immediate terminal Chat error remains unreproduced and unresolved."
+    ]
+  },
+  "verdict_b_source_quality": "PASS_BOUNDED_INDEPENDENT_REVIEW",
+  "verdict_b_basis": [
+    "Product fix commit 62e1ce4c was independently source-reviewed in 476aee80; the review passed bounded source alignment while explicitly leaving runtime unverified.",
+    "This lane added only test observability and a trusted UI action in tests/browser/guest-chat-store-acceptance.mjs and tests/browser/settings-panel-driver.mjs (commit 9fe1e93e88555aea6e4e949d8aabecb18cbd52d1).",
+    "The observer stores only request phase, method, users-schema boolean, authorization-present boolean, and response status. It stores no URL/query, header values, body, or user payload.",
+    "The assertion fails on any GET to the exact user_surface_state endpoint, independent of Authorization header presence; the old artifact produced the expected red and the fixed artifact passed.",
+    "The Values chip is located uniquely in the selected Chat panel and clicked through the existing trusted pointer driver. No product handler, backend, or transport was stubbed.",
+    "node --check and Biome passed for both owned runner files; git diff --check passed. Main CI run 37154229283 completed successfully after the test-only observer commit."
+  ],
+  "artifact_boundary": "The successful development artifact source is b895bdbc, before metadata/documentation release bump 0.2.179. The current checkout has no changes to the tested Context Rules or Chat context product files after b895bdbc. No 0.2.179 artifact or Store package was tested.",
+  "product_source_blob_comparison": {
+    "src/state/context-rules.ts": "c645f47a6a7c78c173ba06ebeac9135d3e904038 at both tested artifact source b895bdbc and current HEAD",
+    "src/lib/chat/context/index.ts": "afaf04d7dc0f61d211db9dd3a579061c66b0280d at both tested artifact source b895bdbc and current HEAD"
+  },
+  "no_claims": [
+    "No full Chat, Settings, member, admin, Store, or release acceptance.",
+    "No claim that the user's immediate terminal error has been fixed."
+  ]
+}
