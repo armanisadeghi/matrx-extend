@@ -1,0 +1,37 @@
+{
+  "status": "owned_test_row_recovered_source_repair_pending_review",
+  "failed_run": {
+    "run_id": "profile-member-native-next-04",
+    "started_at": "2026-10-03T23:03:17.454Z",
+    "finished_at": "2026-10-03T23:04:03.032Z",
+    "original_row_absent": true,
+    "first_save_inserted_by_member_ui": true,
+    "warm_cases_passed": ["EXT-F-1004-T01", "EXT-F-1004-T03", "EXT-F-1004-T25"],
+    "extension_reload_verified": false,
+    "cleanup_failure": "owned_cdp_transport_failed",
+    "prior_execution_failure": "unrecorded_by_failed_runner",
+    "raw_private_report": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-member-native-next-04/evidence/profile-native-profile-member-native-next-04.json"
+  },
+  "recovery": {
+    "run_id": "profile-member-row-recovery-05",
+    "finished_at": "2026-10-03T23:09:59.366Z",
+    "exact_imported_source_sha": "9dfb5911cd7fef18f8c36b1cefd273096e866bbf",
+    "first_party_member_identity_verified": true,
+    "canonical_nonadmin_verified": true,
+    "owner_organization_verified": true,
+    "marker_uuid_and_run04_creation_window_verified": true,
+    "exact_expected_version": 3,
+    "private_ownership_receipt_mode": "0600",
+    "atomic_owner_delete_matched_one_row": true,
+    "authenticated_owner_read_absent_after_delete": true,
+    "original_absence_restored": true,
+    "resource_admitted": true,
+    "resource_invalid": false,
+    "private_report_sha256": "f4f3b370f717212df9fccc8e92244b4680af6bcf5f9eee3144c68aa53ceb253e",
+    "resource_journal_sha256": "06dc65cbef1a55cbb20e851bbef999137e962a3ae5060f5483ef46cc8b115e2f"
+  },
+  "remaining": [
+    "Repair the acceptance runner's lost-panel cleanup and separate original execution failure reporting.",
+    "Independent source review is required before another acceptance run; no reload case is promoted by this recovery."
+  ]
+}
