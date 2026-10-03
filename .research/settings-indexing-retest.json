@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "status": "SETUP_AND_READINESS_PASS_SETTINGS_NATIVE_ACCEPTANCE_UNVERIFIED",
+  "scope": "One hosted settings-persistence acceptance on synchronized main after the disposable hosted VM indexing setup change; no retry.",
+  "provenance": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 37112375038,
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37112375038",
+    "conclusion": "failure",
+    "event": "workflow_dispatch",
+    "head_branch": "main",
+    "head_sha": "b2047f0cdfd1d11f51e628cad7c366bc64be2f4f",
+    "acceptance_case": "settings-persistence",
+    "development_run_id": 37107627454,
+    "development_artifact_id": 11268886169,
+    "development_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "release_run_id": "",
+    "published_store_crx": false,
+    "prepared_development_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "setup_change_commit": "c7887ebd4290a0d9aa369315300e62e277fde966",
+    "setup_peer_review": ".research/hosted-indexing-peer.json"
+  },
+  "setup": {
+    "step": "Disable indexing on the disposable hosted VM",
+    "status": "success",
+    "host_guard": "RUNNER_ENVIRONMENT=github-hosted and RUNNER_OS=macOS passed before sudo mdutil",
+    "mdutil_command": "sudo /usr/bin/mdutil -a -i off",
+    "verification_command": "/usr/bin/mdutil -a -s",
+    "observed_status_lines": 6,
+    "enabled_status_lines": 0,
+    "result": "All six reported volumes said Indexing disabled.; no Indexing enabled. line appeared."
+  },
+  "readiness": {
+    "status": "all_three_gates_passed",
+    "gates": [
+      {
+        "step": "Wait for measured package readiness",
+        "status": "success",
+        "healthy_samples": 3,
+        "samples": [
+          { "busy": 0.06, "load_per_cpu": 0.5025 },
+          { "busy": 0.26, "load_per_cpu": 0.435 },
+          { "busy": 0.01, "load_per_cpu": 0.36 }
+        ]
+      },
+      {
+        "step": "Wait for measured browser readiness",
+        "status": "success",
+        "healthy_samples": 3,
+        "samples": [
+          { "busy": 0.03, "load_per_cpu": 0.33 },
+          { "busy": 0, "load_per_cpu": 0.2725 },
+          { "busy": 0.23, "load_per_cpu": 0.2125 }
+        ]
+      },
+      {
+        "step": "Wait for measured acceptance readiness",
+        "status": "success",
+        "healthy_samples": 3,
+        "samples": [
+          { "busy": 0.05, "load_per_cpu": 0.2125 },
+          { "busy": 0.3, "load_per_cpu": 0.225 },
+          { "busy": 0.07, "load_per_cpu": 0.175 }
+        ]
+      }
+    ]
+  },
+  "resource_guards": {
+    "package_permit": {
+      "status": "admitted_and_valid",
+      "busy_fraction": 0.015714285714285712,
+      "reasons": [],
+      "child_exit_code": 0,
+      "decision": "valid"
+    },
+    "browser_permit": {
+      "status": "admitted_and_valid",
+      "busy_fraction": 0.05,
+      "reasons": [],
+      "child_exit_code": 0,
+      "decision": "valid"
+    },
+    "settings_acceptance_permit": {
+      "initial_status": "admitted",
+      "initial_busy_fraction": 0.06571428571428571,
+      "initial_reasons": [],
+      "watcher_status": "RESOURCE_WATCH_UNSAFE",
+      "watcher_reasons": ["RESOURCE_CPU_BUSY"],
+      "watcher_busy_fraction": 1,
+      "watcher_one_minute_load": 0.78,
+      "child_exit_code": 1,
+      "resource_invalid": false,
+      "final_decision": "child_failed",
+      "hardguard_refusal": false,
+      "inconsistency": "The watcher emitted RESOURCE_WATCH_UNSAFE with RESOURCE_CPU_BUSY while the final decision reported resourceInvalid=false and child_failed. Preserve both receipts; do not interpret the final decision as proof of safe runtime or infer that the watcher caused the native-panel failure."
+    },
+    "interpretation": "The run reached and entered the Settings acceptance step; no package, browser, or settings acceptance permit was refused at admission. The settings child failed, and a later watcher recorded unsafe CPU saturation. This evidence does not establish which event caused the native-panel failure."
+  },
+  "settings_acceptance": {
+    "receipt_artifact_id": 11270039873,
+    "receipt_artifact_name": "hosted-guest-37112375038-1",
+    "receipt_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37112375038/artifacts/11270039873",
+    "receipt_path": "test-results/settings-d87-native-5602fada-ef1e-413d-978c-6c20c5406981.json",
+    "receipt_sha256": "f1f7869df6245e948223b9784da4d4228e0d6872cf759fcc91d573cac03732ae",
+    "status": "fail",
+    "defect": "EXT-D-0087",
+    "failure_stage": "native_panel",
+    "failure_code": "d87_acceptance_failed",
+    "cases_recorded": 0,
+    "browser_observation": "BROWSER_STARTUP_FAILURE was logged with exitCode=null, signalCode=null, launchFailed=false, no stderr, and no classified signature flags.",
+    "ui_storage_error_retry_overlap_reload_posthash": "not_observed; no Settings case completed, and the receipt contains no case observations",
+    "product_cause": "undetermined"
+  },
+  "artifacts": {
+    "acceptance_artifact": {
+      "id": 11270039873,
+      "name": "hosted-guest-37112375038-1",
+      "expired": false,
+      "size_bytes": 5015,
+      "sha256_zip": "6c7b83e0bfa57149ad9beaced1ac96cfd3e653b7a471edc008ead2c29c65acd1",
+      "contains": [
+        "test-results/settings-d87-native-5602fada-ef1e-413d-978c-6c20c5406981.json",
+        "docs/stabilization/resource-journals/hosted-package-37112375038-1.jsonl",
+        "docs/stabilization/resource-journals/hosted-browser-37112375038-1.jsonl",
+        "docs/stabilization/resource-journals/hosted-guest-37112375038-1.jsonl"
+      ]
+    }
+  },
+  "limitations": [
+    "The receipt is a failure with an empty cases array; none of the required Settings persistence observations were produced, so this is not an acceptance pass or product verdict.",
+    "Indexing was disabled and the three readiness gates passed on this VM, but the acceptance watcher later measured 100% CPU busy. The single changed-environment experiment did not eliminate busy CPU during the native step.",
+    "No unchanged retry was run. Store 0.2.176 replacement, D87 closure, and all-Settings or all-modes claims do not follow from this run."
+  ],
+  "next_action": "Preserve this bounded result for root review; no retry or implementation change authorized by this retest."
+}
