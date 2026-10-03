@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-03 18:10 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T18:09:59.735791+00:00. 205 features · 759 cases · 1331 controls · 93 linked defect records.
+Generated 2026-10-03 18:44 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T18:44:58.697829+00:00. 205 features · 759 cases · 1331 controls · 93 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
