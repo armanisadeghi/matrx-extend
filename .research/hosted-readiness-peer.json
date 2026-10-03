@@ -1,0 +1,9 @@
+{
+  "reviewed_commit": "16af748f308fda21493857c1b488440b40965cef",
+  "scope": "Fresh static source review; no implementation edits, browser, hosted run, or heavy execution.",
+  "verdict_A_readiness_runtime": "NOTRUN: static review does not establish hosted readiness or product acceptance.",
+  "verdict_B_quality": "PASS_WITH_LIMITS",
+  "evidence": "The helper reuses cpuBusyFraction and the guard's strict thresholds and units; its per-sample rule is conservative versus the guard's 60-second aggregate, and the unchanged complete guard still admits each child. Measurement errors and expiry fail nonzero. Each of the three serialized phases has its own readiness step and fresh guard, with no bypass path. Policy yields seven samples at 15-second cadence (90 seconds max per wait; 270 seconds total), leaving at least 10m30s of the 15-minute job for actual work. Logs contain CPU/load/count only, with no secrets.",
+  "limits": "Readiness uses three safe point samples spanning 30 seconds while final admission uses the full 60-second CPU average and maximum normalized load; this may delay on transient load but cannot weaken final admission. Hosted feasibility within the remaining 10m30s is unverified.",
+  "checks": "Source trace PASS; helper node syntax PASS; report JSON syntax PASS; targeted Biome PASS; git diff check PASS; hosted runtime NOTRUN."
+}
