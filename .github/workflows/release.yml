@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       aidream_sha:
-        description: 'Immutable AI Dream commit SHA used for records-guide generation'
+        description: 'Immutable AI Dream commit SHA used for Python type generation'
         required: true
         type: string
       message:
@@ -40,6 +40,10 @@ jobs:
       WXT_EXTENSION_OAUTH_CLIENT_ID: ${{ secrets.WXT_EXTENSION_OAUTH_CLIENT_ID }}
       WXT_SAFARI_OAUTH_CLIENT_ID: ${{ secrets.WXT_SAFARI_OAUTH_CLIENT_ID }}
       WXT_DESKTOP_NATIVE_HOST: ${{ secrets.WXT_DESKTOP_NATIVE_HOST }}
+      AIDREAM_API_URL: https://server.app.matrxserver.com
+      AIDREAM_GATE_USERNAME: ${{ secrets.AIDREAM_GATE_USERNAME }}
+      AIDREAM_GATE_PASSWORD: ${{ secrets.AIDREAM_GATE_PASSWORD }}
+      AIDREAM_GATE_ORGANIZATION_ID: ${{ secrets.AIDREAM_GATE_ORGANIZATION_ID }}
 
     steps:
       - name: Require release authority and production configuration
@@ -61,6 +65,9 @@ jobs:
             WXT_EXTENSION_OAUTH_CLIENT_ID
             WXT_SAFARI_OAUTH_CLIENT_ID
             WXT_DESKTOP_NATIVE_HOST
+            AIDREAM_GATE_USERNAME
+            AIDREAM_GATE_PASSWORD
+            AIDREAM_GATE_ORGANIZATION_ID
           )
           missing=()
           for name in "${required[@]}"; do
@@ -79,7 +86,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Check out pinned AI Dream records guide
+      - name: Check out pinned AI Dream type source
         uses: actions/checkout@v4
         with:
           repository: AI-Matrix-Engine/aidream
@@ -96,7 +103,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
-      - name: Verify pinned records-guide source
+      - name: Verify pinned Python type source
         working-directory: matrx-extend
         shell: bash
         run: |
@@ -107,11 +114,6 @@ jobs:
             exit 1
           }
           test -f ../aidream/scripts/sync-types.mjs
-          # `catalog:records-guide` imports guide_for from matrx-records, not
-          # the retired matrx-ai location. Keep the release source proof at
-          # the exact canonical import seam used by that generator.
-          test -f ../aidream/packages/matrx-records/matrx_records/agent/args.py
-          test -f ../aidream/packages/matrx-records/matrx_records/agent/definition.py
 
       - uses: pnpm/action-setup@v4
         with:
@@ -147,7 +149,7 @@ jobs:
       - name: Release through the repository contract
         working-directory: matrx-extend
         shell: bash
-        run: ./release.sh --message "$RELEASE_MESSAGE"
+        run: node scripts/release-with-gate-auth.mjs --message "$RELEASE_MESSAGE"
 
       - name: Verify tag, receipt, and candidate identity
         id: candidate
