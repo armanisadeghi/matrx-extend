@@ -53,7 +53,10 @@ vi.mock('@/lib/desktop/discovery', () => ({
   getEnginePortOverride: mocks.getEnginePortOverride,
   setEnginePortOverride: mocks.setEnginePortOverride,
 }));
-vi.mock('@/lib/desktop/http', () => ({ clearPairToken: vi.fn(), setPairToken: mocks.setPairToken }));
+vi.mock('@/lib/desktop/http', () => ({
+  clearPairToken: vi.fn(),
+  setPairToken: mocks.setPairToken,
+}));
 vi.mock('@/lib/desktop/types', () => ({
   desktopStatusTextClass: () => '',
   engineHealthState: () => 'ok',
@@ -408,7 +411,9 @@ describe('SettingsView local engine port', () => {
     render(<SettingsView />);
     const section = within(screen.getByRole('region', { name: 'Desktop bridge' }));
 
-    expect(await section.findByText('Could not load saved port. Reopen Settings to try again.')).toBeTruthy();
+    expect(
+      await section.findByText('Could not load saved port. Reopen Settings to try again.'),
+    ).toBeTruthy();
     expect(mocks.setEnginePortOverride).not.toHaveBeenCalled();
   });
 });

@@ -128,7 +128,8 @@ export function SettingsView() {
         setEnginePortSaved(p);
         setEnginePortInput(p === null ? '' : String(p));
       } catch {
-        if (!cancelled) setEnginePortError('Could not load saved port. Reopen Settings to try again.');
+        if (!cancelled)
+          setEnginePortError('Could not load saved port. Reopen Settings to try again.');
       }
     })();
     return () => {
