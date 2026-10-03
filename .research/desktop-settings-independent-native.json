@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "scope": "Independent native Settings persistence acceptance for EXT-D-0084 and EXT-D-0086",
+  "source_review": {
+    "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+    "runner_source_sha_at_execution": "e5b2f7437b70576fffaeb27243e807e85e966cf9",
+    "reviewed_runner": "tests/browser/settings-desktop-native-acceptance.mjs",
+    "reset_oracle": "Full local/session baseline census with salted key/value fingerprints. A synthetic unsent draft is seeded through the trusted Chat UI and required to be nondefault before reset. Chat is exempted only when the exact version-1 guest default shape is observed. False guest admin gate, known guest/session/discovery defaults, and test-owned session fixture are named explicitly; no wildcard key whitelist is used.",
+    "admin_reset_finding": "The admin run failed the reset retry census on matrx.user.isAdmin. Source shows signOut removes STORAGE_KEYS.IS_ADMIN through writeAdminGate(null), then the post-reset reload enters the guest boot path which writes false. The oracle accepts an unchanged false gate but its changed-value branch does not accept this exact true-to-false signed-out default transition. The raw receipt does not expose the boolean, so this is a source-explained oracle limitation, not proof that the runtime value was false. No runner/source changes or repeat launch were made in this lane.",
+    "biome_formatter_override": "Added an exact three-file formatter-only override for the immutable raw receipt copies in this evidence folder. Lint remains enabled; the normal summary remains formatter-checked."
+  },
+  "runtime": {
+    "verdict": "PARTIAL",
+    "artifact": {
+      "kind": "CI development build, not a published Store release",
+      "source_sha": "991385d9816b31b568619522e4795c001b4d3a06",
+      "ci_run_id": 37129518563,
+      "artifact_id": 11275878549,
+      "tree_sha256_before_and_after_each_run": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+      "version": "0.2.176",
+      "browser": "local pinned Playwright 1.56.1 and Chromium revision 1194",
+      "headed_native_ui": true
+    },
+    "roles": {
+      "guest": {
+        "status": "partial",
+        "resource_decision": "valid",
+        "identity": "Guest; token, profile, and admin flag absent",
+        "passed": [
+          "Port refusal/retry and reload",
+          "Ordered port writes",
+          "Held initial read preserves edit",
+          "Pair refusal/retry",
+          "Ordered pair writes",
+          "Reset refusal preserves all 7 local and 1 session prior values",
+          "Reset retry and reload: zero unexplained overlaps; session fixture removed; signed out"
+        ],
+        "unverified": [
+          "Pair-code removal is HTTP-only and the native profile did not expose Forget"
+        ],
+        "receipt": {
+          "path": ".research/desktop-settings-independent-native-evidence/raw/guest-receipt.json",
+          "sha256": "fac5f5bebd4834597e20aeb4cb2ab25b69917cfcbba9b0dedbb52e5510f7869e",
+          "runner_output": "test-results/settings-desktop-native-c4098902-f7e3-4f20-8103-a4fc27d9b53d.json"
+        },
+        "resource_journal": {
+          "path": ".research/desktop-settings-independent-native-evidence/raw/guest-resource.jsonl",
+          "sha256": "34bb4915f3a420c0747ad9f833ad3e8d87ae303ce4c4e39ff5d46152459e655a",
+          "runner_output": "docs/stabilization/resource-journals/desktop-settings-guest-20261003-independent01.jsonl"
+        }
+      },
+      "member": {
+        "status": "partial",
+        "resource_decision": "valid",
+        "identity": "Account fingerprint 3d6137db6c081c07; web and extension signed in; rendered email, member role, first-party profile, and stored organization UUID/name assertions matched",
+        "passed": [
+          "Port refusal/retry and reload",
+          "Ordered port writes",
+          "Held initial read preserves edit",
+          "Pair refusal/retry",
+          "Ordered pair writes",
+          "Reset refusal preserves all 14 local and 3 session prior values",
+          "Reset retry and reload: zero unexplained overlaps; session fixture removed; signed out"
+        ],
+        "unverified": [
+          "Pair-code removal is HTTP-only and the native profile did not expose Forget"
+        ],
+        "receipt": {
+          "path": ".research/desktop-settings-independent-native-evidence/raw/member-receipt.json",
+          "sha256": "b14a48b086463b7c65a6ece8db81d52932e6ba6261872d5369107ac4dfb58ea2",
+          "runner_output": "test-results/settings-desktop-native-f9ae192c-ae64-4ad8-bb22-02e8096944ed.json"
+        },
+        "resource_journal": {
+          "path": ".research/desktop-settings-independent-native-evidence/raw/member-resource.jsonl",
+          "sha256": "52bcc0f1a6f73688d82671d2e9745d0e4e9014cca32cb5735e2786a80633b065",
+          "runner_output": "docs/stabilization/resource-journals/desktop-settings-member-20261003-independent01.jsonl"
+        }
+      },
+      "admin": {
+        "status": "fail_at_reset_oracle",
+        "resource_decision": "child_failed; resource permit itself valid",
+        "identity": "Account fingerprint 5edfa2692bdacc5e; web and extension signed in; rendered email, admin role, first-party profile, and stored organization UUID/name assertions matched",
+        "passed_before_failure": [
+          "Port refusal/retry and reload",
+          "Ordered port writes",
+          "Held initial read preserves edit",
+          "Pair refusal/retry",
+          "Ordered pair writes",
+          "Reset refusal preserves all 15 local and 3 session prior values"
+        ],
+        "failure": "desktop_reset_local_overlap; only reported unexplained key was matrx.user.isAdmin. Reset retry was not marked passed.",
+        "receipt": {
+          "path": ".research/desktop-settings-independent-native-evidence/raw/admin-receipt.json",
+          "sha256": "cdada50f317ff6093fd324f7305d1485050a69317288aedad10ffecacff8cd16",
+          "runner_output": "test-results/settings-desktop-native-38071924-4c00-4898-9add-53aada2b746e.json"
+        },
+        "resource_journal": {
+          "path": ".research/desktop-settings-independent-native-evidence/raw/admin-resource.jsonl",
+          "sha256": "4b61a420a229f330cd8db95b16ab25eb1c7a9020eda5fbaecf71e2a8ec05f482",
+          "runner_output": "docs/stabilization/resource-journals/desktop-settings-admin-20261003-independent01.jsonl"
+        }
+      }
+    },
+    "shared_limits": [
+      "Storage fault injection validates the real Settings UI handlers and Chrome storage boundary; it does not prove a healthy desktop engine, actual pairing acceptance, or rediscovery.",
+      "HTTP-only Forget remained unavailable in all three native profiles, so the role receipts are partial.",
+      "These runs are bounded persistence coverage and do not satisfy the full EXT-F-1003 T43-T51 inventory."
+    ]
+  },
+  "quality_verdict": {
+    "status": "SOURCE_REPAIR_PRESENT_IN_733caf33; FRESH_ADMIN_NATIVE_VERIFICATION_PENDING",
+    "evidence": "Guest/member reset census and all visible persistence cases passed. The admin role exposed a missing exact signed-out default transition in the reset census oracle. Commit 733caf33 adds the narrowly scoped false guest admin-gate transition and explicit guest UI/token/profile/admin post-reset assertions. That correction landed after these runs and was not exercised by this lane; a fresh admin native verifier must confirm it.",
+    "forbidden_claims": [
+      "D84/D86 closed",
+      "All T43-T51 passed",
+      "Real desktop connectivity or rediscovery verified"
+    ]
+  },
+  "execution": {
+    "role_run_ids": [
+      "desktop-settings-guest-20261003-independent01",
+      "desktop-settings-member-20261003-independent01",
+      "desktop-settings-admin-20261003-independent01"
+    ],
+    "no_runner_or_product_edits": true,
+    "member_link": "Minted once for the existing reviewer identity, passed privately to the wrapper, and temporary file removed before native launch.",
+    "admin_credentials": "Loaded privately from aidream/.env into the wrapper environment; wrapper wrote and removed its mode-0600 temporary file. No credentials were logged or included in evidence.",
+    "cleanup": "Resource guard final decisions were valid/child_failed/valid as recorded in journals; no heavy lease remains. Harness-created browser profiles were removed on exit (no matrx-native-sidepanel-qa profile directories remained under /tmp). Intentional native screenshot artifact directories remain at the output paths named in the raw receipts.",
+    "member_parent_setup_note": "One initial Node stdin wrapper invocation stopped at parse time before importing the magic-link helper or launching a browser; the corrected wrapper then minted one link and completed the single member run.",
+    "source_tree_at_report_start": "e5b2f7437b70576fffaeb27243e807e85e966cf9"
+  }
+}

@@ -97,6 +97,14 @@
     },
     {
       "include": [
+        ".research/desktop-settings-independent-native-evidence/raw/guest-receipt.json",
+        ".research/desktop-settings-independent-native-evidence/raw/member-receipt.json",
+        ".research/desktop-settings-independent-native-evidence/raw/admin-receipt.json"
+      ],
+      "formatter": { "enabled": false }
+    },
+    {
+      "include": [
         "tests/browser/vault-authenticator-preservation.test.cjs",
         "tests/browser/vault-owned-cdp.cjs"
       ],
