@@ -29,6 +29,29 @@ const SAFE_CODES = new Set([
   'native_sidepanel_local_build_receipt_missing',
   'native_sidepanel_local_build_provenance_refused',
 ]);
+const OBSERVATION_CODES = new Set([
+  'd87_settings_ready',
+  'Appearance_section_ready',
+  'Appearance_expanded',
+  'd87_system_visible',
+  'd87_system_saved',
+  'd87_dark_visible',
+  'd87_dark_saved',
+  'd87_light_visible',
+  'd87_rejection_visible',
+  'd87_first_write_held',
+  'd87_both_writes_finished',
+  'd87_reloaded_guest',
+]);
+const POINTER_CODES = new Set([
+  'pointer_initial_evaluation_failed',
+  'pointer_page_sample_failed',
+  'pointer_target_not_unique',
+  'pointer_followup_evaluation_failed',
+  'pointer_stable_hit_not_observed',
+  'pointer_press_dispatch_failed',
+  'pointer_release_dispatch_failed',
+]);
 const report = {
   schema_version: 1,
   defect: 'EXT-D-0087',
@@ -40,6 +63,16 @@ const report = {
   failure_code: null,
 };
 let stage = 'receipt';
+let operation = 'receipt_validation';
+
+function failureCode(error) {
+  if (SAFE_CODES.has(error?.message)) return error.message;
+  if (POINTER_CODES.has(error?.driverFailure?.code)) return error.driverFailure.code;
+  const waitLabel = String(error?.message ?? '').split('_not_observed:', 1)[0];
+  if (OBSERVATION_CODES.has(waitLabel)) return `${waitLabel}_not_observed`;
+  if (error?.code === 'ERR_ASSERTION') return 'd87_assertion_failed';
+  return 'd87_acceptance_failed';
+}
 
 async function observation(panel) {
   return evaluate(
@@ -57,10 +90,11 @@ async function observation(panel) {
       .some((element) => element.textContent.includes('Could not save preferences'));
     const retry = [...document.querySelectorAll('button')]
       .some((element) => element.textContent.trim() === 'Retry save');
+    const theme = control?.textContent.trim() ?? null;
     return {
       settingsActive: !!document.querySelector('button[title="Settings"][data-state="active"]'),
-      theme: control?.textContent.trim() ?? null,
-      storedTheme,
+      theme: ['System', 'Light', 'Dark'].includes(theme) ? theme : null,
+      storedTheme: ['system', 'light', 'dark'].includes(storedTheme) ? storedTheme : null,
       error,
       retry,
       guest: (document.body?.innerText ?? '').includes('Sign in to choose'),
@@ -70,18 +104,24 @@ async function observation(panel) {
 }
 
 async function openSettings(panel) {
+  operation = 'settings_click';
   await click(panel, 'title', 'Settings');
+  operation = 'settings_ready';
   await waitFor(
     'd87_settings_ready',
     () => observation(panel),
     (state) => state?.settingsActive && state.guest,
   );
+  operation = 'appearance_open';
   await openSection(panel, 'Appearance');
 }
 
 async function chooseTheme(panel, theme) {
+  operation = 'theme_menu_open';
   await click(panel, 'theme', 'Theme');
+  operation = 'theme_option_click';
   await click(panel, 'option', LABELS[theme]);
+  operation = 'theme_visible';
   await waitFor(
     `d87_${theme}_visible`,
     () => observation(panel),
@@ -90,6 +130,7 @@ async function chooseTheme(panel, theme) {
 }
 
 async function settledTheme(panel, theme) {
+  operation = 'theme_persisted';
   return waitFor(
     `d87_${theme}_saved`,
     () => observation(panel),
@@ -98,7 +139,9 @@ async function settledTheme(panel, theme) {
 }
 
 async function reload(panel, expectedTheme) {
+  operation = 'panel_reload';
   await panel.send('Page.reload', { ignoreCache: true });
+  operation = 'reloaded_guest';
   await waitFor(
     'd87_reloaded_guest',
     () => observation(panel),
@@ -206,86 +249,98 @@ try {
     releaseReceiptPath: receiptPath,
     ...(receipt.kind === 'local_dev_unpacked' && { localDevReceiptPath: receiptPath }),
     exercisePanel: async ({ panel }) => {
-      stage = 'baseline';
-      await openSettings(panel);
-      await chooseTheme(panel, 'system');
-      const baseline = await settledTheme(panel, 'system');
-      report.cases.push({
-        name: 'baseline saved through UI',
-        status: 'pass',
-        observation: baseline,
-      });
-
-      stage = 'rejected_write';
-      await installStorageFault(panel, 'reject');
       try {
-        await chooseTheme(panel, 'dark');
-        const failed = await waitFor(
-          'd87_rejection_visible',
-          () => observation(panel),
-          (state) =>
-            state?.theme === 'Dark' && state.storedTheme === 'system' && state.error && state.retry,
-        );
-        assert.equal((await faultState(panel)).calls, 1);
-        report.cases.push({
-          name: 'rejected write visible with retry',
-          status: 'pass',
-          observation: failed,
-        });
-      } finally {
-        await restoreFault(panel);
-      }
-      stage = 'retry';
-      await click(panel, 'button-text', 'Retry save');
-      const retried = await settledTheme(panel, 'dark');
-      await reload(panel, 'dark');
-      report.cases.push({
-        name: 'retry persisted after reload',
-        status: 'pass',
-        observation: retried,
-      });
-
-      stage = 'overlap';
-      await installStorageFault(panel, 'hold');
-      try {
-        await chooseTheme(panel, 'light');
-        await waitFor(
-          'd87_first_write_held',
-          () => faultState(panel),
-          (state) => state?.calls === 1 && state.held,
-        );
+        stage = 'baseline';
+        await openSettings(panel);
         await chooseTheme(panel, 'system');
-        const beforeRelease = await observation(panel);
-        assert.equal(beforeRelease.theme, 'System');
-        assert.equal(beforeRelease.storedTheme, 'dark');
-        assert.equal(
-          (await faultState(panel)).calls,
-          1,
-          'later Chrome write must wait for the first write',
-        );
-        await evaluate(panel, '(() => { window.__d87StorageFault.release(); return true; })()');
-        await waitFor(
-          'd87_both_writes_finished',
-          () => faultState(panel),
-          (state) => state?.calls === 2 && state.released,
-        );
-        const latest = await settledTheme(panel, 'system');
+        const baseline = await settledTheme(panel, 'system');
         report.cases.push({
-          name: 'latest rapid choice persisted',
+          name: 'baseline saved through UI',
           status: 'pass',
-          before_release: beforeRelease,
-          observation: latest,
+          observation: baseline,
         });
-      } finally {
-        await restoreFault(panel);
+
+        stage = 'rejected_write';
+        await installStorageFault(panel, 'reject');
+        try {
+          await chooseTheme(panel, 'dark');
+          const failed = await waitFor(
+            'd87_rejection_visible',
+            () => observation(panel),
+            (state) =>
+              state?.theme === 'Dark' &&
+              state.storedTheme === 'system' &&
+              state.error &&
+              state.retry,
+          );
+          assert.equal((await faultState(panel)).calls, 1);
+          report.cases.push({
+            name: 'rejected write visible with retry',
+            status: 'pass',
+            observation: failed,
+          });
+        } finally {
+          await restoreFault(panel);
+        }
+        stage = 'retry';
+        await click(panel, 'button-text', 'Retry save');
+        const retried = await settledTheme(panel, 'dark');
+        await reload(panel, 'dark');
+        report.cases.push({
+          name: 'retry persisted after reload',
+          status: 'pass',
+          observation: retried,
+        });
+
+        stage = 'overlap';
+        await installStorageFault(panel, 'hold');
+        try {
+          await chooseTheme(panel, 'light');
+          await waitFor(
+            'd87_first_write_held',
+            () => faultState(panel),
+            (state) => state?.calls === 1 && state.held,
+          );
+          await chooseTheme(panel, 'system');
+          const beforeRelease = await observation(panel);
+          assert.equal(beforeRelease.theme, 'System');
+          assert.equal(beforeRelease.storedTheme, 'dark');
+          assert.equal(
+            (await faultState(panel)).calls,
+            1,
+            'later Chrome write must wait for the first write',
+          );
+          await evaluate(panel, '(() => { window.__d87StorageFault.release(); return true; })()');
+          await waitFor(
+            'd87_both_writes_finished',
+            () => faultState(panel),
+            (state) => state?.calls === 2 && state.released,
+          );
+          const latest = await settledTheme(panel, 'system');
+          report.cases.push({
+            name: 'latest rapid choice persisted',
+            status: 'pass',
+            before_release: beforeRelease,
+            observation: latest,
+          });
+        } finally {
+          await restoreFault(panel);
+        }
+        stage = 'overlap_reload';
+        await reload(panel, 'system');
+        report.cases.push({
+          name: 'latest rapid choice survives reload',
+          status: 'pass',
+          observation: await observation(panel),
+        });
+      } catch (error) {
+        report.failure_operation = operation;
+        if (error?.driverFailure) report.driver_failure = error.driverFailure;
+        // Only the fixed Settings predicates below cross from the panel. A
+        // destroyed execution context is recorded as unavailable.
+        report.failure_observation = await observation(panel).catch(() => null);
+        throw error;
       }
-      stage = 'overlap_reload';
-      await reload(panel, 'system');
-      report.cases.push({
-        name: 'latest rapid choice survives reload',
-        status: 'pass',
-        observation: await observation(panel),
-      });
     },
   });
   assert.equal(hashReleaseTree(extensionDir), receipt.treeSha256, 'd87_receipt_tree_mismatch');
@@ -293,7 +348,7 @@ try {
   report.status = 'pass';
 } catch (error) {
   report.failure_stage = stage;
-  report.failure_code = SAFE_CODES.has(error?.message) ? error.message : 'd87_acceptance_failed';
+  report.failure_code = failureCode(error);
   report.status = 'fail';
   process.exitCode = 1;
 } finally {
