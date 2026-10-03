@@ -1,0 +1,33 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_a_actual_preparation_evidence": {
+    "status": "PASS_SOURCE_PREPARATION_ONLY",
+    "evidence": [
+      "Pinned downloaded CRX SHA-256 equals 9964183901e06c92c1a41e68294332bf27e3564ef0df1d860297d533829885b1.",
+      "Actual CRX3 header contains two RSA proofs: lfoeajgcchlidpicbabpmckkejpckcfb and expected primary hnfolienncfklkgmdjjmhhegglimlamg.",
+      "matchingCrx3RsaKey selected a key whose derived ID is hnfolienncfklkgmdjjmhhegglimlamg; a wrong expected ID was refused with crx3_expected_signing_key_refused.",
+      "Preparation code checks the downloaded CRX hash before extraction, asserts the embedded manifest is unkeyed, changes only the extracted manifest key, and records CRX hash, ID, adaptation, and adapted tree hash in the receipt.",
+      "Native harness checks adapted tree hash, CRX file hash, and derived manifest-key identity before launch. No native browser behavior was run or verified in this peer check."
+    ],
+    "native_product_outcome": "UNVERIFIED"
+  },
+  "verdict_b_source_quality": {
+    "status": "PASS",
+    "blocking_issues": [],
+    "evidence": [
+      "Key selection is derived from SHA-256 of each CRX3 RSA public key and must yield exactly one proof matching the requested ID; ambiguous or absent matches fail closed.",
+      "The helper validates CRX3 magic/version, bounded header length, protobuf wire type, and field length before examining proof keys.",
+      "The altered key is confined to the temporary unpacked copy; the pinned original CRX remains saved and is re-hashed by the native harness.",
+      "The approach does not weaken extension-ID checks: the expected primary ID is fixed in the published-artifact path and the adapted key must derive to that ID."
+    ],
+    "limitations": [
+      "This verifies identity derivation and payload provenance via a fixed CRX hash; it does not independently validate CRX3 proof signatures or assert a live Google-installed lifecycle."
+    ]
+  },
+  "checks": {
+    "actual_crx_hash_and_proof_parser": "PASS",
+    "matching_primary_id_and_wrong_id_refusal": "PASS",
+    "product_edits": "NONE",
+    "heavy_tests_browser_build_install": "NOT_RUN"
+  }
+}

@@ -7,6 +7,16 @@
     "Fixed helper selects the matching primary-ID RSA public key from CRX3 proofs and adds it only to temporary unpacked manifest; local exact CRX key matched Chrome Profile 8 installed 294-byte key; node --check, Biome, git diff --check passed.",
     "Production /health/version sampled before dispatch and after both jobs: d74d7e58a6356525a2ea7bf11ce50af6f94471d7 both times; no continuous interval proof; no native first answer or panel reload observed."
   ],
-  "files": ["scripts/crx3-identity.mjs", "scripts/hosted-guest-acceptance.mjs", "tests/browser/guest-chat-store-acceptance.mjs", "tests/browser/native-sidepanel-qa-harness.mjs", ".github/workflows/hosted-guest-acceptance.yml"],
-  "unknowns": ["Fresh peer verdict on CRX3 identity fix", "Actual guarded published payload first answer and post-reload follow-up", "Google-installed lifecycle remains untested"]
+  "files": [
+    "scripts/crx3-identity.mjs",
+    "scripts/hosted-guest-acceptance.mjs",
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml"
+  ],
+  "unknowns": [
+    "Fresh peer verdict on CRX3 identity fix",
+    "Actual guarded published payload first answer and post-reload follow-up",
+    "Google-installed lifecycle remains untested"
+  ]
 }
