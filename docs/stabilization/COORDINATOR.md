@@ -1,12 +1,12 @@
 # Matrx Extend stabilization: resume here
 
-## Active continuation — Settings signed-in verification and audit error repair
+## Active continuation — Settings signed-in native runs and audit-key partial-write repair
 
-Latest synchronized source `c2626265` passed full CI `37123175022`. Settings-only inventory reconciliation (`0aa6e425`, `c2626265`) added five controls and thirteen unverified cases while preserving prior evidence and global source-census provenance. It does not certify runtime behavior.
+Latest reviewed source `9e8e5ffe` passed full CI `37124187442`. Settings inventory reconciliation (`0aa6e425`, `c2626265`, `ad41088c`) added omitted controls and explicit audit recovery procedures while preserving prior results and global source-census provenance. New cases remain unverified.
 
-- `/root/settings_auth_independent` (Luna medium): fresh source review of signed-in six-case D87 acceptance candidate `1d49da3a`; report `.research/settings-signedin-peer.json`. No heavy/native permit yet. Actual admin/member runs follow review.
-- `/root/settings_audit_error_repair` (Sol medium): connected reproduction and scoped repair of silent audit-key async failures, starting with source lead EXT-L-SETTINGS-002; report `.research/settings-audit-error-repair.json`. Sole guarded heavy permit for focused tests/compile; no native browser or manual app build/release. No real user-key rotation.
-- Prior Settings inventory and auth-readiness workers are terminal. Root owns integration, fresh reviews, artifact-bound native retests, and release eligibility. Two failed attempts or twenty active minutes triggers decomposition/escalation. Source-ready is not runtime-passed.
+- `/root/settings_auth_final_peer` (Luna medium): source review accepted auth runner `1d49da3a` + `2fa4e170`; prior reload/cached-auth findings addressed. Sole guarded heavy/native permit for actual admin then existing-member D87 six-case runs on immutable CI source `3092444e`, run `37107627454`, artifact `11268886169`. Relevant D87 product paths still match. Report `.research/settings-signedin-native.json`; credentials point of use, no account creation, all role/org/reload and artifact checks remain required.
+- `/root/settings_audit_error_repair` (Sol medium): initial source repair `cc139884` reproduced and fixed three connected UI failures. Fresh peer `a9e0c5f4` found the deeper partial key-persistence ambiguity. Primitive RED reproduced rotation and first-create persisted-then-rejected errors. Intermediate eight-case GREEN is diagnostic to the current revision only: a subsequent failed-without-persistence history-consistency concern is still being repaired. Worker currently owns source edits only, with no heavy permit until native work releases it. D93 remains in-fix; native coverage is unverified. Report `.research/settings-audit-error-repair.json` plus independent `.research/settings-audit-error-peer.json`.
+- Root added D93 cases T86–T89 and recovery controls C37/C38; admin defect link retained without promoting any result. Root owns integration, fresh review, next exact-artifact native gate, and release eligibility. All other lanes are terminal. Two failed attempts or twenty active minutes triggers decomposition/escalation.
 
 ## Current checkpoint — October 3, 2026: 176 public; guest startup repaired; six Prepare cases pass
 
