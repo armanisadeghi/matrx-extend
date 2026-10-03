@@ -1,0 +1,56 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Independent whole hosted-release source assessment after two hosted failures; no implementation",
+  "reviewedHead": "36d5c94f95650b6eede8596b50537efc3ba8f6d7",
+  "verdictA": {
+    "status": "PARTIAL",
+    "reason": "Hosted setup now has the correct nested manifest, uv, pinned records source, and a committed shared-package refresh. No successful hosted candidate or exact-package native guest/member acceptance exists in the evidence inspected.",
+    "evidence": [
+      "Run 37093086895 passed preflight, both checkouts, pinned-source verification, pnpm, Node, uv and frozen install; failed check:matrx-packages before publication.",
+      "36d5c94f refreshes shared packages, commits only package.json and pnpm-lock.yaml locally, refuses residual dirty files, then delegates publication to release.sh.",
+      "release.sh regenerates API types, canonical records guide, catalog and DB tool documentation into the candidate; all required strict checks and both package gates remain.",
+      "Store publication remains 0.2.130 according to the canonical record; hosted success alone cannot close native exact-package acceptance or Store submission."
+    ]
+  },
+  "verdictB": {
+    "status": "FAIL",
+    "reason": "Two Important interoperability gaps remain: failure diagnostics are lost and dependency provenance is not enforced when main advances."
+  },
+  "findings": [
+    {
+      "id": "HR-1",
+      "severity": "Important",
+      "title": "Failed hosted releases discard the detailed diagnostic log",
+      "evidence": [
+        ".github/workflows/release.yml:182 has the only log artifact upload and inherits the default success condition.",
+        "Run 37093086895 skipped Upload validated release artifacts. gh run view --log-failed shows only matrx-packages failed exit 1; the individual failing package/version is absent.",
+        "release.sh run_checks appends the actual command output to RELEASE_LOG_FILE, then prints only the summary. The hosted runner is subsequently discarded."
+      ],
+      "action": "Add a separate always-run diagnostic-log upload using a run-unique name. Keep validated ZIP/receipt upload gated on successful candidate verification. Verify a failed hosted gate retains the detailed log."
+    },
+    {
+      "id": "HR-2",
+      "severity": "Important",
+      "title": "A merged candidate can use dependencies from a different lockfile",
+      "evidence": [
+        "Workflow lines 128-145 install and refresh dependencies before release.sh fetches main.",
+        "release.sh:251-260 accepts a newer remote tree or merges it with the local package-refresh commit; lines 416-431 repeat candidate creation after a push race.",
+        "release.sh:182 symlinks every candidate snapshot to the original runner node_modules. No install or equality guard reconciles a changed candidate lockfile, package manifest or dependency configuration.",
+        "check-matrx-packages only audits @ai-matrx packages. A compatible ordinary dependency version change can therefore leave source/receipt identity correct while the compiled dependency bytes differ from the committed lock.",
+        "scripts/test-release-ship-path.sh exercises foreign text-file races through stubbed pnpm; it does not exercise a changed dependency graph."
+      ],
+      "action": "Bind installed dependencies to each merged candidate before generation/check/build, or fail closed when relevant dependency inputs differ from the installed source. Cover a dependency-changing remote race; preserve all strict checks."
+    }
+  ],
+  "otherAssessment": {
+    "privileges": "contents:write is needed for atomic main/tag publication; AI Dream checkout uses its separate deploy key with persist-credentials:false. No new token-prefix rule, grant, rotation, or credential read was needed for this assessment.",
+    "recordsSource": "Full SHA input is checked against the AI Dream checkout; generator imports matrx_records from that pinned workspace through uv. API types intentionally come from the live backend, not from that SHA. Do not describe the entire regeneration as an immutable backend snapshot.",
+    "candidateIdentity": "The actual release source may differ from workflow dispatch head because checkout tracks main, package refresh creates a commit, and release.sh merges later main. Receipt sourceSha plus remote tag is the correct identity; use it for acceptance.",
+    "minorCopy": "Workflow comments call Store upload a separate human step despite standing agent authorization. This is misleading operator text, not an actual permission or acceptance gate."
+  },
+  "limits": [
+    "Read-only source and existing hosted-run assessment; no local build, tests or browser executed under the low-disk constraint.",
+    "HR-2 is a direct source-level provenance finding; no runtime race reproduction was performed in this lane.",
+    "No claim of green hosted release, native guest/member behavior, signout privacy, upload, submission or publication."
+  ]
+}
