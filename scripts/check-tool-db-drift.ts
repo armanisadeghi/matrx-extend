@@ -382,7 +382,7 @@ export async function main(): Promise<number> {
   const serverNames = new Set(SERVER_CATALOG.map((tool) => tool.name));
   const local = [
     ...localAll.filter((t) => CANONICAL_SURFACE.has(t.name)),
-    ...SERVER_CATALOG.map((t) => ({
+    ...SERVER_CATALOG.filter((t) => CANONICAL_SURFACE.has(t.name)).map((t) => ({
       ...t,
       input_schema: { type: 'object' as const, properties: {} },
     })),
