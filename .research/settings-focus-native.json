@@ -42,6 +42,53 @@
     "biome": "pnpm exec biome check --diagnostic-level=error . passed under a valid resource permit (exit 0; 2556 files checked; no fixes applied).",
     "attempt_02_receipt_raw_sha256": "ad8bde027af369f72f5cc8d3097155cc6390add0c53ad20247a9eecd3a2c51f5",
     "attempt_02_receipt_formatted_sha256": "ad8bde027af369f72f5cc8d3097155cc6390add0c53ad20247a9eecd3a2c51f5",
-    "attempt_02_receipt_parsed_equal": true
+    "attempt_02_receipt_parsed_equal": true,
+    "report_validation_journals": [
+      {
+        "path": "docs/stabilization/resource-journals/d87-focus-report-biome-20261003-01.jsonl",
+        "sha256": "d2fee0e38cb8f9aab33c1cb4633c98530c67df9f593e2c0fe4f4c2303c9faf68",
+        "records": 4,
+        "final_event": {
+          "schema": 1,
+          "at": "2026-10-03T13:33:32.667Z",
+          "runId": "d87-focus-report-biome-20261003-01",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      },
+      {
+        "path": "docs/stabilization/resource-journals/d87-focus-report-biome-final-20261003-01.jsonl",
+        "sha256": "d1ccbd0c17180fcd06a1645d0fd448a54022321b0286eb6d5457b9371382be8f",
+        "records": 4,
+        "final_event": {
+          "schema": 1,
+          "at": "2026-10-03T13:35:20.364Z",
+          "runId": "d87-focus-report-biome-final-20261003-01",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      },
+      {
+        "path": "docs/stabilization/resource-journals/d87-focus-report-biome-final-20261003-02.jsonl",
+        "sha256": "f01017d362b3a4172b6bbb06c5bc0a00e3778e360f39708eeb39828e7e4e5c4c",
+        "records": 4,
+        "final_event": {
+          "schema": 1,
+          "at": "2026-10-03T13:37:07.222Z",
+          "runId": "d87-focus-report-biome-final-20261003-02",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      }
+    ]
   }
 }
