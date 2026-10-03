@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "incident": "2026-10-03 live Google Store guest Chat immediate error",
+  "status": "NO_DIRECT_SERVER_EVIDENCE_IDENTIFIED",
+  "searched_at_utc": "2026-10-03T20:43Z",
+  "method": {
+    "source": "read-only Supabase MCP SQL against project brsgrqvjdzwihsvnfqkf",
+    "schema_discovery": "information_schema.columns confirmed ops.system_error, ops.app_log, chat.user_request, chat.request, chat.request_snapshot",
+    "queried": [
+      "recent ops.system_error classifications and linkage fields",
+      "recent chat.user_request failure/status aggregates",
+      "recent chat.request error type/code/status classifications",
+      "chat-related ops.app_log level/type/route metadata",
+      "one fresh tool_execution_failed linkage and traceback-shape metadata",
+      "https://server.app.matrxserver.com/health/version"
+    ],
+    "excluded": "No user message, provider payload, raw error text, credentials, or raw traceback were read or written to this report."
+  },
+  "findings": [
+    {
+      "time_utc": "2026-10-03T20:42:56.770534Z",
+      "surface": "ops.system_error",
+      "kind": "tool_execution_failed",
+      "error_type": "forbidden",
+      "source_app": "aidream",
+      "source_feature": "mandate:content_ir.kind_component_builder",
+      "route": "tool_executor.execution",
+      "correlation": "Linked chat.user_request was source aidream / same content_ir builder feature, status completed, finish_reason stop, error absent. This is a tool-level failure, not evidence of the reported guest Chat failure.",
+      "traceback": "Present but only 63 characters; no Python File/line/frame entries. Raw contents intentionally not inspected.",
+      "payload": "Present in capture, not inspected."
+    },
+    {
+      "time_utc": "2026-10-03T20:42:12.740469Z",
+      "surface": "ops.system_error",
+      "kind": "api-network",
+      "error_type": "network_error",
+      "source_app": "matrx-frontend",
+      "route": "/demos/ui-unification/samples/agents-all",
+      "correlation": "Not a Chat route. A second matching record occurred at 20:42:43.756825Z."
+    },
+    {
+      "time_utc": "2026-10-03T20:42:01.697460Z",
+      "surface": "chat.user_request",
+      "source_app": "matrx-extend",
+      "source_feature": "chat",
+      "status": "completed",
+      "finish_reason": "stop",
+      "error_present": false,
+      "correlation": "A nearby completed client request; no identified link to the user's reported failure."
+    }
+  ],
+  "aggregate_findings": {
+    "chat_user_request": "No failed/error user_request rows in the last 24 hours; an aggregate scan over the last 6 hours showed recent chat requests completed without error.",
+    "chat_request": "Latest 12-hour ledger sample showed completed requests and no structured request error fields.",
+    "app_log": "No recent chat/agent/stream app-log error near 20:42Z. The most recent matching rows were older (08:56Z) recovery/pool/tool-result errors, not tied to the reported build."
+  },
+  "live_server_version_endpoint": {
+    "git_sha": "0d2c8772215c8ec94d94a30dece489ea12be1ebc",
+    "built_at_utc": "2026-10-03T20:21:48Z",
+    "note": "This is the server version endpoint SHA; it does not verify the extension Store package SHA values b3a87d8b / b350b372."
+  },
+  "conclusion": "The targeted Supabase error/request surfaces do not identify the immediate guest Chat failure. The fresh forbidden tool failure is on a separate source_feature and completed its enclosing request. No direct error record or traceback source boundary for the reported symptom was found.",
+  "limitations": [
+    "AI Dream MCP errors(action='surfaces') and debug_traces were not exposed in this session; SQL was the available read-only captured-error route.",
+    "The user's exact failing request ID and browser-side Error Inspector record were not available to correlate."
+  ],
+  "report_path": ".research/guest-incident-capture-20261003.json"
+}
