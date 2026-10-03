@@ -1,0 +1,32 @@
+{
+  "lead": "EXT-L-SETTINGS-002",
+  "defect": "EXT-D-0093",
+  "scope": "Admin Settings audit-key card through AdvancedAgentCapabilities",
+  "current_truth": "Source repair is locally green; exact-build native behavior and independent review are unverified. Defect remains open.",
+  "diagnosis": {
+    "boundary": "AuditKeyCard asynchronous operation handlers and first-load effect",
+    "root_cause": "The first-load promise was not caught; export caught to console only; rotation joined the successful mutation and later refresh in one uncaught chain, so a failed refresh obscured a completed key change.",
+    "siblings": [
+      "Initial and retried audit detail reads",
+      "Public-key export and clipboard write",
+      "Rotation mutation",
+      "Post-rotation detail refresh"
+    ],
+    "repair": "Each operation reports a visible result. Details retry performs reads only. Rotation success is recorded immediately after mutation, before refresh. Failed reads clear stale key details. Structured debug logging records only exception type, never error text or key contents."
+  },
+  "verification": {
+    "red": "Guarded run audit-key-red-20261003: 3/3 connected-component cases failed for original missing UI outcomes; original load and rotation refresh also produced unhandled rejections.",
+    "green": "Guarded run audit-key-green-20261003: 3/3 connected-component cases passed without unhandled rejection.",
+    "compile": "Guarded run audit-key-compile-20261003: pnpm exec tsc --noEmit exited 0.",
+    "journals": [
+      "docs/stabilization/resource-journals/audit-key-red-20261003.jsonl",
+      "docs/stabilization/resource-journals/audit-key-green-20261003.jsonl",
+      "docs/stabilization/resource-journals/audit-key-compile-20261003.jsonl"
+    ],
+    "native": "Not run in this lane; no real user/device key was rotated."
+  },
+  "open": [
+    "Independent source review",
+    "Exact-build native Settings verification with isolated key inputs and safe failure injection"
+  ]
+}

@@ -1722,6 +1722,13 @@ Every entry follows this shape:
   6. Open Settings → Advanced agent capabilities → Audit key. Note the
      public-key ID and receipt count. Click "Export public key" — JWK
      copied. Click "Re-key" → confirm. Receipt count is preserved.
+     For failure checks, use an isolated test profile and simulated storage or
+     clipboard rejection. A failed load shows "Audit details unavailable"
+     with "Retry audit details"; a failed copy shows "Public key copy failed"
+     with "Retry export" and no copied checkmark. After a successful rotation
+     whose details refresh fails, "Key rotated" remains visible and retrying
+     details does not rotate again. A failed rotation reports failure and
+     requires a fresh Re-key confirmation.
   7. Run another tool. Verify the new receipt's `publicKeyId` matches
      the new active key. Open an old receipt — it still shows
      "Signature valid" (verified against the retired key in history).

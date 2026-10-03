@@ -1,0 +1,26 @@
+{
+  "id": "EXT-D-0093",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T27", "EXT-F-1003-T60"],
+  "surface": "Settings → Advanced agent capabilities → Audit key",
+  "auth_mode": "admin",
+  "title": "Audit-key load, export, and rotation failures lack actionable UI",
+  "reproduction": [
+    "In an isolated component test, reject the audit details read during the actual Advanced agent capabilities mount: the original card remains at loading and raises an unhandled rejection.",
+    "Reject clipboard writing after Export public key: the original card logs a warning but renders no failure or retry.",
+    "Let rotation succeed but reject its follow-up details read: the original handler raises an unhandled rejection and gives no honest rotation outcome."
+  ],
+  "expected": "Every failure is visible with an action that retries only the failed operation. A successful rotation remains acknowledged when its refresh fails; retrying details never rotates again.",
+  "actual": "The component initially had no failure state; load and rotation refresh rejected outside a catch, while export caught only to console.",
+  "severity": "S2: admin cannot tell whether key rotation succeeded or recover failed reads and copy",
+  "priority": "P2",
+  "state": "in-fix",
+  "evidence": [
+    "src/features/settings/AdvancedAgentCapabilities.audit-key.test.tsx",
+    "docs/stabilization/resource-journals/audit-key-red-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-key-green-20261003.jsonl",
+    ".research/settings-audit-error-repair.json"
+  ],
+  "current_work": "Connected component RED/GREEN passed with isolated key inputs. Source repair covers load, export, rotation, and failed refresh. Guarded compile passed. Independent source review and native exact-build verification are pending. Keep open until independently verified on the built extension.",
+  "closure_requirement": "Independent review plus exact-build native Settings verification of actionable failures and single-rotation retry behavior without rotating real user/device keys."
+}
