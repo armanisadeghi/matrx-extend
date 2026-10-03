@@ -1,0 +1,68 @@
+{
+  "observed_at": "2026-10-03T07:50:00Z",
+  "status": "unverified_pre_interaction_failure",
+  "case": "hosted member Chat acceptance",
+  "release": {
+    "version": "0.2.176",
+    "release_run_id": 37105966615,
+    "release_artifact_id": 11267544261,
+    "source_sha": "3fe608d949a06aa10bfea57b43c9b05638386bc1",
+    "tree_sha256": "755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272"
+  },
+  "runner": {
+    "workflow_run_id": 37107334126,
+    "workflow_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37107334126",
+    "workflow_head_sha": "3d05a324313962c05b4ac0b9f8859009dbc8a2fe",
+    "case_input": "member-chat",
+    "artifact_id": 11268860993,
+    "artifact_name": "hosted-guest-37107334126-1",
+    "artifact_digest": "sha256:137fc8ee54d6271a022dfcb012cac5111887e12283f45d41d968bec3ddfdb2b0",
+    "terminal": "failure"
+  },
+  "resource_guard": {
+    "package_setup": "valid_exit_0",
+    "chromium_setup": "valid_exit_0",
+    "acceptance_run_id": "hosted-guest-37107334126-1",
+    "decision": "child_failed",
+    "admitted": true,
+    "resource_invalid": false,
+    "exit_code": 1,
+    "resource_refusal": false,
+    "note": "The Chromium setup journal recorded one RESOURCE_WATCH_UNSAFE sample, then exited 0 with RESOURCE_FINAL_DECISION valid. Acceptance itself was admitted and failed in its child."
+  },
+  "failure": {
+    "runner_stage": "owned_profile",
+    "account": null,
+    "authentication_method": null,
+    "chat": null,
+    "screenshots": null,
+    "product_interaction_reached": false,
+    "actual_guest_or_member_answer_failure_observed": false,
+    "classification": "pre-interaction native runner/setup failure, not a resource refusal and not an observed Chat product failure",
+    "exact_cause": "unresolved",
+    "cause_limit": "The reviewer runner suppresses the underlying exception and reports only the coarse owned_profile stage. That stage spans the native harness's release verification and browser/profile launch/setup, so this run cannot separate an internal integrity check failure from subsequent profile setup. No screenshot or startup diagnostic was recorded."
+  },
+  "release_integrity_context": {
+    "reported_version": "0.2.176",
+    "reported_tree_sha256": "755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272",
+    "member_runner_after_run_unchanged_assertion": "not reached",
+    "independent_same_artifact_guest_run": "passed as run 37106907229; that run asserted artifact_unchanged and real guest answers before and after panel reload"
+  },
+  "ephemeral_auth_cleanup": {
+    "scoped_github_secret_deleted_after_terminal": true,
+    "secret_list_confirmed_absent": true,
+    "local_one_time_link_deleted_after_terminal": true,
+    "private_identity_file_preserved": true,
+    "credential_or_link_values_recorded": false
+  },
+  "evidence": {
+    "sanitized_runner_result": "test-results/reviewer-chat-store-a11312d0-74f4-429e-b69b-f355e54c6db1.json in hosted artifact 11268860993",
+    "run_scoped_acceptance_journal": "decision=child_failed, exit_code=1, resource_invalid=false",
+    "member_screenshots": "none"
+  },
+  "limits": [
+    "This run does not establish signed-in member identity, nonadmin response, organization selection, or member Chat behavior.",
+    "The already verified guest pass remains valid for guest Chat only; it does not fill member coverage.",
+    "No second launch was made after the single authorized attempt."
+  ]
+}
