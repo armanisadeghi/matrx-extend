@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "task": "reload-final-peer",
+  "status": "DONE_WITH_CONCERNS",
+  "checked_commit": "28e862c5e1348060ceddfc7551121f459b1b25c4",
+  "scope": "Independent zero-authorship verification of the actual unpacked extension reload lifecycle using only the frozen imported development artifact, in a fresh guarded guest Chrome profile.",
+  "artifact": {
+    "source_sha": "9dfb5911cd7fef18f8c36b1cefd273096e866bbf",
+    "ci_run_id": 37159097093,
+    "artifact_id": 11286822448,
+    "version": "0.2.184",
+    "tree_sha256": "2e99c4093efb34e2981f76581cc0c1bc66cdea7888e8296e2d47629e5a1cccb4"
+  },
+  "verdict_a_live_behavior": {
+    "verdict": "PASS_WITH_OBSERVATION",
+    "evidence": "Fresh read-only run reload-final-peer-20261003-01. Guard decision valid; child exit 0. Report SHA-256 9be767f5d6606bab9c9da74ab394791c9db111fb06429921b29f004506daa03a.",
+    "observed": {
+      "management_before": {"state": "ENABLED", "unsupported_developer_extension": false, "developer_mode": true, "runtime_error_count": 0, "manifest_error_count": 0},
+      "management_after": {"state": "ENABLED", "unsupported_developer_extension": false, "developer_mode": true, "runtime_error_count": 1, "manifest_error_count": 0},
+      "old_worker_destroyed_event": true,
+      "old_worker_absent": true,
+      "old_panel_absent": true,
+      "replacement_worker_present": true,
+      "replacement_worker_created_event": true,
+      "replacement_panel_present": true,
+      "side_panel_context_verified": true,
+      "native_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+    },
+    "observation": "Chrome reported one runtime error after reload. This probe records only the count, not its detail; its cause and relevance remain unverified. It does not invalidate the directly observed replacement lifecycle, but should be resolved before claiming a clean runtime."
+  },
+  "verdict_b_source_and_doctrine": {
+    "verdict": "PASS",
+    "evidence": [
+      "Source review confirms reload management state is checked before and after the native reload, Developer mode is explicitly enabled in the harness-owned profile, and strict destroyed/created event, old-target absence, replacement-target identity, and SIDE_PANEL context requirements remain present.",
+      "node tests/browser/native-sidepanel-qa-harness.test.mjs passed.",
+      "Safe forcing-function mutation inserted an immediate return into requireReloadEnabled; test failed with the expected Missing expected rejection assertion. plant.py restored original source byte-for-byte, SHA-256 prefix f13a4b4244fa."
+    ],
+    "concerns": []
+  },
+  "guarded_run": {
+    "run_id": "reload-final-peer-20261003-01",
+    "profile": "/Volumes/Samsung2TB/code/.stabilization-scratch/reload-final-peer-20261003-01/profile",
+    "profile_precreated_mode": "0700",
+    "report_external": "/Volumes/Samsung2TB/code/.stabilization-scratch/reload-final-peer-20261003-01/evidence/profile-reload-readonly-reload-final-peer-20261003-01.json",
+    "resource_journal": "docs/stabilization/resource-journals/reload-final-peer-20261003-01.jsonl",
+    "resource_decision": "valid",
+    "artifact_tree_sha256_reconfirmed": "2e99c4093efb34e2981f76581cc0c1bc66cdea7888e8296e2d47629e5a1cccb4",
+    "screenshots": [
+      "/Volumes/Samsung2TB/code/.stabilization-scratch/reload-final-peer-20261003-01/evidence/native-sidepanel-qa-G63EGJ/native-side-panel.png",
+      "/Volumes/Samsung2TB/code/.stabilization-scratch/reload-final-peer-20261003-01/evidence/native-sidepanel-qa-G63EGJ/normal-target-after-open.png"
+    ]
+  },
+  "constraints_observed": ["No local build or release", "No Profile or database mutation", "No edits to builder code"],
+  "remaining": "Runtime error detail was not exposed by the read-only probe and needs separate diagnosis before claiming the extension runtime is clean."
+}
