@@ -2,7 +2,7 @@
 /** Real guest Chat acceptance in a fresh, receipt-bound native side panel. */
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
@@ -26,6 +26,36 @@ const FOLLOWUP_QUESTION =
   'Read the unique follow-up check code from the article on my current tab and name the heading directly above the check codes. Include the exact code.';
 const REQUIRED_ANSWER_TERMS = ['Capture', 'Understand', 'Use'];
 const digest = (value) => createHash('sha256').update(value).digest('hex').slice(0, 16);
+
+async function fileInventory(root) {
+  const files = new Map();
+  async function walk(directory, prefix = '') {
+    for (const entry of await readdir(directory, { withFileTypes: true })) {
+      const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
+      const absolutePath = join(directory, entry.name);
+      if (entry.isDirectory()) {
+        await walk(absolutePath, relativePath);
+      } else if (entry.isFile()) {
+        const bytes = await readFile(absolutePath);
+        files.set(relativePath, {
+          bytes: bytes.length,
+          sha256: createHash('sha256').update(bytes).digest('hex'),
+        });
+      } else {
+        throw new Error(`artifact_inventory_non_file:${relativePath}`);
+      }
+    }
+  }
+  await walk(root);
+  return files;
+}
+
+function changedFiles(before, after) {
+  return [...new Set([...before.keys(), ...after.keys()])]
+    .sort()
+    .filter((path) => JSON.stringify(before.get(path)) !== JSON.stringify(after.get(path)))
+    .map((path) => ({ path, before: before.get(path) ?? null, after: after.get(path) ?? null }));
+}
 
 let stage = 'receipt';
 const report = {
@@ -500,6 +530,8 @@ async function capture(panel, path) {
 
 try {
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
+  const beforeFiles = await fileInventory(EXTENSION_DIR);
+  assert.equal(hashReleaseTree(EXTENSION_DIR), receipt.treeSha256, 'loaded extension initial tree');
   report.build = {
     version: receipt.version,
     tree_sha256: receipt.treeSha256,
@@ -748,7 +780,18 @@ try {
     },
   });
   markStage('artifact_unchanged');
-  assert.equal(hashReleaseTree(EXTENSION_DIR), receipt.treeSha256);
+  const afterTreeSha256 = hashReleaseTree(EXTENSION_DIR);
+  if (afterTreeSha256 !== receipt.treeSha256) {
+    const afterFiles = await fileInventory(EXTENSION_DIR);
+    report.build.integrity_failure = {
+      expected_tree_sha256: receipt.treeSha256,
+      actual_tree_sha256: afterTreeSha256,
+      before_file_count: beforeFiles.size,
+      after_file_count: afterFiles.size,
+      changed_files: changedFiles(beforeFiles, afterFiles),
+    };
+  }
+  assert.equal(afterTreeSha256, receipt.treeSha256, 'loaded extension tree changed');
   report.build.extension_id = run.extensionId;
   report.build.artifact_unchanged = true;
   report.status = 'pass';
