@@ -9,7 +9,10 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const RECEIPT = join(REPO, '.output', 'release-receipt.json');
+const RECEIPT = resolve(
+  process.env.MATRX_GUEST_CHAT_RELEASE_RECEIPT ?? join(REPO, '.output', 'release-receipt.json'),
+);
+const EXTENSION_DIR = process.env.MATRX_GUEST_CHAT_EXTENSION_DIR;
 const OUTPUT = join(REPO, 'test-results', `guest-chat-store-screenshot-${randomUUID()}.json`);
 const DEMO = 'https://www.aimatrx.com/matrx-extend-demo';
 const QUESTION =
@@ -104,9 +107,14 @@ async function captureStoreCandidate(panel, artifacts) {
 
 try {
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
-  report.build = { version: receipt.version, tree_sha256: receipt.treeSha256 };
+  report.build = {
+    version: receipt.version,
+    tree_sha256: receipt.treeSha256,
+    receipt_kind: receipt.kind ?? 'release',
+  };
   stage = 'owned_guest_profile';
   const run = await runNativeSidepanelQa({
+    ...(EXTENSION_DIR && { extensionDir: resolve(EXTENSION_DIR) }),
     expectedRelease: receipt,
     releaseReceiptPath: RECEIPT,
     exercisePanel: async ({ page, panel, artifacts, attachWorker }) => {
