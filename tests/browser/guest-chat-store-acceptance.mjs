@@ -510,6 +510,10 @@ try {
     extensionDir: EXTENSION_DIR,
     expectedRelease: receipt,
     releaseReceiptPath: RECEIPT,
+    ...(receipt.kind === 'published_store_crx_unpacked' && {
+      expectedExtensionId: receipt.extensionId,
+      publicDemoUrl: 'https://www.aimatrx.com/matrx-extend-demo',
+    }),
     ...(receipt.kind === 'local_dev_unpacked' && { localDevReceiptPath: RECEIPT }),
     exercisePanel: async ({ page, panel, artifacts, attachWorker }) => {
       markStage('fresh_guest');
@@ -531,7 +535,10 @@ try {
       let networkWatch = null;
       try {
         markStage('owned_article_page');
-        assert.equal(new URL(web.url()).hostname, 'localhost');
+        assert.equal(
+          new URL(web.url()).hostname,
+          receipt.kind === 'published_store_crx_unpacked' ? 'www.aimatrx.com' : 'localhost',
+        );
         await waitFor(
           'owned_article_content',
           () => web.locator('main article').count(),

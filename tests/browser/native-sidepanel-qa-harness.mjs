@@ -71,6 +71,20 @@ function resolveExpectedRelease({ receipt, extensionDir, expectedRelease, localD
       version: dev.version,
     });
   }
+  if (receipt?.kind === 'published_store_crx_unpacked') {
+    if (!extensionDir || !expectedRelease || expectedRelease.treeSha256 !== receipt.treeSha256 ||
+        expectedRelease.version !== receipt.version)
+      throw new Error('native_sidepanel_store_crx_provenance_refused');
+    return Object.freeze({
+      kind: receipt.kind,
+      extensionDir: resolve(extensionDir),
+      treeSha256: receipt.treeSha256,
+      version: receipt.version,
+      crxPath: receipt.crxPath,
+      crxSha256: receipt.crxSha256,
+      extensionId: receipt.extensionId,
+    });
+  }
   const released = requireReleaseReceipt(receipt);
   if (extensionDir !== undefined) {
     if (
@@ -103,6 +117,20 @@ async function verifyReleasedArtifact(expected) {
   if (hashReleaseTree(expected.extensionDir) !== expected.treeSha256)
     throw new Error('native_sidepanel_release_tree_refused');
   if (expected.kind === 'local_dev_unpacked') return;
+  if (expected.kind === 'published_store_crx_unpacked') {
+    if (!/^[a-f0-9]{64}$/.test(expected.crxSha256 ?? '') ||
+        expected.extensionId !== 'hnfolienncfklkgmdjjmhhegglimlamg')
+      throw new Error('native_sidepanel_store_crx_receipt_refused');
+    const crx = await readFile(expected.crxPath);
+    if (sha256(crx) !== expected.crxSha256)
+      throw new Error('native_sidepanel_store_crx_hash_refused');
+    const key = Buffer.from(manifest.key ?? '', 'base64');
+    const actualId = [...sha256(key).slice(0, 32)]
+      .map((digit) => String.fromCharCode(97 + Number.parseInt(digit, 16))).join('');
+    if (actualId !== expected.extensionId)
+      throw new Error('native_sidepanel_store_crx_identity_refused');
+    return;
+  }
   let zip;
   try {
     zip = await readFile(expected.storeZipPath);
@@ -333,6 +361,7 @@ export async function runNativeSidepanelQa({
   chromeExecutable,
   expectedExtensionId = EXPECTED_EXTENSION_ID,
   artifactRoot = join(REPO, 'test-results'),
+  publicDemoUrl,
   exercisePanel,
 } = {}) {
   let receipt;
@@ -438,6 +467,13 @@ export async function runNativeSidepanelQa({
       throw new Error('native_sidepanel_target_not_distinct');
     requireSidePanelContext(await sidePanelContexts(cdp, extensionWorker.targetId), panelUrl);
     const readyPanel = await waitForSettledGuestPanel(cdp, panelTarget.targetId);
+
+    if (publicDemoUrl) {
+      if (publicDemoUrl !== 'https://www.aimatrx.com/matrx-extend-demo')
+        throw new Error('native_sidepanel_public_demo_url_refused');
+      await page.goto(publicDemoUrl);
+      await page.locator('main article').waitFor({ state: 'visible' });
+    }
 
     const normalPng = join(artifacts, 'normal-target-after-open.png');
     const panelPng = join(artifacts, 'native-side-panel.png');
