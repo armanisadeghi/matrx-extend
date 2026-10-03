@@ -1,0 +1,20 @@
+{
+  "status": "DONE",
+  "verdict_a": {
+    "readiness": "PASS_FOR_DIAGNOSTIC_RUN",
+    "product_runtime": "UNVERIFIED",
+    "evidence": "Prior exact-artifact run failed in baseline before cases; no UI behavior verdict follows."
+  },
+  "verdict_b": {
+    "diagnostic_quality": "PASS",
+    "evidence": "Fixed operation/stage labels, allowlisted observation and pointer codes, and sanitized Settings state distinguish waits/assertions/driver failures without raw errors or page data.",
+    "assertions_and_provenance": "Source diff preserves receipt/tree checks and acceptance predicates; added reporting is observational."
+  },
+  "limits": "Source review only; no browser/native run. New instrumentation is runner-side and retains the exact product artifact provenance.",
+  "format": "Baseline report reformatted; runner and both reports pass Biome final-bytes check.",
+  "owncommits": ["d6b94f2e", "e9f57e98"],
+  "files": [
+    "tests/browser/settings-d87-native-acceptance.mjs",
+    ".research/d87-baseline-diagnosis.json"
+  ]
+}
