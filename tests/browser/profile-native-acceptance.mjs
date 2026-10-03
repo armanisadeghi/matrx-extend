@@ -110,10 +110,16 @@ async function state(panel) {
     const buttons=[...document.querySelectorAll('button')].filter(visible);
     const row=[...document.querySelectorAll('span')].find(el=>el.textContent.trim()==='Preferred');
     const input=row?.parentElement?.querySelector('input') ?? row?.parentElement?.parentElement?.querySelector('input');
+    const backButton=document.querySelector('button[title="Back"]');
+    const profileRoot=backButton?.parentElement?.parentElement;
+    const profileBody=profileRoot?.children?.[1];
+    const headerSave=profileRoot?.querySelector('button[aria-label="Save profile"]');
     return { profile:buttons.some(b=>b.textContent.trim()==='Profile'),
       back:buttons.some(b=>b.title==='Back'), chat:!!document.querySelector('button[role="tab"][title="Chat"][data-state="active"]'),
       preferred:input?.value ?? null, dirty:(document.body.innerText??'').includes('Unsaved changes'),
       discard:buttons.some(b=>b.textContent.trim()==='Discard'), saveEnabled:buttons.some(b=>b.textContent.trim()==='Save'&&!b.disabled),
+      editorCount:profileBody?.querySelectorAll('input,textarea,select').length??0,
+      headerSaveDisabled:headerSave?.disabled??null,
       loading:!input,
       error:([...document.querySelectorAll('div')].find(el=>el.classList.contains('text-destructive')&&
         el.classList.contains('rounded-xl')&&el.classList.contains('border-destructive/40'))?.textContent??'').slice(0,160) };
@@ -443,6 +449,102 @@ async function caseT04(panel, original) {
   });
 }
 
+async function caseT25(panel, original) {
+  const id = 'EXT-F-1004-T25';
+  const startedAt = new Date().toISOString();
+  const fault = { matched: 0, refused: 0, failures: 0 };
+  const network = observeProfileRequests(panel);
+  await click(panel, 'title', 'Back');
+  await waitFor(
+    'chat_before_denied_read',
+    () => state(panel),
+    (s) => s.chat && !s.back,
+    10000,
+  );
+  const offPaused = panel.on('Fetch.requestPaused', ({ requestId, request }) => {
+    const ownerRead =
+      request?.method === 'GET' && new URL(request.url).pathname === '/rest/v1/user_form_profile';
+    if (ownerRead) fault.matched += 1;
+    void panel
+      .send(
+        ownerRead ? 'Fetch.failRequest' : 'Fetch.continueRequest',
+        ownerRead ? { requestId, errorReason: 'Failed' } : { requestId },
+      )
+      .then(() => {
+        if (ownerRead) fault.refused += 1;
+      })
+      .catch(() => {
+        fault.failures += 1;
+      });
+  });
+  await network.start();
+  await panel.send('Fetch.enable', {
+    patterns: [{ urlPattern: '*://*/rest/v1/user_form_profile*', requestStage: 'Request' }],
+  });
+  let blocked;
+  try {
+    await click(panel, 'title', 'admin@admin.com');
+    await click(panel, 'button-text', 'Profile');
+    blocked = await waitFor(
+      'profile_owner_read_denied',
+      () => state(panel),
+      (s) => s.back && Boolean(s.error) && s.headerSaveDisabled === true,
+      30000,
+    );
+    assert.ok(fault.refused > 0, 'owner_read_network_refusal_not_observed');
+    assert.equal(fault.failures, 0, 'owner_read_fault_failed');
+    assert.equal(blocked.preferred, null, 'denied_read_showed_preferred_editor');
+    assert.equal(blocked.editorCount, 0, 'denied_read_showed_editors');
+    assert.equal(blocked.saveEnabled, false, 'denied_read_enabled_save');
+    assert.equal(blocked.dirty, false, 'denied_read_showed_dirty_footer');
+  } finally {
+    await panel.send('Fetch.disable');
+    offPaused();
+  }
+  await click(panel, 'button-text', 'Retry loading profile');
+  const recovered = await waitFor(
+    'profile_retry_restored_owner_read',
+    () => state(panel),
+    (s) => s.preferred === original && !s.error && !s.dirty,
+    30000,
+  );
+  const requests = await waitFor(
+    'profile_retry_network_read_finished',
+    () => network.snapshot(),
+    (events) =>
+      events.some(
+        (request) =>
+          request.route === 'profile_row' && request.method === 'GET' && request.status === 200,
+      ),
+    10000,
+  );
+  network.stop();
+  assert.ok(
+    requests.some(
+      (request) =>
+        request.route === 'profile_row' && request.method === 'GET' && request.status === 200,
+    ),
+    'profile_retry_successful_owner_read_not_observed',
+  );
+  report.cases.push({
+    id,
+    mode: 'admin',
+    dimension: 'warm',
+    branch: 'denied-owner-read-retry',
+    status: 'passed',
+    started_at: startedAt,
+    observed: {
+      network_owner_reads_refused: fault.refused,
+      editors_during_denial: blocked.editorCount,
+      header_save_disabled: blocked.headerSaveDisabled,
+      footer_save_enabled: blocked.saveEnabled,
+      dirty_footer_during_denial: blocked.dirty,
+      retry_restored_original: recovered.preferred === original,
+      owner_read_http_200_after_retry: true,
+    },
+  });
+}
+
 try {
   assert.ok(RUN_ID && /^[a-zA-Z0-9_-]+$/.test(RUN_ID), 'run_id_required');
   assert.ok(OUTPUT_DIR && OUTPUT_DIR.startsWith('/'), 'output_dir_required');
@@ -502,6 +604,7 @@ try {
       report.original_preferred_present = Boolean(original);
       await caseT02(panel, original);
       await caseT04(panel, original);
+      await caseT25(panel, original);
     },
   });
   report.native = {
