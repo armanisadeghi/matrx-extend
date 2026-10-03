@@ -49,7 +49,16 @@
   },
   "root_cause_boundary": "The published client sends the browser-dom capability, not tool definitions. The server's browser_dom._build_auto_load_specs enumerates live chrome-extension registry rows. Its _inline_kwargs_from_registry maps each tool.parameters entry into input_schema.properties; a DB metadata key $envelope:'args' thereby becomes a false property whose type is 'args', which InlineToolSpec rejects. The exact live tool row and first introduction are for the server lane to establish.",
   "restoration_path": "Repair the server-side registry-to-InlineToolSpec translation or canonical DB definition, then redeploy the server and replay the guest start. The installed Store 0.2.130 request shape need not change for this failure.",
+  "records_envelope_compatibility": {
+    "scope": "Source proof only; no native records call was observed.",
+    "published_client": "The 0.2.130 records handler expects flat action/topic/limit and other action arguments. Its dispatcher forwards tool_delegated.data.arguments directly to a Zod object. A nested args object is stripped, so a nested guide topic becomes null and returns the generic guide; a nested parameterized read loses its parameters.",
+    "server_revisions_inspected": ["41aff687f768a1c0997dce70f595ea978a4f326c", "c01faa5266"],
+    "server_boundary": "Although ToolExecutor.execute calls unwrap_args_envelope, browser-dom turns the DB row into an InlineToolSpec. merge_request_tools stashes a request-local ToolDefinition built solely from the projected input_schema.properties. ToolExecutor.execute prioritizes that projected definition over the DB registry row. The projected parameters have no $envelope or $variants, so args_envelope is None and unwrapping is skipped. The delegated event carries the nested model arguments to the published client.",
+    "impact": "A plain table_list with no nested fields can run with defaults, but guide(topic), parameterized reads, and explicit list limits do not retain their arguments. This is separate from the immediate Chat-start crash and should not delay first-answer recovery.",
+    "needed_repair": "Preserve the registry envelope contract through server-side projected tool dispatch or normalize nested arguments before tool_delegated. Recheck with a native read-only guide and list call."
+  },
   "limitations": [
-    "No extension-side change is justified by this trace; final live recovery remains to be verified after server repair."
+    "No extension-side change is justified by the initial Chat-start trace; final live recovery remains to be verified after server repair.",
+    "The records compatibility finding is based on source trace across the server and published extension, not native execution."
   ]
 }
