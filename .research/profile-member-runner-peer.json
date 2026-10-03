@@ -2,12 +2,13 @@
   "schema_version": 1,
   "review_type": "fresh source-only peer review; no native browser, build, or heavy test run",
   "builder_commit": "fc15a60ecd44a8cfc246783d63b07474d3d9a123",
+  "later_reload_helper_commit": "1aa16b6c (worker-retirement follow-up; source-only peer review pending)",
   "scope": "member Profile and genuine Chrome extension reload adaptation of tests/browser/profile-native-acceptance.mjs",
   "verdict_a_launch_readiness": "BLOCKED",
   "verdict_a_basis": [
     "The member path reuses existing first-party magic-link authentication, binds the extension profile to the first-party user, verifies the canonical admins read returned zero rows, and checks rendered nonadmin identity and selected organization.",
     "The reload path clicks Chrome's extension-management Reload control, requires retirement of both original targets, a replacement worker and panel, and an actual SIDE_PANEL runtime context. Warm and reload rows are recorded separately; panel reopen alone is not counted as extension reload.",
-    "The runner verifies the imported CI receipt, source SHA, run ID, artifact ID, manifest, and tree before browser launch. The currently recorded imported artifact is source 2274cc2fc929f7682c61f1a137e472a87caa2114, which predates this runner commit. A fresh exact-source CI artifact and dependency refresh must be recorded and verified before a launch claim.",
+    "The runner verifies the imported CI receipt, source SHA, run ID, artifact ID, manifest, and tree before browser launch. The builder separately imported and verified product artifact source 2efd0e61 from CI run 37151712068, artifact 11283649857, tree ab10b6a8227b4288749ada2815ac4acf6eefccfcefe2cbf766235490d1d223a5. The test-only runner commit does not itself require a new product build if product source hashes are identical. This review did not independently inspect that import or execute native acceptance.",
     "If the owner's Profile row is absent before the run, save/discard creates a row and restoring an empty Preferred value does not restore the original absence. A passing result could leave a persistent record that did not exist before the test."
   ],
   "verdict_b_quality": "FAIL_NEEDS_CORRECTION",
@@ -25,13 +26,13 @@
     {
       "severity": "bounded_limit",
       "file": "tests/browser/profile-native-acceptance.mjs",
-      "finding": "The source review does not establish any native acceptance pass. The currently imported CI artifact predates the runner change; report rows remain unverified until a guarded run on exact verified source is examined independently."
+      "finding": "The source review does not establish any native acceptance pass. Product artifact source 2efd0e61 was reported verified after this peer's original artifact read. The later 1aa16b6c worker-retirement helper change has not received this peer's source review. Report rows remain unverified until a guarded native run and independent evidence examination."
     }
   ],
   "positive_controls": [
     "No product Profile handler or identity stub was introduced.",
     "T25 uses CDP Fetch.failRequest only against the real owner profile GET and checks recovery through a subsequent successful owner read.",
-    "The save/discard path records only redacted state booleans and checks real profile GET and POST responses before case rows are marked passed."
+    "The save/discard diagnostic stages use redacted state booleans and check real profile GET and POST responses before case rows are marked passed; the separate missing-row report field still violates the privacy requirement."
   ],
   "source_anchors": [
     "tests/browser/profile-native-acceptance.mjs",
@@ -41,7 +42,7 @@
     "tests/browser/vault-extension-lifecycle-acceptance.cjs",
     "scripts/current-test-artifact.mjs",
     ".research/popup-profile-procedures.json",
-    ".research/current-development-artifact-refresh.json"
+    ".research/current-development-artifact-refresh.json (older 2274 import; superseded by builder-reported 2efd import)"
   ],
   "checks": {
     "node_check_profile_runner": "passed",
