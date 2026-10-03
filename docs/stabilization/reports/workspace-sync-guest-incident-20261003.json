@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-10-03T08:21:53.534740+00:00",
-  "last_all_remotes_fetched": "2026-10-03T08:21:53.534740+00:00",
-  "baseline": "2026-10-03T07:29:32.839535+00:00",
+  "observed_at": "2026-10-03T09:29:41.693616+00:00",
+  "last_all_remotes_fetched": "2026-10-03T09:29:41.693616+00:00",
+  "baseline": "2026-10-03T08:21:53.534740+00:00",
   "repositories": [
     {
       "repo": "workspace",
@@ -12,7 +12,9 @@
       "ahead_behind": "0\t0",
       "dirty_paths": [],
       "stashes": [],
-      "other_branches": ["main"],
+      "other_branches": [
+        "main"
+      ],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code",
         "HEAD 0276d4dcabef2d7d43fcfd0bd395050621971f5a",
@@ -21,49 +23,62 @@
     },
     {
       "repo": "aidream",
-      "origin_main": "a88619a5f96d6e976ab0fd882045234dcb4f92d4",
-      "last_update": "2026-10-03T01:04:33-07:00",
-      "files_modified_since_prior_ledger": 7,
+      "origin_main": "4c997ad0b3eba166a714df66eca8bc67c7e137dd",
+      "last_update": "2026-10-03T09:28:22Z",
+      "files_modified_since_prior_ledger": 351,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
       "stashes": [],
-      "other_branches": ["main"],
+      "other_branches": [
+        "main"
+      ],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/aidream",
-        "HEAD a88619a5f96d6e976ab0fd882045234dcb4f92d4",
+        "HEAD 4c997ad0b3eba166a714df66eca8bc67c7e137dd",
         "branch refs/heads/main"
       ]
     },
     {
       "repo": "ai-matrx",
-      "origin_main": "5cbf8ba4cb44d92263f56590fc7b1b6eb1591fb7",
-      "last_update": "2026-10-03T01:04:46-07:00",
-      "files_modified_since_prior_ledger": 103,
+      "origin_main": "6286d567699adc22f2bf719d84931e12d062609d",
+      "last_update": "2026-10-03T01:54:07-07:00",
+      "files_modified_since_prior_ledger": 372,
       "branch": "main",
-      "ahead_behind": "0\t0",
-      "dirty_paths": [],
+      "ahead_behind": "0\t41",
+      "dirty_paths": [
+        "M packages/chat/src/host/db-types.ts",
+        "M types/database.types.ts"
+      ],
       "stashes": [],
-      "other_branches": ["main"],
+      "other_branches": [
+        "main"
+      ],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/ai-matrx",
-        "HEAD 5cbf8ba4cb44d92263f56590fc7b1b6eb1591fb7",
+        "HEAD 2ccb3924fd94f8712af42ee63286dac67f99ff69",
         "branch refs/heads/main"
-      ]
+      ],
+      "sync_blocker": "Fast-forward held: origin/main is 41 commits ahead and changes both locally modified generated-type files; preserving those edits pending their owner."
     },
     {
       "repo": "matrx-extend",
-      "origin_main": "07e5f0ebea1778f739001f720135ed6cfd5c98eb",
-      "last_update": "2026-10-03T01:19:55-07:00",
-      "files_modified_since_prior_ledger": 46,
+      "origin_main": "6aa7dfb7076615c1d91ce945cbf5498b60c97090",
+      "last_update": "2026-10-03T02:25:25-07:00",
+      "files_modified_since_prior_ledger": 28,
       "branch": "main",
       "ahead_behind": "0\t0",
-      "dirty_paths": ["M tests/browser/settings-d87-native-acceptance.mjs"],
+      "dirty_paths": [
+        "M tests/browser/native-sidepanel-qa-harness.mjs",
+        "M tests/browser/native-sidepanel-qa-harness.test.mjs"
+      ],
       "stashes": [],
-      "other_branches": ["main"],
+      "other_branches": [
+        "main"
+      ],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-extend",
-        "HEAD 07e5f0ebea1778f739001f720135ed6cfd5c98eb",
+        "HEAD 6aa7dfb7076615c1d91ce945cbf5498b60c97090",
         "branch refs/heads/main"
       ]
     },
@@ -76,7 +91,9 @@
       "ahead_behind": "0\t0",
       "dirty_paths": [],
       "stashes": [],
-      "other_branches": ["main"],
+      "other_branches": [
+        "main"
+      ],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-local",
         "HEAD 3faa69176c1db1deaadbe41f9759e40edd0dbc77",
@@ -92,7 +109,9 @@
       "ahead_behind": "0\t0",
       "dirty_paths": [],
       "stashes": [],
-      "other_branches": ["main"],
+      "other_branches": [
+        "main"
+      ],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-sandbox",
         "HEAD 867ce5b6225a272c1a54bba9c6fc8bd1c977e7b0",
@@ -108,7 +127,9 @@
       "ahead_behind": "0\t0",
       "dirty_paths": [],
       "stashes": [],
-      "other_branches": ["main"],
+      "other_branches": [
+        "main"
+      ],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-ship",
         "HEAD e98bc7d9420e9aff0c68378138249b0ad4829d2d",
@@ -124,7 +145,9 @@
       "ahead_behind": "0\t0",
       "dirty_paths": [],
       "stashes": [],
-      "other_branches": ["main"],
+      "other_branches": [
+        "main"
+      ],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/my-matrx",
         "HEAD 9af212db67f547090e51412315cb9cd6eaa5bda9",
@@ -133,17 +156,19 @@
     },
     {
       "repo": "matrx-common-docs",
-      "origin_main": "da8da84ed6b37787a832e2931ac7edf9843325fd",
-      "last_update": "2026-10-03T01:18:00-07:00",
-      "files_modified_since_prior_ledger": 60,
+      "origin_main": "f1bd1cf368e1e8a95231ac6499ff190ba50fdb04",
+      "last_update": "2026-10-03T02:27:45-07:00",
+      "files_modified_since_prior_ledger": 1290,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
       "stashes": [],
-      "other_branches": ["main"],
+      "other_branches": [
+        "main"
+      ],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-common-docs",
-        "HEAD da8da84ed6b37787a832e2931ac7edf9843325fd",
+        "HEAD f1bd1cf368e1e8a95231ac6499ff190ba50fdb04",
         "branch refs/heads/main"
       ]
     },
@@ -156,7 +181,9 @@
       "ahead_behind": "0\t0",
       "dirty_paths": [],
       "stashes": [],
-      "other_branches": ["main"],
+      "other_branches": [
+        "main"
+      ],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-package-template",
         "HEAD d795643c38c1dfa9d9970b2baa9b3ae20f8a493c",
