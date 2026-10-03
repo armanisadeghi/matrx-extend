@@ -17,7 +17,7 @@
     "interpretation": "The existing account is a real, currently enabled nonadmin identity. The read-only query does not validate a password or prove a fresh browser session."
   },
   "credential_readiness": {
-    "status": "UNVERIFIED_OWNER_VAULT_REACHED_CREDENTIAL_NOT_IDENTIFIED",
+    "status": "UNVERIFIED_CANONICAL_VAULT_HAS_NO_IDENTIFIABLE_REVIEWER_LOGIN",
     "containment_source": "docs/stabilization/reports/reviewer-credential-containment-20261002.json",
     "prior_login_result": "rejected",
     "private_sources_checked": [
@@ -41,13 +41,14 @@
       "browser": "Existing personal Chrome profile; no new profile or sign-in",
       "observed_tabs": "Two existing signed-in AI Matrx web tabs were listed by browser metadata (Chat and Data). The Chat tab was claimed without navigation.",
       "recovery": "Resetting only the CUA session did not fix the focus-emulation timeout. Native Chrome window inspection on a nonsecret page showed that Chrome Memory Saver had discarded the Chat tab; selecting and reloading that existing tab restored browser-specific control without a new profile or login. This was a discarded-tab control issue, not a locked Vault or system permission prompt.",
-      "owner_vault_state": "Opened www.aimatrx.com/vault in a new tab in the same existing Chrome profile. The page showed Arman Sadeghi signed in, organization AI Matrx selected, and 44 items under My credentials. A visible search for reviewer returned zero matches; no item was opened. This search alone does not exhaustively identify the credential by email or alternate title.",
+      "owner_vault_state": "Opened www.aimatrx.com/vault in a new tab in the same existing Chrome profile. The page showed Arman Sadeghi signed in, organization AI Matrx selected, 44 My credentials, one Shared with me credential (the admin test account), and 36 Organization credentials with All organizations selected. Visible searches for reviewer, Chrome, and store returned zero personal matches; test returned only an isolated macOS Vault test credential and an OAuth test client. No reviewer item was opened or revealed.",
+      "canonical_metadata_census": "A fresh read-only Supabase query joined the exact reviewer auth email internally by its SHA-256 fingerprint against every users.credential_items display name, description, notes, login URL, nonsecret field, and custom field. It returned zero matches, including deleted items. Exactly one active website_login item has an aimatrx.com login URL, and it is the admin test account. No encrypted field values were queried.",
       "secret_exposure": false,
       "vault_reveal_attempted": false,
       "browser_mutation": "Only the discarded existing Chat tab was reloaded and a temporary Vault tab opened; no account, Vault item, or login state was changed.",
-      "next_recovery": "Search the owner's Vault by the exact existing reviewer account identity or alternate item metadata, then use the supported reveal flow only if the item is identified and the page allows it. Keep any value in private process memory; never request native app re-selection or accessibility capture while plaintext is visible."
+      "next_recovery": "The canonical Vault metadata has no identifiable reviewer login. Recover an existing valid nonadmin credential from a different authorized source, if one exists. If none exists, prepare a new ordinary nonadmin test fixture through the canonical account and organization flow, with a privately handled password and no change to the exposed Store reviewer account. Establish fresh real sign-in and independent zero-admin-assignment proof before acceptance. Do not use the D79 native capture path with real plaintext."
     },
-    "result": "No existing valid reviewer password was recovered. The authorized admin Vault API worked but its scope did not contain the reviewer identity. The owner's authenticated Vault was reached after restoring a discarded Chrome tab, but the initial reviewer-title search returned no match. No password value, auth token, or account identifier was printed or copied. No reviewer credential was retried, reset, rotated, or committed.",
+    "result": "No existing valid reviewer password was recovered. The authenticated owner Vault and read-only canonical metadata census found no identifiable reviewer login; the only aimatrx.com website login item is the admin test account. No password value, auth token, or account identifier was printed or copied. No reviewer credential was retried, reset, rotated, or committed.",
     "next_safe_source": "Use the existing authenticated Vault account that owns the reviewer item, or a private owner-readable credential file. Keep any Vault reveal response in process memory and write only a mode-0600 runner input file if required. Establish the same fingerprint and a successful real web session before claiming readiness. Do not use the native CUA app-selection path from EXT-D-0079."
   },
   "candidate_acceptance": {
@@ -69,7 +70,8 @@
     "Local private-source metadata and file permissions checked without emitting values",
     "Fresh admin Auth and first-party Vault personal/shared/organization/inventory read APIs succeeded; scoped metadata contained no exact reviewer identity",
     "Existing owner Chrome Chat/Data tab metadata was observed; focus-emulation timeouts were traced to a Memory Saver discarded tab and resolved by restoring it",
-    "Authenticated owner Vault reached in the existing Chrome profile; 44 personal credentials loaded and reviewer-title search returned zero matches",
+    "Authenticated owner Vault reached in the existing Chrome profile; 44 personal, one shared admin-test, and 36 organization credentials inspected by safe metadata without reveal",
+    "Read-only canonical users.credential_items census: zero exact reviewer-email metadata matches and only one active aimatrx.com website login, the admin test account",
     "Hosted helper and guard allowlist inspected; reviewer runner is locally allowlisted, hosted helper does not support it"
   ]
 }
