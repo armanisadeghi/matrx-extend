@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "method": "Fresh zero-authorship source review; no hosted or heavy browser run",
+  "reviewed_commits": [
+    "b111cb3f",
+    "a9f17f9e",
+    "53ec7df9"
+  ],
+  "verdict_a_live_acceptance": {
+    "status": "PENDING",
+    "source_readiness": "ACCEPTED_FOR_EXACT_CANDIDATE_RUN",
+    "reason": "Guest and existing nonadmin member acceptance have not run against the next exact published release artifact in the hosted native browser. A source pass is not a product pass; Store update remains gated on both live results for the same candidate.",
+    "candidate_binding": "The member case requires a successful published-release run, a receipt whose source SHA equals its fetched version tag, verified local and Store ZIP hashes, keyed extracted tree, manifest version, and the expected extension ID. Development and published Store CRX modes are refused for this case.",
+    "nonadmin_binding": "The private helper requires the fixed reviewer email fingerprint, matching existing confirmed unbanned Auth user, zero admin.admins rows, and exactly one active organization membership in Matrx's Org. The runner requires the fixed fingerprint again from first-party signed-in whoami, equal whoami and extension profile user IDs, a real extension bearer, normal OAuth, and the extension's own HTTP 200 admin.admins GET returning an empty array for that ID. The absent nonadmin Role row is not counted as evidence.",
+    "live_limit": "The helper dry-run minted no link. Hosted iostat latency, magic-link consumption, extension OAuth, organization selection, and completed Chat remain unobserved for the next candidate. Magic-link acceptance establishes existing-account signed-in behavior, not password-form readiness."
+  },
+  "verdict_b_source_quality": {
+    "status": "PASS",
+    "findings": [],
+    "guard_safety": "The CPU sampler takes the second of two bounded iostat readings, rejects malformed/missing/invalid measurements, and leaves the guard's sustained-busy and high-load policies intact. Measurement failure refuses or invalidates the resource permit; child failure remains a distinct verdict. Local iostat produced the expected shape.",
+    "secret_boundary": "The link is created exclusively in a mode-0600 private file under runner temporary storage, omitted from the artifact upload patterns, removed after the acceptance child, and stripped from that child's environment. Source contains no auth-page screenshot, token logging, email send, password change, or admin-session injection. The outer GitHub step and resource wrapper still carry the secret in their process environments until the child starts; live secrecy cannot be established by source review.",
+    "verification": [
+      "node --check for reviewer runner, link helper, and hosted runner passed",
+      "11 resource safety and journal tests passed",
+      "Actual local /usr/sbin/iostat -c 2 -w 1 -n 0 produced the expected two readings"
+    ]
+  }
+}
