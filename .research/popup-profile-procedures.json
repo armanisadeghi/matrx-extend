@@ -16,6 +16,11 @@
     "EXT-F-1002-T13",
     "EXT-F-1002-T14",
     "EXT-F-1002-T15",
+    "EXT-F-1002-T16",
+    "EXT-F-1002-T17",
+    "EXT-F-1002-T18",
+    "EXT-F-1002-T19",
+    "EXT-F-1002-T20",
     "EXT-F-1004-T01",
     "EXT-F-1004-T02",
     "EXT-F-1004-T03",
@@ -43,19 +48,13 @@
     "EXT-F-1004-T25",
     "EXT-F-1004-T26",
     "EXT-F-1004-T27",
-    "EXT-F-1004-T28",
-    "EXT-F-1002-T19",
-    "EXT-F-1002-T20",
-    "EXT-F-1002-T16",
-    "EXT-F-1002-T17",
-    "EXT-F-1002-T18"
+    "EXT-F-1004-T28"
   ],
   "inventory_authority": "docs/stabilization/inventory.json (read only; case IDs and mode applicability preserved)",
   "shared_preconditions": [
-    "Apply the inventory\u2019s existing build/runtime preconditions. Before each case, record exact loaded extension ID, version, and loaded-from path in chrome://extensions; reload the extension and reopen the tested surface before the first run, then repeat after a second extension reload when the case dimension includes reload. Do not treat that setup reload as the post-reload repetition.",
-    "Use an existing account already independently known to be guest, member, or admin as stated by the case. Record visible email and role evidence; never change account roles or include credentials. For authenticated writes, record the active device organization and do not infer it from the account.",
-    "Use synthetic disposable values for profile edits and retain a record of original values so they can be restored. Preserve existing inventory status and all global runtime preconditions.",
-    "Reachability check: inspect the loaded manifest in chrome://extensions. In local/unpacked WXT builds, the popup entrypoint supplies action.default_popup; opening its extension URL in an ordinary tab is not a toolbar-popup test. In a Chrome Web Store build, wxt.config.ts filters out the popup entrypoint and configures Chrome to open the sidepanel on action click. Options and mic-grant remain separately included extension pages; test options from the extension Details > Extension options link, and test mic-grant through Chat\u2019s microphone permission flow."
+    "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+    "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+    "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch."
   ],
   "source_basis": [
     "src/entrypoints/popup/main.tsx:16",
@@ -69,12 +68,17 @@
     "wxt.config.ts:10-33",
     "wxt.config.ts:159-170",
     "src/lib/panel/adapter.ts:72-82",
-    "src/features/chat/ChatView.tsx:1374-1395"
+    "src/features/chat/ChatView.tsx:1374-1395",
+    "wxt.config.ts:10-33,159-170 (Store popup exclusion and side_panel manifest path)",
+    "src/lib/panel/adapter.ts:72-82 (Chrome action click opens sidepanel)",
+    "src/entrypoints/popup/main.tsx:16-134 (toolbar popup behavior)",
+    "src/entrypoints/options/main.tsx:12-35 (options page mount)",
+    "src/features/chat/ChatView.tsx:1360-1445 and src/entrypoints/mic-grant/index.ts:64-114 (Chat-triggered microphone grant)",
+    "src/components/UserMenu.tsx:21-95, src/features/profile/ProfileView.tsx:48-230, src/hooks/use-user-profile.ts:42-108 (Profile reachability and persistence)"
   ],
   "cases": {
     "EXT-F-1002-T01": {
       "preconditions": [
-        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
         "Use the local/unpacked build while signed out.",
         "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
       ],
@@ -84,11 +88,39 @@
       ],
       "expected": ["Open chat and Capture page are absent; Sign in is visible."],
       "source_anchors": ["src/entrypoints/popup/main.tsx:105-134", "wxt.config.ts:26-33"],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": ["Local/unpacked build; guest popup shows Sign in, not Open chat."],
+        "steps": ["Confirm Open chat is absent."],
+        "expected": ["Only the Sign in action is offered to a guest."],
+        "dimensions": ["warm", "reload"],
+        "build_variant": "local-unpacked"
+      },
+      "execution_matrix": [
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T02": {
       "preconditions": [
-        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
         "Use a known signed-in member profile and local/unpacked build. Record active window and current sidepanel state.",
         "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
       ],
@@ -107,11 +139,43 @@
       ],
       "gaps": [
         "The source comment says this does not select Chat, but exact resulting tab is dependent on current persisted sidepanel selection."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open toolbar popup.", "Click Open chat."],
+        "expected": [
+          "Sidepanel opens in the active window and popup closes; the button does not choose the Chat tab."
+        ],
+        "dimensions": ["warm", "reload"],
+        "build_variant": "local-unpacked"
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T03": {
       "preconditions": [
-        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
         "Use a known signed-in admin profile and local/unpacked build. Record active window and current sidepanel state.",
         "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
       ],
@@ -130,11 +194,43 @@
       ],
       "gaps": [
         "The source comment says this does not select Chat, but exact resulting tab is dependent on current persisted sidepanel selection."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open toolbar popup.", "Click Open chat."],
+        "expected": [
+          "Sidepanel opens in the active window and popup closes; the button does not choose the Chat tab."
+        ],
+        "dimensions": ["warm", "reload"],
+        "build_variant": "local-unpacked"
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T04": {
       "preconditions": [
-        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
         "Use the local/unpacked build while signed out.",
         "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
       ],
@@ -144,11 +240,39 @@
       ],
       "expected": ["Capture page and Open chat are absent; Sign in is visible."],
       "source_anchors": ["src/entrypoints/popup/main.tsx:105-134", "wxt.config.ts:26-33"],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": ["Local/unpacked build; guest popup shows Sign in, not Capture page."],
+        "steps": ["Confirm Capture page is absent."],
+        "expected": ["Only the Sign in action is offered to a guest."],
+        "dimensions": ["warm", "reload"],
+        "build_variant": "local-unpacked"
+      },
+      "execution_matrix": [
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T05": {
       "preconditions": [
-        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
         "Use known signed-in member and local/unpacked build. Keep the initiating tab active and record its URL and window ID.",
         "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
       ],
@@ -159,7 +283,8 @@
         "Close and reopen the panel, then confirm the one-time launch does not select Scrape again."
       ],
       "expected": [
-        "Scrape selection is applied to the uniquely confirmed panel context for initiating window; active tab and tab count stay unchanged; a reopened panel does not consume/replay the prior click."
+        "UI evidence: Scrape appears in the launched panel; initiating active tab remains unchanged; no new browser tab appears; reopening the panel does not visibly replay the route.",
+        "Internal inventory assertions about pending/armed state, unique context binding, context ambiguity and stale request cleanup require the named controlled context observer and remain unverified without it."
       ],
       "source_anchors": [
         "src/entrypoints/popup/main.tsx:56-103",
@@ -168,11 +293,212 @@
       ],
       "gaps": [
         "How to observe sidepanel context identity and induce an ambiguous/missing context are not defined by UI; those deeper assertions require a diagnostic surface or controlled browser harness."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Local/unpacked signed-in extension; record the active browser window and tab before clicking Capture page, and keep that tab active through panel opening."
+        ],
+        "steps": [
+          "Open toolbar popup and click Capture page.",
+          "Observe the sidepanel instance created or confirmed for the initiating browser window.",
+          "Verify Scrape selection in that exact sidepanel instance and confirm the active browser tab remains the same.",
+          "Reopen the sidepanel in a new context and confirm it does not consume or replay the earlier click."
+        ],
+        "expected": [
+          "The popup waits for the sidepanel open result and a unique sidepanel context in the initiating window before arming the launch request.",
+          "The request is pending before arming and is consumed only by the sidepanel instance whose context matches the armed request.",
+          "The active tab remains unchanged and no browser tab is created.",
+          "A stale request cannot route a reopened or different sidepanel context; missing or ambiguous sidepanel context fails closed with a retry path."
+        ],
+        "dimensions": [
+          "warm",
+          "reload",
+          "active-window",
+          "active-tab-unchanged",
+          "panel-context",
+          "pending-then-armed",
+          "one-time-intent"
+        ],
+        "build_variant": "local-unpacked"
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "active-window",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "active-tab-unchanged",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "panel-context",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "pending-then-armed",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "one-time-intent",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "active-window",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "active-tab-unchanged",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "panel-context",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "pending-then-armed",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "one-time-intent",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "requires_fixture",
+      "required_fixture": "A controlled sidepanel-context observer is needed to prove pending/armed ordering, unique matching context, claim binding, and replay prevention internals. UI observations remain separate and cannot satisfy those internal assertions.",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T06": {
       "preconditions": [
-        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
         "Use known signed-in admin and local/unpacked build. Keep the initiating tab active and record its URL and window ID.",
         "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
       ],
@@ -183,7 +509,8 @@
         "Close and reopen the panel, then confirm the one-time launch does not select Scrape again."
       ],
       "expected": [
-        "Scrape selection is applied to the uniquely confirmed panel context for initiating window; active tab and tab count stay unchanged; a reopened panel does not consume/replay the prior click."
+        "UI evidence: Scrape appears in the launched panel; initiating active tab remains unchanged; no new browser tab appears; reopening the panel does not visibly replay the route.",
+        "Internal inventory assertions about pending/armed state, unique context binding, context ambiguity and stale request cleanup require the named controlled context observer and remain unverified without it."
       ],
       "source_anchors": [
         "src/entrypoints/popup/main.tsx:56-103",
@@ -192,11 +519,212 @@
       ],
       "gaps": [
         "How to observe sidepanel context identity and induce an ambiguous/missing context are not defined by UI; those deeper assertions require a diagnostic surface or controlled browser harness."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Local/unpacked signed-in extension; record the active browser window and tab before clicking Capture page, and keep that tab active through panel opening."
+        ],
+        "steps": [
+          "Open toolbar popup and click Capture page.",
+          "Observe the sidepanel instance created or confirmed for the initiating browser window.",
+          "Verify Scrape selection in that exact sidepanel instance and confirm the active browser tab remains the same.",
+          "Reopen the sidepanel in a new context and confirm it does not consume or replay the earlier click."
+        ],
+        "expected": [
+          "The popup waits for the sidepanel open result and a unique sidepanel context in the initiating window before arming the launch request.",
+          "The request is pending before arming and is consumed only by the sidepanel instance whose context matches the armed request.",
+          "The active tab remains unchanged and no browser tab is created.",
+          "A stale request cannot route a reopened or different sidepanel context; missing or ambiguous sidepanel context fails closed with a retry path."
+        ],
+        "dimensions": [
+          "warm",
+          "reload",
+          "active-window",
+          "active-tab-unchanged",
+          "panel-context",
+          "pending-then-armed",
+          "one-time-intent"
+        ],
+        "build_variant": "local-unpacked"
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "active-window",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "active-tab-unchanged",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "panel-context",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "pending-then-armed",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "one-time-intent",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "active-window",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "active-tab-unchanged",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "panel-context",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "pending-then-armed",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "one-time-intent",
+          "inventory_dimensions": [
+            "warm",
+            "reload",
+            "active-window",
+            "active-tab-unchanged",
+            "panel-context",
+            "pending-then-armed",
+            "one-time-intent"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "requires_fixture",
+      "required_fixture": "A controlled sidepanel-context observer is needed to prove pending/armed ordering, unique matching context, claim binding, and replay prevention internals. UI observations remain separate and cannot satisfy those internal assertions.",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T07": {
       "preconditions": [
-        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
         "Use the local/unpacked build while signed out, with a reachable sign-in provider.",
         "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
       ],
@@ -206,34 +734,128 @@
       ],
       "expected": ["Auth flow opens; an initiation failure is visible and retryable."],
       "source_anchors": ["src/entrypoints/popup/main.tsx:125-134", "wxt.config.ts:26-33"],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": [
+          "Open Toolbar popup; chrome://extensions options link; mic grant page.",
+          "Begin sign-in from guest popup."
+        ],
+        "expected": ["Auth flow opens; failed initiation is visible and retryable."],
+        "dimensions": ["warm", "reload"],
+        "build_variant": "local-unpacked"
+      },
+      "execution_matrix": [
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T08": {
       "preconditions": [
-        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
         "Use known signed-in member and local/unpacked build.",
         "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
       ],
       "steps": ["Open toolbar popup and inspect visible actions."],
       "expected": ["Sign in is absent; account email and Open chat/Capture page are visible."],
       "source_anchors": ["src/entrypoints/popup/main.tsx:105-134", "wxt.config.ts:26-33"],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Local/unpacked build; signed-in popup shows Open chat and Capture page."
+        ],
+        "steps": ["Confirm Sign in is absent."],
+        "expected": ["Sign in is not offered while signed in."],
+        "dimensions": ["warm", "reload"],
+        "build_variant": "local-unpacked"
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T09": {
       "preconditions": [
-        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
         "Use known signed-in admin and local/unpacked build.",
         "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
       ],
       "steps": ["Open toolbar popup and inspect visible actions."],
       "expected": ["Sign in is absent; account email and Open chat/Capture page are visible."],
       "source_anchors": ["src/entrypoints/popup/main.tsx:105-134", "wxt.config.ts:26-33"],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Local/unpacked build; signed-in popup shows Open chat and Capture page."
+        ],
+        "steps": ["Confirm Sign in is absent."],
+        "expected": ["Sign in is not offered while signed in."],
+        "dimensions": ["warm", "reload"],
+        "build_variant": "local-unpacked"
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T10": {
       "preconditions": [
-        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
-        "Use guest profile as applicable, plus a disposable Chrome profile or known test machine where microphone permission can be reset. Record Chrome site-permission state and whether an input device is connected."
+        "Use guest profile as applicable, plus a disposable Chrome profile or known test machine where microphone permission can be reset. Record Chrome site-permission state and whether an input device is connected.",
+        "Each matrix row resets and records the extension-origin microphone permission independently. A no-device row is unverified if the approved environment cannot confirm zero available audio inputs; do not substitute a permission denial."
       ],
       "steps": [
         "Open Chat and click the microphone control to open the extension mic-grant popup.",
@@ -250,12 +872,83 @@
       ],
       "gaps": [
         "Inventory bundles three outcomes into one case; it does not specify whether one execution may satisfy it. Do not mark complete until each environment-supported branch has independent evidence."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": [
+          "Open Toolbar popup; chrome://extensions options link; mic grant page.",
+          "Trigger browser permission prompt and report granted/denied/no-device outcomes."
+        ],
+        "expected": [
+          "Browser permission prompt appears; grant reports success, deny reports refusal, missing device reports no-device remedy."
+        ],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "warm",
+          "branch": "grant",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "warm",
+          "branch": "deny",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "warm",
+          "branch": "no-device",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "reload",
+          "branch": "grant",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "reload",
+          "branch": "deny",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "reload",
+          "branch": "no-device",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T11": {
       "preconditions": [
-        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
-        "Use member profile as applicable, plus a disposable Chrome profile or known test machine where microphone permission can be reset. Record Chrome site-permission state and whether an input device is connected."
+        "Use member profile as applicable, plus a disposable Chrome profile or known test machine where microphone permission can be reset. Record Chrome site-permission state and whether an input device is connected.",
+        "Each matrix row resets and records the extension-origin microphone permission independently. A no-device row is unverified if the approved environment cannot confirm zero available audio inputs; do not substitute a permission denial."
       ],
       "steps": [
         "Open Chat and click the microphone control to open the extension mic-grant popup.",
@@ -272,12 +965,83 @@
       ],
       "gaps": [
         "Inventory bundles three outcomes into one case; it does not specify whether one execution may satisfy it. Do not mark complete until each environment-supported branch has independent evidence."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": [
+          "Open Toolbar popup; chrome://extensions options link; mic grant page.",
+          "Trigger browser permission prompt and report granted/denied/no-device outcomes."
+        ],
+        "expected": [
+          "Browser permission prompt appears; grant reports success, deny reports refusal, missing device reports no-device remedy."
+        ],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "grant",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "deny",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "no-device",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "grant",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "deny",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "no-device",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T12": {
       "preconditions": [
-        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
-        "Use admin profile as applicable, plus a disposable Chrome profile or known test machine where microphone permission can be reset. Record Chrome site-permission state and whether an input device is connected."
+        "Use admin profile as applicable, plus a disposable Chrome profile or known test machine where microphone permission can be reset. Record Chrome site-permission state and whether an input device is connected.",
+        "Each matrix row resets and records the extension-origin microphone permission independently. A no-device row is unverified if the approved environment cannot confirm zero available audio inputs; do not substitute a permission denial."
       ],
       "steps": [
         "Open Chat and click the microphone control to open the extension mic-grant popup.",
@@ -294,11 +1058,81 @@
       ],
       "gaps": [
         "Inventory bundles three outcomes into one case; it does not specify whether one execution may satisfy it. Do not mark complete until each environment-supported branch has independent evidence."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": [
+          "Open Toolbar popup; chrome://extensions options link; mic grant page.",
+          "Trigger browser permission prompt and report granted/denied/no-device outcomes."
+        ],
+        "expected": [
+          "Browser permission prompt appears; grant reports success, deny reports refusal, missing device reports no-device remedy."
+        ],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "grant",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "deny",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "no-device",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "grant",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "deny",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "no-device",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T13": {
       "preconditions": [
-        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
         "Use guest auth state; options entrypoint is a local/unpacked extension page."
       ],
       "steps": [
@@ -315,11 +1149,43 @@
       ],
       "gaps": [
         "Source establishes shared SettingsView mount but inventory does not identify which Settings controls are in scope for this case."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": [
+          "Open Toolbar popup; chrome://extensions options link; mic grant page.",
+          "Open extension options entry point."
+        ],
+        "expected": ["Options document opens and renders the shared SettingsView."],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T14": {
       "preconditions": [
-        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
         "Use member auth state; options entrypoint is a local/unpacked extension page."
       ],
       "steps": [
@@ -336,11 +1202,43 @@
       ],
       "gaps": [
         "Source establishes shared SettingsView mount but inventory does not identify which Settings controls are in scope for this case."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": [
+          "Open Toolbar popup; chrome://extensions options link; mic grant page.",
+          "Open extension options entry point."
+        ],
+        "expected": ["Options document opens and renders the shared SettingsView."],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T15": {
       "preconditions": [
-        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
         "Use admin auth state; options entrypoint is a local/unpacked extension page."
       ],
       "steps": [
@@ -357,11 +1255,43 @@
       ],
       "gaps": [
         "Source establishes shared SettingsView mount but inventory does not identify which Settings controls are in scope for this case."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": [
+          "Open Toolbar popup; chrome://extensions options link; mic grant page.",
+          "Open extension options entry point."
+        ],
+        "expected": ["Options document opens and renders the shared SettingsView."],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T01": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known member; do not change role or account."
       ],
       "steps": [
@@ -376,11 +1306,40 @@
         "src/features/profile/ProfileView.tsx:48-225",
         "src/hooks/use-user-profile.ts:42-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Return to Chat."],
+        "expected": ["Returns to Chat without applying draft changes."],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T02": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known admin; do not change role or account."
       ],
       "steps": [
@@ -395,11 +1354,40 @@
         "src/features/profile/ProfileView.tsx:48-225",
         "src/hooks/use-user-profile.ts:42-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Return to Chat."],
+        "expected": ["Returns to Chat without applying draft changes."],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T03": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known member; do not change role or account."
       ],
       "steps": [
@@ -415,11 +1403,60 @@
         "src/features/profile/ProfileView.tsx:48-225",
         "src/hooks/use-user-profile.ts:42-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Persist draft or revert; handle saving/errors."],
+        "expected": [
+          "Save persists draft and reload shows saved values; Discard restores last loaded values."
+        ],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "discard-draft",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "save-draft",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "discard-draft",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "save-draft",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T04": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known admin; do not change role or account."
       ],
       "steps": [
@@ -435,11 +1472,60 @@
         "src/features/profile/ProfileView.tsx:48-225",
         "src/hooks/use-user-profile.ts:42-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Persist draft or revert; handle saving/errors."],
+        "expected": [
+          "Save persists draft and reload shows saved values; Discard restores last loaded values."
+        ],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "discard-draft",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "save-draft",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "discard-draft",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "save-draft",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T05": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known member; do not change role or account."
       ],
       "steps": [
@@ -454,11 +1540,42 @@
         "src/features/profile/ProfileView.tsx:100-148",
         "src/hooks/use-user-profile.ts:87-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Edit names, suffix, pronouns, birthday."],
+        "expected": [
+          "Edited legal/preferred names, suffix, pronouns and birthday appear in the saved profile after reload."
+        ],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T06": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known admin; do not change role or account."
       ],
       "steps": [
@@ -473,11 +1590,42 @@
         "src/features/profile/ProfileView.tsx:100-148",
         "src/hooks/use-user-profile.ts:87-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Edit names, suffix, pronouns, birthday."],
+        "expected": [
+          "Edited legal/preferred names, suffix, pronouns and birthday appear in the saved profile after reload."
+        ],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T07": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known member; do not change role or account."
       ],
       "steps": [
@@ -493,11 +1641,42 @@
         "src/features/profile/ProfileView.tsx:300-430",
         "src/hooks/use-user-profile.ts:87-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Add/edit/remove and mark primary."],
+        "expected": [
+          "Add/edit/remove phone and choose primary; saved list and primary designation survive reload."
+        ],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T08": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known admin; do not change role or account."
       ],
       "steps": [
@@ -513,11 +1692,42 @@
         "src/features/profile/ProfileView.tsx:300-430",
         "src/hooks/use-user-profile.ts:87-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Add/edit/remove and mark primary."],
+        "expected": [
+          "Add/edit/remove phone and choose primary; saved list and primary designation survive reload."
+        ],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T09": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known member; do not change role or account."
       ],
       "steps": [
@@ -533,11 +1743,40 @@
         "src/features/profile/ProfileView.tsx:300-430",
         "src/hooks/use-user-profile.ts:87-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Add/edit/remove and mark primary."],
+        "expected": ["Add/edit/remove email and choose primary; saved list survives reload."],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T10": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known admin; do not change role or account."
       ],
       "steps": [
@@ -553,11 +1792,40 @@
         "src/features/profile/ProfileView.tsx:300-430",
         "src/hooks/use-user-profile.ts:87-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Add/edit/remove and mark primary."],
+        "expected": ["Add/edit/remove email and choose primary; saved list survives reload."],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T11": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known member; do not change role or account."
       ],
       "steps": [
@@ -571,11 +1839,40 @@
         "src/features/profile/ProfileView.tsx:450-600",
         "src/hooks/use-user-profile.ts:87-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Edit website and social entries."],
+        "expected": ["Website and social handle fields persist, including public flag."],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T12": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known admin; do not change role or account."
       ],
       "steps": [
@@ -589,11 +1886,40 @@
         "src/features/profile/ProfileView.tsx:450-600",
         "src/hooks/use-user-profile.ts:87-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Edit website and social entries."],
+        "expected": ["Website and social handle fields persist, including public flag."],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T13": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known member; do not change role or account."
       ],
       "steps": [
@@ -609,11 +1935,40 @@
         "src/features/profile/ProfileView.tsx:450-600",
         "src/hooks/use-user-profile.ts:87-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Edit address fields."],
+        "expected": ["Shipping address field values persist after reload."],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T14": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known admin; do not change role or account."
       ],
       "steps": [
@@ -629,11 +1984,40 @@
         "src/features/profile/ProfileView.tsx:450-600",
         "src/hooks/use-user-profile.ts:87-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Edit address fields."],
+        "expected": ["Shipping address field values persist after reload."],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T15": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known member; do not change role or account."
       ],
       "steps": [
@@ -648,11 +2032,42 @@
         "src/features/profile/ProfileView.tsx:181-204",
         "src/hooks/use-user-profile.ts:87-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Toggle and edit conditional billing address."],
+        "expected": [
+          "Enabling hides separate billing form; disabling reveals it and billing values persist."
+        ],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T16": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known admin; do not change role or account."
       ],
       "steps": [
@@ -667,11 +2082,42 @@
         "src/features/profile/ProfileView.tsx:181-204",
         "src/hooks/use-user-profile.ts:87-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Toggle and edit conditional billing address."],
+        "expected": [
+          "Enabling hides separate billing form; disabling reveals it and billing values persist."
+        ],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T17": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known member; do not change role or account."
       ],
       "steps": [
@@ -683,11 +2129,40 @@
         "src/features/profile/ProfileView.tsx:206-221",
         "src/hooks/use-user-profile.ts:87-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Edit company/title."],
+        "expected": ["Company and title values persist after reload."],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T18": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known admin; do not change role or account."
       ],
       "steps": [
@@ -699,11 +2174,40 @@
         "src/features/profile/ProfileView.tsx:206-221",
         "src/hooks/use-user-profile.ts:87-100"
       ],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Edit company/title."],
+        "expected": ["Company and title values persist after reload."],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T19": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known member; do not change role or account."
       ],
       "steps": [
@@ -720,11 +2224,40 @@
       ],
       "gaps": [
         "Confirm exact UI field labels and editor line anchors against the current remaining component body before execution; inventory source anchors currently point only at ProfileView top-level."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Add/edit/remove contacts."],
+        "expected": ["Contact fields persist and removed contacts stay absent after reload."],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T20": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known admin; do not change role or account."
       ],
       "steps": [
@@ -741,11 +2274,40 @@
       ],
       "gaps": [
         "Confirm exact UI field labels and editor line anchors against the current remaining component body before execution; inventory source anchors currently point only at ProfileView top-level."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Add/edit/remove contacts."],
+        "expected": ["Contact fields persist and removed contacts stay absent after reload."],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T21": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known member; do not change role or account."
       ],
       "steps": [
@@ -756,11 +2318,40 @@
         "Each section opens/closes from its label; toggling does not lose the current draft; Discard restores loaded value."
       ],
       "source_anchors": ["src/features/profile/ProfileView.tsx:100-225"],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Open/close each section."],
+        "expected": ["Each selected section opens/closes without losing current draft."],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T22": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
         "Run independently as existing known admin; do not change role or account."
       ],
       "steps": [
@@ -771,11 +2362,40 @@
         "Each section opens/closes from its label; toggling does not lose the current draft; Discard restores loaded value."
       ],
       "source_anchors": ["src/features/profile/ProfileView.tsx:100-225"],
-      "gaps": []
+      "gaps": [],
+      "inventory_criteria": {
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel."
+        ],
+        "steps": ["Open Avatar > Profile.", "Open/close each section."],
+        "expected": ["Each selected section opens/closes without losing current draft."],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T23": {
       "preconditions": [
-        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
         "Use an existing guest profile and a disposable Chrome profile. Before signing out, select Profile in sidepanel, then sign out using the account menu; retain Profile as persisted selection if the app does."
       ],
       "steps": [
@@ -793,13 +2413,45 @@
       ],
       "gaps": [
         "How to seed persisted tab selection for the guest profile and expected first accessible tab are not stated in source anchors; record actual selected destination."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Load with the named auth/role mode, then change into the restricted route through persisted sidepanel selection or direct tab state."
+        ],
+        "steps": [
+          "Sign out while Profile is selected, reopen sidepanel, then inspect user menu and tab strip."
+        ],
+        "expected": [
+          "Profile is hidden from guest navigation; a stale selected Profile redirects to the first accessible tab and no profile data is rendered."
+        ],
+        "dimensions": ["warm", "reload", "role-change"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "warm",
+          "branch": "role-change",
+          "inventory_dimensions": ["warm", "reload", "role-change"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "reload",
+          "branch": "role-change",
+          "inventory_dimensions": ["warm", "reload", "role-change"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T24": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
-        "Run once each as known member and known admin using a disposable profile. Preserve original data and do not use real personal information.",
-        "Repeat this case independently with an existing known member and an existing known admin; record each role\u2019s result separately without changing account roles."
+        "Run once each as known member and known admin using a disposable profile. Preserve original data and do not use real personal information."
       ],
       "steps": [
         "Expand Identity and set Birthday to an invalid date string using browser-native date control (record whether the control accepts it). Expand Emails, add an address with invalid syntax. Expand Emergency contacts, enter invalid email in a disposable contact.",
@@ -816,21 +2468,141 @@
       ],
       "gaps": [
         "Emergency-contact email and exact native input type must be verified in its editor source before asserting browser constraint semantics."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": ["Signed-in user with Profile loaded; use a disposable profile draft."],
+        "steps": [
+          "Enter malformed email and invalid date values in additional email, emergency contact email, and birthday; attempt Save."
+        ],
+        "expected": [
+          "Email/date input types expose browser-native input semantics, but no form submission/explicit profile validator exists in source; record whether Save accepts values and any backend rejection appears in profile error UI."
+        ],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "invalid-birthday-date",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "malformed-additional-email",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "malformed-emergency-contact-email",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "invalid-birthday-date",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "malformed-additional-email",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "malformed-emergency-contact-email",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "invalid-birthday-date",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "malformed-additional-email",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "malformed-emergency-contact-email",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "invalid-birthday-date",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "malformed-additional-email",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "malformed-emergency-contact-email",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T25": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
-        "Use an account where a failed profile read can be induced only through an approved disposable test environment or controlled network fault; do not alter the stored profile.",
-        "Repeat this case independently with an existing known member and an existing known admin; record each role\u2019s result separately without changing account roles."
+        "Use an account where a failed profile read can be induced only through an approved disposable test environment or controlled network fault; do not alter the stored profile."
       ],
       "steps": [
-        "Open Profile with network capture/logging already enabled. Cause get_user_form_context RPC to fail using the available controlled fault mechanism; record method/status without secrets.",
-        "Wait for loading to stop and record exact visible error and whether saved profile fields are shown or empty.",
-        "Restore connectivity and use a visible retry if present; if none, navigate to Chat and reopen Profile."
+        "Open Profile with a controlled disposable read-failure fixture enabled and capture request status without secrets.",
+        "Wait for loading to stop; record exact visible error and whether saved fields are displayed.",
+        "Restore the service, navigate to Chat, and reopen Profile. Record whether data loads successfully."
       ],
       "expected": [
-        "Loading ends with \u201cCould not load your profile: \u2026\u201d visible; a failed read is not silently presented as a successful empty profile. Reopen after restoring service and record whether load recovers."
+        "Loading ends with the visible \u201cCould not load your profile: \u2026\u201d error; a failed read is not silently presented as a successful empty profile. After restoring service, reopening Profile starts a fresh load."
       ],
       "source_anchors": [
         "src/hooks/use-user-profile.ts:42-61",
@@ -838,13 +2610,100 @@
       ],
       "gaps": [
         "Source exposes refresh internally but ProfileView renders no retry button; the controlled RPC/network failure mechanism is not specified."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Signed-in user; profile read failure is reproducible without altering real profile data."
+        ],
+        "steps": [
+          "Cause profile context RPC to fail, then use exposed retry/refresh path or reopen Profile."
+        ],
+        "expected": [
+          "Loading ends and visible error identifies profile load failure; saved data is not presented as an empty profile."
+        ],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "profile-read-rpc-failure",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "reopen-after-service-restored",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "profile-read-rpc-failure",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "reopen-after-service-restored",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "profile-read-rpc-failure",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "reopen-after-service-restored",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "profile-read-rpc-failure",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "reopen-after-service-restored",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "requires_fixture",
+      "required_fixture": "A controlled disposable profile-read failure fixture must force get_user_form_context RPC failure and then restore service. ProfileView exposes no retry control; after restoring service, the supported recovery step is navigate to Chat and reopen Profile.",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T26": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
-        "Use a controlled disposable account/profile and an approved mechanism that makes only the profile upsert fail while leaving the UI usable.",
-        "Repeat this case independently with an existing known member and an existing known admin; record each role\u2019s result separately without changing account roles."
+        "Use a controlled disposable account/profile and an approved mechanism that makes only the profile upsert fail while leaving the UI usable."
       ],
       "steps": [
         "Change Preferred to a unique synthetic value. Trigger Save while the profile write is forced to fail; capture exact visible error and busy-state termination.",
@@ -861,13 +2720,100 @@
       ],
       "gaps": [
         "The source does not define a built-in failure control; a controlled backend/network fault fixture is required."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Signed-in user; controlled disposable field and reproducible backend failure."
+        ],
+        "steps": [
+          "Submit changed draft while profile upsert fails, then restore service and retry Save."
+        ],
+        "expected": [
+          "Save stops busy state, displays error, retains draft; retry persists it and reload shows stored value."
+        ],
+        "dimensions": ["warm", "reload"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "profile-write-failure",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "retry-after-service-restored",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "profile-write-failure",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "retry-after-service-restored",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "profile-write-failure",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "retry-after-service-restored",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "profile-write-failure",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "retry-after-service-restored",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "requires_fixture",
+      "required_fixture": "A controlled disposable profile-upsert failure fixture must reject the write and then restore service. No source-exposed fault control exists; after restoring service, retry with the existing Save control.",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T27": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
-        "Use a disposable signed-in account; test data only. Backend validation outcomes are intentionally unknown.",
-        "Repeat this case independently with an existing known member and an existing known admin; record each role\u2019s result separately without changing account roles."
+        "Use a disposable signed-in account; test data only. Backend validation outcomes are intentionally unknown."
       ],
       "steps": [
         "Enter one malformed additional email, invalid birthday candidate, and boundary-length text values in a field chosen for the boundary attempt. Click Save and capture visible result/error and whether draft remains.",
@@ -882,21 +2828,90 @@
       ],
       "gaps": [
         "Boundary values/limits are not specified by client source or inventory. Do not invent a maximum; use backend contract evidence if a deterministic boundary is required."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Use disposable signed-in profile and controlled candidate values; no real personal data."
+        ],
+        "steps": [
+          "Save malformed email/date and boundary values, then inspect returned error and draft state."
+        ],
+        "expected": [
+          "Client currently submits without profile-specific validator; backend rejection is visible and draft remains available, or successful save shows the accepted shape after reload."
+        ],
+        "dimensions": ["save", "reload", "backend-error"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "malformed-email-and-date",
+          "inventory_dimensions": ["save", "reload", "backend-error"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "boundary-candidate-observation",
+          "inventory_dimensions": ["save", "reload", "backend-error"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "backend-error-observation",
+          "inventory_dimensions": ["save", "reload", "backend-error"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "malformed-email-and-date",
+          "inventory_dimensions": ["save", "reload", "backend-error"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "boundary-candidate-observation",
+          "inventory_dimensions": ["save", "reload", "backend-error"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "backend-error-observation",
+          "inventory_dimensions": ["save", "reload", "backend-error"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1004-T28": {
       "preconditions": [
-        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
-        "Requires two controlled disposable profiles: one with no user_form_profile row, and one existing row filed under organization A. The principal belongs to A and B. Do not create rows on a real profile.",
-        "Repeat this case independently with an existing known member and an existing known admin; record each role\u2019s result separately without changing account roles."
+        "Execute each mode row only after the role-specific identity and both required profile-row fixtures are verified privately; no account or row provisioning is part of this procedure."
       ],
       "steps": [
-        "On the new-row fixture, set active organization A on this device; save a changed synthetic Preferred value and inspect the resulting row organization_id through the authorized read-only database view.",
-        "On the existing-row fixture, confirm stored organization A; switch device active organization to B, edit a synthetic field and save; inspect row organization_id.",
-        "On a separate no-row fixture, clear the active device organization, attempt Save and record whether the resolver holds/presents picker and whether any write occurred."
+        "Before touching the extension, privately verify the existing designated test identity, member/admin role, membership in two organizations, and pre-existing profile fixtures: one principal with no user_form_profile row and one with an existing row filed under org A. Do not expose identifiers, credentials, or personal data in evidence. If either role-specific fixture or its approved access path is unavailable, leave that role\u2019s matrix rows unverified.",
+        "On the existing no-row fixture, set device organization A, save a synthetic Preferred value, and use an authorized read-only observation to confirm organization_id A.",
+        "On the existing row fixture, confirm row organization A; switch device organization to B, edit a synthetic field and save; confirm the row stays filed under A.",
+        "On a pre-existing no-row fixture with device organization unset, attempt Save; record whether the resolver holds/presents the organization picker and confirm no write until a choice is made. Restore any changed synthetic values/selection under the existing fixture protocol."
       ],
       "expected": [
-        "New row explicitly uses active device organization A. Existing row remains filed under A after active device organization changes to B. With no active device organization, write does not occur until user selects an organization; no fallback is inferred."
+        "New row uses explicit active device organization A. Existing row retains A after device selection changes to B. Without an active organization, no profile write occurs until a user selects one. No account, membership, role, or profile fixture is created or rotated by this procedure."
       ],
       "source_anchors": [
         "src/hooks/use-user-profile.ts:87-100",
@@ -905,20 +2920,149 @@
       ],
       "gaps": [
         "The case requires controlled disposable database rows and membership in two organizations. Existing profile repository semantics may be server-owned; check current user-profile module/database contract before executing."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Use a disposable profile with no existing row and a principal belonging to two organizations; then use a separate existing profile filed in the other organization."
+        ],
+        "steps": [
+          "Set organization A on this device and save the new profile.",
+          "Inspect the saved row's organization_id.",
+          "Switch this device to organization B and save an existing profile filed under A.",
+          "Repeat a new-profile save with no active device organization."
+        ],
+        "expected": [
+          "First save explicitly uses A.",
+          "Saving the existing row retains A and does not move it to B.",
+          "Without an active organization, no profile write occurs and the user receives the resolver remedy."
+        ],
+        "dimensions": ["warm", "reload", "organization-unset", "organization-switch"]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "new-row-with-device-org-A",
+          "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "existing-row-org-A-after-device-switch-to-B",
+          "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "new-row-without-device-org",
+          "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "new-row-with-device-org-A",
+          "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "existing-row-org-A-after-device-switch-to-B",
+          "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "new-row-without-device-org",
+          "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "new-row-with-device-org-A",
+          "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "existing-row-org-A-after-device-switch-to-B",
+          "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "new-row-without-device-org",
+          "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "new-row-with-device-org-A",
+          "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "existing-row-org-A-after-device-switch-to-B",
+          "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "new-row-without-device-org",
+          "inventory_dimensions": ["warm", "reload", "organization-unset", "organization-switch"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "requires_fixture",
+      "required_fixture": "Pre-existing disposable member/admin principals and profile-row fixtures must be verified before execution. The designated non-admin test principal test@test.com has prior read-only membership evidence in docs/stabilization/reports/member-access-probe.json, but its extension OAuth access and the required absent/existing user_form_profile rows are not established here. Verify identity and fixture metadata privately without reading or recording secrets; do not create accounts, rotate credentials, change memberships, or write to live profiles. If pre-existing fixtures cannot be verified, keep every row unverified.",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T19": {
       "preconditions": [
         "Use a known signed-in member and local/unpacked build. Confirm loaded action manifest uses popup.html as default_popup. A controlled test harness/fault fixture is required for each failure branch; do not change production permissions or rely on spontaneous failures."
       ],
       "steps": [
-        "From a normal web tab, open toolbar popup and click Capture page once.",
-        "Exercise each controllable branch in a separate run: sidepanel open rejects; session storage write rejects; context enumeration is unavailable/rejects; no unique matching sidepanel context is returned; and claimed-intent removal rejects. Record how each condition was induced.",
-        "For each run, record exact visible error/recovery text, whether popup stays open, whether Capture page becomes enabled again, and whether Scrape was selected in any panel.",
-        "Restore the capability and click Capture page again; verify the retry path can open Scrape in the initiating window. Reopen panel and verify failed-run route does not replay."
+        "Only after the named controlled fixture/harness is available, execute each named failure branch in its own matrix row and record the induced failure mechanism.",
+        "For each branch, record visible error/recovery, popup state, whether capture button re-enables, and whether any later panel routes or replays the intent.",
+        "Restore the relevant capability after each failed run and record retry as its own row."
       ],
       "expected": [
-        "Each failure is visible with a recovery path; in-flight state clears and retry is possible. No launch is armed/consumed before unique matching context confirmation; failed intent does not replay in later panel or active-tab session."
+        "Each injected failure has its own outcome/evidence row. Do not claim UI pass for context identity, intent state, cleanup, or expiry assertions unless the controlled fixture exposes those signals."
       ],
       "source_anchors": [
         "src/entrypoints/popup/main.tsx:56-103",
@@ -928,20 +3072,194 @@
       ],
       "gaps": [
         "The inventory groups five internal failure branches. There is no user-facing control for inducing them; a controlled browser test harness and branch-specific evidence are required."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Local/unpacked signed-in extension; exercise failed panel open, failed session-storage write, unavailable or rejecting sidepanel-context enumeration, missing/ambiguous matching sidepanel context, or failure removing a matching claimed request."
+        ],
+        "steps": [
+          "Open toolbar popup.",
+          "Click Capture page.",
+          "Inspect the visible error and retry after restoring the required browser capability."
+        ],
+        "expected": [
+          "Failure is announced with a specific recovery path; the popup remains available and the in-flight button state clears.",
+          "A request is not armed or consumed unless the opened sidepanel context is uniquely confirmed.",
+          "If claim removal fails, subsequent storage events in that panel and a reopened panel context cannot replay the same route before the intent expires.",
+          "Cleanup of a failed click does not route a later panel or active-tab session."
+        ],
+        "dimensions": [
+          "warm",
+          "failure",
+          "retry",
+          "context-unavailable",
+          "context-rejected",
+          "context-ambiguous",
+          "claim-removal-failure",
+          "expiry"
+        ]
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "panel-open-failure",
+          "inventory_dimensions": [
+            "warm",
+            "failure",
+            "retry",
+            "context-unavailable",
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "session-storage-write-failure",
+          "inventory_dimensions": [
+            "warm",
+            "failure",
+            "retry",
+            "context-unavailable",
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "context-unavailable",
+          "inventory_dimensions": [
+            "warm",
+            "failure",
+            "retry",
+            "context-unavailable",
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "context-rejected",
+          "inventory_dimensions": [
+            "warm",
+            "failure",
+            "retry",
+            "context-unavailable",
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "matching-context-missing-or-ambiguous",
+          "inventory_dimensions": [
+            "warm",
+            "failure",
+            "retry",
+            "context-unavailable",
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "claimed-intent-removal-failure",
+          "inventory_dimensions": [
+            "warm",
+            "failure",
+            "retry",
+            "context-unavailable",
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "intent-expiry",
+          "inventory_dimensions": [
+            "warm",
+            "failure",
+            "retry",
+            "context-unavailable",
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "retry-after-restoring-capability",
+          "inventory_dimensions": [
+            "warm",
+            "failure",
+            "retry",
+            "context-unavailable",
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "requires_fixture",
+      "required_fixture": "A named controlled fault fixture/harness must independently force panel-open rejection, storage-write rejection, each context-enumeration outcome, claim-removal failure, and intent expiry, and record those branch outcomes. No such user-facing fault control is exposed.",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T20": {
       "preconditions": [
         "Use a known signed-in admin and local/unpacked build. Confirm loaded action manifest uses popup.html as default_popup. A controlled test harness/fault fixture is required for each failure branch; do not change production permissions or rely on spontaneous failures."
       ],
       "steps": [
-        "From a normal web tab, open toolbar popup and click Capture page once.",
-        "Exercise each controllable branch in a separate run: sidepanel open rejects; session storage write rejects; context enumeration is unavailable/rejects; no unique matching sidepanel context is returned; and claimed-intent removal rejects. Record how each condition was induced.",
-        "For each run, record exact visible error/recovery text, whether popup stays open, whether Capture page becomes enabled again, and whether Scrape was selected in any panel.",
-        "Restore the capability and click Capture page again; verify the retry path can open Scrape in the initiating window. Reopen panel and verify failed-run route does not replay."
+        "Only after the named controlled fixture/harness is available, execute each named failure branch in its own matrix row and record the induced failure mechanism.",
+        "For each branch, record visible error/recovery, popup state, whether capture button re-enables, and whether any later panel routes or replays the intent.",
+        "Restore the relevant capability after each failed run and record retry as its own row."
       ],
       "expected": [
-        "Each failure is visible with a recovery path; in-flight state clears and retry is possible. No launch is armed/consumed before unique matching context confirmation; failed intent does not replay in later panel or active-tab session."
+        "Each injected failure has its own outcome/evidence row. Do not claim UI pass for context identity, intent state, cleanup, or expiry assertions unless the controlled fixture exposes those signals."
       ],
       "source_anchors": [
         "src/entrypoints/popup/main.tsx:56-103",
@@ -951,7 +3269,182 @@
       ],
       "gaps": [
         "The inventory groups five internal failure branches. There is no user-facing control for inducing them; a controlled browser test harness and branch-specific evidence are required."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Local/unpacked signed-in extension; exercise failed panel open, failed session-storage write, unavailable or rejecting sidepanel-context enumeration, missing/ambiguous matching sidepanel context, or failure removing a matching claimed request."
+        ],
+        "steps": [
+          "Open toolbar popup.",
+          "Click Capture page.",
+          "Inspect the visible error and retry after restoring the required browser capability."
+        ],
+        "expected": [
+          "Failure is announced with a specific recovery path; the popup remains available and the in-flight button state clears.",
+          "A request is not armed or consumed unless the opened sidepanel context is uniquely confirmed.",
+          "If claim removal fails, subsequent storage events in that panel and a reopened panel context cannot replay the same route before the intent expires.",
+          "Cleanup of a failed click does not route a later panel or active-tab session."
+        ],
+        "dimensions": [
+          "warm",
+          "failure",
+          "retry",
+          "context-unavailable",
+          "context-rejected",
+          "context-ambiguous",
+          "claim-removal-failure",
+          "expiry"
+        ]
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "panel-open-failure",
+          "inventory_dimensions": [
+            "warm",
+            "failure",
+            "retry",
+            "context-unavailable",
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "session-storage-write-failure",
+          "inventory_dimensions": [
+            "warm",
+            "failure",
+            "retry",
+            "context-unavailable",
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "context-unavailable",
+          "inventory_dimensions": [
+            "warm",
+            "failure",
+            "retry",
+            "context-unavailable",
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "context-rejected",
+          "inventory_dimensions": [
+            "warm",
+            "failure",
+            "retry",
+            "context-unavailable",
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "matching-context-missing-or-ambiguous",
+          "inventory_dimensions": [
+            "warm",
+            "failure",
+            "retry",
+            "context-unavailable",
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "claimed-intent-removal-failure",
+          "inventory_dimensions": [
+            "warm",
+            "failure",
+            "retry",
+            "context-unavailable",
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "intent-expiry",
+          "inventory_dimensions": [
+            "warm",
+            "failure",
+            "retry",
+            "context-unavailable",
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "retry-after-restoring-capability",
+          "inventory_dimensions": [
+            "warm",
+            "failure",
+            "retry",
+            "context-unavailable",
+            "context-rejected",
+            "context-ambiguous",
+            "claim-removal-failure",
+            "expiry"
+          ],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "requires_fixture",
+      "required_fixture": "A named controlled fault fixture/harness must independently force panel-open rejection, storage-write rejection, each context-enumeration outcome, claim-removal failure, and intent expiry, and record those branch outcomes. No such user-facing fault control is exposed.",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T16": {
       "preconditions": [
@@ -973,7 +3466,48 @@
       ],
       "gaps": [
         "Generated artifact manifest should be inspected for each exact build; source configuration alone cannot prove the loaded artifact matches. Do not promote case status from this procedure."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Use one unchanged loaded Store ID/version in the intended guest profile. Obtain a fresh resource permit and complete build receipt for each of the two executions below; give each execution its own run ID and preserve its permit, receipt, timestamp, window/tab identity, first panel state, toolbar/popup/panel observations, final identity/role evidence, and any auth alert or timeout. Confirm Store ID hnfolienncfklkgmdjjmhhegglimlamg and exact version in chrome://extensions before each execution. Do not count an install/update Reload as the post-reload execution.",
+          "Confirm the profile is signed out before the warm execution; do not sign in between executions.",
+          "Keep an ordinary web tab active in one browser window. Close the Matrx sidepanel before each toolbar click. Preserve all previously linked results and do not promote either dimension without its own live evidence."
+        ],
+        "steps": [
+          "Warm execution: without reloading the extension immediately before this click, close any existing Matrx sidepanel; with the ordinary web tab active, record the fresh permit/receipt/run ID, loaded Store ID/version and tab/window; click the toolbar action once. Record whether a popup appears and whether the sidepanel opens in that same window.",
+          "Within 30 seconds of each toolbar click, wait for the guest Chat banner with its Sign in action (GuestBanner is absent while auth status is unknown). Record the first rendered state and time to this signal. If an auth alert appears, preserve its exact visible text.",
+          "Post-extension-reload execution: close the sidepanel, click Reload for this exact extension in chrome://extensions, observe that Reload completes and the same Store ID/version remains loaded; return to the ordinary web tab. Obtain a new resource permit and complete build receipt and assign a distinct run ID. Click the toolbar action once; record popup absence/presence and sidepanel opening/window independently of the warm execution.",
+          "Within 30 seconds of each toolbar click, wait for the guest Chat banner with its Sign in action (GuestBanner is absent while auth status is unknown). Record the first rendered state and time to this signal. If an auth alert appears, preserve its exact visible text.",
+          "For each execution, record the final identity/role signal or the exact last visible state and elapsed time at the 30-second bound. A missing signal, auth alert, or timeout is evidence to classify, never a silent pass; link both distinct run IDs and receipts to their dimension results before changing case status."
+        ],
+        "expected": [
+          "In each of the two independently evidenced executions, the loaded Store action opens the Matrx sidepanel in the active browser window and opens no popup. Within the bounded auth readiness window, the panel shows the guest Sign in banner. Report the warm and post-extension-reload outcomes separately; this case covers only the toolbar entrypoint and visible identity shell."
+        ],
+        "dimensions": ["warm", "reload"],
+        "build_variant": "store"
+      },
+      "execution_matrix": [
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "guest",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T17": {
       "preconditions": [
@@ -995,7 +3529,48 @@
       ],
       "gaps": [
         "Generated artifact manifest should be inspected for each exact build; source configuration alone cannot prove the loaded artifact matches. Do not promote case status from this procedure."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Use one unchanged loaded Store ID/version in the intended member profile. Obtain a fresh resource permit and complete build receipt for each of the two executions below; give each execution its own run ID and preserve its permit, receipt, timestamp, window/tab identity, first panel state, toolbar/popup/panel observations, final identity/role evidence, and any auth alert or timeout. Confirm Store ID hnfolienncfklkgmdjjmhhegglimlamg and exact version in chrome://extensions before each execution. Do not count an install/update Reload as the post-reload execution.",
+          "Sign in through the ordinary flow as a known non-admin member before the warm execution; record the account email and selected device organization without credentials. Keep that account signed in between executions.",
+          "Keep an ordinary web tab active in one browser window. Close the Matrx sidepanel before each toolbar click. Preserve all previously linked results and do not promote either dimension without its own live evidence."
+        ],
+        "steps": [
+          "Warm execution: without reloading the extension immediately before this click, close any existing Matrx sidepanel; with the ordinary web tab active, record the fresh permit/receipt/run ID, loaded Store ID/version and tab/window; click the toolbar action once. Record whether a popup appears and whether the sidepanel opens in that same window.",
+          "Within 30 seconds of each toolbar click, open the account menu and wait for the known member email plus Profile and Preferences, with no Pilot admin tab and no role-check/auth alert; with network capture attached before the click, observe the admin-schema admins role-check request finish successfully with an empty result for this account. Record only request outcome/timing, never tokens or response secrets. The member fixture must already be independently known to be non-admin; an absent Pilot tab alone is not role proof. Record the first rendered state and time to this signal.",
+          "Post-extension-reload execution: close the sidepanel, click Reload for this exact extension in chrome://extensions, observe that Reload completes and the same Store ID/version remains loaded; return to the ordinary web tab. Obtain a new resource permit and complete build receipt and assign a distinct run ID. Click the toolbar action once; record popup absence/presence and sidepanel opening/window independently of the warm execution.",
+          "Within 30 seconds of each toolbar click, open the account menu and wait for the known member email plus Profile and Preferences, with no Pilot admin tab and no role-check/auth alert; with network capture attached before the click, observe the admin-schema admins role-check request finish successfully with an empty result for this account. Record only request outcome/timing, never tokens or response secrets. The member fixture must already be independently known to be non-admin; an absent Pilot tab alone is not role proof. Record the first rendered state and time to this signal.",
+          "For each execution, record the final identity/role signal or the exact last visible state and elapsed time at the 30-second bound. A missing signal, auth alert, or timeout is evidence to classify, never a silent pass; link both distinct run IDs and receipts to their dimension results before changing case status."
+        ],
+        "expected": [
+          "In each of the two independently evidenced executions, the loaded Store action opens the Matrx sidepanel in the active browser window and opens no popup. Within the bounded auth readiness window, the panel shows the known ordinary-member email and member shell after the admin role-check request completes successfully with no admin row. Report the warm and post-extension-reload outcomes separately; this case covers only the toolbar entrypoint and visible identity shell."
+        ],
+        "dimensions": ["warm", "reload"],
+        "build_variant": "store"
+      },
+      "execution_matrix": [
+        {
+          "mode": "member",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "member",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     },
     "EXT-F-1002-T18": {
       "preconditions": [
@@ -1017,11 +3592,123 @@
       ],
       "gaps": [
         "Generated artifact manifest should be inspected for each exact build; source configuration alone cannot prove the loaded artifact matches. Do not promote case status from this procedure."
-      ]
+      ],
+      "inventory_criteria": {
+        "preconditions": [
+          "Use one unchanged loaded Store ID/version in the intended admin profile. Obtain a fresh resource permit and complete build receipt for each of the two executions below; give each execution its own run ID and preserve its permit, receipt, timestamp, window/tab identity, first panel state, toolbar/popup/panel observations, final identity/role evidence, and any auth alert or timeout. Confirm Store ID hnfolienncfklkgmdjjmhhegglimlamg and exact version in chrome://extensions before each execution. Do not count an install/update Reload as the post-reload execution.",
+          "Sign in through the ordinary flow as a known admin before the warm execution; record the account email and selected device organization without credentials. Keep that account signed in between executions.",
+          "Keep an ordinary web tab active in one browser window. Close the Matrx sidepanel before each toolbar click. Preserve all previously linked results and do not promote either dimension without its own live evidence."
+        ],
+        "steps": [
+          "Warm execution: without reloading the extension immediately before this click, close any existing Matrx sidepanel; with the ordinary web tab active, record the fresh permit/receipt/run ID, loaded Store ID/version and tab/window; click the toolbar action once. Record whether a popup appears and whether the sidepanel opens in that same window.",
+          "Within 30 seconds of each toolbar click, open the account menu and wait for the known admin email and the Pilot admin tab, with no role-check/auth alert. The Pilot tab is gated on isAdmin after the async role read. Record the first rendered state and time to this signal.",
+          "Post-extension-reload execution: close the sidepanel, click Reload for this exact extension in chrome://extensions, observe that Reload completes and the same Store ID/version remains loaded; return to the ordinary web tab. Obtain a new resource permit and complete build receipt and assign a distinct run ID. Click the toolbar action once; record popup absence/presence and sidepanel opening/window independently of the warm execution.",
+          "Within 30 seconds of each toolbar click, open the account menu and wait for the known admin email and the Pilot admin tab, with no role-check/auth alert. The Pilot tab is gated on isAdmin after the async role read. Record the first rendered state and time to this signal.",
+          "For each execution, record the final identity/role signal or the exact last visible state and elapsed time at the 30-second bound. A missing signal, auth alert, or timeout is evidence to classify, never a silent pass; link both distinct run IDs and receipts to their dimension results before changing case status."
+        ],
+        "expected": [
+          "In each of the two independently evidenced executions, the loaded Store action opens the Matrx sidepanel in the active browser window and opens no popup. Within the bounded auth readiness window, the panel shows the known admin email and Pilot admin tab. Report the warm and post-extension-reload outcomes separately; this case covers only the toolbar entrypoint and visible identity shell."
+        ],
+        "dimensions": ["warm", "reload"],
+        "build_variant": "store"
+      },
+      "execution_matrix": [
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "warm",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        },
+        {
+          "mode": "admin",
+          "lifecycle_dimension": "reload",
+          "branch": "default",
+          "inventory_dimensions": ["warm", "reload"],
+          "observed_outcome": null,
+          "evidence_refs": [],
+          "status": "unverified"
+        }
+      ],
+      "readiness": "ready",
+      "inventory_criteria_source": "Exact existing criteria copied from docs/stabilization/inventory.json; no case ID, role applicability, or expected criterion is added to the authoritative file."
     }
   },
   "limitations": [
-    "This is a procedure proposal only; no browser session, extension build, database behavior, or test case was executed.",
-    "Where source does not expose a controlled way to cause a backend/browser failure, the procedure marks the exact missing fault-injection requirement instead of assuming an outcome."
-  ]
+    "No browser, build, database write, or test was executed; this artifact is a procedure proposal, not a result.",
+    "Permission-denial and no-device branches need independent Chrome permission state/device preconditions for each mode and lifecycle dimension; unsupported environment branches remain unverified.",
+    "No named controlled failure harness is available in this proposal for popup internals or profile backend failures.",
+    "T28 has no confirmed pre-existing user_form_profile row fixture evidence in the reviewed files; do not create or mutate account/membership fixtures to manufacture it."
+  ],
+  "case_count": 48,
+  "inventory_source": "docs/stabilization/inventory.json; IDs, mode applicability, dimensions, and acceptance criteria are copied unchanged into each entry.",
+  "entrypoint_preconditions": {
+    "EXT-F-1002-T01-T09, T19-T20": "Local/unpacked build only: inspect loaded manifest and confirm popup.html is action.default_popup, then click the toolbar action. Opening popup.html as an extension URL in an ordinary tab is not a toolbar-popup test.",
+    "EXT-F-1002-T10-T12": "Open the Chat surface in the sidepanel as the case identity and click the microphone control; mic-grant is a separate extension popup window opened by the Chat permission flow, not the toolbar popup.",
+    "EXT-F-1002-T13-T15": "Open chrome://extensions > the exact extension Details > Extension options. Verify the loaded options page; do not use the toolbar action or open options.html in an ordinary tab as a substitute.",
+    "EXT-F-1002-T16-T18": "Chrome Web Store build only: inspect loaded manifest for exact Store ID/version; popup entrypoint is filtered out and toolbar action opens sidepanel. Click the toolbar action; do not open popup.html in a regular tab.",
+    "EXT-F-1004-T01-T28": "Open the sidepanel and use avatar > Profile. The Profile screen is not the Options page and is not advertised in the direct tab strip. T23 starts from the existing guest route and exercises the stale/persisted Profile selection after sign-out."
+  },
+  "ready_case_ids": [
+    "EXT-F-1002-T01",
+    "EXT-F-1002-T02",
+    "EXT-F-1002-T03",
+    "EXT-F-1002-T04",
+    "EXT-F-1002-T07",
+    "EXT-F-1002-T08",
+    "EXT-F-1002-T09",
+    "EXT-F-1002-T10",
+    "EXT-F-1002-T11",
+    "EXT-F-1002-T12",
+    "EXT-F-1002-T13",
+    "EXT-F-1002-T14",
+    "EXT-F-1002-T15",
+    "EXT-F-1002-T16",
+    "EXT-F-1002-T17",
+    "EXT-F-1002-T18",
+    "EXT-F-1004-T01",
+    "EXT-F-1004-T02",
+    "EXT-F-1004-T03",
+    "EXT-F-1004-T04",
+    "EXT-F-1004-T05",
+    "EXT-F-1004-T06",
+    "EXT-F-1004-T07",
+    "EXT-F-1004-T08",
+    "EXT-F-1004-T09",
+    "EXT-F-1004-T10",
+    "EXT-F-1004-T11",
+    "EXT-F-1004-T12",
+    "EXT-F-1004-T13",
+    "EXT-F-1004-T14",
+    "EXT-F-1004-T15",
+    "EXT-F-1004-T16",
+    "EXT-F-1004-T17",
+    "EXT-F-1004-T18",
+    "EXT-F-1004-T19",
+    "EXT-F-1004-T20",
+    "EXT-F-1004-T21",
+    "EXT-F-1004-T22",
+    "EXT-F-1004-T23",
+    "EXT-F-1004-T24",
+    "EXT-F-1004-T27"
+  ],
+  "requires_fixture_case_ids": [
+    "EXT-F-1002-T05",
+    "EXT-F-1002-T06",
+    "EXT-F-1002-T19",
+    "EXT-F-1002-T20",
+    "EXT-F-1004-T25",
+    "EXT-F-1004-T26",
+    "EXT-F-1004-T28"
+  ],
+  "verification": {
+    "procedure_review": "source and inventory only",
+    "browser_build_or_tests": "not run",
+    "inventory_status_changes": "none",
+    "outcome_evidence": "every execution-matrix row starts unverified with null outcome and empty evidence refs"
+  },
+  "execution_matrix_count": 176,
+  "execution_matrix_contract": "One row per applicable existing mode \u00d7 warm/reload (or its sole inventory lifecycle dimension) \u00d7 branch. inventory_dimensions preserves all source dimensions on every row. Each row has its own observed_outcome and evidence_refs; all rows begin unverified."
 }
