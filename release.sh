@@ -396,6 +396,31 @@ mandate_scan_step() {
 }
 # mandate-scan-step:end
 
+# ── Server-contract gate auth: a point-use session for the tool-drift check ──
+# CI mints it in scripts/release-with-gate-auth.mjs and passes AIDREAM_API_TOKEN
+# down; that caller-supplied token is used as-is. A local release (ship.sh →
+# release.sh) has none, so it mints one per candidate through the same
+# gateSession(), reading the identity from the gitignored .env.release.local.
+GATE_TOKEN_FROM_CALLER=false
+[[ -n "${AIDREAM_API_TOKEN:-}" ]] && GATE_TOKEN_FROM_CALLER=true
+mint_gate_auth() {
+    $GATE_TOKEN_FROM_CALLER && return 0
+    local out err key value
+    err="$(mktemp "${TMPDIR:-/tmp}/matrx-extend-gate-auth.XXXXXX")"
+    if ! out="$(cd "$REPO_ROOT" && bounded 60 node scripts/release-with-gate-auth.mjs --print-env 2>"$err")"; then
+        finding "ERROR" "Gate auth" "could not mint the server-contract gate session: $(head -1 "$err")" "node scripts/release-with-gate-auth.mjs --print-env (identity in .env.release.local)"
+        rm -f "$err"
+        return 0
+    fi
+    rm -f "$err"
+    while IFS='=' read -r key value; do
+        case "$key" in
+            AIDREAM_API_TOKEN|AIDREAM_ORGANIZATION_ID|AIDREAM_API_URL) export "$key=$value" ;;
+        esac
+    done <<< "$out"
+    log "server-contract gate session minted for organization ${AIDREAM_ORGANIZATION_ID:-?}"
+}
+
 run_checks() {
     local row name secs rc
     for row in "${CHECKS[@]}"; do
@@ -551,6 +576,7 @@ while (( RACES < SHIP_PUSH_ATTEMPTS )); do
     export_snapshot "$RELEASE_SHA" "$RELEASE_SHA" && BUILD_SNAP="$SNAP_DIR"         || hard_stop "could not export build candidate for $NEW_TAG — nothing was pushed"
     JOBS="$(mktemp -d "${TMPDIR:-/tmp}/matrx-extend-release-jobs.XXXXXX")"
     SNAP_ROOTS+=("$JOBS")
+    $SKIP_CATALOG || mint_gate_auth
     run_checks || hard_stop "mandatory checks failed for $NEW_TAG — nothing was pushed"
     mandate_scan_step
     STORE_CANDIDATE="$BUILD_SNAP/.output/${PROJECT_NAME}-${NEW_VERSION}-store.zip"

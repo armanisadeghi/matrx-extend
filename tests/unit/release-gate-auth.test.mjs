@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
 import { test } from 'node:test';
-import { gateSession } from '../../scripts/release-with-gate-auth.mjs';
+import {
+  LOCAL_GATE_ENV,
+  gateSession,
+  localGateEnv,
+} from '../../scripts/release-with-gate-auth.mjs';
 
 const env = {
   WXT_SUPABASE_URL: 'https://db.example',
@@ -40,4 +45,19 @@ test('refuses missing explicit organization without attempting sign-in', async (
     }),
     /AIDREAM_GATE_ORGANIZATION_ID/,
   );
+});
+
+test('local mode loads the gitignored gate env, then the public env, and names a missing file', () => {
+  const loaded = [];
+  const root = new URL('../..', import.meta.url).pathname;
+  // Both files exist in a configured local checkout; the loader is injected so
+  // the test never reads real credentials.
+  if (existsSync(`${root}${LOCAL_GATE_ENV}`)) {
+    localGateEnv({}, root, (path) => loaded.push(path));
+    assert.deepEqual(
+      loaded.map((path) => path.split('/').pop()),
+      [LOCAL_GATE_ENV, '.env.production'],
+    );
+  }
+  assert.throws(() => localGateEnv({}, '/nonexistent-root', () => {}), /\.env\.release\.local/);
 });
