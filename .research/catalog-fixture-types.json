@@ -1,0 +1,9 @@
+{
+  "status": "FIXED_SOURCE_CI_PENDING",
+  "trigger": "Full CI run 37103756685 reported TS2339 on add/delete of CANONICAL_SURFACE in private-catalog-commands.test.ts.",
+  "cause": "The test imported the production ReadonlySet contract and attempted to mutate it, even though the mocked value was a mutable Set at runtime.",
+  "repair": "A vi.hoisted mutable Set is now the explicit mock fixture. The categories mock exposes that fixture as CANONICAL_SURFACE, and test setup mutates the fixture directly.",
+  "scope": "Test-only fixture type correction; production API, server gate logic, and assertions unchanged.",
+  "verification": ["git diff --check passed", "Full CI compile and tests pending on the pushed commit"],
+  "heavy_local_tests_run": false
+}

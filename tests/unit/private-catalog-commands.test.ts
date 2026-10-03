@@ -8,7 +8,8 @@ import { loadSupabaseEnv } from '../../scripts/_supabase-rest';
 import type { DbToolRow } from '../../scripts/_tool-db-row-validation';
 import { main as drift } from '../../scripts/check-tool-db-drift';
 import { main as generateDocs } from '../../scripts/dump-tools-from-db';
-import { CANONICAL_SURFACE } from '../../src/lib/tools/categories';
+
+const canonicalSurfaceFixture = vi.hoisted(() => new Set<string>(['google_workspace']));
 
 vi.mock('../../scripts/_supabase-rest', async (original) => ({
   ...(await original<typeof import('../../scripts/_supabase-rest')>()),
@@ -28,7 +29,7 @@ vi.mock('../../src/lib/tools/catalog', () => ({
   }),
 }));
 vi.mock('../../src/lib/tools/categories', () => ({
-  CANONICAL_SURFACE: new Set(['google_workspace']),
+  CANONICAL_SURFACE: canonicalSurfaceFixture,
 }));
 vi.mock('node:fs', async (original) => ({
   ...(await original<typeof import('node:fs')>()),
@@ -58,7 +59,7 @@ let read: ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
   process.argv = [...argv, '--strict'];
-  CANONICAL_SURFACE.delete('records');
+  canonicalSurfaceFixture.delete('records');
   vi.mocked(loadSupabaseEnv).mockReturnValue(null);
   vi.stubEnv('MATRX_SUPABASE_PROJECT_REF', 'brsgrqvjdzwihsvnfqkf');
   vi.stubEnv('SUPABASE_ACCESS_TOKEN', 'operator-fixture-token');
@@ -323,7 +324,7 @@ describe('public catalog response validation through the real REST reader', () =
 
 describe('registered server contract through the complete strict command', () => {
   function serverFixture() {
-    CANONICAL_SURFACE.add('records');
+    canonicalSurfaceFixture.add('records');
     const parameters = {
       action: { type: 'string', enum: ['guide'] },
       args: { type: 'object' },
