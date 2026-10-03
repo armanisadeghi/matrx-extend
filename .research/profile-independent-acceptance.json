@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "review_type": "fresh independent zero-product-authorship source review and pending native acceptance",
+  "review_type": "fresh independent zero-product-authorship source review and bounded native acceptance",
   "scope": ["EXT-D-0094", "EXT-D-0095"],
   "product_commits": [
     "dccc196abb1945664b8ac756825526a5a9a6c7c5",
@@ -44,6 +44,9 @@
     "restoration_verified": true,
     "raw_receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-independent-20261003-01/evidence/profile-native-profile-independent-20261003-01.json",
     "raw_receipt_sha256": "e22cac1dd62631c2e525fd23ad581e3a4fb3cb5e0ff2d2c4c066d03efbac4671",
+    "sanitized_receipt": ".research/profile-independent-native-receipt.sanitized.json",
+    "sanitized_receipt_sha256": "5296aba7355d270ac873e982df7fd3130102d092c86e9438cd941dad27d89d99",
+    "sanitization": "The repository copy is formatted JSON with email, organization name, browser target ID, local absolute paths and native artifact directory removed. It retains run and build identity, boolean UI observations, network statuses and error codes.",
     "resource_journal": "docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl",
     "resource_journal_sha256": "dddcab9788d9c56e12b442cf9921bc5a4ca9244276ebc0f557449551decc8db0"
   },

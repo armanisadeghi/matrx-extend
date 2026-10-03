@@ -1,0 +1,256 @@
+{
+  "schema_version": 1,
+  "kind": "profile_native_acceptance",
+  "run_id": "profile-independent-20261003-01",
+  "started_at": "2026-10-03T20:16:19.820Z",
+  "status": "passed",
+  "stage": "complete",
+  "cases": [
+    {
+      "id": "EXT-F-1004-T02",
+      "mode": "admin",
+      "dimension": "warm",
+      "branch": "default",
+      "status": "passed",
+      "started_at": "2026-10-03T20:16:32.541Z",
+      "observed": {
+        "draft_dirty": true,
+        "discard_visible": true,
+        "back_chat": true,
+        "reopened_original": true
+      }
+    },
+    {
+      "id": "EXT-F-1004-T04",
+      "mode": "admin",
+      "dimension": "warm",
+      "branch": "discard-draft",
+      "status": "passed",
+      "started_at": "2026-10-03T20:16:33.425Z",
+      "observed": {
+        "discard_restored": true,
+        "save_disabled": true
+      }
+    },
+    {
+      "id": "EXT-F-1004-T04",
+      "mode": "admin",
+      "dimension": "warm",
+      "branch": "save-draft",
+      "status": "passed",
+      "started_at": "2026-10-03T20:16:33.425Z",
+      "observed": {
+        "saved_after_reopen": true,
+        "original_restored_after_reopen": true
+      }
+    },
+    {
+      "id": "EXT-F-1004-T25",
+      "mode": "admin",
+      "dimension": "warm",
+      "branch": "denied-owner-read-retry",
+      "status": "passed",
+      "started_at": "2026-10-03T20:16:36.222Z",
+      "observed": {
+        "network_owner_reads_refused": 4,
+        "editors_during_denial": 0,
+        "header_save_disabled": true,
+        "footer_save_enabled": false,
+        "dirty_footer_during_denial": false,
+        "retry_restored_original": true,
+        "owner_read_http_200_after_retry": true
+      }
+    }
+  ],
+  "artifact": {
+    "run_id": 37150495327,
+    "artifact_id": 11283802431,
+    "source_sha": "ac49ac2f8fb9f9c3d538aef81149a1c4a6eb2418",
+    "version": "0.2.177",
+    "tree_sha256": "9cc1d6a77f7f2f0314a9ecee8dae6b73bc2bc6bb472e94d05e6b0aea43f75fdf"
+  },
+  "runtime": {
+    "node": "v25.6.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  },
+  "launch": {
+    "profile_run_id": "profile-independent-20261003-01"
+  },
+  "identity": {
+    "role": "admin",
+    "device_organization_present": true,
+    "profile_matches_first_party": true
+  },
+  "original_preferred_present": false,
+  "t04_diagnostic": {
+    "stages": [
+      {
+        "stage": "discard_draft",
+        "preferred_matches_expected": false,
+        "preferred_empty": false,
+        "preferred_missing": false,
+        "dirty": true,
+        "save_enabled": true,
+        "error_present": false,
+        "loading": false,
+        "back": true
+      },
+      {
+        "stage": "discard_settled",
+        "preferred_matches_expected": true,
+        "preferred_empty": true,
+        "preferred_missing": false,
+        "dirty": false,
+        "save_enabled": false,
+        "error_present": false,
+        "loading": false,
+        "back": true
+      },
+      {
+        "stage": "save_draft",
+        "preferred_matches_expected": true,
+        "preferred_empty": false,
+        "preferred_missing": false,
+        "dirty": true,
+        "save_enabled": true,
+        "error_present": false,
+        "loading": false,
+        "back": true
+      },
+      {
+        "stage": "save_settled",
+        "preferred_matches_expected": true,
+        "preferred_empty": false,
+        "preferred_missing": false,
+        "dirty": false,
+        "save_enabled": false,
+        "error_present": false,
+        "loading": false,
+        "back": true
+      },
+      {
+        "stage": "saved_after_reopen",
+        "preferred_matches_expected": true,
+        "preferred_empty": false,
+        "preferred_missing": false,
+        "dirty": false,
+        "save_enabled": false,
+        "error_present": false,
+        "loading": false,
+        "back": true
+      },
+      {
+        "stage": "before_cleanup",
+        "preferred_matches_expected": false,
+        "preferred_empty": false,
+        "preferred_missing": false,
+        "dirty": false,
+        "save_enabled": false,
+        "error_present": false,
+        "loading": false,
+        "back": true
+      },
+      {
+        "stage": "cleanup_draft",
+        "preferred_matches_expected": true,
+        "preferred_empty": true,
+        "preferred_missing": false,
+        "dirty": true,
+        "save_enabled": true,
+        "error_present": false,
+        "loading": false,
+        "back": true
+      },
+      {
+        "stage": "cleanup_settled",
+        "preferred_matches_expected": true,
+        "preferred_empty": true,
+        "preferred_missing": false,
+        "dirty": false,
+        "save_enabled": false,
+        "error_present": false,
+        "loading": false,
+        "back": true
+      },
+      {
+        "stage": "cleanup_after_reopen",
+        "preferred_matches_expected": true,
+        "preferred_empty": true,
+        "preferred_missing": false,
+        "dirty": false,
+        "save_enabled": false,
+        "error_present": false,
+        "loading": false,
+        "back": true
+      }
+    ],
+    "requests": [
+      {
+        "route": "profile_row",
+        "method": "GET",
+        "status": 200,
+        "outcome": "finished",
+        "error_code": null
+      },
+      {
+        "route": "profile_row",
+        "method": "POST",
+        "status": 200,
+        "outcome": "finished",
+        "error_code": null
+      },
+      {
+        "route": "profile_row",
+        "method": "GET",
+        "status": 200,
+        "outcome": "finished",
+        "error_code": null
+      },
+      {
+        "route": "profile_row",
+        "method": "GET",
+        "status": 200,
+        "outcome": "finished",
+        "error_code": null
+      },
+      {
+        "route": "profile_row",
+        "method": "GET",
+        "status": 200,
+        "outcome": "finished",
+        "error_code": null
+      },
+      {
+        "route": "profile_row",
+        "method": "POST",
+        "status": 200,
+        "outcome": "finished",
+        "error_code": null
+      },
+      {
+        "route": "profile_row",
+        "method": "GET",
+        "status": 200,
+        "outcome": "finished",
+        "error_code": null
+      },
+      {
+        "route": "profile_row",
+        "method": "GET",
+        "status": 200,
+        "outcome": "finished",
+        "error_code": null
+      }
+    ]
+  },
+  "restoration": {
+    "verified": true,
+    "at": "2026-10-03T20:16:36.222Z"
+  },
+  "native": {
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "verified": true
+  },
+  "finished_at": "2026-10-03T20:16:44.492Z"
+}
