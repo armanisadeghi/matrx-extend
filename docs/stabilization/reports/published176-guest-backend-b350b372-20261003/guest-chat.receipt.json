@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "scope": "fresh native headless Chromium guest Chat; opening grounded answer and same guest follow-up after real side-panel reload",
+  "build": {
+    "version": "0.2.176",
+    "tree_sha256": "755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272",
+    "receipt_kind": "release",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "artifact_unchanged": true
+  },
+  "guest": {
+    "fresh": true,
+    "chat_visible": true,
+    "after_reload": true,
+    "fixture_reinstalled_before_first_send": false,
+    "session_absent_after_reload": true,
+    "fixture_reinstalled_after_reload": false
+  },
+  "chat": {
+    "opening_question_fingerprint": "8b0041e45eb47431",
+    "fixture_fragment_fingerprint": "d5b8a29213a26039",
+    "opening_code_fingerprint": "30cc37526d7ef842",
+    "completed_reply_count": 1,
+    "answer_contains_unpredictable_page_code": true,
+    "answer_names_page_stages": true,
+    "answer_stages_in_order": true,
+    "no_login_paywall_or_error": true,
+    "followup_completed_after_reload": true,
+    "followup_question_fingerprint": "be2d5336e111bd21",
+    "followup_code_fingerprint": "29d866c5dd887394",
+    "followup_reply_count": 1,
+    "followup_contains_unpredictable_page_code": true,
+    "followup_names_fixture_heading": true
+  },
+  "stage_progress": [
+    "owned_profile",
+    "fresh_guest",
+    "owned_article_page",
+    "page_specific_fixture",
+    "guest_chat_open",
+    "guest_question",
+    "real_guest_answer",
+    "real_panel_reload",
+    "guest_followup_composer",
+    "guest_followup_question",
+    "real_guest_followup_answer",
+    "artifact_unchanged"
+  ],
+  "guest_ai_requests": [],
+  "grounding": {
+    "opening_page_and_active_tab_match_fixture": true,
+    "opening_answer_grounded": true,
+    "followup_page_and_active_tab_match_fixture": true,
+    "followup_answer_grounded": true
+  },
+  "screenshots": ["guest-chat-real-answer.png", "guest-chat-real-followup-answer.png"]
+}
