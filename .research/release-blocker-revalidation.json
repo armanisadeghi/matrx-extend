@@ -8,5 +8,12 @@
   "narrow_correction": "Implemented: removed only the sbp_fc prefix rejection from .github/workflows/release.yml; kept the nonempty secret requirement, strict migration/tool checks, and Management API read-only SELECT validation. No rotation or new grant is intrinsically required if an existing authorized token can read the project.",
   "gate_verification": "Executed the extracted workflow bash gate using synthetic classic, scoped, and empty token strings: classic/scoped exit 0, empty exits 1 with the missing-secret finding. Confirmed both strict live-DB gate commands remain in release.sh.",
   "remaining_verification": "A hosted run is still needed to prove Database Read and strict gate success; the project GET only proves project endpoint access. Mac local release remains under the disk guard.",
-  "sources": [".github/workflows/release.yml:33-76", "release.sh:322-338", "scripts/check-migrations.ts:107-150", "scripts/check-tool-db-drift.ts:326-409", "scripts/_supabase-management.ts:43-98", "https://supabase.com/docs/guides/platform/personal-access-tokens"]
+  "sources": [
+    ".github/workflows/release.yml:33-76",
+    "release.sh:322-338",
+    "scripts/check-migrations.ts:107-150",
+    "scripts/check-tool-db-drift.ts:326-409",
+    "scripts/_supabase-management.ts:43-98",
+    "https://supabase.com/docs/guides/platform/personal-access-tokens"
+  ]
 }
