@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "artifact_type": "read-only-disk-acceptance-capacity-diagnosis",
+  "task_id": "disk-acceptance-unblock",
+  "observed_at": "2026-10-02T14:00:00-07:00",
+  "scope": "Read-only targeted capacity and hosted acceptance capability review. No deletion, move, process stop, browser, test, install, or credential read.",
+  "disk_grooming_guidance": {
+    "skill": ".claude/skills/disk-groom/SKILL.md",
+    "register": "/Users/armanisadeghi/code/common-docs/operations/disk-grooming.md",
+    "relevant_rule": "The canonical daily dev-caches cleanup is the approved cleanup mechanism for package and generated build caches; it does not authorize deleting browser profiles, cloud synchronization state, or VM data."
+  },
+  "capacity": {
+    "observed": "df -h /: 5.0 GiB available; /Volumes/Samsung2TB: 1.7 TiB available.",
+    "unchanged_guard_floor": "20 GiB internal free space",
+    "shortfall_to_guard": "about 15 GiB",
+    "prior_growth_evidence": ".research/internal-disk-growth-20261002.json reports approximately 28.99 GiB CloudKit MMCS, flat during its bounded observation, with no writer proven. It explicitly recommends preserving cloud state and deferring storage-intensive tests."
+  },
+  "targeted_cache_census": {
+    "method": "du on named cache roots and one-level inventory of ~/Library/Caches; no broad filesystem scan.",
+    "measured": {
+      "Library_Caches_total": "34 GiB",
+      "CloudKit": "29 GiB",
+      "Google_Chrome_profile_cache": "3.4 GiB",
+      "pnpm_cache": "610 MiB",
+      "Playwright_browser_cache": "539 MiB",
+      "Playwright_Go_cache": "127 MiB",
+      "Homebrew_cache": "91 MiB",
+      "node_gyp_cache": "62 MiB",
+      "pip_cache": "51 MiB",
+      "Codex_named_cache": "116 MiB",
+      "user_cache_runtime": "1.5 GiB"
+    },
+    "safe_reconstructible_developer_cache_ceiling": "The individually measured package/tool caches (pnpm, Playwright, Homebrew, node-gyp, pip) total about 1.5 GiB. No safe reconstructible development cache approaching the 15 GiB shortfall was identified.",
+    "excluded": [
+      "CloudKit: protected cloud synchronization state; size accounts for most of Library/Caches.",
+      "Google Chrome tree: browser profile/cache data, not treated as disposable development output.",
+      "Codex application/runtime caches: active application runtime or conversation-related state; preserved.",
+      "Docker and other VM disks, Android AVD, and active simulator state: preserved per prior bounded reports and task scope."
+    ]
+  },
+  "relocation_assessment": {
+    "finding": "No supported, reversible application-storage relocation was identified that can safely recover at least 15 GiB within this read-only lane.",
+    "evidence": "The prior inactive-disk relocation report says Docker Desktop's supported disk-image move would recover at most about 7.7 GiB, leaving the volume below the 20 GiB floor; its app was not launched. The Claude VM bundle has no verified supported move procedure and includes session/machine state. Earlier safe-target census already relocated the verified inactive Gradle cache and found no additional >=20 GiB safe target."
+  },
+  "hosted_native_acceptance": {
+    "finding": "No existing hosted native Chrome acceptance capability was found.",
+    "evidence": "The GitHub release workflow uses ubuntu-latest for strict release gates. CI has a macos-latest job for copied stabilization resource-guard regressions, while native UI acceptance scripts use the local Chrome sidepanel harness. Neither workflow launches the extension in Chrome and executes a native user flow.",
+    "implication": "Hosted checks may verify source and gates, but cannot substitute for the requested native acceptance with the existing workflow."
+  },
+  "disposition": "No safe capacity recovery of >=15 GiB found. Preserve the 20 GiB guard; defer native acceptance unless the owner restores space from known disposable files or authorizes another verified source. No environmental state was changed."
+}
