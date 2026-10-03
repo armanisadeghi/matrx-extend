@@ -25,5 +25,10 @@
     "draft_version": "0.2.130",
     "upload_available": true,
     "pending_version": null
+  },
+  "listing_review": {
+    "description": "Existing description promises guest page questions, capture, structure and SEO without an account; explicitly no paid account for guest Chat. Signed-in Vault disclosure present.",
+    "changed_fields": [],
+    "decision": "Preserve existing listing and reviewer path; runtime acceptance still required before submission."
   }
 }
