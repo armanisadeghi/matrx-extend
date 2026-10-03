@@ -17,6 +17,10 @@ function fingerprint(value) {
   return createHash('sha256').update(value.toLowerCase()).digest('hex').slice(0, 16);
 }
 
+export function settingsShellReady(state, mode) {
+  return state?.settingsAvailable === true && state.guest === (mode === 'guest');
+}
+
 async function privateJson(file, code) {
   assert.ok(file, `${code}_file_required`);
   const metadata = await stat(file);

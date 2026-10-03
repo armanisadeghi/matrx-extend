@@ -1,7 +1,44 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
-import { currentSettingsIdentityMatches, panelIdentity } from './settings-native-auth-driver.mjs';
+import {
+  currentSettingsIdentityMatches,
+  panelIdentity,
+  settingsShellReady,
+} from './settings-native-auth-driver.mjs';
+
+function readinessContract(check) {
+  // The headed D87 reload had guest=false while no Settings control was mounted.
+  for (const mode of ['admin', 'member', 'guest']) {
+    assert.equal(check({ settingsAvailable: false, guest: false }, mode), false, 'blank shell');
+    assert.equal(check(null, mode), false, 'unavailable shell');
+    assert.equal(
+      check({ settingsAvailable: true, guest: mode === 'guest' }, mode),
+      true,
+      'mounted role-appropriate shell',
+    );
+    assert.equal(
+      check({ settingsAvailable: true, guest: mode !== 'guest' }, mode),
+      false,
+      'wrong account mode',
+    );
+  }
+}
+
+test('Settings readiness requires mounted controls before initial and reload clicks', () => {
+  readinessContract(settingsShellReady);
+});
+
+test('readiness guard kills constant-return and missing-mount mutations in memory', () => {
+  for (const body of [
+    '() => true',
+    '() => false',
+    settingsShellReady.toString().replace('state?.settingsAvailable === true && ', ''),
+  ]) {
+    const mutant = runInNewContext(`(${body})`);
+    assert.throws(() => readinessContract(mutant), { code: 'ERR_ASSERTION' });
+  }
+});
 
 const MEMBER = '123e4567-e89b-42d3-a456-426614174000';
 const ORGANIZATION = '123e4567-e89b-42d3-a456-426614174001';

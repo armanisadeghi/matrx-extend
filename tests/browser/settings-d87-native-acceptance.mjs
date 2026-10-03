@@ -14,6 +14,7 @@ import {
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import {
   panelIdentity,
+  settingsShellReady,
   signInSettings,
   verifyCurrentSettingsIdentity,
 } from './settings-native-auth-driver.mjs';
@@ -42,6 +43,7 @@ const SAFE_CODES = new Set([
   'native_sidepanel_local_build_provenance_refused',
 ]);
 const OBSERVATION_CODES = new Set([
+  'd87_settings_shell',
   'd87_settings_ready',
   'Appearance_section_ready',
   'Appearance_expanded',
@@ -181,6 +183,11 @@ async function assertExpectedIdentity(panel) {
 }
 
 async function openSettings(panel) {
+  await waitFor(
+    'd87_settings_shell',
+    () => observation(panel),
+    (state) => settingsShellReady(state, AUTH_MODE),
+  );
   operation = 'settings_click';
   await click(panel, 'title', 'Settings');
   operation = 'settings_ready';
@@ -228,7 +235,7 @@ async function reload(page, panel, expectedTheme) {
     await waitFor(
       'd87_reloaded_identity',
       () => observation(panel),
-      (state) => state?.settingsAvailable && state.guest === (AUTH_MODE === 'guest'),
+      (state) => settingsShellReady(state, AUTH_MODE),
     );
     const rendered = await openSettings(panel);
     if (AUTH_MODE !== 'guest') {
