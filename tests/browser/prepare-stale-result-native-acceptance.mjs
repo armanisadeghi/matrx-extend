@@ -6,6 +6,7 @@ import { readFile, stat, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { faultState, installFault, releaseFault } from './prepare-fault-driver.mjs';
 import {
   activeTabPanelExpression,
   click,
@@ -230,68 +231,6 @@ async function prepareState(panel) {
   );
 }
 
-async function installFault(panel, mode) {
-  const installed = await evaluate(
-    panel,
-    `(() => {
-    if (window.__prepareFault) return false;
-    const original = chrome.scripting.executeScript;
-    const native = original.bind(chrome.scripting);
-    const fault = { calls: 0, held: false, release: null };
-    const wrapper = (details) => {
-      if (!details?.target?.documentIds || !details?.args?.[0] ||
-          typeof details.args[0].scrollToBottom !== 'boolean') return native(details);
-      fault.calls++;
-      if (fault.calls !== 1) return native(details);
-      if (${JSON.stringify(mode)} === 'reject')
-        return Promise.reject(new Error('Controlled Prepare rejection'));
-      return native(details).then((result) => new Promise((resolve, reject) => {
-        fault.held = true;
-        fault.release = () => {
-          fault.held = false;
-          if (${JSON.stringify(mode)} === 'hold_reject') reject(new Error('Controlled Prepare rejection'));
-          else resolve(result);
-        };
-      }));
-    };
-    chrome.scripting.executeScript = wrapper;
-    if (chrome.scripting.executeScript !== wrapper) return false;
-    window.__prepareFault = {
-      state: () => ({ calls: fault.calls, held: fault.held }),
-      release: () => fault.release?.(),
-      restore: () => { chrome.scripting.executeScript = original; },
-    };
-    return true;
-  })()`,
-  );
-  assert.equal(installed, true, 'prepare_fault_boundary_unavailable');
-}
-
-async function faultState(panel) {
-  return evaluate(panel, '(() => window.__prepareFault?.state() ?? null)()');
-}
-
-async function releaseFault(panel) {
-  report.release_stage = 'execute_release';
-  await evaluate(
-    panel,
-    '(() => { window.__prepareFault?.release(); window.__prepareFault?.restore(); delete window.__prepareFault; return true; })()',
-  );
-  report.release_stage = 'visibility';
-  report.release_visibility = await evaluate(
-    panel,
-    "['visible', 'hidden'].includes(document.visibilityState) ? document.visibilityState : 'other'",
-  );
-  report.release_stage = 'animation_frames';
-  // Let the pending hook continuation and React paint complete before inspecting
-  // the old document's result. A pre-settlement empty state is not evidence.
-  await evaluate(
-    panel,
-    'new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve(true))))',
-  );
-  report.release_stage = 'complete';
-}
-
 try {
   assert.ok(EXTENSION_DIR && RECEIPT && CREDENTIALS, 'prepare_inputs_required');
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
@@ -354,7 +293,13 @@ try {
       stage('failed_retry_assert_previous_success_absent');
       assert.equal(pendingRetry.success, false, 'prepare_previous_success_visible_during_retry');
       stage('failed_retry_release');
-      await releaseFault(panel);
+      await releaseFault(
+        panel,
+        () => prepareState(panel),
+        (value) => {
+          report.release_stage = value;
+        },
+      );
       stage('failed_retry_observe_rejection');
       const retry = await waitFor(
         'prepare_failed_retry',
@@ -397,7 +342,13 @@ try {
             !value.failed &&
             !value.preparing,
         );
-        await releaseFault(panel);
+        await releaseFault(
+          panel,
+          () => prepareState(panel),
+          (value) => {
+            report.release_stage = value;
+          },
+        );
         const after = await waitFor(
           `prepare_${mode}_late_ignored`,
           () => prepareState(panel),
