@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "incident": "EXT-D-0088",
+  "observed_at_date": "2026-10-02",
+  "scope": "Read-only extension source and published-tag analysis; the live start probe is owned by the server incident lane.",
+  "published_extension": {
+    "version": "0.2.130",
+    "tag_sha": "10ac483f35d97faf5affdd57d8c4a5a258d91c65",
+    "store_zip_sha256_from_record": "9bdf93b207cef0ff849189b124f1899a8a425a860e5801dcbd164a9c4c75467a"
+  },
+  "fresh_guest_start": {
+    "method": "POST",
+    "url": "https://server.app.matrxserver.com/v2/ai/mandates/extend.browser_chat",
+    "headers": ["Content-Type: application/json", "Accept: text/event-stream", "X-Fingerprint-ID: 64-character install SHA-256 hex"],
+    "omitted_headers": ["Authorization", "X-Organization-Id"],
+    "body_core": {
+      "user_input": "person's message",
+      "conversation_id": "client-minted UUID",
+      "is_new": true,
+      "variables": null,
+      "stream": true,
+      "store": true,
+      "source_app": "matrx-extend",
+      "source_feature": "chat",
+      "initiation": "user",
+      "client": {"capabilities": ["browser-dom"], "state": {"browser-dom": {"is_guest": true}}}
+    },
+    "additional_body": "Page context is assembled per send. Optional model, admin, and sandbox overrides depend on settings. The service worker removes organization_id for fingerprint guests."
+  },
+  "evidence": [
+    "git show v0.2.130:src/features/chat/ChatView.tsx: fresh guest selects DEFAULT_CHAT_MANDATE_REF",
+    "git show v0.2.130:src/lib/mandates.ts: the ref names extend.browser_chat from @ai-matrx/agents/mandates",
+    "git show v0.2.130:src/hooks/use-chat-stream.ts: send builds the body and routes the mandate",
+    "git show v0.2.130:src/lib/stream/offscreen-proxy.ts: guest transport binds X-Fingerprint-ID and removes organization_id",
+    "docs/stabilization/runs/guest-chat-presubmit-006.json: earlier exact-build acceptance passed but explicitly recorded no observed guest AI network requests"
+  ],
+  "current_main_difference": "Since v0.2.130, request context assembly and stream rejoin changed, but the guest start route, fingerprint header, and organization stripping did not change. Those later source edits cannot alter the installed published build.",
+  "live_response": {
+    "source": "Server incident lane's live ops.system_error at 03:38:58",
+    "outcome": "Guest mandate resolution succeeded, then stream_crash during browser_dom._build_auto_load_specs",
+    "error": "InlineToolSpec validation: input_schema.properties.$envelope.type='args' is invalid JSON Schema"
+  },
+  "root_cause_boundary": "The published client sends the browser-dom capability, not tool definitions. The server's browser_dom._build_auto_load_specs enumerates live chrome-extension registry rows. Its _inline_kwargs_from_registry maps each tool.parameters entry into input_schema.properties; a DB metadata key $envelope:'args' thereby becomes a false property whose type is 'args', which InlineToolSpec rejects. The exact live tool row and first introduction are for the server lane to establish.",
+  "restoration_path": "Repair the server-side registry-to-InlineToolSpec translation or canonical DB definition, then redeploy the server and replay the guest start. The installed Store 0.2.130 request shape need not change for this failure.",
+  "limitations": ["No extension-side change is justified by this trace; final live recovery remains to be verified after server repair."]
+}
