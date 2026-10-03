@@ -59,5 +59,15 @@
     }
   ],
   "current_work": "Concurrency finding CONFIRMED by guarded RED. Shared native Web Lock repair and persisted-id cache validation passed final 24 focused tests, including real Ed25519 signatures from both overlapping activations after module restart, and TypeScript compile. Lock-removal and constant-lookup mutations failed with byte-identical restoration. Fresh peer and new exact CI artifact/native Chrome verification remain pending. Keep in-fix.",
-  "closure_requirement": "Independent review plus exact-build native Settings verification of actionable failures and single-rotation retry behavior without rotating real user/device keys."
+  "closure_requirement": "Independent review plus exact-build native Settings verification of actionable failures and single-rotation retry behavior without rotating real user/device keys.",
+  "independent_source_review": {
+    "commit": "22f29e68",
+    "report": ".research/settings-audit-concurrency-peer.json",
+    "quality_verdict": "pass_with_minor",
+    "runtime_verdict": "partial_native_pending"
+  },
+  "remaining_work": [
+    "Exact new-CI-artifact native Settings failure/retry and cross-context receipt verification; no source test closes this requirement.",
+    "Minor independent finding: when Web Locks is unavailable, current rotation error invites a retry that cannot restore the missing capability. Preserve honest capability-specific recovery guidance before final closure."
+  ]
 }
