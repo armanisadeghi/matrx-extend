@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "review_type": "read-only Store release feasibility; no workflow dispatch, build, package, upload, or submission",
+  "checked_at_utc": "2026-10-03",
+  "current_truth": {
+    "published_version": "0.2.176",
+    "published_source": "3fe608d949a06aa10bfea57b43c9b05638386bc1",
+    "primary_item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "working_source_version_at_review": "0.2.180",
+    "latest_successful_hosted_release_run": 37105966615,
+    "latest_successful_hosted_release_artifact": "matrx-extend-v0.2.176",
+    "latest_successful_hosted_release_artifact_id": 11267544261,
+    "latest_successful_hosted_release_artifact_expired": false,
+    "new_candidate_store_zip_available": false,
+    "local_output_store_zip": "0.2.173 only; stale and ineligible for a new upload",
+    "recent_ci_artifacts": "Development-test artifacts only; they are not Store ZIPs or release receipts."
+  },
+  "authorized_remote_route_after_product_gates": [
+    "Use .github/workflows/release.yml (Hosted release) by workflow_dispatch on main, with an immutable 40-character aidream_sha and release note. Its ubuntu-latest job installs frozen dependencies, refreshes @ai-matrx packages, and invokes scripts/release-with-gate-auth.mjs, which runs release.sh with the strict gates and Store risk check.",
+    "A successful job verifies the pushed source/tag and release receipt, then uploads matrx-extend-v<version> containing the validated -store.zip, -local.zip, release-receipt.json, and log. Identify the candidate from that receipt and verify the Store ZIP hash; do not infer eligibility from package.json version or a development artifact.",
+    "Run exact-artifact hosted guest and member acceptance through .github/workflows/hosted-guest-acceptance.yml with release_run_id and inspect the results. The workflow accepts only a successful Hosted release run with one unexpired versioned artifact for this mode.",
+    "After the guest/member gates pass, upload only the validated -store.zip to the primary Matrx publisher item, submit with automatic publication enabled, and verify Pending review. Routine release and dashboard actions are already authorized by the chrome-web-store-release skill; only an unsatisfied live Google 2FA challenge is a normal human handoff."
+  ],
+  "unresolved_constraints": [
+    "No Hosted release after v0.2.176 is visible in the queried workflow history, so there is no eligible newer Store ZIP yet.",
+    "The reported installed Store guest Chat failure remains open, and an exact new candidate has not passed guest/member acceptance. This feasibility review does not grant release readiness.",
+    "The user's current machine restriction excludes local packaging; the hosted workflow is the existing remote path."
+  ],
+  "source_evidence": [
+    ".github/workflows/release.yml",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "config/chrome-web-store-approved-baseline.json",
+    "/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHROME-WEB-STORE.md",
+    ".claude/skills/chrome-web-store-release/SKILL.md",
+    "GitHub Actions Hosted release run 37105966615 and its artifact 11267544261 (read-only API)"
+  ]
+}
