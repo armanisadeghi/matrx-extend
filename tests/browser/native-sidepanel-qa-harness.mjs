@@ -446,6 +446,7 @@ export async function runNativeSidepanelQa({
         '--enable-automation',
         '--no-first-run',
         '--no-default-browser-check',
+        '--use-mock-keychain',
         '--remote-debugging-address=127.0.0.1',
         '--remote-debugging-port=0',
         `--user-data-dir=${profile}`,

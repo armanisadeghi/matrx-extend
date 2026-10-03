@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "status": "MACOS_KEYCHAIN_DECRYPT_WAIT_IDENTIFIED_UNDERLYING_CAUSE_UNVERIFIED",
-  "completed_at": "2026-10-03T11:18:02Z",
+  "status": "CONTROLLED_MOCK_KEYCHAIN_FLAG_RESTORES_OWNED_CDP",
+  "completed_at": "2026-10-03T11:21:35Z",
   "defects": ["EXT-D-0058", "EXT-D-0059"],
-  "launch_attempts": 2,
+  "launch_attempts": 3,
   "boundary": "Fresh official Chromium 141.0.7390.37 revision 1194 was spawned with the native harness exact headless/debugging/extension arguments, fresh owned profile, and unchanged 5000 ms readiness limit. It created SingletonLock and Local State but never DevToolsActivePort. Child remained alive, so spawn/executable permission and immediate crash are excluded. CDP owner verification and product acceptance were never reached.",
   "observations": [
     {
@@ -56,15 +56,17 @@
       "prediction": "A monitored launch with the unchanged limit fails at five seconds but a separately observed endpoint appears later without a process/argument change; this must not be used to silently raise the limit."
     }
   ],
-  "next_discriminating_probe": "Two diagnostic launches consumed. Escalate with the sanitized stack evidence to the owner; no third launch, Keychain entry mutation, security-setting change, password-store bypass, signature/quarantine change, endpoint-timeout increase, or acceptance retry in this lane.",
-  "scope": "Two owned guarded diagnostic launches only; no product file changed, app built, user browser/profile reused, Keychain modified, security setting changed, or acceptance case run. Both resource permits ended valid.",
+  "next_discriminating_probe": "Independent peer review of the one-line harness change and controlled red/green evidence, then root-owned exact Prepare native acceptance with existing resource and receipt gates. Two failed unchanged launches plus one successful one-variable launch; no further diagnostic launch needed.",
+  "scope": "Three owned guarded startup diagnostics; final one used a single canonical test-only mock-keychain argument and passed owned CDP. No user Chrome profile, system Keychain mutation, signature/quarantine change, password-store switch, timeout increase, app build, release, or product acceptance.",
   "evidence_paths": {
     "diagnostic_script": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/diagnose-startup.mjs",
     "diagnostic_profile": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/startup-2OQg32/profile",
     "resource_journal": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/startup-resource-journal.jsonl",
     "stack_probe_script": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/diagnose-stack.mjs",
     "stack_resource_journal": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/stack-resource-journal.jsonl",
-    "raw_sample_local_only": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/stack-bOXcGM/sample.txt"
+    "raw_sample_local_only": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/stack-bOXcGM/sample.txt",
+    "mock_diagnostic_script": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/diagnose-mock-keychain.mjs",
+    "mock_resource_journal": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/mock-resource-journal.jsonl"
   },
   "second_probe": {
     "launch": "Same fresh official Chromium and native harness arguments; new isolated owned profile; unchanged five-second readiness limit; no acceptance or credentials.",
@@ -94,5 +96,27 @@
     "process_cleanup": "Chromium parent and both observed helpers absent after owned cleanup; parent required SIGKILL after SIGTERM did not complete within one second.",
     "limits": "Stack sample identifies the immediate blocking call, not the keychain item, permission-dialog state, securityd cause, or whether the same wait occurs on another host. No raw sample or profile data committed."
   },
-  "verdict": "The local native endpoint timeout is caused immediately by Chromium main-thread waiting synchronously for macOS Keychain decryption before DevToolsActivePort creation. The item and reason for the wait remain unknown. Byte-identical official browser content and identical codesign diagnostics exclude cached-binary damage as an explanation."
+  "verdict": "The missing Playwright-standard --use-mock-keychain switch caused the local owned Chromium launch to block in macOS Keychain decryption before CDP. One-variable addition restored DevToolsActivePort and passed the unchanged owned-CDP process/profile/WebSocket guard in 728 ms. This proves the local startup repair; product Prepare acceptance remains unrun.",
+  "controlled_red_green": {
+    "red": "Without --use-mock-keychain, fresh official Chromium and exact native harness arguments stayed alive with initialized profile but no DevToolsActivePort through 5.217 seconds; the main thread spent 703/703 one-second samples in SecItemCopyMatching \u2192 SecurityServer::ClientSession::decrypt.",
+    "one_variable": "The green diagnostic used the same absolute executable, extension, headless mode, debugging flags, and fresh owned-profile launch shape. The sole argument addition was --use-mock-keychain, the switch in pinned playwright-core 1.56.1 Chromium defaults at lib/server/chromium/chromiumSwitches.js:80. Profile path was necessarily fresh for ownership isolation. --password-store=basic was not added.",
+    "green": {
+      "ready": true,
+      "elapsed_ms": 728,
+      "owner_verified_by_unchanged_connectOwnedCdp": true,
+      "devtools_active_port_present": true,
+      "launch_error": null,
+      "stderr_class": "DevTools listening; no error",
+      "child_exit_code_after_cleanup": 0,
+      "owned_chromium_process_remaining": false
+    },
+    "diagnostic_script_sha256": "e3f3ec2c1889002db387d0eb41036dab37944b85c63997b280c6903bd91facef",
+    "scope": "The scratch diagnostic invoked the repository\u2019s unchanged prepareOwnedProfile and connectOwnedCdp implementation; no auth, extension panel interaction, or Prepare case was run."
+  },
+  "fix": "Add only --use-mock-keychain to the native sidepanel QA harness direct Chromium spawn, which always creates a fresh owned ephemeral profile. No product browser launch, password backend change, system Keychain update, or broader security-setting change.",
+  "self_verification": [
+    "Controlled red and green real browser diagnostics above",
+    "node tests/browser/native-sidepanel-qa-harness.test.mjs passed",
+    "Focused Biome check and git diff --check passed"
+  ]
 }
