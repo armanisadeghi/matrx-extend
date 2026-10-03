@@ -51,7 +51,7 @@
     }
   ],
   "closure_requirement": "Original published guest request succeeds on deployed fix, real signed-out extension reply and reload verified, independent peer and surrounding member/guest regressions pass. Do not close from source or ordinary CI.",
-  "deployed_server_sha": "23053275714b3401ff514339706635f8fc051d0d",
+  "deployed_server_sha": "5318c105968feabd14ce1143f31506061aa4efc2",
   "published_extension_version": "0.2.130",
   "bounded_retest": "Guest native firstreply + reloadfollowup PASS on CIdevelopment175 controlledarticle; original Store130 native, publicdemo and surrounding member tests remain open. State fixed, notclosed."
 }

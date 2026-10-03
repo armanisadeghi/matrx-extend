@@ -20,7 +20,10 @@
     "src/lib/tools/handlers/records.ts",
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/37097488341",
     ".research/records-contract-escalation.json",
-    ".research/records-routing-peer.json"
+    ".research/records-routing-peer.json",
+    ".research/records-canonical-escalation.json",
+    "https://github.com/armanisadeghi/matrx-extend/commit/41670d8d",
+    "https://github.com/AI-Matrix-Engine/aidream/commit/c971bc6314"
   ],
   "transition_history": [
     {
@@ -59,5 +62,5 @@
     "entity_read",
     "entity_write"
   ],
-  "current_work": "Aggregate filter and date-bucket defects repaired2ea9860f, static independent acceptance1d46880e; native unverified. Canonical server already owns Records, but browser autoload creates inline spec and merge drops it. Existing-resolver RegisteredToolSpec repair in progress; manual Tools execution gaps remain separately open."
+  "current_work": "Source41670d8d removes duplicate local executor, preserves server Records discovery and manual UI, and requires live canonical contract proof. Aidream c971bc6314 exposes that proof through existing tool detail. Guarded types and focused tests passed. Source review, explicit server test CI, deployed endpoint, strict gate and native acceptance remain pending; not closed."
 }
