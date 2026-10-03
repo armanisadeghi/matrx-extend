@@ -24,10 +24,15 @@
   "expected": "Failed persistence leaves the prior saved value intact, displays a recoverable error, and allows a later successful save and rediscovery.",
   "actual": "Pre-fix handler awaited setEnginePortOverride without a rejection handler; source shows failed persistence escapes without setting enginePortError. Controlled runtime reproduction is pending hosted CI; native failure is not yet exercised.",
   "reproduction_status": "source-confirmed boundary; controlled runtime regression pending",
-  "evidence": ["src/features/settings/SettingsView.tsx", ".research/settings-failure-repair.json"],
+  "evidence": [
+    "src/features/settings/SettingsView.tsx",
+    ".research/settings-failure-repair.json",
+    ".research/settings-storage-final-peer.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37092730162"
+  ],
   "severity": "S2: connection setting silently fails to save",
   "priority": "P1: contained Settings persistence repair",
-  "state": "in-fix",
+  "state": "fixed",
   "transition_history": [
     {
       "at": "2026-10-03T03:10:33.412336+00:00",
@@ -46,6 +51,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Implementation lane owns caller repair and causal regression; native acceptance remains pending."
+    },
+    {
+      "at": "2026-10-03T03:22:57.568985+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "39ee192b + 8a6d61aa accepted by fresh c89f7ac3 source peer. HostedCI37092730162 passes16 Settings tests, full1912passed/6skipped, typecheck/lint/build. Nativeexactbuild and pre-fixruntimeRED remain unverified; no closure."
     }
   ],
   "closure_requirement": "Controlled failing-then-passing caller regression plus successful retry, independent review, and native exact-build persistence/error acceptance; no closure from source alone."
