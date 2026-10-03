@@ -11,7 +11,7 @@
     "Observe immediate error; correlate server stream_crash for source_app matrx-extend and source_feature chat."
   ],
   "expected": "Signed-out users receive a streamed Chat response without a paid account or login.",
-  "actual": "Original server startup crash repaired. Version 0.2.176 is Published - public. Fresh exact176 unpacked release native Chromium smoke against server4ec65fdb passed signed-out grounded first answer and distinct follow-up after real panel reload, with unchanged artifact tree and valid resource exit. This retest does not certify Store installation/update lifecycle or broader Chat features.",
+  "actual": "Original server startup crash repaired. Version 0.2.176 is Published - public. Fresh exact176 unpacked release native Chromium smoke against server6c7c5a09 passed signed-out grounded first answer and distinct follow-up after real panel reload, with unchanged artifact tree and valid resource exit. This retest does not certify Store installation/update lifecycle or broader Chat features.",
   "evidence": [
     ".research/guest-live-incident-server.json",
     ".research/guest-live-incident-extension.json",
@@ -26,7 +26,8 @@
     ".research/candidate176-guest-acceptance.json",
     ".research/member176-receipt-retest.json",
     ".research/publisher-session-restore.json",
-    ".research/published176-guest-server-refresh.json"
+    ".research/published176-guest-server-refresh.json",
+    ".research/published176-guest-backend-6c7c5a09.json"
   ],
   "severity": "S0: public core no-login Chat fails immediately",
   "priority": "P0: supersedes deferred Chat sequencing; restore live guest promise now",
