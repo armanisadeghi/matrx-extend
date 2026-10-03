@@ -10,6 +10,7 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import { signInAdminSettings } from './admin-settings-signin.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { panelIdentity } from './settings-native-auth-driver.mjs';
+import { signInSettings } from './settings-native-auth-driver.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
@@ -19,6 +20,7 @@ const RUN_ID = process.env.PROFILE_RUN_ID;
 const SOURCE_SHA = process.env.PROFILE_EXPECTED_SOURCE_SHA;
 const CI_RUN_ID = Number(process.env.PROFILE_EXPECTED_CI_RUN_ID);
 const ARTIFACT_ID = Number(process.env.PROFILE_EXPECTED_ARTIFACT_ID);
+const AUTH_MODE = process.env.PROFILE_AUTH_MODE ?? 'admin';
 const report = {
   schema_version: 1,
   kind: 'profile_native_acceptance',
@@ -30,6 +32,7 @@ const report = {
   artifact: null,
   runtime: { node: process.version, platform: process.platform, arch: process.arch },
   launch: {
+    auth_mode: AUTH_MODE,
     profile_run_id: RUN_ID,
     profile_dev_build_receipt: RECEIPT,
     profile_output_dir: OUTPUT_DIR,
@@ -160,6 +163,7 @@ function observeProfileRequests(panel) {
         status: null,
         outcome: 'pending',
         error_code: null,
+        row_present: null,
       });
   });
   const offResponse = panel.on('Network.responseReceived', ({ requestId, response }) => {
@@ -172,12 +176,15 @@ function observeProfileRequests(panel) {
     entry.outcome = 'finished';
     events.push(entry);
     requests.delete(requestId);
-    if (entry.status === null || entry.status < 400) return;
+    if (entry.status === null) return;
     void panel
       .send('Network.getResponseBody', { requestId })
       .then(({ body, base64Encoded }) => {
         const raw = base64Encoded ? Buffer.from(body, 'base64').toString('utf8') : body;
-        const code = JSON.parse(raw)?.code;
+        const parsed = raw ? JSON.parse(raw) : null;
+        if (entry.route === 'profile_row' && entry.method === 'GET' && entry.status === 200)
+          entry.row_present = Boolean(parsed && typeof parsed === 'object' && parsed.user_id);
+        const code = parsed?.code;
         if (typeof code === 'string' && /^[A-Za-z0-9_]{1,40}$/.test(code)) entry.error_code = code;
       })
       .catch(() => {});
@@ -193,12 +200,13 @@ function observeProfileRequests(panel) {
   return {
     start: () => panel.send('Network.enable'),
     snapshot: () =>
-      events.map(({ route, method, status, outcome, error_code }) => ({
+      events.map(({ route, method, status, outcome, error_code, row_present }) => ({
         route,
         method,
         status,
         outcome,
         error_code,
+        row_present,
       })),
     stop: () => {
       offRequest();
@@ -208,8 +216,8 @@ function observeProfileRequests(panel) {
     },
   };
 }
-async function openProfile(panel) {
-  await click(panel, 'title', 'admin@admin.com');
+async function openProfile(panel, email) {
+  await click(panel, 'title', email);
   await click(panel, 'button-text', 'Profile');
   const ready = await waitFor(
     'profile_ready',
@@ -304,8 +312,8 @@ async function fillPreferred(panel, value) {
     10000,
   );
 }
-async function caseT02(panel, original) {
-  const id = 'EXT-F-1004-T02';
+async function caseBack(panel, original, email, mode, dimension) {
+  const id = mode === 'member' ? 'EXT-F-1004-T01' : 'EXT-F-1004-T02';
   const startedAt = new Date().toISOString();
   await fillPreferred(panel, `Profile cancel ${randomUUID().slice(0, 8)}`);
   const draft = await state(panel);
@@ -316,7 +324,7 @@ async function caseT02(panel, original) {
     (s) => s.chat && !s.back,
     10000,
   );
-  await openProfile(panel);
+  await openProfile(panel, email);
   const reopened = await waitFor(
     'profile_cancel_restored',
     () => state(panel),
@@ -325,8 +333,8 @@ async function caseT02(panel, original) {
   );
   report.cases.push({
     id,
-    mode: 'admin',
-    dimension: 'warm',
+    mode,
+    dimension,
     branch: 'default',
     status: 'passed',
     started_at: startedAt,
@@ -338,11 +346,12 @@ async function caseT02(panel, original) {
     },
   });
 }
-async function caseT04(panel, original) {
-  const id = 'EXT-F-1004-T04';
+async function caseSaveDiscard(panel, original, email, mode, dimension) {
+  const id = mode === 'member' ? 'EXT-F-1004-T03' : 'EXT-F-1004-T04';
   const startedAt = new Date().toISOString();
-  const diagnostic = { stages: [], requests: [] };
-  report.t04_diagnostic = diagnostic;
+  const diagnostic = { mode, dimension, stages: [], requests: [] };
+  report.save_discard_diagnostics ??= [];
+  report.save_discard_diagnostics.push(diagnostic);
   const network = observeProfileRequests(panel);
   await network.start();
   const observe = async (stage, expected) => {
@@ -373,7 +382,7 @@ async function caseT04(panel, original) {
     );
     await observe('save_settled', savedValue);
     await click(panel, 'title', 'Back');
-    await openProfile(panel);
+    await openProfile(panel, email);
     await waitFor(
       'profile_saved_after_reopen',
       () => state(panel),
@@ -403,7 +412,7 @@ async function caseT04(panel, original) {
         );
         await observe('cleanup_settled', original);
         await click(panel, 'title', 'Back');
-        await openProfile(panel);
+        await openProfile(panel, email);
         await waitFor(
           'profile_restore_reopen',
           () => state(panel),
@@ -426,10 +435,24 @@ async function caseT04(panel, original) {
   }
   if (firstError) throw firstError;
   if (cleanupError) throw cleanupError;
+  assert.ok(
+    diagnostic.requests.filter(
+      (request) =>
+        request.route === 'profile_row' && request.method === 'GET' && request.status === 200,
+    ).length >= 2,
+    'profile_saved_and_restored_server_reads_missing',
+  );
+  assert.ok(
+    diagnostic.requests.filter(
+      (request) =>
+        request.route === 'profile_row' && request.method === 'POST' && request.status === 200,
+    ).length >= 2,
+    'profile_save_and_restore_server_writes_missing',
+  );
   report.cases.push({
     id,
-    mode: 'admin',
-    dimension: 'warm',
+    mode,
+    dimension,
     branch: 'discard-draft',
     status: 'passed',
     started_at: startedAt,
@@ -440,8 +463,8 @@ async function caseT04(panel, original) {
   });
   report.cases.push({
     id,
-    mode: 'admin',
-    dimension: 'warm',
+    mode,
+    dimension,
     branch: 'save-draft',
     status: 'passed',
     started_at: startedAt,
@@ -449,7 +472,7 @@ async function caseT04(panel, original) {
   });
 }
 
-async function caseT25(panel, original) {
+async function caseT25(panel, original, email, mode, dimension) {
   const id = 'EXT-F-1004-T25';
   const startedAt = new Date().toISOString();
   const fault = { matched: 0, refused: 0, failures: 0 };
@@ -483,7 +506,7 @@ async function caseT25(panel, original) {
   });
   let blocked;
   try {
-    await click(panel, 'title', 'admin@admin.com');
+    await click(panel, 'title', email);
     await click(panel, 'button-text', 'Profile');
     blocked = await waitFor(
       'profile_owner_read_denied',
@@ -528,8 +551,8 @@ async function caseT25(panel, original) {
   );
   report.cases.push({
     id,
-    mode: 'admin',
-    dimension: 'warm',
+    mode,
+    dimension,
     branch: 'denied-owner-read-retry',
     status: 'passed',
     started_at: startedAt,
@@ -547,8 +570,9 @@ async function caseT25(panel, original) {
 
 try {
   assert.ok(RUN_ID && /^[a-zA-Z0-9_-]+$/.test(RUN_ID), 'run_id_required');
-  assert.ok(OUTPUT_DIR && OUTPUT_DIR.startsWith('/'), 'output_dir_required');
-  assert.ok(RECEIPT && RECEIPT.startsWith('/'), 'receipt_required');
+  assert.ok(['admin', 'member'].includes(AUTH_MODE), 'profile_auth_mode_invalid');
+  assert.ok(OUTPUT_DIR?.startsWith('/'), 'output_dir_required');
+  assert.ok(RECEIPT?.startsWith('/'), 'receipt_required');
   assert.match(SOURCE_SHA ?? '', /^[a-f0-9]{40}$/, 'expected_source_sha_required');
   assert.ok(Number.isSafeInteger(CI_RUN_ID) && CI_RUN_ID > 0, 'expected_ci_run_id_required');
   assert.ok(Number.isSafeInteger(ARTIFACT_ID) && ARTIFACT_ID > 0, 'expected_artifact_id_required');
@@ -572,39 +596,105 @@ try {
     expectedRelease: receipt,
     localDevReceiptPath: RECEIPT,
     artifactRoot: OUTPUT_DIR,
-    exercisePanel: async ({ page, panel }) => {
+    exercisePanel: async ({ page, panel, reloadExtension }) => {
       report.stage = 'authentication';
-      const auth = { stage: 'begin', signin_observations: {} };
-      const identity = await signInAdminSettings({
-        page,
-        panel,
-        report: auth,
-        stage: (v) => {
-          auth.stage = v;
-        },
-        readCredentials: credentials,
-        captureIdentity: true,
-      });
-      const selectedOrg = await selectApprovedOrganization(panel);
+      let identity;
+      let selectedOrg;
+      if (AUTH_MODE === 'member') {
+        const member = await signInSettings({
+          mode: 'member',
+          page,
+          panel,
+          repo: REPO,
+          memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
+          onStage: (stage) => {
+            report.stage = `authentication:${stage}`;
+          },
+        });
+        identity = { userId: member.profileId, email: member.email };
+        selectedOrg = member.organization_selected;
+        report.member_authentication = {
+          account_fingerprint: member.account_fingerprint,
+          canonical_nonadmin_check: member.canonical_nonadmin_check,
+          rendered_identity: member.rendered_identity,
+        };
+      } else {
+        const auth = { stage: 'begin', signin_observations: {} };
+        identity = await signInAdminSettings({
+          page,
+          panel,
+          report: auth,
+          stage: (v) => {
+            auth.stage = v;
+          },
+          readCredentials: credentials,
+          captureIdentity: true,
+        });
+        selectedOrg = await selectApprovedOrganization(panel);
+      }
       const stored = await panelIdentity(panel);
       assert.equal(stored.profileId, identity.userId, 'profile_identity_mismatch');
-      assert.equal(stored.isAdmin, true, 'admin_role_unverified');
+      assert.equal(stored.isAdmin, AUTH_MODE === 'admin', 'profile_role_unverified');
       assert.ok(stored.organizationId, 'device_organization_missing');
       report.identity = {
-        email: identity.email,
-        role: 'admin',
+        role: AUTH_MODE,
         device_organization_present: Boolean(stored.organizationId),
         profile_matches_first_party: stored.profileId === identity.userId,
-        device_organization_name: selectedOrg,
+        organization_selection_verified: Boolean(selectedOrg),
       };
       report.stage = 'profile';
       await click(panel, 'title', 'Settings');
-      await openProfile(panel);
+      const initialRead = observeProfileRequests(panel);
+      await initialRead.start();
+      await openProfile(panel, identity.email);
       const original = (await state(panel)).preferred ?? '';
+      const initialRequests = await waitFor(
+        'profile_initial_server_read_finished',
+        () => initialRead.snapshot(),
+        (events) =>
+          events.some(
+            (event) =>
+              event.route === 'profile_row' &&
+              event.method === 'GET' &&
+              event.status === 200 &&
+              event.row_present !== null,
+          ),
+        10000,
+      );
+      initialRead.stop();
+      const initialRow = initialRequests.find(
+        (event) =>
+          event.route === 'profile_row' &&
+          event.method === 'GET' &&
+          event.status === 200 &&
+          event.row_present !== null,
+      );
+      report.profile_row_existed_before = initialRow.row_present;
+      if (!initialRow.row_present) report.owned_test_row_user_id_private = identity.userId;
       report.original_preferred_present = Boolean(original);
-      await caseT02(panel, original);
-      await caseT04(panel, original);
-      await caseT25(panel, original);
+      await caseBack(panel, original, identity.email, AUTH_MODE, 'warm');
+      await caseSaveDiscard(panel, original, identity.email, AUTH_MODE, 'warm');
+      await caseT25(panel, original, identity.email, AUTH_MODE, 'warm');
+      report.stage = 'extension_reload';
+      const reloaded = await reloadExtension();
+      report.extension_reload = {
+        management_reload_clicked: reloaded.management_reload_clicked,
+        old_targets_retired: reloaded.old_targets_retired,
+        worker_replaced: reloaded.worker_replaced,
+        panel_replaced: reloaded.panel_replaced,
+      };
+      try {
+        const after = await panelIdentity(reloaded.panel);
+        assert.equal(after.profileId, identity.userId, 'reload_profile_identity_changed');
+        assert.equal(after.isAdmin, AUTH_MODE === 'admin', 'reload_profile_role_changed');
+        assert.equal(after.organizationId, stored.organizationId, 'reload_organization_changed');
+        await openProfile(reloaded.panel, identity.email);
+        await caseBack(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
+        await caseSaveDiscard(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
+        await caseT25(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
+      } finally {
+        await reloaded.panel.detach();
+      }
     },
   });
   report.native = {
@@ -627,7 +717,7 @@ try {
     OUTPUT_DIR ?? join(REPO, 'test-results'),
     `profile-native-${RUN_ID ?? randomUUID()}.json`,
   );
-  await writeFile(output, JSON.stringify(report, null, 2) + '\n', { mode: 0o600 });
+  await writeFile(output, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
   process.stdout.write(`PROFILE_NATIVE_REPORT ${output} ${report.status}\n`);
   if (report.status !== 'passed') process.exitCode = 1;
 }
