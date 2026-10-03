@@ -95,33 +95,23 @@ async function fillPreferred(panel, value) {
   await panel.send('Input.insertText',{text:value});
   await waitFor('preferred_draft',()=>state(panel),s=>s.preferred===value&&s.dirty&&s.saveEnabled,10000);
 }
-async function screenshot(panel, artifacts, name) {
-  const image=await panel.send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
-  assert.ok(image?.data,'profile_screenshot_missing');
-  const path=join(artifacts,`${name}.png`);
-  await writeFile(path,Buffer.from(image.data,'base64'),{mode:0o600});
-  return path;
-}
-async function caseT02(panel, original, artifacts) {
+async function caseT02(panel, original) {
   const id='EXT-F-1004-T02', startedAt=new Date().toISOString();
   await fillPreferred(panel,`Profile cancel ${randomUUID().slice(0,8)}`);
   const draft=await state(panel);
-  const draftShot=await screenshot(panel,artifacts,'T02-warm-draft');
   await click(panel,'title','Back');
   const back=await waitFor('chat_after_back',()=>state(panel),s=>s.chat&&!s.back,10000);
   await openProfile(panel);
   const reopened=await waitFor('profile_cancel_restored',()=>state(panel),s=>s.preferred===original&&!s.dirty,30000);
-  const reopenedShot=await screenshot(panel,artifacts,'T02-warm-reopened');
   report.cases.push({id,mode:'admin',dimension:'warm',branch:'default',status:'passed',started_at:startedAt,
-    evidence_refs:[draftShot,reopenedShot],observed:{draft_dirty:draft.dirty,discard_visible:draft.discard,
+    observed:{draft_dirty:draft.dirty,discard_visible:draft.discard,
       back_chat:back.chat,reopened_original:reopened.preferred===original}});
 }
-async function caseT04(panel, original, artifacts) {
+async function caseT04(panel, original) {
   const id='EXT-F-1004-T04', startedAt=new Date().toISOString();
   await fillPreferred(panel,`Profile discard ${randomUUID().slice(0,8)}`);
   await clickProfileHeader(panel,'Discard');
   const discarded=await waitFor('profile_discard_restored',()=>state(panel),s=>s.preferred===original&&!s.dirty&&!s.saveEnabled,10000);
-  const discardedShot=await screenshot(panel,artifacts,'T04-warm-discarded');
   const savedValue=`Profile save ${randomUUID().slice(0,8)}`;
   await fillPreferred(panel,savedValue);
   try {
@@ -130,7 +120,6 @@ async function caseT04(panel, original, artifacts) {
     await click(panel,'title','Back');
     await openProfile(panel);
     await waitFor('profile_saved_after_reopen',()=>state(panel),s=>s.preferred===savedValue&&!s.dirty,30000);
-    report.saved_reopen_screenshot=await screenshot(panel,artifacts,'T04-warm-saved-reopened');
   } finally {
     const current=await state(panel);
     if(current.preferred!==original) {
@@ -141,14 +130,11 @@ async function caseT04(panel, original, artifacts) {
       await openProfile(panel);
       await waitFor('profile_restore_reopen',()=>state(panel),s=>s.preferred===original&&!s.dirty,30000);
     }
-    report.restore_screenshot=await screenshot(panel,artifacts,'T04-warm-original-restored');
     report.restoration={verified:true,at:new Date().toISOString()};
   }
   report.cases.push({id,mode:'admin',dimension:'warm',branch:'discard-draft',status:'passed',started_at:startedAt,
-    evidence_refs:[discardedShot,report.restore_screenshot],
     observed:{discard_restored:discarded.preferred===original,save_disabled:!discarded.saveEnabled}});
   report.cases.push({id,mode:'admin',dimension:'warm',branch:'save-draft',status:'passed',started_at:startedAt,
-    evidence_refs:[report.saved_reopen_screenshot,report.restore_screenshot],
     observed:{saved_after_reopen:true,original_restored_after_reopen:true}});
 }
 
@@ -166,7 +152,7 @@ try {
     version:receipt.version,tree_sha256:receipt.treeSha256,extension_dir:receipt.extensionDir};
   report.stage='browser';
   const native=await runNativeSidepanelQa({extensionDir:receipt.extensionDir,expectedRelease:receipt,
-    localDevReceiptPath:RECEIPT,artifactRoot:OUTPUT_DIR,exercisePanel:async({page,panel,artifacts})=>{
+    localDevReceiptPath:RECEIPT,artifactRoot:OUTPUT_DIR,exercisePanel:async({page,panel})=>{
       report.stage='authentication';
       const auth={stage:'begin',signin_observations:{}};
       const identity=await signInAdminSettings({page,panel,report:auth,stage:v=>{auth.stage=v},readCredentials:credentials,captureIdentity:true});
@@ -181,8 +167,8 @@ try {
       await openProfile(panel);
       const original=(await state(panel)).preferred ?? '';
       report.original_preferred_present=Boolean(original);
-      await caseT02(panel,original,artifacts);
-      await caseT04(panel,original,artifacts);
+      await caseT02(panel,original);
+      await caseT04(panel,original);
   }});
   report.native={extension_id:native.extensionId,panel_target_id:native.panelTargetId,artifacts:native.artifacts,verified:native.verified};
   report.status='passed';report.stage='complete';
