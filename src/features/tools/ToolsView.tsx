@@ -35,7 +35,12 @@ import {
 } from '@/lib/tools/categories';
 import { getManualServerToolDefinition, runManualServerTool } from '@/lib/tools/manual-server';
 import { listAllHandlers } from '@/lib/tools/registry';
-import type { AnyToolHandler, ToolTier } from '@/lib/tools/types';
+import {
+  SERVER_CATALOG,
+  type ToolCatalogEntry,
+  isServerCatalogEntry,
+} from '@/lib/tools/server-catalog';
+import type { ToolTier } from '@/lib/tools/types';
 import { cn } from '@/lib/utils';
 import {
   Badge,
@@ -67,7 +72,7 @@ type CategoryFilter = 'all' | ToolCategory;
 type SurfaceFilter = 'canonical' | 'internal' | 'all';
 
 export function ToolsView() {
-  const handlers = useMemo(() => listAllHandlers(), []);
+  const handlers = useMemo(() => [...listAllHandlers(), ...SERVER_CATALOG], []);
 
   return (
     <div className="flex h-full flex-col">
@@ -113,7 +118,7 @@ function ToolsTab({ value, children }: { value: string; children: React.ReactNod
   );
 }
 
-function CatalogPane({ handlers }: { handlers: AnyToolHandler[] }) {
+function CatalogPane({ handlers }: { handlers: ToolCatalogEntry[] }) {
   const [query, setQuery] = useState('');
   const [tier, setTier] = useState<TierFilter>('all');
   const [category, setCategory] = useState<CategoryFilter>('all');
@@ -240,7 +245,7 @@ function ToolRow({
   handler,
   description,
 }: {
-  handler: AnyToolHandler;
+  handler: ToolCatalogEntry;
   description?: string | undefined;
 }) {
   const [open, setOpen] = useState(false);
@@ -342,14 +347,17 @@ function ToolDetail({
   handler,
   description,
 }: {
-  handler: AnyToolHandler;
+  handler: ToolCatalogEntry;
   description?: string | undefined;
 }) {
   const localSchema = useMemo(
-    () => zodToJsonSchema(handler.argsSchema, { $refStrategy: 'none', target: 'jsonSchema7' }),
+    () =>
+      isServerCatalogEntry(handler)
+        ? {}
+        : zodToJsonSchema(handler.argsSchema, { $refStrategy: 'none', target: 'jsonSchema7' }),
     [handler],
   );
-  const serverOwned = handler.name === 'records';
+  const serverOwned = isServerCatalogEntry(handler);
   const [serverSchema, setServerSchema] = useState<Record<string, unknown> | null>(null);
   const [schemaError, setSchemaError] = useState<string | null>(null);
   useEffect(() => {
@@ -403,7 +411,9 @@ function ToolDetail({
       setError(e instanceof Error ? e.message : 'Invalid Network capture recipe.');
       return;
     }
-    const validated = serverOwned ? null : handler.argsSchema.safeParse(observedArgs);
+    const validated = isServerCatalogEntry(handler)
+      ? null
+      : handler.argsSchema.safeParse(observedArgs);
     if (validated && !validated.success) {
       setError(`Schema mismatch:\n${JSON.stringify(validated.error.format(), null, 2)}`);
       return;
@@ -434,7 +444,7 @@ function ToolDetail({
         ? await (await import('@/lib/chat/active-tab')).resolveActiveTab()
         : null;
       if (isSavedRun && savedRunTab?.id == null) throw new Error('No active tab for saved replay.');
-      const out = serverOwned
+      const out = isServerCatalogEntry(handler)
         ? await runManualServerTool(handler.name, runInput as Record<string, unknown>)
         : isSavedRun
           ? await (

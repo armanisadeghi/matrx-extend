@@ -4,19 +4,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const h = vi.hoisted(() => ({ localRun: vi.fn(), serverRun: vi.fn(), broadcast: vi.fn() }));
-vi.mock('@/lib/tools/registry', async () => {
-  const { z } = await import('zod');
-  return {
-    listAllHandlers: () => [
-      {
-        name: 'records',
-        tier: 'action',
-        argsSchema: z.object({ action: z.literal('guide') }),
-        run: h.localRun,
-      },
-    ],
-  };
-});
+vi.mock('@/lib/tools/registry', () => ({ listAllHandlers: () => [] }));
 vi.mock('@/lib/tools/manual-server', () => ({
   getManualServerToolDefinition: async () => ({
     parameters: {

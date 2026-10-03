@@ -24,10 +24,12 @@ import {
   ALL_CATEGORIES,
   CATEGORIES,
   type ToolCategory,
+  categoryOf,
   toolsInCategory,
 } from '@/lib/tools/categories';
 import { ensureToolDescriptions } from '@/lib/tools/descriptions';
 import { listAllHandlers } from '@/lib/tools/registry';
+import { SERVER_CATALOG } from '@/lib/tools/server-catalog';
 import type { AnyToolHandler, ToolContext, ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
 import { zodToJsonSchema } from 'zod-to-json-schema';
@@ -64,7 +66,12 @@ export const list_chrome_categories: ToolHandler<NoArgs, unknown> = {
     for (const cat of ALL_CATEGORIES) {
       const meta = CATEGORIES[cat];
       if (meta.admin_only && !isAdmin) continue;
-      const tools = toolsInCategory(handlers, cat, { isAdmin });
+      const tools = [
+        ...toolsInCategory(handlers, cat, { isAdmin }),
+        ...SERVER_CATALOG.filter(
+          (tool) => categoryOf(tool.name) === cat && (isAdmin || !tool.admin_only),
+        ),
+      ];
       if (tools.length === 0) continue;
       categories.push({
         name: cat,
@@ -95,26 +102,37 @@ function buildCategoryListTool(category: ToolCategory): ToolHandler<NoArgs, unkn
       const isAdmin = ctxIsAdmin(ctx) || !!meta.admin_only === false;
       const handlers = listAllHandlers();
       const tools = toolsInCategory(handlers, category, { isAdmin: isAdmin });
+      const registered = SERVER_CATALOG.filter(
+        (tool) => categoryOf(tool.name) === category && (isAdmin || !tool.admin_only),
+      );
       // Descriptions live ONLY in the DB (Rule 4) — read them live so the
       // agent-facing schemas still carry a description without hardcoding it.
       const descs = await ensureToolDescriptions();
       return {
         category,
-        count: tools.length,
-        tools: tools.map((h) => ({
-          name: h.name,
-          description: descs.get(h.name) ?? null,
-          tier: h.tier,
-          admin_only: !!h.admin_only,
-          required_optional_permissions: h.required_optional_permissions ?? [],
-          supported_browsers: (h.supportedBrowsers ?? null) as readonly string[] | null,
-          input_schema: zodToJsonSchema(h.argsSchema, {
-            $refStrategy: 'none',
-            target: 'jsonSchema7',
-          }),
-        })),
+        count: tools.length + registered.length,
+        tools: [
+          ...tools.map((h) => ({
+            name: h.name,
+            description: descs.get(h.name) ?? null,
+            tier: h.tier,
+            admin_only: !!h.admin_only,
+            required_optional_permissions: h.required_optional_permissions ?? [],
+            supported_browsers: (h.supportedBrowsers ?? null) as readonly string[] | null,
+            input_schema: zodToJsonSchema(h.argsSchema, {
+              $refStrategy: 'none',
+              target: 'jsonSchema7',
+            }),
+          })),
+          ...registered.map((tool) => ({
+            name: tool.name,
+            description: descs.get(tool.name) ?? null,
+            tier: tool.tier,
+            execution: 'server',
+          })),
+        ],
         hint:
-          tools.length > 0
+          tools.length + registered.length > 0
             ? 'You may now call any tool listed here. The server has been notified to make these tools available.'
             : 'Category exists but has no tools available to you (admin restriction or empty).',
       };
