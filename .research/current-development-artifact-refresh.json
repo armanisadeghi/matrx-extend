@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "current_development_artifact_refresh",
+  "repository": "armanisadeghi/matrx-extend",
+  "workflow": ".github/workflows/ci.yml",
+  "event": "push",
+  "branch": "main",
+  "run_id": 37145482483,
+  "run_attempt": 1,
+  "run_conclusion": "success",
+  "artifact_id": 11282375130,
+  "artifact_name": "matrx-extend-development-test-2274cc2fc929f7682c61f1a137e472a87caa2114-37145482483-1",
+  "github_artifact_digest": "sha256:b7f1e618f39d1eb0daebd9ebd7a5b3ead89b31560985ed8bd12f29b943bd38d2",
+  "source_sha": "2274cc2fc929f7682c61f1a137e472a87caa2114",
+  "source_version": "0.2.177",
+  "source_claim": "exact_pushed_commit_only",
+  "origin_main_at_import": "990b4432b2083a0d9383841faa86cfef26f808dc",
+  "tree_sha256": "a366b2b34045412b9866929cea59ab9d872d7be373ba08562705e4bcce8d3b23",
+  "ci_receipt_sha256": "88256ea9329f5d864481a78bacc222fb233c60ac896d3d34346e6a65bba022eb",
+  "provenance_sha256": "5096871327f3138050a8e06d3271d391c0f97ad601ae666e9da2a8a975bbcb23",
+  "import_dir": "test-results/ci-artifacts/2274cc2fc929f7682c61f1a137e472a87caa2114/37145482483-1",
+  "extension_dir": "test-results/ci-artifacts/2274cc2fc929f7682c61f1a137e472a87caa2114/37145482483-1/chrome-mv3",
+  "receipt": "test-results/ci-artifacts/2274cc2fc929f7682c61f1a137e472a87caa2114/37145482483-1/local-dev-receipt.json",
+  "verification": "node scripts/current-test-artifact.mjs import authenticated the GitHub run, artifact digest, CI provenance, manifest and tree; a separate read-only verifyImportedNativeEvidence call passed after import.",
+  "next_acceptance_prerequisites": {
+    "artifact": "Use development run 37145482483 and artifact 11282375130; verifyImportedNativeEvidence must pass against the exact extension directory and local receipt before browser launch.",
+    "runner": "Use scripts/stabilization-resource.mjs run with an owned run ID, external profile directory and allowlisted native command. One heavy lease at a time; choose an explicit case and output directory.",
+    "hosted_wrapper_environment": [
+      "MATRX_HOSTED_PHASE=acceptance",
+      "MATRX_HOSTED_DEV_RUN_ID=37145482483",
+      "MATRX_HOSTED_DEV_ARTIFACT_ID=11282375130",
+      "MATRX_HOSTED_ACCEPTANCE_CASE=<chosen case>",
+      "MATRX_HOSTED_GUEST_OUTPUT_DIR=<owned external output directory>",
+      "MATRX_HOSTED_BROWSER_RUNTIME_DIR=<installed owned runtime directory>",
+      "PLAYWRIGHT_BROWSERS_PATH=<installed owned browser cache>"
+    ],
+    "direct_browser_environment": [
+      "MATRX_PLAYWRIGHT_MODULE=/Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+      "MATRX_CHROME_PATH=/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+      "TMPDIR=/Volumes/Samsung2TB/code/.stabilization-scratch",
+      "Pass the exact local-dev receipt through the selected case's receipt variable."
+    ]
+  },
+  "native_acceptance": "not_run"
+}

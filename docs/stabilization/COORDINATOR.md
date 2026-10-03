@@ -2,6 +2,8 @@
 
 ## Active continuation — Snapshot identity and contained-surface coverage
 
+Current native development artifact: successful main CI run `37145482483`, artifact `11282375130`, source `2274cc2f` (0.2.177), imported and independently reverified with tree `a366b2b34045412b9866929cea59ab9d872d7be373ba08562705e4bcce8d3b23`. Exact import path, receipt, provenance and next runner prerequisites: `.research/current-development-artifact-refresh.json`. Main `990b4432` only adds ledger commits after that source, so source claim is `exact_pushed_commit_only`. All next native testing must select this run/artifact and verify its receipt before launch; prior `991385d9` passes remain historical and no new UI acceptance is claimed here.
+
 Public Store last checked16:09UTC remains 0.2.176; no subsequent submission. Inventory: 205 features, 759 cases, 1,331 controls. Current case-role results: 70 pass, 56 partial, 4 fail, 1,074 unverified, 1 not applicable; zero fully verified feature-role pairs. Three older full-case passes were refreshed to current-artifact partial coverage, with prior evidence retained. Bounded historical passes do not establish current-release health.
 
 - Guest startup D88 remains CLOSED. Exact176 unpacked-release native run `published176-guest-backend-82af43a3` passed initial and post-panel-reload grounded replies without sign-in against newly deployed82af43a3, unchanged before/after at18:09UTC. Report `.research/published176-guest-backend-82af43a3.json`, commit14306f02; root independently matched four raw hashes and viewed guest follow-up screenshot. Headless native Chromium, not Store installation/update lifecycle. Prior6c7c5a09 retest retained.
