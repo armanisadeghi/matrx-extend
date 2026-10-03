@@ -1,0 +1,9 @@
+{
+  "reviewed_commit": "c01faa52660a2720fcc888af3e10210688bc80cc",
+  "verdict_A_actual_flow": "PASS_SOURCE_ONLY: Store guest POST reaches server browser-dom enabled_tools_factory; it now creates InlineToolSpec from ToolDefinition.to_inline_input_schema(), which excludes $envelope/$variants before validation. Bundle discovery uses the same projection. requires_auth=False is unchanged. Hosted deployment and signed-out chat completion remain unverified.",
+  "verdict_B_quality": "PASS_WITH_VERIFICATION_LIMIT: shared ToolDefinition projection preserves action/args and required_params while filtering internal metadata; duplicate bundle conversion is removed. No important source regression found in the four-file commit.",
+  "original_failure": "Captured live error input_schema.properties.$envelope.type='args' is explained by the old raw-parameter converter; the new regression test constructs that exact metadata shape and validates both factory and bundle specs.",
+  "sibling": "bundle_lister._build_spec_for(EXTERNAL_HANDLER) now calls the same canonical projection; this closes the second raw-schema path.",
+  "reported_checks": "Builder reports pre-fix red reproduction, then 19 passed and 12 skipped focused tests, plus Ruff and diff checks. I inspected source/test assertions only; I did not rerun tests, build, install, browser, or hosted flow. The 12 skips are registry-dependent integration tests, not proof of live guest success.",
+  "release_condition": "Deploy c01faa5266 or a descendant, confirm /health/version, then require a fresh Store 0.2.130 signed-out chat with streamed content and terminal success; check for a new system_error."
+}

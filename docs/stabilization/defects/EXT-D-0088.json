@@ -17,11 +17,14 @@
   "actual": "User reports immediate error. Live server captured 2026-10-03T03:38:58Z: prepare_agent_run → apply_unified_tools → resolve_client_capabilities → browser_dom._build_auto_load_specs → InlineToolSpec validation rejects input_schema.properties.$envelope.type=args. Guest mandate resolution returns200. Exact request replay pending.",
   "evidence": [
     ".research/guest-live-incident-server.json",
-    ".research/guest-live-incident-extension.json"
+    ".research/guest-live-incident-extension.json",
+    ".research/guest-final-release-peer.json",
+    "https://github.com/AI-Matrix-Engine/aidream/commit/c01faa52660a2720fcc888af3e10210688bc80cc",
+    "https://github.com/AI-Matrix-Engine/aidream/actions/runs/37094559311"
   ],
   "severity": "S0: public core no-login Chat fails immediately",
   "priority": "P0: supersedes deferred Chat sequencing; restore live guest promise now",
-  "state": "in-fix",
+  "state": "fixed",
   "transition_history": [
     {
       "at": "2026-10-03T03:45:02.531723+00:00",
@@ -40,6 +43,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Server origin repair lane and independent extension wire diagnosis active; lower-priority Settings paused."
+    },
+    {
+      "at": "2026-10-03T03:52:42.350615+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "aidream c01faa52660a2720fcc888af3e10210688bc80cc fixes both browser capability and bundle discovery via canonical shared schema. Independent final source review accepted. Hosteddeployment37094559311 pending; live recovery not yet verified."
     }
   ],
   "closure_requirement": "Original published guest request succeeds on deployed fix, real signed-out extension reply and reload verified, independent peer and surrounding member/guest regressions pass. Do not close from source or ordinary CI.",

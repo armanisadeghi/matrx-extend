@@ -24,11 +24,13 @@
   "evidence": [
     "src/features/settings/SettingsView.tsx",
     "src/features/settings/SettingsView.about.test.tsx",
-    ".research/settings-failure-repair.json"
+    ".research/settings-failure-repair.json",
+    ".research/settings-initial-read-peer.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37093887851"
   ],
   "severity": "S2: a desktop setting can revert to an older choice",
   "priority": "P1: preserve Settings choice under overlapping saves",
-  "state": "in-fix",
+  "state": "fixed",
   "transition_history": [
     {
       "at": "2026-10-03T03:34:17Z",
@@ -47,6 +49,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "cf0877f1 serializes same-panel writes per key and guards pair input by revision; a follow-up repairs delayed initial port reads. Hosted CI and independent repair review remain pending."
+    },
+    {
+      "at": "2026-10-03T03:52:42.350615+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "cf0877f1 and17b8ea9d source repair accepted by independent1120b813. HostedCI37093887851 passed20Settings tests; fullCI has separate release recovery failure. Native exact-build and pre-fixRED remain pending."
     }
   ],
   "closure_requirement": "Hosted controlled caller regression, independent repair review, and exact-build native save/reload acceptance; no closure from source inspection or an unexecuted test."
