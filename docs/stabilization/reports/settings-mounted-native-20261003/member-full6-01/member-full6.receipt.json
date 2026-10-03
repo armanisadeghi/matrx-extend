@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0087",
+  "scope": "receipt-bound owned Chrome-for-Testing native Settings panel; member",
+  "auth_mode": "member",
+  "authentication": {
+    "mode": "member",
+    "account_fingerprint": "3d6137db6c081c07",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "admin_role": false,
+    "canonical_nonadmin_check": {
+      "matched_current_extension_user": true,
+      "http_status": 200,
+      "returned_rows": 0
+    },
+    "organization_selected": true,
+    "rendered_identity": {
+      "rendered_email_matches_first_party": true,
+      "rendered_role_matches_mode": true,
+      "profile_matches_first_party": true,
+      "selected_organization_matches_stored_uuid_and_name": true
+    }
+  },
+  "reload_auth_checks": [
+    {
+      "first_party_user_matches_extension": true,
+      "rendered_account_and_role_match": true,
+      "selected_organization_matches_stored_uuid_and_name": true,
+      "canonical_nonadmin_check": {
+        "matched_current_extension_user": true,
+        "http_status": 200,
+        "returned_rows": 0
+      }
+    },
+    {
+      "first_party_user_matches_extension": true,
+      "rendered_account_and_role_match": true,
+      "selected_organization_matches_stored_uuid_and_name": true,
+      "canonical_nonadmin_check": {
+        "matched_current_extension_user": true,
+        "http_status": 200,
+        "returned_rows": 0
+      }
+    }
+  ],
+  "pointer_boundary": null,
+  "status": "pass",
+  "build": {
+    "version": "0.2.176",
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "receipt_kind": "local_dev_unpacked",
+    "artifact_id": 11268886169
+  },
+  "cases": [
+    {
+      "name": "first changed choice saved through UI",
+      "status": "pass",
+      "observation": {
+        "settingsAvailable": true,
+        "settingsActive": true,
+        "theme": "Light",
+        "storedTheme": "light",
+        "error": false,
+        "retry": false,
+        "guest": false
+      }
+    },
+    {
+      "name": "system choice saved through UI",
+      "status": "pass",
+      "observation": {
+        "settingsAvailable": true,
+        "settingsActive": true,
+        "theme": "System",
+        "storedTheme": "system",
+        "error": false,
+        "retry": false,
+        "guest": false
+      }
+    },
+    {
+      "name": "rejected write visible with retry",
+      "status": "pass",
+      "observation": {
+        "settingsAvailable": true,
+        "settingsActive": true,
+        "theme": "Dark",
+        "storedTheme": "system",
+        "error": true,
+        "retry": true,
+        "guest": false
+      }
+    },
+    {
+      "name": "retry persisted after reload",
+      "status": "pass",
+      "before_reload": {
+        "settingsAvailable": true,
+        "settingsActive": true,
+        "theme": "Dark",
+        "storedTheme": "dark",
+        "error": false,
+        "retry": false,
+        "guest": false
+      },
+      "observation": {
+        "settingsAvailable": true,
+        "settingsActive": true,
+        "theme": "Dark",
+        "storedTheme": "dark",
+        "error": false,
+        "retry": false,
+        "guest": false
+      }
+    },
+    {
+      "name": "latest rapid choice persisted",
+      "status": "pass",
+      "before_release": {
+        "settingsAvailable": true,
+        "settingsActive": true,
+        "theme": "System",
+        "storedTheme": "dark",
+        "error": false,
+        "retry": false,
+        "guest": false
+      },
+      "observation": {
+        "settingsAvailable": true,
+        "settingsActive": true,
+        "theme": "System",
+        "storedTheme": "system",
+        "error": false,
+        "retry": false,
+        "guest": false
+      }
+    },
+    {
+      "name": "latest rapid choice survives reload",
+      "status": "pass",
+      "observation": {
+        "settingsAvailable": true,
+        "settingsActive": true,
+        "theme": "System",
+        "storedTheme": "system",
+        "error": false,
+        "retry": false,
+        "guest": false
+      }
+    }
+  ],
+  "failure_stage": null,
+  "failure_code": null,
+  "artifacts": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-iW0tlA"
+}
