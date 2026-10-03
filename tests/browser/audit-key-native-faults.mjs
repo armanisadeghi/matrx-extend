@@ -84,10 +84,16 @@ export function auditFaultSource(mode) {
         try { copied = JSON.parse(state.lastClipboardText); } catch { return false; }
         const publicJwk = activeKey?.publicKeyJwk;
         if (!publicJwk || !copied || typeof copied !== 'object') return false;
-        const actual = Object.keys(copied).sort();
-        const expected = Object.keys(publicJwk).sort();
-        return actual.length === expected.length &&
-          actual.every((key, i) => key === expected[i] && copied[key] === publicJwk[key]) &&
+        const sameJson = (left, right) => {
+          if (left === right) return true;
+          if (!left || !right || typeof left !== 'object' || typeof right !== 'object') return false;
+          if (Array.isArray(left) !== Array.isArray(right)) return false;
+          if (Array.isArray(left)) return left.length === right.length && left.every((value, i) => sameJson(value, right[i]));
+          const keys = Object.keys(left);
+          return keys.length === Object.keys(right).length &&
+            keys.every((key) => Object.hasOwn(right, key) && sameJson(left[key], right[key]));
+        };
+        return sameJson(copied, publicJwk) &&
           ['d', 'p', 'q', 'dp', 'dq', 'qi'].every((key) => !Object.hasOwn(copied, key));
       },
       release: () => state.release?.(),

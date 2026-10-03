@@ -1,0 +1,73 @@
+{
+  "status": "repaired_pending_independent_native",
+  "hypotheses": [
+    {
+      "cause": "fresh exercise CDP session does not enable Page domain",
+      "prediction": "install/reload succeed, new document loads without prelude; enabling Page in that session executes marker"
+    },
+    {
+      "cause": "injected script throws before marker",
+      "prediction": "prelude starts but marker stays false even with Page enabled"
+    },
+    {
+      "cause": "document transition is not observed",
+      "prediction": "probe never reports both newDocument and settingsReady"
+    },
+    {
+      "cause": "cleanup removal masks an earlier failure",
+      "prediction": "boundary trace records two failures with primary preserved"
+    }
+  ],
+  "diagnostic_attempt": {
+    "run": "audit-escalation-diagnostic-20261003",
+    "result": "setup_refusal_before_native",
+    "code": "test_artifact_native_version_refused",
+    "cause": "immutable 0.2.176 artifact compared with moving checkout package.json version; requested verifier scope from root"
+  },
+  "native_claim": "none",
+  "artifact_repair": {
+    "commit": "726c0cd7",
+    "red": "audit-artifact-version-red-20261003: historical 0.0.123 fixture refused by moving version comparison",
+    "green": "audit-artifact-version-green-20261003: 10/10 pass resource-valid",
+    "class": "native verification, artifact import, imported local receipt creation; ordinary local output retains checkout-version gate",
+    "strict_guard": "audit-artifact-strict-guard-20261003: 10/10, frozen expected source, wrong/unavailable input rejected",
+    "strict_guard_commit": "66df64db"
+  },
+  "reload_diagnostic": {
+    "path": ".research/audit-native-escalation-diagnostic.json",
+    "sha256": "4ea1d5275e4223fa541c49f2dc9f0959f51f6176d3b97d7e1fc95dc514655741",
+    "result": "install/reload/new-document/settings-ready succeeded; marker absent; removal succeeded",
+    "classification": "diagnostic only; peer executed unauthorized lightweight test at uncertain overlapping timestamp"
+  },
+  "reload_experiment": "Enable Page on same CDP session before script registration, sole changed behavior; fresh guarded native run pending",
+  "receipts": [
+    {
+      "path": ".research/audit-native-escalation-page-enabled.json",
+      "sha256": "3c2d3bc1a0aae0870868d0ea21c0d6ad4326dce0a67b5a3016092e674f436440"
+    },
+    {
+      "path": ".research/audit-native-escalation-export-scope.json",
+      "sha256": "b6507d4d8673d120f040a10cfb1187959c525eca38d604a9c7ccaf4d93b9e1c0"
+    }
+  ],
+  "reload_cause": "CDP Page domain was not enabled in exercise-panel session. Page.enable before prelude registration was sole behavior change; new document marker became true and T86 failure/read-only retry passed twice.",
+  "guard": "Final helper13/13 resource-valid; strict source guard10/10 resource-valid; native WebCrypto JWK guard RED12/13→GREEN13/13.",
+  "export_status": "Real Node WebCrypto Ed25519 exported JWK reproduces strict reference-comparison failure through actual fault-helper copiedPublicJwk (12 pass/1 fail). Full recursive JSON structural equality replaces scalar ===; property set, values and array order retained; private fields still refused; altered key_ops guard retained. audit-jwk-value-green-20261003 passed13/13 resource-valid.",
+  "commits": ["726c0cd7", "6c98a2f3", "66df64db"],
+  "remaining": [
+    "fresh source peer of final oracle diff",
+    "fresh independent native acceptance including T60+ subsequent cases",
+    "T87/T89/T90 genuine signed receipts/reload/tamper remain incomplete"
+  ],
+  "limits": [
+    "T86 self-verification passed twice; not independent acceptance",
+    "T60 latest native stopped in combined assertion at verify_copied_public_jwk before structural comparison repair; split count/equality stages now distinguish",
+    "snapshot lexical-scope defect source-confirmed and fixed, but downstream storage comparison not yet reached natively",
+    "No builds, releases, installs, artifact rewrites, CSS/hit-test bypasses, or production code edits"
+  ],
+  "cleanup": {
+    "heavyLeaseAbsent": true,
+    "privateCredentialFileAbsent": true,
+    "nativeHarness": "Every native child terminal; own browser/profile removed by harness finally; no further native run in this lane"
+  }
+}

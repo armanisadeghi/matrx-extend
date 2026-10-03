@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { webcrypto } from 'node:crypto';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import {
@@ -90,10 +91,10 @@ test('held active write persists only after release and release is idempotent', 
 
 test('clipboard failure clears only on a second real write; restore reinstates native API', async () => {
   const b = browser('clipboard-once');
-  b.saved.set(ACTIVE, {
-    publicKeyId: 'old',
-    publicKeyJwk: { kty: 'OKP', crv: 'Ed25519', x: 'public' },
-  });
+  const pair = await webcrypto.subtle.generateKey('Ed25519', true, ['sign', 'verify']);
+  const publicKeyJwk = await webcrypto.subtle.exportKey('jwk', pair.publicKey);
+  assert.deepEqual(publicKeyJwk.key_ops, ['verify']);
+  b.saved.set(ACTIVE, { publicKeyId: 'old', publicKeyJwk });
   await assert.rejects(b.navigator.clipboard.writeText('first'), /controlled clipboard refusal/);
   assert.deepEqual(b.clipboard, []);
   b.window.__auditNativeFault.disarm();
@@ -102,6 +103,10 @@ test('clipboard failure clears only on a second real write; restore reinstates n
   assert.deepEqual(b.clipboard, [publicText]);
   assert.equal(b.window.__auditNativeFault.state().clipboardSucceeded, 1);
   assert.equal(await b.window.__auditNativeFault.copiedPublicJwk(), true);
+  await b.navigator.clipboard.writeText(
+    JSON.stringify({ ...b.saved.get(ACTIVE).publicKeyJwk, key_ops: ['sign'] }),
+  );
+  assert.equal(await b.window.__auditNativeFault.copiedPublicJwk(), false);
   await b.navigator.clipboard.writeText(
     JSON.stringify({ ...b.saved.get(ACTIVE).publicKeyJwk, d: 'private' }),
   );

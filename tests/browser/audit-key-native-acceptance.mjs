@@ -267,8 +267,9 @@ try {
         'audit_export_recovered',
         (value) => value?.copied && !value.exportFailed && !value.retryExport,
       );
-      detailStep = 'verify_copied_public_jwk';
+      detailStep = 'check_clipboard_success_count';
       assert.equal((await fault(panel)).clipboardSucceeded, 1);
+      detailStep = 'verify_copied_public_jwk';
       assert.equal(
         await evaluate(panel, 'window.__auditNativeFault.copiedPublicJwk()'),
         true,
