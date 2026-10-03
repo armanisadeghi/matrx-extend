@@ -21,6 +21,15 @@ const report = {
   schema_version: 1, kind: 'profile_native_acceptance', run_id: RUN_ID,
   started_at: new Date().toISOString(), status: 'unverified', stage: 'preflight',
   cases: [], artifact: null, runtime: { node: process.version, platform: process.platform, arch: process.arch },
+  launch: {
+    profile_run_id: RUN_ID,
+    profile_dev_build_receipt: RECEIPT,
+    profile_output_dir: OUTPUT_DIR,
+    playwright_module: process.env.MATRX_PLAYWRIGHT_MODULE ?? null,
+    chrome_executable: process.env.MATRX_CHROME_PATH ?? null,
+    playwright_browsers_path: process.env.PLAYWRIGHT_BROWSERS_PATH ?? null,
+    temp_dir: process.env.TMPDIR ?? null,
+  },
 };
 
 function readEnvValue(source, key) {
@@ -110,10 +119,6 @@ async function caseT04(panel, original) {
     await click(panel,'title','Back');
     await openProfile(panel);
     await waitFor('profile_saved_after_reopen',()=>state(panel),s=>s.preferred===savedValue&&!s.dirty,30000);
-    report.cases.push({id,mode:'admin',dimension:'warm',branch:'discard-draft',status:'passed',started_at:startedAt,
-      observed:{discard_restored:discarded.preferred===original,save_disabled:!discarded.saveEnabled}});
-    report.cases.push({id,mode:'admin',dimension:'warm',branch:'save-draft',status:'passed',started_at:startedAt,
-      observed:{saved_after_reopen:true}});
   } finally {
     const current=await state(panel);
     if(current.preferred!==original) {
@@ -126,6 +131,10 @@ async function caseT04(panel, original) {
     }
     report.restoration={verified:true,at:new Date().toISOString()};
   }
+  report.cases.push({id,mode:'admin',dimension:'warm',branch:'discard-draft',status:'passed',started_at:startedAt,
+    observed:{discard_restored:discarded.preferred===original,save_disabled:!discarded.saveEnabled}});
+  report.cases.push({id,mode:'admin',dimension:'warm',branch:'save-draft',status:'passed',started_at:startedAt,
+    observed:{saved_after_reopen:true,original_restored_after_reopen:true}});
 }
 
 try {
@@ -136,7 +145,9 @@ try {
   requireLocalDevReceipt(receipt,receipt.extensionDir);
   const imported=await verifyImportedNativeEvidence(receipt.extensionDir,RECEIPT);
   assert.equal(imported.sourceSha,SOURCE_SHA,'source_sha_mismatch');
-  report.artifact={run_id:37145482483,artifact_id:11282375130,source_sha:imported.sourceSha,
+  assert.equal(imported.runId,37145482483,'artifact_run_mismatch');
+  assert.equal(imported.artifactId,11282375130,'artifact_id_mismatch');
+  report.artifact={run_id:imported.runId,artifact_id:imported.artifactId,source_sha:imported.sourceSha,
     version:receipt.version,tree_sha256:receipt.treeSha256,extension_dir:receipt.extensionDir};
   report.stage='browser';
   const native=await runNativeSidepanelQa({extensionDir:receipt.extensionDir,expectedRelease:receipt,
@@ -148,7 +159,8 @@ try {
       assert.equal(stored.profileId,identity.userId,'profile_identity_mismatch');
       assert.equal(stored.isAdmin,true,'admin_role_unverified');
       assert.ok(stored.organizationId,'device_organization_missing');
-      report.identity={email:identity.email,role:'admin',device_organization_id:stored.organizationId,profile_id:stored.profileId};
+      report.identity={email:identity.email,role:'admin',device_organization_present:Boolean(stored.organizationId),
+        profile_matches_first_party:stored.profileId===identity.userId};
       report.stage='profile';
       await click(panel,'title','Settings');
       await openProfile(panel);
