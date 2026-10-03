@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T02:08:23.247Z",
+  "generated_at": "2026-10-03T08:54:42.083Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_chrome_categories",
@@ -5920,10 +5920,6 @@
           },
           "tab_id": {
             "type": "integer"
-          },
-          "persist": {
-            "type": "boolean",
-            "default": false
           }
         },
         "required": [
@@ -8457,9 +8453,6 @@
           },
           "tab_id": {
             "type": "integer"
-          },
-          "persistent": {
-            "type": "boolean"
           }
         },
         "required": [

@@ -11,6 +11,7 @@ import {
   startRecording,
   stopRecording,
 } from '@/lib/recording/state';
+import { parseTabIdArg } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler, ToolTier } from '@/lib/tools/types';
 /**
  * Tier: ACTION (requires the `debugger` optional permission).
@@ -61,8 +62,8 @@ const RecordGifArgs = z.object({
 type RecordGifArgs = z.infer<typeof RecordGifArgs>;
 
 function parseTabId(tabIdStr: string): number | null {
-  const id = Number.parseInt(tabIdStr, 10);
-  return Number.isFinite(id) ? id : null;
+  const parsed = parseTabIdArg(tabIdStr);
+  return parsed.ok ? parsed.id : null;
 }
 
 async function activateTab(id: number): Promise<{ ok: boolean; reason?: string }> {

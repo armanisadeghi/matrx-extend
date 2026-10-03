@@ -164,7 +164,7 @@ export const ai: ToolHandler<AiArgs, unknown> = {
           return {
             ok: false,
             reason: args.image_url
-              ? "describe_image needs image_base64 (no data: prefix); image_url is not supported on-device"
+              ? 'describe_image needs image_base64 (no data: prefix); image_url is not supported on-device'
               : "'image_base64' required for describe_image",
           };
         return delegate(
@@ -230,7 +230,12 @@ export const cookies: ToolHandler<CookiesArgs, unknown> = {
           value: args.value,
           domain: args.domain,
           path: args.path,
-          expires_in_seconds: args.expires_in_seconds,
+          // Public arg is relative seconds; the leaf takes absolute epoch seconds and
+          // treats an absent value as a session cookie (this key used to be stripped).
+          expiration:
+            args.expires_in_seconds != null
+              ? Math.floor(Date.now() / 1000) + args.expires_in_seconds
+              : undefined,
           same_site: args.same_site,
           http_only: args.http_only,
           secure: args.secure,
@@ -410,13 +415,13 @@ export const history: ToolHandler<HistoryArgs, unknown> = {
           query: args.query ?? '',
           start_time_ms: args.start_time_ms,
           end_time_ms: args.end_time_ms,
-          limit: args.limit,
+          max_results: args.limit,
         },
         ctx,
       );
     }
     if (args.action === 'recent') {
-      return delegate(list_recent_history, { minutes: args.minutes, limit: args.limit }, ctx);
+      return delegate(list_recent_history, { minutes: args.minutes, max_results: args.limit }, ctx);
     }
     return { ok: false, reason: `Unknown history action: ${args.action as string}` };
   },
@@ -455,8 +460,6 @@ const StylesheetArgs = z.object({
   action: z.enum(['inject', 'remove']),
   css: z.string().min(1),
   tab_id: z.number().int().optional(),
-  /** For inject — persist across navigations on this tab. Default false. */
-  persistent: z.boolean().optional(),
 });
 type StylesheetArgs = z.infer<typeof StylesheetArgs>;
 
@@ -466,11 +469,7 @@ export const stylesheet: ToolHandler<StylesheetArgs, unknown> = {
   argsSchema: StylesheetArgs,
   run: async (args, ctx) => {
     if (args.action === 'inject') {
-      return delegate(
-        inject_stylesheet,
-        { css: args.css, tab_id: args.tab_id, persistent: args.persistent },
-        ctx,
-      );
+      return delegate(inject_stylesheet, { css: args.css, tab_id: args.tab_id }, ctx);
     }
     if (args.action === 'remove') {
       return delegate(remove_stylesheet, { css: args.css, tab_id: args.tab_id }, ctx);

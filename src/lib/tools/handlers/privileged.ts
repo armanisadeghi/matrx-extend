@@ -15,11 +15,6 @@ import { z } from 'zod';
 const InjectStylesheetArgs = z.object({
   css: z.string().min(1),
   tab_id: z.number().int().optional(),
-  /**
-   * Persist the stylesheet across navigations on this tab. Default false.
-   * (When true, also returns an `id` you can pass to `remove_stylesheet`.)
-   */
-  persist: z.boolean().optional().default(false),
 });
 type InjectStylesheetArgs = z.infer<typeof InjectStylesheetArgs>;
 

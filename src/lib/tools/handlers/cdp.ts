@@ -32,8 +32,9 @@ import * as cdp from '@/lib/cdp/client';
 import { log } from '@/lib/debug/log';
 import { assertScreenshotDocument, readScreenshotDocument } from '@/lib/screenshot/document';
 import { type ScreenshotProfile, resolveProfile } from '@/lib/screenshot/profiles';
-import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
+import { getAssignedTabId, resolveTabIdArg } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
+import { delegate } from '@/lib/tools/types';
 import { base64ByteLength } from '@ai-matrx/kit/base64';
 import { z } from 'zod';
 
@@ -643,9 +644,9 @@ export const read_console_messages: ToolHandler<ReadConsoleArgs, unknown> = {
   supportedBrowsers: ['chrome'],
   argsSchema: ReadConsoleArgs,
   run: async (args, ctx) => {
-    const tabId =
-      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ?? (await getAssignedTabId(ctx));
-    if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
+    const resolved = await resolveTabIdArg(args.tab_id, ctx);
+    if (!resolved.ok) return { ok: false, reason: resolved.reason };
+    const tabId = resolved.id;
     if (args.auto_start) {
       try {
         await cdp.startConsoleCapture(tabId);
@@ -699,9 +700,9 @@ export const read_network_requests: ToolHandler<ReadNetworkArgs, unknown> = {
   supportedBrowsers: ['chrome'],
   argsSchema: ReadNetworkArgs,
   run: async (args, ctx) => {
-    const tabId =
-      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ?? (await getAssignedTabId(ctx));
-    if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
+    const resolved = await resolveTabIdArg(args.tab_id, ctx);
+    if (!resolved.ok) return { ok: false, reason: resolved.reason };
+    const tabId = resolved.id;
     if (args.auto_start) {
       try {
         await cdp.startNetworkCapture(tabId);
@@ -731,16 +732,13 @@ export const get_request_body: ToolHandler<GetRequestBodyArgs, unknown> = {
   supportedBrowsers: ['chrome'],
   argsSchema: GetRequestBodyArgs,
   run: async (args, ctx) => {
-    const tabId =
-      args.tab_id ??
-      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ??
-      (await getAssignedTabId(ctx));
-    if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
-    return cdp_network_get_body.run(
-      { request_id: args.request_id, tab_id: tabId } as never,
-      // Pass the parent ctx through so the inner handler keeps the same
-      // assignedTabId / conversationId — we already resolved tabId above
-      // anyway, but keeping ctx consistent matters for tools that read it.
+    // tab_id is a string on the canonical surface; parse it ONCE (it used to pass the raw
+    // string through, so Number.isFinite failed and every explicit tab_id said "No active tab").
+    const resolved = await resolveTabIdArg(args.tab_id, ctx);
+    if (!resolved.ok) return { ok: false, reason: resolved.reason };
+    return delegate(
+      cdp_network_get_body,
+      { request_id: args.request_id, tab_id: resolved.id },
       ctx,
     );
   },

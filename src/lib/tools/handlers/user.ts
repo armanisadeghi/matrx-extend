@@ -24,6 +24,7 @@
 import { addTasks, savePlan, setPlanStatus } from '@/lib/lists/storage';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
+import { resolveTabIdArg } from '@/lib/tools/handlers/_active-tab';
 import type {
   AskUserResponse,
   PendingAskUserRequest,
@@ -354,7 +355,7 @@ async function fireSystemNotification(q: SingleQuestion, agentName: string | nul
 
 // Unified arg set (matches tool_def + the other surfaces): reason (required),
 // instructions?, expected_action?, tab_id?, timeout_seconds?. This surface uses
-// tab_id implicitly (via the assigned tab) and honors timeout_seconds when set.
+// tab_id by bringing that tab to the front for the person, and honors timeout_seconds.
 const TakeoverArgs = z.object({
   reason: z.string().min(1),
   expected_action: z.string().optional(),
@@ -369,7 +370,19 @@ export const request_user_takeover: ToolHandler<TakeoverArgs, unknown> = {
   tier: 'ask-user',
   argsSchema: TakeoverArgs,
   run: async (args, ctx) => {
-    const detail = args.expected_action ?? args.instructions ?? '';
+    // Both texts reach the person: `??` used to drop instructions whenever
+    // expected_action was also sent.
+    const detail = [args.instructions, args.expected_action].filter((t) => t?.trim()).join('\n\n');
+    if (args.tab_id != null && args.tab_id !== '') {
+      const resolved = await resolveTabIdArg(args.tab_id, ctx);
+      if (!resolved.ok) return { ok: false, reason: resolved.reason };
+      try {
+        const tab = await chrome.tabs.update(resolved.id, { active: true });
+        if (tab?.windowId != null) await chrome.windows.update(tab.windowId, { focused: true });
+      } catch (err) {
+        return { ok: false, reason: `Tab ${resolved.id} not found: ${(err as Error).message}` };
+      }
+    }
     const request: PendingAskUserRequest = {
       callId: ctx.callId,
       conversationId: ctx.conversationId,

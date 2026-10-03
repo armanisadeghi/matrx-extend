@@ -192,6 +192,16 @@ export async function delegate<TArgs, TResult>(
   args: unknown,
   ctx: ToolContext,
 ): Promise<TResult | { ok: false; reason: string }> {
+  const unknown = unknownDelegateKeys(leaf.argsSchema, args);
+  if (unknown.length > 0) {
+    // zod strips unknown object keys silently, so a wrapper key the leaf names
+    // differently (limit vs max_results, expires_in_seconds vs expiration) used
+    // to vanish with no error. Refuse loudly instead.
+    return {
+      ok: false,
+      reason: `delegate passed unknown key(s) ${unknown.join(', ')} to leaf ${leaf.name}`,
+    };
+  }
   const parsed = leaf.argsSchema.safeParse(args);
   if (!parsed.success) {
     return {
@@ -200,6 +210,57 @@ export async function delegate<TArgs, TResult>(
     };
   }
   return leaf.run(parsed.data, ctx);
+}
+
+/**
+ * Every key a Zod schema accepts at its top level, or null when the schema's
+ * top level is not an object shape we can enumerate (then no key check runs).
+ * Unwraps refine/transform/optional/default; a union accepts any member's keys.
+ */
+export function schemaObjectKeys(schema: z.ZodTypeAny): Set<string> | null {
+  // biome-ignore lint/suspicious/noExplicitAny: walking zod internals by typeName
+  const def = (schema as any)?._def;
+  switch (def?.typeName) {
+    case 'ZodObject':
+      // Leaves that declare .passthrough()/.catchall() accept anything.
+      if (def.unknownKeys === 'passthrough') return null;
+      if (def.catchall && def.catchall._def?.typeName !== 'ZodNever') return null;
+      return new Set(Object.keys(def.shape()));
+    case 'ZodEffects':
+      return schemaObjectKeys(def.schema);
+    case 'ZodOptional':
+    case 'ZodNullable':
+    case 'ZodDefault':
+    case 'ZodCatch':
+    case 'ZodReadonly':
+    case 'ZodBranded':
+      return schemaObjectKeys(def.innerType ?? def.type);
+    case 'ZodPipeline':
+      return schemaObjectKeys(def.in);
+    case 'ZodUnion':
+    case 'ZodDiscriminatedUnion': {
+      const options: z.ZodTypeAny[] = Array.isArray(def.options)
+        ? def.options
+        : [...def.options.values()];
+      const all = new Set<string>();
+      for (const o of options) {
+        const keys = schemaObjectKeys(o);
+        if (!keys) return null;
+        for (const k of keys) all.add(k);
+      }
+      return all;
+    }
+    default:
+      return null;
+  }
+}
+
+/** Keys in `args` the leaf schema would strip (present even if undefined). */
+export function unknownDelegateKeys(schema: z.ZodTypeAny, args: unknown): string[] {
+  if (args == null || typeof args !== 'object' || Array.isArray(args)) return [];
+  const accepted = schemaObjectKeys(schema);
+  if (!accepted) return [];
+  return Object.keys(args).filter((k) => !accepted.has(k));
 }
 
 export interface ToolResultEnvelope {

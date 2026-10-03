@@ -20,10 +20,9 @@
 import { downloadFileBytes, uploadFile } from '@/lib/api/routes/files';
 import { extractPdfText } from '@/lib/api/routes/pdf';
 import { log } from '@/lib/debug/log';
-import { getAssignedTab } from '@/lib/tools/handlers/_active-tab';
+import { getAssignedTab, parseTabIdArg } from '@/lib/tools/handlers/_active-tab';
 import {
   click_element,
-  wait_for as legacy_wait_for,
   navigate_active_tab,
   scroll_page,
   set_clipboard,
@@ -66,8 +65,9 @@ import { z } from 'zod';
 async function activateTab(
   tabId: string,
 ): Promise<{ ok: true; id: number } | { ok: false; reason: string }> {
-  const id = Number.parseInt(tabId, 10);
-  if (!Number.isFinite(id)) return { ok: false, reason: `Invalid tabId: ${tabId}` };
+  const parsed = parseTabIdArg(tabId);
+  if (!parsed.ok || parsed.id == null) return { ok: false, reason: `Invalid tab_id: ${tabId}` };
+  const id = parsed.id;
   try {
     const tab = await chrome.tabs.get(id);
     if (!tab.active) {
@@ -172,7 +172,17 @@ export const computer: ToolHandler<ComputerArgs, unknown> = {
       case 'focus':
         return delegate(focus_element, { ref: args.ref, selector: undefined }, ctx);
       case 'blur':
-        return delegate(blur_element, { ref: args.ref, selector: undefined }, ctx);
+        // The blur leaf takes only `selector`; `ref` used to be stripped, so every
+        // blur hit document.activeElement instead of the element the agent named.
+        return delegate(
+          blur_element,
+          {
+            selector: args.ref
+              ? `[data-matrx-ref="${args.ref.replace(/^ref:/, '').replace(/"/g, '\\"')}"]`
+              : undefined,
+          },
+          ctx,
+        );
       case 'screenshot':
         return doScreenshot(args.tab_id, ctx);
       case 'left_click_drag':
@@ -522,10 +532,12 @@ export const tabs: ToolHandler<TabsArgs, unknown> = {
         status: tab.status,
       };
     }
-    const id = args.tab_id ? Number.parseInt(args.tab_id, 10) : Number.NaN;
-    if (!Number.isFinite(id))
+    const parsedId = parseTabIdArg(args.tab_id);
+    if (!parsedId.ok) return { ok: false, reason: parsedId.reason };
+    if (parsedId.id == null)
       return { ok: false, reason: `tab_id required for action='${args.action}'` };
-    if (args.action === 'close') return delegate(close_tab, { tab_id: id }, ctx);
+    const id = parsedId.id;
+    if (args.action === 'close') return delegate(close_tab, { tab_ids: id }, ctx);
     if (args.action === 'switch') return delegate(switch_to_tab, { tab_id: id }, ctx);
     if (args.action === 'reload') return delegate(reload_tab, { tab_id: id }, ctx);
     if (args.action === 'info') return delegate(get_tab_info, { tab_id: id }, ctx);
@@ -655,7 +667,7 @@ export const wait_for: ToolHandler<WaitForArgs, unknown> = {
   name: 'wait_for',
   tier: 'read',
   argsSchema: WaitForArgs,
-  run: async (args, ctx) => {
+  run: async (args) => {
     const act = await activateTab(args.tab_id);
     if (!act.ok) return { ok: false, reason: act.reason };
     if (args.condition === 'element') {
@@ -670,15 +682,59 @@ export const wait_for: ToolHandler<WaitForArgs, unknown> = {
       return waitForUrl(act.id, args.target!, args.timeout_ms);
     }
     if (args.condition === 'network_idle') {
-      return delegate(
-        legacy_wait_for,
-        { ready_state: 'complete', timeout_ms: args.timeout_ms },
-        ctx,
-      );
+      // Runs on the tab the caller named (act.id). The old delegation sent the legacy
+      // leaf ready_state:'complete' (it takes a boolean), so this branch never ran, and
+      // that leaf waits on the assigned tab, not tab_id.
+      return waitForNetworkIdle(act.id, args.timeout_ms);
     }
     return { ok: false, reason: `Unknown condition: ${args.condition as string}` };
   },
 };
+
+/**
+ * Network idle on one tab: the tab reports status 'complete', then no new resource
+ * entries land for NETWORK_QUIET_MS. Refuses on timeout instead of pretending.
+ */
+const NETWORK_QUIET_MS = 500;
+async function waitForNetworkIdle(tabId: number, timeoutMs: number) {
+  const start = Date.now();
+  const deadline = start + timeoutMs;
+  while (Date.now() < deadline) {
+    try {
+      const tab = await chrome.tabs.get(tabId);
+      if (tab.status === 'complete') break;
+    } catch (err) {
+      return { ok: false, reason: `Tab ${tabId} not found: ${(err as Error).message}` };
+    }
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  if (Date.now() >= deadline)
+    return { ok: false, reason: `tab ${tabId} did not finish loading within ${timeoutMs}ms` };
+  const [r] = await chrome.scripting.executeScript({
+    target: { tabId },
+    func: async (quietMs: number, maxMs: number) => {
+      const started = Date.now();
+      let count = performance.getEntriesByType('resource').length;
+      let lastChange = Date.now();
+      while (Date.now() - started < maxMs) {
+        await new Promise((res) => setTimeout(res, 100));
+        const now = performance.getEntriesByType('resource').length;
+        if (now !== count) {
+          count = now;
+          lastChange = Date.now();
+        } else if (Date.now() - lastChange >= quietMs) {
+          return { ok: true } as const;
+        }
+      }
+      return { ok: false } as const;
+    },
+    args: [NETWORK_QUIET_MS, Math.max(0, deadline - Date.now())],
+  });
+  const res = r?.result as { ok: boolean } | undefined;
+  if (!res?.ok)
+    return { ok: false, reason: `network on tab ${tabId} never went idle within ${timeoutMs}ms` };
+  return { ok: true, elapsed_ms: Date.now() - start };
+}
 
 async function waitForElement(tabId: number, selector: string, timeoutMs: number, scroll: boolean) {
   const [r] = await chrome.scripting.executeScript({
@@ -925,8 +981,10 @@ export const read_pdf: ToolHandler<ReadPdfArgs, unknown> = {
     // If only tab_id was given, capture the PDF bytes from the tab's URL and
     // upload it first so the extraction door gets a MediaRef (file_id).
     if (!fileId && args.tab_id) {
-      const id = Number.parseInt(args.tab_id, 10);
-      if (!Number.isFinite(id)) return { ok: false, reason: 'Invalid tab_id' };
+      const parsed = parseTabIdArg(args.tab_id);
+      if (!parsed.ok || parsed.id == null)
+        return { ok: false, reason: parsed.ok ? 'Invalid tab_id' : parsed.reason };
+      const id = parsed.id;
       try {
         const tab = await chrome.tabs.get(id);
         const pdfUrl = tab.url ?? '';

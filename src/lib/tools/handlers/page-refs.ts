@@ -30,7 +30,7 @@
 
 import { SENSITIVE_ATTR, sensitiveSelectorsForTab } from '@/lib/credentials/sensitive-fields';
 import { quickPrompt } from '@/lib/onbox-ai/client';
-import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
+import { resolveTabIdArg } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
 
@@ -187,9 +187,9 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
   tier: 'read',
   argsSchema: ReadPageArgs,
   run: async (args, ctx) => {
-    const tabId =
-      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ?? (await getAssignedTabId(ctx));
-    if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
+    const resolved = await resolveTabIdArg(args.tab_id, ctx);
+    if (!resolved.ok) return { ok: false, reason: resolved.reason };
+    const tabId = resolved.id;
     // Canonical 'filter' overrides interactive_only when present.
     const interactiveOnly =
       args.filter !== undefined ? args.filter === 'interactive' : args.interactive_only;
@@ -523,9 +523,9 @@ export const find: ToolHandler<FindArgs, unknown> = {
   tier: 'read',
   argsSchema: FindArgs,
   run: async (args, ctx) => {
-    const tabId =
-      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ?? (await getAssignedTabId(ctx));
-    if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
+    const resolved = await resolveTabIdArg(args.tab_id, ctx);
+    if (!resolved.ok) return { ok: false, reason: resolved.reason };
+    const tabId = resolved.id;
 
     // Reuse a fresh cached scrape if the agent (or a prior tool call) just ran
     // read_page. Saves the executeScript round-trip + DOM walk on the common
@@ -702,9 +702,9 @@ export const get_page_text: ToolHandler<PageTextArgs, unknown> = {
   tier: 'read',
   argsSchema: PageTextArgs,
   run: async (args, ctx) => {
-    const tabId =
-      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ?? (await getAssignedTabId(ctx));
-    if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
+    const resolved = await resolveTabIdArg(args.tab_id, ctx);
+    if (!resolved.ok) return { ok: false, reason: resolved.reason };
+    const tabId = resolved.id;
     try {
       const [first] = await chrome.scripting.executeScript({
         target: { tabId },

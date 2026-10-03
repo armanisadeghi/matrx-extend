@@ -13,7 +13,7 @@
  */
 
 import { SENSITIVE_ATTR, sensitiveSelectorsForTab } from '@/lib/credentials/sensitive-fields';
-import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
+import { getAssignedTabId, resolveTabIdArg } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
 
@@ -37,9 +37,9 @@ export const find_text_on_page: ToolHandler<FindTextArgs, unknown> = {
   tier: 'read',
   argsSchema: FindTextArgs,
   run: async (args, ctx) => {
-    const tabId =
-      (args.tab_id ? Number.parseInt(args.tab_id, 10) : null) ?? (await getAssignedTabId(ctx));
-    if (tabId == null || !Number.isFinite(tabId)) return { ok: false, reason: 'No active tab' };
+    const resolved = await resolveTabIdArg(args.tab_id, ctx);
+    if (!resolved.ok) return { ok: false, reason: resolved.reason };
+    const tabId = resolved.id;
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },
       func: (
@@ -420,14 +420,9 @@ export const get_element_details: ToolHandler<ElementDetailsArgs, unknown> = {
   tier: 'read',
   argsSchema: ElementDetailsArgs,
   run: async (args, ctx) => {
-    let tabId: number | null;
-    if (args.tab_id) {
-      tabId = Number.parseInt(args.tab_id, 10);
-      if (!Number.isFinite(tabId)) return { ok: false, reason: 'Invalid tabId' };
-    } else {
-      tabId = await getAssignedTabId(ctx);
-    }
-    if (tabId == null) return { ok: false, reason: 'No active tab' };
+    const resolved = await resolveTabIdArg(args.tab_id, ctx);
+    if (!resolved.ok) return { ok: false, reason: resolved.reason };
+    const tabId = resolved.id;
     const refSelector = `[data-matrx-ref="${args.ref.replace(/^ref:/, '')}"]`;
     const [first] = await chrome.scripting.executeScript({
       target: { tabId },

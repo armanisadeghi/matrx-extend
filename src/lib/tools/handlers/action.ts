@@ -248,6 +248,14 @@ function waitForLoad(tabId: number, timeoutMs: number): Promise<void> {
     };
     chrome.tabs.onUpdated.addListener(handler);
     setTimeout(finish, timeoutMs);
+    // A tab that already finished loading never fires another 'complete' — without
+    // this check ready_state:true always burned the whole timeout.
+    chrome.tabs
+      .get(tabId)
+      .then((t) => {
+        if (t.status === 'complete') finish();
+      })
+      .catch(finish);
   });
 }
 
