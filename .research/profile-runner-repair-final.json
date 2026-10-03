@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "scope": "Profile member and extension-reload native runner source repair",
+  "status": "source_ready_for_independent_review",
+  "changes": [
+    "Removed the private owner user ID from the report.",
+    "Report Profile acceptance as unverified and refuse mutation when the initial owner row is absent because this runner has no verified exact delete-and-restore path.",
+    "Require Chrome to emit destruction of the exact original worker target and creation of the replacement worker target during extension reload, with the original targets absent from a fresh target list."
+  ],
+  "checks": {
+    "node_check_profile_runner": "passed",
+    "node_check_native_harness": "passed",
+    "native_sidepanel_harness_lightweight_test": "passed",
+    "biome_format": "passed",
+    "git_diff_check": "passed",
+    "native_acceptance": "not_run"
+  },
+  "unknowns": [
+    "Chrome target lifecycle evidence has not been exercised in a guarded native run.",
+    "An account whose Profile row is initially absent is deliberately refused before persistent mutation; save/discard acceptance for that account remains unverified."
+  ]
+}

@@ -670,8 +670,10 @@ try {
           event.row_present !== null,
       );
       report.profile_row_existed_before = initialRow.row_present;
-      if (!initialRow.row_present) report.owned_test_row_user_id_private = identity.userId;
       report.original_preferred_present = Boolean(original);
+      // Save creates an owner row when none exists. The UI has no exact inverse for
+      // that write, so refuse the mutating cases before creating persistent data.
+      if (!initialRow.row_present) throw new Error('profile_original_row_absent_mutation_refused');
       await caseBack(panel, original, identity.email, AUTH_MODE, 'warm');
       await caseSaveDiscard(panel, original, identity.email, AUTH_MODE, 'warm');
       await caseT25(panel, original, identity.email, AUTH_MODE, 'warm');
@@ -706,10 +708,11 @@ try {
   report.status = 'passed';
   report.stage = 'complete';
 } catch (error) {
-  report.status = 'failed';
-  report.failure_code = String(error?.message ?? 'unknown')
+  const code = String(error?.message ?? 'unknown')
     .split(':', 1)[0]
     .slice(0, 100);
+  report.status = code === 'profile_original_row_absent_mutation_refused' ? 'unverified' : 'failed';
+  report.failure_code = code;
 } finally {
   report.finished_at = new Date().toISOString();
   await mkdir(OUTPUT_DIR ?? join(REPO, 'test-results'), { recursive: true, mode: 0o700 });
