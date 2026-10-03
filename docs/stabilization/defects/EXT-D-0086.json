@@ -1,0 +1,52 @@
+{
+  "id": "EXT-D-0086",
+  "feature_id": "EXT-F-1003",
+  "case_ids": [
+    "EXT-F-1003-T43",
+    "EXT-F-1003-T44",
+    "EXT-F-1003-T45",
+    "EXT-F-1003-T46",
+    "EXT-F-1003-T47",
+    "EXT-F-1003-T48"
+  ],
+  "surface": "Settings desktop port and pair code",
+  "auth_mode": "guest/member/admin",
+  "title": "Overlapping desktop settings writes can persist an older choice",
+  "reproduction": [
+    "In one mounted Settings panel, hold the first local engine port storage write pending after Save, choose another valid port, and click Save again.",
+    "Release the two writes in reverse completion order and inspect the final Chrome storage value and displayed input.",
+    "Repeat with two pair codes: submit the first, enter and submit the second while the first write is pending, then settle both writes and inspect the input and final saved code."
+  ],
+  "expected": "Writes to each desktop setting complete in submission order; an older pair-code completion cannot erase newer input. The latest successful submission is the final persisted value.",
+  "actual": "Pre-fix source invoked Chrome storage for each Save without ordering; an older operation could settle after a newer one, and pair save always cleared the current input on completion. This is source-confirmed; controlled runtime RED and native reproduction have not been executed.",
+  "reproduction_status": "source-confirmed overlap; controlled component and native runtime reproduction pending",
+  "evidence": [
+    "src/features/settings/SettingsView.tsx",
+    "src/features/settings/SettingsView.about.test.tsx",
+    ".research/settings-failure-repair.json"
+  ],
+  "severity": "S2: a desktop setting can revert to an older choice",
+  "priority": "P1: preserve Settings choice under overlapping saves",
+  "state": "in-fix",
+  "transition_history": [
+    {
+      "at": "2026-10-03T03:34:17Z",
+      "from": null,
+      "to": "open",
+      "reason": "Two fresh source peers identified overlapping Settings writes and an older pair save clearing newer input."
+    },
+    {
+      "at": "2026-10-03T03:34:17Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source tracing located concurrent writes in the real Settings handlers; controlled deferred-storage reproduction was specified."
+    },
+    {
+      "at": "2026-10-03T03:34:17Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "cf0877f1 serializes same-panel writes per key and guards pair input by revision; hosted CI and independent repair review remain pending."
+    }
+  ],
+  "closure_requirement": "Hosted controlled caller regression, independent repair review, and exact-build native save/reload acceptance; no closure from source inspection or an unexecuted test."
+}

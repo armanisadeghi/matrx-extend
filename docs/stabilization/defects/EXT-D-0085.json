@@ -11,13 +11,16 @@
   ],
   "expected": "The hosted runner selects the package manager declared by the checked-out extension and proceeds to strict release verification.",
   "actual": "Run37092816878 failed with No pnpm version is specified at pnpm/action-setup; no package was produced.",
+  "retest_result": "Run37093086895 passed pnpm/action-setup, Node, uv, and frozen install; the job later failed check:matrx-packages without publishing a candidate.",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/37092816878",
-    ".research/release-blocker-revalidation.json"
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37093086895",
+    ".research/release-blocker-revalidation.json",
+    ".research/hosted-setup-peer.json"
   ],
   "severity": "S1: blocks all hosted releases",
   "priority": "P0: restore authorized release path",
-  "state": "in-fix",
+  "state": "closed",
   "transition_history": [
     {
       "at": "2026-10-03T03:21:56.508881+00:00",
@@ -36,6 +39,24 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Release implementation lane owns narrow path correction and sibling environment census."
+    },
+    {
+      "at": "2026-10-03T03:34:17Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "fbf5ae69 set the nested package manifest for pnpm/action-setup and added uv setup; an independent source peer accepted the scoped correction."
+    },
+    {
+      "at": "2026-10-03T03:34:17Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Hosted run 37093086895 passed pnpm, Node, uv, and locked dependency installation after both checkouts; the release subsequently failed inside check:matrx-packages."
+    },
+    {
+      "at": "2026-10-03T03:34:17Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Only the package-manager setup defect is closed. The hosted release itself did not publish a candidate and remains separately blocked by a later gate."
     }
   ],
   "closure_requirement": "Independent source review and actual hosted rerun passes package-manager setup; full release remains separately required."
