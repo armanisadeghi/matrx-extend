@@ -1,0 +1,66 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Independent source-only review of e15aac6af702c747de1ecaf050626ebe397e1459 and b02b04baf67e8e9075675771a552328a4226e607 for EXT-D-0084/0086",
+  "method": "Read exact commits, defect records, inventory T43–T51, runner, storage fault helper, Settings handlers, and shared native harness. No test, browser, build, or heavy process was run.",
+  "verdict_a_acceptance": {
+    "status": "PARTIAL — prepared coverage, no native result",
+    "adequate_targets": [
+      "Port refusal, successful retry, two ordered submissions, delayed initial read, and reload are driven through the real Settings input and Chrome storage boundary in a disposable profile.",
+      "Pair save refusal/retry and overlapping submissions are attempted when the input is visible; reset refusal/retry is attempted through the real confirmation UI."
+    ],
+    "missing_or_limited": [
+      "No execution receipt exists in the reviewed commits, so none of the defect closure requirements is fulfilled by this source review.",
+      "The inventory's full T43–T51 controls are not covered: port boundaries/blank clear/invalid feedback and rediscovery, pair cancel/actual pairing acceptance, reset cancel and full local/session key census are absent. This runner must not be used to upgrade those inventory cases wholesale.",
+      "Pair controls may be hidden by native transport; the runner records not_applicable or unverified and still sets top-level pass, concealing partial D84/D86 control coverage."
+    ]
+  },
+  "verdict_b_quality": {
+    "status": "FAIL — one blocking false-negative and one blocking false-positive path",
+    "findings": [
+      {
+        "severity": "Important",
+        "kind": "false_negative",
+        "location": "tests/browser/settings-desktop-native-acceptance.mjs:95,513-519",
+        "finding": "pairError observes only 'Could not save pair code. Try again.'; the real Forget rejection in SettingsView.tsx:626 says 'Could not forget pair code. Try again.'. When Forget is visible, a correct product fails this test's wait. Inspect the actual Forget error separately."
+      },
+      {
+        "severity": "Important",
+        "kind": "false_positive",
+        "location": "tests/browser/settings-desktop-native-acceptance.mjs:496-545,589",
+        "finding": "The pair entry and Forget paths can be recorded not_applicable/unverified, yet report.status becomes pass without a coverage gate. This can be a passing run with neither pair failure nor pair overlap exercised. Mark overall result partial/unverified for missing required controls, and keep per-control outcomes distinct."
+      },
+      {
+        "severity": "Important",
+        "kind": "weak_oracle",
+        "location": "tests/browser/settings-desktop-native-acceptance.mjs:82-94,555-583",
+        "finding": "Reset success checks one port key, dialog dismissal and signed-out identity. It does not census all prior chrome.storage.local/session keys, so a partial clear or stale session data can pass. The inventory and D84 ask that local reset be genuinely verified."
+      },
+      {
+        "severity": "Minor",
+        "kind": "causality_risk",
+        "location": "tests/browser/settings-desktop-native-acceptance.mjs:67-105,399-419; tests/browser/settings-desktop-storage-faults.mjs:18-26",
+        "finding": "The initial-read observer state() also calls chrome.storage.local.get with the target port key. If it races the Settings effect, it can consume the helper's first held get instead of the product read. The later old-value assertion may then fail, but the receipt would not prove a held product read. Isolate observation from the intercepted key or assert the intercepted call's product provenance."
+      }
+    ],
+    "strengths": [
+      "Faults wrap Chrome storage rather than Settings logic; trusted CDP pointer/keyboard events drive controls.",
+      "Source SHA, imported run/artifact IDs, tree hash and manifest version are checked; b02b04ba correctly accepts source identity from the imported path when the dev receipt omits sourceSha.",
+      "Actual values for pair codes are excluded from report fields, and member/admin identities use the shared sign-in driver."
+    ]
+  },
+  "reviewed_sources": [
+    "docs/stabilization/defects/EXT-D-0084.json",
+    "docs/stabilization/defects/EXT-D-0086.json",
+    "docs/stabilization/inventory.json EXT-F-1003-T43 through T51",
+    "tests/browser/settings-desktop-native-acceptance.mjs",
+    "tests/browser/settings-desktop-storage-faults.mjs",
+    "src/features/settings/SettingsView.tsx",
+    "src/lib/desktop/discovery.ts",
+    "src/lib/desktop/http.ts"
+  ],
+  "unverified": [
+    "Actual Chrome runtime, fault installation and all three roles",
+    "Exact artifact launch, browser version and profile resource permit",
+    "RED-to-GREEN or mutation proof; no test permit in this lane"
+  ]
+}
