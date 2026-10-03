@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "scope": "Fresh native Chromium headless guest Chat regression retest on frozen published release 0.2.176 against newly deployed aidream backend. First grounded answer and same guest follow-up after a real side-panel reload. This does not verify the Chrome Web Store installed lifecycle.",
+  "backend": {
+    "health_url": "https://server.app.matrxserver.com/health/version",
+    "before": {
+      "git_sha": "82af43a337e848da4d2ffebc7915fc76da8ea2b8",
+      "built_at": "2026-10-03T17:40:27Z",
+      "verified_immediately_before_run": true
+    },
+    "after": {
+      "git_sha": "82af43a337e848da4d2ffebc7915fc76da8ea2b8",
+      "built_at": "2026-10-03T17:40:27Z",
+      "captured_at": "2026-10-03T18:09:11Z"
+    }
+  },
+  "release_artifact": {
+    "release_run_id": 37105966615,
+    "github_artifact_id": 11267544261,
+    "version": "0.2.176",
+    "embedded_release_source_sha": "3fe608d949a06aa10bfea57b43c9b05638386bc1",
+    "store_zip_sha256_before": "813715b8dcd6421d4ee001c04e99c3729f6dad439064f8bf5922e6fb38ce09f8",
+    "store_zip_sha256_after": "813715b8dcd6421d4ee001c04e99c3729f6dad439064f8bf5922e6fb38ce09f8",
+    "keyed_tree_sha256_before": "755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272",
+    "keyed_tree_sha256_after": "755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272",
+    "input_artifact_unchanged": true,
+    "receipt_kind": "release; exact unpacked local ZIP; Store installation/update lifecycle not exercised"
+  },
+  "runner": {
+    "command": "node scripts/hosted-guest-acceptance.mjs",
+    "acceptance_case": "guest-chat",
+    "run_id": "published176-guest-backend-82af43a3",
+    "resource_decision": "valid",
+    "exit_code": 0,
+    "resource_journal": "docs/stabilization/resource-journals/published176-guest-backend-82af43a3.jsonl",
+    "raw_files": {
+      "guest-chat.receipt.json": {
+        "path": "raw/guest-chat.receipt.json",
+        "sha256": "2f6fdaf746a2a947eb3d996216118b3c2c45918254bf2199e64cb9084b94ed29"
+      },
+      "guest-chat-real-answer.png": {
+        "path": "raw/guest-chat-real-answer.png",
+        "sha256": "9909f4a2b86f272dfafec040853ae2a7d7a2ac26fc4b24c06e8af1f97cb0cc11"
+      },
+      "guest-chat-real-followup-answer.png": {
+        "path": "raw/guest-chat-real-followup-answer.png",
+        "sha256": "8dea51245a1d251583649fcaf917090d675567d06d26247b5a12712fdd005fd0"
+      },
+      "resource-journal.jsonl": {
+        "path": "raw/resource-journal.jsonl",
+        "sha256": "5a33e462a693f0c385eb635f2bb6dbfb0122e72a8d5f82f8840ec9a6466db7a5"
+      }
+    },
+    "invocation_recipe": {
+      "parent_environment": {
+        "PATH": "/Volumes/Samsung2TB/.codex-guest-runtime/node/bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+        "PLAYWRIGHT_BROWSERS_PATH": "/Volumes/Samsung2TB/.codex-guest-runtime/browsers",
+        "MATRX_HOSTED_BROWSER_RUNTIME_DIR": "/Volumes/Samsung2TB/.codex-guest-runtime/node",
+        "MATRX_HOSTED_RELEASE_ARTIFACT_DIR": "/Volumes/Samsung2TB/.codex-guest-runtime/acceptance/release176-artifact-37105966615/.output",
+        "MATRX_HOSTED_RELEASE_SHA": "3fe608d949a06aa10bfea57b43c9b05638386bc1",
+        "MATRX_HOSTED_GUEST_OUTPUT_DIR": "/Volumes/Samsung2TB/.codex-guest-runtime/acceptance/published176-guest-backend-82af43a3-output",
+        "MATRX_HOSTED_PHASE": "acceptance",
+        "MATRX_HOSTED_ACCEPTANCE_CASE": "guest-chat"
+      },
+      "guard": "node scripts/stabilization-resource.mjs run --run-id published176-guest-backend-82af43a3 --profile-dir /Volumes/Samsung2TB/.codex-guest-runtime/acceptance/published176-guest-backend-82af43a3-output -- node scripts/hosted-guest-acceptance.mjs",
+      "note": "Set these variables in the parent environment. Keep the exact allowlisted child argv after --."
+    }
+  },
+  "guest_acceptance": {
+    "fresh_profile": true,
+    "guest_visible": true,
+    "opening_terminal_answer": true,
+    "opening_contains_unpredictable_page_code": true,
+    "opening_names_capture_understand_use_in_order": true,
+    "real_side_panel_reload": true,
+    "guest_visible_after_reload": true,
+    "session_absent_after_reload": true,
+    "followup_terminal_answer": true,
+    "followup_has_distinct_unpredictable_page_code": true,
+    "followup_names_fixture_heading": true,
+    "login_paywall_or_error": false,
+    "guest_ai_requests": 0,
+    "opening_and_followup_grounded_in_active_fixture": true
+  },
+  "cleanup": {
+    "heavy_lease_present": false,
+    "unsafe_hold_present": false,
+    "owned_runner_or_pinned_browser_processes_remaining": 0
+  },
+  "verification": {
+    "native_guest_run": "pass: two grounded terminal replies around actual panel reload",
+    "release_tree": "unchanged before and after",
+    "backend": "same requested SHA before and after run",
+    "resource_journal": "admitted, watcher healthy, exit 0, decision valid"
+  }
+}
