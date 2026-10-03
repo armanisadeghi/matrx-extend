@@ -132,7 +132,9 @@ export const ai: ToolHandler<AiArgs, unknown> = {
       case 'classify':
         if (!args.text || !args.categories?.length)
           return { ok: false, reason: "'text' and 'categories' required for classify" };
-        return delegate(ai_classify, { text: args.text, categories: args.categories }, ctx);
+        // The canonical arg is `categories`; the leaf names them `labels` (2-20). Sending
+        // `categories` failed the leaf's strict parse on every classify call.
+        return delegate(ai_classify, { text: args.text, labels: args.categories }, ctx);
       case 'extract_json':
         if (!args.text || !args.schema)
           return { ok: false, reason: "'text' and 'schema' required for extract_json" };
@@ -156,15 +158,21 @@ export const ai: ToolHandler<AiArgs, unknown> = {
         if (!args.text) return { ok: false, reason: "'text' required for proofread" };
         return delegate(ai_proofread, { text: args.text }, ctx);
       case 'describe_image':
-        if (!args.image_url && !args.image_base64)
-          return { ok: false, reason: "'image_url' or 'image_base64' required for describe_image" };
+        // The on-device model takes raw bytes only (image_base64) and reads `question`;
+        // image_url and prompt were passed through and silently dropped by the leaf.
+        if (!args.image_base64)
+          return {
+            ok: false,
+            reason: args.image_url
+              ? "describe_image needs image_base64 (no data: prefix); image_url is not supported on-device"
+              : "'image_base64' required for describe_image",
+          };
         return delegate(
           ai_describe_image,
           {
-            image_url: args.image_url,
             image_base64: args.image_base64,
             mime_type: args.mime_type,
-            prompt: args.prompt,
+            question: args.prompt,
           },
           ctx,
         );
