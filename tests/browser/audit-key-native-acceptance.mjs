@@ -383,103 +383,175 @@ try {
       );
 
       stage = 'lock_unavailable';
-      await reloadWithPrelude(panel, lockUnavailableSource);
-      await openSection(panel, 'Advanced agent capabilities');
-      const unavailableLoad = await expectCard(
+      await verifyCurrentSettingsIdentity({
         panel,
-        'audit_lock_unavailable_load',
-        (value) =>
-          value?.lockUnavailable &&
-          value.retryDetails &&
-          value.rekeyDisabled &&
-          value.exportDisabled,
-      );
-      const beforeLockRecovery = await snapshot(panel);
-      await evaluate(panel, '(() => { window.__auditNativeLockRestore(); return true; })()');
-      await click(panel, 'button-text', 'Retry audit details');
-      const recoveredLock = await expectCard(
-        panel,
-        'audit_lock_recovered',
-        (value) =>
-          value?.keyId === beforeLockRecovery.activeId &&
-          !value.lockUnavailable &&
-          !value.rekeyDisabled,
-      );
-      assert.deepEqual(await snapshot(panel), beforeLockRecovery);
-      await evaluate(panel, lockUnavailableSource);
-      await click(panel, 'button-text', 'Export public key');
+        mode: 'admin',
+        email: identity.email,
+        profileId: identity.profileId,
+        organizationId: identity.organizationId,
+      });
+      const beforeUnavailable = await snapshot(panel);
       await expectCard(
         panel,
-        'audit_lock_unavailable_export',
-        (value) => value?.lockUnavailable && value.exportDisabled && value.rekeyDisabled,
+        'audit_card_ready_before_missing_lock',
+        (value) => value?.keyId === beforeUnavailable.activeId && !value.detailsUnavailable,
       );
-      assert.deepEqual(await snapshot(panel), beforeLockRecovery);
-      await evaluate(panel, '(() => { window.__auditNativeLockRestore(); return true; })()');
-      await click(panel, 'button-text', 'Retry audit details');
-      await expectCard(
-        panel,
-        'audit_lock_export_recovered',
-        (value) => value?.keyId === beforeLockRecovery.activeId && !value.lockUnavailable,
-      );
-      await evaluate(panel, lockUnavailableSource);
-      await rotate(panel);
-      const unavailableRotate = await expectCard(
-        panel,
-        'audit_lock_unavailable_rotate',
-        (value) => value?.lockUnavailable && value.rekeyDisabled && value.retryDetails,
-      );
-      assert.deepEqual(await snapshot(panel), beforeLockRecovery);
-      await evaluate(panel, '(() => { window.__auditNativeLockRestore(); return true; })()');
-      await click(panel, 'button-text', 'Retry audit details');
-      await expectCard(
-        panel,
-        'audit_lock_rotation_recovered',
-        (value) => value?.keyId === beforeLockRecovery.activeId && !value.lockUnavailable,
-      );
-      assert.deepEqual(await snapshot(panel), beforeLockRecovery);
-      pass(
-        'T91 unsupported Web Locks blocks and read-only retry recovers',
-        unavailableLoad,
-        unavailableRotate,
-        {
-          details_recovered: recoveredLock.keyId === beforeLockRecovery.activeId,
-          history_unchanged: true,
-        },
-      );
+      detailStep = 'leave_authenticated_settings';
+      try {
+        // The auth shell also requires Web Locks during document bootstrap.
+        // Mount Settings after the authenticated shell is ready so this fault
+        // reaches the audit card rather than preventing the entire app boot.
+        await click(panel, 'title', 'Chat');
+        detailStep = 'inject_lock_before_settings_mount';
+        await evaluate(panel, lockUnavailableSource);
+        detailStep = 'mount_settings_without_lock';
+        await click(panel, 'title', 'Settings');
+        detailStep = 'open_advanced_section';
+        await openSection(panel, 'Advanced agent capabilities');
+        detailStep = 'observe_unavailable_load';
+        const unavailableLoad = await expectCard(
+          panel,
+          'audit_lock_unavailable_load',
+          (value) =>
+            value?.lockUnavailable &&
+            value.retryDetails &&
+            value.rekeyDisabled &&
+            value.exportDisabled,
+        );
+        detailStep = 'read_storage_after_unavailable_load';
+        const beforeLockRecovery = await snapshot(panel);
+        detailStep = 'restore_lock_after_load';
+        await evaluate(panel, '(() => { window.__auditNativeLockRestore(); return true; })()');
+        detailStep = 'retry_details_after_load';
+        await click(panel, 'button-text', 'Retry audit details');
+        detailStep = 'observe_details_recovery';
+        const recoveredLock = await expectCard(
+          panel,
+          'audit_lock_recovered',
+          (value) =>
+            value?.keyId === beforeLockRecovery.activeId &&
+            !value.lockUnavailable &&
+            !value.rekeyDisabled,
+        );
+        detailStep = 'compare_storage_after_details_recovery';
+        assert.deepEqual(await snapshot(panel), beforeLockRecovery);
+        detailStep = 'inject_lock_for_export';
+        await evaluate(panel, lockUnavailableSource);
+        detailStep = 'click_export_without_lock';
+        await click(panel, 'button-text', 'Export public key');
+        detailStep = 'observe_unavailable_export';
+        await expectCard(
+          panel,
+          'audit_lock_unavailable_export',
+          (value) => value?.lockUnavailable && value.exportDisabled && value.rekeyDisabled,
+        );
+        detailStep = 'compare_storage_after_unavailable_export';
+        assert.deepEqual(await snapshot(panel), beforeLockRecovery);
+        detailStep = 'restore_lock_after_export';
+        await evaluate(panel, '(() => { window.__auditNativeLockRestore(); return true; })()');
+        detailStep = 'retry_details_after_export';
+        await click(panel, 'button-text', 'Retry audit details');
+        detailStep = 'observe_export_recovery';
+        await expectCard(
+          panel,
+          'audit_lock_export_recovered',
+          (value) => value?.keyId === beforeLockRecovery.activeId && !value.lockUnavailable,
+        );
+        detailStep = 'inject_lock_for_rotation';
+        await evaluate(panel, lockUnavailableSource);
+        detailStep = 'rotate_without_lock';
+        await rotate(panel);
+        detailStep = 'observe_unavailable_rotation';
+        const unavailableRotate = await expectCard(
+          panel,
+          'audit_lock_unavailable_rotate',
+          (value) => value?.lockUnavailable && value.rekeyDisabled && value.retryDetails,
+        );
+        detailStep = 'compare_storage_after_unavailable_rotation';
+        assert.deepEqual(await snapshot(panel), beforeLockRecovery);
+        detailStep = 'restore_lock_after_rotation';
+        await evaluate(panel, '(() => { window.__auditNativeLockRestore(); return true; })()');
+        detailStep = 'retry_details_after_rotation';
+        await click(panel, 'button-text', 'Retry audit details');
+        detailStep = 'observe_rotation_recovery';
+        await expectCard(
+          panel,
+          'audit_lock_rotation_recovered',
+          (value) => value?.keyId === beforeLockRecovery.activeId && !value.lockUnavailable,
+        );
+        detailStep = 'compare_storage_after_rotation_recovery';
+        assert.deepEqual(await snapshot(panel), beforeLockRecovery);
+        pass(
+          'T91 unsupported Web Locks blocks and read-only retry recovers',
+          unavailableLoad,
+          unavailableRotate,
+          {
+            details_recovered: recoveredLock.keyId === beforeLockRecovery.activeId,
+            history_unchanged: true,
+          },
+        );
+      } catch (error) {
+        report.lock_diagnostic = {
+          step: detailStep,
+          card: await card(panel).catch(() => null),
+          lock_missing: await evaluate(panel, 'navigator.locks === undefined').catch(() => null),
+          prelude_installed: await evaluate(panel, 'window.__auditPreludeInstalled === true').catch(
+            () => null,
+          ),
+        };
+        report.failure_code = `audit_lock_${detailStep}_failed`;
+        throw error;
+      }
 
       // A second extension document shares the real origin, storage and Web
       // Lock manager. Hold the first active write; the second confirmation
       // must queue and both activated public IDs must survive in history.
       stage = 'cross_context';
+      detailStep = 'create_sibling';
       const sibling = await page.context().newPage();
       try {
+        detailStep = 'navigate_sibling';
         await sibling.goto('chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html');
+        detailStep = 'open_sibling_settings';
         await sibling.getByRole('button', { name: 'Settings' }).click();
+        detailStep = 'open_sibling_advanced';
         await sibling.getByRole('button', { name: 'Advanced agent capabilities' }).click();
+        detailStep = 'observe_sibling_card';
         await sibling.getByText('Audit key', { exact: true }).waitFor();
+        detailStep = 'inject_sibling_hold';
         assert.equal(await sibling.evaluate(auditFaultSource('hold-active')), true);
+        detailStep = 'activate_first_panel';
         await activatePanel();
+        detailStep = 'observe_first_foreground';
         await waitFor(
           'audit_panel_foreground_before_rotation',
           () => evaluate(panel, 'document.visibilityState === "visible"'),
           Boolean,
         );
+        detailStep = 'inject_first_hold';
         await inject(panel, 'hold-active');
+        detailStep = 'start_first_rotation';
         await rotate(panel);
+        detailStep = 'observe_first_write_held';
         await waitFor(
           'audit_first_write_held',
           () => fault(panel),
           (value) => value?.held && value.activeWrites === 1,
         );
-        const firstBeforeRelease = await snapshot(sibling);
+        detailStep = 'read_sibling_before_release';
+        const firstBeforeRelease = await sibling.evaluate(auditSnapshotSource());
+        detailStep = 'activate_sibling';
         await sibling.bringToFront();
+        detailStep = 'observe_sibling_foreground';
         await waitFor(
           'audit_sibling_foreground_before_rotation',
           () => sibling.evaluate('document.visibilityState === "visible"'),
           Boolean,
         );
+        detailStep = 'start_sibling_rotation';
         await sibling.getByRole('button', { name: 'Re-key', exact: true }).click();
         await sibling.getByRole('button', { name: 'Rotate key', exact: true }).click();
+        detailStep = 'observe_second_lock_queued';
         await waitFor(
           'audit_second_lock_queued',
           () =>
@@ -491,19 +563,27 @@ try {
             ),
           Boolean,
         );
-        const queued = await snapshot(sibling);
+        detailStep = 'compare_queued_snapshot';
+        const queued = await sibling.evaluate(auditSnapshotSource());
         assert.deepEqual(queued, firstBeforeRelease);
+        detailStep = 'release_first_write';
         await evaluate(panel, '(() => { window.__auditNativeFault.release(); return true; })()');
+        detailStep = 'observe_first_rotation';
         await expectCard(panel, 'audit_first_context_rotated', (value) => value?.rotated);
+        detailStep = 'observe_second_write_held';
         await waitFor(
           'audit_second_write_held',
           () => sibling.evaluate('window.__auditNativeFault?.state() ?? null'),
           (value) => value?.held && value.activeWrites === 1,
         );
+        detailStep = 'read_first_activated';
         const firstActivated = await snapshot(panel);
         assert.notEqual(firstActivated.activeId, firstBeforeRelease.activeId);
+        detailStep = 'release_second_write';
         await sibling.evaluate('window.__auditNativeFault.release()');
+        detailStep = 'observe_second_rotation';
         await sibling.getByText('Key rotated.', { exact: true }).waitFor();
+        detailStep = 'read_final_history';
         const final = await snapshot(panel);
         assert.notEqual(final.activeId, firstActivated.activeId);
         assert.equal(final.historyIds.length, firstBeforeRelease.historyIds.length + 2);
@@ -519,6 +599,18 @@ try {
           missing:
             'product-signed receipts from both keys, post-reload verification and tamper rejection',
         });
+      } catch (error) {
+        report.cross_context_diagnostic = {
+          step: detailStep,
+          first_card: await card(panel).catch(() => null),
+          sibling_card: await sibling.evaluate(cardSource()).catch(() => null),
+          first_fault: await fault(panel).catch(() => null),
+          sibling_fault: await sibling
+            .evaluate('window.__auditNativeFault?.state() ?? null')
+            .catch(() => null),
+        };
+        report.failure_code = `audit_cross_context_${detailStep}_failed`;
+        throw error;
       } finally {
         await restore(panel);
         await sibling.evaluate('window.__auditNativeFault?.restore()').catch(() => {});
