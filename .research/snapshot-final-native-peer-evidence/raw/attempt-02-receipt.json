@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0059",
+  "case_id": "EXT-F-1012-T09",
+  "status": "pass_bounded",
+  "artifact": {
+    "version": "0.2.176",
+    "source_sha": null,
+    "tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+    "kind": "local_dev_unpacked"
+  },
+  "cases": [
+    {
+      "case": "current_document_snapshot",
+      "status": "pass"
+    },
+    {
+      "case": "completed_same_url_reload",
+      "status": "pass",
+      "document_id_changed": true
+    },
+    {
+      "case": "old_document_late_success",
+      "status": "pass",
+      "document_id_changed": true
+    },
+    {
+      "case": "old_document_late_rejection",
+      "status": "pass",
+      "document_id_changed": true
+    },
+    {
+      "case": "fresh_document_snapshot",
+      "status": "pass"
+    }
+  ],
+  "stage": "complete",
+  "failure_code": null,
+  "native_stage": "exercise_panel",
+  "release_stage": "complete",
+  "transport_failure_class": null,
+  "last_safe_observation": {
+    "ready": true,
+    "capturing": false,
+    "rowCount": 1,
+    "titlePresent": true,
+    "error": false,
+    "buttonReady": true
+  },
+  "signin_observations": {
+    "web_dashboard_reached": true,
+    "extension_after_account_open": {
+      "settings_panel_active": true,
+      "account_present": true,
+      "account_expanded": true,
+      "email_row_present": true,
+      "expected_admin_email": false,
+      "admin_role": false,
+      "sign_in_count": 1,
+      "sign_in_enabled": true,
+      "sign_out_present": false,
+      "auth_error_present": false,
+      "auth_retry_present": false,
+      "auth_retry_disabled": false,
+      "loading_present": false
+    },
+    "extension_guest_ready": {
+      "settings_panel_active": true,
+      "account_present": true,
+      "account_expanded": true,
+      "email_row_present": true,
+      "expected_admin_email": false,
+      "admin_role": false,
+      "sign_in_count": 1,
+      "sign_in_enabled": true,
+      "sign_out_present": false,
+      "auth_error_present": false,
+      "auth_retry_present": false,
+      "auth_retry_disabled": false,
+      "loading_present": false
+    },
+    "extension_last": {
+      "settings_panel_active": true,
+      "account_present": true,
+      "account_expanded": true,
+      "email_row_present": true,
+      "expected_admin_email": true,
+      "admin_role": true,
+      "sign_in_count": 0,
+      "sign_in_enabled": false,
+      "sign_out_present": true,
+      "auth_error_present": false,
+      "auth_retry_present": false,
+      "auth_retry_disabled": false,
+      "loading_present": false
+    }
+  }
+}

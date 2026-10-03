@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0059",
+  "case_id": "EXT-F-1012-T09",
+  "status": "unverified",
+  "artifact": {
+    "version": "0.2.176",
+    "source_sha": null,
+    "tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+    "kind": "local_dev_unpacked"
+  },
+  "cases": [],
+  "stage": "native_panel",
+  "failure_code": "native_panel_failed",
+  "native_stage": "browser_runtime",
+  "release_stage": null,
+  "transport_failure_class": "unclassified",
+  "last_safe_observation": null,
+  "signin_observations": {}
+}

@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "status": "PASS_BOUNDED",
+  "case_id": "EXT-F-1012-T09",
+  "defect": "EXT-D-0059",
+  "verdict_A": {
+    "status": "PASS_BOUNDED",
+    "requirements": {
+      "current_document_snapshot": "pass",
+      "completed_same_url_reload": "pass",
+      "old_document_late_success": "pass",
+      "old_document_late_rejection": "pass",
+      "fresh_document_snapshot": "pass"
+    },
+    "observations": "Actual owned native Chrome side panel, real admin identity and role, public demo page, same tab/URL with changed top-frame documentId before each old settlement, UI clear after reload and after release, fresh titled row after final capture."
+  },
+  "verdict_B": {
+    "status": "PASS_BOUNDED",
+    "reviewed_commits": ["5ca1c63f", "b94912ea"],
+    "findings": [],
+    "reason": "Runner executes real Snapshot product path. Interceptor forwards the actual document-targeted executeScript to Chrome and holds only its returned promise; it does not synthesize product result or alter product source. Acceptance checks active Snapshot table rows, title, pending state, and controlled error after documentId transition and promise settlement. Receipt/tree and actual admin auth are asserted. Row-count oracle was corrected before this peer run."
+  },
+  "artifact": {
+    "kind": "CI development test artifact",
+    "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+    "run_id": 37129518563,
+    "run_attempt": 1,
+    "artifact_id": 11275878549,
+    "version": "0.2.176",
+    "tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+    "provenance": "verifyImportedNativeEvidence passed independently after run; exact pushed commit only"
+  },
+  "attempts": [
+    {
+      "run_id": "snapshot-d59-final-peer-20261003-01",
+      "status": "environment_unverified",
+      "native_stage": "browser_runtime",
+      "resource": "admitted; child exit 1; resourceInvalid=false; final decision child_failed",
+      "reason": "Launcher omitted installed Playwright and Chrome-for-Testing paths; no browser/auth/UI case ran."
+    },
+    {
+      "run_id": "snapshot-d59-final-peer-20261003-02",
+      "status": "pass_bounded",
+      "native_stage": "exercise_panel",
+      "resource": "admitted; child exit 0; resourceInvalid=false; final decision valid",
+      "cases": 5,
+      "admin_role": true
+    }
+  ],
+  "invocation": {
+    "parent": "Node parseEnv of /Volumes/Samsung2TB/code/aidream/.env reads AI_ADMIN_PASSWORD privately; writes temporary mode-0600 admin credentials JSON, passes its path as MATRX_PREPARE_ADMIN_CREDENTIALS_FILE and removes file in finally.",
+    "environment": {
+      "MATRX_SNAPSHOT_EXTENSION_DIR": "test-results/ci-artifacts/991385d9816b31a568619522e4795c001b4d3a06/37129518563-1/chrome-mv3",
+      "MATRX_SNAPSHOT_RECEIPT": "test-results/ci-artifacts/991385d9816b31a568619522e4795c001b4d3a06/37129518563-1/local-dev-receipt.json",
+      "MATRX_PLAYWRIGHT_MODULE": "/Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+      "MATRX_CHROME_PATH": "/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
+    },
+    "guard_command": [
+      "node",
+      "scripts/stabilization-resource.mjs",
+      "run",
+      "--run-id",
+      "snapshot-d59-final-peer-20261003-02",
+      "--profile-dir",
+      "/Users/armanisadeghi/Library/Application Support/Google/Chrome",
+      "--",
+      "node",
+      "tests/browser/snapshot-document-native-acceptance.mjs"
+    ]
+  },
+  "evidence": {
+    "attempt-01-receipt.json": {
+      "path": ".research/snapshot-final-native-peer-evidence/raw/attempt-01-receipt.json",
+      "sha256": "5744cb26708ce96753cede9b3656d6c15e478cabd4703f74bba589a055caf1cb"
+    },
+    "attempt-01-resource.jsonl": {
+      "path": ".research/snapshot-final-native-peer-evidence/raw/attempt-01-resource.jsonl",
+      "sha256": "e8f176d954ead79785036c8d246eefa6609dd11a84bf349298978798509c8291"
+    },
+    "attempt-02-receipt.json": {
+      "path": ".research/snapshot-final-native-peer-evidence/raw/attempt-02-receipt.json",
+      "sha256": "500094f1542cf15e288ea223745d3204367e98a867ecf06ca7777534cce9af10"
+    },
+    "attempt-02-resource.jsonl": {
+      "path": ".research/snapshot-final-native-peer-evidence/raw/attempt-02-resource.jsonl",
+      "sha256": "109425257bf152978ce9c19b04c3137396c039d8ddf32792bc164217ef0e2453"
+    }
+  },
+  "cleanup": {
+    "private_admin_credentials_removed": true,
+    "owned_chromium_processes": "zero observed after wrapper exit",
+    "resource_permit": "released by terminal valid guard decision"
+  },
+  "limits": [
+    "Snapshot only on one public demo page in exact CI development artifact; Store/public release unverified.",
+    "Inventory T09 auth-transition, service-error, and broader D59 shared document-identity consumers remain open.",
+    "The first peer attempt is a pre-browser environment failure, not a product defect."
+  ]
+}
