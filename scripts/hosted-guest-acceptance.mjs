@@ -210,6 +210,7 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
       'settings-persistence',
       'settings-persistence-admin',
       'settings-persistence-member',
+      'audit-key-admin',
       'member-chat',
       'prepare-stale-results',
     ].includes(acceptanceCase),
@@ -222,6 +223,8 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
       'ci_development_test',
       'Settings persistence requires CI development receipt',
     );
+  if (acceptanceCase === 'audit-key-admin')
+    assert.equal(kind, 'ci_development_test', 'Audit key requires CI development receipt');
   if (acceptanceCase === 'member-chat')
     assert.equal(kind, 'published_release', 'Member Chat requires exact published release receipt');
   if (acceptanceCase === 'prepare-stale-results')
@@ -238,7 +241,8 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
   }
   if (
     acceptanceCase === 'prepare-stale-results' ||
-    acceptanceCase === 'settings-persistence-admin'
+    acceptanceCase === 'settings-persistence-admin' ||
+    acceptanceCase === 'audit-key-admin'
   ) {
     assert.ok(process.env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON, 'Prepare admin secret required');
     const parsed = JSON.parse(process.env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON);
@@ -273,11 +277,15 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
       ? { MATRX_REVIEWER_MAGIC_LINK_FILE: memberLinkPath }
       : {}),
     ...(acceptanceCase === 'prepare-stale-results' ||
-    acceptanceCase === 'settings-persistence-admin'
+    acceptanceCase === 'settings-persistence-admin' ||
+    acceptanceCase === 'audit-key-admin'
       ? {
           MATRX_PREPARE_EXTENSION_DIR: extensionDir,
           MATRX_PREPARE_RECEIPT: relocatedReceipt,
           MATRX_PREPARE_ADMIN_CREDENTIALS_FILE: adminCredentialsPath,
+          ...(acceptanceCase === 'audit-key-admin'
+            ? { MATRX_AUDIT_EXTENSION_DIR: extensionDir, MATRX_AUDIT_RECEIPT: relocatedReceipt }
+            : {}),
         }
       : {}),
     ...(acceptanceCase === 'settings-controls'
@@ -301,13 +309,15 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
           repo,
           acceptanceCase === 'settings-controls'
             ? 'tests/browser/settings-local-controls-acceptance.mjs'
-            : acceptanceCase.startsWith('settings-persistence')
-              ? 'tests/browser/settings-d87-native-acceptance.mjs'
-              : acceptanceCase === 'prepare-stale-results'
-                ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
-                : acceptanceCase === 'member-chat'
-                  ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
-                  : 'tests/browser/guest-chat-store-acceptance.mjs',
+            : acceptanceCase === 'audit-key-admin'
+              ? 'tests/browser/audit-key-native-acceptance.mjs'
+              : acceptanceCase.startsWith('settings-persistence')
+                ? 'tests/browser/settings-d87-native-acceptance.mjs'
+                : acceptanceCase === 'prepare-stale-results'
+                  ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
+                  : acceptanceCase === 'member-chat'
+                    ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
+                    : 'tests/browser/guest-chat-store-acceptance.mjs',
         ),
       ],
       {

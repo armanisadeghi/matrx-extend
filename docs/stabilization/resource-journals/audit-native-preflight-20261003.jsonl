@@ -1,0 +1,3 @@
+{"schema":1,"at":"2026-10-03T14:45:20.964Z","runId":"audit-native-preflight-20261003","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-03T14:45:20.974Z","runId":"audit-native-preflight-20261003","code":"RESOURCE_MEASUREMENT_FAILED"}
+{"schema":1,"at":"2026-10-03T14:45:20.977Z","runId":"audit-native-preflight-20261003","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}

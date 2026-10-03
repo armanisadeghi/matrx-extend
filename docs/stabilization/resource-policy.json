@@ -118,6 +118,7 @@
       "tests/browser/member-native-auth-proof.test.mjs"
     ],
     ["node", "--test", "tests/browser/notes-member-credential.test.mjs"],
+    ["node", "--test", "tests/browser/audit-key-native-faults.test.mjs"],
     ["node", "tests/browser/settings-local-reset-acceptance.mjs"],
     ["bash", "release.sh", "--message", "EXT-D-0002 validated release integration"],
     ["bash", "release.sh", "--message", "EXT-D-0006 validated permission controls"],
