@@ -6,7 +6,7 @@
  */
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
@@ -21,6 +21,7 @@ const RECEIPT = resolve(
   process.env.MATRX_REVIEWER_RELEASE_RECEIPT ?? join(REPO, '.output', 'release-receipt.json'),
 );
 const CREDENTIALS = process.env.MATRX_REVIEWER_CREDENTIALS_FILE;
+const MAGIC_LINK = process.env.MATRX_REVIEWER_MAGIC_LINK_FILE;
 const INTERACTIVE_REVIEWER = process.env.MATRX_REVIEWER_INTERACTIVE === '1';
 const INTERACTIVE_REVIEWER_EMAIL = process.env.MATRX_REVIEWER_EMAIL?.trim() || null;
 const WEB_ORIGIN = 'https://www.aimatrx.com';
@@ -34,6 +35,7 @@ const report = {
   status: 'unverified',
   build: null,
   account: null,
+  authentication_method: null,
   chat: null,
   screenshots: null,
   failure_stage: null,
@@ -59,6 +61,25 @@ async function credentials() {
   )
     throw new Error('reviewer_credentials_unavailable');
   return { email: parsed.email, password: parsed.password };
+}
+
+async function magicLink() {
+  if (!MAGIC_LINK) throw new Error('reviewer_magic_link_file_required');
+  const metadata = await stat(MAGIC_LINK);
+  if ((metadata.mode & 0o077) !== 0) throw new Error('reviewer_magic_link_file_not_private');
+  const parsed = JSON.parse(await readFile(MAGIC_LINK, 'utf8'));
+  if (typeof parsed.email !== 'string' || !parsed.email || typeof parsed.action_link !== 'string')
+    throw new Error('reviewer_magic_link_unavailable');
+  const link = new URL(parsed.action_link);
+  if (
+    link.protocol !== 'https:' ||
+    link.origin !== WEB_ORIGIN ||
+    link.pathname !== '/auth/confirm' ||
+    link.searchParams.get('type') !== 'magiclink' ||
+    !link.searchParams.get('token_hash')
+  )
+    throw new Error('reviewer_magic_link_authority_unverified');
+  return { email: parsed.email, url: link.href };
 }
 
 /** Assert the cookie-backed web identity through the first-party, credential-free whoami door. */
@@ -245,14 +266,29 @@ try {
     expectedRelease: receipt,
     ...(receipt.kind === 'local_dev_unpacked' && { localDevReceiptPath: RECEIPT }),
     exercisePanel: async ({ page, panel, artifacts }) => {
-      stage = 'open_reviewer_web_login';
+      stage = MAGIC_LINK ? 'open_reviewer_magic_link' : 'open_reviewer_web_login';
       const web = await page.context().newPage();
       try {
-        await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-        if (safeLocation(web.url()) !== `${WEB_ORIGIN}/login`)
-          throw new Error('reviewer_login_route_unverified');
+        if (!MAGIC_LINK) {
+          await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+          if (safeLocation(web.url()) !== `${WEB_ORIGIN}/login`)
+            throw new Error('reviewer_login_route_unverified');
+        }
         let email;
-        if (INTERACTIVE_REVIEWER) {
+        if (MAGIC_LINK) {
+          const auth = await magicLink();
+          email = auth.email;
+          report.authentication_method = 'existing_user_magic_link';
+          report.account = { reviewer_fingerprint: hash(email), web_signed_in: false };
+          await web.goto(auth.url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+          email = await waitFor(
+            'reviewer_magic_link_web_session',
+            () => authenticatedWebEmail(web),
+            (value) => value?.toLowerCase() === auth.email.toLowerCase(),
+            90_000,
+          );
+        } else if (INTERACTIVE_REVIEWER) {
+          report.authentication_method = 'manual_password_login';
           stage = 'ready_manual_reviewer_login';
           process.stdout.write('STAGE ready_manual_reviewer_login\n');
           email = await waitFor(
@@ -262,6 +298,7 @@ try {
             180_000,
           );
         } else {
+          report.authentication_method = 'password_login';
           const auth = await credentials();
           email = auth.email;
           report.account = { reviewer_fingerprint: hash(email), web_signed_in: false };
