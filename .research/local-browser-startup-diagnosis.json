@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "status": "MACOS_KEYCHAIN_DECRYPT_WAIT_IDENTIFIED_UNDERLYING_CAUSE_UNVERIFIED",
+  "completed_at": "2026-10-03T11:18:02Z",
+  "defects": ["EXT-D-0058", "EXT-D-0059"],
+  "launch_attempts": 2,
+  "boundary": "Fresh official Chromium 141.0.7390.37 revision 1194 was spawned with the native harness exact headless/debugging/extension arguments, fresh owned profile, and unchanged 5000 ms readiness limit. It created SingletonLock and Local State but never DevToolsActivePort. Child remained alive, so spawn/executable permission and immediate crash are excluded. CDP owner verification and product acceptance were never reached.",
+  "observations": [
+    {
+      "elapsed_ms": 1026,
+      "process": "sleeping, 0.0% CPU",
+      "profile_entries": 0,
+      "endpoint": false
+    },
+    {
+      "elapsed_ms": 3074,
+      "process": "sleeping, 0.5% CPU",
+      "profile_entries": [
+        "Local State",
+        "NativeMessagingHosts",
+        "ShaderCache",
+        "SingletonCookie",
+        "SingletonLock",
+        "SingletonSocket",
+        "Variations",
+        "component_crx_cache"
+      ],
+      "endpoint": false
+    },
+    {
+      "elapsed_ms": 5123,
+      "process": "sleeping, 0.3% CPU",
+      "endpoint": false
+    }
+  ],
+  "stderr": "empty",
+  "launch_error": null,
+  "endpoint_file_after_cleanup": false,
+  "owned_process_after_cleanup": false,
+  "comparison": "Fresh revision 1194 bundle is byte-identical to cached revision 1194. A separate installed Chromium 1228 app bundle shows the same read-only codesign \u201ccode has no resources but signature indicates they must be present\u201d diagnostic and ad hoc/no-sealed-resources metadata. This makes the codesign diagnostic non-discriminating; 1228 was not launched.",
+  "ranked_hypotheses": [
+    {
+      "cause": "Chromium startup blocks in an OS service or framework before CDP initialization",
+      "prediction": "A stack sample during the next bounded launch will show its main thread waiting in a specific OS call; unified logs may identify that service."
+    },
+    {
+      "cause": "Extension initialization blocks browser startup",
+      "prediction": "An otherwise identical bounded launch without extension switches reaches DevToolsActivePort while the full launch does not."
+    },
+    {
+      "cause": "External-volume file or profile I/O stalls startup",
+      "prediction": "A same-revision bounded launch with executable and profile on internal storage reaches the endpoint; process sample shows filesystem wait in this run."
+    },
+    {
+      "cause": "Readiness limit expires during ordinary cold startup",
+      "prediction": "A monitored launch with the unchanged limit fails at five seconds but a separately observed endpoint appears later without a process/argument change; this must not be used to silently raise the limit."
+    }
+  ],
+  "next_discriminating_probe": "Two diagnostic launches consumed. Escalate with the sanitized stack evidence to the owner; no third launch, Keychain entry mutation, security-setting change, password-store bypass, signature/quarantine change, endpoint-timeout increase, or acceptance retry in this lane.",
+  "scope": "Two owned guarded diagnostic launches only; no product file changed, app built, user browser/profile reused, Keychain modified, security setting changed, or acceptance case run. Both resource permits ended valid.",
+  "evidence_paths": {
+    "diagnostic_script": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/diagnose-startup.mjs",
+    "diagnostic_profile": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/startup-2OQg32/profile",
+    "resource_journal": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/startup-resource-journal.jsonl",
+    "stack_probe_script": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/diagnose-stack.mjs",
+    "stack_resource_journal": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/stack-resource-journal.jsonl",
+    "raw_sample_local_only": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/stack-bOXcGM/sample.txt"
+  },
+  "second_probe": {
+    "launch": "Same fresh official Chromium and native harness arguments; new isolated owned profile; unchanged five-second readiness limit; no acceptance or credentials.",
+    "observations": [
+      {
+        "elapsed_ms": 1026,
+        "parent_cpu_percent": 2.1,
+        "helper_children": 2,
+        "endpoint": false
+      },
+      {
+        "elapsed_ms": 3631,
+        "parent_cpu_percent": 0.1,
+        "helper_children": 2,
+        "endpoint": false
+      },
+      {
+        "elapsed_ms": 5217,
+        "parent_cpu_percent": 0.0,
+        "helper_children": 2,
+        "endpoint": false
+      }
+    ],
+    "main_thread_stack": "One-second sample near 3.6\u20134.6 seconds: 703/703 samples follow Chromium main thread \u2192 SecItemCopyMatching \u2192 SecKeychainItemCopyContent \u2192 SecurityServer::ClientSession::decrypt \u2192 mach_msg2_trap. This is a synchronous macOS Keychain decrypt wait before CDP endpoint creation.",
+    "stderr": "empty",
+    "profile_initialized": true,
+    "process_cleanup": "Chromium parent and both observed helpers absent after owned cleanup; parent required SIGKILL after SIGTERM did not complete within one second.",
+    "limits": "Stack sample identifies the immediate blocking call, not the keychain item, permission-dialog state, securityd cause, or whether the same wait occurs on another host. No raw sample or profile data committed."
+  },
+  "verdict": "The local native endpoint timeout is caused immediately by Chromium main-thread waiting synchronously for macOS Keychain decryption before DevToolsActivePort creation. The item and reason for the wait remain unknown. Byte-identical official browser content and identical codesign diagnostics exclude cached-binary damage as an explanation."
+}
