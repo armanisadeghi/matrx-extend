@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "defects": [
+    "EXT-D-0084",
+    "EXT-D-0086"
+  ],
+  "scope": "native side-panel storage behavior in an owned disposable profile",
+  "case": "remaining",
+  "role": "admin",
+  "status": "pass",
+  "build": {
+    "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+    "run_id": 37129518563,
+    "artifact_id": 11275878549,
+    "tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+    "version": "0.2.176"
+  },
+  "authentication": {
+    "mode": "admin",
+    "account_fingerprint": "5edfa2692bdacc5e",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "rendered_identity": {
+      "rendered_email_matches_first_party": true,
+      "rendered_role_matches_mode": true,
+      "profile_matches_first_party": true,
+      "selected_organization_matches_stored_uuid_and_name": true
+    }
+  },
+  "cases": [
+    {
+      "name": "port bounds, filtered input, and blank clear persist across reload",
+      "status": "pass",
+      "observation": {
+        "lower_bound": 1,
+        "upper_bound": 65535,
+        "invalid_values_rejected": true,
+        "nondigit_filtered": true,
+        "blank_cleared": true
+      }
+    },
+    {
+      "name": "HTTP fixture Forget cancel retains owned pair code",
+      "status": "pass",
+      "observation": {
+        "pairing_preserved": true
+      }
+    },
+    {
+      "name": "HTTP fixture Forget refusal preserves owned pair code",
+      "status": "pass",
+      "observation": {
+        "pairing_preserved": true,
+        "error_visible": true
+      }
+    },
+    {
+      "name": "HTTP fixture Forget retry removes owned browser pairing",
+      "status": "pass",
+      "observation": {
+        "pairing_removed": true,
+        "engine_connection_unverified": true
+      }
+    },
+    {
+      "name": "reset Cancel preserves complete local and session census",
+      "status": "pass",
+      "observation": {
+        "local_count": 14,
+        "session_count": 3
+      }
+    },
+    {
+      "name": "reset refusal keeps confirmation and saved value",
+      "status": "pass",
+      "observation": {
+        "error_visible": true,
+        "retry_available": true,
+        "prior_local_count": 14,
+        "prior_session_count": 3,
+        "prior_values_preserved": true
+      }
+    },
+    {
+      "name": "reset retry clears prior local/session values and signs out after reload",
+      "status": "pass",
+      "observation": {
+        "signed_out": true,
+        "local": {
+          "before": 14,
+          "missing": 9,
+          "identical": 0,
+          "allowedFresh": 5,
+          "unexplained": 0,
+          "unexplainedKeys": []
+        },
+        "session": {
+          "before": 3,
+          "missing": 3,
+          "identical": 0,
+          "allowedFresh": 0,
+          "unexplained": 0,
+          "unexplainedKeys": []
+        },
+        "session_fixture_removed": true
+      }
+    }
+  ],
+  "limits": [
+    "Storage fault injection does not establish a healthy desktop-engine connection.",
+    "Pair-code clear requires an HTTP transport and is not inferred from a stored synthetic code."
+  ],
+  "reset_census": {
+    "local": {
+      "before": 14,
+      "missing": 9,
+      "identical": 0,
+      "allowedFresh": 5,
+      "unexplained": 0,
+      "unexplainedKeys": []
+    },
+    "session": {
+      "before": 3,
+      "missing": 3,
+      "identical": 0,
+      "allowedFresh": 0,
+      "unexplained": 0,
+      "unexplainedKeys": []
+    },
+    "session_fixture_present": false
+  },
+  "artifacts": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-3H4Br8"
+}

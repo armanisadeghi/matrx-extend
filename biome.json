@@ -116,6 +116,14 @@
     },
     {
       "include": [
+        ".research/settings-forget-reset-final-evidence/raw/guest-receipt.json",
+        ".research/settings-forget-reset-final-evidence/raw/member-receipt.json",
+        ".research/settings-forget-reset-final-evidence/raw/admin-receipt.json"
+      ],
+      "formatter": { "enabled": false }
+    },
+    {
+      "include": [
         "tests/browser/vault-authenticator-preservation.test.cjs",
         "tests/browser/vault-owned-cdp.cjs"
       ],

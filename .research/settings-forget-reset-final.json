@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "status": "DONE",
+  "scope": "Fresh zero-authorship native verification of Settings HTTP Forget retry after rejected Chrome storage.remove, Reset Cancel, and remaining-control corpus across guest/member/admin.",
+  "artifact": {
+    "kind": "CI development artifact, not published Store or real desktop engine",
+    "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+    "ci_run_id": 37129518563,
+    "artifact_id": 11275878549,
+    "tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+    "version": "0.2.176"
+  },
+  "reviewed_commits": ["92d09b3a", "710a380a", "6a572eaf"],
+  "verdict_a": {
+    "status": "PASS_NARROW_NATIVE; FULL_T43_T51_PARTIAL",
+    "observed": "Each role opened the actual headed extension Settings side panel with identity verified. The disposable HTTP availability fixture exposed the product Forget control. Cancel retained the owned pair code. A rejected Chrome storage.remove left the code intact and showed a retry error; the next trusted UI confirmation removed that stored code and cleared the error. Reset Cancel preserved every baseline local/session value; the corpus also passed port boundaries/filter/blank-clear, reset refusal/retry, reload, and signed-out state.",
+    "limitations": [
+      "HTTP transport was announced by a disposable availability message; actual desktop engine pairing acceptance, connection, and rediscovery were not verified.",
+      "Full T43–T51 criteria and public Store build/release acceptance remain partial; D84 persistence closure decision belongs to coordinator."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS_SCOPED_SOURCE_QUALITY",
+    "findings": [
+      "Observed pair removal and error state come from live chrome.storage.local and visible Settings DOM; the fault wrapper is installed only at Chrome storage.remove, with one rejected call asserted and then restored before retry. A no-op product Forget handler cannot pass the stored-code removal check.",
+      "Reset Cancel is clicked through the native pointer driver and is followed by exact hashed-value comparison for every prior local/session entry; a skipped or destructive Cancel fails.",
+      "Corrected nondigit oracle expects rendered 123 after typing 12x3; pane-scoped Forget selector resolves prior ambiguity, while dialog confirmation stays scoped. No production source changed.",
+      "The injected HTTP availability fixture is only a UI exposure mechanism and cannot establish real engine behavior."
+    ]
+  },
+  "runs": [
+    {
+      "role": "guest",
+      "run_id": "desktop-settings-forget-reset-guest-20261003-01",
+      "status": "pass",
+      "resource": "admitted; valid; child exit 0; resourceInvalid=false",
+      "identity": {
+        "mode": "guest",
+        "access_token_absent": true,
+        "profile_absent": true,
+        "admin_flag_absent": true
+      },
+      "case_names": [
+        "port bounds, filtered input, and blank clear persist across reload",
+        "HTTP fixture Forget cancel retains owned pair code",
+        "HTTP fixture Forget refusal preserves owned pair code",
+        "HTTP fixture Forget retry removes owned browser pairing",
+        "reset Cancel preserves complete local and session census",
+        "reset refusal keeps confirmation and saved value",
+        "reset retry clears prior local/session values and signs out after reload"
+      ],
+      "reset_census": {
+        "local": {
+          "before": 6,
+          "missing": 1,
+          "identical": 1,
+          "allowedFresh": 4,
+          "unexplained": 0,
+          "unexplainedKeys": []
+        },
+        "session": {
+          "before": 1,
+          "missing": 1,
+          "identical": 0,
+          "allowedFresh": 0,
+          "unexplained": 0,
+          "unexplainedKeys": []
+        },
+        "session_fixture_present": false
+      },
+      "raw": {
+        "guest-receipt.json": {
+          "path": ".research/settings-forget-reset-final-evidence/raw/guest-receipt.json",
+          "sha256": "2cb9844991f022a249a4347c62f5b60d063b9910b95c19c3d821934d9192d194",
+          "bytes": 3332
+        },
+        "guest-resource.jsonl": {
+          "path": ".research/settings-forget-reset-final-evidence/raw/guest-resource.jsonl",
+          "sha256": "062bb02b900d66d76533a5bdc59011de4d891a633140468c36b0d4211e53ea23",
+          "bytes": 1073
+        },
+        "guest-sidepanel.png": {
+          "path": ".research/settings-forget-reset-final-evidence/raw/guest-sidepanel.png",
+          "sha256": "07bc05a94dc8dd16227d3c6088bf03b6e32a15352f289292ae0bcc5be15a323f",
+          "bytes": 36998
+        },
+        "guest-normal-target.png": {
+          "path": ".research/settings-forget-reset-final-evidence/raw/guest-normal-target.png",
+          "sha256": "33271f9da5b7c8919b1d69230710105d7fbec474a29e2a24ddd831fb2fa7cf87",
+          "bytes": 33579
+        }
+      }
+    },
+    {
+      "role": "admin",
+      "run_id": "desktop-settings-forget-reset-admin-20261003-01",
+      "status": "pass",
+      "resource": "admitted; valid; child exit 0; resourceInvalid=false",
+      "identity": {
+        "mode": "admin",
+        "account_fingerprint": "5edfa2692bdacc5e",
+        "web_signed_in": true,
+        "extension_signed_in": true,
+        "rendered_identity": {
+          "rendered_email_matches_first_party": true,
+          "rendered_role_matches_mode": true,
+          "profile_matches_first_party": true,
+          "selected_organization_matches_stored_uuid_and_name": true
+        }
+      },
+      "case_names": [
+        "port bounds, filtered input, and blank clear persist across reload",
+        "HTTP fixture Forget cancel retains owned pair code",
+        "HTTP fixture Forget refusal preserves owned pair code",
+        "HTTP fixture Forget retry removes owned browser pairing",
+        "reset Cancel preserves complete local and session census",
+        "reset refusal keeps confirmation and saved value",
+        "reset retry clears prior local/session values and signs out after reload"
+      ],
+      "reset_census": {
+        "local": {
+          "before": 14,
+          "missing": 9,
+          "identical": 0,
+          "allowedFresh": 5,
+          "unexplained": 0,
+          "unexplainedKeys": []
+        },
+        "session": {
+          "before": 3,
+          "missing": 3,
+          "identical": 0,
+          "allowedFresh": 0,
+          "unexplained": 0,
+          "unexplainedKeys": []
+        },
+        "session_fixture_present": false
+      },
+      "raw": {
+        "admin-receipt.json": {
+          "path": ".research/settings-forget-reset-final-evidence/raw/admin-receipt.json",
+          "sha256": "481c0e39d68fdb108bc668ca768aad5a3f10f0d22969f01a19566209b38787d3",
+          "bytes": 3585
+        },
+        "admin-resource.jsonl": {
+          "path": ".research/settings-forget-reset-final-evidence/raw/admin-resource.jsonl",
+          "sha256": "7d912dcc248bd512875bb2d41762985b4192155b05271e947b9f4df8daaad18f",
+          "bytes": 1504
+        },
+        "admin-sidepanel.png": {
+          "path": ".research/settings-forget-reset-final-evidence/raw/admin-sidepanel.png",
+          "sha256": "07bc05a94dc8dd16227d3c6088bf03b6e32a15352f289292ae0bcc5be15a323f",
+          "bytes": 36998
+        },
+        "admin-normal-target.png": {
+          "path": ".research/settings-forget-reset-final-evidence/raw/admin-normal-target.png",
+          "sha256": "33271f9da5b7c8919b1d69230710105d7fbec474a29e2a24ddd831fb2fa7cf87",
+          "bytes": 33579
+        }
+      }
+    },
+    {
+      "role": "member",
+      "run_id": "desktop-settings-forget-reset-member-20261003-01",
+      "status": "pass",
+      "resource": "admitted; valid; child exit 0; resourceInvalid=false",
+      "identity": {
+        "mode": "member",
+        "account_fingerprint": "3d6137db6c081c07",
+        "web_signed_in": true,
+        "extension_signed_in": true,
+        "rendered_identity": {
+          "rendered_email_matches_first_party": true,
+          "rendered_role_matches_mode": true,
+          "profile_matches_first_party": true,
+          "selected_organization_matches_stored_uuid_and_name": true
+        }
+      },
+      "case_names": [
+        "port bounds, filtered input, and blank clear persist across reload",
+        "HTTP fixture Forget cancel retains owned pair code",
+        "HTTP fixture Forget refusal preserves owned pair code",
+        "HTTP fixture Forget retry removes owned browser pairing",
+        "reset Cancel preserves complete local and session census",
+        "reset refusal keeps confirmation and saved value",
+        "reset retry clears prior local/session values and signs out after reload"
+      ],
+      "reset_census": {
+        "local": {
+          "before": 13,
+          "missing": 8,
+          "identical": 1,
+          "allowedFresh": 4,
+          "unexplained": 0,
+          "unexplainedKeys": []
+        },
+        "session": {
+          "before": 3,
+          "missing": 3,
+          "identical": 0,
+          "allowedFresh": 0,
+          "unexplained": 0,
+          "unexplainedKeys": []
+        },
+        "session_fixture_present": false
+      },
+      "raw": {
+        "member-receipt.json": {
+          "path": ".research/settings-forget-reset-final-evidence/raw/member-receipt.json",
+          "sha256": "ddc7ef7b18c65ccc02ef36663fa0ba1f94efd92ea93a249d844906574b0bd95f",
+          "bytes": 3587
+        },
+        "member-resource.jsonl": {
+          "path": ".research/settings-forget-reset-final-evidence/raw/member-resource.jsonl",
+          "sha256": "2f2ee33b0549ff1ff4b5ae99f9b93c044c4090145e2138cbcc160dcf4bbcdc26",
+          "bytes": 1521
+        },
+        "member-sidepanel.png": {
+          "path": ".research/settings-forget-reset-final-evidence/raw/member-sidepanel.png",
+          "sha256": "9f83dcbe86d452099e450c2d030c7a9da6c9538e3e30b5701d6fd4d21dcf30b0",
+          "bytes": 36991
+        },
+        "member-normal-target.png": {
+          "path": ".research/settings-forget-reset-final-evidence/raw/member-normal-target.png",
+          "sha256": "33271f9da5b7c8919b1d69230710105d7fbec474a29e2a24ddd831fb2fa7cf87",
+          "bytes": 33579
+        }
+      }
+    }
+  ],
+  "cleanup": {
+    "private_auth_files": "removed by private parent wrappers",
+    "owned_profile": "empty; no browser remains",
+    "resource_lease": "absent after three valid decisions"
+  },
+  "auth": "Existing account identities and private helper only; no account creation or password rotation; no secrets in report/argv."
+}
