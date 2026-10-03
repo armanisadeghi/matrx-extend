@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "report_id": "native-runtime-peer",
+  "reviewed_commit": "5886319b0cb3099d93a11985241eedefbbdef9f6",
+  "review_scope": "Independent source and differential review of the hosted Settings native acceptance runtime handoff and stage diagnostics. No browser, guarded acceptance, test suite, install, or credential access.",
+  "verdict_A_actual_native": "PENDING_NATIVE_ACCEPTANCE",
+  "verdict_A_reason": "The candidate changes do not establish that the authenticated pinned artifact completed the Settings flow in native Chrome. Source still requires a fresh authorized acceptance result with the selected receipt, authentication checks, and recorded product cases. The run result cannot be inferred from package preflight or syntax checks.",
+  "verdict_B_source_quality": "PASS_WITH_LIMITS",
+  "verdict_B_reason": "The wrapper validates Playwright Core 1.56.1, imports that package, checks Chromium's executable and installation-complete marker, then spawns the child with MATRX_PLAYWRIGHT_MODULE set to that same package's index.mjs. Before this change the child inherited the workflow path only; setting the explicit verified path closes that propagation gap. The acceptance runner's new onStage callback updates failure_stage as native harness setup advances, including receipt, artifact, browser runtime, profile, and launch boundaries. It changes no resource admission, artifact provenance, authentication, or Settings assertions and introduces no fallback runtime or credential logging. Existing failureCode still deliberately maps unrecognized errors to d87_acceptance_failed; the newly recorded failure_stage disambiguates the setup boundary but does not expose raw exception text. This remains a diagnostic limit if a future failure occurs within a stage.",
+  "differential_evidence": {
+    "commit": "5886319b0cb3099d93a11985241eedefbbdef9f6",
+    "wrapper_change": "scripts/hosted-guest-acceptance.mjs assigns MATRX_PLAYWRIGHT_MODULE from the already validated packageDir before launching acceptance.",
+    "runner_change": "tests/browser/settings-d87-native-acceptance.mjs forwards runNativeSidepanelQa onStage values into the persisted failure_stage.",
+    "setup_failure_claim": "A wrapper preflight error occurs before child creation and therefore before the callback exists; a child runtime setup error occurs after the initial receipt callback and is attributed to the latest native stage. The candidate addresses the latter runtime-path propagation issue, not a wrapper preflight failure.",
+    "preserved_boundaries": "The inspected source retains exact artifact receipt/tree checks, admin credential file handling and environment clearing, the native harness's owned profile/CDP flow, and unchanged Settings predicates."
+  },
+  "validation": {
+    "syntax": "PASS: node --check scripts/hosted-guest-acceptance.mjs; node --check tests/browser/settings-d87-native-acceptance.mjs.",
+    "biome": "PASS: pnpm exec biome check scripts/hosted-guest-acceptance.mjs tests/browser/settings-d87-native-acceptance.mjs .research/native-runtime-peer.json; checked 3 files, no fixes applied.",
+    "runtime": "NOT_RUN_BY_REVIEWER"
+  },
+  "next_evidence": "A fresh permitted hosted native run must show the exact authenticated pinned artifact, verified installed browser runtime, stage/case receipt, and actual Settings assertions before Verdict A can pass."
+}
