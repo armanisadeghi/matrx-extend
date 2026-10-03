@@ -66,6 +66,11 @@
     ]
   },
   "resource_guards": {
+    "policy": {
+      "unsafe_samples_to_stop": 2,
+      "watch_interval_seconds": 15,
+      "source": "docs/stabilization/resource-policy.json"
+    },
     "package_permit": {
       "status": "admitted_and_valid",
       "busy_fraction": 0.015714285714285712,
@@ -91,10 +96,11 @@
       "child_exit_code": 1,
       "resource_invalid": false,
       "final_decision": "child_failed",
-      "hardguard_refusal": false,
-      "inconsistency": "The watcher emitted RESOURCE_WATCH_UNSAFE with RESOURCE_CPU_BUSY while the final decision reported resourceInvalid=false and child_failed. Preserve both receipts; do not interpret the final decision as proof of safe runtime or infer that the watcher caused the native-panel failure."
+      "hardguard_admission_refusal": false,
+      "unsafe_samples_before_child_exit": 1,
+      "resource_stop_emitted": false
     },
-    "interpretation": "The run reached and entered the Settings acceptance step; no package, browser, or settings acceptance permit was refused at admission. The settings child failed, and a later watcher recorded unsafe CPU saturation. This evidence does not establish which event caused the native-panel failure."
+    "interpretation": "The run reached and entered the Settings acceptance step; no package, browser, or settings acceptance permit was refused at admission. One unsafe watcher sample occurred before the child exited; the two-consecutive-sample stop threshold was not reached. The child failed its native-panel acceptance, and the watcher sample does not establish the cause."
   },
   "settings_acceptance": {
     "receipt_artifact_id": 11270039873,
