@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-10-03T14:10:32.923926+00:00",
-  "last_all_remotes_fetched": "2026-10-03T14:10:32.923926+00:00",
-  "baseline": "2026-10-03T12:18:08.147157+00:00",
+  "observed_at": "2026-10-03T14:37:43.133740+00:00",
+  "last_all_remotes_fetched": "2026-10-03T14:37:43.133740+00:00",
+  "baseline": "2026-10-03T14:10:32.923926+00:00",
   "repositories": [
     {
       "repo": "workspace",
@@ -23,7 +23,7 @@
       "repo": "aidream",
       "origin_main": "5f596382a02510dd9765f614f9859a310d895e02",
       "last_update": "2026-10-03T06:50:30-07:00",
-      "files_modified_since_prior_ledger": 153,
+      "files_modified_since_prior_ledger": 0,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -39,7 +39,7 @@
       "repo": "ai-matrx",
       "origin_main": "a918c9bbe14eab9a0bd3896545eb87fcef850931",
       "last_update": "2026-10-03T06:41:14-07:00",
-      "files_modified_since_prior_ledger": 590,
+      "files_modified_since_prior_ledger": 0,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -53,20 +53,17 @@
     },
     {
       "repo": "matrx-extend",
-      "origin_main": "21fef2e6ab60157d6b3a17c63c7806bfa844ede1",
-      "last_update": "2026-10-03T07:10:17-07:00",
-      "files_modified_since_prior_ledger": 109,
+      "origin_main": "9d3d0186de58c224eb25cc97491b559c6db99a34",
+      "last_update": "2026-10-03T07:36:53-07:00",
+      "files_modified_since_prior_ledger": 34,
       "branch": "main",
       "ahead_behind": "0\t0",
-      "dirty_paths": [
-        "?? docs/stabilization/resource-journals/settings-mounted-admin-full6-20261003-01.jsonl",
-        "?? docs/stabilization/resource-journals/settings-mounted-member-full6-20261003-01.pending.jsonl"
-      ],
+      "dirty_paths": [],
       "stashes": [],
       "other_branches": ["main"],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-extend",
-        "HEAD 21fef2e6ab60157d6b3a17c63c7806bfa844ede1",
+        "HEAD 9d3d0186de58c224eb25cc97491b559c6db99a34",
         "branch refs/heads/main"
       ]
     },
@@ -136,9 +133,9 @@
     },
     {
       "repo": "matrx-common-docs",
-      "origin_main": "f4edd5a85b25a74ba30874a504a946742adfee91",
-      "last_update": "2026-10-03T07:04:08-07:00",
-      "files_modified_since_prior_ledger": 14,
+      "origin_main": "6d06833d3e9fafbe6e6c843d1a1f373c52663244",
+      "last_update": "2026-10-03T07:34:29-07:00",
+      "files_modified_since_prior_ledger": 15,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -146,7 +143,7 @@
       "other_branches": ["main"],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-common-docs",
-        "HEAD f4edd5a85b25a74ba30874a504a946742adfee91",
+        "HEAD 6d06833d3e9fafbe6e6c843d1a1f373c52663244",
         "branch refs/heads/main"
       ]
     },
@@ -168,12 +165,13 @@
     }
   ],
   "verification": {
-    "prepare_defect": "EXT-D-0058 closed after independent six-case native audit 5d725a77; EXT-D-0059 remains in-fix",
-    "full_ci_run": 37128201197,
+    "full_ci_run": 37129518563,
     "full_ci_conclusion": "success",
-    "full_ci_head": "8ea64d6e",
-    "full_ci_artifact": 11276325227,
-    "scope": "Latest verified full CI; native member lane remains active separately. No build or release in this sync checkpoint."
+    "full_ci_source": "991385d9816b31a568619522e4795c001b4d3a06",
+    "guest_smoke": "published176-guest-server-refresh-20261003-01 passed original guest initial/reload against server4ec65fdb; exact unpacked release176, not Store install lifecycle",
+    "settings": "D87 closed after guest/member/admin native and fresh evidence audit; broad Theme cases remain partial",
+    "audit_key": "D93 fixed; history non-mutation5/5 and fresh peer accepted; native acceptance on artifact11275878549 remains pending",
+    "scope": "No new Store submission, no overall-health claim; all delegated lanes terminal."
   },
-  "snapshot_note": "Remote SHA baselines and checkout cleanliness observed after fetching all ten remotes and fast-forwarding clean common-docs. Extension review journals are recent active work owned by separate lanes; preserved untouched. This ledger is excluded from its own pre-commit dirty-path snapshot."
+  "snapshot_note": "Remote baselines and checkout states observed before committing this ledger itself."
 }
