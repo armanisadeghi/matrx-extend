@@ -120,6 +120,8 @@ try {
         lifecycle.failure_code = safeFailureCode(error);
         lifecycle.failure_stage = report.stage;
         lifecycle.transport_failure_class = safeTransportClass(transportFailureClass);
+        if (lifecycle.failure_code === 'native_extension_worker_retirement_unverified')
+          lifecycle.retirement_evidence = error.lifecycleEvidence ?? null;
       }
       report.lifecycle = lifecycle;
       report.status = lifecycle.reload_returned ? 'reload_observed' : 'reload_failed_observed';
