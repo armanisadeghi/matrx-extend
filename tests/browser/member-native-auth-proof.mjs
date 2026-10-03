@@ -8,13 +8,18 @@ function fingerprint(value) {
   return createHash('sha256').update(value.toLowerCase()).digest('hex').slice(0, 16);
 }
 
-export async function authenticatedWebIdentity(page, expectedFingerprint) {
+export async function firstPartyWebIdentity(page) {
   const identity = await page.evaluate(async () => {
     const response = await fetch('/api/whoami', { credentials: 'include', cache: 'no-store' });
     if (!response.ok) return null;
     const result = await response.json();
     return result?.signed_in === true ? { email: result.email, userId: result.user_id } : null;
   });
+  return identity;
+}
+
+export async function authenticatedWebIdentity(page, expectedFingerprint) {
+  const identity = await firstPartyWebIdentity(page);
   if (
     typeof identity?.email !== 'string' ||
     !UUID.test(identity.userId ?? '') ||

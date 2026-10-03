@@ -6,8 +6,17 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { storageFaultInstallerSource } from './d87-storage-fault-injector.mjs';
+import {
+  firstPartyWebIdentity,
+  observeCanonicalAdminCheck,
+  supabaseOrigin,
+} from './member-native-auth-proof.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { panelIdentity, signInSettings } from './settings-native-auth-driver.mjs';
+import {
+  panelIdentity,
+  signInSettings,
+  verifyCurrentSettingsIdentity,
+} from './settings-native-auth-driver.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 // EXT-D-0087: trusted Settings choices, real Chrome storage reads, and one
@@ -52,6 +61,8 @@ const OBSERVATION_CODES = new Set([
   'd87_web_identity',
   'd87_extension_signin_ready',
   'd87_expected_identity',
+  'd87_rendered_identity',
+  'd87_reload_first_party',
 ]);
 const POINTER_CODES = new Set([
   'pointer_initial_evaluation_failed',
@@ -68,6 +79,7 @@ const report = {
   scope: `receipt-bound owned Chrome-for-Testing native Settings panel; ${AUTH_MODE}`,
   auth_mode: AUTH_MODE,
   authentication: null,
+  reload_auth_checks: [],
   status: 'unverified',
   build: null,
   cases: [],
@@ -77,6 +89,8 @@ const report = {
 let stage = 'receipt';
 let operation = 'receipt_validation';
 let expectedProfileId = null;
+let expectedEmail = null;
+let expectedOrganizationId = null;
 
 function failureCode(error) {
   if (SAFE_CODES.has(error?.message)) return error.message;
@@ -117,18 +131,21 @@ async function observation(panel) {
 }
 
 async function assertExpectedIdentity(panel) {
-  return waitFor(
-    'd87_expected_identity',
-    () => panelIdentity(panel),
-    (identity) =>
-      AUTH_MODE === 'guest'
-        ? identity?.accessTokenPresent === false
-        : identity?.accessTokenPresent === true &&
-          identity.profileId === expectedProfileId &&
-          (AUTH_MODE === 'admin' ? identity.isAdmin === true : identity.isAdmin !== true) &&
-          (AUTH_MODE !== 'member' || identity.organizationSelected === true),
-    30_000,
-  );
+  if (AUTH_MODE === 'guest') {
+    return waitFor(
+      'd87_expected_identity',
+      () => panelIdentity(panel),
+      (identity) => identity?.accessTokenPresent === false,
+      30_000,
+    );
+  }
+  return verifyCurrentSettingsIdentity({
+    panel,
+    mode: AUTH_MODE,
+    email: expectedEmail,
+    profileId: expectedProfileId,
+    organizationId: expectedOrganizationId,
+  });
 }
 
 async function openSettings(panel) {
@@ -140,9 +157,10 @@ async function openSettings(panel) {
     () => observation(panel),
     (state) => state?.settingsActive && state.guest === (AUTH_MODE === 'guest'),
   );
-  await assertExpectedIdentity(panel);
+  const identity = await assertExpectedIdentity(panel);
   operation = 'appearance_open';
   await openSection(panel, 'Appearance');
+  return identity;
 }
 
 async function chooseTheme(panel, theme) {
@@ -167,28 +185,68 @@ async function settledTheme(panel, theme) {
   );
 }
 
-async function reload(panel, expectedTheme) {
-  operation = 'panel_reload';
-  await panel.send('Page.reload', { ignoreCache: true });
-  operation = 'reloaded_identity';
-  await waitFor(
-    'd87_reloaded_identity',
-    () => observation(panel),
-    (state) => state?.guest === (AUTH_MODE === 'guest'),
-  );
-  await openSettings(panel);
-  await assertExpectedIdentity(panel);
-  operation = 'reloaded_theme';
-  return waitFor(
-    `d87_${expectedTheme}_saved`,
-    () => observation(panel),
-    (state) =>
-      state?.settingsActive &&
-      state.guest === (AUTH_MODE === 'guest') &&
-      state.theme === LABELS[expectedTheme] &&
-      state.storedTheme === expectedTheme &&
-      !state.error,
-  );
+async function reload(page, panel, expectedTheme) {
+  const canonical =
+    AUTH_MODE === 'member' ? observeCanonicalAdminCheck(panel, await supabaseOrigin(REPO)) : null;
+  await canonical?.start();
+  try {
+    operation = 'panel_reload';
+    await panel.send('Page.reload', { ignoreCache: true });
+    operation = 'reloaded_identity';
+    await waitFor(
+      'd87_reloaded_identity',
+      () => observation(panel),
+      (state) => state?.guest === (AUTH_MODE === 'guest'),
+    );
+    const rendered = await openSettings(panel);
+    if (AUTH_MODE !== 'guest') {
+      operation = 'reloaded_first_party_identity';
+      const web = await page.context().newPage();
+      try {
+        await web.goto('https://www.aimatrx.com/matrx-extend-demo', {
+          waitUntil: 'domcontentloaded',
+          timeout: 60_000,
+        });
+        const firstParty = await waitFor(
+          'd87_reload_first_party',
+          () => firstPartyWebIdentity(web),
+          (identity) =>
+            identity?.userId === expectedProfileId &&
+            identity.email?.toLowerCase() === expectedEmail.toLowerCase(),
+          30_000,
+        );
+        report.reload_auth_checks.push({
+          first_party_user_matches_extension:
+            firstParty.userId === expectedProfileId &&
+            firstParty.email.toLowerCase() === expectedEmail.toLowerCase(),
+          rendered_account_and_role_match:
+            rendered.rendered_email_matches_first_party && rendered.rendered_role_matches_mode,
+          selected_organization_matches_stored_uuid_and_name:
+            rendered.selected_organization_matches_stored_uuid_and_name,
+          canonical_nonadmin_check: null,
+        });
+      } finally {
+        await web.close();
+        await page.bringToFront();
+      }
+      operation = 'reloaded_canonical_role';
+      const role = AUTH_MODE === 'member' ? await canonical.verify(expectedProfileId) : null;
+      report.reload_auth_checks.at(-1).canonical_nonadmin_check = role;
+    }
+    operation = 'reloaded_theme';
+    return waitFor(
+      `d87_${expectedTheme}_saved`,
+      () => observation(panel),
+      (state) =>
+        state?.settingsActive &&
+        state.guest === (AUTH_MODE === 'guest') &&
+        state.theme === LABELS[expectedTheme] &&
+        state.storedTheme === expectedTheme &&
+        !state.error,
+    );
+  } finally {
+    await canonical?.stop();
+  }
 }
 
 async function installStorageFault(panel, mode) {
@@ -270,8 +328,10 @@ try {
               operation = value;
             },
           });
-          const { profileId, ...safeAuthentication } = authentication;
+          const { profileId, email, organizationId, ...safeAuthentication } = authentication;
           expectedProfileId = profileId;
+          expectedEmail = email;
+          expectedOrganizationId = organizationId;
           report.authentication = safeAuthentication;
         }
         stage = 'baseline';
@@ -316,7 +376,7 @@ try {
         stage = 'retry';
         await click(panel, 'button-text', 'Retry save');
         const retried = await settledTheme(panel, 'dark');
-        const reloaded = await reload(panel, 'dark');
+        const reloaded = await reload(page, panel, 'dark');
         report.cases.push({
           name: 'retry persisted after reload',
           status: 'pass',
@@ -359,7 +419,7 @@ try {
           await restoreFault(panel);
         }
         stage = 'overlap_reload';
-        const reloadedLatest = await reload(panel, 'system');
+        const reloadedLatest = await reload(page, panel, 'system');
         report.cases.push({
           name: 'latest rapid choice survives reload',
           status: 'pass',

@@ -33,7 +33,8 @@ export async function panelIdentity(panel) {
     profileId: stored['matrx.user.profile']?.id ?? null,
     accessTokenPresent: typeof stored['matrx.auth.accessToken'] === 'string',
     isAdmin: stored['matrx.user.isAdmin'] === true ? true : stored['matrx.user.isAdmin'] === false ? false : null,
-    organizationSelected: typeof stored['matrx.org.active'] === 'string',
+    organizationId: stored['matrx.org.active']?.id ?? null,
+    organizationName: stored['matrx.org.active']?.name ?? null,
   })))()`,
   );
 }
@@ -55,15 +56,61 @@ async function accountIdentity(panel, email) {
     return {
       emailMatches: row('Email') === ${JSON.stringify(`Email${email}`)},
       adminRole: row('Role')?.toLowerCase() === 'roleadmin',
+      roleAbsent: row('Role') === null,
       signOutVisible: [...document.querySelectorAll('button')]
         .some((button) => button.textContent.trim() === 'Sign out'),
       signInEnabled: [...document.querySelectorAll('button')]
         .some((button) => button.textContent.trim() === 'Sign in' && !button.disabled),
       organizationSelected: Boolean(orgButton && orgText && orgText !== 'Choose…'),
+      organizationLabel: orgButton && orgText && orgText !== 'Choose…' ? orgText : null,
       organizationPickerAvailable: Boolean(orgButton),
     };
   })()`,
   );
+}
+
+export function currentSettingsIdentityMatches(value, { mode, profileId, organizationId }) {
+  return Boolean(
+    value?.emailMatches &&
+      value.signOutVisible &&
+      value.accessTokenPresent &&
+      value.profileId === profileId &&
+      (mode === 'admin'
+        ? value.adminRole && value.isAdmin === true
+        : value.roleAbsent && !value.adminRole && value.isAdmin !== true) &&
+      (organizationId === null
+        ? value.organizationId === null && !value.organizationSelected
+        : value.organizationId === organizationId &&
+          UUID.test(value.organizationId) &&
+          value.organizationSelected &&
+          value.organizationLabel === value.organizationName),
+  );
+}
+
+export async function verifyCurrentSettingsIdentity({
+  panel,
+  mode,
+  email,
+  profileId,
+  organizationId,
+}) {
+  await openSection(panel, 'Account');
+  await openSection(panel, 'Organization');
+  const observed = await waitFor(
+    'd87_rendered_identity',
+    async () => ({ ...(await accountIdentity(panel, email)), ...(await panelIdentity(panel)) }),
+    (value) => currentSettingsIdentityMatches(value, { mode, profileId, organizationId }),
+    30_000,
+  );
+  return {
+    rendered_email_matches_first_party: observed.emailMatches,
+    rendered_role_matches_mode: mode === 'admin' ? observed.adminRole : observed.roleAbsent,
+    profile_matches_first_party: observed.profileId === profileId,
+    selected_organization_matches_stored_uuid_and_name:
+      organizationId === null ||
+      (observed.organizationId === organizationId &&
+        observed.organizationLabel === observed.organizationName),
+  };
 }
 
 async function approveConsent(context) {
@@ -147,15 +194,25 @@ export async function signInSettings({
     const stored = await panelIdentity(panel);
     assert.equal(stored.profileId, identity.userId, 'd87_admin_profile_mismatch');
     assert.equal(stored.isAdmin, true, 'd87_admin_role_unverified');
+    const rendered = await verifyCurrentSettingsIdentity({
+      panel,
+      mode,
+      email: identity.email,
+      profileId: identity.userId,
+      organizationId: stored.organizationId,
+    });
     return {
       mode,
       profileId: identity.userId,
+      email: identity.email,
+      organizationId: stored.organizationId,
       account_fingerprint: fingerprint(identity.email),
       web_signed_in: true,
       extension_signed_in: true,
       admin_role: true,
       canonical_nonadmin_check: null,
       organization_selected: null,
+      rendered_identity: rendered,
     };
   }
   const web = await page.context().newPage();
@@ -223,22 +280,43 @@ export async function signInSettings({
         (value) => value?.organizationSelected || value?.organizationPickerAvailable,
         30_000,
       );
-      if (!org.organizationSelected) await selectOrganization(panel);
+      if (!org.organizationSelected || org.organizationLabel !== "Matrx's Org")
+        await selectOrganization(panel);
       await waitFor(
         'd87_member_organization_selected',
         () => accountIdentity(panel, email),
-        (value) => value?.organizationSelected,
+        (value) => value?.organizationSelected && value.organizationLabel === "Matrx's Org",
         30_000,
       );
+      const selected = await panelIdentity(panel);
+      assert.ok(
+        UUID.test(selected.organizationId ?? ''),
+        'd87_member_organization_uuid_unverified',
+      );
+      assert.equal(
+        selected.organizationName,
+        "Matrx's Org",
+        'd87_member_organization_name_unverified',
+      );
+      const rendered = await verifyCurrentSettingsIdentity({
+        panel,
+        mode,
+        email: identity.email,
+        profileId: identity.userId,
+        organizationId: selected.organizationId,
+      });
       return {
         mode,
         profileId: identity.userId,
+        email: identity.email,
+        organizationId: selected.organizationId,
         account_fingerprint: fingerprint(identity.email),
         web_signed_in: true,
         extension_signed_in: true,
         admin_role: account.adminRole,
         canonical_nonadmin_check: canonical,
         organization_selected: true,
+        rendered_identity: rendered,
       };
     } finally {
       await adminCheck.stop();
