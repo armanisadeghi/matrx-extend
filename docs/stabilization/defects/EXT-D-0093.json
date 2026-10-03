@@ -23,7 +23,7 @@
   "actual": "The component initially had no failure state; load and rotation refresh rejected outside a catch, while export caught only to console. The primitive wrote history, active key, and imported key sequentially, so a late rejection could obscure a persisted key change.",
   "severity": "S2: admin cannot tell whether key rotation succeeded or recover failed reads and copy",
   "priority": "P2",
-  "state": "in-fix",
+  "state": "fixed",
   "evidence": [
     "src/features/settings/AdvancedAgentCapabilities.audit-key.test.tsx",
     "tests/unit/device-key-partial-write.test.ts",
@@ -40,7 +40,8 @@
     ".research/settings-audit-concurrency-peer.json",
     ".research/audit-lock-ci-repair.json",
     ".research/audit-lock-unavailable-recovery.json",
-    ".research/audit-unavailable-final-peer.json"
+    ".research/audit-unavailable-final-peer.json",
+    ".research/audit-history-guard-peer.json"
   ],
   "transition_history": [
     {
@@ -60,9 +61,15 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Source repair committed; native acceptance remained pending."
+    },
+    {
+      "at": "2026-10-03T14:36:52.932142+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Production concurrency and capability recovery fixes passed focused RED/GREEN, mutation checks, full CI37129518563 and independent source reviews; history guard finding resolved inbefd9227 and freshpeerfaf1e928. Native acceptance remains required."
     }
   ],
-  "current_work": "Concurrency repair43d28aa0 and Web Locks fixture repair03b80268 passed source peers and full CI37128201197. Capability-specific recovery991385d9 passed guarded13 focused tests, compile, gut and branch mutation. Fresh source review49371f48 accepts behavior but identified missing persistent-history non-mutation guard coverage; correction is in progress. Exact newer-artifact native Settings acceptance remains pending.",
+  "current_work": "Source fixes complete: concurrency43d28aa0, capability-specific recovery991385d9, fixture03b80268, history guardbefd9227. Fresh peerfaf1e928 accepted the missing-history assertion correction; 5/5 guarded tests passed and deliberate history corruption failed. Full CI37129518563 passed production991385d9 and produced immutable development artifact11275878549. No native D93 acceptance or Store shipment is implied.",
   "closure_requirement": "Independent review plus exact-build native Settings verification of actionable failures and single-rotation retry behavior without rotating real user/device keys.",
   "independent_source_review": {
     "commit": "22f29e68",
@@ -71,8 +78,7 @@
     "runtime_verdict": "partial_native_pending"
   },
   "remaining_work": [
-    "Complete independent guard review for unsupported-lock persistent-history non-mutation; no production failure was identified by this finding.",
-    "Exact new-CI-artifact native Settings failure/retry and cross-context receipt verification without rotating real user/device keys.",
+    "Exact artifact11275878549 from successful CI37129518563/source991385d9: native Settings failure/retry, successful versus uncertain single-rotation outcomes, and cross-context receipt verification. Use only fresh owned profiles; never rotate real user/device keys.",
     "Subsequent release gates and exact guest/non-admin candidate acceptance before Store submission."
   ]
 }
