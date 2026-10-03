@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "2026096211bd81d0092f0b909de7269d3244a127",
+  "lane": "independent source review; zero authorship; no live browser",
+  "verdict_a": {
+    "outcome": "PARTIAL",
+    "usefulness": "The three new Store cases give actionable setup and observation steps for control EXT-F-1002-C06 in guest, ordinary-member, and admin modes.",
+    "evidence": [
+      "Each case requires a fresh resource permit/build receipt, checks the loaded Store ID, records the exact version, identifies the role/profile, and observes toolbar click, popup absence, sidepanel opening, and the visible identity shell.",
+      "The selected cases map only to C06; sibling popup, sign-in, microphone, and options controls remain represented by their earlier cases.",
+      "The inventory cells for guest/member/admin remain unverified with no linked run IDs; this commit does not promote behavior to pass."
+    ],
+    "missing": [
+      "Cases declare both warm and reload dimensions, but the procedure describes one execution. Its conditional extension reload only applies after install/update, while closing an already-open panel then opening it describes a cold panel open. It does not prescribe separate warm and post-extension-reload executions or record each result.",
+      "Auth restoration and role verification are asynchronous in src/hooks/use-auth.ts. The procedure asks for the first rendered state and expects the guest/member/admin shell, but gives no readiness signal or bounded wait before classifying a transient loading/unknown state."
+    ],
+    "runtime_status": "UNVERIFIED: no live Chrome UI was exercised in this source-only lane."
+  },
+  "verdict_b": {
+    "outcome": "PASS_WITH_CONCERNS",
+    "evidence": [
+      "wxt.config.ts filters popup out of the Chrome Web Store entrypoints and configures side_panel.default_path; src/entrypoints/background.ts and src/lib/panel/adapter.ts configure action-click panel opening.",
+      "The Store runtime ID hnfolienncfklkgmdjjmhhegglimlamg matches src/config/identity.ts and the WXT configuration comments.",
+      "The source-only completion report explicitly states that live UI was not exercised and that current Store publication may not contain this source; the inventory statuses stay honest."
+    ],
+    "concerns": [
+      "Make warm and reload distinct executable subruns, each with its own receipt/run evidence, or revise the declared dimensions to match the intended single run.",
+      "Define an observable authenticated/signed-out readiness condition and bounded wait before checking the role shell, while preserving the resulting timeout/error state as evidence."
+    ],
+    "source_evidence": [
+      "docs/stabilization/PLAN.md requires a resource permit and complete build receipt for each test/retest and treats reload/auth state as dimensions.",
+      "src/hooks/use-auth.ts restores and verifies the canonical session asynchronously, then refreshes the admin role."
+    ]
+  },
+  "status_promotion": "None. All three targeted mode cells remain unverified, with no run IDs.",
+  "limitations": [
+    "No live browser/UI behavior, Store package publication state, or exact loaded artifact was verified in this lane.",
+    "No product source or inventory was edited."
+  ]
+}
