@@ -25,7 +25,7 @@
   "actual": "The component initially had no failure state; load and rotation refresh rejected outside a catch, while export caught only to console. The primitive wrote history, active key, and imported key sequentially, so a late rejection could obscure a persisted key change.",
   "severity": "S2: admin cannot tell whether key rotation succeeded or recover failed reads and copy",
   "priority": "P2",
-  "state": "fixed",
+  "state": "closed",
   "evidence": [
     "src/features/settings/AdvancedAgentCapabilities.audit-key.test.tsx",
     "tests/unit/device-key-partial-write.test.ts",
@@ -47,7 +47,9 @@
     ".research/audit-native-independent.json",
     ".research/audit-native-escalation.json",
     ".research/audit-escalation-peer.json",
-    ".research/audit-receipt-native-door.json"
+    ".research/audit-receipt-native-door.json",
+    ".research/audit-final-native.json",
+    ".research/audit-receipts-peer.json"
   ],
   "transition_history": [
     {
@@ -73,9 +75,21 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Production concurrency and capability recovery fixes passed focused RED/GREEN, mutation checks, full CI37129518563 and independent source reviews; history guard finding resolved inbefd9227 and freshpeerfaf1e928. Native acceptance remains required."
+    },
+    {
+      "at": "2026-10-03T16:38:19.684027+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent guarded native run audit-final-native-20261003-02 passed T60/T86\u2013T91 on exact source991385d9; source peer ff877f8b accepted signer/verifier mapping and concurrency assertions."
+    },
+    {
+      "at": "2026-10-03T16:38:19.684027+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Coordinator recomputed all three preserved evidence hashes and inspected seven native passes, genuine/tampered receipt verdicts across three generations in both reloaded contexts, unchanged artifact tree and released lease. Original failure paths and adjacent recovery/concurrency cases passed."
     }
   ],
-  "current_work": "Independent exact-build native run audit-escalation-peer-native-20261003 passed T60/T86/T88; T87/T89 are partial for missing signed-receipt verification. Run stopped at lock_unavailable with generic audit_native_unverified before T90. T91 product verdict remains unverified pending exact failure diagnosis. Source stays fixed; no complete retest or Store shipment implied. Runner repairs (source-bound artifact version, Page.enable/new-document fault setup, snapshot scope and structural public-JWK comparison) passed focused guards, fresh source review and full CI37134787410.",
+  "current_work": "Original audit-key failure/recovery and concurrency defect independently verified and closed. T91 scope is authenticated-shell audit-card remount; full Settings, cold missing-Web-Locks startup, receipt-dialog UI and Store update lifecycle remain outside this acceptance.",
   "closure_requirement": "Independent review plus exact-build native Settings verification of actionable failures and single-rotation retry behavior without rotating real user/device keys.",
   "independent_source_review": {
     "commit": "22f29e68",
@@ -84,8 +98,13 @@
     "runtime_verdict": "partial_native_pending"
   },
   "remaining_work": [
-    "Diagnose T91 lock_unavailable boundary with safe specific diagnostics; no blind unchanged rerun. T90 not reached.",
-    "Complete actual product-signed receipt verification after recovery/rotation and both-context reload, including tamper rejection for T87/T89/T90; actual signing/verifier door traced in .research/audit-receipt-native-door.json.",
-    "Subsequent release gates and exact guest/non-admin candidate acceptance before Store submission; main version0.2.177 alone is not release evidence."
-  ]
+    "Release integration remains separate: required current-main gates and exact guest/non-admin Store candidate acceptance before submission. These source fixes are not in frozen public176."
+  ],
+  "independent_review": {
+    "commit": "ff877f8b",
+    "report": ".research/audit-receipts-peer.json",
+    "quality_verdict": "pass",
+    "runtime_verdict": "pass",
+    "runtime_report": ".research/audit-final-native.json"
+  }
 }

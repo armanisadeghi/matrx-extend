@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "defect": "EXT-D-0093",
-  "status": "independent_native_pass_pending_coordinator_audit",
+  "status": "independent_native_pass",
   "scope": "One fresh, guarded headed native acceptance on the exact imported CI development artifact in an owned disposable Chrome profile.",
   "source": {
     "sha": "991385d9816b31a568619522e4795c001b4d3a06",
@@ -64,5 +64,15 @@
     "preflight_refusal_journal_sha256": "76673546ca35067c1492fe7bc7270924c4e414728ecc8f9dc1f55f4c63469d51",
     "runner_native_artifacts": "test-results/native-sidepanel-qa-pBW14v"
   },
-  "independent_review": "This is the independent native runtime pass. The source peer accepted the implementation before execution; coordinator audit of the preserved receipt and resource journals is the remaining review step."
+  "independent_review": "This is the independent native runtime pass. The source peer accepted the implementation before execution; coordinator audit of the preserved receipt and resource journals is the remaining review step.",
+  "coordinator_audit": {
+    "at": "2026-10-03T16:38:19.684027+00:00",
+    "verdict": "pass",
+    "checks": [
+      "All three durable receipt/journal SHA-256 values recomputed and matched.",
+      "Seven raw native cases passed; T90 records three distinct keys with genuine success and tamper rejection in both contexts.",
+      "Pre/post artifact hashes match; canonical heavy lease absent at transfer."
+    ],
+    "defect_state": "closed"
+  }
 }
