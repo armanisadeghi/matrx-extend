@@ -24,7 +24,8 @@
     "EXT-F-1003-T46 through T48 specify port boundaries, clearing and persistence",
     "EXT-F-1003-T60 records that export failure currently has no in-product message",
     "EXT-F-1003-T63 avoids testing an artificial direct component mount",
-    "EXT-F-1003-T85 retains permission retry procedure after new cases were assigned"
+    "EXT-F-1003-T85 retains permission retry procedure after new cases were assigned",
+    "EXT-F-1003-T60 requires actionable visible clipboard failure feedback, no false copied state and retry; console-only handling is a source lead pending real runtime evidence."
   ],
   "source_reconciliation": [
     "SettingsView.tsx exposes an Organization ArchiveFilter only when a user exists.",

@@ -5875,12 +5875,14 @@
             "Verify the real signed-in principal is the authorized admin using the displayed account/role and known test-principal provenance."
           ],
           "steps": [
-            "Activate Export public key in the actual admin Settings card.",
-            "Verify clipboard contents through a bounded clipboard read in the test profile and inspect visible copied feedback.",
-            "Where a controlled clipboard failure is available, attempt export and record busy-state recovery and whether any user-facing message appears."
+            "Activate Export public key in the actual admin Settings card and verify the public JWK and copied feedback on success.",
+            "In a controlled native extension run, make clipboard writing fail; verify the card presents an actionable visible error, no copied-success feedback, and a usable retry path.",
+            "Retry after restoring clipboard access and verify success feedback appears only after the public JWK is copied."
           ],
           "expected": [
-            "Successful export copies only the public JWK and shows copy feedback. On failure, busy state clears; the current card has no in-product failure message, so record that visible limitation and keep failure handling unverified."
+            "Success copies only the public JWK and shows copied feedback.",
+            "Clipboard failure produces an actionable in-product error and retry path, clears busy state, and never reports success or copied state.",
+            "The current source catches export failure only in the console; that source observation is a lead, not a pass or confirmed runtime defect. The failure behavior remains unverified until exercised in the installed extension."
           ],
           "dimensions": [
             "warm",
@@ -6794,6 +6796,13 @@
           "summary": "Current-source Settings reconciliation found archive-filter, account identity/role, settled desktop status, and permission retry controls missing from explicit control inventory; new cases are procedure-ready but unexecuted. Audit-key export failure has no in-product error signal in current component.",
           "source": "docs/stabilization/.research/settings-inventory-delta.json",
           "state": "unverified-current-source-reconciliation",
+          "wave": "A"
+        },
+        {
+          "id": "EXT-L-SETTINGS-002",
+          "summary": "Audit-key export failure is caught and logged to console without a visible card error or retry affordance in current source. T60 requires actionable UI failure feedback and no false copied state; verify against a controlled clipboard failure before defect triage.",
+          "source": "src/features/settings/AuditKeyCard.tsx:95",
+          "state": "unverified-source-lead-no-runtime-reproduction",
           "wave": "A"
         }
       ],
@@ -54245,7 +54254,8 @@
     "2026-09-27 source reconciliation to 528ea0b: changed source paths mapped in takeover-inventory-reconciled.json. Current-source native results remain unverified; historical case receipts retain their original build provenance.",
     "Takeover .89 native guest census observed five expected guest tabs and eleven known Settings section labels; five additional aria-expanded elements are unclassified, not established extra sections. Only scoped T22/T37/T46/T70 guest behavior admitted; full surface/mode coverage remains open. See runs/takeover-visible-census-089-002.json.",
     "2026-10-03 current-source Settings delta reconciles EXT-F-1003 against HEAD 6f4e9d0. Added explicit account identity, organization archive-filter visibility/behavior, settled desktop status/health and admin permission retry controls; refined misleading debugger toggle and role-denial procedures. All additions remain unverified; this does not close the global source census.",
-    "Settings source census is reconciled through source SHA 6f4e9d0; guest/member/admin controls now have explicit readiness procedures. Runtime additions and failure-injection paths remain unverified. Global scope_complete remains false."
+    "Settings source census is reconciled through source SHA 6f4e9d0; guest/member/admin controls now have explicit readiness procedures. Runtime additions and failure-injection paths remain unverified. Global scope_complete remains false.",
+    "Settings follow-up: T60 now requires visible actionable clipboard failure feedback and no false copied-success state. Current console-only error handling is retained as unverified source lead EXT-L-SETTINGS-002, not a runtime defect or pass."
   ],
   "source_review": "docs/stabilization/reports/takeover-inventory-reconciled.json"
 }
