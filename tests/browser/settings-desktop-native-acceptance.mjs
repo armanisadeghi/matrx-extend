@@ -568,7 +568,7 @@ try {
           () => state(panel),
           (s) => s?.forgetVisible,
         );
-        await click(panel, 'button', 'Forget pair code');
+        await click(panel, 'settings-button', 'Forget pair code');
         await waitFor(
           'desktop_forget_cancel_dialog',
           () => state(panel),
@@ -583,7 +583,7 @@ try {
         passed('HTTP fixture Forget cancel retains owned pair code', { pairing_preserved: true });
         await fault(panel, 'remove', PAIR_KEY, 'reject');
         try {
-          await click(panel, 'button', 'Forget pair code');
+          await click(panel, 'settings-button', 'Forget pair code');
           await waitFor(
             'desktop_forget_refusal_dialog',
             () => state(panel),
@@ -603,7 +603,12 @@ try {
         } finally {
           await restoreFault(panel);
         }
-        await click(panel, 'button', 'Forget pair code');
+        await waitFor(
+          'desktop_forget_refusal_dialog_closed',
+          () => state(panel),
+          (s) => !s?.pairDialog && s.forgetVisible,
+        );
+        await click(panel, 'settings-button', 'Forget pair code');
         await waitFor(
           'desktop_forget_retry_dialog',
           () => state(panel),
@@ -799,7 +804,7 @@ try {
         if ((await state(panel)).forgetVisible) {
           await fault(panel, 'remove', PAIR_KEY, 'reject');
           try {
-            await click(panel, 'button', 'Forget pair code');
+            await click(panel, 'settings-button', 'Forget pair code');
             await waitFor(
               'desktop_pair_forget_dialog',
               () => state(panel),
@@ -819,7 +824,12 @@ try {
           } finally {
             await restoreFault(panel);
           }
-          await click(panel, 'button', 'Forget pair code');
+          await waitFor(
+            'desktop_pair_forget_refusal_dialog_closed',
+            () => state(panel),
+            (s) => !s?.pairDialog && s.forgetVisible,
+          );
+          await click(panel, 'settings-button', 'Forget pair code');
           await waitFor(
             'desktop_pair_forget_retry_dialog',
             () => state(panel),

@@ -109,6 +109,13 @@
     },
     {
       "include": [
+        ".research/settings-remaining-controls-evidence/raw/guest-run-receipt.json",
+        ".research/settings-remaining-controls-evidence/raw/guest-retry-receipt.json"
+      ],
+      "formatter": { "enabled": false }
+    },
+    {
+      "include": [
         "tests/browser/vault-authenticator-preservation.test.cjs",
         "tests/browser/vault-owned-cdp.cjs"
       ],

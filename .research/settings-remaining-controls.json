@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "status": "PARTIAL_TWO_GUARDED_ATTEMPTS",
+  "scope": "Current-artifact Settings port validation, HTTP-only Forget fixture, and Reset Cancel across guest/member/admin",
+  "runner": "tests/browser/settings-desktop-native-acceptance.mjs",
+  "source_commit_before_native_run": "92d09b3a",
+  "artifact": {
+    "kind": "CI development artifact; not published Store or real desktop engine",
+    "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+    "ci_run_id": 37129518563,
+    "artifact_id": 11275878549,
+    "tree_sha256_before_and_after": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+    "version": "0.2.176"
+  },
+  "native_guest": {
+    "run_id": "desktop-settings-remaining-guest-20261003-01",
+    "resource": "admitted; child exit 1; resourceInvalid=false; no acceptance pass",
+    "identity": "Actual owned guest profile; access token absent, profile absent, admin true gate absent",
+    "failure_stage": "desktop_port_bounds",
+    "failure_code": "desktop_acceptance_failed",
+    "causal_harness_finding": "First-run source contained a contradictory oracle for nondigit input (expected typed 12x3 instead of rendered 123). Broad first-run stage does not prove which assertion stopped. Second run passed the corrected port corpus and reached HTTP Forget retry.",
+    "raw_receipt": {
+      "path": ".research/settings-remaining-controls-evidence/raw/guest-run-receipt.json",
+      "sha256": "c4c43be1c9ce0b21009c17a1f45a5de88e03bccfe54d7c225615df21ac505340"
+    },
+    "raw_resource_journal": {
+      "path": ".research/settings-remaining-controls-evidence/raw/guest-resource.jsonl",
+      "sha256": "6c318adaad23a98ce49d9b508eb60dfa9d892e0fee7d5a48e9e253c485e6c759"
+    },
+    "screenshots": [
+      {
+        "path": ".research/settings-remaining-controls-evidence/raw/guest-sidepanel.png",
+        "sha256": "07bc05a94dc8dd16227d3c6088bf03b6e32a15352f289292ae0bcc5be15a323f"
+      },
+      {
+        "path": ".research/settings-remaining-controls-evidence/raw/guest-normal-target.png",
+        "sha256": "c336144fed7444bd3ea3c5edbe050c7843e306ab6b352cd4d40cc4b1e5e5f7bf"
+      }
+    ],
+    "first_run_status": "Admitted, exit 1 in broad port_bounds; raw receipt proves no new pass. Contradictory input oracle found and corrected before second run."
+  },
+  "unverified": [
+    "Forget successful removal after refusal was not observed; actual engine pairing/rediscovery never tested.",
+    "Reset Cancel and confirmed reset were not reached in the new corpus.",
+    "Member and admin have no new-control native runs; all full T43\u2013T51 cases remain partial.",
+    "Post-second-run scoped selector/dialog-readiness source correction has syntax/formatter checks only, no native verification."
+  ],
+  "fixture_limit": "The disposable transport-state message would expose the product HTTP-only control in an owned profile. It cannot prove an actual desktop engine connection or valid pair acceptance.",
+  "next_action": "Two admitted attempts ended in runner failures. Fresh seat should inspect the exact new selector and run a narrower guest Forget-retry/Reset-Cancel path under a new resource permit, then member/admin. Do not promote full T43\u2013T51 or D84 closure from this evidence.",
+  "runner_correction_after_first_run": "710a380a: replaceInput accepts expected rendered value for digit filtering; still uses trusted CDP input and real React onChange.",
+  "native_guest_retry": {
+    "run_id": "desktop-settings-remaining-guest-20261003-02",
+    "resource": "admitted; child exit 1; resourceInvalid=false; final decision child_failed",
+    "identity": "Owned guest profile; no access token/profile/admin true gate",
+    "passed": [
+      "Port minimum 1 and maximum 65535 saved through trusted UI",
+      "0 and 65536 rejected while prior saved value remained",
+      "Typed nondigits filtered by product to 123",
+      "Blank save cleared prior invalid error and override, persisted after panel reload",
+      "HTTP transport-state fixture exposed Forget; Cancel preserved test-owned pair code",
+      "Chrome storage.remove refusal preserved owned pair code and rendered retry error"
+    ],
+    "failure_stage": "desktop_http_fixture",
+    "failure_code": "pointer_target_not_unique",
+    "cause": "Runner used a global button text selector for Forget retry. The Settings action and dialog confirmation share the same label; the pointer driver refused an ambiguous target. Subsequent source correction scopes the action to the Settings pane and waits for refusal dialog closure. No third native run in this lane.",
+    "raw_receipt": {
+      "path": ".research/settings-remaining-controls-evidence/raw/guest-retry-receipt.json",
+      "sha256": "76eaa6a70c219f1f134d2fe6325071eb9d477898d9af9987d538d808b1a82fbd"
+    },
+    "raw_resource_journal": {
+      "path": ".research/settings-remaining-controls-evidence/raw/guest-retry-resource.jsonl",
+      "sha256": "3cd6c20fc25902b2a9c0bf81e9bddf67d07a3d7ef59b748f6d0f6c091437f020"
+    },
+    "screenshots": [
+      {
+        "path": ".research/settings-remaining-controls-evidence/raw/guest-retry-sidepanel.png",
+        "sha256": "9f83dcbe86d452099e450c2d030c7a9da6c9538e3e30b5701d6fd4d21dcf30b0"
+      },
+      {
+        "path": ".research/settings-remaining-controls-evidence/raw/guest-retry-normal-target.png",
+        "sha256": "33271f9da5b7c8919b1d69230710105d7fbec474a29e2a24ddd831fb2fa7cf87"
+      }
+    ]
+  },
+  "invocation_recipe": {
+    "parent_environment": {
+      "PATH": "/Volumes/Samsung2TB/.codex-guest-runtime/node/node_modules/.bin:/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+      "PLAYWRIGHT_BROWSERS_PATH": "/Volumes/Samsung2TB/.codex-guest-runtime/browsers",
+      "MATRX_PLAYWRIGHT_MODULE": "/Volumes/Samsung2TB/.codex-guest-runtime/node/node_modules/playwright-core/index.mjs",
+      "MATRX_CHROME_PATH": "/Volumes/Samsung2TB/.codex-guest-runtime/browsers/chromium-1194/chrome-mac/Chromium.app/Contents/MacOS/Chromium",
+      "MATRX_DESKTOP_SETTINGS_EXTENSION_DIR": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/991385d9816b31a568619522e4795c001b4d3a06/37129518563-1/chrome-mv3",
+      "MATRX_DESKTOP_SETTINGS_RECEIPT": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/991385d9816b31a568619522e4795c001b4d3a06/37129518563-1/local-dev-receipt.json",
+      "MATRX_DESKTOP_SETTINGS_AUTH_MODE": "guest",
+      "MATRX_DESKTOP_SETTINGS_CASE": "remaining",
+      "TMPDIR": "/Volumes/Samsung2TB/.codex-guest-runtime/acceptance/settings-remaining-20261003/"
+    },
+    "guard_argv": [
+      "node",
+      "scripts/stabilization-resource.mjs",
+      "run",
+      "--run-id",
+      "CHOOSE_FRESH_ID",
+      "--profile-dir",
+      "/Volumes/Samsung2TB/.codex-guest-runtime/acceptance/settings-remaining-20261003",
+      "--",
+      "node",
+      "tests/browser/settings-desktop-native-acceptance.mjs"
+    ],
+    "note": "Export variables in the parent environment; the command after -- must remain the exact allowed child argv. For member/admin, use the existing private auth driver inputs; never print credentials or change real user pairing."
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "defects": [
+    "EXT-D-0084",
+    "EXT-D-0086"
+  ],
+  "scope": "native side-panel storage behavior in an owned disposable profile",
+  "case": "remaining",
+  "role": "guest",
+  "status": "fail",
+  "build": {
+    "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+    "run_id": 37129518563,
+    "artifact_id": 11275878549,
+    "tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+    "version": "0.2.176"
+  },
+  "authentication": {
+    "mode": "guest",
+    "access_token_absent": true,
+    "profile_absent": true,
+    "admin_flag_absent": true
+  },
+  "cases": [],
+  "limits": [
+    "Storage fault injection does not establish a healthy desktop-engine connection.",
+    "Pair-code clear requires an HTTP transport and is not inferred from a stored synthetic code."
+  ],
+  "failure_stage": "desktop_port_bounds",
+  "failure_code": "desktop_acceptance_failed"
+}
