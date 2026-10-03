@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0099",
+  "status": "repair_native_verified_final_assertions_await_independent_retest",
+  "scope": "Guest-only native reload. Frozen imported 0.2.184 source 9dfb5911cd7fef18f8c36b1cefd273096e866bbf, run 37159097093, artifact 11286822448. No Profile or database mutations. No local build or release.",
+  "root_cause": "Fresh owned Chrome profile had Developer mode off. Command-line unpacked loading initially worked, but native management reload disabled the extension with unsupportedDeveloperExtension=true. Native Developer mode toggle before reload restores strict lifecycle success.",
+  "original_reply": {
+    "error": "Could not establish connection. Receiving end does not exist."
+  },
+  "repair": "Enable Developer mode with native extensions-toolbar toggle only in the harness-owned Chrome profile; assert enabled management state before and after reload. Keep strict destroyed-event, old-target absence, created-event replacement-worker, replacement-panel and SIDE_PANEL runtime-context checks.",
+  "runs": [
+    {
+      "run_id": "reload-escalation-01",
+      "status": "reload_failed_observed",
+      "report_external": "/Volumes/Samsung2TB/code/.stabilization-scratch/reload-escalation-01/evidence/profile-reload-readonly-reload-escalation-01.json",
+      "report_sha256": "9c3a95f188d5ebc7a57e606a8ed5e23b99093dbb73c17b8854cc4fa065971bbb",
+      "resource_journal": "docs/stabilization/resource-journals/reload-escalation-01.jsonl",
+      "resource_journal_sha256": "8d4b6bed05344c728aaa976882fb259e80b84ddc93c5a1971ef5215f22123db4",
+      "resource_decision": "valid",
+      "lifecycle": {
+        "reload_attempted": true,
+        "before_panel_target_observed": true,
+        "reload_returned": false,
+        "old_targets_retired": null,
+        "worker_replaced": null,
+        "panel_replaced": null,
+        "failure_code": "native_extension_worker_retirement_unverified",
+        "failure_stage": "extension_reload",
+        "transport_failure_class": "none",
+        "retirement_evidence": {
+          "old_worker_destroyed_event": false,
+          "old_worker_absent": true,
+          "old_panel_absent": true,
+          "replacement_worker_present": false,
+          "replacement_worker_created_event": false,
+          "observed_worker_count": 0,
+          "management": {
+            "state": "DISABLED",
+            "disableReasons": {
+              "blockedByPolicy": false,
+              "corruptInstall": false,
+              "custodianApprovalRequired": false,
+              "parentDisabledPermissions": false,
+              "publishedInStoreRequired": false,
+              "reloading": false,
+              "suspiciousInstall": false,
+              "unsupportedDeveloperExtension": true,
+              "unsupportedManifestVersion": false,
+              "updateRequired": false
+            },
+            "runtimeErrors": [],
+            "manifestErrors": []
+          },
+          "open_panel_reply": {
+            "error": "Could not establish connection. Receiving end does not exist."
+          }
+        }
+      }
+    },
+    {
+      "run_id": "reload-escalation-02",
+      "status": "reload_observed",
+      "report_external": "/Volumes/Samsung2TB/code/.stabilization-scratch/reload-escalation-02/evidence/profile-reload-readonly-reload-escalation-02.json",
+      "report_sha256": "eabe12732d442ebe057e8eb1c2b6556e2b04ce73f6d9898fdeb7ae0882549ad4",
+      "resource_journal": "docs/stabilization/resource-journals/reload-escalation-02.jsonl",
+      "resource_journal_sha256": "8de18015803481e0c2fc6cf9807fcbd2050abb7c5f95b00fe0010adb8b0b0cf9",
+      "resource_decision": "valid",
+      "lifecycle": {
+        "reload_attempted": true,
+        "before_panel_target_observed": true,
+        "reload_returned": true,
+        "old_targets_retired": true,
+        "worker_replaced": true,
+        "panel_replaced": true,
+        "failure_code": null,
+        "failure_stage": null,
+        "transport_failure_class": null
+      }
+    }
+  ],
+  "guard": {
+    "sut": "reloadOwnedExtension orchestration; native browser UI and CDP are external dependencies",
+    "green": "node tests/browser/native-sidepanel-qa-harness.test.mjs",
+    "mutation_runner": ".claude/skills/forcing-function-tests/plant.py",
+    "mutations": [
+      {
+        "change": "omit Developer mode click",
+        "result": "RED native_extension_developer_mode_unverified"
+      },
+      {
+        "change": "omit enabled-management check after reload",
+        "result": "RED Missing expected rejection"
+      },
+      {
+        "change": "replace reloadOwnedExtension with constant success",
+        "result": "RED native reload preserves existing Developer mode"
+      }
+    ],
+    "restoration": "all three restored identical source sha256 f13a4b4244fa prefix"
+  },
+  "hypotheses_ruled_out": [
+    "CDP transport failure: none in original red",
+    "Extension runtime or manifest failure: zero errors in original red",
+    "Reload only needs a later openPanel wake: listener absent while disabled",
+    "Strict event oracle is impossible: unchanged oracle passed after native Developer mode setup"
+  ],
+  "remaining": "Root-owned independent native retest of final before/after management assertions and code review. Profile mutating tests remain held pending that review."
+}

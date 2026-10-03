@@ -226,6 +226,40 @@ async function waitForExpectedExtension(cdp, extensionId) {
   throw new Error('native_sidepanel_expected_extension_missing');
 }
 
+async function reloadManagementState(details, extensionId) {
+  const state = await details.evaluate(async (id) => {
+    const extensions = await chrome.developerPrivate.getExtensionsInfo({
+      includeDisabled: true,
+      includeTerminated: true,
+    });
+    const item = extensions.find((extension) => extension.id === id);
+    return {
+      state: item?.state ?? 'ABSENT',
+      unsupported_developer_extension: item?.disableReasons?.unsupportedDeveloperExtension === true,
+      runtime_error_count: item?.runtimeErrors?.length ?? 0,
+      manifest_error_count: item?.manifestErrors?.length ?? 0,
+    };
+  }, extensionId);
+  return {
+    ...state,
+    developer_mode: await details
+      .locator('extensions-toolbar #devMode')
+      .evaluate((toggle) => toggle.checked === true),
+  };
+}
+
+function requireReloadEnabled(state) {
+  if (
+    state.developer_mode !== true ||
+    state.state !== 'ENABLED' ||
+    state.unsupported_developer_extension
+  ) {
+    const error = new Error('native_extension_reload_disabled');
+    error.lifecycleEvidence = { management: state };
+    throw error;
+  }
+}
+
 async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelId }) {
   const details = await context.newPage();
   const destroyedTargets = new Set();
@@ -241,6 +275,14 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
       waitUntil: 'domcontentloaded',
       timeout: 30000,
     });
+    // Command-line unpacked loading works with Developer mode off, but Chrome
+    // disables that same extension on reload. Set the native owned-profile UI.
+    const developerMode = details.locator('extensions-toolbar #devMode');
+    if (!(await developerMode.evaluate((toggle) => toggle.checked))) await developerMode.click();
+    if (!(await developerMode.evaluate((toggle) => toggle.checked)))
+      throw new Error('native_extension_developer_mode_unverified');
+    const managementBefore = await reloadManagementState(details, extensionId);
+    requireReloadEnabled(managementBefore);
     const reload = details.locator('extensions-detail-view #dev-reload-button');
     if ((await reload.count()) !== 1 || !(await reload.isVisible()))
       throw new Error('native_extension_management_reload_unavailable');
@@ -296,7 +338,10 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
     }
     if (!replacementWorker) {
       const error = new Error('native_extension_worker_retirement_unverified');
-      error.lifecycleEvidence = retirementEvidence;
+      error.lifecycleEvidence = {
+        ...retirementEvidence,
+        management: await reloadManagementState(details, extensionId),
+      };
       throw error;
     }
     await page.bringToFront();
@@ -313,7 +358,11 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
     }
     if (!replacementPanel) throw new Error('native_extension_replacement_panel_unverified');
     requireSidePanelContext(await sidePanelContexts(cdp, replacementWorker.targetId), panelUrl);
+    const managementAfter = await reloadManagementState(details, extensionId);
+    requireReloadEnabled(managementAfter);
     return {
+      management_before: managementBefore,
+      management_after: managementAfter,
       panel: await attachTargetSession(cdp, replacementPanel.targetId),
       worker_replaced: replacementWorker.targetId !== oldWorkerId,
       panel_replaced: replacementPanel.targetId !== oldPanelId,
@@ -756,6 +805,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 }
 
 export {
+  reloadOwnedExtension,
   isSettledGuestPanel,
   requireReleaseReceipt,
   requireExpectedExtension,

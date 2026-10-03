@@ -24,6 +24,8 @@ const report = {
 
 const SAFE_ERRORS = new Set([
   'native_extension_management_reload_unavailable',
+  'native_extension_developer_mode_unverified',
+  'native_extension_reload_disabled',
   'native_extension_current_worker_unverified',
   'native_extension_current_panel_unverified',
   'native_extension_old_worker_retired_before_reload',
@@ -111,6 +113,8 @@ try {
       };
       try {
         const result = await reloadExtension();
+        lifecycle.management_before = result.management_before;
+        lifecycle.management_after = result.management_after;
         lifecycle.reload_returned = true;
         lifecycle.old_targets_retired = result.old_targets_retired === true;
         lifecycle.worker_replaced = result.worker_replaced === true;
@@ -120,7 +124,7 @@ try {
         lifecycle.failure_code = safeFailureCode(error);
         lifecycle.failure_stage = report.stage;
         lifecycle.transport_failure_class = safeTransportClass(transportFailureClass);
-        if (lifecycle.failure_code === 'native_extension_worker_retirement_unverified')
+        if (error.lifecycleEvidence)
           lifecycle.retirement_evidence = error.lifecycleEvidence ?? null;
       }
       report.lifecycle = lifecycle;
