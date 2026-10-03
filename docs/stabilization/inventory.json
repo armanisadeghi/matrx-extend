@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T18:44:58.697829+00:00",
+  "updated_at": "2026-10-03T18:46:41.991293+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -21344,10 +21344,14 @@
             "EXT-F-1012-C09"
           ],
           "preconditions": [
-            "Sign in as admin; use a controlled ordinary page with known DOM, structured data and network events; use owned disposable saved patterns."
+            "Sign in as admin; use a controlled ordinary page with known DOM, structured data and network events; use owned disposable saved patterns.",
+            "Record exact source/build receipt, output tree, runtime extension identity, Chrome runtime, owned profile and admin identity. Reopen the actual panel after extension reload; never substitute a regular extension URL tab for the side panel."
           ],
           "steps": [
-            "Click Snapshot."
+            "Click Snapshot.",
+            "Capture current document; reload the same tab at the same URL and verify top-frame documentId changes and completed results clear.",
+            "Using the named owned Chrome scripting-response boundary, hold a pending Snapshot response, reload, release the old success, and verify no stale result; repeat with a rejected old response.",
+            "Capture again on the current document and verify a fresh result. Track auth-transition and current-document service-error recovery separately; no full-case pass while they are missing."
           ],
           "expected": [
             "Current page snapshot result renders; busy/error states are clear."
@@ -21364,13 +21368,37 @@
           "results": {
             "admin": {
               "status": "partial",
-              "run_id": "siteaccess-prepare-pathchecked-sol-20261002-01",
-              "evidence": "docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json",
-              "detail": "Actual Chrome owned profile and loaded175 folder/version verified before/after extension Reload. Withheld Prepare recovered through exact-origin Allow plus separate Reload; fresh Prepare757ms/3steps. Completed Prepare and Snapshot clear on same-URL reload. Admin Deny, controlled late results, failure retry and broad remaining controls unverified.",
-              "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
-              "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
-              "provenance_correction": "Earlier deleted-profile observations remain unbound; this fresh run establishes its own loaded path and receipt only.",
-              "prior_evidence": "docs/stabilization/reports/prepare-document-native-20261002.json"
+              "run_id": "snapshot-d59-final-peer-20261003-02",
+              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "evidence": [
+                ".research/snapshot-final-native-peer.json",
+                ".research/snapshot-current-native.json"
+              ],
+              "verified_substeps": [
+                "Initial and fresh current-document Snapshot render one expected titled row.",
+                "Same-tab/same-URL reload changes top-frame documentId and clears completed rows.",
+                "Held real old-document response success and rejection are released after reload; neither restores old rows, pending state or controlled stale error."
+              ],
+              "remaining_criteria": [
+                "Auth transition behavior.",
+                "Current-document service error, visible recovery and retry.",
+                "Broader D59 shared consumers remain separately unverified."
+              ],
+              "release_scope": "CI development artifact; not public176 Store installation/update acceptance.",
+              "prior_evidence": [
+                {
+                  "status": "partial",
+                  "run_id": "siteaccess-prepare-pathchecked-sol-20261002-01",
+                  "evidence": "docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json",
+                  "detail": "Actual Chrome owned profile and loaded175 folder/version verified before/after extension Reload. Withheld Prepare recovered through exact-origin Allow plus separate Reload; fresh Prepare757ms/3steps. Completed Prepare and Snapshot clear on same-URL reload. Admin Deny, controlled late results, failure retry and broad remaining controls unverified.",
+                  "source_sha": "2a5fbe64686b8f32dea8f904bb92f70bbf6e2d9a",
+                  "tree_sha256": "2649082de6a9f709eb34baa18f2d0d753570e4f28e4612b33638c2fd34279233",
+                  "provenance_correction": "Earlier deleted-profile observations remain unbound; this fresh run establishes its own loaded path and receipt only.",
+                  "prior_evidence": "docs/stabilization/reports/prepare-document-native-20261002.json"
+                }
+              ]
             }
           }
         },

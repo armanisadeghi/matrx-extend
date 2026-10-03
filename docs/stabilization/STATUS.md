@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-03 18:44 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T18:44:58.697829+00:00. 205 features · 759 cases · 1331 controls · 93 linked defect records.
+Generated 2026-10-03 18:46 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T18:46:41.991293+00:00. 205 features · 759 cases · 1331 controls · 93 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -1051,8 +1051,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: showcase-installed-d43-001, docs/stabilization/runs/showcase-installed-d43-001.json
 - EXT-F-1012-T08 · admin: Partial. Authenticated native admin on exact imported CI development artifact 0.2.176; all six bounded Prepare cases passed, including held late success/rejection after navigation to a distinct full URL with changed top-frame documentId. Same-origin demo route only. Snapshot on this artifact, remaining T08 controls/dimensions, and Store/public-release acceptance remain unverified.
   Evidence / build / date recorded: prepare-local-native-20261003-08, .research/prepare-native-acceptance-peer.json
-- EXT-F-1012-T09 · admin: Partial. Actual Chrome owned profile and loaded175 folder/version verified before/after extension Reload. Withheld Prepare recovered through exact-origin Allow plus separate Reload; fresh Prepare757ms/3steps. Completed Prepare and Snapshot clear on same-URL reload. Admin Deny, controlled late results, failure retry and broad remaining controls unverified.
-  Evidence / build / date recorded: siteaccess-prepare-pathchecked-sol-20261002-01, docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json
+- EXT-F-1012-T09 · admin: Partial.
+  Evidence / build / date recorded: snapshot-d59-final-peer-20261003-02, ['.research/snapshot-final-native-peer.json', '.research/snapshot-current-native.json']
 - EXT-F-1012-T10 · admin: Partial. Type chip and blank/matching/nonexistent filters verified on actual Google Article page. Auth-transition, service-error and broader chips remain unverified.
   Evidence / build / date recorded: showcase-structured-journal-retest-20260928, ['docs/stabilization/reports/showcase-structured-journal-retest.json']
 - EXT-F-1012-T11 · admin: Partial. Blank/matching returned current BreadcrumbList; nonexistent shows honest no-match; changed-page live no-JSONLD state verified. Auth/fault dimensions remain unverified.

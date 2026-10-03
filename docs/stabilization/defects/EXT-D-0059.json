@@ -11,7 +11,7 @@
     "Inspect whether the previous document report remains current, or a pending old-document completion appears after reload."
   ],
   "expected": "Results and pending completions are scoped to the actual document, not merely the tab ID and URL.",
-  "actual": "Source trace shows useActiveTab lacks document identity and consumers invalidate only tab ID/URL; same-URL reload is not distinguished. Native reproduction remains unverified.",
+  "actual": "Shared document-identity repair is present. Independent exact991385d9 native admin Snapshot now clears completed results on same-URL reload and ignores both late success and rejection from the previous document; a fresh current-document capture succeeds. Broader consumers and remaining auth-transition/service-error criteria are unverified.",
   "severity": "S2: old-document results can appear current",
   "priority": "P1: shared document identity correctness",
   "state": "in-fix",
@@ -47,9 +47,11 @@
     "docs/stabilization/reports/picker-navigation-escalation.json",
     "docs/stabilization/reports/d59-pattern-probe-ownership-20261002.json",
     "docs/stabilization/reports/d59-pattern-probe-final-peer-20261002.json",
-    ".research/prepare-native-acceptance-peer.json"
+    ".research/prepare-native-acceptance-peer.json",
+    ".research/snapshot-current-native.json",
+    ".research/snapshot-final-native-peer.json"
   ],
-  "verification_status": "Bounded native admin evidence on the exact 0.2.176 CI development artifact covers Prepare same-URL and different-full-URL old-document late settlements. D59 remains in-fix: Snapshot on the current artifact and the broader shared document-identity consumers are still unverified.",
+  "verification_status": "Prepare and Snapshot have bounded independent native evidence. D59 remains in-fix for broader shared consumers; full T09 auth-transition/current-document service-error acceptance remains pending.",
   "transition_history": [
     {
       "at": "2026-09-28T15:30:38.553635+00:00",
@@ -86,11 +88,23 @@
     "unverified": "Failed retry, controlled late completion/rejection, pending Snapshot and broader D59 consumers."
   },
   "current_native_evidence": {
-    "report": ".research/prepare-native-acceptance-peer.json",
-    "run": "prepare-local-native-20261003-08",
+    "report": ".research/snapshot-final-native-peer.json",
+    "commit": "48a1a4d4",
+    "clarification_commit": "8d666198",
+    "run": "snapshot-d59-final-peer-20261003-02",
     "status": "partial",
-    "artifact": "CI development test run 37107627454 artifact 11268886169; source 3092444e73094cb0023f6086202869ccbd22978b; tree 025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
-    "verified": "Current-artifact Prepare passed same-URL reload and distinct-full-URL late success/rejection cases; destination document identity changed and stale outcomes did not surface.",
-    "scope_limit": "Prepare only. Snapshot on this current artifact and the remaining shared document-identity consumers are unverified; keep D59 in-fix."
-  }
+    "artifact": "CI37129518563 artifact11275878549 source991385d9816b31a568619522e4795c001b4d3a06 treee4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+    "verified": "Five independent actual admin Snapshot cases: initial, completed same-URL reload clear, late old-document success/rejection ignored after changed top-frame documentId, fresh capture. Resource valid exit0. Root matched four raw hashes.",
+    "scope_limit": "Not full T09, other consumers, or Store release. Browser version149.0.7827.55/Playwright1.62.1 is post-run filesystem metadata, not live Browser.getVersion. Historical guard profile path measured disk only; actual Chrome profile was harness-owned disposable. Raw success receipt deterministic; independent journal/runID supplies run binding."
+  },
+  "prior_native_evidence": [
+    {
+      "report": ".research/prepare-native-acceptance-peer.json",
+      "run": "prepare-local-native-20261003-08",
+      "status": "partial",
+      "artifact": "CI development test run 37107627454 artifact 11268886169; source 3092444e73094cb0023f6086202869ccbd22978b; tree 025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+      "verified": "Current-artifact Prepare passed same-URL reload and distinct-full-URL late success/rejection cases; destination document identity changed and stale outcomes did not surface.",
+      "scope_limit": "Prepare only. Snapshot on this current artifact and the remaining shared document-identity consumers are unverified; keep D59 in-fix."
+    }
+  ]
 }
