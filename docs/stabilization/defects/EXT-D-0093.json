@@ -36,7 +36,11 @@
     ".research/settings-audit-error-repair.json",
     ".research/settings-audit-error-final-peer.json",
     ".research/settings-audit-concurrency-repair.json",
-    "tests/unit/device-key-concurrency.test.ts"
+    "tests/unit/device-key-concurrency.test.ts",
+    ".research/settings-audit-concurrency-peer.json",
+    ".research/audit-lock-ci-repair.json",
+    ".research/audit-lock-unavailable-recovery.json",
+    ".research/audit-unavailable-final-peer.json"
   ],
   "transition_history": [
     {
@@ -58,7 +62,7 @@
       "reason": "Source repair committed; native acceptance remained pending."
     }
   ],
-  "current_work": "Concurrency finding CONFIRMED by guarded RED. Shared native Web Lock repair and persisted-id cache validation passed final 24 focused tests, including real Ed25519 signatures from both overlapping activations after module restart, and TypeScript compile. Lock-removal and constant-lookup mutations failed with byte-identical restoration. Fresh peer and new exact CI artifact/native Chrome verification remain pending. Keep in-fix.",
+  "current_work": "Concurrency repair43d28aa0 and Web Locks fixture repair03b80268 passed source peers and full CI37128201197. Capability-specific recovery991385d9 passed guarded13 focused tests, compile, gut and branch mutation. Fresh source review49371f48 accepts behavior but identified missing persistent-history non-mutation guard coverage; correction is in progress. Exact newer-artifact native Settings acceptance remains pending.",
   "closure_requirement": "Independent review plus exact-build native Settings verification of actionable failures and single-rotation retry behavior without rotating real user/device keys.",
   "independent_source_review": {
     "commit": "22f29e68",
@@ -67,7 +71,8 @@
     "runtime_verdict": "partial_native_pending"
   },
   "remaining_work": [
-    "Exact new-CI-artifact native Settings failure/retry and cross-context receipt verification; no source test closes this requirement.",
-    "Minor independent finding: when Web Locks is unavailable, current rotation error invites a retry that cannot restore the missing capability. Preserve honest capability-specific recovery guidance before final closure."
+    "Complete independent guard review for unsupported-lock persistent-history non-mutation; no production failure was identified by this finding.",
+    "Exact new-CI-artifact native Settings failure/retry and cross-context receipt verification without rotating real user/device keys.",
+    "Subsequent release gates and exact guest/non-admin candidate acceptance before Store submission."
   ]
 }
