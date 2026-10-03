@@ -33467,6 +33467,27 @@
               "detail": "Exact release0.2.176 guest first/reload grounded answers, all resource phases valid, artifact unchanged after interaction. Hosted unpacked receipt-bound acceptance; not Google-installed lifecycle or exhaustive Chat. Original startup schema incident EXT-D-0088 closed with separate published130 functional and nonadmin surrounding evidence."
             }
           },
+          "defect_verification": {
+            "defect_id": "EXT-D-0096",
+            "status": "bounded_guest_pass_member_and_store_pending",
+            "source_commit": "62e1ce4c",
+            "independent_source_review": "476aee80",
+            "ci_artifact": {
+              "run_id": 37153902142,
+              "artifact_id": 11285197390,
+              "source_sha": "b895bdbcfff3c206c2c1058ad95aee56495ab30a",
+              "version": "0.2.178",
+              "tree_sha256": "7cba6861e39736b8716a380012311f74f2df116952ea05f80e51e416dcddf623"
+            },
+            "native_run": "urgent-context-rules-fixed-ci-01",
+            "evidence": ".research/urgent-guest-context-native-peer.json",
+            "detail": "Fresh guest Values chip open/close and two page-grounded terminal replies across panel reload passed on the exact imported development artifact; no user_surface_state GET occurred from observer attachment through the tested interactions. Frozen published 0.2.176 positive control observed the owner-table GET on Values open. Observer attached after panel startup.",
+            "not_established": [
+              "Signed-in non-admin positive HTTP 200 owner read.",
+              "Published Store package with the repair.",
+              "Full EXT-F-2013-T10/T11 or Chat feature acceptance."
+            ]
+          },
           "result_history": [
             {
               "mode": "guest",
@@ -33523,7 +33544,7 @@
             "Viewer opens actual stored delivered text for the exact turn; no client-generated message ID is substituted."
           ],
           "defect_ids": ["EXT-D-0096"],
-          "verification_status": "Source consumer repair guarded29/29 and compile; native unverified. Exact text viewer wire gap EXT-D-0075 remains.",
+          "verification_status": "D96 guest owner-read repair has bounded native guest verification on development artifact 0.2.178; signed-in member positive read remains unverified. This does not verify receipt-block parity or persisted delivered text; exact text viewer wire gap EXT-D-0075 remains.",
           "results": {}
         }
       ],
@@ -33539,9 +33560,10 @@
           ],
           "run_ids": [
             "guest-grounding-peer-native-20261001-001",
-            "hosted-guest-controlled-20261003"
+            "hosted-guest-controlled-20261003",
+            "urgent-context-rules-fixed-ci-01"
           ],
-          "retest_status": "Development175 controlled guest reply+reload passed; originalStore130 native and broader Chat remain unverified."
+          "retest_status": "Development175 and bounded development0.2.178 guest reply+reload passed; D96 guest owner-read fix is verified only after observer attachment. Store0.2.176 still has the old request path; member positive read, broader Chat, and full feature acceptance remain unverified. Cell remains partial."
         },
         "member": {
           "test_status": "unverified",

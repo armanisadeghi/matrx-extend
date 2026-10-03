@@ -10,16 +10,38 @@
     "The shared buildChatContext path calls ensureContextRulesReady without regard to auth. Its loadContextRules then SELECTs users.user_surface_state with an anon Supabase client. Read-only live grants show authenticated SELECT, no anon SELECT; authenticated RLS includes owner reads."
   ],
   "expected": "Guest sends and Values opens use local session rules without an owner-table read; a signed-in person's rules load only for that identity and never bleed across account changes.",
-  "actual": "Guest sends record a 42501 owner-table read error. The store can retain prior rules across auth transitions and older reads or queued writes can settle after a new identity takes over.",
+  "actual": "Published Store 0.2.176 guest sends and Values opens attempt the owner-only users.user_surface_state read (HTTP 401 in the captured native chip-open request; backend logs separately record SQLSTATE 42501). Source previously retained rules across identity transitions and could let older reads or queued writes settle after a new identity took over. The fix now keeps guest rules local and invalidates prior identity work; member and Store verification remain pending.",
   "severity": "S2: visible context-settings failure and possible cross-identity rule state in a shared UI session",
   "priority": "P1: repair shared identity-aware context-rule boundary before trusting guest context controls",
-  "state": "in-fix",
+  "state": "fixed",
   "evidence": [
     "Valid native release176 guest run urgent-live-guest-20261003-02 passed two grounded turns on backend b3a87d8b while ops.system_error simultaneously recorded users.user_surface_state 42501; this defect is not proven to cause the user's reported terminal Chat error.",
     "Live database read-only role grants and pg_policies inspection: authenticated SELECT exists with owner policy; anon SELECT grant absent.",
     "Guarded planted-break RED urgent-context-rules-red-02: removing guest read skip made owner-table SELECT assertion fail; original source restored byte-identically.",
-    "Guarded GREEN urgent-context-rules-green-03: 6 focused tests passed, including real request context_withheld and delayed cross-identity read/write cases. Compile urgent-context-rules-compile-01 passed."
+    "Guarded GREEN urgent-context-rules-green-03: 6 focused tests passed, including real request context_withheld and delayed cross-identity read/write cases. Compile urgent-context-rules-compile-01 passed.",
+    "Product repair 62e1ce4c: guest context rules stay in local session state; signed-in identity changes clear state and invalidate delayed reads and queued writes. Independent source review 476aee80 passed; see .research/urgent-guest-context-peer.json.",
+    "Successful main CI 37153902142 / artifact 11285197390, source b895bdbcfff3c206c2c1058ad95aee56495ab30a, development 0.2.178, imported tree 7cba6861e39736b8716a380012311f74f2df116952ea05f80e51e416dcddf623.",
+    "Bounded native guest verification .research/urgent-guest-context-native-peer.json: old Store 0.2.176 positive control reached Values and observed one users.user_surface_state GET (HTTP 401) while guest access token was absent; fixed development artifact opened Values and completed two page-grounded turns across panel reload with no table GET after observer attachment. Raw acceptance SHA-256: 89de5e93914bea3e60284af843eb7950783c1efb125c145d2c78f4146487ed94 (positive control) and 0fbedb52ac0f5c29ffc8b743825b2f994939bb0da9469c52118cf6371a1ed0b4 (fixed artifact). These HTTP responses are not SQLSTATE 42501 evidence.",
+    "Resource journals: docs/stabilization/resource-journals/urgent-context-rules-positive-176-01.jsonl (SHA-256 f0e91a336bad2e343c7bff445f6ea244febd771d22c4c89afa1cad172e0caa46) and docs/stabilization/resource-journals/urgent-context-rules-fixed-ci-01.jsonl (SHA-256 2c9c9eea962c56b5a5b0119ff910ab1b9bf448feeb484e98bc3f374026f42399)."
   ],
-  "current_work": "Source repair and focused guard are complete; independent peer review and final CI/native verification remain. Existing Store 0.2.176 still has the defect. The reported instant guest Chat terminal error remains an open, separately investigated symptom.",
-  "closure_requirement": "Review final source, pass current CI, and verify fresh guest and signed-in member on the exact resulting development artifact, including absence of a new guest owner-table 42501. Then distinguish source fixed from published Store status."
+  "transition_history": [
+    {
+      "at": "2026-10-03T21:16:33.499Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source repair 62e1ce4c passed independent review 476aee80 and successful main CI 37153902142. Guarded native verification on exact imported development artifact 11285197390 passed fresh guest Values open and two grounded turns across panel reload with no owner-table GET after observer attachment; the frozen Store 0.2.176 positive control caught its actual owner-table GET. State means the bounded guest source path is fixed, not that member or Store acceptance is closed."
+    }
+  ],
+  "current_work": "The guest owner-table read and identity-isolation source defect is fixed on main and bounded guest native verification passed on development 0.2.178. Keep D96 open/fixed pending a signed-in non-admin positive read and published Store verification; Store 0.2.176 remains the old defective package. A separate fourth-message guest access failure was reproduced and traced by the incident lane to guest_ai_allowance_used 403; it is not evidence for or against this owner-table defect, and equivalence to the user's exact report is not established.",
+  "member_acceptance_preparation": {
+    "status": "prepared_not_executed",
+    "artifact_requirement": "Use the exact latest successful main CI development artifact containing 62e1ce4c; record CI run, artifact ID, source SHA, version and tree hash. This is not Store acceptance.",
+    "existing_auth_path": "Reuse signInSettings({ mode: 'member', memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE }) from tests/browser/settings-native-auth-driver.mjs. It uses the existing member magic-link fixture, first-party web identity check and canonical non-admin check (HTTP 200, zero admin rows); do not print or persist the link, email, user ID, or token.",
+    "minimal_read_only_case": "In a fresh owned profile, load the exact artifact, sign in with that existing non-admin member, select the already authorized organization through the existing helper if required, open Chat and the actual Values chip once, and observe the exact users.user_surface_state GET. Require GET + users schema + HTTP 200 + request owner matches the verified member identity in memory. Record booleans/status only; do not read response body, toggle a rule, save, or persist user state.",
+    "not_established": [
+      "No member-positive request was run in this lane; do not claim HTTP 200 until native evidence exists.",
+      "No Store package contains the repair yet; do not promote the Store or overall Chat case."
+    ]
+  },
+  "closure_requirement": "Keep state fixed but not closed. Run the prepared existing-member positive HTTP 200 read on an exact successful CI artifact with the repaired source, then verify an updated published Store package and repeat the bounded guest no-read check. Preserve D96 as separate from the guest allowance 403 incident; do not broaden database grants."
 }

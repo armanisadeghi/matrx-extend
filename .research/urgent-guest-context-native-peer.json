@@ -41,7 +41,7 @@
       "The native case proves two messages in a fresh profile. Root is separately testing the repeated-message edge that may explain the user's instant failure.",
       "The signed-in non-admin positive-read path was not run.",
       "This is a development CI artifact, not Store installation or release acceptance.",
-      "The user's reported immediate terminal Chat error remains unreproduced and unresolved."
+      "A separate installed-Store fourth-message access failure is now reproduced after three prior guest completions and attributed by the incident lane to guest_ai_allowance_used HTTP 403. Exact equivalence to the user's original report is not established; this is separate from D96."
     ]
   },
   "verdict_b_source_quality": "PASS_BOUNDED_INDEPENDENT_REVIEW",
@@ -54,6 +54,11 @@
     "node --check and Biome passed for both owned runner files; git diff --check passed. Main CI run 37154229283 completed successfully after the test-only observer commit."
   ],
   "artifact_boundary": "The successful development artifact source is b895bdbc, before metadata/documentation release bump 0.2.179. The current checkout has no changes to the tested Context Rules or Chat context product files after b895bdbc. No 0.2.179 artifact or Store package was tested.",
+  "related_installed_access_failure": {
+    "evidence": ".research/urgent-installed-guest-fourth-20261003.json",
+    "server_attribution": ".research/guest-live-incident-server.json",
+    "summary": "A fourth guest prompt on installed Store 0.2.176 failed after three earlier completions; the incident lane traced the access response to guest_ai_allowance_used HTTP 403. This is not the Context Rules owner-read error and is not definitively matched to the user's original report."
+  },
   "product_source_blob_comparison": {
     "src/state/context-rules.ts": "c645f47a6a7c78c173ba06ebeac9135d3e904038 at both tested artifact source b895bdbc and current HEAD",
     "src/lib/chat/context/index.ts": "afaf04d7dc0f61d211db9dd3a579061c66b0280d at both tested artifact source b895bdbc and current HEAD"
