@@ -32,12 +32,13 @@
     "limit": "Point snapshots do not prove the server version was unchanged throughout the interval"
   },
   "existing_chrome_inventory": {
-    "result": "Chrome is running with one CUA-exposed browser session named armansadeghi.com, showing the publisher dashboard and other personal tabs; no signed-out guest or public demo tab was evidenced",
+    "result": "Chrome is running with one CUA-exposed browser session named armansadeghi.com. A new HTTPS public demo tab loaded and eventually showed Arman's signed-in frontend. The native Extensions popup's Full access list showed seven other extensions and no visible Matrx Extend entry; this does not prove extension absence elsewhere or establish an extension guest state",
     "profile_identity": "unverified; CUA security policy denied chrome://version and forbade indirect inspection of that blocked browser page",
-    "disposition": "No new browser/profile launch or interaction with the personal publisher session for guest acceptance"
+    "disposition": "No new browser/profile launch, account change, or Store guest acceptance in this personal session"
   },
   "remaining": [
-    "Diagnose the macOS top measurement failure and obtain a fresh guarded admission on an adequate compatible host",
+    "Diagnose the macOS top measurement failure: the current guard log has only execFile's generic Command failed text, with no exit code, signal, or stderr; a bounded readiness probe should capture those nonsecret fields before another browser run",
+    "Obtain a fresh guarded admission on an adequate compatible host and keep all runtime preparation under its owned permit",
     "Run exact public Store 0.2.130 CRX in the owned native Chrome side panel against the public demo page",
     "Observe the first grounded guest answer and a distinct follow-up after panel reload",
     "Preserve a complete resource receipt and browser artifact; no result from these two attempts can be promoted to product acceptance"
