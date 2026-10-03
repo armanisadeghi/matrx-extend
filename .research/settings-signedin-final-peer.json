@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "reviewed_commits": [
+    "1d49da3a935444e56e53df7b6a9c37069fe88d52",
+    "2fa4e1708bd3e70bfd2c533cbd68383f81a6fc0c"
+  ],
+  "scope": "Independent source review of signed-in Settings D87 acceptance and repair; no browser launched, no heavy tests run.",
+  "prior_findings": {
+    "post_reload_identity_and_role_were_cached_only": "ADDRESSED: each signed-in reload reopens Settings Account and Organization; it requires rendered email/role and stored extension profile/org to match expected values, then fetches first-party whoami and compares the same UUID/email. Member mode also requires a new observed HTTP 200 canonical admin.admins read with zero rows for that UUID.",
+    "member_active_org_storage_shape_was_misread_as_string": "ADDRESSED: panelIdentity now reads the actual {id,name} object, with a focused shape guard.",
+    "member_org_fixture_not_bound_to_rendered_selection": "ADDRESSED for the named fixture: the runner selects Matrx's Org and requires the persisted UUID/name to match the current rendered selection before and after reload. The real Organization UI is populated from membership-backed active organizations.",
+    "six_case_and_guest_assertions": "ADDRESSED / retained: original six cases remain in order; guest checks remain and are not changed by the signed-in helper path. The readiness report cites the prior native guest pass; not independently rerun here."
+  },
+  "verdict_a": {
+    "status": "PARTIAL_NATIVE_PENDING",
+    "source_acceptance": "PASS: admin/member identity, role, and selected-organization assertions run before initial acceptance and after both reloads; six persistence cases retained.",
+    "runtime": "Admin and member native outcomes remain unverified pending explicit transfer of the native execution permit. Guest prior pass was not repeated.",
+    "evidence": "tests/browser/settings-d87-native-acceptance.mjs reload(); tests/browser/settings-native-auth-driver.mjs verifyCurrentSettingsIdentity(); tests/browser/member-native-auth-proof.mjs; SettingsView and use-auth live paths.",
+    "missing_extra_misunderstood": "No missing or extra D87 Settings persistence case found in the reviewed runner."
+  },
+  "verdict_b": {
+    "status": "PASS_WITH_RUNTIME_PENDING",
+    "reuse": "PASS: existing native panel, first-party whoami, admin-check observer, storage, and Settings UI helpers are reused.",
+    "no_legacy_and_platform": "PASS: repair adds no product shim or parallel product implementation; product changes in 2fa4e170 are the separate Audit Key lane documented in readiness, outside this D87 repair.",
+    "nothing_silent": "PASS: mismatched identity, rendered role, org UUID/name, failed network read, or stale/missing evidence prevents acceptance.",
+    "credentials_and_provenance": "PASS by source: hosted wrapper moves credentials/link into mode-0600 private files, removes secret env values from child env, and removes files in finally; D87 report omits email/profile/org raw identity and secret values. Receipt/build provenance gates remain.",
+    "guard_quality": "PASS for helper tests: they reject wrong rendered email/role/org and malformed organization shape. They are synthetic guards only; real native behavior remains the live gate.",
+    "possible_new_breakage": "No material D87 regression found. Organization selection is deliberately bound to the existing named preauthorized member fixture; it is not a general multi-organization persona test."
+  },
+  "limits": [
+    "No native browser run performed; do not treat admin/member acceptance as passed.",
+    "Cross-repo system-of-record files under /Users/armanisadeghi/code/common-docs/systems/clients/extension were not present at the instructed path in this checkout; local extension org/auth contracts were inspected instead.",
+    "No tests or compile run per the lane instruction; source review and diff checks only."
+  ],
+  "reviewer": "fresh zero-authorship final peer"
+}
