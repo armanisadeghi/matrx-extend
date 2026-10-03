@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0087",
+  "status": "READINESS_EXPIRED_NATIVE_UNVERIFIED",
+  "product_verdict": null,
+  "scope": "One authorized native settings-persistence acceptance attempt with the reviewed per-phase readiness wait; no implementation or feature verdict.",
+  "hosted_run": {
+    "id": 37111474440,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37111474440",
+    "job_id": 111170073271,
+    "workflow": "Hosted guest side-panel acceptance",
+    "head_branch": "main",
+    "head_sha": "8ee97708ba40beb649ade7779f4975bb23ad69d8",
+    "created_at": "2026-10-03T08:58:24Z",
+    "started_at": "2026-10-03T08:58:24Z",
+    "updated_at": "2026-10-03T09:00:26Z",
+    "conclusion": "failure"
+  },
+  "inputs": {
+    "acceptance_case": "settings-persistence",
+    "development_run_id": 37107627454,
+    "development_artifact_id": 11268886169,
+    "development_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "release_run_id": "",
+    "published_store_crx": false
+  },
+  "synchronized_main_at_dispatch": {
+    "local_head_sha": "8ee97708ba40beb649ade7779f4975bb23ad69d8",
+    "origin_main_sha": "8ee97708ba40beb649ade7779f4975bb23ad69d8"
+  },
+  "artifact_provenance": {
+    "ci_conclusion": "success",
+    "ci_event": "push",
+    "ci_branch": "main",
+    "artifact_name": "matrx-extend-development-test-3092444e73094cb0023f6086202869ccbd22978b-37107627454-1",
+    "expired": false,
+    "version": "0.2.176",
+    "artifact_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660"
+  },
+  "source_evidence": {
+    "baseline_repair_commit": "0b8c43e8bc5d0fe5de77bbbb997dcc3f886e4509",
+    "baseline_peer_review_commit": "1a58a9fb",
+    "readiness_commit": "16af748f308fda21493857c1b488440b40965cef",
+    "readiness_peer_review_commit": "8ee97708ba40beb649ade7779f4975bb23ad69d8",
+    "settings_case_source": "tests/browser/settings-d87-native-acceptance.mjs",
+    "settings_baseline_verified": "The case chooses Light and verifies its persisted value, then chooses System and verifies that persisted baseline before rejection, retry, rapid-choice overlap, reload, and post-hash assertions.",
+    "readiness_verified": "The workflow waits for measured readiness before each of the three phases; the existing resource guard invocations and thresholds are unchanged.",
+    "verification": "The Settings case and readiness/workflow files are unchanged from their reviewed commits in the dispatched source."
+  },
+  "terminal_failure": {
+    "step_number": 6,
+    "step": "Wait for measured package readiness",
+    "code": "RESOURCE_READINESS_EXPIRED",
+    "process_exit_code": 1,
+    "state": "Seven samples did not reach the required three consecutive healthy samples; the healthy streaks were [1,0,0,0,0,0,0].",
+    "readiness_samples": [
+      { "busy_fraction": 0.59, "load_per_cpu": 12.9, "healthy_streak": 1 },
+      { "busy_fraction": 0.8, "load_per_cpu": 10.14, "healthy_streak": 0 },
+      { "busy_fraction": 0.63, "load_per_cpu": 8.17, "healthy_streak": 0 },
+      { "busy_fraction": 1.0, "load_per_cpu": 6.7075, "healthy_streak": 0 },
+      { "busy_fraction": 1.0, "load_per_cpu": 5.7025, "healthy_streak": 0 },
+      { "busy_fraction": 0.84, "load_per_cpu": 4.71, "healthy_streak": 0 },
+      { "busy_fraction": 0.68, "load_per_cpu": 3.98, "healthy_streak": 0 }
+    ]
+  },
+  "phase_receipts": {
+    "package_readiness": "FAILED_RESOURCE_READINESS_EXPIRED",
+    "package_guard": "NOT_STARTED_NO_ADMISSION_RECEIPT",
+    "browser_readiness": "SKIPPED_AFTER_PACKAGE_READINESS_FAILURE",
+    "browser_guard": "SKIPPED",
+    "acceptance_readiness": "SKIPPED",
+    "native_settings_case": "SKIPPED_NO_UI_OR_ASSERTIONS"
+  },
+  "native_case_evidence": {
+    "settings_ui_opened": false,
+    "baseline_observed": false,
+    "light_choice_observed": false,
+    "persisted_light_observed": false,
+    "system_choice_observed": false,
+    "persisted_system_observed": false,
+    "rejection_observed": false,
+    "retry_observed": false,
+    "rapid_choice_overlap_observed": false,
+    "reload_observed": false,
+    "post_hash_observed": false,
+    "native_result_report_present": false,
+    "screenshots_present": false
+  },
+  "uploaded_artifact": {
+    "id": 11269154187,
+    "name": "hosted-guest-37111474440-1",
+    "expired": false,
+    "native_result_report_present": false,
+    "matching_run_resource_journals_present": false,
+    "note": "The uploaded archive contained only journals named for older run 37105304739; they were excluded as unrelated evidence."
+  },
+  "overall_status": "NO_PRODUCT_VERDICT",
+  "follow_up_attempts": [],
+  "rerun_or_fix_performed": false
+}
