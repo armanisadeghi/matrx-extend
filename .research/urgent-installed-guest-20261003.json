@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "status": "BOUNDED_PASS_USER_REPORTED_ERROR_UNREPRODUCED",
+  "observed_at_utc": "2026-10-03T20:47:42Z",
+  "observer": "root native Chrome accessibility UI",
+  "installed_extension": {
+    "version": "0.2.176",
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "source": "Chrome Web Store (confirmed Chrome extension Details)",
+    "initial_enabled": false,
+    "restored_enabled": false,
+    "auth": "Visible guest banner throughout; no extension sign-in performed"
+  },
+  "resource": {
+    "run_id": "urgent-installed-guest-20261003-01",
+    "decision": "valid",
+    "journal": "docs/stabilization/resource-journals/urgent-installed-guest-20261003-01.jsonl",
+    "journal_sha256": "e79217f80cbad1915ec6d18a3a990aff862be34c2ea1f429c2faeb52b0a34597"
+  },
+  "cases": [
+    {
+      "action": "Send Hi, can you help me? from public demo page",
+      "result": "Terminal assistant answer; no error/paywall/login requirement",
+      "status": "pass"
+    },
+    {
+      "action": "New chat then Analyze the current page on public demo page",
+      "result": "Terminal grounded answer with Capture/Understand/Use and actual page content",
+      "status": "pass"
+    },
+    {
+      "action": "New chat then Analyze the current page on Chrome Web Store listing",
+      "result": "Page read and text extraction tools failed due restricted page; agent subsequently used Web and gave terminal Store listing summary with explicit browser restriction explanation",
+      "status": "partial",
+      "limit": "Multiple failed tool rows before answer; does not reproduce immediate terminal error"
+    }
+  ],
+  "backend_observations": [
+    {
+      "sha": "b3a87d8b66e76f5f7f3f34b83d31de002a631242",
+      "built_at": "2026-10-03T19:58:02Z",
+      "relation": "before installed test"
+    },
+    {
+      "sha": "0d2c8772215c8ec94d94a30dece489ea12be1ebc",
+      "built_at": "2026-10-03T20:21:48Z",
+      "relation": "during installed test"
+    }
+  ],
+  "limitations": [
+    "Backend changed during test; individual turns not bound to an exact server SHA.",
+    "Does not explain or disprove user-reported immediate guest error. Exact error and trigger requested while investigation continues.",
+    "Installed extension was already off; enabling then restoring off may reset worker lifetime. Pre-toggle failing state was not available.",
+    "No byte-level installed-package hash captured; identity/version/source verified in Chrome UI.",
+    "No overall feature or release readiness claim."
+  ],
+  "state_changes": "Three test guest conversations created; no user conversations deleted. Original extension off state restored. Agent-created browser tab closed after test."
+}
