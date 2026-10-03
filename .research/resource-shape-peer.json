@@ -1,0 +1,12 @@
+{
+  "commit": "78e49da6",
+  "verdict_a": {
+    "outcome": "PASS",
+    "evidence": "The three new allowances cover numeric GiB values used for resource admission/safety thresholds: diskIsLow inputs, and host free-space checks before integration workloads. They do not replace a byte-count-to-display-string helper. The two integration files use toFixed only in skip diagnostics; threshold comparisons use the unrounded number."
+  },
+  "verdict_b": {
+    "outcome": "PASS_WITH_RISK",
+    "evidence": "No scanner logic or broad exclusions changed. node scripts/check-package-twins.mjs --strict exits 0 with zero uncensused shape bodies; existing census debt remains reported. Allow entries skip each whole file, so future formatFileSize-shaped code added to one of those files would be exempt until the entry is revisited."
+  },
+  "scope": "Source review plus bounded strict scanner; no runtime edits, allowances, build, browser, install, or local-heavy checks."
+}
