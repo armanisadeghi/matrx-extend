@@ -55,30 +55,18 @@ jobs:
           source_sha="$(git rev-parse "v${version}^{commit}")"
           echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
 
-      - name: Refuse an unsafe host before installing browser runtime
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/guest-resource-profile"
-          node scripts/stabilization-resource.mjs check --profile-dir "$RUNNER_TEMP/guest-resource-profile"
-
-      - name: Install isolated Playwright CDP client
-        shell: bash
-        env:
-          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
-        run: |
-          npm install --prefix "$RUNNER_TEMP/browser-runtime" --no-save --ignore-scripts playwright@1.56.1
-          "$RUNNER_TEMP/browser-runtime/node_modules/.bin/playwright" install chromium
-
       - name: Exercise the actual signed-out Chrome side panel
         shell: bash
         env:
           MATRX_PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser-runtime/node_modules/playwright/index.mjs
+          MATRX_HOSTED_BROWSER_RUNTIME_DIR: ${{ runner.temp }}/browser-runtime
           PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
           MATRX_HOSTED_RELEASE_ARTIFACT_DIR: ${{ steps.release.outputs.artifact_dir }}
           MATRX_HOSTED_GUEST_OUTPUT_DIR: ${{ runner.temp }}/guest-acceptance
           MATRX_HOSTED_RELEASE_SHA: ${{ steps.release.outputs.source_sha }}
-        run: node scripts/stabilization-resource.mjs run --run-id "hosted-guest-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
+        run: |
+          mkdir -p "$RUNNER_TEMP/guest-resource-profile"
+          node scripts/stabilization-resource.mjs run --run-id "hosted-guest-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
 
       - name: Upload browser result and native-panel screenshots
         if: always()

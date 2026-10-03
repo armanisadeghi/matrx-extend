@@ -113,4 +113,23 @@ if (!artifactDirArg || !outputDirArg || !expectedSha) {
 const artifactDir = resolve(artifactDirArg);
 const outputDir = resolve(outputDirArg);
 await mkdir(outputDir, { recursive: true });
-await run({ ...(await prepare(artifactDir, outputDir, expectedSha)), outputDir });
+const prepared = await prepare(artifactDir, outputDir, expectedSha);
+const runtimeDir = resolve(process.env.MATRX_HOSTED_BROWSER_RUNTIME_DIR ?? '');
+if (!process.env.MATRX_HOSTED_BROWSER_RUNTIME_DIR || !process.env.PLAYWRIGHT_BROWSERS_PATH) {
+  throw new Error('hosted_browser_runtime_configuration_missing');
+}
+const installed = await ownedProcess('npm', [
+  'install',
+  '--prefix',
+  runtimeDir,
+  '--no-save',
+  '--ignore-scripts',
+  'playwright@1.56.1',
+]);
+assert.equal(installed.code, 0, 'pinned Playwright install failed');
+const browser = await ownedProcess(join(runtimeDir, 'node_modules/.bin/playwright'), [
+  'install',
+  'chromium',
+]);
+assert.equal(browser.code, 0, 'bundled Chromium install failed');
+await run(prepared);
