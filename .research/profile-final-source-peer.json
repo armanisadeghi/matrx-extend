@@ -6,7 +6,11 @@
     "base_commit": "dfcf8d71133a47e0927c37e4dee3943dd8d9abea",
     "prior_d94_product_commit": "dccc196abb1945664b8ac756825526a5a9a6c7c5",
     "uncommitted_diff_sha256": "01a6e063870117f746e181c717ccdb8e4f2350fc3ce625bb8ea92a59e71798b7",
-    "diff_paths": ["src/hooks/use-user-profile.ts", "src/features/profile/ProfileView.tsx", "src/lib/supabase/user-profile.read.test.ts"],
+    "diff_paths": [
+      "src/hooks/use-user-profile.ts",
+      "src/features/profile/ProfileView.tsx",
+      "src/lib/supabase/user-profile.read.test.ts"
+    ],
     "new_identity_test_sha256": "40c38260525e42a105520d7c77a1c8a20bfdffbc7fd10eddb82e26b9d27dfa59",
     "new_view_test_sha256": "5d3e63128d352680dde5c0b3df0297733e783e17312e586a47ee0c3a977aa27b",
     "binding_limit": "This is a pre-final worktree snapshot. A later builder commit requires fresh independent verification; this report does not approve that commit."
