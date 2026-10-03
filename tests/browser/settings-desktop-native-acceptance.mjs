@@ -52,6 +52,16 @@ let expectedIdentity = null;
 
 function safeCode(error) {
   const message = String(error?.message ?? '');
+  for (const code of [
+    'desktop_reset_local_overlap',
+    'desktop_reset_session_overlap',
+    'desktop_reset_session_fixture_survived',
+    'desktop_refused_reset_removed_local_key',
+    'desktop_refused_reset_removed_session_key',
+    'desktop_refused_reset_changed_local_value',
+    'desktop_refused_reset_changed_session_value',
+  ])
+    if (message.includes(code)) return code;
   if (/^(desktop_|native_sidepanel_)[a-z0-9_]+$/.test(message)) return message;
   if (error?.driverFailure?.code) return error.driverFailure.code;
   return error?.code === 'ERR_ASSERTION' ? 'desktop_assertion_failed' : 'desktop_acceptance_failed';
@@ -671,6 +681,11 @@ try {
       assert.equal((await state(panel)).portSaved, null);
       assert.equal((await panelIdentity(panel)).accessTokenPresent, false);
       const clearedCensus = await storageCensus(panel, beforeReset.baseline);
+      report.reset_census = {
+        local: clearedCensus.local,
+        session: clearedCensus.session,
+        session_fixture_present: clearedCensus.sessionFixturePresent,
+      };
       assert.equal(clearedCensus.local.unexplained, 0, 'desktop_reset_local_overlap');
       assert.equal(clearedCensus.session.unexplained, 0, 'desktop_reset_session_overlap');
       assert.equal(
