@@ -57,7 +57,16 @@
   "live_server_version_endpoint": {
     "git_sha": "0d2c8772215c8ec94d94a30dece489ea12be1ebc",
     "built_at_utc": "2026-10-03T20:21:48Z",
-    "note": "This is the server version endpoint SHA; it does not verify the extension Store package SHA values b3a87d8b / b350b372."
+    "note": "b350b372 and b3a87d8b are AI Dream backend SHAs from the live server version history, not extension Store package SHAs."
+  },
+  "backend_history_attribution": {
+    "reviewed_shas": [
+      { "sha": "b350b372226d3cb172974bc281f94c7702d4487c", "time_local": "2026-10-03T12:27:32-07:00", "subject": "desktop tools: chat proofs for the screen-driving tools on CI device hosts", "relevance": "No guest/chat production change in this commit." },
+      { "sha": "b3a87d8b66e76f5f7f3f34b83d31de002a631242", "time_local": "2026-10-03T12:55:40-07:00", "subject": "sync and release", "relevance": "Release pointer; dependency versions were matrx-ai 0.5.445 and matrx-connect 0.1.173." },
+      { "sha": "0d2c8772215c8ec94d94a30dece489ea12be1ebc", "time_local": "2026-10-03T13:18:06-07:00", "subject": "ship-all 2026-10-03_13-17-08", "relevance": "Release pointer after intervening source commits; dependency versions include matrx-ai 0.5.446 and matrx-connect 0.1.174." }
+    ],
+    "intervening_change": "The b3a87d8b..0d2c8772 source range contains no commit explicitly described as a guest fix. It does include fec0956a941c636beff5f94c01130e60e6c064f1, which adds a cross-client terminal error (empty_reply_at_output_limit) when reasoning consumes the entire model output limit and no visible answer exists; 0d2c8772 updates the matrx-ai dependency from 0.5.445 to 0.5.446. This condition could change the displayed outcome for that specific provider response, but the captured incident contains no matching request/error, so it is not attribution for the reported symptom.",
+    "deployment_observation": "The installed Store test overlapped the server switch: its turns are not bound to either backend SHA. The later bounded greeting/public-demo analyses succeeded, so the earlier symptom remains unreproduced."
   },
   "conclusion": "The targeted Supabase error/request surfaces do not identify the immediate guest Chat failure. The fresh forbidden tool failure is on a separate source_feature and completed its enclosing request. No direct error record or traceback source boundary for the reported symptom was found.",
   "limitations": [
