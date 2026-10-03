@@ -2,7 +2,9 @@
 // Mint a point-use user session for the authenticated server contract gate.
 // The JWT exists only in this process and its release.sh child environment.
 import { spawn } from 'node:child_process';
-import { pathToFileURL } from 'node:url';
+import { existsSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 export async function gateSession(env, request = fetch) {
   const required = [
@@ -52,7 +54,39 @@ export async function gateSession(env, request = fetch) {
   return session.access_token;
 }
 
+// Local releases (release.sh with no caller-supplied AIDREAM_API_TOKEN) read
+// the gate identity from the gitignored LOCAL_GATE_ENV and the public Supabase
+// values from the committed production env. Values already in the environment
+// win, so CI — which runs this file's main path, not --print-env — is unchanged.
+export const LOCAL_GATE_ENV = '.env.release.local';
+const PUBLIC_ENV = '.env.production';
+
+export function localGateEnv(env, root, load = process.loadEnvFile) {
+  for (const file of [LOCAL_GATE_ENV, PUBLIC_ENV]) {
+    const path = resolve(root, file);
+    if (!existsSync(path)) {
+      if (file === LOCAL_GATE_ENV)
+        throw new Error(
+          `Local release gate needs ${LOCAL_GATE_ENV} with AIDREAM_API_URL, AIDREAM_GATE_USERNAME, AIDREAM_GATE_PASSWORD and AIDREAM_GATE_ORGANIZATION_ID`,
+        );
+      continue;
+    }
+    load(path);
+  }
+  return env;
+}
+
 async function main() {
+  if (process.argv[2] === '--print-env') {
+    // KEY=value lines for release.sh to export into its own check processes.
+    // The JWT is written only to this pipe, never to a file or log.
+    const env = localGateEnv(process.env, resolve(dirname(fileURLToPath(import.meta.url)), '..'));
+    const token = await gateSession(env);
+    process.stdout.write(
+      `AIDREAM_API_TOKEN=${token}\nAIDREAM_ORGANIZATION_ID=${env.AIDREAM_GATE_ORGANIZATION_ID}\nAIDREAM_API_URL=${env.AIDREAM_API_URL}\n`,
+    );
+    return;
+  }
   const token = await gateSession(process.env);
   if (process.argv[2] === '--check-auth') {
     process.stdout.write('Release gate identity and organization membership verified.\n');
