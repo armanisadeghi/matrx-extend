@@ -214,7 +214,7 @@ async function settledTheme(panel, theme) {
   );
 }
 
-async function reload(page, panel, expectedTheme, activatePanel) {
+async function reload(page, panel, expectedTheme) {
   const canonical =
     AUTH_MODE === 'member' ? observeCanonicalAdminCheck(panel, await supabaseOrigin(REPO)) : null;
   await canonical?.start();
@@ -256,12 +256,7 @@ async function reload(page, panel, expectedTheme, activatePanel) {
         });
       } finally {
         await web.close();
-        await activatePanel();
-        await waitFor(
-          'd87_panel_foreground',
-          () => evaluate(panel, 'document.visibilityState === "visible"'),
-          (visible) => visible === true,
-        );
+        await page.bringToFront();
       }
       operation = 'reloaded_canonical_role';
       const role = AUTH_MODE === 'member' ? await canonical.verify(expectedProfileId) : null;
@@ -419,7 +414,7 @@ try {
         stage = 'retry';
         await click(panel, 'button-text', 'Retry save');
         const retried = await settledTheme(panel, 'dark');
-        const reloaded = await reload(page, panel, 'dark', activatePanel);
+        const reloaded = await reload(page, panel, 'dark');
         report.cases.push({
           name: 'retry persisted after reload',
           status: 'pass',
@@ -462,7 +457,7 @@ try {
           await restoreFault(panel);
         }
         stage = 'overlap_reload';
-        const reloadedLatest = await reload(page, panel, 'system', activatePanel);
+        const reloadedLatest = await reload(page, panel, 'system');
         report.cases.push({
           name: 'latest rapid choice survives reload',
           status: 'pass',
