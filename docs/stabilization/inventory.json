@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T14:28:23.366924+00:00",
+  "updated_at": "2026-10-03T14:41:01.040297+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -6917,6 +6917,86 @@
             "warm",
             "reload"
           ]
+        },
+        {
+          "id": "EXT-F-1003-T90",
+          "title": "Concurrent audit key rotation preserves receipt verification",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1003-C09",
+            "EXT-F-1003-C25"
+          ],
+          "preconditions": [
+            "Record a resource permit and build receipt for the Settings audit source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never treat source inspection as a result.",
+            "Wait for a fresh build to finish, load its generated extension output, fully Reload after relevant source/manifest/permission/environment changes, then reopen the actual side panel and verify the running extension identity.",
+            "Verify the actual principal is a known authorized admin, not merely signed in.",
+            "Use an owned disposable browser profile and isolated audit keys; never rotate or overwrite a real user profile key. Record only public identifiers, operation counts and redacted failures."
+          ],
+          "steps": [
+            "In one owned disposable extension profile, open two actual same-origin extension contexts and establish the authorized admin identity. Use only that profile's audit key/history.",
+            "Force overlapping key creation or confirmed rotation through the actual product boundary; retain public IDs and signed sample receipt verification outcomes, never private key material.",
+            "Reload both contexts and verify every key actually activated during the overlap remains available to verify its prior receipt; a cached context must observe the persisted active key."
+          ],
+          "expected": [
+            "Origin-wide coordination prevents lost activated-key history and stale-key reuse across extension contexts. Genuine old receipts verify after reload, while altered receipts fail."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "failure-recovery"
+          ],
+          "linked_defects": [
+            "EXT-D-0093"
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "detail": "Inventoried before native execution; source and unit evidence do not establish native acceptance."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-1003-T91",
+          "title": "Audit storage locking unavailable recovery",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1003-C09",
+            "EXT-F-1003-C24",
+            "EXT-F-1003-C25",
+            "EXT-F-1003-C37"
+          ],
+          "preconditions": [
+            "Record a resource permit and build receipt for the Settings audit source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never treat source inspection as a result.",
+            "Wait for a fresh build to finish, load its generated extension output, fully Reload after relevant source/manifest/permission/environment changes, then reopen the actual side panel and verify the running extension identity.",
+            "Verify the actual principal is a known authorized admin, not merely signed in.",
+            "Use an owned disposable browser profile and isolated audit keys; never rotate or overwrite a real user profile key. Record only public identifiers, operation counts and redacted failures."
+          ],
+          "steps": [
+            "In an owned disposable native profile, make Web Locks unavailable at the real capability boundary during separate details-load, export and rotation attempts.",
+            "Inspect the visible capability failure, stale details, Re-key and export states. Compare the actual active public key ID and public history before and after each refused operation.",
+            "Restore the capability and activate the offered details-only recovery. Verify actual details recover without a key rotation, and ordinary retryable failures remain recoverable."
+          ],
+          "expected": [
+            "The UI identifies the unavailable capability rather than inviting another mutation attempt. Active key and history remain unchanged; recovery reads details only and restores controls after a successful read."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "failure-recovery"
+          ],
+          "linked_defects": [
+            "EXT-D-0093"
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "detail": "Inventoried before native execution; source and unit evidence do not establish native acceptance."
+            }
+          }
         }
       ],
       "cells": {

@@ -7,7 +7,9 @@
     "EXT-F-1003-T86",
     "EXT-F-1003-T87",
     "EXT-F-1003-T88",
-    "EXT-F-1003-T89"
+    "EXT-F-1003-T89",
+    "EXT-F-1003-T90",
+    "EXT-F-1003-T91"
   ],
   "surface": "Settings \u2192 Advanced agent capabilities \u2192 Audit key",
   "auth_mode": "admin",
