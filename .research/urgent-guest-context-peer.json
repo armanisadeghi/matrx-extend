@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "review_type": "independent source-only review; no browser, native, or heavy execution",
+  "reviewed_commit": "62e1ce4cff213ed1245d164b97e31d68f71b0d11",
+  "scope": "guest context rules, identity transitions, and owner-only settings reads",
+  "verdict_a_runtime_and_spec": "SOURCE_ALIGNED_RUNTIME_UNVERIFIED",
+  "verdict_a_basis": [
+    "A fingerprint guest now skips the users.user_surface_state owner-only read, including the Values chip open and Chat send paths that call loadContextRules or ensureContextRulesReady.",
+    "Guest rule changes stay in local session state and flow through the canonical _default request surface. The guard asserts page_brief is absent from request context, appears in context_withheld, and client context remains present.",
+    "An auth user-ID transition immediately clears rules, previews, expected receipts, and prior-send rows. A generation check prevents late reads or queued writes from an earlier identity lifetime from repopulating the new one, including A to guest to A.",
+    "The authenticated RLS-backed read and write paths remain in place. Source and scoped unit evidence do not reproduce or resolve the user's immediate failure in the installed Store guest Chat. That terminal incident and a real guest send/response remain open."
+  ],
+  "verdict_b_source_quality": "PASS_BOUNDED_SOURCE_REVIEW",
+  "verdict_b_basis": [
+    "The final test uses the real _default surface key and the request-context builder; it checks no guest select/upsert and the request wire behavior, rather than only asserting local store state.",
+    "Deferred old-owner reads are tested across A to B and A to guest to A. A queued old-owner write is tested against B. These checks match the identity lifetime guards in the source.",
+    "The builder's guarded red run failed the intended guest owner-table SELECT assertion after temporarily removing the skip, then source was restored; six tests passed in the final guarded green run and guarded compile passed. Resource journals marked all three decisions valid.",
+    "No product handler stub, schema change, or owner-table permission broadening appears in the four-file commit."
+  ],
+  "limits": [
+    "No native installed-extension or exact live Store UI acceptance was run by this reviewer.",
+    "The unit seam covers the canonical request builder but does not establish a completed stream or assistant reply.",
+    "The user-reported immediate Store Chat error was not reproduced at this seam and must not be closed by this review."
+  ],
+  "evidence": {
+    "red_resource_journal": "docs/stabilization/resource-journals/urgent-context-rules-red-02.jsonl",
+    "green_resource_journal": "docs/stabilization/resource-journals/urgent-context-rules-green-03.jsonl",
+    "compile_resource_journal": "docs/stabilization/resource-journals/urgent-context-rules-compile-01.jsonl",
+    "tests": "src/state/context-rules.guest.test.ts",
+    "contract": "/Volumes/Samsung2TB/code/common-docs/systems/account/scopes-context/context-delivery/STATE.md"
+  }
+}
