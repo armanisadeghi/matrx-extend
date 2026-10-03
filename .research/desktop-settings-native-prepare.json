@@ -61,5 +61,19 @@
     "Pair-code clear is marked unverified when native or disconnected transport hides Forget; a synthetic stored code alone does not make the HTTP-only control applicable.",
     "The imported artifact belongs to the D84/D86 repair source but is an interim CI development build, not a published Store release."
   ],
-  "next": "Independent peer review of the final reset oracle and raw receipts; member/admin native roles, HTTP-only pair removal, real desktop connection/rediscovery, and full T43-T51 control criteria remain open."
+  "next": "Independent peer review of the final reset oracle and raw receipts; member/admin native roles, HTTP-only pair removal, real desktop connection/rediscovery, and full T43-T51 control criteria remain open.",
+  "next_runner": {
+    "hosted_private_parent": "scripts/hosted-guest-acceptance.mjs, invoked by .github/workflows/hosted-guest-acceptance.yml under scripts/stabilization-resource.mjs",
+    "dispatch_pattern": "gh workflow run hosted-guest-acceptance.yml -f development_run_id=37129518563 -f development_artifact_id=11275878549 -f acceptance_case=desktop-settings-guest",
+    "case_choices": ["desktop-settings-guest", "desktop-settings-member", "desktop-settings-admin"],
+    "private_inputs": "MATRX_HOSTED_MEMBER_LINK_JSON and MATRX_HOSTED_ADMIN_CREDENTIALS_JSON are supplied by the existing hosted CI secrets. The wrapper writes mode-0600 child files, sets MATRX_REVIEWER_MAGIC_LINK_FILE or MATRX_PREPARE_ADMIN_CREDENTIALS_FILE, removes files on exit, and does not print values. A fresh member link can be minted with tests/browser/prepare-reviewer-magic-link.mjs from test-results/reviewer-account-recovery-private.json using its documented MATRX_REVIEWER_IDENTITY_FILE, MATRX_ADMIN_ENV_FILE and MATRX_REVIEWER_MAGIC_LINK_FILE path variables; keep the link private and single-use.",
+    "runner_env": [
+      "MATRX_DESKTOP_SETTINGS_EXTENSION_DIR",
+      "MATRX_DESKTOP_SETTINGS_RECEIPT",
+      "MATRX_DESKTOP_SETTINGS_AUTH_MODE",
+      "MATRX_PLAYWRIGHT_MODULE",
+      "MATRX_CHROME_PATH"
+    ],
+    "runtime_limit": "Hosted runs prepare pinned Playwright/Chrome under separate resource permits; no local build, release, or user-profile mutation is required."
+  }
 }
