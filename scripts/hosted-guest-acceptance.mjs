@@ -97,18 +97,25 @@ async function prepareDevelopment(runId, artifactId) {
   ]);
   assert.equal(imported.code, 0, 'authenticated CI development artifact import failed');
   const sourceRoot = join(repo, 'test-results/ci-artifacts');
-  const sourceShas = await readdir(sourceRoot);
-  assert.equal(sourceShas.length, 1, 'expected one imported CI source');
-  assert.match(sourceShas[0], /^[a-f0-9]{40}$/);
-  const attempts = await readdir(join(sourceRoot, sourceShas[0]));
-  assert.equal(attempts.length, 1, 'expected one imported CI run attempt');
-  assert.match(attempts[0], new RegExp(`^${runId}-[1-9][0-9]*$`));
-  const target = join(sourceRoot, sourceShas[0], attempts[0]);
+  const sourceShas = (await readdir(sourceRoot)).filter((name) => /^[a-f0-9]{40}$/.test(name));
+  const targets = [];
+  for (const sourceSha of sourceShas) {
+    for (const attempt of await readdir(join(sourceRoot, sourceSha))) {
+      if (!new RegExp(`^${runId}-[1-9][0-9]*$`).test(attempt)) continue;
+      const target = join(sourceRoot, sourceSha, attempt);
+      const status = JSON.parse(await readFile(join(target, 'import-status.json'), 'utf8'));
+      if (status.artifactId === Number(artifactId)) targets.push({ target, sourceSha });
+    }
+  }
+  assert.equal(targets.length, 1, 'expected one import matching selected CI run and artifact');
+  const { target, sourceSha } = targets[0];
   const extensionDir = join(target, 'chrome-mv3');
   const relocatedReceipt = join(target, 'local-dev-receipt.json');
   const evidence = await verifyImportedNativeEvidence(extensionDir, relocatedReceipt);
   assert.equal(evidence.eligibleStore, false);
-  assert.equal(evidence.sourceSha, sourceShas[0]);
+  assert.equal(evidence.sourceSha, sourceSha);
+  assert.equal(evidence.runId, Number(runId));
+  assert.equal(evidence.artifactId, Number(artifactId));
   process.stdout.write(`PREPARED_DEVELOPMENT ${evidence.sourceSha} ${evidence.treeSha256}\n`);
   return { extensionDir, relocatedReceipt, kind: 'ci_development_test' };
 }
