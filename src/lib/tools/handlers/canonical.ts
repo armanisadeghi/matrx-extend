@@ -902,7 +902,7 @@ export const drop_file: ToolHandler<DropFileArgs, unknown> = {
 };
 
 // ────────────────────────────────────────────────────────────────────────────
-// read_pdf — text extraction via server's /pdf/extract-text
+// read_pdf — text extraction via server's /utilities/pdf/extract-text-remote
 // ────────────────────────────────────────────────────────────────────────────
 
 const ReadPdfArgs = z
@@ -923,8 +923,7 @@ export const read_pdf: ToolHandler<ReadPdfArgs, unknown> = {
   run: async (args) => {
     let fileId = args.file_id;
     // If only tab_id was given, capture the PDF bytes from the tab's URL and
-    // upload to cld_files first so the server's /pdf/extract-text endpoint
-    // can take its preferred MediaRef shape.
+    // upload it first so the extraction door gets a MediaRef (file_id).
     if (!fileId && args.tab_id) {
       const id = Number.parseInt(args.tab_id, 10);
       if (!Number.isFinite(id)) return { ok: false, reason: 'Invalid tab_id' };
@@ -962,10 +961,12 @@ export const read_pdf: ToolHandler<ReadPdfArgs, unknown> = {
     return {
       ok: true,
       file_id: fileId,
-      page_count: r.data.page_count ?? null,
+      page_count: r.data.page_count,
+      total_pages: r.data.total_pages,
+      page_start: r.data.page_start,
+      page_end: r.data.page_end,
       text,
       truncated,
-      pages: r.data.pages ?? null,
     };
   },
 };

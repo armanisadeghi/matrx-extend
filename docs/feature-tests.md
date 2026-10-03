@@ -645,6 +645,13 @@ Every entry follows this shape:
     their source intact. Unit coverage:
     `tests/unit/normalize-markup.test.ts`.
 
+### read_pdf
+
+- **What it does:** Reads the text of a PDF the agent has as a `file_id`, or one open in a tab (`tab_id`; the bytes upload first). Calls aidream `POST /utilities/pdf/extract-text-remote` and reads its event stream. `page_start` / `page_end` (1-based, inclusive) read only that slice; the result carries `page_count` (pages read), `total_pages`, `page_start`, `page_end`, `text` (with page markers), `truncated`.
+- **Where to test:** Tools tab "Run" in the side panel, or a Pilot chat with a PDF open in a tab.
+- **Steps:** Open a multi-page PDF in a tab; run `read_pdf` with that `tab_id`; run again with `page_start: 2, page_end: 3`; run again with `page_start` past the last page.
+- **Expected:** Whole-document text with `page_count` equal to `total_pages`; then only pages 2 to 3 (`page_count: 2`); then a refusal naming the last page, never empty success. Unit proof: `src/lib/api/routes/pdf.test.ts`, `src/lib/api/routes/backend-paths.test.ts` (every literal backend path exists on aidream); server: `aidream/api/tests/test_pdf_extract_text_page_range.py`.
+
 ### record_gif
 - **What it does:** Record browser actions on a tab via CDP screencast
   and export an animated GIF, optionally dropping it onto a page
