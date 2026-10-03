@@ -41,10 +41,15 @@ if (outputArgument !== -1 && !process.argv.at(outputArgument + 1)) {
   throw new Error('--output requires a file path');
 }
 
-const generated = execFileSync('uv', ['run', 'python', '-c', PROGRAM], {
+const sourceJson = execFileSync('uv', ['run', 'python', '-c', PROGRAM], {
   cwd: AIDREAM,
   encoding: 'utf8',
 });
+const generated = execFileSync(
+  'biome',
+  ['format', '--stdin-file-path=src/lib/tools/generated/records-guide.json'],
+  { cwd: ROOT, input: sourceJson, encoding: 'utf8' },
+);
 
 if (check) {
   if (!existsSync(OUTPUT) || readFileSync(OUTPUT, 'utf8') !== generated) {

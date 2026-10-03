@@ -1,0 +1,15 @@
+{
+  "commits": [
+    "f1f5b289fbc385d4625ae05447b433fa9370bdbd",
+    "7b461df929e5d360bc6767687efff136ca07c61e"
+  ],
+  "review": "Important findings",
+  "A": "Configured nonempty credential env values selected by the name filter are replaced both literally and in JSON-escaped form before hosted Vitest output is printed. No environment dump is added. However, this prints all remaining Vitest output to the hosted job log, including arbitrary assertion values and console/database output; therefore no-raw-database-output is not established. On failure the workflow uploads only diagnostics.log, whose unit branch contains whitelisted file paths/static labels; the full latest.log artifact step is success()-gated and is skipped. The unredacted captured output remains in the runner's release log, not the failure artifact.",
+  "B": "The diagnostics parser restricts paths to tests/src test/spec extensions, rejects '..' segments, resolves against the candidate root, and enforces lexical containment before reading. It emits only source-matched literal labels and file paths. A symlink inside the candidate could defeat lexical containment and make it read an external file; use realpath containment or reject symlink components if this is intended as a hard source boundary. No tests/builds were run per task limits.",
+  "owner_adjudication": {
+    "decision": "Proceed with credential-redacted ordinary unit-test job logs; no raw database-gate output or failure log artifact added.",
+    "reason": "Existing CI already prints this same Vitest suite output. The change restores standard diagnostic visibility with additional configured-credential redaction; it is not a general arbitrary-data sanitizer and is not claimed to be one. Hypothetical assertion content without observed leakage is not a new release blocker.",
+    "symlink_evidence": "git ls-files -s src tests scripts reports no tracked symlinks; candidate source paths used by the parser are regular tracked files. No current escape path was identified.",
+    "limitations": "Source-only peer; hosted execution and actual failing assertion still required. Keep the minimal artifact policy and do not emit environment or separate database-gate logs."
+  }
+}

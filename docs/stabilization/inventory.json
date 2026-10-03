@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T03:35:43.427468+00:00",
+  "updated_at": "2026-10-03T04:33:36.264624+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -3465,7 +3465,10 @@
               "evidence": "docs/stabilization/runs/guest-theme-001.json",
               "detail": "Light/Dark/System each visibly applied and persisted through separate full extension Reloads on0.2.51. OriginalSystem restored; resource healthy."
             }
-          }
+          },
+          "linked_defects": [
+            "EXT-D-0087"
+          ]
         },
         {
           "id": "EXT-F-1003-T05",
@@ -3489,6 +3492,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -3521,7 +3527,10 @@
               "evidence": "docs/stabilization/runs/admin-settings-local-001.json",
               "detail": "Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy."
             }
-          }
+          },
+          "linked_defects": [
+            "EXT-D-0087"
+          ]
         },
         {
           "id": "EXT-F-1003-T07",
@@ -3553,7 +3562,10 @@
               "evidence": "docs/stabilization/runs/guest-settings-007.json",
               "detail": "Native Chrome guest controls matched all expected criteria warm and after full extension Reload; ID/path/version0.2.51 verified, resource healthy."
             }
-          }
+          },
+          "linked_defects": [
+            "EXT-D-0087"
+          ]
         },
         {
           "id": "EXT-F-1003-T08",
@@ -3577,6 +3589,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -3609,7 +3624,10 @@
               "evidence": "docs/stabilization/runs/admin-default-agent-002.json",
               "detail": "FreshSol visual+AX/detail reconciled sameQuickTestAgent plus2memberbadge; actualchosenidentity persisted afterfullreload, originalMatrxBrowserAgent restored."
             }
-          }
+          },
+          "linked_defects": [
+            "EXT-D-0087"
+          ]
         },
         {
           "id": "EXT-F-1003-T10",
@@ -3641,7 +3659,10 @@
               "detail": "pass_restored_Ask_before_acting",
               "evidence": "docs/stabilization/runs/render-retest-001.json"
             }
-          }
+          },
+          "linked_defects": [
+            "EXT-D-0087"
+          ]
         },
         {
           "id": "EXT-F-1003-T11",
@@ -3665,6 +3686,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -3689,6 +3713,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -3721,7 +3748,10 @@
               "detail": "pass_restored_Fast",
               "evidence": "docs/stabilization/runs/render-retest-001.json"
             }
-          }
+          },
+          "linked_defects": [
+            "EXT-D-0087"
+          ]
         },
         {
           "id": "EXT-F-1003-T14",
@@ -3745,6 +3775,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -3777,7 +3810,10 @@
               "evidence": "docs/stabilization/runs/admin-settings-local-001.json",
               "detail": "Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy."
             }
-          }
+          },
+          "linked_defects": [
+            "EXT-D-0087"
+          ]
         },
         {
           "id": "EXT-F-1003-T16",
@@ -3814,7 +3850,10 @@
                 "Verify whether identity/email context sharing follows the preference; no sharing action or network behavior was exercised."
               ]
             }
-          }
+          },
+          "linked_defects": [
+            "EXT-D-0087"
+          ]
         },
         {
           "id": "EXT-F-1003-T17",
@@ -3838,6 +3877,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -3862,6 +3904,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -3886,6 +3931,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -3910,6 +3958,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -3934,6 +3985,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -4252,7 +4306,10 @@
                 "Open supported sign-in form and verify the saved-login offer follows preference; no form was exercised."
               ]
             }
-          }
+          },
+          "linked_defects": [
+            "EXT-D-0087"
+          ]
         },
         {
           "id": "EXT-F-1003-T32",
@@ -4276,6 +4333,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -4300,6 +4360,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -4337,7 +4400,10 @@
                 "Verify on-page suggestion presentation changes between enabled and quiet; no credential form was exercised."
               ]
             }
-          }
+          },
+          "linked_defects": [
+            "EXT-D-0087"
+          ]
         },
         {
           "id": "EXT-F-1003-T35",
@@ -4361,6 +4427,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -4385,6 +4454,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -4448,7 +4520,10 @@
                 }
               ]
             }
-          }
+          },
+          "linked_defects": [
+            "EXT-D-0087"
+          ]
         },
         {
           "id": "EXT-F-1003-T38",
@@ -4472,6 +4547,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -4496,6 +4574,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -4543,7 +4624,10 @@
                 "Confirm actual captured page text/unique marker and disabled behavior on a fresh document; counts alone do not prove capture integration."
               ]
             }
-          }
+          },
+          "linked_defects": [
+            "EXT-D-0087"
+          ]
         },
         {
           "id": "EXT-F-1003-T41",
@@ -4567,6 +4651,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -4591,6 +4678,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -5542,7 +5632,10 @@
               },
               "detail": "Capture and Scroll & capture each persisted after full extension Reload. Restored Capture and verified after final reload."
             }
-          }
+          },
+          "linked_defects": [
+            "EXT-D-0087"
+          ]
         },
         {
           "id": "EXT-F-1003-T68",
@@ -5566,6 +5659,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -5590,6 +5686,9 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -5753,7 +5852,8 @@
             "EXT-D-0009",
             "EXT-D-0012",
             "EXT-D-0084",
-            "EXT-D-0086"
+            "EXT-D-0086",
+            "EXT-D-0087"
           ],
           "run_ids": [
             "guest-local-001",
@@ -5785,7 +5885,8 @@
             "EXT-D-0001",
             "EXT-D-0007",
             "EXT-D-0084",
-            "EXT-D-0086"
+            "EXT-D-0086",
+            "EXT-D-0087"
           ],
           "run_ids": [],
           "retest_status": "not-run"
@@ -5797,7 +5898,8 @@
             "EXT-D-0006",
             "EXT-D-0007",
             "EXT-D-0084",
-            "EXT-D-0086"
+            "EXT-D-0086",
+            "EXT-D-0087"
           ],
           "run_ids": [
             "admin-org-001",
@@ -27940,12 +28042,13 @@
           "defect_ids": [
             "EXT-D-0066",
             "EXT-D-0074",
-            "EXT-D-0075"
+            "EXT-D-0075",
+            "EXT-D-0088"
           ],
           "run_ids": [
             "guest-grounding-peer-native-20261001-001"
           ],
-          "retest_status": "candidate173 guest first/reload pass; published105 fail; signout privacy unverified"
+          "retest_status": "Published0.2.130 immediate guest Chat error reported October2; live server schema crash captured October3 03:38:58UTC; fix/retest pending."
         },
         "member": {
           "test_status": "unverified",
@@ -47128,6 +47231,9 @@
             "invalid-input",
             "permissions",
             "reload"
+          ],
+          "defect_ids": [
+            "EXT-D-0089"
           ]
         },
         {

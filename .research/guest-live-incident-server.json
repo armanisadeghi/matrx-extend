@@ -1,0 +1,41 @@
+{
+  "incident": "EXT-D-0088",
+  "status": "primary_guest_chat_restored; delegated_records_envelope_followup_in_progress",
+  "live_server_before_fix": {
+    "git_sha": "41aff687f768a1c0997dce70f595ea978a4f326c",
+    "built_at": "2026-10-03T02:48:47Z"
+  },
+  "evidence": [
+    "Guest GET /mandates/extend.browser_chat/resolution returned 200 and selected agent 443dd7ff-e7cc-47b8-907a-0a14834caa48.",
+    "Guest POST /v2/ai/mandates/extend.browser_chat with the Store 0.2.130 request shape returned HTTP 200 SSE connected, reserved records, rollback, then agent_error InlineToolSpec: input_schema.properties.$envelope.type='args' is invalid; stream ended reason=error.",
+    "ops.system_error at 2026-10-03T03:38:58Z recorded the same stream_crash and full traceback from prepare_agent_run through browser_dom._build_auto_load_specs.",
+    "Live tool.definition records row bound to chrome-extension has $envelope='args' and $variants object; row updated_at 2026-10-03T02:02:05Z."
+  ],
+  "cause": "Two server registry-to-InlineToolSpec conversion paths copied internal ToolDefinition parameters as provider JSON Schema properties. The records tool's $envelope metadata then failed Pydantic validation before the agent could start. The installed extension did not send this metadata.",
+  "repair": {
+    "repository": "aidream",
+    "commit": "c01faa5266",
+    "pushed_to": "origin/main",
+    "files": [
+      "packages/matrx-ai/matrx_ai/tools/models.py",
+      "packages/matrx-ai/matrx_ai/capabilities/browser_dom.py",
+      "packages/matrx-ai/matrx_ai/tools/implementations/bundle_lister.py",
+      "packages/matrx-ai/matrx_ai/capabilities/tests/test_browser_dom.py"
+    ],
+    "verification": "The new guard failed before the repair with the captured InlineToolSpec validation error, then passed after it. Focused browser-dom and envelope suites: 19 passed, 12 skipped. Ruff and git diff --check passed."
+  },
+  "live_acceptance": {
+    "deployed_git_sha": "c01faa52660a2720fcc888af3e10210688bc80cc",
+    "health_samples": "Three consecutive /health/version reads returned the fixed SHA.",
+    "first_guest_turn": "HTTP 200, 3.85 seconds, SSE completion and end reason=complete, no error event.",
+    "same_guest_followup": "HTTP 200, 4.07 seconds, assistant produced a browser-help sentence, completion.status=success, end reason=complete, no error event.",
+    "new_guest_conversation": "HTTP 200, 9.35 seconds, assistant output 'Hello! Hope you're having a great day.', completion.status=success, end reason=complete, no error event."
+  },
+  "provenance": {
+    "git_introduction": "81876a58e7 added $envelope to the records definition file on 2026-10-02T16:43:51-07:00",
+    "qualification": "Git authoring and a row update time do not establish who deployed the row or when guests first failed."
+  },
+  "remaining": [
+    "Repair the separate delegated records args-envelope metadata loss (EXT-D-0089); InlineToolSpec projection drops $envelope before executor argument unwrapping."
+  ]
+}

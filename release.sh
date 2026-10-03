@@ -267,7 +267,23 @@ verify_installed_dependency_inputs() {
     # race may change dependency inputs after pnpm installed them on the runner.
     # Stop before generation/check/build instead of validating mismatched bytes.
     if ! git diff --quiet "$LOCAL_HEAD^{tree}" "$BASE_TREE" -- \
-        package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc .pnpmfile.cjs patches; then
+        pnpm-lock.yaml pnpm-workspace.yaml .npmrc .pnpmfile.cjs patches; then
+        hard_stop "merged candidate changes dependency inputs since installation; refresh packages on the updated main and retry — nothing was pushed"
+    fi
+    # A prior push can bump only the package version, then fail during local ZIP
+    # promotion. That version does not alter the installed graph. Compare every
+    # other manifest field so a retry can still restore an interrupted release.
+    if ! node - "$LOCAL_HEAD:package.json" "$BASE_TREE:package.json" <<'NODE'
+const { execFileSync } = require('node:child_process');
+const { isDeepStrictEqual } = require('node:util');
+function manifest(ref) {
+  const value = JSON.parse(execFileSync('git', ['cat-file', '-p', ref], { encoding: 'utf8' }));
+  delete value.version;
+  return value;
+}
+process.exit(isDeepStrictEqual(manifest(process.argv[2]), manifest(process.argv[3])) ? 0 : 1);
+NODE
+    then
         hard_stop "merged candidate changes dependency inputs since installation; refresh packages on the updated main and retry — nothing was pushed"
     fi
 }
@@ -388,6 +404,25 @@ run_checks() {
         rc=$?
         { echo "--- check $name (exit $rc) ---"; cat "$JOBS/check-$name.out"; } >> "$RELEASE_LOG_FILE"
         if [[ "$rc" != 0 ]]; then
+            if [[ "$name" == unit-tests && "${GITHUB_ACTIONS:-}" == true ]]; then
+                # Keep ordinary Vitest failure context in the hosted job log.
+                # Credentials are read from this process environment, never
+                # passed as arguments or copied into the uploaded artifact.
+                node - "$JOBS/check-$name.out" <<'NODE'
+const fs = require('node:fs');
+const output = fs.readFileSync(process.argv[2], 'utf8');
+const credentials = Object.entries(process.env)
+  .filter(([name, value]) => value && (/(?:TOKEN|KEY|SECRET|PASSWORD|CLIENT_ID|NATIVE_HOST)/.test(name) || /^(?:WXT_SUPABASE_URL|MATRX_SUPABASE_PROJECT_REF)$/.test(name)))
+  .flatMap(([, value]) => [value, JSON.stringify(value).slice(1, -1)])
+  .filter(Boolean)
+  .sort((a, b) => b.length - a.length);
+let redacted = output;
+for (const value of new Set(credentials)) redacted = redacted.split(value).join('[REDACTED]');
+console.log('--- unit test output (configured credential values redacted) ---');
+process.stdout.write(redacted);
+if (!redacted.endsWith('\n')) process.stdout.write('\n');
+NODE
+            fi
             {
                 printf 'gate=%s exit=%s candidate=%s\n' "$name" "$rc" "$NEW_TAG"
                 if [[ "$name" == matrx-packages ]]; then
@@ -403,9 +438,66 @@ for (const line of input.split('\n')) {
   console.log(`${match[1]} ${match[2]}${match[3] ? ` installed=${match[3]}` : ''}${latest ? ` latest=${latest}` : ''}`);
 }
 NODE
+                elif [[ "$name" == lint ]]; then
+                    ( cd "$CHECK_SNAP" && node_modules/.bin/biome check --reporter=json . ) \
+                        > "$JOBS/check-lint.json" 2>/dev/null || true
+                    node - "$JOBS/check-lint.json" "$CHECK_SNAP" <<'NODE'
+const fs = require('node:fs');
+const path = require('node:path');
+let report;
+try { report = JSON.parse(fs.readFileSync(process.argv[2], 'utf8')); }
+catch { console.log('lint diagnostic parsing unavailable'); process.exit(0); }
+const root = path.resolve(process.argv[3]);
+const safe = new Set();
+for (const diagnostic of report.diagnostics ?? []) {
+  if (diagnostic.severity !== 'error') continue;
+  const file = diagnostic.location?.path?.file;
+  const category = diagnostic.category;
+  if (typeof file !== 'string' || typeof category !== 'string') continue;
+  const absolute = path.isAbsolute(file) ? path.normalize(file) : path.resolve(root, file);
+  const relative = path.relative(root, absolute);
+  if (!/^[A-Za-z0-9_./-]+$/.test(relative) || relative.startsWith('..')) continue;
+  if (!/^(?:format|lint\/[A-Za-z0-9_/-]+|assist\/[A-Za-z0-9_/-]+)$/.test(category)) continue;
+  safe.add(`${relative} ${category} ${category === 'format' ? 'format differs' : 'rule violation'}`);
+}
+for (const line of [...safe].slice(0, 50)) console.log(line);
+if (safe.size > 50) console.log(`additional diagnostics omitted=${safe.size - 50}`);
+if (safe.size === 0) console.log('lint failed without a recognized safe diagnostic');
+NODE
+                elif [[ "$name" == unit-tests ]]; then
+                    # Vitest's assertion output can contain source values. Report
+                    # failed paths and only titles that exactly match static test
+                    # labels in the candidate's own source files.
+                    node - "$JOBS/check-$name.out" "$CHECK_SNAP" <<'NODE'
+const fs = require('node:fs');
+const path = require('node:path');
+const input = fs.readFileSync(process.argv[2], 'utf8').replace(/\x1b\[[0-9;]*m/g, '');
+const root = path.resolve(process.argv[3]);
+const failed = new Map();
+for (const line of input.split('\n')) {
+  const match = line.match(/^\s*FAIL\s+((?:tests|src)\/[A-Za-z0-9_./-]+\.(?:test|spec)\.[cm]?[jt]sx?)(?=\s|$)/);
+  if (!match || match[1].split('/').includes('..')) continue;
+  const file = match[1];
+  const fullPath = path.resolve(root, file);
+  if (!fullPath.startsWith(`${root}${path.sep}`)) continue;
+  let source;
+  try { source = fs.readFileSync(fullPath, 'utf8'); } catch { continue; }
+  const labels = new Set();
+  const staticLabel = /\b(?:describe|it|test)(?:\.[A-Za-z]+)*\s*\(\s*(['"`])([^'"`\n]{1,200})\1/g;
+  for (const found of source.matchAll(staticLabel)) labels.add(found[2]);
+  const title = line.slice(line.indexOf(file) + file.length).split(/\s+>\s+/).slice(1).findLast((part) => labels.has(part.trim()));
+  if (!failed.has(file) || title) failed.set(file, title?.trim() ?? null);
+}
+for (const [file, title] of [...failed].slice(0, 50)) {
+  console.log(`failed-test-file=${file}`);
+  if (title && /^[\x20-\x7E]{1,200}$/.test(title)) console.log(`static-test-label=${title}`);
+}
+if (failed.size > 50) console.log(`additional failed test files omitted=${failed.size - 50}`);
+if (failed.size === 0) console.log('unit tests failed without a recognized safe test file');
+NODE
                 fi
-            } > "$RELEASE_LOG_DIR/diagnostics.txt"
-            cat "$RELEASE_LOG_DIR/diagnostics.txt"
+            } > "$RELEASE_LOG_DIR/diagnostics.log"
+            cat "$RELEASE_LOG_DIR/diagnostics.log"
             finding "ERROR" "Checks" "$name failed (exit $rc); candidate $NEW_TAG was not published" "$cmd"
             return 1
         fi

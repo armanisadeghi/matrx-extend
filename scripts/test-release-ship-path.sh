@@ -113,6 +113,13 @@ else
   exit 1
 fi
 # CI runs `pnpm lint`; a released candidate with Biome errors must stop here.
+mkdir -p node_modules/.bin
+cat > node_modules/.bin/biome <<'STUB'
+#!/usr/bin/env bash
+printf '%s\n' '{"diagnostics":[{"severity":"error","category":"format","location":{"path":{"file":"src/fixture.ts"},"sourceCode":"SYNTHETIC_SOURCE_MUST_NOT_LEAK"}}]}'
+exit 1
+STUB
+chmod +x node_modules/.bin/biome
 touch "$SANDBOX/fail-lint"
 set +e
 PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/lint-out" 2>&1
@@ -122,6 +129,8 @@ rm "$SANDBOX/fail-lint"
 if [[ $LINT_STATUS -ne 0 ]] \
     && grep -q 'lint failed' "$SANDBOX/lint-out" \
     && grep -q ' lint' "$SANDBOX/pnpm-calls" \
+    && grep -q 'src/fixture.ts format format differs' "$SANDBOX/lint-out" \
+    && ! grep -q 'SYNTHETIC_SOURCE_MUST_NOT_LEAK' "$SANDBOX/lint-out" \
     && ! grep -q 'exec vitest run' "$SANDBOX/pnpm-calls" \
     && [[ "$REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] \
     && ! git ls-remote --tags origin | grep -q 'refs/tags/v0.1.2$'; then
@@ -300,6 +309,32 @@ for failure in install restore; do
   fi
   rm -f "$SANDBOX/fail-zip-install" "$SANDBOX/fail-zip-restore"
 done
+
+# A post-push ZIP failure leaves local HEAD one version behind remote main.
+# That version-only manifest delta must allow the next release to finish.
+VERSION_RETRY_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+set +e
+PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/version-retry-out" 2>&1
+VERSION_RETRY_STATUS=$?
+set -e
+check "version-only retry succeeds after failed promotion" '[[ $VERSION_RETRY_STATUS -eq 0 && "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" != "$VERSION_RETRY_BASE" ]]'
+check "version-only retry publishes validated tag" 'git ls-remote --tags origin | grep -q "refs/tags/v0.1.7$"'
+
+# A changed manifest field other than version invalidates the runner install.
+# The candidate must stop before any generation, check, or publication.
+PKG_CALLS_BEFORE_INPUT_CHANGE="$(wc -l < "$SANDBOX/pnpm-calls")"
+( cd "$SANDBOX/other" && git pull -q origin main \
+  && python3 -c 'import json; from pathlib import Path; p=Path("package.json"); d=json.loads(p.read_text()); d["dependencies"]={"fixture-new-dependency":"1.0.0"}; p.write_text(json.dumps(d, indent=2)+"\n")' \
+  && git add package.json && git -c user.name=t -c user.email=t@t commit -qm 'change dependency input' \
+  && git push -q origin main )
+INPUT_CHANGE_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+set +e
+PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/dependency-input-out" 2>&1
+INPUT_CHANGE_STATUS=$?
+set -e
+check "non-version manifest delta stops before validation" '[[ $INPUT_CHANGE_STATUS -ne 0 && "$(wc -l < "$SANDBOX/pnpm-calls")" == "$PKG_CALLS_BEFORE_INPUT_CHANGE" ]]'
+check "non-version manifest delta stays unpublished" '[[ "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" == "$INPUT_CHANGE_BASE" ]]'
+check "dependency refusal identifies retry" 'grep -q "merged candidate changes dependency inputs since installation" "$SANDBOX/dependency-input-out"'
 
 # A real content conflict must leave both commits and remote refs untouched.
 git_q clone "$SANDBOX/origin.git" "$SANDBOX/conflict"

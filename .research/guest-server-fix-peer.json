@@ -1,0 +1,12 @@
+{
+  "reviewed_commit": "c01faa52660a2720fcc888af3e10210688bc80cc",
+  "outcome": "PASS_SOURCE",
+  "quality": "PASS_WITH_LIVE_VERIFICATION_PENDING",
+  "findings": [
+    "The browser-dom factory now projects registry parameters through ToolDefinition.to_inline_input_schema; internal $envelope/$variants metadata is excluded while action and args remain.",
+    "The same projection now covers bundle_lister category discovery; its duplicate raw-parameter conversion was removed.",
+    "Browser-dom remains available to guests (requires_auth=False); no login gate or silent feature hiding was introduced.",
+    "The regression test exercises both always-on and category InlineToolSpec construction. Owner reports red ValidationError before the fix, then 19 passed and 12 skipped, with lint and diff checks green. Independent py_compile passed."
+  ],
+  "remaining": "The live signed-out Store flow still needs verification after deployment; source and local checks alone cannot prove production recovery."
+}

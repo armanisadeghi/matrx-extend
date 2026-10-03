@@ -1,6 +1,6 @@
 /**
- * Census guard: the browser's guide artifact must remain a byte-for-byte
- * projection of aidream's `guide_for` for every supported records action.
+ * Census guard: the browser's guide artifact must remain a canonically
+ * formatted projection of aidream's `guide_for` for every supported action.
  * Removing an action, worked example, caution, or argument description makes
  * the generator's --check mode fail.
  */
@@ -27,6 +27,17 @@ it('keeps every records guide topic identical to aidream guide_for', () => {
   });
   expect(output).toContain('records guide matches aidream guide_for for every action');
 }, 90_000);
+
+it('keeps the generated guide clean under the release formatter', () => {
+  const artifactPath = resolve(REPO, 'src/lib/tools/generated/records-guide.json');
+  const artifact = readFileSync(artifactPath, 'utf8');
+  const formatted = execFileSync(
+    'biome',
+    ['format', '--stdin-file-path=src/lib/tools/generated/records-guide.json'],
+    { cwd: REPO, input: artifact, encoding: 'utf8' },
+  );
+  expect(artifact).toBe(formatted);
+});
 
 it('fails closed instead of finding a sibling checkout when its source is absent', () => {
   const result = spawnSync(

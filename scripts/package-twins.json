@@ -276,6 +276,18 @@
         {
           "file": "scripts/stabilization-resource.mjs",
           "reason": "A DIFFERENT capability: resource admission converts measured bytes into numeric GiB for memory and disk threshold comparisons. These values remain numbers in the policy decision; no byte count becomes a display string, so formatFileSize would change the type and break the safety comparisons."
+        },
+        {
+          "file": "scripts/stabilization-resource-safety.mjs",
+          "reason": "A DIFFERENT capability: freeGiB converts filesystem blocks to a numeric GiB measurement returned in the disk sample; diskIsLow compares that number with the configured minimum. It remains a policy input, not a byte-size display string, so formatFileSize would change the type used by the safety decision."
+        },
+        {
+          "file": "scripts/test-stabilization-resource-disk-integration.mjs",
+          "reason": "A DIFFERENT capability: the statfs conversion produces numeric freeGiB for the below-20-GiB admission check. toFixed is used only in the skip diagnostic; the converted value remains a number for the threshold comparison and is not a reusable byte-size display."
+        },
+        {
+          "file": "scripts/test-stabilization-resource-safety-integration.mjs",
+          "reason": "A DIFFERENT capability: the statfs conversion produces numeric systemFreeGiB for the below-20-GiB admission check. toFixed is used only in the skip diagnostic; the converted value remains a number for the threshold comparison and is not a reusable byte-size display."
         }
       ]
     },

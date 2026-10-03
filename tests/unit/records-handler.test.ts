@@ -108,7 +108,10 @@ describe('registered records schema null defaults', () => {
       ok: true,
       action: 'guide',
       ...canonicalGuide.unknown,
-      note: '\'form_propse\' is not an action of this tool. Call {"action": "guide", "topic": "<action>"} with one of these.',
+      note: canonicalGuide.unknown.note.replace(
+        canonicalGuide.unknown_topic_quoted,
+        "'form_propse'",
+      ),
     });
     expect(openRecordStore).not.toHaveBeenCalled();
   });
