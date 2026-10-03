@@ -16,7 +16,7 @@
   "version_only_retry_correction": "The strict dependency guard initially compared all package.json bytes. After a release push succeeds but local ZIP promotion fails, remote main has only a version bump and the checkout remains at the earlier HEAD. That stopped the fixture before its intended ZIP-restoration assertion. The guard now ignores only package.json version while comparing every other manifest field, the lockfile, pnpm config/workspace, and patches.",
   "retry_peer_repair": "Independent review 75d5cad9 found relative Biome paths could be resolved against the release checkout instead of CHECK_SNAP and therefore suppressed. The safe parser now resolves relative paths against CHECK_SNAP before applying its traversal/character whitelist. The existing ship-path fixture now injects a relative-path Biome JSON error with synthetic sourceCode and checks that the safe path/rule appears while sourceCode does not; it also checks successful release after a version-only post-push promotion failure and refusal before validation when a later remote commit changes another manifest field.",
   "hosted_lint_cause_and_repair": "Hosted run 37094898802 safely identified exactly one lint failure: src/lib/tools/generated/records-guide.json format differs. The generator wrote Python's json.dumps(indent=2) bytes directly, which are not guaranteed to match this repo's Biome JSON line-width rules; checked-in source lint therefore passed while regeneration changed the candidate. The generator now pipes the pinned server projection through Biome format with the canonical guide file path before both write and --check comparison. The parity test also independently asserts the checked-in guide is Biome-clean.",
-  "remaining_verification": "A hosted retry is needed to reveal the exact safe lint locations, resolve the actual candidate lint cause, and prove all remaining gates. The release ship-path fixture also needs CI rerun for the version-only retry correction. Mac local release remains under the disk guard.",
+  "remaining_verification": "A hosted retry is required to identify the failing candidate unit test file and establish its cause. No release was published by run 37095276034. The main CI success verifies the checked-in commit, not the regenerated release candidate. Mac local heavy verification remains under the disk guard.",
   "sources": [
     ".github/workflows/release.yml:33-76",
     "release.sh:322-338",
@@ -25,5 +25,7 @@
     "scripts/_supabase-management.ts:43-98",
     "https://supabase.com/docs/guides/platform/personal-access-tokens",
     "https://github.com/pnpm/action-setup/blob/v4/action.yml"
-  ]
+  ],
+  "hosted_unit_red": "Hosted run 37095276034 cleared lint after the records-guide formatter repair, then stopped at unit-tests for candidate v0.2.176 before publication. Parallel main CI run 37095276203 on dd1dcd94acfe2156019ce2e79b93660b568488ae passed. The candidate test failure is not identified by the prior gate-only artifact; candidate-only generation/package inputs or a runner-specific failure remain possible.",
+  "unit_diagnostic_repair": "On a unit-tests failure, release.sh now extracts only whitelisted Vitest failed test file paths and titles matching literal static labels in the candidate test source into the already-sanitized diagnostics artifact. Assertions, runtime values, and raw test output remain private. Synthetic Vitest lines proved the recognized file/label is emitted and an unknown title is omitted; bash syntax passed. This is diagnostic only; the unit gate still blocks release."
 }
