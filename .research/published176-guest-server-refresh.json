@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "PASS",
-  "scope": "One headed native guest Chat smoke on frozen release 0.2.176 against the refreshed live aidream server; fresh profile, first grounded answer, actual side-panel reload, grounded follow-up.",
+  "scope": "One native Chromium headless guest Chat smoke on frozen release 0.2.176 against the refreshed live aidream server; fresh profile, first grounded answer, actual side-panel reload, grounded follow-up.",
   "backend": {
     "health_url": "https://server.app.matrxserver.com/health/version",
     "before": {
@@ -31,6 +31,7 @@
   "runner": {
     "source": "scripts/hosted-guest-acceptance.mjs → tests/browser/guest-chat-store-acceptance.mjs",
     "acceptance_case": "guest-chat",
+    "browser_mode": "Chromium headless; no visible window asserted",
     "run_id": "published176-guest-server-refresh-20261003-01",
     "resource_decision": "valid",
     "exit_code": 0,
