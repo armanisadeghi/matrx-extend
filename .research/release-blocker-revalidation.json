@@ -7,13 +7,16 @@
   "existing_access": "A mode-0600 ~/.supabase/access-token exists and is the instructed noninteractive CLI credential. The parent privately verified HTTP 200 and matching project identity from the official Management API project endpoint, then provisioned that same existing credential as the repository's SUPABASE_ACCESS_TOKEN GitHub secret through stdin; no value was printed, rotated, or newly granted. Database Read permission and the strict gate outcome remain unverified.",
   "narrow_correction": "Implemented: removed only the sbp_fc prefix rejection from .github/workflows/release.yml; kept the nonempty secret requirement, strict migration/tool checks, and Management API read-only SELECT validation. No rotation or new grant is intrinsically required if an existing authorized token can read the project.",
   "gate_verification": "Executed the extracted workflow bash gate using synthetic classic, scoped, and empty token strings: classic/scoped exit 0, empty exits 1 with the missing-secret finding. Confirmed both strict live-DB gate commands remain in release.sh.",
-  "remaining_verification": "A hosted run is still needed to prove Database Read and strict gate success; the project GET only proves project endpoint access. Mac local release remains under the disk guard.",
+  "hosted_red": "Hosted run 37092816878 passed credential preflight and both checkouts, then pnpm/action-setup@v4 failed before installation: No pnpm version is specified. Its log shows package_json_file: package.json, while this workflow checks out the extension at matrx-extend/package.json (whose packageManager is pnpm@10.30.3).",
+  "hosted_setup_repair": "Configured pnpm/action-setup@v4 package_json_file: matrx-extend/package.json as the v4 action.yml documents for nested checkouts. Added astral-sh/setup-uv@v5 before release because scripts/generate-records-guide.ts invokes uv run python during mandatory artifact regeneration; CI already installs the same action. setup-node cache path and command working directories already point to matrx-extend.",
+  "remaining_verification": "A hosted retry is needed to prove pnpm/uv setup and the release's strict Database Read gates; project GET only proved project endpoint access. Mac local release remains under the disk guard.",
   "sources": [
     ".github/workflows/release.yml:33-76",
     "release.sh:322-338",
     "scripts/check-migrations.ts:107-150",
     "scripts/check-tool-db-drift.ts:326-409",
     "scripts/_supabase-management.ts:43-98",
-    "https://supabase.com/docs/guides/platform/personal-access-tokens"
+    "https://supabase.com/docs/guides/platform/personal-access-tokens",
+    "https://github.com/pnpm/action-setup/blob/v4/action.yml"
   ]
 }
