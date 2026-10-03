@@ -1,0 +1,524 @@
+{
+  "schema_version": 1,
+  "status": "PASS_GUEST_AND_EXISTING_NONADMIN_STORE_CANDIDATE",
+  "test_source_commit": "099f5c37",
+  "product_code_changed": false,
+  "artifact": {
+    "schema_version": 1,
+    "status": "candidate_packaged_native_acceptance_pending_not_submitted",
+    "hosted_run_id": 37155938434,
+    "hosted_conclusion": "success",
+    "artifact_id": 11286485029,
+    "artifact_digest": "sha256:0124db8dd6467c6a5d84de0fb0b555c377ccdc4c62c5b837b403ceb3f56bf35a",
+    "version": "0.2.181",
+    "source_sha": "bcf1d1615e90f873cada20209eae7ddce742ecf4",
+    "store_zip_sha256": "b816f01b1f2bbc3c5dae378415c701f2e73233e18998af6adc72fa2b87ab987c",
+    "publisher_receipt_sha256": "fc236a96872d1da6eb25ab079750db03f38a571898f55e1b38e73e5059edc1e0",
+    "receipt_local_tree_sha256": "fa184521e71b9bd71eed11799a90ea2c3f5328d0e12b3472e2bf0f49dad6e9c4",
+    "store_tree_sha256": "827d1a10c42955cf83e007039d4768e3d33b25dc97521b3a97c6ab56eab45cf8",
+    "provenance_limit": "Publisher receipt tree represents keyed local build, not Store ZIP. Actual Store and local bundles differ. Native Store-payload acceptance must validate exact Store bytes with only explicitly recorded manifest.key adaptation. No Store-installation or publication claim.",
+    "fix_ancestry_verified": ["b54877e7", "62e1ce4c"],
+    "release_gate_result": "Hosted strict release contract succeeded; mandate references remain advisory warnings.",
+    "store_upload": "not_started"
+  },
+  "cause": "Shared design-system title-tooltips moves a hovered title into data-matrx-title. The pointer remains over Send after turn 1; title-only readiness and click lose its real target. Waiting longer did not restore it.",
+  "repair": "Shared title pointer lookup recognizes canonical data-matrx-title only when title is absent. Guest readiness requires enabled Send; signed-out identity asserts guest banner and absent token/profile. Existing timeouts unchanged.",
+  "red_evidence": [
+    "test-results/guest-allowance-native-bc77a137-3db0-4728-80ed-1ecb46761a99.json",
+    "test-results/guest-allowance-native-80859100-fa47-40a9-8e0b-332cdbf64e7f.json"
+  ],
+  "guest_acceptance": {
+    "schema_version": 1,
+    "scope": "nominated immutable extension artifact; one owned guest profile; three live answers then fourth live allowance response",
+    "status": "pass",
+    "context_rule_observation_horizon": "observer attached before turn 1 through turn 4; no owner-table GET expected",
+    "limitation": "panel-target run proves rendered live behavior; it does not observe offscreen fetch HTTP status",
+    "build": {
+      "kind": "pushed-release-store-zip-adapted",
+      "store_zip_verified": true,
+      "store_installed": false,
+      "store_published": false,
+      "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "artifact_verified_by_harness": true,
+      "source_sha": "bcf1d1615e90f873cada20209eae7ddce742ecf4",
+      "tree_sha256": "c4326432d01842271b6722d35b61e6d456ee95dee7f9e8afed7a7e110f489e8b",
+      "version": "0.2.181",
+      "store_zip_sha256": "b816f01b1f2bbc3c5dae378415c701f2e73233e18998af6adc72fa2b87ab987c",
+      "publish_state": "pushed",
+      "store_payload": {
+        "publisher_receipt_sha256": "fc236a96872d1da6eb25ab079750db03f38a571898f55e1b38e73e5059edc1e0",
+        "store_zip_sha256": "b816f01b1f2bbc3c5dae378415c701f2e73233e18998af6adc72fa2b87ab987c",
+        "store_tree_sha256": "827d1a10c42955cf83e007039d4768e3d33b25dc97521b3a97c6ab56eab45cf8",
+        "publisher_source_tree_sha256": "fa184521e71b9bd71eed11799a90ea2c3f5328d0e12b3472e2bf0f49dad6e9c4",
+        "local_zip_sha256": "2dbff0975150a4ec5dfa183796176930f6b5ba966b8bc29529da4feb2ec8078c",
+        "manifest_before_sha256": "97a135fcb7dad8d093ef28f249a4df5e5130e68794fb20072dbb157fe40bf106",
+        "manifest_key_adaptation": "public key copied from matching-version local ZIP; original Store ZIP unchanged",
+        "loaded_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "manifest_fields_after_removing_key_equal_original": true,
+        "modified_paths": ["manifest.json"],
+        "adapted_tree_sha256": "c4326432d01842271b6722d35b61e6d456ee95dee7f9e8afed7a7e110f489e8b",
+        "manifest_after_sha256": "facf7650a5f394da74235c488103dbe3d15cbcc67e4196eb7544092af24e04ae"
+      }
+    },
+    "completed_turns": [
+      {
+        "ordinal": 1,
+        "expected_answer_present": true
+      },
+      {
+        "ordinal": 2,
+        "expected_answer_present": true
+      },
+      {
+        "ordinal": 3,
+        "expected_answer_present": true
+      }
+    ],
+    "send_observations": [
+      {
+        "tabs": [
+          {
+            "selected": "true",
+            "state": "active"
+          }
+        ],
+        "paneState": "active",
+        "composers": [
+          {
+            "width": 334,
+            "height": 36,
+            "focused": true,
+            "length": 43
+          }
+        ],
+        "sends": [
+          {
+            "width": 32,
+            "height": 32,
+            "disabled": false
+          }
+        ],
+        "stops": 0
+      },
+      {
+        "tabs": [
+          {
+            "selected": "true",
+            "state": "active"
+          }
+        ],
+        "paneState": "active",
+        "composers": [
+          {
+            "width": 334,
+            "height": 36,
+            "focused": true,
+            "length": 43
+          }
+        ],
+        "sends": [
+          {
+            "width": 32,
+            "height": 32,
+            "disabled": false
+          }
+        ],
+        "stops": 0
+      },
+      {
+        "tabs": [
+          {
+            "selected": "true",
+            "state": "active"
+          }
+        ],
+        "paneState": "active",
+        "composers": [
+          {
+            "width": 334,
+            "height": 36,
+            "focused": true,
+            "length": 43
+          }
+        ],
+        "sends": [
+          {
+            "width": 32,
+            "height": 32,
+            "disabled": false
+          }
+        ],
+        "stops": 0
+      },
+      {
+        "tabs": [
+          {
+            "selected": "true",
+            "state": "active"
+          }
+        ],
+        "paneState": "active",
+        "composers": [
+          {
+            "width": 334,
+            "height": 36,
+            "focused": true,
+            "length": 43
+          }
+        ],
+        "sends": [
+          {
+            "width": 32,
+            "height": 32,
+            "disabled": false
+          }
+        ],
+        "stops": 0
+      }
+    ],
+    "exhausted_turn": {
+      "ordinal": 4,
+      "safe_allowance_copy_present": true,
+      "generic_access_denial_absent": true,
+      "retry_absent": true
+    },
+    "owner_table_gets_after_observer_attachment": [],
+    "failure_stage": null,
+    "guest_identity": {
+      "banner_present": true,
+      "access_token_absent": true,
+      "profile_absent": true
+    }
+  },
+  "validation": {
+    "node_check": "pass both edited scripts",
+    "biome_check": "pass both edited scripts"
+  },
+  "resource_journals": [
+    {
+      "path": "docs/stabilization/resource-journals/guest-store181-escalation-01.jsonl",
+      "sha256": "92cbcecd206b9512fb7d14755a9834ebfeb2bb7882bf94caa00ac030c5a15e52"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/guest-store181-escalation-02.jsonl",
+      "sha256": "ff9affeb72bd7c2e81305e2701101b73b9ee9a76b01c12fabc07763790ffec49"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/guest-store181-escalation-03.jsonl",
+      "sha256": "ca19daaec94b5a178ed79487f6b269f63a690ab3a03c1ca8acf188f2618c08a8"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/guest-store181-escalation-04.jsonl",
+      "sha256": "ba8a5f74a2a69011320bed928122546b7ca977f767f07619a1249edbee4b2eba"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/member-store181-escalation-01.jsonl",
+      "sha256": "9b3c51d714c4d108738818bbf2e21716d995571d08d3a5a76005fec2de8d4d12"
+    }
+  ],
+  "runtime_paths": {
+    "TMPDIR": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-181-37155938434/tmp",
+    "MATRX_GUEST_CHAT_DEV_RECEIPT": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-181-37155938434/.output/release-receipt.json",
+    "MATRX_GUEST_CHAT_EXTENSION_DIR": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-181-37155938434/escalation-store-unpacked",
+    "MATRX_GUEST_CHAT_STORE_ZIP": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-181-37155938434/.output/matrx-extend-0.2.181-store.zip",
+    "MATRX_GUEST_CHAT_LOCAL_ZIP": "/Volumes/Samsung2TB/code/.stabilization-scratch/store-181-37155938434/.output/matrx-extend-0.2.181-local.zip",
+    "MATRX_PLAYWRIGHT_MODULE": "/Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+    "MATRX_CHROME_PATH": "/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
+  },
+  "limits": [
+    "Unpacked native candidate with key-only manifest identity adaptation; not an actual Web Store installation or publication.",
+    "Owner-table Network observer covers panel target after attachment, not startup before attachment or offscreen HTTP status.",
+    "Member authentication uses existing-user magiclink and does not prove Store reviewer password."
+  ],
+  "red_observations": {
+    "initial_pointer_failure": {
+      "schema_version": 1,
+      "scope": "nominated immutable extension artifact; one owned guest profile; three live answers then fourth live allowance response",
+      "status": "unverified",
+      "context_rule_observation_horizon": "observer attached before turn 1 through turn 4; no owner-table GET expected",
+      "limitation": "panel-target run proves rendered live behavior; it does not observe offscreen fetch HTTP status",
+      "build": null,
+      "completed_turns": [
+        {
+          "ordinal": 1,
+          "expected_answer_present": true
+        }
+      ],
+      "send_observations": [
+        {
+          "tabs": [
+            {
+              "selected": "true",
+              "state": "active"
+            }
+          ],
+          "paneState": "active",
+          "composers": [
+            {
+              "width": 334,
+              "height": 36,
+              "focused": true,
+              "length": 43
+            }
+          ],
+          "sends": [
+            {
+              "width": 32,
+              "height": 32,
+              "disabled": false
+            }
+          ],
+          "stops": 0
+        },
+        {
+          "tabs": [
+            {
+              "selected": "true",
+              "state": "active"
+            }
+          ],
+          "paneState": "active",
+          "composers": [
+            {
+              "width": 334,
+              "height": 36,
+              "focused": true,
+              "length": 43
+            }
+          ],
+          "sends": [],
+          "stops": 0
+        }
+      ],
+      "exhausted_turn": null,
+      "owner_table_gets_after_observer_attachment": [],
+      "failure_stage": "turn_2",
+      "guest_identity": {
+        "banner_present": true,
+        "access_token_absent": true,
+        "profile_absent": true
+      },
+      "driver_failure": {
+        "code": "pointer_target_not_unique",
+        "sampleStage": null,
+        "matchedTargetCount": 0,
+        "visibleMatchCount": 0,
+        "uniqueVisibleTarget": false,
+        "hitTarget": false,
+        "animating": false,
+        "stableSamples": 0,
+        "positionStable": false,
+        "targetHasArea": null,
+        "clippedTargetHasArea": null,
+        "selectedPointAvailable": null,
+        "centerHitCategory": null,
+        "targetDisabled": null,
+        "pointerEventsNone": null,
+        "clippingAncestorCount": null,
+        "testedPointCount": null,
+        "interiorHitKinds": null,
+        "targetRectangle": null,
+        "centerOccluder": null,
+        "firstInteriorOccluder": null
+      },
+      "failure_code": "unique_visible_pointer_target"
+    },
+    "readiness_only_failure": {
+      "schema_version": 1,
+      "scope": "nominated immutable extension artifact; one owned guest profile; three live answers then fourth live allowance response",
+      "status": "unverified",
+      "context_rule_observation_horizon": "observer attached before turn 1 through turn 4; no owner-table GET expected",
+      "limitation": "panel-target run proves rendered live behavior; it does not observe offscreen fetch HTTP status",
+      "build": null,
+      "completed_turns": [
+        {
+          "ordinal": 1,
+          "expected_answer_present": true
+        }
+      ],
+      "send_observations": [
+        {
+          "tabs": [
+            {
+              "selected": "true",
+              "state": "active"
+            }
+          ],
+          "paneState": "active",
+          "composers": [
+            {
+              "width": 334,
+              "height": 36,
+              "focused": true,
+              "length": 43
+            }
+          ],
+          "sends": [
+            {
+              "width": 32,
+              "height": 32,
+              "disabled": false
+            }
+          ],
+          "stops": 0
+        }
+      ],
+      "exhausted_turn": null,
+      "owner_table_gets_after_observer_attachment": [],
+      "failure_stage": "turn_2",
+      "guest_identity": {
+        "banner_present": true,
+        "access_token_absent": true,
+        "profile_absent": true
+      },
+      "send_wait_failure": {
+        "buttons": [
+          {
+            "title": "",
+            "label": null,
+            "disabled": false
+          },
+          {
+            "title": "",
+            "label": null,
+            "disabled": false
+          },
+          {
+            "title": "Voice language: English",
+            "label": "Voice language, currently English",
+            "disabled": false
+          },
+          {
+            "title": "Pick a sandbox or your own computer",
+            "label": null,
+            "disabled": true
+          },
+          {
+            "title": "Tool permission mode",
+            "label": null,
+            "disabled": true
+          },
+          {
+            "title": "Copy entire conversation",
+            "label": null,
+            "disabled": false
+          },
+          {
+            "title": "New chat",
+            "label": null,
+            "disabled": false
+          },
+          {
+            "title": "History",
+            "label": null,
+            "disabled": false
+          },
+          {
+            "title": "Copy message",
+            "label": null,
+            "disabled": false
+          },
+          {
+            "title": "Copy reply",
+            "label": "Copy reply",
+            "disabled": false
+          },
+          {
+            "title": "Read message aloud",
+            "label": "Read message aloud",
+            "disabled": false
+          },
+          {
+            "title": "Customize this conversation",
+            "label": null,
+            "disabled": false
+          },
+          {
+            "title": "Attach a Google Doc or Sheet you've shared with AI Matrx",
+            "label": null,
+            "disabled": false
+          },
+          {
+            "title": "",
+            "label": "13 included",
+            "disabled": false
+          },
+          {
+            "title": "Sign in to use voice input",
+            "label": null,
+            "disabled": false
+          },
+          {
+            "title": "",
+            "label": null,
+            "disabled": false
+          }
+        ],
+        "pane_present": true
+      },
+      "driver_failure": null,
+      "failure_code": "turn_2_send_ready_not_observed"
+    }
+  },
+  "startup_attempt": {
+    "run_id": "guest-store181-escalation-01",
+    "failure": "browser_runtime_playwright_missing",
+    "browser_launched": false,
+    "resolution": "explicit verified installed Playwright and Chrome paths added; no installation or application build"
+  },
+  "source_contract": {
+    "artifact_chunk": "chunks/dist-BKweKWgb.js",
+    "preserved_title_attribute": "data-matrx-title",
+    "behavior": "title tooltip copies title into preserved attribute and removes title while hovered; restores it on leave"
+  },
+  "member_acceptance": {
+    "schema_version": 1,
+    "scope": "fresh owned Chrome-for-Testing profile; real non-admin login; native signed-in Chat",
+    "status": "pass",
+    "build": {
+      "version": "0.2.181",
+      "tree_sha256": "c4326432d01842271b6722d35b61e6d456ee95dee7f9e8afed7a7e110f489e8b",
+      "receipt_kind": "native_store_zip_candidate_key_adapted",
+      "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+    },
+    "account": {
+      "reviewer_fingerprint": "3d6137db6c081c07",
+      "web_signed_in": true,
+      "extension_signed_in": true,
+      "observed_role_category": "absent",
+      "canonical_extension_admin_check": {
+        "matched_current_extension_user": true,
+        "http_status": 200,
+        "returned_rows": 0
+      },
+      "sign_out_visible": true,
+      "default_organization_selected": true,
+      "organization_picker_available": true,
+      "storage_shape": {
+        "accessTokenPresent": true,
+        "profilePresent": true,
+        "activeOrganizationPresent": false
+      }
+    },
+    "authentication_method": "existing_user_magic_link",
+    "chat": {
+      "visible": true,
+      "question_fingerprint": "3461006324ce0420",
+      "accepted": true,
+      "completed_real_answer": true,
+      "completed_reply_count": 1,
+      "answer_names_capture_understand_use": true,
+      "demo_route": "https://www.aimatrx.com/matrx-extend-demo"
+    },
+    "screenshots": {
+      "before": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-FDNQjd/reviewer-chat-before.png",
+      "action": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-FDNQjd/reviewer-chat-action.png",
+      "result": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-FDNQjd/reviewer-chat-result.png",
+      "store_candidate_640x400": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-FDNQjd/reviewer-chat-store-640x400.png"
+    },
+    "failure_stage": null,
+    "failure_code": null
+  },
+  "member_acceptance_path": "test-results/reviewer-chat-store-f617c86a-61d7-4fe9-bff0-470386d9982b.json",
+  "private_link_removed": true
+}
