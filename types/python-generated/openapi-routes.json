@@ -2884,6 +2884,11 @@
    "application/json"
   ]
  },
+ "/google-integrations/calendar/cancel/confirm": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/google-integrations/calendar/cancel/preview": {
   "post": [
    "application/json"
@@ -2897,7 +2902,17 @@
    "application/json"
   ]
  },
+ "/google-integrations/calendar/reschedule/confirm": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/google-integrations/calendar/reschedule/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/calendar/rsvp/confirm": {
   "post": [
    "application/json"
   ]
