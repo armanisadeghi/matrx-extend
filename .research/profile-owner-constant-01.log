@@ -1,0 +1,65 @@
+PLANTED in /Volumes/Samsung2TB/code/matrx-extend/src/hooks/use-user-profile.ts
+RESTORED /Volumes/Samsung2TB/code/matrx-extend/src/hooks/use-user-profile.ts sha=d48a1b053af4 original_sha=d48a1b053af4 IDENTICAL
+----- command output (tail) -----
+  }
+
+ ❯ src/hooks/use-user-profile.identity.test.tsx:40:61
+     38|   state.userId = 'owner-b';
+     39|   rerender();
+     40|   expect(frames.find((frame) => frame.owner === 'owner-b')).toMatchObj…
+       |                                                             ^
+     41| });
+     42|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  src/hooks/use-user-profile.identity.test.tsx > isolates old-owner save continuation when the next owner read is {"ok":true,"profile":{"legal_first_name":null,"legal_middle_name":null,"legal_last_name":null,"preferred_name":"Samir","name_suffix":null,"pronouns":null,"date_of_birth":null,"phones":[],"emails":[],"social_handles":[],"website_url":null,"shipping_line1":null,"shipping_line2":null,"shipping_city":null,"shipping_region":null,"shipping_postal_code":null,"shipping_country":null,"billing_same_as_shipping":true,"billing_line1":null,"billing_line2":null,"billing_city":null,"billing_region":null,"billing_postal_code":null,"billing_country":null,"company_name":null,"job_title":null,"emergency_contacts":[],"custom_fields":{}}}
+ FAIL  src/hooks/use-user-profile.identity.test.tsx > isolates old-owner save continuation when the next owner read is {"ok":false,"error":"permission denied"}
+AssertionError: expected undefined to be 'owner-a' // Object.is equality
+
+- Expected:
+"owner-a"
+
++ Received:
+undefined
+
+ ❯ src/hooks/use-user-profile.identity.test.tsx:50:37
+     48|     let pending!: Promise<{ ok: boolean }>;
+     49|     act(() => { pending = result.current.save(); });
+     50|     expect(state.writes[0]?.userId).toBe('owner-a');
+       |                                     ^
+     51|     state.userId = 'owner-b'; rerender();
+     52|     await read(1, nextRead);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  src/hooks/use-user-profile.identity.test.tsx > isolates a stale refresh from the next owner read
+AssertionError: expected 'Maya' to be 'Samir' // Object.is equality
+
+Expected: "Samir"
+Received: "Maya"
+
+ ❯ src/hooks/use-user-profile.identity.test.tsx:71:47
+     69|   await read(1, first);
+     70|   await pending;
+     71|   expect(result.current.draft.preferred_name).toBe('Samir');
+       |                                               ^
+     72| });
+     73|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  src/hooks/use-user-profile.identity.test.tsx > refuses another write after a saved draft cannot be reloaded and recovers on Retry
+AssertionError: the given combination of arguments (null and string) is invalid for this assertion. You can use an array, a map, an object, a set, a string, or a weakset instead of a string
+ ❯ src/hooks/use-user-profile.identity.test.tsx:83:36
+     81|   await read(1, { ok: false, error: 'permission denied' });
+     82|   await pending;
+     83|   expect(result.current.loadError).toContain('permission denied');
+       |                                    ^
+     84|   act(() => { void result.current.save(); });
+     85|   expect(state.writes).toHaveLength(1);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+---------------------------------
+VERDICT: RED (rc=1, expected RED)

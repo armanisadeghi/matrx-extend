@@ -1,0 +1,65 @@
+PLANTED in /Volumes/Samsung2TB/code/matrx-extend/src/lib/supabase/user-profile.ts
+RESTORED /Volumes/Samsung2TB/code/matrx-extend/src/lib/supabase/user-profile.ts sha=ffeddb3c7d8c original_sha=ffeddb3c7d8c IDENTICAL
+----- command output (tail) -----
+AssertionError: expected { ok: true, …(1) } to deeply equal { ok: true, profile: null }
+
+- Expected
++ Received
+
+  {
+    "ok": true,
+-   "profile": null,
++   "profile": {
++     "billing_same_as_shipping": true,
++     "custom_fields": {},
++     "emails": [],
++     "emergency_contacts": [],
++     "phones": [],
++     "preferred_name": "Maya",
++     "social_handles": [],
++   },
+  }
+
+ ❯ src/lib/supabase/user-profile.read.test.ts:71:18
+     69| it('treats no owner row as a new empty profile', async () => {
+     70|   const result = await fetchUserFormProfile('aaaaaaaa-aaaa-4aaa-8aaa-a…
+     71|   expect(result).toEqual({ ok: true, profile: null });
+       |                  ^
+     72|   expect(db.requestedTable).toBe('user_form_profile');
+     73| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  src/lib/supabase/user-profile.read.test.ts > refuses a malformed stored profile instead of presenting a blank form
+AssertionError: expected { ok: true, …(1) } to deeply equal { ok: false, …(1) }
+
+- Expected
++ Received
+
+  {
+-   "error": "Profile data came back in an unexpected shape.",
+-   "ok": false,
++   "ok": true,
++   "profile": {
++     "billing_same_as_shipping": true,
++     "custom_fields": {},
++     "emails": [],
++     "emergency_contacts": [],
++     "phones": [],
++     "preferred_name": "Maya",
++     "social_handles": [],
++   },
+  }
+
+ ❯ src/lib/supabase/user-profile.read.test.ts:78:18
+     76|   db.row = { preferred_name: 42 };
+     77|   const result = await fetchUserFormProfile('aaaaaaaa-aaaa-4aaa-8aaa-a…
+     78|   expect(result).toEqual({ ok: false, error: 'Profile data came back i…
+       |                  ^
+     79| });
+     80|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+---------------------------------
+VERDICT: RED (rc=1, expected RED)

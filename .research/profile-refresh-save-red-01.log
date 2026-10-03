@@ -1,0 +1,42 @@
+{"schema":1,"at":"2026-10-03T20:04:02.525Z","runId":"profile-refresh-save-red-01","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/profile-refresh-save-red-01.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-03T20:05:09.746Z","runId":"profile-refresh-save-red-01","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":10.88,"requiredMemoryGiB":4,"oneMinuteLoad":1.88,"logicalCpus":10,"cpuBusyFraction":0.1542857142857143,"swapUsedMiB":2683,"repoFreeGiB":1689.2811012268066,"profileFreeGiB":1689.2811012268066,"safetyFreeGiB":29.424144744873047,"systemFreeGiB":29.424144744873047},"cpuBusySamples":[0.16,0.16,0.15,0.14,0.16,0.15,0.16],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - `__dirname` (vitest.config.ts:7:25). Use `import.meta.dirname` instead
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Volumes/Samsung2TB/code/matrx-extend
+
+(node:24119) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/hooks/use-user-profile.identity.test.tsx (6 tests | 1 failed) 14ms
+   × refuses Save synchronously when refresh invalidates the loaded baseline 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/hooks/use-user-profile.identity.test.tsx > refuses Save synchronously when refresh invalidates the loaded baseline
+AssertionError: expected [ { userId: 'owner-a', …(1) } ] to have a length of +0 but got 1
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ src/hooks/use-user-profile.identity.test.tsx:139:24
+    137|     void result.current.save();
+    138|   });
+    139|   expect(state.writes).toHaveLength(0);
+       |                        ^
+    140|   await read(1, second);
+    141| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  13:05:10
+   Duration  413ms (transform 63ms, setup 71ms, import 88ms, tests 14ms, environment 145ms)
+
+{"schema":1,"at":"2026-10-03T20:05:10.737Z","runId":"profile-refresh-save-red-01","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-03T20:05:10.784Z","runId":"profile-refresh-save-red-01","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}

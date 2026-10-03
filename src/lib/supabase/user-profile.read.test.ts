@@ -1,4 +1,5 @@
 import { beforeEach, expect, it, vi } from 'vitest';
+import { profileFixture } from './user-profile.fixture';
 
 const db = vi.hoisted(() => ({
   requestedTable: '' as string,
@@ -12,7 +13,10 @@ vi.mock('@/lib/supabase/client', () => ({
   getSupabase: () => ({
     rpc: async () => {
       db.rpcCalls += 1;
-      return { data: null, error: { message: 'permission denied for function get_user_form_context', code: '42501' } };
+      return {
+        data: null,
+        error: { message: 'permission denied for function get_user_form_context', code: '42501' },
+      };
     },
   }),
 }));
@@ -47,7 +51,12 @@ it.each([
   ['Maya', 'Maya'],
   ['Samir', 'Samir'],
 ])('reads the signed-in owner profile when preferred name is %s', async (preferred, expected) => {
-  db.row = { preferred_name: preferred };
+  db.row = {
+    ...profileFixture,
+    user_id: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    organization_id: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc',
+    preferred_name: preferred,
+  };
   const userId = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
   const result = await fetchUserFormProfile(userId);
   expect(result).toMatchObject({ ok: true, profile: { preferred_name: expected } });

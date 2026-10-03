@@ -1,0 +1,22 @@
+{"schema":1,"at":"2026-10-03T20:05:46.900Z","runId":"profile-owner-green-02","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/profile-owner-green-02.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-03T20:06:54.107Z","runId":"profile-owner-green-02","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":10.88,"requiredMemoryGiB":4,"oneMinuteLoad":2.09,"logicalCpus":10,"cpuBusyFraction":0.1457142857142857,"swapUsedMiB":2683,"repoFreeGiB":1689.2810745239258,"profileFreeGiB":1689.2810745239258,"safetyFreeGiB":29.423789978027344,"systemFreeGiB":29.423789978027344},"cpuBusySamples":[0.16,0.15,0.13,0.13,0.17,0.14,0.14],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - `__dirname` (vitest.config.ts:7:25). Use `import.meta.dirname` instead
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Volumes/Samsung2TB/code/matrx-extend
+
+(node:24333) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:24334) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:24335) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+ Test Files  3 passed (3)
+      Tests  13 passed (13)
+   Start at  13:06:54
+   Duration  977ms (transform 84ms, setup 115ms, import 244ms, tests 88ms, environment 276ms)
+
+{"schema":1,"at":"2026-10-03T20:06:55.610Z","runId":"profile-owner-green-02","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-03T20:06:55.656Z","runId":"profile-owner-green-02","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}

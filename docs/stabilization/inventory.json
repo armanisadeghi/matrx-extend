@@ -11314,7 +11314,7 @@
           "steps": [
             "Open Profile with a controlled disposable read-failure fixture enabled and capture request status without secrets.",
             "Wait for loading to stop; record exact visible error and whether saved fields are displayed.",
-            "Restore the service, navigate to Chat, and reopen Profile. Record whether data loads successfully.",
+            "Restore the owner-row read, click Retry loading profile, and record whether saved data and editing return. Also verify reopening Profile.",
             "With Profile still mounted, switch from the first existing test identity to a second existing test identity and force only the second identity's read to fail; observe which draft, if any, is visible.",
             "Repeat the transition after entering a synthetic unsaved draft for the first identity; verify the second identity failure cannot expose the first identity's draft."
           ],
@@ -11335,14 +11335,14 @@
           ],
           "procedure_readiness": "requires_fixture",
           "procedure_gaps": [
-            "Source exposes refresh internally but ProfileView renders no retry button; the controlled RPC/network failure mechanism is not specified.",
+            "ProfileView exposes Retry; native acceptance still requires a controlled network fault on the users.user_form_profile owner-row GET, including the refetch after a successful save.",
             "Identity-transition failure needs an existing second test identity and controlled read failure; this path is source-confirmed only and has no runtime evidence."
           ],
           "procedure_execution_matrix": [
             {
               "mode": "member",
               "lifecycle_dimension": "warm",
-              "branch": "profile-read-rpc-failure",
+              "branch": "profile-owner-row-read-failure",
               "inventory_dimensions": [
                 "warm",
                 "reload"
@@ -11368,7 +11368,7 @@
             {
               "mode": "member",
               "lifecycle_dimension": "reload",
-              "branch": "profile-read-rpc-failure",
+              "branch": "profile-owner-row-read-failure",
               "inventory_dimensions": [
                 "warm",
                 "reload"
@@ -11394,7 +11394,7 @@
             {
               "mode": "admin",
               "lifecycle_dimension": "warm",
-              "branch": "profile-read-rpc-failure",
+              "branch": "profile-owner-row-read-failure",
               "inventory_dimensions": [
                 "warm",
                 "reload"
@@ -11420,7 +11420,7 @@
             {
               "mode": "admin",
               "lifecycle_dimension": "reload",
-              "branch": "profile-read-rpc-failure",
+              "branch": "profile-owner-row-read-failure",
               "inventory_dimensions": [
                 "warm",
                 "reload"

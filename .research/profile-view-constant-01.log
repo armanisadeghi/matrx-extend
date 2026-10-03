@@ -1,0 +1,65 @@
+PLANTED in /Volumes/Samsung2TB/code/matrx-extend/src/features/profile/ProfileView.tsx
+RESTORED /Volumes/Samsung2TB/code/matrx-extend/src/features/profile/ProfileView.tsx sha=6c0ec7b93e1b original_sha=6c0ec7b93e1b IDENTICAL
+----- command output (tail) -----
+null
+
++ Received:
+<div
+  role="alert"
+>
+  Could not load your profile
+</div>
+
+ ❯ src/features/profile/ProfileView.load-error.test.tsx:40:39
+     38|   fireEvent.click(screen.getByRole('button', { name: 'Retry loading pr…
+     39|   await read(1, { ok: true, profile: profileFixture });
+     40|   expect(screen.queryByRole('alert')).toBeNull();
+       |                                       ^
+     41|   const field = screen.getByDisplayValue('Maya');
+     42|   fireEvent.change(field, { target: { value: 'Maya edited' } });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  src/features/profile/ProfileView.load-error.test.tsx > removes every actionable Save when the dirty save refetch fails
+TestingLibraryElementError: Unable to find an element with the display value: Maya.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mrole[39m=[32m"alert"[39m
+      [36m>[39m
+        [0mCould not load your profile[0m
+      [36m</div>[39m
+      [36m<button[39m
+        [33maria-label[39m=[32m"Save profile"[39m
+        [33mdisabled[39m=[32m""[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0mSave[0m
+      [36m</button>[39m
+      [36m<button[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0mRetry loading profile[0m
+      [36m</button>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/.pnpm/@testing-library+dom@10.4.1/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ src/features/profile/ProfileView.load-error.test.tsx:50:27
+     48|   render(<ProfileView />);
+     49|   await read(0, { ok: true, profile: profileFixture });
+     50|   fireEvent.change(screen.getByDisplayValue('Maya'), { target: { value…
+       |                           ^
+     51|   expect(screen.getByText('Unsaved changes')).toBeTruthy();
+     52|   await act(async () => { fireEvent.click(screen.getByRole('button', {…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+---------------------------------
+VERDICT: RED (rc=1, expected RED)

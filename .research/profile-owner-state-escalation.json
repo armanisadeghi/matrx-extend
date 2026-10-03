@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "status": "source_guarded_native_pending",
+  "scope": ["EXT-D-0094", "EXT-D-0095"],
+  "diagnosis": "The owner-filtered read repair remains in place. Untagged React state leaked the previous owner on the first identity render; old saves could start a new old-owner read; a failed refetch left an actionable dirty footer and allowed another write.",
+  "implementation": [
+    "One owner-lifetime tagged profile state synchronously masks data on identity transitions, including return to the same account.",
+    "Each read uses owner lifetime and sequence checks; stale save continuations cannot start a read or publish into the current owner.",
+    "A successful owner read is required for edits and saves. Loading/failure removes the dirty footer and keeps the header Save disabled.",
+    "The loaded baseline records its read sequence, so a same-tick refresh followed by Save is refused before React flushes queued state.",
+    "A prominent failed-load alert offers Retry; successful Retry restores the saved profile.",
+    "Native runner requires explicit expected source SHA, CI run ID, and artifact ID and compares all against verified imported provenance."
+  ],
+  "evidence": {
+    "original_red": ".research/profile-owner-red-01.log",
+    "green": ".research/profile-owner-green-02.log",
+    "hook_constant": ".research/profile-owner-constant-01.log",
+    "view_constant": ".research/profile-view-constant-01.log",
+    "query_constant": ".research/profile-read-constant-02.log",
+    "compile": ".research/profile-owner-compile-02.log",
+    "same_tick_red": ".research/profile-refresh-save-red-01.log"
+  },
+  "fixture_contract": "No generated users.user_form_profile Row contract exists in this repo (types/python-generated contains only stream-events.ts and route metadata). Controlled personal-form guard fixtures contain every canonical runtime profile field, checked with satisfies Required<UserFormProfile>. They are not production/customer records and do not prove RLS.",
+  "native_retest": "Pending fresh independent source review and receipt-bound repaired CI artifact. No database grants changed, local build/release/migration/manual CI invoked, or native acceptance promoted.",
+  "remaining": [
+    "Independent source review of final commit",
+    "Native save/reopen/restoration on the repaired CI artifact",
+    "Native T25 owner-row failure/Retry and identity-negative acceptance; member remains unverified"
+  ],
+  "active_process_or_mutation": false,
+  "verification": {
+    "original_owner_red": "4 named assertion failures / 5 cases",
+    "same_tick_red": "Expected zero writes during pending refresh; observed one",
+    "green": "13 tests across owner hook, real ProfileView/hook integration, and owner query passed; valid resource decision",
+    "constant_return": "Hook, real view and owner query mutants each returned RED; plant.py recorded IDENTICAL restoration for all three.",
+    "format": "Exact-path Biome error-level passed; pre-existing warnings remain. Runner node --check passed.",
+    "compile": "Final profile-owner-compile-02 passed; resource decision valid."
+  },
+  "final_tested_source_sha256": {
+    "src/hooks/use-user-profile.ts": "4fe09c0b1bd81f36aeec376da59506a609f874994e5cffef26cd62360ea58788",
+    "src/hooks/use-user-profile.identity.test.tsx": "1e2a2852bd7a68f0de6fd08d74ac80b2ce3c53a9646838e92551446843099456",
+    "src/features/profile/ProfileView.tsx": "6e625da07d0c552378ca4c7577da4c33fc18ca7a2a40b1347505d586b003bca8",
+    "src/features/profile/ProfileView.load-error.test.tsx": "9659b47cf8f5a0f553466292f50be915d1b1b5fef14fa31c29f56e9dd1157cfc",
+    "src/lib/supabase/user-profile.fixture.ts": "4377da6f981a3d100a715b94312e2bd0cb2789ff031a4b69d2b1291dddef22b1",
+    "src/lib/supabase/user-profile.read.test.ts": "bf03739d0fe33f0d2d633f75eef2c3753c1cbca04289804448e7f7d3ed8bf90e",
+    "tests/browser/profile-native-acceptance.mjs": "3e6a48690fcb98dbdfec084137326c4e7813aaaf445ad9389564060ea270bbe7"
+  }
+}

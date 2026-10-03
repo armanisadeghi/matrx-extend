@@ -56,7 +56,7 @@ export function ProfileView() {
         </button>
         <span className="text-sm font-medium">Profile</span>
         <div className="ml-auto flex items-center gap-1">
-          {profile.dirty && (
+          {profile.dirty && !profile.loading && !profile.loadError && (
             <Button
               size="sm"
               variant="ghost"
@@ -70,7 +70,10 @@ export function ProfileView() {
           <Button
             size="sm"
             className="h-7 rounded-full px-3 text-xs"
-            disabled={!profile.dirty || profile.saving}
+            aria-label="Save profile"
+            disabled={
+              !profile.dirty || profile.loading || profile.saving || Boolean(profile.loadError)
+            }
             onClick={() => {
               void profile.save();
             }}
@@ -91,6 +94,21 @@ export function ProfileView() {
         {profile.loading ? (
           <div className="flex h-32 items-center justify-center text-muted-foreground">
             <Loader2 className="size-4 animate-spin" />
+          </div>
+        ) : profile.loadError ? (
+          <div
+            className="m-3 rounded-xl border border-destructive/40 bg-destructive/10 p-3.5 text-sm text-destructive"
+            role="alert"
+          >
+            <p>{profile.loadError}</p>
+            <Button
+              className="mt-3"
+              size="sm"
+              variant="outline"
+              onClick={() => void profile.refresh()}
+            >
+              Retry loading profile
+            </Button>
           </div>
         ) : (
           <div className="space-y-3 px-3 pb-3">
@@ -236,7 +254,7 @@ export function ProfileView() {
         )}
       </div>
 
-      {profile.dirty && (
+      {profile.dirty && !profile.loading && !profile.loadError && (
         <div className="shrink-0 border-t bg-card/80 px-3 py-2 backdrop-blur">
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs text-muted-foreground">Unsaved changes</span>

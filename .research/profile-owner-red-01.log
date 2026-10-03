@@ -1,0 +1,92 @@
+{"schema":1,"at":"2026-10-03T19:52:46.611Z","runId":"profile-owner-red-01","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/profile-owner-red-01.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-03T19:53:53.839Z","runId":"profile-owner-red-01","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":10.88,"requiredMemoryGiB":4,"oneMinuteLoad":1.7199999999999998,"logicalCpus":10,"cpuBusyFraction":0.1471428571428572,"swapUsedMiB":2699,"repoFreeGiB":1689.2924003601074,"profileFreeGiB":1689.2924003601074,"safetyFreeGiB":29.437976837158203,"systemFreeGiB":29.437976837158203},"cpuBusySamples":[0.14,0.19,0.14,0.14,0.15,0.13,0.14],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - `__dirname` (vitest.config.ts:7:25). Use `import.meta.dirname` instead
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Volumes/Samsung2TB/code/matrx-extend
+
+(node:20407) Warning: `--localstorage-file` was provided without a valid path
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ❯ src/hooks/use-user-profile.identity.test.tsx (5 tests | 4 failed) 14ms
+   × masks prior-owner fields on the first identity render before effects 10ms
+   × isolates old-owner save continuation when the next owner read is {"ok":true,"profile":{"legal_first_name":null,"legal_middle_name":null,"legal_last_name":null,"preferred_name":"Samir","name_suffix":null,"pronouns":null,"date_of_birth":null,"phones":[],"emails":[],"social_handles":[],"website_url":null,"shipping_line1":null,"shipping_line2":null,"shipping_city":null,"shipping_region":null,"shipping_postal_code":null,"shipping_country":null,"billing_same_as_shipping":true,"billing_line1":null,"billing_line2":null,"billing_city":null,"billing_region":null,"billing_postal_code":null,"billing_country":null,"company_name":null,"job_title":null,"emergency_contacts":[],"custom_fields":{}}} 1ms
+   × isolates old-owner save continuation when the next owner read is {"ok":false,"error":"permission denied"} 1ms
+   × refuses another write after a saved draft cannot be reloaded and recovers on Retry 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  src/hooks/use-user-profile.identity.test.tsx > masks prior-owner fields on the first identity render before effects
+AssertionError: expected { owner: 'owner-b', …(2) } to match object { name: undefined, dirty: false }
+(1 matching property omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "dirty": false,
+-   "name": undefined,
++   "dirty": true,
++   "name": "Maya edited",
+  }
+
+ ❯ src/hooks/use-user-profile.identity.test.tsx:39:61
+     37|   state.userId = 'owner-b';
+     38|   rerender();
+     39|   expect(frames.find((frame) => frame.owner === 'owner-b')).toMatchObj…
+       |                                                             ^
+     40| });
+     41|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  src/hooks/use-user-profile.identity.test.tsx > isolates old-owner save continuation when the next owner read is {"ok":true,"profile":{"legal_first_name":null,"legal_middle_name":null,"legal_last_name":null,"preferred_name":"Samir","name_suffix":null,"pronouns":null,"date_of_birth":null,"phones":[],"emails":[],"social_handles":[],"website_url":null,"shipping_line1":null,"shipping_line2":null,"shipping_city":null,"shipping_region":null,"shipping_postal_code":null,"shipping_country":null,"billing_same_as_shipping":true,"billing_line1":null,"billing_line2":null,"billing_city":null,"billing_region":null,"billing_postal_code":null,"billing_country":null,"company_name":null,"job_title":null,"emergency_contacts":[],"custom_fields":{}}}
+ FAIL  src/hooks/use-user-profile.identity.test.tsx > isolates old-owner save continuation when the next owner read is {"ok":false,"error":"permission denied"}
+AssertionError: expected [ 'owner-a', 'owner-b', 'owner-a' ] to deeply equal [ 'owner-a', 'owner-b' ]
+
+- Expected
++ Received
+
+  [
+    "owner-a",
+    "owner-b",
++   "owner-a",
+  ]
+
+ ❯ src/hooks/use-user-profile.identity.test.tsx:53:54
+     51|     await read(1, nextRead);
+     52|     await act(async () => { state.writes[0]?.resolve({ ok: true }); });
+     53|     expect(state.reads.map((entry) => entry.userId)).toEqual(['owner-a…
+       |                                                      ^
+     54|     await pending;
+     55|     expect(result.current.draft.preferred_name).toBe(nextRead.ok ? 'Sa…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  src/hooks/use-user-profile.identity.test.tsx > refuses another write after a saved draft cannot be reloaded and recovers on Retry
+AssertionError: expected [ { userId: 'owner-a', …(1) }, …(1) ] to have a length of 1 but got 2
+
+- Expected
++ Received
+
+- 1
++ 2
+
+ ❯ src/hooks/use-user-profile.identity.test.tsx:84:24
+     82|   expect(result.current.loadError).toContain('permission denied');
+     83|   act(() => { void result.current.save(); });
+     84|   expect(state.writes).toHaveLength(1);
+       |                        ^
+     85|   let retry!: Promise<void>;
+     86|   act(() => { retry = result.current.refresh(); });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 1 passed (5)
+   Start at  12:53:54
+   Duration  422ms (transform 67ms, setup 75ms, import 90ms, tests 14ms, environment 147ms)
+
+{"schema":1,"at":"2026-10-03T19:53:54.880Z","runId":"profile-owner-red-01","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-03T19:53:54.926Z","runId":"profile-owner-red-01","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}

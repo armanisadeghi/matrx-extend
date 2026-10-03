@@ -18,6 +18,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 interface UseUserProfileResult {
   loading: boolean;
+  loadError: string | null;
   draft: UserFormProfile;
   dirty: boolean;
   saving: boolean;
@@ -28,85 +29,185 @@ interface UseUserProfileResult {
   refresh: () => Promise<void>;
 }
 
+interface ProfileOwner {
+  id: string | undefined;
+  read: number;
+  writing: boolean;
+  mounted: boolean;
+}
+
+interface ProfileState {
+  owner: ProfileOwner;
+  read: number;
+  saved: UserFormProfile | null;
+  draft: UserFormProfile;
+  ready: boolean;
+  loading: boolean;
+  saving: boolean;
+  loadError: string | null;
+  error: string | null;
+}
+
+function initialState(owner: ProfileOwner): ProfileState {
+  return {
+    owner,
+    read: owner.read,
+    saved: null,
+    draft: emptyProfile(),
+    ready: false,
+    loading: Boolean(owner.id),
+    saving: false,
+    loadError: null,
+    error: null,
+  };
+}
+
 export function useUserProfile(): UseUserProfileResult {
   const { user } = useAuth();
-  const [savedProfile, setSavedProfile] = useState<UserFormProfile | null>(null);
-  const [draft, setDraft] = useState<UserFormProfile>(emptyProfile);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const lastUserIdRef = useRef<string | null>(null);
+  // Each identity transition gets a distinct lifetime, including A → B → A.
+  const owner = useMemo<ProfileOwner>(
+    () => ({ id: user?.id, read: 0, writing: false, mounted: true }),
+    [user?.id],
+  );
+  const activeOwner = useRef(owner);
+  activeOwner.current = owner;
+  const [stored, setStored] = useState(() => initialState(owner));
+  // Mask synchronously: a passive effect is too late to hide another owner's data.
+  const state = stored.owner === owner ? stored : initialState(owner);
+  const currentState = useRef(state);
+  currentState.current = state;
 
-  const load = useCallback(async () => {
-    if (!user?.id) {
-      setSavedProfile(null);
-      setDraft(emptyProfile());
-      setLoading(false);
-      return;
+  const isCurrent = useCallback(() => activeOwner.current === owner && owner.mounted, [owner]);
+  const load = useCallback(async (): Promise<boolean> => {
+    if (!owner.id || !isCurrent()) return false;
+    const read = ++owner.read;
+    setStored((previous) => ({
+      ...(previous.owner === owner ? previous : initialState(owner)),
+      loading: true,
+      ready: false,
+      loadError: null,
+    }));
+    try {
+      const result = await fetchUserFormProfile(owner.id);
+      if (!isCurrent() || read !== owner.read) return false;
+      if (!result.ok) {
+        setStored((previous) => ({
+          ...previous,
+          loading: false,
+          ready: false,
+          loadError: `Could not load your profile: ${result.error}`,
+        }));
+        return false;
+      }
+      setStored((previous) => ({
+        ...previous,
+        owner,
+        read,
+        saved: result.profile,
+        draft: result.profile ?? emptyProfile(),
+        loading: false,
+        ready: true,
+        loadError: null,
+        error: null,
+      }));
+      return true;
+    } catch (error) {
+      if (!isCurrent() || read !== owner.read) return false;
+      setStored((previous) => ({
+        ...previous,
+        loading: false,
+        ready: false,
+        loadError: `Could not load your profile: ${error instanceof Error ? error.message : String(error)}`,
+      }));
+      return false;
     }
-    setLoading(true);
-    const res = await fetchUserFormProfile(user.id);
-    if (!res.ok) {
-      // Surface load failures — the existing error banner renders this.
-      setError(`Could not load your profile: ${res.error}`);
-      setLoading(false);
-      return;
-    }
-    setError(null);
-    setSavedProfile(res.profile);
-    setDraft(res.profile ?? emptyProfile());
-    setLoading(false);
-  }, [user?.id]);
+  }, [owner, isCurrent]);
 
-  // Reload when the signed-in user changes; the boot guard in useAuth keeps
-  // this from thrashing on every mount.
   useEffect(() => {
-    if (lastUserIdRef.current === (user?.id ?? null)) return;
-    lastUserIdRef.current = user?.id ?? null;
+    owner.mounted = true;
     void load();
-  }, [user?.id, load]);
+    return () => {
+      owner.mounted = false;
+      owner.read += 1;
+    };
+  }, [owner, load]);
 
   const setField = useCallback(
     <K extends keyof UserFormProfile>(key: K, value: UserFormProfile[K]) => {
-      setDraft((prev) => ({ ...prev, [key]: value }));
+      if (!isCurrent()) return;
+      setStored((previous) =>
+        previous.owner === owner && previous.ready && !owner.writing
+          ? { ...previous, draft: { ...previous.draft, [key]: value } }
+          : previous,
+      );
     },
-    [],
+    [owner, isCurrent],
   );
-
   const resetDraft = useCallback(() => {
-    setDraft(savedProfile ?? emptyProfile());
-  }, [savedProfile]);
-
-  const dirty = useMemo(() => {
-    const baseline = savedProfile ?? emptyProfile();
-    return JSON.stringify(baseline) !== JSON.stringify(draft);
-  }, [savedProfile, draft]);
+    if (!isCurrent()) return;
+    setStored((previous) =>
+      previous.owner === owner && previous.ready && !owner.writing
+        ? { ...previous, draft: previous.saved ?? emptyProfile() }
+        : previous,
+    );
+  }, [owner, isCurrent]);
 
   const save = useCallback(async () => {
-    if (!user?.id) return { ok: false };
-    setSaving(true);
-    setError(null);
-    const patch: UserFormProfilePatch = computePatch(savedProfile, draft);
-    const result = await upsertUserFormProfile(user.id, patch);
-    setSaving(false);
-    if (!result.ok) {
-      setError(result.error);
+    const snapshot = currentState.current;
+    if (
+      !owner.id ||
+      !isCurrent() ||
+      snapshot.owner !== owner ||
+      !snapshot.ready ||
+      snapshot.read !== owner.read ||
+      owner.writing
+    ) {
       return { ok: false };
     }
-    await load();
-    return { ok: true };
-  }, [user?.id, savedProfile, draft, load]);
+    owner.writing = true;
+    const read = owner.read;
+    setStored((previous) => ({ ...previous, saving: true, error: null }));
+    try {
+      const result = await upsertUserFormProfile(
+        owner.id,
+        computePatch(snapshot.saved, snapshot.draft),
+      );
+      if (!isCurrent()) return { ok: false };
+      // A newer explicit refresh owns its result; an old save cannot supersede it.
+      if (read !== owner.read) return { ok: false };
+      if (!result.ok) {
+        setStored((previous) => ({ ...previous, error: result.error }));
+        return { ok: false };
+      }
+      return { ok: await load() };
+    } catch (error) {
+      if (isCurrent() && read === owner.read) {
+        setStored((previous) => ({
+          ...previous,
+          error: error instanceof Error ? error.message : String(error),
+        }));
+      }
+      return { ok: false };
+    } finally {
+      owner.writing = false;
+      if (isCurrent()) setStored((previous) => ({ ...previous, saving: false }));
+    }
+  }, [owner, isCurrent, load]);
 
   return {
-    loading,
-    draft,
-    dirty,
-    saving,
-    error,
+    loading: state.loading,
+    loadError: state.loadError,
+    draft: state.draft,
+    dirty:
+      state.ready && JSON.stringify(state.saved ?? emptyProfile()) !== JSON.stringify(state.draft),
+    saving: state.saving,
+    error: state.error,
     setField,
     resetDraft,
     save,
-    refresh: load,
+    refresh: async () => {
+      await load();
+    },
   };
 }
 
