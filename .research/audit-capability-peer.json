@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "status": "DONE_WITH_CONCERNS",
+  "reviewed_commit": "a1b1a00642f8718cd40466fc841da7cb6bb51407",
+  "scope": "Independent source review only; no test, browser, build, permission, or native runtime execution.",
+  "contract": [
+    "A: PARTIAL; T91 source path is ready for its authorized native run, with no runtime result claimed.",
+    "B: PASS; no important quality defect found in the reviewed delta.",
+    "T91 first confirms admin identity on the live Settings surface before injecting unavailable Web Locks.",
+    "The fault is injected while Chat is selected and before Settings remounts, avoiding the auth-shell bootstrap dependency.",
+    "T91 compares active public ID and history around refused load, export, rotation, and each read-only recovery.",
+    "The recovery path restores navigator.locks and retries details; source assertions require controls and key state to recover.",
+    "T90 sibling reads now use sibling.evaluate(auditSnapshotSource()), matching the Playwright Page object instead of the CDP panel evaluator.",
+    "T90 remains explicitly partial: signed receipts from both keys, reload verification, and altered-receipt rejection are named missing.",
+    "The runner still exits 2 after bounded acceptance and cannot report a full D93 pass while T90 proof is absent.",
+    "Prior T60, T86, and T88 native proof remains earlier evidence; this diff does not extend or replace those claims.",
+    "No key/history mutation is added to T91; snapshots gate all unavailable-operation and recovery boundaries.",
+    "No important finding; native execution of the new T91 path remains required before runtime acceptance.",
+    "Verification: reviewed exact commit diff and inventory; Biome report check only. Tests and browser were not run by this reviewer."
+  ],
+  "verdict_A": {
+    "status": "PARTIAL",
+    "evidence": [
+      "tests/browser/audit-key-native-acceptance.mjs verifies admin email, profile, and organization immediately before T91 fault injection.",
+      "The T91 subflow snapshots persistence before unavailable-load behavior, then checks active ID and history after recovery, export refusal/recovery, and rotation refusal/recovery.",
+      "T90 reads and queued snapshots from sibling via sibling.evaluate(auditSnapshotSource()), and still records the case as partial with the exact missing product proof.",
+      "The runner sets status=partial, failure_stage=T90_product_receipt_verification_unavailable, failure_code=audit_T90_incomplete, and exit code 2 after the cases."
+    ],
+    "not_verified": [
+      "No new native result exists for the changed T91 timing or repaired sibling-page evaluator.",
+      "T90 genuine receipt verification after both contexts reload, plus altered-receipt rejection, remains unimplemented and unverified."
+    ]
+  },
+  "verdict_B": {
+    "status": "PASS",
+    "evidence": [
+      "T91 mutation is scoped to the isolated panel document after admin authentication, and the fault restores the inherited navigator.locks behavior by deleting the temporary own property.",
+      "Every unavailable T91 operation is followed by a storage equality check; recovery checks the same active key and no history delta.",
+      "T90 uses the correct evaluator for the sibling Playwright Page, while first-panel interactions continue through the CDP panel abstraction.",
+      "Failure diagnostics preserve named T91/T90 substeps and attempt exact fault restoration and sibling closure in finally."
+    ],
+    "findings": []
+  },
+  "verification_limits": [
+    "No tests, browser, native permit, build, or runtime acceptance were executed in this peer lane.",
+    "Historical T60/T86/T88 results were read from the prior evidence record and were not re-run."
+  ]
+}
