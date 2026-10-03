@@ -11,7 +11,11 @@
   "fresh_guest_start": {
     "method": "POST",
     "url": "https://server.app.matrxserver.com/v2/ai/mandates/extend.browser_chat",
-    "headers": ["Content-Type: application/json", "Accept: text/event-stream", "X-Fingerprint-ID: 64-character install SHA-256 hex"],
+    "headers": [
+      "Content-Type: application/json",
+      "Accept: text/event-stream",
+      "X-Fingerprint-ID: 64-character install SHA-256 hex"
+    ],
     "omitted_headers": ["Authorization", "X-Organization-Id"],
     "body_core": {
       "user_input": "person's message",
@@ -23,7 +27,10 @@
       "source_app": "matrx-extend",
       "source_feature": "chat",
       "initiation": "user",
-      "client": {"capabilities": ["browser-dom"], "state": {"browser-dom": {"is_guest": true}}}
+      "client": {
+        "capabilities": ["browser-dom"],
+        "state": { "browser-dom": { "is_guest": true } }
+      }
     },
     "additional_body": "Page context is assembled per send. Optional model, admin, and sandbox overrides depend on settings. The service worker removes organization_id for fingerprint guests."
   },
@@ -42,5 +49,7 @@
   },
   "root_cause_boundary": "The published client sends the browser-dom capability, not tool definitions. The server's browser_dom._build_auto_load_specs enumerates live chrome-extension registry rows. Its _inline_kwargs_from_registry maps each tool.parameters entry into input_schema.properties; a DB metadata key $envelope:'args' thereby becomes a false property whose type is 'args', which InlineToolSpec rejects. The exact live tool row and first introduction are for the server lane to establish.",
   "restoration_path": "Repair the server-side registry-to-InlineToolSpec translation or canonical DB definition, then redeploy the server and replay the guest start. The installed Store 0.2.130 request shape need not change for this failure.",
-  "limitations": ["No extension-side change is justified by this trace; final live recovery remains to be verified after server repair."]
+  "limitations": [
+    "No extension-side change is justified by this trace; final live recovery remains to be verified after server repair."
+  ]
 }
