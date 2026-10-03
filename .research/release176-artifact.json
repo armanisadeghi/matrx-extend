@@ -14,5 +14,16 @@
     "Release log:1923 tests passed,5 skipped; strict gates exit0; manifest policy unchanged from published0.2.130"
   ],
   "runtime_acceptance": "Guest and nonadmin on exact176 pending; not overall health evidence",
-  "publication": "Tag pushed; no GitHub Release object; artifacts in Actions. Not uploaded or submitted to Google."
+  "publication": "Tag pushed; no GitHub Release object; artifacts in Actions. Not uploaded or submitted to Google.",
+  "dashboard_rechecked_at": "2026-10-03T07:34:43.908638+00:00",
+  "dashboard": {
+    "method": "Supported native Chrome accessibility, primary Package page refreshed",
+    "publisher": "Matrx",
+    "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "status": "Published - public",
+    "published_version": "0.2.130",
+    "draft_version": "0.2.130",
+    "upload_available": true,
+    "pending_version": null
+  }
 }
