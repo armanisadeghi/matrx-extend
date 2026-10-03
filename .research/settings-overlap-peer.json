@@ -1,0 +1,39 @@
+{
+  "reviewed_commit": "cf0877f1f500fcf9f48c05f2414383ff44c1c8ab",
+  "lane": "fresh independent review; zero implementation authorship",
+  "verdict_a_user_outcome": {
+    "status": "PARTIAL",
+    "evidence": [
+      "The new port test holds the first mocked write, submits a second value, verifies the second call has not started, then resolves both and checks the final stored value is 65003.",
+      "The new pair-code test verifies an older completion preserves the newer input and that the second submitted code is ultimately stored.",
+      "Both controls use a per-control queue; Forget pair code shares the pair-code queue, so removal is ordered with saves.",
+      "The initial port-load effect can still overwrite newer input: after mount, a user can type before getEnginePortOverride resolves; its later setEnginePortInput(p) replaces that input. No loading guard or input revision check was added."
+    ],
+    "runtime_status": "UNVERIFIED: exact-build Chrome use with delayed/rejected storage and hosted CI were not run in this source-only lane.",
+    "scope_limit": "The stated Settings-wide reliability goal is not established by this commit. Theme, agent, permission, chat-speed, privacy, credential, and scrape controls write through Zustand persist and chromeLocalStorage; failures on that path have no visible Settings feedback and are outside these changes."
+  },
+  "verdict_b_source_and_doctrine": {
+    "status": "PASS_WITH_CONCERNS",
+    "positive": [
+      "serializeStorageWrite chains a new write after the previous promise and converts either prior outcome to a resolved queue tail, so one rejected write does not permanently block later writes.",
+      "Pair-code completion and error updates are guarded by a revision incremented on edits and submissions, preventing stale completions from clearing or overwriting newer input state.",
+      "The new tests exercise the real Settings component and fail if both writes start immediately; the deferred storage boundary makes ordering the asserted behavior rather than merely checking that a helper exists."
+    ],
+    "important": [
+      {
+        "finding": "The commit does not guard the initial port read against a user edit/save before the read resolves. The effect unconditionally sets both saved state and input from the read result, which can discard newer visible input and misrepresent the current save after rapid interaction.",
+        "evidence": "src/features/settings/SettingsView.tsx:134-146; input/save handlers at 156-171 and 608-617.",
+        "action": "Track user edits or pending saves and apply the initial read only while the input remains untouched; add a deferred-read regression at the component boundary."
+      },
+      {
+        "finding": "The broader request covers all Settings controls, but async Zustand preference persistence still uses chromeLocalStorage directly. A rejected set is not surfaced by these controls, and this commit provides no serialization or failure recovery for that persistence class.",
+        "evidence": "src/state/settings.ts:125-157 routes every preference setter through persist; src/lib/storage/zustand-adapter.ts:19-21 awaits chrome.storage.local.set; SettingsView.tsx:329-482 wires the controls directly to those setters.",
+        "action": "Review the canonical shared persistence path and give preference writes observable failure/retry behavior, including rapid successive updates, before claiming Settings-wide reliability."
+      }
+    ],
+    "minor": [
+      "The mocked storedPort/storedCode variables are updated inside the stubbed boundary, so they verify call ordering and the queued values, not Chrome storage behavior. Native browser proof remains necessary and is explicitly documented as pending."
+    ]
+  },
+  "verification": "Read-only source and commit inspection. No tests, build, install, or browser session run under the assigned disk-floor constraint. The report is limited to the target commit and source visible at review time."
+}
