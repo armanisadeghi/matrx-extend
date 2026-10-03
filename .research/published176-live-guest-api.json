@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "status": "inconclusive_http_422_before_stream",
+  "target": {
+    "published_extension_version": "0.2.176 (publication status supplied by task context)",
+    "endpoint": "https://server.app.matrxserver.com/v2/ai/mandates/extend.browser_chat",
+    "source_app": "matrx-extend",
+    "source_feature": "chat",
+    "auth": "No Authorization header, account, paid identity, or organization header was used."
+  },
+  "server_health": {
+    "before": {
+      "checked_at": "2026-10-03T10:43:06.247Z",
+      "http_status": 200,
+      "git_sha": "7207d2ad6be42ae495ac4dd235a66db2f20d7f0a",
+      "built_at": "2026-10-03T09:14:47Z"
+    },
+    "after": {
+      "checked_at": "2026-10-03T10:43:07.267Z",
+      "http_status": 200,
+      "git_sha": "7207d2ad6be42ae495ac4dd235a66db2f20d7f0a",
+      "built_at": "2026-10-03T09:14:47Z"
+    }
+  },
+  "reproducer": {
+    "contract_source": ".research/guest-live-incident-extension.json fresh_guest_start.body_core; src/hooks/use-chat-stream.ts request assembly; src/lib/chat/context/request-context.ts context fields",
+    "fidelity_limit": "The saved incident report gives the published extension body core and header contract, not a full byte-for-byte captured request including per-send page context. This probe used that source-derived core contract; it is not a native extension capture or UI test.",
+    "headers": [
+      "Content-Type: application/json",
+      "Accept: text/event-stream",
+      "X-Fingerprint-ID: ephemeral SHA-256-shaped guest install fingerprint"
+    ],
+    "conversation": "One ephemeral client-minted conversation UUID and one ephemeral guest fingerprint were held only in process memory; neither is recorded here.",
+    "body_fields": [
+      "user_input",
+      "conversation_id",
+      "is_new",
+      "variables=null",
+      "context_withheld=[]",
+      "stream=true",
+      "store=true",
+      "source_app=matrx-extend",
+      "source_feature=chat",
+      "initiation=user",
+      "client.capabilities=[browser-dom]",
+      "client.state.browser-dom.is_guest=true"
+    ],
+    "first_message": "Please reply in one brief sentence confirming you can help with browser tasks.",
+    "followup_message": "Name one simple thing you can help with in a browser, in one brief sentence."
+  },
+  "attempts": [
+    {
+      "label": "first_guest_turn",
+      "started_at": "2026-10-03T10:43:06.719Z",
+      "http_status": 422,
+      "duration_ms": 548,
+      "stream_opened": false,
+      "answer_observed": false,
+      "error_event_observed": false,
+      "end_reason_observed": null,
+      "completion_status_observed": null,
+      "interpretation": "HTTP 422 arrived before any stream events. The response body was not retained, so the validation cause is unknown."
+    },
+    {
+      "label": "same_guest_followup",
+      "attempted": false,
+      "reason": "The first turn did not create a confirmed successful conversation; no follow-up was sent."
+    }
+  ],
+  "scope": {
+    "result": "No actual successful answer or stream completion was observed. This is inconclusive API evidence, not a product failure, product pass, or UI result.",
+    "next_step_limit": "The full captured request needed to faithfully replay the existing reproducer was not present in the saved evidence. No missing payload fields were guessed and no second API attempt was made.",
+    "native_published_install": "Not verified by this direct API probe."
+  }
+}
