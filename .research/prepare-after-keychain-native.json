@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "RUNNER_DUPLICATE_IMPORT_REPAIRED_ACCEPTANCE_PENDING",
+  "status": "EXACT_ARTIFACT_PREPARED_NATIVE_PANEL_UNVERIFIED",
   "defects": ["EXT-D-0058", "EXT-D-0059"],
   "requested_artifact": {
     "run_id": 37107627454,
@@ -34,5 +34,35 @@
       "Focused Biome and git diff --check passed"
     ]
   },
-  "product_verdict": "NONE; no Prepare cases or sign-in steps reached in this attempt. Native acceptance pending peer review of runner repair and one fresh guarded run."
+  "product_verdict": "NONE; exact source/tree preparation passed but native_panel failed before sign-in and all Prepare cases. EXT-D-0058 and EXT-D-0059 remain open/in-fix.",
+  "completed_at": "2026-10-03T11:36:01Z",
+  "post_repair_native_attempt": {
+    "run_id": "prepare-local-native-20261003-03",
+    "source_commit": "36a37d6cc7e7f19e953bdc0284a76ad38019df4c",
+    "resource_decision": "child_failed, admitted and resource valid",
+    "runner_preparation": "PREPARED_DEVELOPMENT exact requested source and tree",
+    "native_receipt": {
+      "path": "test-results/prepare-stale-result-native-fc33acb5-fb60-4f29-83fc-61346a09b2a2.json",
+      "sha256": "d2d555ab576d41a3f531fd7a5a4d1dfe46d2b5bd43b14b9102e219b28104ef5e",
+      "status": "unverified",
+      "stage": "native_panel",
+      "failure_code": "native_panel_failed",
+      "source_sha": null,
+      "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+      "cases": [],
+      "signin_observations": {}
+    },
+    "browser_boundary": "Native harness created an empty owned artifact directory, but there was no BROWSER_STARTUP_FAILURE or BROWSER_EXTENSION_FAILURE log. Inner exception is swallowed by receipt catch; browser, extension, and panel readiness remain unproven.",
+    "log": {
+      "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-after-import-repair.log",
+      "sha256": "acc8d0b14a95e0754a99f77b45395bc21adbb186d439997603168cf418562dd2",
+      "mode": "0600"
+    },
+    "resource_journal": {
+      "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-after-import-repair-resource-journal.jsonl",
+      "sha256": "d09f3969926a6b39d2797f5014a27ef8569c672eeb8126fd10d0f78c1ced08b8"
+    },
+    "credential_file_removed": true
+  },
+  "next_action": "Independent native pipeline escalation owns source-only localization of the swallowed native_panel exception. No further browser launch or source edit in this lane; preserve both resource-valid failure logs and exact imported artifact."
 }
