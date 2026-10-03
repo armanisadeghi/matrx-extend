@@ -1,7 +1,7 @@
 {
   "observed_at": "2026-10-03T18:14:09+00:00",
   "last_all_remotes_fetched": "2026-10-03T18:13:17+00:00",
-  "baseline": "2026-10-03T14:37:43.133740+00:00",
+  "baseline": "2026-10-03T17:52:20+00:00",
   "repositories": [
     {
       "repo": "workspace",
@@ -266,5 +266,7 @@
       "Pushed to main": "\u2014",
       "Not included on main / reason": "None"
     }
-  ]
+  ],
+  "baseline_verified_from": "4916830d:docs/stabilization/reports/workspace-sync-guest-incident-20261003.json",
+  "owner_audit": "All ten changed-path counts independently recomputed against prior per-repository origin_main and matched. Ledger-only commits after this snapshot are excluded from its captured head times."
 }
