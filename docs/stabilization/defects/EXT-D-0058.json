@@ -14,15 +14,18 @@
   "actual": "run clears error but retains report, and async continuations unconditionally write after page-change invalidation.",
   "severity": "S2: misleading preparation status",
   "priority": "P1: truthful current-page results",
-  "state": "in-fix",
+  "state": "closed",
   "evidence": [
     "docs/stabilization/reports/prepare-source-audit.json",
     "docs/stabilization/reports/prepare-lifecycle-repair.json",
     "docs/stabilization/reports/prepare-lifecycle-peer.json",
     "docs/stabilization/reports/prepare-integrated-verification.json",
-    ".research/prepare-native-acceptance-peer.json"
+    ".research/prepare-native-acceptance-peer.json",
+    ".research/prepare-cross-url-native.json",
+    "docs/stabilization/reports/prepare-cross-url-native-20261003/acceptance-receipt.json",
+    "docs/stabilization/reports/prepare-cross-url-native-20261003/resource-journal.jsonl"
   ],
-  "verification_status": "Bounded native admin acceptance on exact CI development artifact 0.2.176 passed failed-retry-after-success and controlled late success/rejection after a same-tab, same-URL document reload. D58 remains in-fix: the documented late-result reproduction navigates from page A to page B with a different URL, which this run did not exercise; broad T08 controls also remain open.",
+  "verification_status": "Closed on bounded native admin retest of the exact 0.2.176 CI development artifact: failed retry after success plus controlled late success and rejection after navigation to a distinct full URL all passed; destination URL and top-frame documentId changed. Same-origin route only; no cross-origin, Store/public-release, or complete T08 claim.",
   "transition_history": [
     {
       "at": "2026-09-28T15:00:57.328820+00:00",
@@ -41,6 +44,24 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol prepare_lifecycle_repair assigned async lifecycle repair with meaningful connected regression coverage and guarded self-verification."
+    },
+    {
+      "at": "2026-09-28T15:29:28Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source repair 46b22e50c91566ccdff4d85ceb64558f8eae8bc6 invalidated stale Prepare attempts; guarded regression tests recorded in prepare-lifecycle-repair.json. Native retest remained pending."
+    },
+    {
+      "at": "2026-10-03T12:08:55Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Authenticated native admin run 37107627454 artifact 11268886169 passed all six retained Prepare cases, including different-full-URL late success and rejection; run resource decision valid, receipt semantics verified, and post-run artifact tree unchanged."
+    },
+    {
+      "at": "2026-10-03T12:12:45Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "The original D58 A-to-B different-URL ordering boundary and both late settlement outcomes are now exercised on the actual Prepare panel. Same-origin and artifact-specific limits remain recorded; broader T08 and D59 remain open."
     }
   ],
   "invalidated_native_evidence": {
@@ -58,10 +79,10 @@
   },
   "current_native_evidence": {
     "report": ".research/prepare-native-acceptance-peer.json",
-    "run": "prepare-local-native-20261003-07",
-    "status": "partial",
+    "run": "prepare-local-native-20261003-08",
+    "status": "pass_bounded",
     "artifact": "CI development test run 37107627454 artifact 11268886169; source 3092444e73094cb0023f6086202869ccbd22978b; tree 025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
-    "verified": "Authenticated admin on the exact imported build: failed retry after success, controlled old-document late success and rejection after same-tab/same-URL reload, and fresh-document Prepare all passed. Resource admission was valid; the post-run build-tree hash still matched.",
-    "scope_limit": "Same-URL reload is a new-document case and supports D59. It is not the separate different-URL A-to-B navigation explicitly named by D58 reproduction; D58 remains open. No Store/public-release or full T08 acceptance is claimed."
+    "verified": "Authenticated admin on the exact imported build: all six cases passed, including held late success and rejection after navigation from the source to a distinct full URL with a changed top-frame documentId. Destination UI remained free of stale result, error, and pending state. Resource decision valid and post-run tree matched.",
+    "scope_limit": "Cross-URL test changes the query on the same-origin demo route; no cross-origin behavior is claimed. This closes D58 Prepare ordering only, not all T08 controls, Store/public-release acceptance, or D59 shared consumers."
   }
 }

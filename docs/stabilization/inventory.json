@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T12:05:20+00:00",
+  "updated_at": "2026-10-03T12:12:45Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -16330,18 +16330,19 @@
           "results": {
             "admin": {
               "status": "partial",
-              "run_id": "prepare-local-native-20261003-07",
+              "run_id": "prepare-local-native-20261003-08",
               "evidence": ".research/prepare-native-acceptance-peer.json",
-              "detail": "Exact imported CI development artifact 0.2.176, authenticated admin, owned native profile, and valid resource receipt. All four original Prepare cases passed: failed retry after success; old-document late success and rejection after same-tab/same-URL reload; fresh-document Prepare. Current tree still hashes to the loaded artifact after the run. This does not cover the separately documented different-URL A-to-B navigation, Snapshot on this artifact, all Showcase controls, or a Store/public-release build.",
+              "detail": "Authenticated native admin on exact imported CI development artifact 0.2.176; all six bounded Prepare cases passed, including held late success/rejection after navigation to a distinct full URL with changed top-frame documentId. Same-origin demo route only. Snapshot on this artifact, remaining T08 controls/dimensions, and Store/public-release acceptance remain unverified.",
               "artifact_run_id": 37107627454,
               "artifact_id": 11268886169,
-              "runner_commit": "6b574159",
+              "runner_commit": "b576f20c402911b41b4c3cab3195462a14488c0e",
               "artifact_version": "0.2.176 CI development test; not Store package",
               "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
               "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
               "post_run_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
-              "resource_journal": "docs/stabilization/reports/prepare-native-20261003/resource-journal.jsonl",
-              "prior_evidence": "docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json"
+              "resource_journal": "docs/stabilization/reports/prepare-cross-url-native-20261003/resource-journal.jsonl",
+              "prior_evidence": "docs/stabilization/reports/prepare-native-20261003/acceptance-receipt.json",
+              "receipt_sha256": "30cc1153e1f164ed9df4024b03bc37f27bd715e3efbeacc4d2e66abf3c5e2bb9"
             }
           },
           "result_history": [
@@ -16383,6 +16384,16 @@
               "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
               "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
               "detail": "All four bounded Prepare cases passed. Controlled late success/rejection were tested after same-tab/same-URL reload, not different-URL A-to-B navigation; Snapshot and broader Showcase controls remain unverified.",
+              "evidence": ".research/prepare-native-acceptance-peer.json"
+            },
+            {
+              "mode": "admin",
+              "status": "partial",
+              "run_id": "prepare-local-native-20261003-08",
+              "artifact_version": "0.2.176 CI development test; not Store package",
+              "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+              "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+              "detail": "All six bounded Prepare cases passed, including two different-full-URL late settlement cases; URL and top-frame documentId changed. Same-origin only; Snapshot and remaining T08 controls/dimensions remain unverified.",
               "evidence": ".research/prepare-native-acceptance-peer.json"
             }
           ]

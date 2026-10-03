@@ -49,7 +49,7 @@
     "docs/stabilization/reports/d59-pattern-probe-final-peer-20261002.json",
     ".research/prepare-native-acceptance-peer.json"
   ],
-  "verification_status": "The exact 0.2.176 CI development artifact now has bounded native admin evidence that same-tab/same-URL reload clears prior Prepare state and ignores controlled old-document late success and rejection. D59 remains in-fix: this run covers Prepare only; Snapshot on the current artifact and broader shared document-identity consumers remain open.",
+  "verification_status": "Bounded native admin evidence on the exact 0.2.176 CI development artifact covers Prepare same-URL and different-full-URL old-document late settlements. D59 remains in-fix: Snapshot on the current artifact and the broader shared document-identity consumers are still unverified.",
   "transition_history": [
     {
       "at": "2026-09-28T15:30:38.553635+00:00",
@@ -87,10 +87,10 @@
   },
   "current_native_evidence": {
     "report": ".research/prepare-native-acceptance-peer.json",
-    "run": "prepare-local-native-20261003-07",
+    "run": "prepare-local-native-20261003-08",
     "status": "partial",
     "artifact": "CI development test run 37107627454 artifact 11268886169; source 3092444e73094cb0023f6086202869ccbd22978b; tree 025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
-    "verified": "Prepare on the actual native extension panel: same-URL reload after a controlled held operation followed by its late success or rejection leaves the new document without stale success/error; failed retry after success and fresh-document Prepare also passed.",
-    "scope_limit": "This is a current-artifact Prepare result only. It does not cover Snapshot or the remaining shared live consumers named in the D59 scope; do not close D59."
+    "verified": "Current-artifact Prepare passed same-URL reload and distinct-full-URL late success/rejection cases; destination document identity changed and stale outcomes did not surface.",
+    "scope_limit": "Prepare only. Snapshot on this current artifact and the remaining shared document-identity consumers are unverified; keep D59 in-fix."
   }
 }
