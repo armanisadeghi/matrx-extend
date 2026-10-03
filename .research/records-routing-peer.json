@@ -1,0 +1,35 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Independent static architecture review; no product or database mutation and no live UI exercise.",
+  "verdict_A_behavior": {
+    "result": "PARTIAL",
+    "observed": [
+      "The extension's records handler advertises 25 actions but explicitly refuses 14 platform actions before opening the store (src/lib/tools/handlers/records.ts, UNSUPPORTED_BROWSER_ACTIONS and run).",
+      "The aidream Records declaration is a native server tool owned by aidream (aidream/tools/_generated_declarations.py:632-653); its package implementation uses the ambient operating person, organization, membership and store policy (packages/matrx-records/matrx_records/agent/context.py:73-122 and agent/tool.py:1803-1841).",
+      "browser-dom currently enumerates Chrome-bound tools and emits InlineToolSpec for each (packages/matrx-ai/matrx_ai/capabilities/browser_dom.py:174-244); inline means client delegation. merge_request_tools reconciles this with binding resolution and drops inline custom tools when the registry chooses server (tools/merge.py:1000-1041).",
+      "The Tools panel directly calls handler.run with a manual context (src/features/tools/ToolsView.tsx:356-409), so a server chat route alone does not make manually exposed Records actions work."
+    ],
+    "unverified": [
+      "No live signed-in member or guest turn, no database binding read, no browser Tools run, and no full Records workflow were exercised in this review.",
+      "Whether the current production cache/DB routes Records to Chrome or aidream was not verified; source paths alone do not establish live behavior."
+    ],
+    "acceptance": [
+      "In signed-in extension Chat, discover Records, call a platform-only action, and prove server execution plus real output, persisted tool receipt, and absence of tool_delegated for that call.",
+      "Confirm all 25 actions remain offered with the canonical DB schema, and test guest versus member denial/availability using real session context; a guest may have an auth.users row but still lacks Records authority.",
+      "Exercise Tools panel Run for at least one platform-only action and one write; ensure a real authorized path and the same visible policy/refusal semantics.",
+      "Check read spanning and write organization selection with two memberships, plus closed-store and verb allowlist refusals; retain the local action/privileged approval path or equivalent durable authorization."
+    ]
+  },
+  "verdict_B_correctness_design": {
+    "result": "FAIL_PENDING_ROUTING_FIX",
+    "confirmed": [
+      "A DB-only removal of the Chrome binding loses browser-dom enumeration and category discovery, because both filter on the Chrome binding (browser_dom.py:133-150,174-244,300-348). It would hide Records from extension Chat unless a registered server spec is added through a canonical discovery path.",
+      "Keeping an InlineToolSpec for Records while registry resolution selects its declared aidream executor is also insufficient: merge.py drops the custom inline spec when server-owned; it must be present as a RegisteredToolSpec/config.tools.",
+      "The server execution_authorization hook can demand confirmation and force delegation (tools/executor.py:1586-1592), so write approval must be tested and a client must be able to answer that exact confirmation without running a different Records implementation or bypassing policy.",
+      "The extension's manual runner has no conversation, agent, or server ToolContext and bypasses the ordinary dispatcher approval flow; silently proxying its call to the server would need a reviewed authorization/organization context contract."
+    ],
+    "best_reuse_path": "Route Records as a registered aidream-owned tool in browser-dom and discovery, using the existing native matrx_records.agent.tool implementation and canonical DB schema. Keep the direct Supabase @ai-matrx/records/core client for existing extension data/UI work, but do not duplicate platform-only orchestration in the Chrome handler. Resolve the Chrome binding's asserted capability and manual Tools runner exposure together; the DB mutation follows complete discovery, chat routing, approval, and manual-run design, not precedes it.",
+    "aggregate_commit_2ea9860f": "PASS for its narrow repair: AggregateMatch matches the shared RecordFilter scalar/null/date-window shape, forwards filter to the shared recordAggregate door, and avoids sending groupBy redundantly when bucket is set (aidream/apps/shared/records/src/aggregate.ts:46-61; extension records.ts:494-528). Tests added for forwarding and rejection. This does not resolve unsupported Records actions or cross-executor route; no live aggregate behavior was checked here.",
+    "other_drift": "Extension category copy and common-docs extension STATE still say eight Records actions, while the active schema and handler enumerate 25. Update user-visible category text and state when shipping; do not use stale prose to narrow the tool."
+  }
+}
