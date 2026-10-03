@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_source_review",
+  "reviewed_commit": "18ef4a37e829f6212e4e375df7760c3fba7bde3c",
+  "scope": "Profile native runner cleanup after failed extension reload; source review only",
+  "A_launch_readiness": {
+    "decision": "hold_next_mutating_native_run",
+    "reason": "The warm save/discard helper may write the original value during its cleanup and then throw the original case failure. The outer flow then skips the receipt update from expected_version 1 to 3, while final deletion still requires version 1. Cleanup can therefore fail closed and leave the test-owned row behind.",
+    "known_state": "This review did not run a browser, mutate the database, or establish that extension reload works. No reload case is promoted."
+  },
+  "B_quality": {
+    "decision": "changes_requested",
+    "fixed_prior_findings": [
+      "persistPrivateOwnership syncs receipt contents and the containing directory before returning, including after atomic replacement.",
+      "When execution and cleanup both fail, executionError is thrown first; cleanup_failure_code and unverified restoration remain separately reported.",
+      "acquireLiveExtensionPanel now includes attachment and identity verification in the retry loop."
+    ],
+    "blockers": [
+      {
+        "file": "tests/browser/profile-native-acceptance.mjs",
+        "line": 830,
+        "finding": "After caseSaveDiscard, the receipt advances from expected_version 1 to 3 only if the helper returns. In caseSaveDiscard, its finally block can save the original value, then the helper throws firstError or cleanupError. That path reaches the outer catch before the receipt update; final deleteOwnedProfileRow uses stale ownedVersion 1 and fails its version compare. Persist/reconcile the verified current owned-row version even when the case reports failure, while preserving ownership checks and fail-closed behavior. The same pattern applies to the reload phase at line 864 and the expected_version 5 update."
+      }
+    ],
+    "version_receipt_progress": {
+      "first_insert": "expected_version 1 is durably recorded after row ownership verification.",
+      "warm_cases": "expected_version 3 is recorded after both warm cases return; a throwing save/discard helper can have already performed its cleanup save and skip this receipt update.",
+      "reload_cases": "expected_version 5 is recorded after both reload cases return; a throwing save/discard helper can likewise have performed cleanup writes before skipping the update."
+    },
+    "remaining_verification": "After repairing receipt progress on failure paths, review source again before any mutating native run. A later bounded run with a fresh receipt path must establish actual reload behavior and restoration."
+  },
+  "evidence": {
+    "reviewed_files": [
+      "tests/browser/profile-native-acceptance.mjs",
+      "tests/browser/native-sidepanel-qa-harness.mjs",
+      "tests/browser/profile-empty-row-restoration.mjs"
+    ],
+    "native_execution_this_review": "not_run",
+    "database_writes_this_review": "none"
+  }
+}
