@@ -29,6 +29,7 @@ const report = {
   cases: [],
   stage: 'inputs',
   failure_code: null,
+  native_stage: null,
   signin_observations: {},
 };
 
@@ -298,6 +299,9 @@ try {
     releaseReceiptPath: RECEIPT,
     ...(receipt.kind === 'local_dev_unpacked' && { localDevReceiptPath: RECEIPT }),
     publicDemoUrl: DEMO,
+    onStage: (value) => {
+      report.native_stage = value;
+    },
     exercisePanel: async ({ page, panel }) => {
       stage('admin_signin');
       await signIn(page, panel);
@@ -319,24 +323,32 @@ try {
         30_000,
       );
 
-      stage('failed_retry');
+      stage('failed_retry_install_fault');
       await installFault(panel, 'hold_reject');
+      stage('failed_retry_click');
       await click(panel, 'button-text', 'Prepare page');
+      stage('failed_retry_wait_held');
       await waitFor(
         'prepare_failed_retry_held',
         () => faultState(panel),
         (value) => value?.calls === 1 && value.held,
         30_000,
       );
+      stage('failed_retry_read_pending');
       const pendingRetry = await prepareState(panel);
+      stage('failed_retry_assert_pending');
       assert.equal(pendingRetry.preparing, true, 'prepare_retry_not_pending');
+      stage('failed_retry_assert_previous_success_absent');
       assert.equal(pendingRetry.success, false, 'prepare_previous_success_visible_during_retry');
+      stage('failed_retry_release');
       await releaseFault(panel);
+      stage('failed_retry_observe_rejection');
       const retry = await waitFor(
         'prepare_failed_retry',
         () => prepareState(panel),
         (value) => value?.failed && value.buttonReady,
       );
+      stage('failed_retry_assert_stale_success_absent');
       assert.equal(retry.success, false, 'prepare_old_success_visible_after_failure');
       report.cases.push({ case: 'failed_retry_after_success', status: 'pass' });
 
@@ -406,7 +418,9 @@ try {
 } catch {
   report.status = 'unverified';
   report.failure_code = `${report.stage}_failed`;
-  process.stderr.write(`UNVERIFIED prepare_stale_result_native stage=${report.stage}\n`);
+  process.stderr.write(
+    `UNVERIFIED prepare_stale_result_native stage=${report.stage} native_stage=${report.native_stage}\n`,
+  );
   process.exitCode = 1;
 } finally {
   await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });

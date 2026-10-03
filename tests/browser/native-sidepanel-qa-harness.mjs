@@ -402,7 +402,9 @@ export async function runNativeSidepanelQa({
   artifactRoot = join(REPO, 'test-results'),
   publicDemoUrl,
   exercisePanel,
+  onStage = () => {},
 } = {}) {
+  onStage('receipt');
   let receipt;
   try {
     receipt = JSON.parse(await readFile(localDevReceiptPath ?? releaseReceiptPath, 'utf8'));
@@ -419,7 +421,9 @@ export async function runNativeSidepanelQa({
     expectedRelease,
     localDev: localDevReceiptPath !== undefined,
   });
+  onStage('artifact_verify');
   await verifyReleasedArtifact(expected);
+  onStage('browser_runtime');
   const browserRuntime = await resolveBrowserRuntime({ chromeExecutable });
   chromeExecutable = browserRuntime.executablePath;
   const verifiedExtensionDir = expected.extensionDir;
@@ -428,6 +432,7 @@ export async function runNativeSidepanelQa({
   await mkdir(artifactRoot, { recursive: true, mode: 0o700 });
   const artifacts = await mkdtemp(join(artifactRoot, 'native-sidepanel-qa-'));
   await mkdir(profile, { mode: 0o700 });
+  onStage('profile_prepare');
   const preparedProfile = await prepareOwnedProfile(profile);
   let child;
   let cdp;
@@ -438,6 +443,7 @@ export async function runNativeSidepanelQa({
   let launchError;
   let startupStartedAt;
   try {
+    onStage('browser_spawn');
     startupStartedAt = performance.now();
     child = spawn(
       chromeExecutable,
@@ -464,6 +470,7 @@ export async function runNativeSidepanelQa({
     });
 
     try {
+      onStage('cdp_connect');
       cdp = await connectOwnedCdp({ preparedProfile, chromeExecutable });
       if (launchError) throw launchError;
     } catch (error) {
@@ -480,11 +487,15 @@ export async function runNativeSidepanelQa({
       process.stderr.write(`BROWSER_STARTUP_FAILURE ${JSON.stringify(startupDiagnostic)}\n`);
       throw error;
     }
+    onStage('endpoint_read');
     const endpoint = await ownedEndpoint(profile);
+    onStage('command_line_query');
     const commandLine = await cdp.send('Browser.getBrowserCommandLine');
+    onStage('command_line_verify');
     requireOwnedCommandLine(commandLine, profile);
     let extensionWorker;
     try {
+      onStage('extension_worker');
       extensionWorker = await waitForExpectedExtension(cdp, expectedExtensionId);
     } catch (error) {
       process.stderr.write(
@@ -492,9 +503,11 @@ export async function runNativeSidepanelQa({
       );
       throw error;
     }
+    onStage('spawn_owner');
     requireSpawnedProfileOwner(await readlink(join(profile, 'SingletonLock')), child.pid);
     verified = true;
 
+    onStage('local_server');
     server = createServer((_request, response) => {
       response
         .writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' })
@@ -507,14 +520,19 @@ export async function runNativeSidepanelQa({
 
     // This attach is derived exclusively from this profile's DevToolsActivePort,
     // after the process/profile/extension checks above. It is never a shared port.
+    onStage('playwright_connect');
     playwrightBrowser = await browserRuntime.chromium.connectOverCDP(
       `http://127.0.0.1:${endpoint.port}`,
     );
+    onStage('page_create');
     const context = playwrightBrowser.contexts()[0];
     const page = await context.newPage();
+    onStage('local_page_navigation');
     await page.goto(`http://localhost:${serverPort}/`);
+    onStage('panel_open');
     await page.locator('#open-panel').click(); // Real trusted Chromium input.
     await page.locator('#result').waitFor({ state: 'visible' });
+    onStage('panel_reply');
     const reply = JSON.parse((await page.locator('#result').textContent()) || '{}');
     if (reply?.ok !== true || reply?.result?.opened !== true)
       throw new Error(`native_sidepanel_open_refused:${JSON.stringify(reply)}`);
@@ -524,24 +542,30 @@ export async function runNativeSidepanelQa({
     );
     if (!normalTarget) throw new Error('native_sidepanel_normal_target_missing');
     const panelUrl = `chrome-extension://${expectedExtensionId}/sidepanel.html`;
+    onStage('panel_target');
     const panelTarget = await waitForPanelTarget(cdp, panelUrl);
     if (panelTarget.targetId === normalTarget.targetId)
       throw new Error('native_sidepanel_target_not_distinct');
+    onStage('panel_context');
     requireSidePanelContext(await sidePanelContexts(cdp, extensionWorker.targetId), panelUrl);
+    onStage('panel_settle');
     const readyPanel = await waitForSettledGuestPanel(cdp, panelTarget.targetId);
 
     if (publicDemoUrl) {
       if (publicDemoUrl !== 'https://www.aimatrx.com/matrx-extend-demo')
         throw new Error('native_sidepanel_public_demo_url_refused');
+      onStage('demo_navigation');
       await page.goto(publicDemoUrl);
       await page.locator('main article').waitFor({ state: 'visible' });
     }
 
     const normalPng = join(artifacts, 'normal-target-after-open.png');
     const panelPng = join(artifacts, 'native-side-panel.png');
+    onStage('screenshot');
     await captureTarget(cdp, normalTarget.targetId, normalPng);
     await captureTarget(cdp, panelTarget.targetId, panelPng);
     await readyPanel.detach();
+    onStage('exercise_panel');
     if (exercisePanel) {
       const panel = await attachTargetSession(cdp, panelTarget.targetId);
       try {
