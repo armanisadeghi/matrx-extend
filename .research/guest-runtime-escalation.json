@@ -1,0 +1,28 @@
+{
+  "status": "SOURCE_READY_AWAITING_FRESH_PEER; native_guest_acceptance_unverified",
+  "commit": "25845342da89df4da2827eba0235e7cb06736058",
+  "source_changes": [
+    "Hosted package installation, Chromium installation, and actual acceptance use three sequential fresh resource leases on the same runner with unique journal IDs.",
+    "Pinned playwright-core 1.56.1 package install disables npm audit and funding requests; retains ignore-scripts.",
+    "Browser phase installs full Chromium with --no-shell. Package version must equal 1.56.1; acceptance verifies the pinned package executable exists and the expected Chromium revision has Playwright INSTALLATION_COMPLETE marker.",
+    "Acceptance does no runtime installation. Published Store CRX hash and adapted identity checks remain unchanged.",
+    "A bounded read-only top probe exposes exit code, signal, killed status, bounded stderr, and CPU lines before the guard; failure stops workflow.",
+    "Resource journals upload on failure as well as success. All guard thresholds and ownership enforcement unchanged.",
+    "CI only cancels in-progress pull-request verification; main and tag verification finish while later same-ref runs queue."
+  ],
+  "phase_result_semantics": "Workflow phases require previous steps to succeed. Any refused or invalid setup lease stops later phases; its result remains refused/invalid. No invalid setup receipt is promoted to acceptance. A completed package can persist on the same host between healthy phases, with no threshold relaxation.",
+  "checks": {
+    "node_syntax": "PASS",
+    "biome_owned_javascript": "PASS",
+    "ruby_psych_both_workflows": "PASS",
+    "git_diff_check": "PASS",
+    "hosted_heavy_execution": "NOT_STARTED: fresh independent peer required"
+  },
+  "server_version_before_any_new_attempt": "d74d7e58a6356525a2ea7bf11ce50af6f94471d7",
+  "server_version_at_handoff": "d74d7e58a6356525a2ea7bf11ce50af6f94471d7",
+  "native_outcomes": {
+    "first_guest_answer": "UNVERIFIED",
+    "distinct_answer_after_reload": "UNVERIFIED"
+  },
+  "remaining": "Fresh independent source peer then guarded hosted workflow dispatch. No browser, build, or installation was run locally or remotely by this tranche."
+}
