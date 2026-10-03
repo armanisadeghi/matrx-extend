@@ -42,6 +42,8 @@ jobs:
       cancel-in-progress: false
     env:
       GH_TOKEN: ${{ github.token }}
+      MATRX_HOSTED_BROWSER_RUNTIME_DIR: ${{ runner.temp }}/browser-runtime
+      PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
     steps:
       - uses: actions/checkout@v4
         with:
@@ -94,6 +96,30 @@ jobs:
             [[ "$DEVELOPMENT_RUN_ID" =~ ^[1-9][0-9]*$ && "$DEVELOPMENT_ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]] || exit 1
           fi
 
+      - name: Diagnose host measurement readiness
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { execFile } from 'node:child_process';
+          execFile('/usr/bin/top', ['-l', '2', '-s', '1', '-n', '0'], { timeout: 5000 }, (error, stdout, stderr) => {
+            console.log(JSON.stringify({ measurement: 'top', code: error?.code ?? 0, signal: error?.signal ?? null, killed: error?.killed ?? false, stderr: stderr.slice(0, 1000), cpu: stdout.match(/CPU usage:.*/g) ?? [] }));
+            process.exitCode = error ? 1 : 0;
+          });
+          NODE
+
+      - name: Prepare pinned browser driver under an owned permit
+        env:
+          MATRX_HOSTED_PHASE: package
+        run: |
+          mkdir -p "$RUNNER_TEMP/guest-resource-profile"
+          node scripts/stabilization-resource.mjs run --run-id "hosted-package-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
+
+      - name: Prepare full Chromium under a fresh owned permit
+        env:
+          MATRX_HOSTED_PHASE: browser
+        run: |
+          node scripts/stabilization-resource.mjs run --run-id "hosted-browser-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
+
       - name: Exercise the actual signed-out Chrome side panel
         shell: bash
         env:
@@ -118,6 +144,7 @@ jobs:
           name: hosted-guest-${{ github.run_id }}-${{ github.run_attempt }}
           if-no-files-found: ignore
           path: |
+            docs/stabilization/resource-journals/hosted-*.jsonl
             test-results/guest-chat-store-*.json
             test-results/settings-local-controls-acceptance.json
             test-results/native-sidepanel-qa-*/*.png

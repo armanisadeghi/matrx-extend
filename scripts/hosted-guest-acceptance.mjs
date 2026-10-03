@@ -3,9 +3,9 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { access, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { matchingCrx3RsaKey } from './crx3-identity.mjs';
 import { verifyImportedNativeEvidence } from './current-test-artifact.mjs';
 import { hashReleaseTree } from './sync-unpacked-release.mjs';
@@ -228,6 +228,52 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
   );
 }
 
+// Each phase runs under its own fresh resource admission on the same host.
+// Setup has no product verdict, and acceptance never installs dependencies.
+const phase = process.env.MATRX_HOSTED_PHASE ?? 'acceptance';
+assert.ok(['package', 'browser', 'acceptance'].includes(phase), 'invalid hosted phase');
+assert.ok(process.env.MATRX_RESOURCE_OWNER, 'hosted phase requires owned resource permit');
+const runtimeDir = resolve(process.env.MATRX_HOSTED_BROWSER_RUNTIME_DIR ?? '');
+assert.ok(process.env.MATRX_HOSTED_BROWSER_RUNTIME_DIR && process.env.PLAYWRIGHT_BROWSERS_PATH);
+const packageDir = join(runtimeDir, 'node_modules/playwright-core');
+if (phase === 'package') {
+  const installed = await ownedProcess('npm', [
+    'install',
+    '--prefix',
+    runtimeDir,
+    '--no-save',
+    '--ignore-scripts',
+    '--no-audit',
+    '--no-fund',
+    'playwright-core@1.56.1',
+  ]);
+  assert.equal(installed.code, 0, 'pinned Playwright core install failed');
+}
+const runtimePackage = JSON.parse(await readFile(join(packageDir, 'package.json'), 'utf8'));
+assert.equal(runtimePackage.version, '1.56.1', 'runtime version mismatch');
+if (phase === 'package') {
+  console.log('HOSTED_PACKAGE_READY', runtimePackage.version);
+  process.exit(0);
+}
+if (phase === 'browser') {
+  const browser = await ownedProcess(join(runtimeDir, 'node_modules/.bin/playwright-core'), [
+    'install',
+    'chromium',
+    '--no-shell',
+  ]);
+  assert.equal(browser.code, 0, 'bundled Chromium install failed');
+}
+const { chromium } = await import(pathToFileURL(join(packageDir, 'index.mjs')));
+await access(chromium.executablePath());
+// Playwright writes this only after a complete extraction. Never reuse a partial download.
+const browsers = JSON.parse(await readFile(join(packageDir, 'browsers.json'), 'utf8'));
+const revision = browsers.browsers.find((browser) => browser.name === 'chromium').revision;
+await access(
+  join(process.env.PLAYWRIGHT_BROWSERS_PATH, `chromium-${revision}`, 'INSTALLATION_COMPLETE'),
+);
+console.log('HOSTED_BROWSER_READY', revision, phase);
+if (phase === 'browser') process.exit(0);
+
 const artifactDirArg = process.env.MATRX_HOSTED_RELEASE_ARTIFACT_DIR;
 const outputDirArg = process.env.MATRX_HOSTED_GUEST_OUTPUT_DIR;
 const expectedSha = process.env.MATRX_HOSTED_RELEASE_SHA;
@@ -249,23 +295,4 @@ const prepared = releaseMode
   : developmentMode
     ? await prepareDevelopment(devRunId, devArtifactId)
     : await preparePublishedStoreCrx(outputDir);
-const runtimeDir = resolve(process.env.MATRX_HOSTED_BROWSER_RUNTIME_DIR ?? '');
-if (!process.env.MATRX_HOSTED_BROWSER_RUNTIME_DIR || !process.env.PLAYWRIGHT_BROWSERS_PATH) {
-  throw new Error('hosted_browser_runtime_configuration_missing');
-}
-const installed = await ownedProcess('npm', [
-  'install',
-  '--prefix',
-  runtimeDir,
-  '--no-save',
-  '--ignore-scripts',
-  'playwright-core@1.56.1',
-]);
-assert.equal(installed.code, 0, 'pinned Playwright core install failed');
-const browser = await ownedProcess(join(runtimeDir, 'node_modules/.bin/playwright-core'), [
-  'install',
-  'chromium',
-  '--no-shell',
-]);
-assert.equal(browser.code, 0, 'bundled Chromium install failed');
 await run(prepared);

@@ -30,7 +30,8 @@ on:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  # Main and release verification must finish despite subsequent evidence commits.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   resource-guard-integration:
