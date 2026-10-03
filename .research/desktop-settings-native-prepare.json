@@ -1,5 +1,5 @@
 {
-  "status": "guest_partial_native_evidence_reset_census_source_traced",
+  "status": "guest_bounded_native_evidence_reset_census_passed_defects_not_closed",
   "scope": "EXT-D-0084 and EXT-D-0086 native Settings storage acceptance in an owned disposable Chrome profile",
   "runner": "tests/browser/settings-desktop-native-acceptance.mjs",
   "storage_fault_helper": "tests/browser/settings-desktop-storage-faults.mjs",
@@ -38,12 +38,22 @@
     "failed_boundary": "Successful reset retry after reload: prior local-key comparison found two identical unexplained overlaps among seven prior keys; one session fixture was removed.",
     "reset_only_diagnostic": ".research/desktop-settings-reset-census-01.json",
     "reset_only_resource_journal": ".research/desktop-settings-reset-resource-01.jsonl",
+    "reset_only_followup": ".research/desktop-settings-reset-census-02.json",
+    "reset_only_followup_resource_journal": ".research/desktop-settings-reset-resource-02.jsonl",
+    "receipt_sha256": {
+      "guest_run_02": "4153cecd11e82fe32fc4d38b65c3e4af5a6d2e2981d1b3d8c9eaa646a9f16ea5",
+      "guest_run_03": "28caa6a2fa72947de932eb2754b355a3b79d1092b2a4a533af34496e6c716677",
+      "reset_only_diagnostic": "0f3b4641c57f5a95e91cd0ba6024041a50fbb1955325c717bd6edfcc9296fcb3",
+      "reset_only_followup": "d047e1a403733080c09348be2f58fdbfd468e28f1663fcaed0347d722a931f43"
+    },
     "overlap_key_names": ["matrx.chat.v1", "matrx.user.isAdmin"],
     "source_trace": [
       "The exact 991385d9 use-auth applyCanonicalSession guest boot writes a false matrx.user.isAdmin gate.",
       "The exact 991385d9 ChatView identity effect calls clearForIdentityChange('guest'); src/state/chat.ts persists chatActorId, selectedAgentId, draft, variableValues, permissionMode, and boundComputeTarget.",
-      "The prior census predicate omitted chatActorId, so it misclassified a possibly fresh chat default. Key identity alone is insufficient; the next bounded check seeds an unsent nondefault draft through the trusted Chat composer and requires exact empty-draft guest default after reset."
-    ]
+      "The prior census predicate omitted chatActorId, so it misclassified a fresh chat default. The bounded followup seeded an unsent synthetic draft through trusted Chat UI, observed persistence before reset, then required its removal and exact empty-draft guest default after reset."
+    ],
+    "reset_only_followup_result": "PASS: rejected clear preserved six local and one session prior values; retry removed the nondefault draft, prior port and session fixture; post-reload census found zero unexplained overlaps and guest identity remained signed out. One same-value false admin gate and four changed fresh defaults were source-explained, not blanket-exempted.",
+    "resource_final_decision": "valid; child exit 0; heavy lease absent after run"
   },
   "limits": [
     "Guest runtime results are partial, not defect closure. Member and admin have not run.",
@@ -51,5 +61,5 @@
     "Pair-code clear is marked unverified when native or disconnected transport hides Forget; a synthetic stored code alone does not make the HTTP-only control applicable.",
     "The imported artifact belongs to the D84/D86 repair source but is an interim CI development build, not a published Store release."
   ],
-  "next": "After root scope decision, rerun reset-census only with a trusted nondefault Chat draft and exact fresh-default/admin-false predicates. Member/admin and real desktop connection remain separate later coverage."
+  "next": "Independent peer review of the final reset oracle and raw receipts; member/admin native roles, HTTP-only pair removal, real desktop connection/rediscovery, and full T43-T51 control criteria remain open."
 }
