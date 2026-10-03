@@ -75,5 +75,11 @@
       "MATRX_CHROME_PATH"
     ],
     "runtime_limit": "Hosted runs prepare pinned Playwright/Chrome under separate resource permits; no local build, release, or user-profile mutation is required."
+  },
+  "ci_formatter_rule": {
+    "source": "biome.json overrides",
+    "scope": "Formatter disabled only for the four byte-identical native receipt JSON files; linter and all other files retain the repository defaults.",
+    "validation": "Biome check passed on the four receipts, biome.json, and this report; an unlisted scratch copy of the same raw receipt failed the formatter as expected and was removed.",
+    "raw_receipt_hashes_preserved": true
   }
 }

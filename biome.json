@@ -88,6 +88,15 @@
   "overrides": [
     {
       "include": [
+        ".research/desktop-settings-guest-native-run02.json",
+        ".research/desktop-settings-guest-native-run03.json",
+        ".research/desktop-settings-reset-census-01.json",
+        ".research/desktop-settings-reset-census-02.json"
+      ],
+      "formatter": { "enabled": false }
+    },
+    {
+      "include": [
         "tests/browser/vault-authenticator-preservation.test.cjs",
         "tests/browser/vault-owned-cdp.cjs"
       ],
