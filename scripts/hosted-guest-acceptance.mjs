@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { access, mkdir, readFile, readdir, unlink, writeFile } from 'node:fs/promises';
-import { basename, join, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { matchingCrx3RsaKey } from './crx3-identity.mjs';
 import { verifyImportedNativeEvidence } from './current-test-artifact.mjs';
@@ -198,46 +198,68 @@ async function preparePublishedStoreCrx(outputDir) {
 
 async function run({ extensionDir, relocatedReceipt, kind }) {
   const acceptanceCase = process.env.MATRX_HOSTED_ACCEPTANCE_CASE ?? 'guest-chat';
-  assert.ok(['guest-chat', 'settings-controls'].includes(acceptanceCase));
+  assert.ok(['guest-chat', 'settings-controls', 'member-chat'].includes(acceptanceCase));
   if (acceptanceCase === 'settings-controls')
     assert.equal(kind, 'ci_development_test', 'Settings controls requires CI development receipt');
-  const child = spawn(
-    process.execPath,
-    [
-      join(
-        repo,
-        acceptanceCase === 'settings-controls'
-          ? 'tests/browser/settings-local-controls-acceptance.mjs'
-          : 'tests/browser/guest-chat-store-acceptance.mjs',
-      ),
-    ],
-    {
-      cwd: repo,
-      stdio: 'inherit',
-      env: {
-        ...process.env,
-        MATRX_GUEST_CHAT_EXTENSION_DIR: extensionDir,
-        ...(acceptanceCase === 'settings-controls'
-          ? {
-              SETTINGS_DEV_EXTENSION_DIR: extensionDir,
-              SETTINGS_DEV_BUILD_RECEIPT: relocatedReceipt,
-            }
-          : {}),
-        ...(kind === 'ci_development_test'
-          ? { MATRX_GUEST_CHAT_DEV_RECEIPT: relocatedReceipt }
-          : { MATRX_GUEST_CHAT_RELEASE_RECEIPT: relocatedReceipt }),
+  if (acceptanceCase === 'member-chat')
+    assert.equal(kind, 'published_release', 'Member Chat requires exact published release receipt');
+  const memberLinkPath = join(dirname(relocatedReceipt), 'member-magic-link-private.json');
+  if (acceptanceCase === 'member-chat') {
+    assert.ok(process.env.MATRX_HOSTED_MEMBER_LINK_JSON, 'member link secret required');
+    await writeFile(memberLinkPath, process.env.MATRX_HOSTED_MEMBER_LINK_JSON, {
+      mode: 0o600,
+      flag: 'wx',
+    });
+  }
+  const childEnv = {
+    ...process.env,
+    MATRX_GUEST_CHAT_EXTENSION_DIR: extensionDir,
+    MATRX_REVIEWER_EXTENSION_DIR: extensionDir,
+    MATRX_REVIEWER_RELEASE_RECEIPT: relocatedReceipt,
+    ...(acceptanceCase === 'member-chat' ? { MATRX_REVIEWER_MAGIC_LINK_FILE: memberLinkPath } : {}),
+    ...(acceptanceCase === 'settings-controls'
+      ? {
+          SETTINGS_DEV_EXTENSION_DIR: extensionDir,
+          SETTINGS_DEV_BUILD_RECEIPT: relocatedReceipt,
+        }
+      : {}),
+    ...(kind === 'ci_development_test'
+      ? { MATRX_GUEST_CHAT_DEV_RECEIPT: relocatedReceipt }
+      : { MATRX_GUEST_CHAT_RELEASE_RECEIPT: relocatedReceipt }),
+  };
+  childEnv.MATRX_HOSTED_MEMBER_LINK_JSON = undefined;
+  childEnv.MATRX_REVIEWER_CREDENTIALS_FILE = undefined;
+  try {
+    const child = spawn(
+      process.execPath,
+      [
+        join(
+          repo,
+          acceptanceCase === 'settings-controls'
+            ? 'tests/browser/settings-local-controls-acceptance.mjs'
+            : acceptanceCase === 'member-chat'
+              ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
+              : 'tests/browser/guest-chat-store-acceptance.mjs',
+        ),
+      ],
+      {
+        cwd: repo,
+        stdio: 'inherit',
+        env: childEnv,
       },
-    },
-  );
-  const result = await new Promise((resolveRun, reject) => {
-    child.once('error', reject);
-    child.once('exit', (code, signal) => resolveRun({ code, signal }));
-  });
-  assert.equal(
-    result.code,
-    0,
-    `native side-panel guest acceptance exited ${result.code ?? result.signal}`,
-  );
+    );
+    const result = await new Promise((resolveRun, reject) => {
+      child.once('error', reject);
+      child.once('exit', (code, signal) => resolveRun({ code, signal }));
+    });
+    assert.equal(
+      result.code,
+      0,
+      `native side-panel acceptance exited ${result.code ?? result.signal}`,
+    );
+  } finally {
+    if (acceptanceCase === 'member-chat') await unlink(memberLinkPath);
+  }
 }
 
 // Each phase runs under its own fresh resource admission on the same host.

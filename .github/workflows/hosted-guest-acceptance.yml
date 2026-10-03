@@ -28,6 +28,7 @@ on:
         options:
           - guest-chat
           - settings-controls
+          - member-chat
 
 permissions:
   actions: read
@@ -84,8 +85,12 @@ jobs:
           DEVELOPMENT_RUN_ID: ${{ inputs.development_run_id }}
           DEVELOPMENT_ARTIFACT_ID: ${{ inputs.development_artifact_id }}
           PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx }}
+          ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
         run: |
           set -euo pipefail
+          if [[ "$ACCEPTANCE_CASE" == member-chat ]]; then
+            [[ -n "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
+          fi
           if [[ "$PUBLISHED_STORE_CRX" == true ]]; then
             [[ -z "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" ]] || exit 1
           elif [[ -n "$RELEASE_RUN_ID" ]]; then
@@ -122,7 +127,7 @@ jobs:
         run: |
           node scripts/stabilization-resource.mjs run --run-id "hosted-browser-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
 
-      - name: Exercise the actual signed-out Chrome side panel
+      - name: Exercise the selected Chrome side-panel case
         shell: bash
         env:
           MATRX_PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser-runtime/node_modules/playwright-core/index.mjs
@@ -135,6 +140,7 @@ jobs:
           MATRX_HOSTED_DEV_ARTIFACT_ID: ${{ inputs.development_artifact_id }}
           MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.130' || '' }}
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
+          MATRX_HOSTED_MEMBER_LINK_JSON: ${{ secrets.MATRX_REVIEWER_MAGIC_LINK_JSON }}
         run: |
           mkdir -p "$RUNNER_TEMP/guest-resource-profile"
           node scripts/stabilization-resource.mjs run --run-id "hosted-guest-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
@@ -149,4 +155,5 @@ jobs:
             docs/stabilization/resource-journals/hosted-*.jsonl
             test-results/guest-chat-store-*.json
             test-results/settings-local-controls-acceptance.json
+            test-results/reviewer-chat-store-*.json
             test-results/native-sidepanel-qa-*/*.png

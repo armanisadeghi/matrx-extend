@@ -344,7 +344,7 @@ try {
             },
             (state) =>
               state?.emailMatchesReviewer &&
-              state.observedRoleCategory !== 'admin' &&
+              state.observedRoleCategory === 'non_admin' &&
               state.signOutVisible &&
               state.chatVisible,
             90_000,
