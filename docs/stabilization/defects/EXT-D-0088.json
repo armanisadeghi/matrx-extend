@@ -18,7 +18,8 @@
     ".research/guest-final-release-peer.json",
     "https://github.com/AI-Matrix-Engine/aidream/commit/c01faa52660a2720fcc888af3e10210688bc80cc",
     "https://github.com/AI-Matrix-Engine/aidream/actions/runs/37094559311",
-    "Three consecutive /health/version samples reported c01faa52660a2720fcc888af3e10210688bc80cc; direct guest API first turn, same-guest follow-up, and fresh conversation each returned HTTP 200 with successful completion and no error event (.research/guest-live-incident-server.json)."
+    "Three consecutive /health/version samples reported c01faa52660a2720fcc888af3e10210688bc80cc; direct guest API first turn, same-guest follow-up, and fresh conversation each returned HTTP 200 with successful completion and no error event (.research/guest-live-incident-server.json).",
+    "docs/stabilization/runs/hosted-guest-controlled-20261003.json"
   ],
   "severity": "S0: public core no-login Chat fails immediately",
   "priority": "P0: supersedes deferred Chat sequencing; restore live guest promise now",
@@ -50,6 +51,7 @@
     }
   ],
   "closure_requirement": "Original published guest request succeeds on deployed fix, real signed-out extension reply and reload verified, independent peer and surrounding member/guest regressions pass. Do not close from source or ordinary CI.",
-  "deployed_server_sha": "c01faa52660a2720fcc888af3e10210688bc80cc",
-  "published_extension_version": "0.2.130"
+  "deployed_server_sha": "23053275714b3401ff514339706635f8fc051d0d",
+  "published_extension_version": "0.2.130",
+  "bounded_retest": "Guest native firstreply + reloadfollowup PASS on CIdevelopment175 controlledarticle; original Store130 native, publicdemo and surrounding member tests remain open. State fixed, notclosed."
 }

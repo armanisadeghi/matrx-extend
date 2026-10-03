@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T05:01:17.774052+00:00",
+  "updated_at": "2026-10-03T05:17:26.738743+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -28046,19 +28046,31 @@
           ],
           "results": {
             "guest": {
-              "status": "fail",
-              "detail": "Published0.2.105 remains the failing Store baseline;0.2.130 pending review. Exact candidate0.2.173 independently passed fresh guest opening and post-panel-reload page-grounded answers on Oct1. Earlier candidate marker miss remains unexplained; live signout privacy remains unverified.",
-              "defect_ids": [
-                "EXT-D-0066"
-              ],
-              "candidate_result": {
-                "version": "0.2.173",
-                "status": "pass",
-                "run_id": "guest-grounding-peer-native-20261001-001",
-                "evidence": "docs/stabilization/reports/guest-grounding-peer-20261001.json"
-              }
+              "status": "pass",
+              "run_id": "hosted-guest-controlled-20261003",
+              "evidence": "docs/stabilization/runs/hosted-guest-controlled-20261003.json",
+              "detail": "Bounded development175 controlledarticle native firstreply and reloadfollowup; actual unpredictable codes observed. Not Store130/publicdemo/Records/fullChat."
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "fail",
+                "detail": "Published0.2.105 remains the failing Store baseline;0.2.130 pending review. Exact candidate0.2.173 independently passed fresh guest opening and post-panel-reload page-grounded answers on Oct1. Earlier candidate marker miss remains unexplained; live signout privacy remains unverified.",
+                "defect_ids": [
+                  "EXT-D-0066"
+                ],
+                "candidate_result": {
+                  "version": "0.2.173",
+                  "status": "pass",
+                  "run_id": "guest-grounding-peer-native-20261001-001",
+                  "evidence": "docs/stabilization/reports/guest-grounding-peer-20261001.json"
+                }
+              },
+              "superseded_at": "2026-10-03T05:17:26.738743+00:00"
+            }
+          ]
         },
         {
           "id": "EXT-F-2013-T11",
@@ -28091,7 +28103,7 @@
       ],
       "cells": {
         "guest": {
-          "test_status": "fail",
+          "test_status": "partial",
           "defect_ids": [
             "EXT-D-0066",
             "EXT-D-0074",
@@ -28099,9 +28111,10 @@
             "EXT-D-0088"
           ],
           "run_ids": [
-            "guest-grounding-peer-native-20261001-001"
+            "guest-grounding-peer-native-20261001-001",
+            "hosted-guest-controlled-20261003"
           ],
-          "retest_status": "Published0.2.130 immediate guest Chat error reported October2; live server schema crash captured October3 03:38:58UTC; fix/retest pending."
+          "retest_status": "Development175 controlled guest reply+reload passed; originalStore130 native and broader Chat remain unverified."
         },
         "member": {
           "test_status": "unverified",
