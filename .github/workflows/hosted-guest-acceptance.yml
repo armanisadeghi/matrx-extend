@@ -15,6 +15,14 @@ on:
         description: Exact CI development artifact ID, verified by the existing importer
         required: false
         type: string
+      acceptance_case:
+        description: Native-panel case to exercise
+        required: false
+        default: guest-chat
+        type: choice
+        options:
+          - guest-chat
+          - settings-controls
 
 permissions:
   actions: read
@@ -89,6 +97,7 @@ jobs:
           MATRX_HOSTED_RELEASE_SHA: ${{ steps.release.outputs.source_sha }}
           MATRX_HOSTED_DEV_RUN_ID: ${{ inputs.development_run_id }}
           MATRX_HOSTED_DEV_ARTIFACT_ID: ${{ inputs.development_artifact_id }}
+          MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
         run: |
           mkdir -p "$RUNNER_TEMP/guest-resource-profile"
           node scripts/stabilization-resource.mjs run --run-id "hosted-guest-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
@@ -101,4 +110,5 @@ jobs:
           if-no-files-found: ignore
           path: |
             test-results/guest-chat-store-*.json
+            test-results/settings-local-controls-acceptance.json
             test-results/native-sidepanel-qa-*/*.png

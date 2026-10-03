@@ -108,15 +108,32 @@ async function prepareDevelopment(runId, artifactId) {
 }
 
 async function run({ extensionDir, relocatedReceipt, kind }) {
+  const acceptanceCase = process.env.MATRX_HOSTED_ACCEPTANCE_CASE ?? 'guest-chat';
+  assert.ok(['guest-chat', 'settings-controls'].includes(acceptanceCase));
+  if (acceptanceCase === 'settings-controls')
+    assert.equal(kind, 'ci_development_test', 'Settings controls requires CI development receipt');
   const child = spawn(
     process.execPath,
-    [join(repo, 'tests/browser/guest-chat-store-acceptance.mjs')],
+    [
+      join(
+        repo,
+        acceptanceCase === 'settings-controls'
+          ? 'tests/browser/settings-local-controls-acceptance.mjs'
+          : 'tests/browser/guest-chat-store-acceptance.mjs',
+      ),
+    ],
     {
       cwd: repo,
       stdio: 'inherit',
       env: {
         ...process.env,
         MATRX_GUEST_CHAT_EXTENSION_DIR: extensionDir,
+        ...(acceptanceCase === 'settings-controls'
+          ? {
+              SETTINGS_DEV_EXTENSION_DIR: extensionDir,
+              SETTINGS_DEV_BUILD_RECEIPT: relocatedReceipt,
+            }
+          : {}),
         ...(kind === 'ci_development_test'
           ? { MATRX_GUEST_CHAT_DEV_RECEIPT: relocatedReceipt }
           : { MATRX_GUEST_CHAT_RELEASE_RECEIPT: relocatedReceipt }),
