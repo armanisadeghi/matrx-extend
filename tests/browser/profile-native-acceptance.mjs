@@ -2,7 +2,7 @@
 /** Receipt-bound native Profile acceptance in an owned Chrome profile. */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
@@ -10,7 +10,7 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { signInAdminSettings } from './admin-settings-signin.mjs';
 import { panelIdentity } from './settings-native-auth-driver.mjs';
-import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
+import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
 const RECEIPT = process.env.PROFILE_DEV_BUILD_RECEIPT;
@@ -45,6 +45,35 @@ async function credentials() {
   assert.equal(email, 'admin@admin.com', 'admin_identity_required');
   assert.ok(password, 'admin_password_required');
   return { email, password };
+}
+async function selectApprovedOrganization(panel) {
+  const configPath=join(REPO,'test-results/notes-private-config.json');
+  const metadata=await stat(configPath);
+  assert.equal(metadata.mode&0o077,0,'organization_fixture_not_private');
+  const config=JSON.parse(await readFile(configPath,'utf8'));
+  const name=config.approved_organization_name;
+  assert.ok(typeof name==='string'&&name.trim(),'approved_organization_missing');
+  await openSection(panel,'Organization');
+  const selected=()=>evaluate(panel,`(() => {
+    const section=[...document.querySelectorAll('button[aria-expanded]')].find(b=>b.textContent.trim()==='Organization');
+    const body=section?.parentElement?.nextElementSibling;
+    const label=[...(body?.querySelectorAll('span')??[])].find(s=>s.textContent.trim()==='Acting as');
+    const control=label?.parentElement?.parentElement?.querySelector('button[role="combobox"]');
+    return {count:control?1:0,name:control?.textContent.trim()??null,
+      noMembership:(body?.textContent??'').includes('You are not a member of any organization'),
+      error:Boolean(body?.querySelector('.text-destructive'))};
+  })()`);
+  const before=await waitFor('organization_picker_ready',selected,s=>s?.count===1||s?.noMembership||s?.error,30000);
+  assert.equal(before.count,1,'organization_picker_unavailable');
+  if(before.name!==name){
+    assert.equal(before.name,'Choose…','unexpected_preselected_organization');
+    await click(panel,'organization','Acting as');
+    await waitFor('approved_organization_option',()=>evaluate(panel,`(() =>
+      [...document.querySelectorAll('[role="option"]')].filter(o=>o.textContent.trim()===${JSON.stringify(name)}).length)()`),n=>n===1,30000);
+    await click(panel,'option',name);
+  }
+  await waitFor('approved_organization_selected',selected,s=>s?.name===name,30000);
+  return name;
 }
 async function state(panel) {
   return evaluate(panel, `(() => {
@@ -156,12 +185,13 @@ try {
       report.stage='authentication';
       const auth={stage:'begin',signin_observations:{}};
       const identity=await signInAdminSettings({page,panel,report:auth,stage:v=>{auth.stage=v},readCredentials:credentials,captureIdentity:true});
+      const selectedOrg=await selectApprovedOrganization(panel);
       const stored=await panelIdentity(panel);
       assert.equal(stored.profileId,identity.userId,'profile_identity_mismatch');
       assert.equal(stored.isAdmin,true,'admin_role_unverified');
       assert.ok(stored.organizationId,'device_organization_missing');
       report.identity={email:identity.email,role:'admin',device_organization_present:Boolean(stored.organizationId),
-        profile_matches_first_party:stored.profileId===identity.userId};
+        profile_matches_first_party:stored.profileId===identity.userId,device_organization_name:selectedOrg};
       report.stage='profile';
       await click(panel,'title','Settings');
       await openProfile(panel);
