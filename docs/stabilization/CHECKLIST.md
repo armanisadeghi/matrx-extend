@@ -1,6 +1,6 @@
 # Stabilization checklist
 
-Generated 2026-10-03 06:25 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-10-03T06:25:20.561874+00:00.
+Generated 2026-10-03 06:46 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-10-03T06:25:20.561874+00:00.
 
 ## Current truth
 
@@ -14,12 +14,12 @@ Generated 2026-10-03 06:25 UTC from inventory.json, defect records, and the curr
 
 - **Release 0.2.173:** Last frozen validated Store candidate remains 0.2.173 at this receipt/tag. Published Store version is 0.2.130. Main development version is 0.2.175 with newer fixes, but no newer Store package has passed all release gates or been uploaded. Hosted credentials are working; current release blocker is genuine Records contract drift (D91), after D90 validator repair.
 - **Artifact:** Frozen Store candidate173 keyed tree494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064 and Store ZIP1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff remain unchanged. Guest development175 artifact11264666911 tree54162a180ed723dd4eb4b18cfbe6c0d9253be6d72b545c722cb4ed4a68a35068 is not Store-eligible.
-- **Scoped native acceptance:** Hosted run37098718754 passed actual signed-out first answer and reload-followup with unpredictable page codes on exact CI development175/source38bc59215ff12077b7949c34aaabcfe30c6a0274, artifact11264666911. This is controlled-article evidence, not Store130, public demo, next Store candidate, Records execution, signed-in or whole Chat acceptance. Server startup repair and delegated-envelope repair are live in23053275714b3401ff514339706635f8fc051d0d. Original Store130 native retest remains open. Settings run37099617740 refused CPU preflight before cases; fresh-host retry pending. Broad coverage remains unverified; historical passes retain their build boundaries.
+- **Scoped native acceptance:** Development175 controlled-article guest first answer/reload passed37098718754; bounded Settings guest cases passed37099860144 (runs/hosted-settings-20261003.json). Published130 adapted original Google CRX run37103324918 observed two grounded signed-out answers, but failed final artifact-integrity assertion: whole-run acceptance remains unverified pending diagnostic37103982014. See .research/guest-published-runtime.json. Current live server5318c105 contains startup/envelope/routing repairs; new endpoint revision9bd979a894 passed train37103660096 and deploy37103864282 is pending. No full Chat, Records, member or overall product health claim; historical case passes retain exact build boundaries.
 - These receipts establish only the named checks on the named artifact. Other inventory passes keep their recorded historical build boundary.
 
 ## Inventory freshness review
 
-Since inventory source `528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b`, **240 `src/` paths changed** through `0d1b1f8c29ee716bc7741453ed696af32e69f064`. A direct path-anchor comparison matched 30 and left 210 without an exact inventory anchor.
+Since inventory source `528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b`, **242 `src/` paths changed** through `c32d94194608f8d3983fccadf99ce2b755b2d927`. A direct path-anchor comparison matched 31 and left 211 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities
