@@ -14,13 +14,15 @@
   "actual": "Run04 left its test-created row because cleanup lost the panel; separate guarded recovery05 restored absence. Current source fixes transport retry/provenance but can retain a stale expected version after a helper writes and then throws.",
   "severity": "S2: test-created data can remain after failed acceptance; no customer data loss demonstrated.",
   "priority": "P1: blocks trustworthy member/reload acceptance.",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "profile_recovery_escalation",
   "evidence": [
     ".research/profile-member-native-next.json",
     ".research/profile-member-reload-recovery.json",
     ".research/profile-reload-cleanup-peer.json",
-    ".research/profile-cleanup-final-review.json"
+    ".research/profile-cleanup-final-review.json",
+    ".research/profile-recovery-escalation.json:12focusedguards and5reportedmutations; no native claim.",
+    ".research/profile-intent-peer.json: independent source accepted;12guards pass and3independentlyreplayedmutations fail."
   ],
   "transition_history": [
     {
@@ -40,8 +42,15 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Fresh Astra escalation after repeated implementation/source-review rounds; no mutating acceptance authorized until reviewed."
+    },
+    {
+      "at": "2026-10-03T23:28:50.433994+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Per-owned-write durable intent and strict successor reconciliation landeddf9ad6a2; independent source review5709cd15 accepted. Native restoration retest remains outstanding."
     }
   ],
-  "current_work": "Prior owned row recovered and absent. Fix per-write failure provenance and cleanup authority; diagnose actual reload failure read-only where practical.",
-  "closure_requirement": "Independent source review and meaningful failure-path falsification, then guarded real member acceptance with successful exact original-absence restoration; concurrent or preexisting records remain protected."
+  "current_work": "Sourcefixed and independentlyreviewed. Guarded read-only lifecycle diagnostic must identify underlyingreloadfailure before another mutatingacceptance. Nativefailure-path restoration stillunverified; no closure.",
+  "closure_requirement": "Independent source review and meaningful failure-path falsification, then guarded real member acceptance with successful exact original-absence restoration; concurrent or preexisting records remain protected.",
+  "fix_commits": ["df9ad6a2"]
 }
