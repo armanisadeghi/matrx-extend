@@ -3616,3 +3616,10 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 - **Where to test:** Signed-in Tools, Records runner, with a table containing dates in the same month and two different statuses.
 - **Steps:** Ask for a monthly count with `group_by` naming the date key, `bucket: "month"`, and `match` naming one status. Repeat with the other status and without a bucket.
 - **Expected:** The store receives the filter each time. Monthly results combine same-month dates; unbucketed results group by the raw date. Invalid match values return a refusal before querying. D91 remains open for the full per-action contract and unsupported workflows.
+
+### Profile owner read and save (EXT-D-0094)
+
+- **What it does:** Profile loads the signed-in person's form row through its owner-scoped table read. A failed read shows an error instead of presenting a blank profile as loaded.
+- **Where to test:** Signed-in side panel → account menu → Profile, with the device organization selected.
+- **Steps:** Open Profile and confirm the read settles without an error. Change Preferred to a disposable value, Save, leave and reopen Profile, then restore the original value and Save. Repeat the open with a denied profile read, then restore access and reopen.
+- **Expected:** The saved value survives reopening; the original value is restored afterward. A denied read shows a visible load error and cannot count as a successful empty profile. The Profile save/read regression is in `src/lib/supabase/user-profile.read.test.ts`.

@@ -2,7 +2,7 @@
  * user_form_profile — typed CRUD for the profile UI.
  *
  * Reads:
- *   - get_user_form_context(p_user_id)   → bundled snapshot (profile)
+ *   - owner-scoped users.user_form_profile row through RLS
  *
  * Writes:
  *   - direct upsert on users.user_form_profile (RLS owner-only)
@@ -13,7 +13,6 @@ import {
   isOrganizationNotSelectedError,
   requireActiveOrganizationId,
 } from '@/lib/org/active-org';
-import { getSupabase } from '@/lib/supabase/client';
 import { usersDb } from '@/lib/supabase/schemas';
 import { z } from 'zod';
 
@@ -87,39 +86,34 @@ export const UserFormProfileSchema = z.object({
 });
 export type UserFormProfile = z.infer<typeof UserFormProfileSchema>;
 
-// ─── Combined context (one round trip on load) ──────────────────────────────
-export const UserFormContextSchema = z.object({
-  user_id: z.string().uuid(),
-  primary_email: z.string().nullable().optional(),
-  display_name: z.string().nullable().optional(),
-  public_avatar: z.string().nullable().optional(),
-  profile: UserFormProfileSchema.nullable(),
-});
-export type UserFormContext = z.infer<typeof UserFormContextSchema>;
-
 export function emptyProfile(): UserFormProfile {
   return UserFormProfileSchema.parse({});
 }
 
-export async function fetchUserFormContext(
+export async function fetchUserFormProfile(
   userId: string,
-): Promise<{ ok: true; context: UserFormContext | null } | { ok: false; error: string }> {
-  const c = getSupabase();
-  const { data, error } = await c.rpc('get_user_form_context', { p_user_id: userId });
+): Promise<{ ok: true; profile: UserFormProfile | null } | { ok: false; error: string }> {
+  // The old bundled SECURITY DEFINER RPC accepts an arbitrary user ID and is
+  // intentionally server-only. Read the owner's row through its RLS door.
+  const { data, error } = await usersDb()
+    .from('user_form_profile')
+    .select('*')
+    .eq('user_id', userId)
+    .maybeSingle();
   if (error) {
-    console.warn('[matrx-extend] fetchUserFormContext error', error.message);
+    console.warn('[matrx-extend] fetchUserFormProfile error', error.message);
     // Distinguish FAILURE from "no profile yet" — collapsing both to null
     // rendered a blank profile with zero error on a transient fetch failure,
     // looking exactly like the user's data was wiped.
     return { ok: false, error: error.message };
   }
-  if (!data) return { ok: true, context: null };
-  const parsed = UserFormContextSchema.safeParse(data);
+  if (!data) return { ok: true, profile: null };
+  const parsed = UserFormProfileSchema.safeParse(data);
   if (!parsed.success) {
-    console.warn('[matrx-extend] fetchUserFormContext shape mismatch', parsed.error.format());
+    console.warn('[matrx-extend] fetchUserFormProfile shape mismatch', parsed.error.format());
     return { ok: false, error: 'Profile data came back in an unexpected shape.' };
   }
-  return { ok: true, context: parsed.data };
+  return { ok: true, profile: parsed.data };
 }
 
 export type UserFormProfilePatch = Partial<UserFormProfile>;

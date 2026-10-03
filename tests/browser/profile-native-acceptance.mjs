@@ -140,7 +140,8 @@ function observeProfileRequests(panel) {
 async function openProfile(panel) {
   await click(panel, 'title', 'admin@admin.com');
   await click(panel, 'button-text', 'Profile');
-  await waitFor('profile_ready', () => state(panel), s => s.back && s.preferred !== null, 30000);
+  const ready=await waitFor('profile_ready', () => state(panel), s => s.back && s.preferred !== null, 30000);
+  assert.equal(Boolean(ready.error),false,'profile_initial_load_failed');
 }
 async function clickProfileHeader(panel, label) {
   const target=await waitFor('profile_header_button_hittable',()=>evaluate(panel,`(() => {

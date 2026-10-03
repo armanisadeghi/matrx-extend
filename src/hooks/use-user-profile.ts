@@ -1,25 +1,23 @@
 /**
  * useUserProfile — loads + mutates user_form_profile.
  *
- * One round-trip on mount via get_user_form_context RPC. Local edits are
+ * One owner-scoped row read on mount. Local edits are
  * staged in `draft`; calling save() upserts only the dirty subset and
  * refetches.
  */
 
 import { useAuth } from '@/hooks/use-auth';
 import {
-  type UserFormContext,
   type UserFormProfile,
   type UserFormProfilePatch,
   emptyProfile,
-  fetchUserFormContext,
+  fetchUserFormProfile,
   upsertUserFormProfile,
 } from '@/lib/supabase/user-profile';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 interface UseUserProfileResult {
   loading: boolean;
-  context: UserFormContext | null;
   draft: UserFormProfile;
   dirty: boolean;
   saving: boolean;
@@ -32,7 +30,7 @@ interface UseUserProfileResult {
 
 export function useUserProfile(): UseUserProfileResult {
   const { user } = useAuth();
-  const [context, setContext] = useState<UserFormContext | null>(null);
+  const [savedProfile, setSavedProfile] = useState<UserFormProfile | null>(null);
   const [draft, setDraft] = useState<UserFormProfile>(emptyProfile);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -41,13 +39,13 @@ export function useUserProfile(): UseUserProfileResult {
 
   const load = useCallback(async () => {
     if (!user?.id) {
-      setContext(null);
+      setSavedProfile(null);
       setDraft(emptyProfile());
       setLoading(false);
       return;
     }
     setLoading(true);
-    const res = await fetchUserFormContext(user.id);
+    const res = await fetchUserFormProfile(user.id);
     if (!res.ok) {
       // Surface load failures — the existing error banner renders this.
       setError(`Could not load your profile: ${res.error}`);
@@ -55,8 +53,8 @@ export function useUserProfile(): UseUserProfileResult {
       return;
     }
     setError(null);
-    setContext(res.context);
-    setDraft(res.context?.profile ?? emptyProfile());
+    setSavedProfile(res.profile);
+    setDraft(res.profile ?? emptyProfile());
     setLoading(false);
   }, [user?.id]);
 
@@ -76,19 +74,19 @@ export function useUserProfile(): UseUserProfileResult {
   );
 
   const resetDraft = useCallback(() => {
-    setDraft(context?.profile ?? emptyProfile());
-  }, [context]);
+    setDraft(savedProfile ?? emptyProfile());
+  }, [savedProfile]);
 
   const dirty = useMemo(() => {
-    const baseline = context?.profile ?? emptyProfile();
+    const baseline = savedProfile ?? emptyProfile();
     return JSON.stringify(baseline) !== JSON.stringify(draft);
-  }, [context, draft]);
+  }, [savedProfile, draft]);
 
   const save = useCallback(async () => {
     if (!user?.id) return { ok: false };
     setSaving(true);
     setError(null);
-    const patch: UserFormProfilePatch = computePatch(context?.profile ?? null, draft);
+    const patch: UserFormProfilePatch = computePatch(savedProfile, draft);
     const result = await upsertUserFormProfile(user.id, patch);
     setSaving(false);
     if (!result.ok) {
@@ -97,11 +95,10 @@ export function useUserProfile(): UseUserProfileResult {
     }
     await load();
     return { ok: true };
-  }, [user?.id, context, draft, load]);
+  }, [user?.id, savedProfile, draft, load]);
 
   return {
     loading,
-    context,
     draft,
     dirty,
     saving,
