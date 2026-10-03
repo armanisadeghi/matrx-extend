@@ -7,7 +7,7 @@
 > common-docs/systems/agents/agent-tools/STATE.md).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-10-03T07:20:25.974Z
+Generated: 2026-10-03T15:29:19.665Z
 Total tools: 82
 
 ## ai
@@ -16,7 +16,7 @@ Total tools: 82
 
 _read_
 
-On-device AI (Gemini Nano + siblings). Free, offline, multimodal, no network. Actions: 'check_availability' (probe per-API readiness), 'summarize' (text→summary), 'classify' (text+categories→label), 'extract_json' (text+schema→object), 'translate' (text+target_lang), 'detect_language' (text→BCP-47), 'proofread' (text→corrections), 'describe_image' (image_url OR image_base64+mime_type → caption), 'check_prompt_injection' (text→risk assessment). Use BEFORE expensive cloud calls when on-device quality permits.
+On-device Chrome AI (Gemini Nano): free, offline, below cloud quality — use for cheap pre-processing before cloud calls. Missing API -> ok:false (+ availability for most actions). Outputs: check_availability -> per-API readiness; summarize -> summary; classify -> label, confidence; extract_json -> data; translate -> translation; detect_language -> candidates; proofread -> corrections; describe_image -> description; check_prompt_injection -> suspicious, severity, reason, excerpts.
 
 **Parameters:** `text` (string); `action` (string, required) = ["check_availability","summarize","classify","extract_json","translate","detect_language","proofread","describe_image","check_prompt_injection"]; `prompt` (string); `schema` (any); `image_url` (string); `mime_type` (string); `categories` (array); `source_lang` (string); `target_lang` (string); `image_base64` (string)
 
@@ -26,7 +26,7 @@ On-device AI (Gemini Nano + siblings). Free, offline, multimodal, no network. Ac
 
 _action_
 
-Record browser actions and export as an animated GIF. Actions: 'start_recording', 'stop_recording', 'export' (generates and either downloads or drops onto a page element), 'clear' (discard frames). Take a screenshot right after start and right before stop to capture clean first/last frames. 'export' returns {file_id, file_url} when not dropping. Drop target accepts ref (preferred) or coordinate.
+Record a tab's browser actions as an animated GIF. start_recording: one per tab. stop_recording -> frame_count, duration_ms. export: stops if needed, uploads -> file_id, file_url, then downloads (download=true) or drops onto ref/coordinate (one required). clear: discard frames. Screenshot right after start and right before stop for clean first/last frames.
 
 **Parameters:** `ref` (string); `action` (string, required) = ["start_recording","stop_recording","export","clear"]; `tab_id` (string, required); `options` (object); `download` (boolean); `filename` (string); `coordinate` (array)
 
@@ -34,7 +34,7 @@ Record browser actions and export as an animated GIF. Actions: 'start_recording'
 
 _action_
 
-Record video of a tab via chrome.tabCapture + MediaRecorder and upload to cld_files. Args: duration_ms (default 5000, max 60000), audio (default false), tab_id? (defaults to assigned tab), filename?. Returns { ok, file_id, file_url, mime_type, duration_ms, size_bytes }. Requires `tabCapture` optional permission — when missing returns ok:false with a remediation hint pointing the user to Settings → Advanced → Tab video capture.
+Record a tab as video (chrome.tabCapture + MediaRecorder, WebM/MP4) and upload it to cld_files under browser-agent/recordings/. Returns {ok, file_id, file_url, mime_type, duration_ms, size_bytes, audio, source}, or {ok:false, reason, remediation?}. Needs the `tabCapture` optional permission (user enables Settings → Advanced → Tab video capture).
 
 **Parameters:** `audio` (boolean); `tab_id` (integer); `filename` (string); `duration_ms` (integer)
 
@@ -42,7 +42,7 @@ Record video of a tab via chrome.tabCapture + MediaRecorder and upload to cld_fi
 
 _action_
 
-Snapshot a tab as a self-contained MHTML archive (HTML + every resource inlined). Returns base64 MHTML data. Use for: archival, sharing a frozen page, feeding the agent a stable snapshot it can reanalyze later.
+Snapshot a tab (default: the agent's tab) as a self-contained MHTML archive, every resource inlined. -> {mhtml_base64, byte_length}. For archiving or re-analysing a frozen copy of the page.
 
 **Parameters:** `tab_id` (integer)
 
@@ -50,7 +50,7 @@ Snapshot a tab as a self-contained MHTML archive (HTML + every resource inlined)
 
 _action_
 
-Manage file downloads. Actions: 'list' (recent downloads with id/filename/url/state/bytes), 'cancel' (abort a pending download), 'confirm' (no-op; Chrome auto-completes downloads), 'download_url' (trigger a download from a URL). download_id required for cancel/confirm; url required for download_url.
+Chrome downloads. list: 50 most recent (id, filename, url, state, bytes). cancel: abort an in-progress download; requires download_id. confirm: returns the download's current record (Chrome completes downloads itself); requires download_id. download_url: start downloading url; requires url; name conflicts are uniquified.
 
 **Parameters:** `url` (string); `action` (string, required) = ["list","confirm","cancel","download_url"]; `filename` (string); `download_id` (string)
 
@@ -58,7 +58,7 @@ Manage file downloads. Actions: 'list' (recent downloads with id/filename/url/st
 
 _read_
 
-Capture a bounded region of the active tab's viewport — 5-20× cheaper than a full screenshot for focused vision calls. Target with `ref` (preferred, from read_page), `selector`, or explicit viewport `rect:{x,y,w,h}`; off-screen targets are scrolled into view, optional `padding` in CSS px. Uploads to cloud; returns { ok, media_type, format, width, height, source_rect, image_base64, byte_length, file_id, file_url }. Render/share file_url (durable); image_base64 feeds the vision model.
+Capture part of the assigned tab's viewport; far cheaper than a full screenshot for focused vision. Target with one of ref (preferred, from read_page), selector, or rect (viewport CSS px); an off-screen ref/selector target is scrolled into view, then padded and clamped to the viewport. Returns an image ref {file_id, file_url, media_type, source_width, source_height, size_bytes} plus source_rect; inline image_base64 only if the upload failed. Failures return ok:false with a reason.
 
 **Parameters:** `ref` (string); `rect` (object); `format` (string) = ["png","jpeg"]; `padding` (integer); `profile` (string) = ["auto","auto-final","anthropic-default","anthropic-hires","openai-original","openai-high","openai-low","gemini-screenshot","gemini-overview","gemini-2.5-default","ocr-heavy","lossless"]; `quality` (integer); `selector` (string)
 
@@ -68,7 +68,7 @@ Capture a bounded region of the active tab's viewport — 5-20× cheaper than a 
 
 _read_
 
-Read the user's bookmarks. Actions: 'search' (free-text against title and URL; pass `query`), 'tree' (folder tree starting at `folder_id` or root, `max_depth` deep). Each bookmark has id/title/url/parent_id/date_added.
+Read the user's bookmarks. search: query matched against title and URL. tree: folder tree from folder_id or the root.
 
 **Parameters:** `limit` (integer); `query` (string); `action` (string, required) = ["search","tree"]; `folder_id` (string); `max_depth` (integer)
 
@@ -84,7 +84,7 @@ Manage cookies for any domain. Actions: 'get' (read; pass `name` for a specific 
 
 _read_
 
-Read browsing history. Actions: 'search' (free-text against title/URL; pass `query`, optional `start_time_ms`/`end_time_ms`/`limit`), 'recent' (last N `minutes`, default 60).
+Reads browsing history. search: query over title/URL within a time window. recent: visits in the last `minutes`, newest first.
 
 **Parameters:** `limit` (integer); `query` (string); `action` (string, required) = ["search","recent"]; `minutes` (integer); `end_time_ms` (integer); `start_time_ms` (integer)
 
@@ -92,7 +92,7 @@ Read browsing history. Actions: 'search' (free-text against title/URL; pass `que
 
 _action_
 
-Recently-closed tabs and windows. Actions: 'list' (returns sessions with id/url/title/lastModified), 'restore' (reopens; `session_id` optional — defaults to the most recently closed).
+Recently closed tabs and windows. list -> entries [{last_modified_ms, tab{id,url,title} | window{id,tab_count,tabs}}] (max 25); restore reopens one.
 
 **Parameters:** `action` (string, required) = ["list","restore"]; `session_id` (string)
 
@@ -102,7 +102,7 @@ Recently-closed tabs and windows. Actions: 'list' (returns sessions with id/url/
 
 _read_
 
-Execute up to 20 read-tier Chrome-extension tool calls in one round trip (runs in the user's browser via the Matrx extension). Pass `calls: [{ name, arguments }]`. Returns `results: [{ name, ok, output | error }]` in order. Action / ask-user / privileged tools are NOT permitted inside a batch — call them individually so the user can approve. Use this for predictable multi-step reads (read_page + take_screenshot + list_open_tabs) where each call is independent.
+Run up to 20 read-tier extension tools (read_page, take_screenshot, list_open_tabs, …) sequentially in one round trip in the user's browser. Each call's arguments are validated against that tool's own schema. Returns {count, results: [{name, ok, output | error}]} in order. Action, ask-user and privileged tools are rejected per call (error, not run): call them individually so the user can approve. Use only when the calls don't depend on each other's output.
 
 **Parameters:** `calls` (array, required); `stop_on_error` (boolean)
 
@@ -110,7 +110,7 @@ Execute up to 20 read-tier Chrome-extension tool calls in one round trip (runs i
 
 _read_
 
-Index of every tool category the Matrx Chrome extension exposes (client-side tools that run in the user's own browser). Returns one entry per category: name, label, description, count of tools, name of the category-specific list tool. To get the full schemas for a category, call its `list_tool` (e.g. `list_reading_tools`). Use this whenever the model needs more Chrome-extension capabilities than its current toolset offers.
+Index of the Matrx Chrome extension's tool categories (tools that run in the user's own browser): name, label, description, list_tool, tool_count, tool_names. Call a category's list_tool (e.g. list_reading_tools) to load its tools; a tool is callable only after its category's list_tool has run. Use when you need a browser capability your toolset lacks.
 
 **Parameters:** _No parameters._
 
@@ -130,7 +130,10 @@ Signs in to a website with the person's saved logins; you never see a credential
 
 _action_
 
-Add the website of the page you are on to the user's AI Matrx prospect list. ALWAYS call with action='preview' first: it writes nothing and tells you the verdict (new, already a prospect, blocked by the user's blocklist, or not a usable web address), which of their websites it would be filed under, and — most importantly — whether this company is ALREADY someone they know, with the number of previous messages, the campaigns they are in, how many confirmed wins they have given, and whether they are marked do-not-contact. Report that before capturing: treating a warm or forbidden contact as a cold prospect is the mistake this prevents. Then call action='capture' to save it. The capture goes through the platform's one prospect-import path, so the user's blocklist, de-duplication and authority scoring all apply exactly as they do to a prospect found by search. Defaults to the page you are assigned to; pass `url` only to capture a different address. If the user has several websites the call comes back asking which one — ask them, then pass `site_id`. This tool captures a COMPANY, never a person; it never sends anything to anyone.
+Add the company behind the assigned page (or url) to the user's AI Matrx prospect list. Captures a company, never a person; sends nothing.
+preview (default; writes nothing): -> verdict (new | already a prospect | blocklisted | unusable address), the website it would file under, and any existing relationship: message count, campaigns, confirmed wins, do-not-contact. Call it first and report any existing relationship before capturing.
+capture: saves it through the standard prospect import (blocklist, de-duplication, authority scoring apply).
+Errors: site_choice_required (several websites: ask which, pass site_id), no_page (pass url), sign_in_required.
 
 **Parameters:** `url` (string); `action` (string) = ["preview","capture"]; `site_id` (string)
 
@@ -164,15 +167,15 @@ List every saved demo as { id, name, description, start_url, step_count, paramet
 
 _action_
 
-Record a user demonstration that can later be replayed by the agent. Actions: 'start' (begin recording on a tab; clicks, typed text, submits, navigations, and scrolls are captured automatically as the user demonstrates), 'stop' (save the recording with a name + parameter declarations; sensitive fields like passwords are auto-parameterised), 'discard' (throw away the in-flight recording without saving), 'status' (read; report whether a recording is active and how many steps have been captured). Coach the user: ask them to walk through the workflow, then call stop when they say they're done. Saved demos are replayed via `replay_demo`.
+Record a user demonstration for replay_demo. start {tab_id?}: capture the user's clicks, typing, submits, navigations, scrolls (default active tab); ask them to walk through the workflow and call stop when they say they're done. stop {name ≤100, description? ≤500, parameters?: [{name, description?, type?, sensitive?}]}: save; sensitive fields (passwords) become parameters automatically. discard: drop it unsaved. status: recording?, steps_captured.
 
-**Parameters:** _No parameters._
+**Parameters:** `name` (string); `action` (string, required) = ["start","stop","discard","status"]; `tab_id` (integer); `parameters` (array); `description` (string)
 
 ### `replay_demo`
 
 _privileged_
 
-Replay a saved demo against a tab. Always requires confirmation — the demo can click, type, submit, and navigate. Pass `dry_run: true` to test selector resolution without taking action. Pass `params` to substitute placeholders (sensitive fields like passwords MUST be supplied this way; the agent should ask the user via `user(type='secret', ...)` first). Returns per-step results with `resolved_via` showing which selector strategy hit.
+Replay a saved demo in a tab: loads its start URL, then re-runs its clicks, typing, submits and navigations. Always asks the person to confirm. Returns per-step results (resolved_via = selector strategy that hit) and failed_at_index on abort.
 
 **Parameters:** `params` (object); `tab_id` (integer); `demo_id` (string, required); `dry_run` (boolean)
 
@@ -182,7 +185,7 @@ Replay a saved demo against a tab. Always requires confirmation — the demo can
 
 _privileged_
 
-Invoke a command on the matrx-local desktop bridge. Available commands depend on what matrx-local exposes (file ops, system info, window control, etc.). Returns { ok, data?, error? }. Fails fast with reason="desktop unavailable" if the bridge isn't connected — check via the desktop:availability channel before calling.
+Invoke a command on the matrx-local desktop bridge. Available commands depend on what matrx-local exposes (file ops, system info, window control, etc.). Returns { ok, data?, error? }; fails fast with reason "desktop bridge unavailable — matrx-local is not running" when the bridge isn't connected.
 
 **Parameters:** `args` (object); `command` (string, required)
 
@@ -192,7 +195,7 @@ Invoke a command on the matrx-local desktop bridge. Available commands depend on
 
 _privileged_
 
-Dump the accessibility tree of the active tab via Accessibility.getFullAXTree. Each node has { role, name, value, description, properties, children }. Use INSTEAD of read_active_page when you want a clean semantic view of the page — it omits decorative DOM and surfaces aria-roles, button labels, form-field associations directly. Best for vision-free reasoning.
+Dump the tab's accessibility tree (CDP Accessibility.getFullAXTree) as a flat node list with role, name, value, properties, child_ids. Prefer over read_active_page for a semantic view (roles, labels, form-field associations) without decorative DOM.
 
 **Parameters:** `tab_id` (integer); `max_nodes` (integer)
 
@@ -200,7 +203,7 @@ Dump the accessibility tree of the active tab via Accessibility.getFullAXTree. E
 
 _privileged · admin-only_
 
-Override viewport / device metrics on an attached CDP tab for responsive testing. Actions: 'set' (apply `width`+`height`+optional `device_scale_factor`/`mobile`/`user_agent`), 'clear' (revert overrides). Tab must be attached via cdp_session first.
+Override viewport/device metrics on a tab via CDP for responsive testing; attaches the debugger itself. set -> {ok}. clear: drops metrics + user-agent overrides. Needs the `debugger` optional permission; Chrome only.
 
 **Parameters:** `width` (integer); `action` (string, required) = ["set","clear"]; `height` (integer); `mobile` (boolean); `tab_id` (integer); `user_agent` (string); `device_scale_factor` (number)
 
@@ -208,7 +211,7 @@ Override viewport / device metrics on an attached CDP tab for responsive testing
 
 _privileged_
 
-Capture the FULL scrollable page (beyond the viewport) — use instead of computer/take_screenshot for long-form pages. Auto-scales so the long edge fits the `profile`'s vision-model target (same profiles as take_screenshot). Uploads to cloud; returns { ok, media_type, format, width, height, image_base64, byte_length, capture_scale, profile, est_tokens, file_id, file_url }. Render/share file_url (durable); image_base64 feeds the vision model — pass media_type through verbatim, never stringify the object.
+Capture the full scrollable page (beyond the viewport); use instead of take_screenshot for long pages. Auto-scales the long edge to the profile's vision target (profiles as take_screenshot). tab_id defaults to your tab. Returns an image_ref (file_id, durable file_url to render/share, capture_scale, est_tokens). If upload fails: inline image_base64 + media_type — pass media_type verbatim, never stringify the object.
 
 **Parameters:** `format` (string) = ["png","jpeg","webp"]; `tab_id` (integer); `profile` (string) = ["auto","auto-final","anthropic-default","anthropic-hires","openai-original","openai-high","openai-low","gemini-screenshot","gemini-overview","gemini-2.5-default","ocr-heavy","lossless"]; `quality` (integer); `full_page` (boolean); `capture_scale` (number)
 
@@ -216,7 +219,7 @@ Capture the FULL scrollable page (beyond the viewport) — use instead of comput
 
 _privileged_
 
-Synthesize a real mouse click at viewport coordinates (x, y) via Input.dispatchMouseEvent. Bypasses event-handler shadowing, works through shadow DOM and cross-origin iframes (OOPIFs) — the most reliable click in existence. Use when click_element fails because the page intercepts synthetic clicks.
+Real mouse click at viewport CSS-pixel (x, y) via CDP Input.dispatchMouseEvent; works through shadow DOM, cross-origin iframes, and pages that ignore synthetic clicks. Use when a ref click (computer left_click) has no effect. Chrome only; needs the debugger permission. Default tab: the run's tab.
 
 **Parameters:** `x` (number, required); `y` (number, required); `button` (string) = ["left","right","middle"]; `tab_id` (integer); `click_count` (integer)
 
@@ -224,7 +227,7 @@ Synthesize a real mouse click at viewport coordinates (x, y) via Input.dispatchM
 
 _privileged_
 
-Type literal text into whatever element currently has focus, via Input.insertText. Fires beforeinput / input / compositionend events correctly so React-controlled inputs accept it. Use after focus_element + when type_into_element fails.
+Type literal text into the focused element via CDP Input.insertText (fires the input events React-controlled inputs need). Focus first with computer action=focus; use when computer type or form_input leaves a controlled input unchanged.
 
 **Parameters:** `text` (string, required); `tab_id` (integer)
 
@@ -232,7 +235,7 @@ Type literal text into whatever element currently has focus, via Input.insertTex
 
 _privileged_
 
-Drain captured Network events from a tab's buffer. Each entry has { request_id, url, method, status, mime_type, request_headers, response_headers, finished, failed, ts_ms }. Use cdp_network_get_body with a request_id to fetch a response body lazily.
+Remove and return up to `max` of the oldest Network records buffered for a tab (after cdp_network_capture_start; Chrome). Each record { request_id, url, method, status, mime_type, request_headers, response_headers, finished, failed, ts_ms }. url_contains (case-insensitive) filters after removal, so drained non-matching records are lost. Bodies: cdp_network_get_body(request_id).
 
 **Parameters:** `max` (integer); `tab_id` (integer); `url_contains` (string)
 
@@ -248,7 +251,7 @@ Begin capturing every Network event on a tab (default: active). After this, navi
 
 _privileged_
 
-Stop capturing Network events on a tab and clear its buffer.
+Stop capturing Network events on a tab and clear its buffer; undrained events are lost (cdp_network_capture_drain first).
 
 **Parameters:** `tab_id` (integer)
 
@@ -256,7 +259,7 @@ Stop capturing Network events on a tab and clear its buffer.
 
 _privileged_
 
-Fetch the response body for a captured request, by request_id (from cdp_network_capture_drain). Returns { body, base64_encoded }. Bodies are large so we don't buffer them eagerly.
+Response body of one request captured by cdp_network_capture_start, by request_id from cdp_network_capture_drain. -> {body, base64_encoded}.
 
 **Parameters:** `tab_id` (integer); `request_id` (string, required)
 
@@ -264,7 +267,7 @@ Fetch the response body for a captured request, by request_id (from cdp_network_
 
 _read_
 
-Read Performance.getMetrics for a tab. Returns { Documents, Frames, JSHeapUsedSize, LayoutCount, RecalcStyleCount, ScriptDuration, TaskDuration, … }. Useful when an action triggered chaos and you need to measure it.
+Chrome Performance.getMetrics for a tab (default: the agent's tab). -> {metrics: {Documents, Frames, JSHeapUsedSize, LayoutCount, RecalcStyleCount, ScriptDuration, TaskDuration, …}}.
 
 **Parameters:** `tab_id` (integer)
 
@@ -272,7 +275,7 @@ Read Performance.getMetrics for a tab. Returns { Documents, Frames, JSHeapUsedSi
 
 _privileged_
 
-Print a tab to PDF via Page.printToPDF. Returns base64 PDF data. Useful for archival, sharing, or feeding the PDF to a downstream model.
+Print a tab to PDF via CDP Page.printToPDF, e.g. to archive a page or pass it to another model. Returns {pdf_base64, byte_length (decoded bytes)}.
 
 **Parameters:** `tab_id` (integer); `landscape` (boolean); `print_background` (boolean)
 
@@ -280,7 +283,7 @@ Print a tab to PDF via Page.printToPDF. Returns base64 PDF data. Useful for arch
 
 _privileged · admin-only_
 
-Manage Chrome DevTools Protocol attachments. Actions: 'attach' (begin debugger session on `tab_id` — required before any other cdp_* tool), 'detach' (end session), 'list' (which tabs are currently attached). Admin + `debugger` permission.
+Manage Chrome DevTools Protocol debugger sessions. attach/detach: open/close a session on tab_id; list -> {tab_ids} attached. Other cdp_* tools attach their tab on demand, so attach is optional.
 
 **Parameters:** `action` (string, required) = ["attach","detach","list"]; `tab_id` (integer)
 
@@ -288,7 +291,7 @@ Manage Chrome DevTools Protocol attachments. Actions: 'attach' (begin debugger s
 
 _privileged_
 
-Fetch the response body for a specific request seen by read_network_requests. Returns inline text. Pass request_id from a prior drain.
+Response body of a request from read_network_requests, by its request_id. Chrome only; needs the debugger permission.
 
 **Parameters:** `tab_id` (string); `request_id` (string, required)
 
@@ -296,7 +299,7 @@ Fetch the response body for a specific request seen by read_network_requests. Re
 
 _privileged_
 
-Read console messages from a tab. Auto-starts CDP console capture if not already running. Filter by level, text regex, or use errors_only=true. Returns { count, messages: [{ level, text, url, line, ts_ms }] }. Console capture stays on until cdp_detach or tab close.
+Read console output (console.* calls, uncaught exceptions) from a tab via CDP. The first call starts capture, so only later messages are seen; capture persists until the debugger detaches (tab close, cdp_session detach, 10 min idle). Takes the oldest `limit` buffered messages, then filters; without clear:true every read returns the same oldest messages, so pass clear:true to poll for new output. Returns {ok, count, messages: [{level, text, url, line, column, ts_ms}]}. Needs the `debugger` optional permission; Chrome only.
 
 **Parameters:** `max` (integer); `clear` (boolean); `limit` (integer); `tab_id` (string); `pattern` (string); `auto_start` (boolean); `errors_only` (boolean); `level_filter` (array)
 
@@ -304,7 +307,7 @@ Read console messages from a tab. Auto-starts CDP console capture if not already
 
 _privileged_
 
-Read HTTP requests (XHR, fetch, documents, etc.) from a tab. Auto-cleared on cross-domain navigation. Filter with url_pattern to keep output manageable. Response bodies are NOT included by default — use get_request_body to fetch a specific body. The buffer is per-tab and bounded; old entries fall off the back.
+Read completed HTTP requests (XHR, fetch, documents, …) from a tab via CDP. The first call starts capture, so only requests finishing later are seen; capture persists until the debugger detaches (tab close, cdp_session detach, 10 min idle). Each read removes the oldest `limit` records from the buffer, then applies url_pattern; non-matching removed records are lost. Returns {ok, count, records: [{request_id, url, method, status, mime_type, request_headers, response_headers, failed?, error_text?, ts_ms}]}; no bodies (get_request_body with request_id). Needs the `debugger` optional permission; Chrome only.
 
 **Parameters:** `clear` (boolean); `limit` (integer); `tab_id` (string); `auto_start` (boolean); `url_pattern` (string); `include_body` (boolean)
 
@@ -314,7 +317,7 @@ Read HTTP requests (XHR, fetch, documents, etc.) from a tab. Auto-cleared on cro
 
 _action_
 
-Capture the study set on the current page into a native AI Matrx flashcard deck. Extracts term/definition pairs (a Quizlet set's framework data, a definition list, or a two-column table) and lands them through the platform's one import door — the same writer, dedupe and membership edges as the web app's importer. Always 'preview' first: it writes nothing and returns the deck name, card count and a 5-card sample so the user confirms what would be captured. 'capture' commits and returns the new deck's id and open link. Requires sign-in to commit.
+Capture the study set on the current page as an AI Matrx flashcard deck. Extracts term/definition pairs from Quizlet set data, a definition list, or a two-column table (3+ rows). preview writes nothing and returns deck_name, card_count, source and a 5-card sample — show it to the person before capture. capture creates the deck and returns set_id, deck_name, card_count, open_url. Errors: no_page, nothing_found, extraction_failed, sign_in_required, organization_required (relay its message: the person must pick an organization), import_failed.
 
 **Parameters:** `action` (string) = ["preview","capture"]; `deck_name` (string)
 
@@ -332,7 +335,7 @@ Delete a saved guidance item by id. Cannot be undone. For demo references, this 
 
 _read_
 
-Return the full record for one guidance item by id. Notes include their text; screenshots/GIFs include their cld_files URL; demo references include the linked demo_id (use `replay_demo` to run).
+One guidance item by id, in full: note text; screenshot/GIF file_id + url (annotated_* when marked up); demo_ref demo_id (run with replay_demo).
 
 **Parameters:** `id` (string, required)
 
@@ -340,7 +343,7 @@ Return the full record for one guidance item by id. Notes include their text; sc
 
 _read_
 
-List saved guidance items (notes, screenshots, GIFs, demo references). Pass `domain` to filter; omit to return everything. Returns lightweight summaries — call `get_guidance_item` for full details.
+List saved guidance summaries (notes, screenshots, GIFs, demo refs); get_guidance_item returns content.
 
 **Parameters:** `domain` (string)
 
@@ -348,7 +351,7 @@ List saved guidance items (notes, screenshots, GIFs, demo references). Pass `dom
 
 _action_
 
-Save a domain-scoped note for the user (or for yourself on the next visit). The note auto-surfaces in chat context whenever the user opens a tab on this domain. Use for site-specific lessons that don't fit in `remember_for_domain`'s structured hints — full prose explanations, workflow hints, gotchas.
+Save a free-form note for a domain; it is added to chat context whenever the user's page is on that domain or a subdomain. For site-specific prose (workflows, gotchas); structured hints go to remember_for_domain.
 
 **Parameters:** `text` (string, required); `domain` (string, required); `caption` (string); `origin_url` (string)
 
@@ -358,7 +361,7 @@ Save a domain-scoped note for the user (or for yourself on the next visit). The 
 
 _ask-user_
 
-Hand keyboard/mouse control to the user so they can perform an action the agent cannot or should not (logging in, MFA, CAPTCHA, sensitive form filling, decisions only the user can make). The user types/clicks directly into the page; when they're done they signal completion in the UI. The agent should re-read the page after takeover ends to see what changed. Distinct from `user` (Q&A) — this is full page handoff.
+Pause and ask the user to do something in the page themselves that you cannot or should not (log in, MFA, CAPTCHA, sensitive form entry, a decision only they can make). Shows a takeover card; the user acts in the page, then replies. Returns {answer, cancelled, additional_instructions} or {timed_out:true}. Re-read the page afterwards. For a question with no page action, use user.
 
 **Parameters:** `reason` (string, required); `tab_id` (string); `instructions` (string); `expected_action` (string); `timeout_seconds` (integer)
 
@@ -366,7 +369,7 @@ Hand keyboard/mouse control to the user so they can perform an action the agent 
 
 _ask-user_
 
-Propose a step-by-step plan and wait for the user to approve, modify, or reject it. Use this BEFORE a multi-step action sequence so you align on intent up front. Returns { approved: true, note?: string } or { approved: false, note?: string } so you can adjust.
+Propose a step-by-step plan and wait for the person to approve, amend or reject it; call before a multi-step action sequence. Returns { approved, note? } — note carries their amendment; timeout or cancel returns approved=false.
 
 **Parameters:** `steps` (array); `title` (string); `domains` (array); `approach` (array); `reasoning` (string); `timeout_seconds` (integer); `estimated_minutes` (integer)
 
@@ -392,7 +395,8 @@ Prefer this to guessing on destructive or sensitive actions. For the user typing
 
 _action_
 
-Assign tasks TO THE USER for the current conversation. The user sees them in a dedicated panel and checks them off; you'll see their state in `user_todos` context on every turn. Actions: 'add' (`title` + optional `context` for why + optional `due` hint; fires a Chrome notification unless `silent:true`), 'list', 'update' (`id` + `title`/`context`/`due`; pass null to clear), 'remove' (`id`), 'mark_done' (`id`; `done:false` un-checks), 'clear_done' (purge completed). Use this to delegate work back to the user — e.g. 'forward the email I just drafted', 'pick a date for the meeting'.
+Assign tasks to the person for this conversation (work only they can do, e.g. forward a drafted email, pick a meeting date). They check them off in a panel; their state reaches you each turn in `user_todos` context.
+add: title -> todo; notifies them unless silent. list. update: id + fields to change. remove: id. mark_done: id. clear_done: deletes completed todos.
 
 **Parameters:** `id` (string); `due` (any); `done` (boolean); `title` (string); `action` (string, required) = ["add","list","update","remove","mark_done","clear_done"]; `silent` (boolean); `context` (any)
 
@@ -402,7 +406,7 @@ Assign tasks TO THE USER for the current conversation. The user sees them in a d
 
 _action_
 
-Read from or write to the system clipboard. Actions: 'read' (returns current clipboard text), 'write' (sets clipboard text — pass `text`). Useful for 'copy this for the user' and 'paste what I just copied' workflows.
+Read or write the system clipboard through the agent's tab. read -> {text}; write sets the clipboard to text.
 
 **Parameters:** `text` (string); `action` (string, required) = ["read","write"]
 
@@ -410,7 +414,14 @@ Read from or write to the system clipboard. Actions: 'read' (returns current cli
 
 _action_
 
-Mouse, keyboard, and screenshot interactions. Prefer 'ref' over 'coordinate' when targeting elements; coordinates survive poorly across scrolls and layout changes. The 'screenshot' action persists the image to cloud and returns {file_id, file_url, width, height, mime_type} — use that file_id with upload_file or drop_file later. Use wait_for for synchronization, NOT a fixed sleep.
+Mouse, keyboard and screenshot actions in one browser tab (activated first). Prefer ref (from read_page) over coordinate: coordinates break across scrolls and layout changes. Synchronize with wait_for, not fixed sleeps.
+left_click, double_click, triple_click: ref or coordinate. right_click, hover, focus, blur, scroll_to: ref.
+type: text; replaces the value of ref's field, or of the focused field without ref.
+key: text = space-separated keys/chords ("Enter", "Control+Shift+K", "Tab Tab Enter") to the focused element.
+scroll: scroll_direction, scroll_amount (ticks of ~100px).
+left_click_drag: start_coordinate -> coordinate.
+screenshot: -> {file_id, file_url, width, height, mime_type}; reuse file_id with upload_file/drop_file.
+repeat and modifiers are accepted but not applied.
 
 **Parameters:** `ref` (string); `text` (string); `action` (string, required) = ["left_click","right_click","double_click","triple_click","type","key","scroll","hover","screenshot","left_click_drag","scroll_to","focus","blur"]; `repeat` (integer); `tab_id` (string, required); `modifiers` (string); `coordinate` (array); `scroll_amount` (integer); `scroll_direction` (string) = ["up","down","left","right"]; `start_coordinate` (array)
 
@@ -418,7 +429,7 @@ Mouse, keyboard, and screenshot interactions. Prefer 'ref' over 'coordinate' whe
 
 _action_
 
-Synthesize a drag-and-drop of a single file onto a target element or coordinate. Use for drop zones that aren't backed by <input type='file'>. Provide ref OR coordinate. file_id is a MediaRef (e.g. from a prior screenshot or upload).
+Dispatches a drag-and-drop of one file onto ref or coordinate (one required); focuses tab_id first. For drop zones not backed by <input type='file'> (else upload_file). file_id is a MediaRef id (prior upload, or computer screenshot).
 
 **Parameters:** `ref` (string); `tab_id` (string, required); `file_id` (string, required); `filename` (string); `coordinate` (array)
 
@@ -426,7 +437,7 @@ Synthesize a drag-and-drop of a single file onto a target element or coordinate.
 
 _action_
 
-Set the value of a form element by reference. Use string for text inputs, boolean for checkboxes/radios, value or visible label for selects. The handler dispatches on element type — you don't need to specify it.
+Set a form element's value by ref (from read_page/find); element type auto-detected. Text/textarea/contenteditable: string, replaces content. Checkbox: boolean. Select, radio: the option's value attribute, not its label (a miss returns the available options).
 
 **Parameters:** `ref` (string, required); `value` (string|number|boolean, required); `tab_id` (string, required)
 
@@ -434,7 +445,7 @@ Set the value of a form element by reference. Use string for text inputs, boolea
 
 _action_
 
-Navigate a tab to a URL, or move through history with 'back'/'forward'. Protocol defaults to https:// if omitted. After navigating, refs from prior read_page calls are invalidated — call read_page again before referencing elements.
+Navigate tab_id to url; url 'back'/'forward' moves through history. A URL without a scheme gets https://. Navigating invalidates refs from earlier read_page calls; call read_page again before using refs.
 
 **Parameters:** `url` (string, required); `force` (boolean); `tab_id` (string, required)
 
@@ -442,7 +453,7 @@ Navigate a tab to a URL, or move through history with 'back'/'forward'. Protocol
 
 _action_
 
-Pause the agent for `ms` milliseconds (50ms–5min). Use when waiting for time-based things the page does on its own — a video to play before capturing transcript, an animation to finish, a debounced search to settle, a rate-limit window to clear. The server is non-blocking during the pause; only the agent waits. Prefer `wait_for` when you have a concrete condition (selector or readyState) — `sleep` is for unconditional waits. Returns { ok, slept_ms }.
+Unconditional pause of ms milliseconds -> {ok, slept_ms}. For time-based page behavior: a video playing before transcript capture, an animation, a debounced search, a rate-limit window. With a concrete condition (element, text, url, network_idle) use wait_for.
 
 **Parameters:** `ms` (integer, required); `reason` (string)
 
@@ -450,15 +461,15 @@ Pause the agent for `ms` milliseconds (50ms–5min). Use when waiting for time-b
 
 _privileged_
 
-Inject or remove a CSS stylesheet on the active (or specified) tab. Actions: 'inject' (apply `css`; pass `persistent: true` to survive navigations), 'remove' (drop a previously-injected `css` block — must match exactly).
+Inject or remove CSS on a tab (default active). inject: lasts until navigation. remove: css must exactly match an injected block.
 
-**Parameters:** `css` (string, required); `action` (string, required) = ["inject","remove"]; `tab_id` (integer); `persistent` (boolean)
+**Parameters:** `css` (string, required); `action` (string, required) = ["inject","remove"]; `tab_id` (integer)
 
 ### `submit_form`
 
 _action_
 
-Submit a form. By default the tool clicks the form's primary submit button (so HTML5 validation + framework handlers run). Set via_button=false to fall back to HTMLFormElement.submit() — skips validation but works for form elements that lack a button.
+Submit a form in the agent's tab: clicks its submit button so validation and handlers run; with no button or via_button=false, calls form.requestSubmit().
 
 **Parameters:** `selector` (string); `via_button` (boolean)
 
@@ -466,7 +477,7 @@ Submit a form. By default the tool clicks the form's primary submit button (so H
 
 _action_
 
-Upload one or more files to a <input type='file'> element by reference. Pass file_ids — these are MediaRef IDs (e.g. from a previous /files/upload, or from computer.action=screenshot). The handler resolves each file_id to bytes and sets the input. Do NOT click file inputs — that opens a native picker the agent cannot see. For drag-and-drop targets, use drop_file instead.
+Sets files on an <input type='file'> (by ref) and fires change; focuses tab_id first. file_ids are MediaRef ids (prior upload, or computer screenshot). Never click a file input: the native picker is invisible to you. Drop zones without a file input: drop_file.
 
 **Parameters:** `ref` (string, required); `tab_id` (string, required); `file_ids` (array, required)
 
@@ -474,7 +485,7 @@ Upload one or more files to a <input type='file'> element by reference. Pass fil
 
 _read_
 
-Poll until a condition is met or timeout. Use after navigation or actions that trigger async loads — far more reliable than fixed sleeps. Conditions: 'element' (ref or selector exists and is visible; pass scroll=true to scroll the page while polling — handles infinite scroll), 'text' (text appears anywhere on page), 'url' (tab URL matches substring or regex), 'network_idle' (no in-flight requests for ~500ms).
+Poll (200 ms) until a condition holds or timeout_ms; use after navigation or actions that load async instead of fixed sleeps. Activates and focuses the tab. element: target = CSS selector or 'ref:<ref>', exists and visible (non-zero box, not hidden/transparent). text: target is a case-insensitive substring of the page's innerText. url: target is a regex (substring if it fails to compile) on the tab URL. network_idle: currently unreliable — prefer element, text or url. Returns {ok, elapsed_ms} or {ok:false, reason:'timeout'}.
 
 **Parameters:** `scroll` (boolean); `tab_id` (string, required); `target` (string); `condition` (string, required) = ["element","text","url","network_idle"]; `timeout_ms` (integer)
 
@@ -484,7 +495,7 @@ Poll until a condition is met or timeout. Use after navigation or actions that t
 
 _action_
 
-Remember something about a domain so it shows up in `domain_memo` context on every future visit. Use for site-specific lessons: "the PO submit button is the third primary", "DOB format is MM/DD/YYYY here", "this site requires SSO via Okta". Notes are free-form prose; hints are structured key/value pairs you can look up by name. Memos on a parent domain (e.g., atlassian.net) automatically apply to subdomains. Returns the updated memo so you can see what is remembered now.
+Save a site-specific lesson ('PO submit is the third primary button', 'DOB is MM/DD/YYYY', 'SSO via Okta'); it appears in domain_memo context on every later visit to the domain and its subdomains. Pass note and/or hints; notes accumulate (newest 50 kept), hints merge by key. Returns the updated memo.
 
 **Parameters:** `note` (string); `hints` (object); `domain` (string, required)
 
@@ -518,7 +529,7 @@ The user's saved data-extraction patterns (the extension's Showcase/Data tabs), 
 
 _read_
 
-Extract every structured-data signal on the active page in one call: { snapshot, json_ld, microdata, schema_org_types, counts }. `snapshot` is the OG/Twitter/canonical/JSON-LD snapshot used by the Showcase tab. `json_ld` returns each JSON-LD block (flattens @graph; honors `ld_type` filter). `microdata` walks every [itemscope][itemtype] tree (honors `itemtype` filter). `schema_org_types` unions all detected types so you can answer 'is this a Product page?' in one read. Same code paths as the user-facing Showcase → JSON-LD / Microdata / Snapshot sub-tabs, so improvements to either surface flow both ways.
+Extract the active page's structured data in one call. Returns { ok, snapshot, json_ld, microdata, schema_org_types, counts: {json_ld, microdata}, reason? }. snapshot: title, url, canonical, lang, description, og.*, twitter.*, article.*, embedded JSON-LD, favicon. json_ld: every block, @graph flattened. microdata: top-level [itemscope][itemtype] items. schema_org_types: union of every detected type (answers 'is this a Product page?'). A failed sub-extractor returns empty and is named in reason.
 
 **Parameters:** `kinds` (array); `ld_type` (string); `itemtype` (string)
 
@@ -526,7 +537,7 @@ Extract every structured-data signal on the active page in one call: { snapshot,
 
 _read_
 
-Extract a table on the active page as structured JSON. Handles native <table> with thead/tbody, rowspan/colspan, multi-row headers, and ARIA role="table" / role="grid" patterns. Provide `ref` (preferred) from a prior read_page, or `selector` (any CSS), or omit both to pick the largest visible table. Returns { columns: [{ index, path: [headerLevels...] }], rows: [{ cells: [{ value, is_header, colspan?, rowspan? }] }], merged_cells, row_count, column_count }. Use this instead of cell-by-cell scraping — one call versus dozens.
+Extract one table on the active page as structured JSON: native <table> (thead/tbody, rowspan/colspan, multi-row headers) or ARIA role=table/grid. Target: `ref` from read_page (preferred), else `selector` (CSS), else the largest visible table. Returns { ok, table_kind, columns: [{index, path: [header levels]}], rows: [{index, cells: [{value, is_header, colspan?, rowspan?}]}], merged_cells, row_count, column_count, header_row_count, truncated } or { ok: false, reason }. One call instead of cell-by-cell scraping.
 
 **Parameters:** `ref` (string); `max_rows` (integer); `selector` (string); `normalize` (boolean); `compute_header_paths` (boolean)
 
@@ -542,7 +553,7 @@ Fetch an HTTP(S) URL and return its readable content as Markdown — the same de
 
 _read_
 
-Find elements on the active page by natural-language description ("the sign-in button", "the search input near the top", "the paragraph about pricing"). Returns matching refs you can immediately pass to interaction tools. Uses on-device AI for matching when available; falls back to text similarity. Reuses any fresh `read_page` scrape — call it once before a series of finds. By default also searches non-interactive content (headings/paragraphs) so you can locate sections by topic; set `include_content:false` to restrict to clickable elements only. Returns { matches: [{ ref, name, role, score, reason }] }.
+Find elements on the active page by natural-language description ("the sign-in button", "the paragraph about pricing"). Returns { matches: [{ ref, name, role, score, reason }] }; pass the refs to interaction tools. Reuses a fresh read_page scrape, so call read_page once before a series of finds. Searches headings/paragraphs too; include_content:false restricts to interactive elements.
 
 **Parameters:** `limit` (integer); `query` (string, required); `tab_id` (string); `max_candidates` (integer); `include_content` (boolean)
 
@@ -550,7 +561,7 @@ Find elements on the active page by natural-language description ("the sign-in b
 
 _read_
 
-Ctrl+F-style literal text search within a tab. Returns matches with surrounding context + the nearest enclosing element selector. Pass regex=true to use a regular expression. Use when read_active_page would be overkill — e.g. "where on this page does it say 'click here to download'?". For natural-language search, use find instead.
+Ctrl+F over a tab's text nodes, skipping script/style and nodes whose direct parent is display:none or visibility:hidden; a match never spans element boundaries. Returns {count, matches: [{text, context, selector, tag}]}; selector = enclosing element. Cheaper than read_active_page when you only need where a string appears; for natural-language search use find.
 
 **Parameters:** `limit` (integer); `query` (string, required); `regex` (boolean); `tab_id` (string); `context_chars` (integer); `case_sensitive` (boolean)
 
@@ -574,7 +585,7 @@ Identify the DOM element at viewport coordinates (x, y). Returns tag, text, attr
 
 _read_
 
-Deep inspection of a single element by ref: full attribute set, bounding box, visibility, optional computed styles and innerHTML. Use when read_page's summary isn't enough — e.g. reading data-* attributes or checking if something is hidden by CSS. Avoids needing evaluate_javascript for routine introspection. innerHTML is capped at 50 KB; response includes truncated:true when exceeded.
+Inspects one element by ref: all attributes (sensitive values masked), bounding rect, visibility (incl. CSS-hidden), first 400 chars of text. include_styles adds computed styles; include_html adds innerHTML (capped 50 KB, truncated:true). Use when read_page's summary is not enough, e.g. data-* attributes.
 
 **Parameters:** `ref` (string, required); `tab_id` (string); `include_html` (boolean); `include_styles` (boolean)
 
@@ -582,7 +593,7 @@ Deep inspection of a single element by ref: full attribute set, bounding box, vi
 
 _read_
 
-Discover forms on the active tab. For each form, returns id, action, method, and a list of fields: { name, type, value, label, required, placeholder, selector }. Use this BEFORE typing to find the right selector and label so you fill the right field.
+List forms on the active tab: each form's id, action, method, submit_selector, and fields {name, type, value, label, required, placeholder, selector}; select fields include options; secret values masked. Scans <form> elements only. Use before typing to pick the right field.
 
 **Parameters:** `selector` (string)
 
@@ -598,7 +609,7 @@ Return anchor links from the active tab. Each entry is { href, text, title, rel,
 
 _read_
 
-Return the user’s currently selected text on the active tab. Empty string if nothing is selected.
+Returns the active tab's selected text as {text, selected, range_count}; text '' when nothing is selected, plus error if the page blocks scripting.
 
 **Parameters:** _No parameters._
 
@@ -606,7 +617,7 @@ Return the user’s currently selected text on the active tab. Empty string if n
 
 _read_
 
-Extract clean readable text from the active page — strips chrome / nav / ads / scripts / hidden DOM. Lighter than read_active_page (which returns full markdown + media + structured data). Best for "read me this article" style asks. Returns { url, title, byline, text, char_count }.
+Extract clean readable text from the active page — prefers <main>/<article>, drops nav / aside / header / footer / scripts / hidden DOM. Lighter than read_active_page (which returns full markdown + media + structured data). Best for "read me this article" style asks. Returns { url, title, byline, text, char_count }.
 
 **Parameters:** `tab_id` (string); `max_chars` (integer)
 
@@ -630,7 +641,7 @@ List highlights the user captured on web pages (text passages and elements) via 
 
 _read_
 
-Observe an element for `duration_ms` (default 3000, max 30000) and report what changed. Set `kinds` to a subset of ['text','attributes','children','visibility'] to filter; default watches all four. Events: { ts_ms, kind, before?, after?, attribute?, added_count?, removed_count?, visible? }. Use this instead of polling read_page when waiting for async UI to settle.
+Watch one element for duration_ms and report what changed — use instead of polling read_page while async UI settles. Returns {ok, duration_ms, events: [{ts_ms, kind, before?, after?, attribute?, added_count?, removed_count?, visible?}], total_events, truncated}; before/after capped at 200 chars. Errors: element not found, bad selector.
 
 **Parameters:** `ref` (string); `kinds` (array); `selector` (string); `max_events` (integer); `duration_ms` (integer)
 
@@ -638,7 +649,7 @@ Observe an element for `duration_ms` (default 3000, max 30000) and report what c
 
 _read_
 
-Run document.querySelectorAll on the active tab and return up to `limit` matches as { tag, text, attrs }. `attrs` is a list of attribute names to extract. Use this to find CSS selectors that subsequent action tools can target.
+Run document.querySelectorAll on the active tab and return up to `limit` matches as { index, tag, text, attrs, visible }. attrs holds the requested `attributes`, or all attributes when omitted; sensitive values are masked. Use this to find CSS selectors that subsequent action tools can target.
 
 **Parameters:** `limit` (integer); `selector` (string, required); `attributes` (array)
 
@@ -654,7 +665,7 @@ Read the active tab and return a structured snapshot: cleaned article (markdown 
 
 _read_
 
-Return an accessibility-style summary of the active page. Each interactive element gets a reference id (`ref:N`) you can pass to click_element / type_into_element / scroll_into_view / etc. instead of a CSS selector — refs are stable across DOM mutations within the same page lifetime. Pass interactive_only=false to include headings, paragraphs, and labels too. Refs invalidate on navigation; call this again after navigating. Returns { url, title, count, elements: [{ ref, role, name, tag, text, visible, bounds? }] }.
+Accessibility-style snapshot of a tab. Each element gets a `ref:N` to pass as `ref` to computer (left_click, type, focus, scroll_to, …) instead of a coordinate. Refs survive DOM mutations but are renumbered by the next read_page and invalidated by navigation — re-read after either. Sensitive values are masked. Returns { url, title, count, total_candidates, elements: [{ ref, role, name, tag, text, visible, bounds?, href?, value? }] }.
 
 **Parameters:** `filter` (string) = ["interactive","all"]; `tab_id` (string); `max_chars` (integer); `max_nodes` (integer); `include_text` (boolean); `include_bounds` (boolean); `include_hidden` (boolean); `interactive_only` (boolean); `trigger_lazy_load` (boolean)
 
@@ -662,7 +673,7 @@ Return an accessibility-style summary of the active page. Each interactive eleme
 
 _read_
 
-Extract text and structure from a PDF — either one loaded in a browser tab, or one already in cld_files (pass file_id). Returns text by page with optional page range. Use file_id when you have a MediaRef in hand (e.g. from a prior download); use tab_id when the PDF is open in the browser.
+Extract text from a PDF by file_id (cld_files id) or tab_id (open tab whose URL ends in .pdf; fetched with the user's cookies and uploaded, returning a reusable file_id). Returns file_id, text (with page markers), page_count (pages read), total_pages, page_start, page_end, truncated.
 
 **Parameters:** `tab_id` (string); `file_id` (string); `page_end` (integer); `max_chars` (integer); `page_start` (integer)
 
@@ -677,7 +688,7 @@ Actions:
 - table_list: the tables and homes the person can see
 - metadata_search: search tables and fields by name (structure, not rows)
 - record_read: rows of a table (table_id, optional match), or one row (record_id)
-- record_aggregate: count/sum/avg/min/max, grouped; every total, count, average or top N — never add up rows you read. Name the table and fields as the person did; no table_list or guide first: {"action": "record_aggregate", "args": {"table": "Visit Log", "measure": "sum", "field_key": "Copay", "match": {"Patient.Referring physician": "Dr. Shah"}}} ("Relation.Field" reaches across a relation). Also group_by, bucket (day/week/month), order "measure_desc" + limit (top N), as_of
+- record_aggregate: count/sum/avg/min/max, grouped; every total, count, average or top N — never add up rows you read. Call it FIRST, naming the table, fields and related rows as the person did — no metadata_search, table_list, record_read or guide before it (a wrong name is refused with the real ones): {"action": "record_aggregate", "args": {"table": "Visit Log", "measure": "sum", "field_key": "Copay", "match": {"Patient.Referring physician": "Dr. Shah"}}} ("Relation.Field", or a related table's field named bare, reaches across a relation; a related row is matched by its name). Also group_by (a relation's groups carry each row's `name`), bucket (day/week/month), order "measure_desc" + limit (top N), as_of
 - record_write: add or change rows, up to 200 in one call via `records`; an entry with `record_id` changes that row
 - record_delete: archive a row; undo=true restores it
 - record_history / record_restore_version: a row's past versions; put one back
@@ -716,7 +727,7 @@ Report which open tabs are currently making noise, were recently audible (within
 
 _action_
 
-Resize the browser window containing a tab. Useful for responsive testing. If tab_id is omitted, resizes the active tab's window. Note: this changes the OS window size, which in turn changes the viewport.
+Resize the OS browser window containing tab_id (default the active tab's window) to width x height px, which changes the viewport; for responsive testing. Returns {window_id, width, height}.
 
 **Parameters:** `width` (integer, required); `height` (integer, required); `tab_id` (integer)
 
@@ -724,7 +735,7 @@ Resize the browser window containing a tab. Useful for responsive testing. If ta
 
 _action_
 
-Manage tab groups. Actions: 'list' (returns all groups across windows), 'create' (groups `tab_ids` together; optional `title`/`color`), 'add' (puts more `tab_ids` into existing `group_id`), 'remove' (ungroups `tab_ids`), 'update' (rename/recolor/collapse `group_id`).
+Manage Chrome tab groups. list: all groups across windows. create: group tab_ids. add: move tab_ids into group_id. remove: ungroup tab_ids. update: rename, recolor or collapse group_id.
 
 **Parameters:** `color` (string) = ["grey","blue","red","yellow","green","pink","purple","cyan","orange"]; `title` (string); `action` (string, required) = ["list","create","add","remove","update"]; `tab_ids` (array); `group_id` (integer); `collapsed` (boolean)
 
@@ -732,7 +743,7 @@ Manage tab groups. Actions: 'list' (returns all groups across windows), 'create'
 
 _action_
 
-Manage browser tabs. Actions: 'list' (all tabs in current window), 'create' (opens new tab; pass url to open at a URL), 'close', 'switch' (brings tab to foreground), 'reload', 'active' (returns the currently active tab — call when you don't know your tab_id), 'info' (full info for a specific tab_id), 'pin' (toggle pin via `on`), 'mute' (toggle mute via `on`), 'duplicate', 'move' (to `index` and optionally `window_id`), 'zoom' (set `zoom_factor`, e.g. 1.5 for 150%). tab_id required for close/switch/reload/info/pin/mute/duplicate/move/zoom.
+Manage browser tabs. list: tabs in all windows. create: new foreground tab (url optional). active: your assigned tab — call when you lack a tab_id. info: one tab's details. switch: bring to foreground. close, reload, duplicate. pin / mute: set via on. move: to index (window_id optional). zoom: set zoom_factor.
 
 **Parameters:** `on` (boolean); `url` (string); `index` (integer); `action` (string, required) = ["list","create","close","switch","reload","active","info","pin","mute","duplicate","move","zoom"]; `tab_id` (string); `window_id` (integer); `zoom_factor` (number)
 
@@ -742,7 +753,7 @@ Manage browser tabs. Actions: 'list' (all tabs in current window), 'create' (ope
 
 _action · admin-only_
 
-Discover and invoke tools that pages have registered via `navigator.modelContext.registerTool` (Chrome 146+). Actions: 'check' (probe API + count tools), 'list' (enumerate page-registered tools), 'call' (invoke; pass `tool_name` and `arguments`). Admin-only experimental capability.
+Use tools the current page registered via navigator.modelContext.registerTool (WebMCP, Chrome 146+). check: API present + tool count. list: the page's tools. call: run tool_name with arguments.
 
 **Parameters:** `action` (string, required) = ["check","list","call"]; `arguments` (any); `tool_name` (string)
 
