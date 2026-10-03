@@ -359,6 +359,17 @@ function testPage(extensionId) {
     </script>`;
 }
 
+function sanitizedBrowserDiagnostic(value) {
+  return String(value)
+    .replace(/https?:\/\/[^\s"'<>]+/gi, '[URL]')
+    .replace(/Bearer\s+\S+/gi, 'Bearer [REDACTED]')
+    .replace(/eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, '[JWT]')
+    .replace(
+      /((?:password|passwd|secret|token|api[_-]?key|authorization)\s*[=:]\s*)(?:"[^"]*"|'[^']*'|[^\s,;]+)/gi,
+      '$1[REDACTED]',
+    );
+}
+
 export async function runNativeSidepanelQa({
   headed = false,
   extensionDir,
@@ -420,8 +431,10 @@ export async function runNativeSidepanelQa({
       ],
       { stdio: ['ignore', 'ignore', 'pipe'] },
     );
-    const chromeStderr = [];
-    child.stderr.on('data', (chunk) => chromeStderr.push(String(chunk)));
+    let chromeStderr = '';
+    child.stderr.on('data', (chunk) => {
+      chromeStderr = (chromeStderr + String(chunk)).slice(-2000);
+    });
     child.once('error', (error) => {
       launchError = error;
     });
@@ -434,13 +447,10 @@ export async function runNativeSidepanelQa({
         exitCode: child.exitCode,
         signalCode: child.signalCode,
         executable: chromeExecutable,
-        launchError: launchError?.message ?? null,
-        stderr: chromeStderr
-          .join('')
-          .slice(-2000)
-          .replace(/https?:\/\/[^\s"'<>]+/gi, '[URL]')
-          .replace(/Bearer\s+\S+/gi, 'Bearer [REDACTED]')
-          .replace(/eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, '[JWT]'),
+        launchError: launchError
+          ? { name: launchError.name, code: launchError.code ?? null }
+          : null,
+        stderr: sanitizedBrowserDiagnostic(chromeStderr),
       };
       // Guest result summaries truncate errors; preserve bounded startup evidence
       // in the runner log before forwarding the unchanged failure.
@@ -454,7 +464,7 @@ export async function runNativeSidepanelQa({
     try {
       extensionWorker = await waitForExpectedExtension(cdp, expectedExtensionId);
     } catch (error) {
-      throw new Error(`${error.message}:${chromeStderr.join('').slice(-1000)}`);
+      throw new Error(sanitizedBrowserDiagnostic(`${error.message}:${chromeStderr}`));
     }
     requireSpawnedProfileOwner(await readlink(join(profile, 'SingletonLock')), child.pid);
     verified = true;
