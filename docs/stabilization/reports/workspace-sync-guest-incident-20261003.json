@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-10-03T10:59:48+00:00",
-  "last_all_remotes_fetched": "2026-10-03T10:57:40+00:00",
-  "baseline": "2026-10-03T09:30:45.571932+00:00",
+  "observed_at": "2026-10-03T12:18:08.147157+00:00",
+  "last_all_remotes_fetched": "2026-10-03T12:18:08.147157+00:00",
+  "baseline": "2026-10-03T10:59:48+00:00",
   "repositories": [
     {
       "repo": "workspace",
@@ -21,9 +21,9 @@
     },
     {
       "repo": "aidream",
-      "origin_main": "1559bfa15a38a8647f9954e1fa0c4aa846c6481b",
-      "last_update": "2026-10-03T10:47:20Z",
-      "files_modified_since_prior_ledger": 416,
+      "origin_main": "4ec65fdb63a8d15e7c11d4404e0516317ebfaabd",
+      "last_update": "2026-10-03T05:17:31-07:00",
+      "files_modified_since_prior_ledger": 90,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -31,15 +31,15 @@
       "other_branches": ["main"],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/aidream",
-        "HEAD 1559bfa15a38a8647f9954e1fa0c4aa846c6481b",
+        "HEAD 4ec65fdb63a8d15e7c11d4404e0516317ebfaabd",
         "branch refs/heads/main"
       ]
     },
     {
       "repo": "ai-matrx",
-      "origin_main": "6111fe3cbdfc643520e165905b4943a57cd1a261",
-      "last_update": "2026-10-03T02:49:26-07:00",
-      "files_modified_since_prior_ledger": 0,
+      "origin_main": "d7e959dda583c204f102a580da9753053b6faf68",
+      "last_update": "2026-10-03T04:56:24-07:00",
+      "files_modified_since_prior_ledger": 5,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -47,15 +47,15 @@
       "other_branches": ["main"],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/ai-matrx",
-        "HEAD 6111fe3cbdfc643520e165905b4943a57cd1a261",
+        "HEAD d7e959dda583c204f102a580da9753053b6faf68",
         "branch refs/heads/main"
       ]
     },
     {
       "repo": "matrx-extend",
-      "origin_main": "048af4e5ea7b15c65689d9fe006b6d67080d47a9",
-      "last_update": "2026-10-03T03:55:55-07:00",
-      "files_modified_since_prior_ledger": 23,
+      "origin_main": "d1b589ff969c24594bc61e313f98b75483cd979a",
+      "last_update": "2026-10-03T05:17:09-07:00",
+      "files_modified_since_prior_ledger": 38,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -63,7 +63,7 @@
       "other_branches": ["main"],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-extend",
-        "HEAD 048af4e5ea7b15c65689d9fe006b6d67080d47a9",
+        "HEAD d1b589ff969c24594bc61e313f98b75483cd979a",
         "branch refs/heads/main"
       ]
     },
@@ -133,9 +133,9 @@
     },
     {
       "repo": "matrx-common-docs",
-      "origin_main": "c3284ca6854b32561c30f0d4ecfaed7a48fcf776",
-      "last_update": "2026-10-03T03:45:39-07:00",
-      "files_modified_since_prior_ledger": 19,
+      "origin_main": "4ab59def028f4fd1ee30348ea0bbcade4675bc2c",
+      "last_update": "2026-10-03T05:01:06-07:00",
+      "files_modified_since_prior_ledger": 15,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -143,7 +143,7 @@
       "other_branches": ["main"],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-common-docs",
-        "HEAD c3284ca6854b32561c30f0d4ecfaed7a48fcf776",
+        "HEAD 4ab59def028f4fd1ee30348ea0bbcade4675bc2c",
         "branch refs/heads/main"
       ]
     },
@@ -163,5 +163,12 @@
         "branch refs/heads/main"
       ]
     }
-  ]
+  ],
+  "verification": {
+    "prepare_defect": "EXT-D-0058 closed after independent six-case native audit 5d725a77; EXT-D-0059 remains in-fix",
+    "full_ci_run": 37122105124,
+    "full_ci_conclusion": "success",
+    "scope": "Source/evidence repair CI passed; later tracker and checkpoint commits are documentation only. No new Store submission. Broad product coverage remains incomplete."
+  },
+  "snapshot_note": "Remote SHA baselines and checkout cleanliness observed before committing this ledger artifact itself."
 }
