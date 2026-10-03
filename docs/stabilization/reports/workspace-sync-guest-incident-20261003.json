@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-10-03T13:27:36-07:00",
-  "last_all_remotes_fetched": "2026-10-03T13:27:36-07:00",
-  "baseline": "2026-10-03T20:27:37+00:00",
+  "observed_at": "2026-10-03T13:29:08-07:00",
+  "last_all_remotes_fetched": "2026-10-03T13:29:08-07:00",
+  "baseline": "2026-10-03T20:29:09+00:00",
   "repositories": [
     {
       "repo": "workspace",
@@ -19,7 +19,7 @@
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code\nHEAD 0276d4dcabef2d7d43fcfd0bd395050621971f5a\nbranch refs/heads/main"
       ],
-      "remote_main_verified_at": "2026-10-03T13:27:36-07:00"
+      "remote_main_verified_at": "2026-10-03T13:29:08-07:00"
     },
     {
       "repo": "aidream",
@@ -37,7 +37,7 @@
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/aidream\nHEAD 53e91ec075c412ec2515df5ee5bfc413f4222cbb\nbranch refs/heads/main"
       ],
-      "remote_main_verified_at": "2026-10-03T13:27:36-07:00"
+      "remote_main_verified_at": "2026-10-03T13:29:08-07:00"
     },
     {
       "repo": "ai-matrx",
@@ -55,15 +55,15 @@
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/ai-matrx\nHEAD 7963b959b9a4e624bd276d6f984b354606aba119\nbranch refs/heads/main"
       ],
-      "remote_main_verified_at": "2026-10-03T13:27:36-07:00"
+      "remote_main_verified_at": "2026-10-03T13:29:08-07:00"
     },
     {
       "repo": "matrx-extend",
       "prior_origin_main": "6a3d17e797a442b8fd22b98ccbdfc99444f4f800",
-      "origin_main": "b0c9f90197e1421257bbecb6bfe990d4afc40e28",
-      "last_update": "2026-10-03T13:26:03-07:00",
+      "origin_main": "8d57d5e0934f2b1e8f6cc9690185ab741d45a1bc",
+      "last_update": "2026-10-03T13:27:53-07:00",
       "files_modified_since_prior_ledger": 65,
-      "pushed_to_main": "2026-10-03T13:26:03-07:00",
+      "pushed_to_main": "2026-10-03T13:27:53-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -71,9 +71,9 @@
       "other_branches": ["main"],
       "unmerged_remote_branches": [],
       "worktrees": [
-        "worktree /Volumes/Samsung2TB/code/matrx-extend\nHEAD b0c9f90197e1421257bbecb6bfe990d4afc40e28\nbranch refs/heads/main"
+        "worktree /Volumes/Samsung2TB/code/matrx-extend\nHEAD 8d57d5e0934f2b1e8f6cc9690185ab741d45a1bc\nbranch refs/heads/main"
       ],
-      "remote_main_verified_at": "2026-10-03T13:27:36-07:00"
+      "remote_main_verified_at": "2026-10-03T13:29:08-07:00"
     },
     {
       "repo": "matrx-local",
@@ -91,7 +91,7 @@
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-local\nHEAD 1f403285a999e3c9c1649074d32b4c8bca828b12\nbranch refs/heads/main"
       ],
-      "remote_main_verified_at": "2026-10-03T13:27:36-07:00"
+      "remote_main_verified_at": "2026-10-03T13:29:08-07:00"
     },
     {
       "repo": "matrx-sandbox",
@@ -109,7 +109,7 @@
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-sandbox\nHEAD 1af1f7f7fee51e634cdbb7ab1445bcdc5df264cb\nbranch refs/heads/main"
       ],
-      "remote_main_verified_at": "2026-10-03T13:27:36-07:00"
+      "remote_main_verified_at": "2026-10-03T13:29:08-07:00"
     },
     {
       "repo": "matrx-ship",
@@ -127,7 +127,7 @@
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-ship\nHEAD 063be903d178203ded541e134e1d01bfd0e9a89e\nbranch refs/heads/main"
       ],
-      "remote_main_verified_at": "2026-10-03T13:27:36-07:00"
+      "remote_main_verified_at": "2026-10-03T13:29:08-07:00"
     },
     {
       "repo": "my-matrx",
@@ -145,15 +145,15 @@
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/my-matrx\nHEAD 0f05c284b031cf161420c72b7db5dc54aa14a527\nbranch refs/heads/main"
       ],
-      "remote_main_verified_at": "2026-10-03T13:27:36-07:00"
+      "remote_main_verified_at": "2026-10-03T13:29:08-07:00"
     },
     {
       "repo": "matrx-common-docs",
       "prior_origin_main": "23cbbc2356054b892111a13134ed95d544f84e27",
-      "origin_main": "0532cdf0a84080b1a604bcd480ce1addee49f68e",
-      "last_update": "2026-10-03T13:25:05-07:00",
-      "files_modified_since_prior_ledger": 30,
-      "pushed_to_main": "2026-10-03T13:25:05-07:00",
+      "origin_main": "8f22e6986f564b01282f48f7762140f63c900876",
+      "last_update": "2026-10-03T13:27:46-07:00",
+      "files_modified_since_prior_ledger": 31,
+      "pushed_to_main": "2026-10-03T13:27:46-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -161,9 +161,9 @@
       "other_branches": ["main"],
       "unmerged_remote_branches": ["origin/claude/codec-subscriptions-integration-uzewe1"],
       "worktrees": [
-        "worktree /Volumes/Samsung2TB/code/matrx-common-docs\nHEAD 0532cdf0a84080b1a604bcd480ce1addee49f68e\nbranch refs/heads/main"
+        "worktree /Volumes/Samsung2TB/code/matrx-common-docs\nHEAD 8f22e6986f564b01282f48f7762140f63c900876\nbranch refs/heads/main"
       ],
-      "remote_main_verified_at": "2026-10-03T13:27:36-07:00"
+      "remote_main_verified_at": "2026-10-03T13:29:08-07:00"
     },
     {
       "repo": "matrx-package-template",
@@ -181,7 +181,7 @@
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-package-template\nHEAD 2e16e0246dd3a3caf514bcdf931d9fbe46fe61ea\nbranch refs/heads/main"
       ],
-      "remote_main_verified_at": "2026-10-03T13:27:36-07:00"
+      "remote_main_verified_at": "2026-10-03T13:29:08-07:00"
     }
   ],
   "note": "Snapshot captures refreshed origin/main immediately before this ledger commit; its own commit is excluded from these heads and path counts. The next ledger compares from these recorded origin SHAs. Last update and pushed-to-main values are origin/main commit timestamps; counts are unique changed paths. Additional worktrees, dirty paths, stashes, and unmerged remote branches are listed as exceptions.",
@@ -209,9 +209,9 @@
     },
     {
       "Repository": "matrx-extend",
-      "Last update": "2026-10-03T13:26:03-07:00",
+      "Last update": "2026-10-03T13:27:53-07:00",
       "Files modified since prior ledger": 65,
-      "Pushed to main": "2026-10-03T13:26:03-07:00",
+      "Pushed to main": "2026-10-03T13:27:53-07:00",
       "Not included on main / reason": "None"
     },
     {
@@ -244,9 +244,9 @@
     },
     {
       "Repository": "matrx-common-docs",
-      "Last update": "2026-10-03T13:25:05-07:00",
-      "Files modified since prior ledger": 30,
-      "Pushed to main": "2026-10-03T13:25:05-07:00",
+      "Last update": "2026-10-03T13:27:46-07:00",
+      "Files modified since prior ledger": 31,
+      "Pushed to main": "2026-10-03T13:27:46-07:00",
       "Not included on main / reason": "unmerged remote branches: origin/claude/codec-subscriptions-integration-uzewe1"
     },
     {
@@ -258,5 +258,5 @@
     }
   ],
   "baseline_verified_from": "90b415d6:docs/stabilization/reports/workspace-sync-guest-incident-20261003.json",
-  "owner_audit": "Used the prior ledger origin_main SHAs recorded by 90b415d6 as this turn’s path-count baselines. Fast-forwarded clean repos to refreshed origin/main, including matrx-local. The profile checkpoint correction is now on extension main and its checkout is clean. Existing unrelated codec-subscriptions contributor branch remains untouched wherever it remains unmerged."
+  "owner_audit": "Used the prior ledger origin_main SHAs recorded by 90b415d6 as this turn’s path-count baselines. Fast-forwarded clean repos to refreshed origin/main, including matrx-local and matrx-common-docs. The profile checkpoint corrections are on extension main and its checkout is clean. Existing unrelated codec-subscriptions contributor branch remains untouched wherever it remains unmerged."
 }
