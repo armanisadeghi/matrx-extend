@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "47c7bc040dc9737b7993833807963995ddf3a3fb",
+  "lane": "independent source review; zero authorship; no browser/UI",
+  "verdict_a_user_outcome": {
+    "status": "PASS_WITH_CONCERNS",
+    "evidence": [
+      "EXT-F-1002-T16/T17/T18 each specify two separate executions: warm and post-extension-reload. Each execution receives its own run ID, permit, receipt, timing and observations; installation/update reload is explicitly not counted as the reload dimension.",
+      "Each role has a bounded 30-second auth-readiness window and records the last visible state, elapsed time and alerts/timeouts. The procedures require both sidepanel opening and no popup in each run, without promoting either dimension absent its own evidence.",
+      "Guest readiness uses the guest Chat banner and Sign in action; source confirms GuestBanner is absent while auth status is unknown (GuestBanner.tsx:15-19).",
+      "Member readiness requires the known email and member menu plus a successful empty admins role query, and explicitly rejects absent Pilot alone as proof. Admin readiness requires known email and Pilot after the asynchronous role read.",
+      "Statuses and run IDs remain unverified/empty; the repair does not infer product behavior from procedure text."
+    ],
+    "remaining_concerns": [
+      "The member procedure says to have network capture attached before opening the panel, but does not name the capture mechanism or how to attach it while the sidepanel is closed. That is the evidence needed to distinguish a completed empty role lookup from the transient pre-role state. Provide the bounded CDP/network-capture setup explicitly before treating this role check as executable."
+    ],
+    "runtime_status": "UNVERIFIED: no Store artifact, Chrome UI, toolbar click or role request was exercised in this review."
+  },
+  "verdict_b_source_and_doctrine": {
+    "status": "PASS_WITH_CONCERNS",
+    "evidence": [
+      "The commit changes only stabilization procedures, generated tracker views and a research report; no product source, inventory result, status or run ID was changed.",
+      "useAuth asynchronously restores/verifies the session, then calls checkIsAdmin; null denotes a failed role read and false is a successful non-admin result (use-auth.ts:161-191; queries.ts:109-120). The procedure correctly waits for an observable result and does not use missing Pilot alone to claim member status.",
+      "The 30-second bound is a procedure observation window, not a product timeout. It records timeout/last-state evidence rather than changing app behavior.",
+      "Warm and extension reload are separately specified while retaining the same Store ID/version; this follows the stabilization plan's requirement to distinguish warm and reloaded lifecycle runs (PLAN.md:24-32)."
+    ],
+    "concerns": [
+      "The member role-request evidence requirement lacks an explicit, executable capture setup. The source supports the requested distinction, but a successful empty result cannot be established solely from the visible menu because user UI becomes available before the admin role read completes.",
+      "Guest steps say to preserve any auth alert and state that it must be classified, but the expected paragraph does not explicitly say a guest banner with an auth alert cannot satisfy the dimension. Add an explicit no-auth-alert pass condition for consistency with the member/admin procedures."
+    ],
+    "status_promotion": "None; all three roles and both dimensions remain unverified.",
+    "scope_limit": "This is a source/procedure review only. It does not prove Store behavior, release identity, network results or toolbar operation."
+  },
+  "repair_recommendation": [
+    "Name the approved CDP capture procedure that can observe the sidepanel admin role request before toolbar-open, and state the safe fields to retain (completion/outcome and timing only).",
+    "Make an auth alert an explicit non-pass condition for the guest dimension, while retaining the alert text as failure evidence."
+  ],
+  "verification": {
+    "source_review": "Compared commit 47c7bc04 with the previous independent findings, current inventory procedures, stabilization plan and actual auth/readiness source.",
+    "format_check": "PASS: Biome format/check and git diff --check.",
+    "browser": "Not run by instruction."
+  }
+}
