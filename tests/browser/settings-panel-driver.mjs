@@ -126,6 +126,11 @@ export async function click(panel, kind, label) {
     let candidates;
     if (kind === 'title') candidates = [...document.querySelectorAll('button[title]')]
       .filter((el) => el.title === label);
+    else if (kind === 'active-chat-send') {
+      const chatPanel = ${activeTabPanelExpression('Chat')};
+      candidates = [...(chatPanel?.querySelectorAll('button[title="Send"]') ?? [])]
+        .filter((el) => label === 'Send');
+    }
     else if (kind === 'context-values') {
       const chatTab = [...document.querySelectorAll('button[role="tab"][title="Chat"]')]
         .find((el) => el.getAttribute('aria-selected') === 'true');

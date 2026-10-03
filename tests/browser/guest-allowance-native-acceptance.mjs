@@ -373,7 +373,7 @@ try {
             (s) => s?.replyCount === before.replyCount && !s.streaming && s.composer,
             10_000,
           );
-          await click(panel, 'title', 'Send');
+          await click(panel, 'active-chat-send', 'Send');
           const finished = await waitFor(
             `turn_${index + 1}_terminal`,
             state,
