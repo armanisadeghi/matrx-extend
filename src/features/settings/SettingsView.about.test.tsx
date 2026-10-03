@@ -162,6 +162,14 @@ vi.mock('@ai-matrx/design-system', () => ({
 
 import { SettingsView } from './SettingsView';
 
+function deferred() {
+  let resolve!: () => void;
+  const promise = new Promise<void>((done) => {
+    resolve = done;
+  });
+  return { promise, resolve };
+}
+
 function setChromeRuntime({
   requestUpdateCheck,
   browserLoginReady = true,
@@ -419,6 +427,38 @@ describe('SettingsView local engine port', () => {
     ).toBeTruthy();
     expect(mocks.setEnginePortOverride).not.toHaveBeenCalled();
   });
+
+  it('persists overlapping port choices in submission order', async () => {
+    const first = deferred();
+    const second = deferred();
+    let storedPort = 65001;
+    mocks.setEnginePortOverride
+      .mockImplementationOnce(async (port: number) => {
+        await first.promise;
+        storedPort = port;
+      })
+      .mockImplementationOnce(async (port: number) => {
+        await second.promise;
+        storedPort = port;
+      });
+    render(<SettingsView />);
+    const section = within(screen.getByRole('region', { name: 'Desktop bridge' }));
+    const input = await section.findByDisplayValue('65001');
+
+    fireEvent.change(input, { target: { value: '65002' } });
+    fireEvent.click(section.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(mocks.setEnginePortOverride).toHaveBeenCalledTimes(1));
+    fireEvent.change(input, { target: { value: '65003' } });
+    fireEvent.click(section.getByRole('button', { name: 'Save' }));
+    expect(mocks.setEnginePortOverride).toHaveBeenCalledTimes(1);
+
+    first.resolve();
+    await waitFor(() => expect(mocks.setEnginePortOverride).toHaveBeenNthCalledWith(2, 65003));
+    expect(storedPort).toBe(65002);
+    second.resolve();
+    await waitFor(() => expect(storedPort).toBe(65003));
+    expect((input as HTMLInputElement).value).toBe('65003');
+  });
 });
 
 describe('SettingsView desktop pair code', () => {
@@ -476,6 +516,39 @@ describe('SettingsView desktop pair code', () => {
     await waitFor(() =>
       expect(section.queryByText('Could not forget pair code. Try again.')).toBeNull(),
     );
+  });
+
+  it('keeps a newer pair code through an older completion and persists the latest submission', async () => {
+    const first = deferred();
+    const second = deferred();
+    let storedCode = '';
+    mocks.setPairToken
+      .mockImplementationOnce(async (code: string) => {
+        await first.promise;
+        storedCode = code;
+      })
+      .mockImplementationOnce(async (code: string) => {
+        await second.promise;
+        storedCode = code;
+      });
+    render(<SettingsView />);
+    const section = within(screen.getByRole('region', { name: 'Desktop bridge' }));
+    const input = section.getByPlaceholderText('Pair code') as HTMLInputElement;
+
+    fireEvent.change(input, { target: { value: 'old-pair-code' } });
+    fireEvent.click(section.getByRole('button', { name: 'Pair' }));
+    await waitFor(() => expect(mocks.setPairToken).toHaveBeenCalledTimes(1));
+    fireEvent.change(input, { target: { value: 'new-pair-code' } });
+    fireEvent.click(section.getByRole('button', { name: 'Pair' }));
+    expect(mocks.setPairToken).toHaveBeenCalledTimes(1);
+
+    first.resolve();
+    await waitFor(() => expect(mocks.setPairToken).toHaveBeenNthCalledWith(2, 'new-pair-code'));
+    expect(input.value).toBe('new-pair-code');
+    expect(storedCode).toBe('old-pair-code');
+    second.resolve();
+    await waitFor(() => expect(storedCode).toBe('new-pair-code'));
+    await waitFor(() => expect(input.value).toBe(''));
   });
 });
 

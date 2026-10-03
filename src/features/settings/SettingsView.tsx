@@ -45,9 +45,21 @@ import {
 } from '@ai-matrx/design-system';
 import { Switch } from '@ai-matrx/design-system';
 import { ChevronRight, LogIn, LogOut, Trash2 } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const NONE = '__none__';
+
+function serializeStorageWrite(
+  pending: { current: Promise<void> },
+  write: () => Promise<void>,
+): Promise<void> {
+  const result = pending.current.then(write);
+  pending.current = result.then(
+    () => undefined,
+    () => undefined,
+  );
+  return result;
+}
 
 type ExtensionUpdateStatus =
   | { kind: 'idle' }
@@ -101,9 +113,12 @@ export function SettingsView() {
   const settings = useSettingsStore();
   const [pairTokenInput, setPairTokenInput] = useState('');
   const [pairTokenError, setPairTokenError] = useState<string | null>(null);
+  const pairWritePending = useRef(Promise.resolve());
+  const pairInputRevision = useRef(0);
   const [enginePortInput, setEnginePortInput] = useState('');
   const [enginePortSaved, setEnginePortSaved] = useState<number | null>(null);
   const [enginePortError, setEnginePortError] = useState<string | null>(null);
+  const enginePortWritePending = useRef(Promise.resolve());
   const [clearLocalDataOpen, setClearLocalDataOpen] = useState(false);
   const [clearLocalDataError, setClearLocalDataError] = useState<string | null>(null);
   const [extensionUpdate, setExtensionUpdate] = useState<ExtensionUpdateStatus>({ kind: 'idle' });
@@ -147,7 +162,7 @@ export function SettingsView() {
     }
     const nextPort = trimmed === '' ? null : n;
     try {
-      await setEnginePortOverride(nextPort);
+      await serializeStorageWrite(enginePortWritePending, () => setEnginePortOverride(nextPort));
     } catch {
       setEnginePortError('Could not save port. Try again.');
       return;
@@ -526,6 +541,7 @@ export function SettingsView() {
                   <Input
                     value={pairTokenInput}
                     onChange={(e) => {
+                      pairInputRevision.current += 1;
                       setPairTokenInput(e.target.value);
                       setPairTokenError(null);
                     }}
@@ -538,12 +554,19 @@ export function SettingsView() {
                     disabled={!pairTokenInput.trim()}
                     onClick={async () => {
                       if (pairTokenInput.trim()) {
+                        const submittedInput = pairTokenInput;
+                        const revision = ++pairInputRevision.current;
                         try {
-                          await setPairToken(pairTokenInput.trim());
-                          setPairTokenInput('');
-                          setPairTokenError(null);
+                          await serializeStorageWrite(pairWritePending, () =>
+                            setPairToken(submittedInput.trim()),
+                          );
+                          if (pairInputRevision.current === revision) {
+                            setPairTokenInput('');
+                            setPairTokenError(null);
+                          }
                         } catch {
-                          setPairTokenError('Could not save pair code. Try again.');
+                          if (pairInputRevision.current === revision)
+                            setPairTokenError('Could not save pair code. Try again.');
                         }
                       }
                     }}
@@ -568,7 +591,7 @@ export function SettingsView() {
                       alternative:
                         'If the desktop app is just offline, cancel — the code still works when it comes back.',
                       confirmLabel: 'Forget pair code',
-                      run: () => clearPairToken(),
+                      run: () => serializeStorageWrite(pairWritePending, clearPairToken),
                     })
                       .then((confirmed) => {
                         if (confirmed) setPairTokenError(null);

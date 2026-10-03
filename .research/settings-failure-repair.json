@@ -20,5 +20,11 @@
     "unit": "pending hosted CI; native local execution prohibited by low disk space",
     "browser": "pending exact-build acceptance with controlled storage failure injection",
     "red_proof": "not executed locally because the task forbids local tests/builds under the disk threshold"
+  },
+  "follow_up_race": {
+    "defect_id": "EXT-D-0086",
+    "source_evidence": "Overlapping Settings port and pair-code writes previously called Chrome storage concurrently; pair save also cleared the input after awaiting an older write.",
+    "repair": "Serialize writes per storage key and clear a submitted pair input only when no later input edit or submission occurred.",
+    "regression": "Controlled deferred Chrome-storage boundaries assert the second operation waits for the first and the latest value persists. Runtime verdict remains pending hosted CI."
   }
 }

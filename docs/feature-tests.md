@@ -3460,6 +3460,14 @@ Every entry follows this shape:
 - **Expected:** a failed port save leaves the previous override in place, skips rediscovery, and shows a retry error. A successful retry clears the error. A rejected pair code stays in the input until saved. A rejected removal shows an error; cancellation does not remove the code and a confirmed successful retry clears the error. A rejected read is reported. A rejected local-data clear leaves its confirmation open and does not sign out; a successful retry closes it and signs out.
 - **Covered by:** `src/features/settings/SettingsView.about.test.tsx` (Settings component with rejected storage boundaries). Installed-browser failure injection remains unverified.
 
+### Overlapping desktop settings saves keep the latest choice
+
+- **What it does:** port and pair-code writes for each control finish in the order submitted, even when Chrome storage responds slowly.
+- **Where to test:** Settings → Desktop bridge in an isolated profile with a delayed first storage write.
+- **Steps:** save port `65002`, then `65003` before the first write completes. Repeat with two different pair codes, editing and submitting the second while the first is pending.
+- **Expected:** the second storage write starts after the first settles; the final stored port is `65003` and the input still shows `65003`. The first pair-code completion leaves the newer input alone; the final stored code is the second submission.
+- **Covered by:** `src/features/settings/SettingsView.about.test.tsx` controlled overlapping writes. Native exact-build acceptance remains unverified.
+
 ### DevTools console is not a firehose
 
 - **What it does:** the Debug → Logs feed keeps every event at every level,
