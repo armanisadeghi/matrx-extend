@@ -1,5 +1,5 @@
 import { settingsStorage } from '@/lib/settings/persistence';
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
@@ -408,7 +408,10 @@ describe('SettingsView local engine port', () => {
     const input = await section.findByDisplayValue('65001');
 
     fireEvent.change(input, { target: { value: '65002' } });
-    fireEvent.click(section.getByRole('button', { name: 'Save' }));
+    await act(async () => {
+      fireEvent.click(section.getByRole('button', { name: 'Save' }));
+    });
+    expect(mocks.setEnginePortOverride).toHaveBeenCalledTimes(1);
     expect(await section.findByText('Could not save port. Try again.')).toBeTruthy();
     expect(section.getByText('override')).toBeTruthy();
     expect(mocks.send).not.toHaveBeenCalled();

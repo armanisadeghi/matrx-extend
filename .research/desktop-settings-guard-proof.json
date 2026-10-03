@@ -1,0 +1,27 @@
+{
+  "defect_ids": ["EXT-D-0084", "EXT-D-0086"],
+  "scope": "SettingsView desktop-port persistence rejection, retry, overlapping writes, and delayed initial read",
+  "sut": "SettingsView.tsx handleSaveEnginePort, serializeStorageWrite, and initial getEnginePortOverride effect",
+  "proof_run": "desktop-settings-guard-proof-20261003-02",
+  "resource_journal": "docs/stabilization/resource-journals/desktop-settings-guard-proof-20261003-02.jsonl",
+  "resource_decision": "admitted; child exit 0; resourceInvalid=false; final decision valid",
+  "green": "SettingsView.about.test.tsx: 21/21 passed before mutations and 21/21 passed after restore",
+  "gut": {
+    "fault": "Replace the awaited desktop port storage write with an already-resolved promise, skipping the owned persistence side effect.",
+    "red": "The rejected-save test failed at line 414: expected setEnginePortOverride to be called once, received zero calls."
+  },
+  "mutations": [
+    {
+      "fault": "Start each storage write immediately instead of chaining it behind the prior write.",
+      "red": "The overlapping-port test failed at line 509: expected one setter call before the first write settled, received two."
+    },
+    {
+      "fault": "Always apply the delayed initial port read to the input, ignoring the input revision.",
+      "red": "The delayed-read test failed at line 464: expected the newer typed port 65003, received stale saved port 65001."
+    }
+  ],
+  "mutation_safety": "Each fault used forcing-function-tests/plant.py within one admitted resource-guard child; plant.py restored the shared production file before the next case. The runner verified source SHA-256 bbcc09f98c2754ff6532e0db06fab487ea6518ccb419cc70ce85d61fce89389f after every case and at exit.",
+  "prior_run": "desktop-settings-guard-proof-20261003-01 also had valid resource admission, 21/21 green before and after the same three red faults; its D84 red was missing error feedback, which prompted the more direct storage-call assertion in the final run.",
+  "source_change": "Added one explicit assertion that the rejected port save actually invokes its storage setter; added a fixed-purpose proof runner and one exact resource allowlist entry. Production source is unchanged.",
+  "limits": "This is causal unit-guard proof for the named Settings paths, not native UI acceptance or live Chrome storage verification. Independent native acceptance belongs to the parent lane."
+}
