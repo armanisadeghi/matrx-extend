@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "kind": "profile_native_execution",
+  "status": "partial_progress_escalated_after_two_failed_attempts",
+  "recorded_at_utc": "2026-10-03T19:20:28Z",
+  "inventory_outcomes_changed": false,
+  "artifact": {
+    "version": "0.2.177",
+    "source_sha": "2274cc2fc929f7682c61f1a137e472a87caa2114",
+    "ci_run_id": 37145482483,
+    "artifact_id": 11282375130,
+    "tree_sha256": "a366b2b34045412b9866929cea59ab9d872d7be373ba08562705e4bcce8d3b23",
+    "receipt": "test-results/ci-artifacts/2274cc2fc929f7682c61f1a137e472a87caa2114/37145482483-1/local-dev-receipt.json"
+  },
+  "runtime": {
+    "node": "v25.6.0",
+    "platform": "darwin",
+    "architecture": "arm64",
+    "browser_executable": "/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+    "browser_runtime": "Playwright Chromium revision 1228; executable version not queried",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "guarded_launch_recipe": {
+    "working_directory": "/Volumes/Samsung2TB/code/matrx-extend",
+    "environment_common": {
+      "PROFILE_DEV_BUILD_RECEIPT": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/2274cc2fc929f7682c61f1a137e472a87caa2114/37145482483-1/local-dev-receipt.json",
+      "MATRX_PLAYWRIGHT_MODULE": "/Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+      "MATRX_CHROME_PATH": "/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+      "PLAYWRIGHT_BROWSERS_PATH": "/Users/armanisadeghi/Library/Caches/ms-playwright",
+      "TMPDIR": "/Volumes/Samsung2TB/code/.stabilization-scratch"
+    },
+    "per_run_environment": {
+      "PROFILE_RUN_ID": "profile-20261003-01 or profile-20261003-02",
+      "PROFILE_OUTPUT_DIR": "/Volumes/Samsung2TB/code/.stabilization-scratch/<PROFILE_RUN_ID>/evidence"
+    },
+    "guard_argv_template": [
+      "node", "scripts/stabilization-resource.mjs", "run", "--run-id", "<PROFILE_RUN_ID>",
+      "--profile-dir", "/Volumes/Samsung2TB/code/.stabilization-scratch/<PROFILE_RUN_ID>/permit-profile",
+      "--", "node", "tests/browser/profile-native-acceptance.mjs"
+    ],
+    "policy_command_exact": ["node", "tests/browser/profile-native-acceptance.mjs"],
+    "permit_limit": 1,
+    "unsafe_policy": "refuse",
+    "local_build_or_release": false
+  },
+  "attempts": [
+    {
+      "run_id": "profile-20261003-01",
+      "started_at_utc": "2026-10-03T19:13:27Z",
+      "finished_at_utc": "2026-10-03T19:14:48Z",
+      "resource_decision": "admitted_then_child_failed; permit_finalized",
+      "failure_stage": "authentication",
+      "failure_code": "device_organization_missing",
+      "profile_cases_executed": 0,
+      "receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-native-20261003-01/evidence/profile-native-profile-20261003-01.json",
+      "journal": "docs/stabilization/resource-journals/profile-20261003-01.jsonl"
+    },
+    {
+      "run_id": "profile-20261003-02",
+      "started_at_utc": "2026-10-03T19:16:17Z",
+      "finished_at_utc": "2026-10-03T19:18:40Z",
+      "resource_decision": "admitted_then_child_failed; permit_finalized",
+      "identity_evidence": "Existing admin signed in through first-party flow; role admin and selected approved device organization verified; principal matched first-party identity without recording UUIDs.",
+      "failure_stage": "profile",
+      "failure_code": "profile_original_restored_not_observed",
+      "failed_wait_predicate": "Preferred input equals original empty string, draft is clean, and Profile error banner is absent after restoration Save",
+      "last_dom_observation": null,
+      "last_dom_observation_limit": "The runner retained only the wait label in its private receipt; the last DOM sample was not persisted. Do not infer which predicate term failed.",
+      "receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-native-20261003-02/evidence/profile-native-profile-20261003-02.json",
+      "journal": "docs/stabilization/resource-journals/profile-20261003-02.jsonl"
+    }
+  ],
+  "case_observations": [
+    {
+      "id": "EXT-F-1004-T02", "mode": "admin", "dimension": "warm", "branch": "default",
+      "observation": "passed_in_second_run",
+      "evidence_ref": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-native-20261003-02/evidence/profile-native-profile-20261003-02.json#cases[0]",
+      "details": "Synthetic Preferred draft showed Unsaved changes and Discard; Back selected Chat; reopened Profile displayed the original blank input with no dirty state."
+    },
+    {
+      "id": "EXT-F-1004-T04", "mode": "admin", "dimension": "warm", "branch": "discard-draft",
+      "observation": "discard_predicate_observed_but_branch_unverified",
+      "evidence_ref": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-native-20261003-02/evidence/profile-native-profile-20261003-02.json#failure_code",
+      "details": "The Discard wait preceded the try/finally block and therefore passed. The whole run later failed, and no completed per-branch row was emitted. Peer must not promote this branch."
+    },
+    {
+      "id": "EXT-F-1004-T04", "mode": "admin", "dimension": "warm", "branch": "save-draft",
+      "observation": "unverified_due_to_masked_try_error_and_restoration_wait_failure",
+      "evidence_ref": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-native-20261003-02/evidence/profile-native-profile-20261003-02.json#failure_code",
+      "details": "The finally restoration wait timed out and could have masked an earlier save or reopen failure. The receipt does not establish whether synthetic Preferred persisted. No completed per-branch row was emitted."
+    }
+  ],
+  "unexecuted": "All Profile reload dimensions and all other EXT-F-1004 cases remain unverified; no extension reload was attempted.",
+  "database_cleanup_check": {
+    "project": "brsgrqvjdzwihsvnfqkf",
+    "scope": "users.user_form_profile Preferred for existing admin principal only",
+    "method": "Two read-only Supabase MCP SQL queries after the second run; no database mutation",
+    "product_path": "ProfileView calls useUserProfile.save(); upsertUserFormProfile writes users.user_form_profile.preferred_name through usersDb().from('user_form_profile').upsert; load uses get_user_form_context RPC.",
+    "readback_query_shape": "SELECT count(*), count(*) FILTER (WHERE preferred_name IS NULL), count(*) FILTER (WHERE preferred_name LIKE 'Profile save %') FROM users.user_form_profile WHERE user_id=(SELECT id FROM auth.users WHERE email='admin@admin.com')",
+    "result": "One matching authoritative row; preferred_name IS NULL (the original blank value); zero values with the runner's synthetic save prefix. This post-run state does not prove whether a transient synthetic save succeeded earlier.",
+    "verified_at_utc": "2026-10-03T19:20:28Z",
+    "ui_restoration": "unverified because the native wait timed out; database value is restored"
+  },
+  "cleanup": {
+    "guard_final_decision_present_for_both": true,
+    "owned_browser_processes_remaining": 0,
+    "active_permit": false,
+    "profile_fields_other_than_preferred_changed": false
+  },
+  "source_files": ["tests/browser/profile-native-acceptance.mjs", "docs/stabilization/resource-policy.json"],
+  "source_commits": ["0cda7f87", "53c3d56a", "cac80a37", "179fcbf6", "d1857cad", "410c3bb9"],
+  "next_owner": "Fresh native_empty_input_fix owns diagnosis/repair of clearing an empty Preferred input and preserving the last redacted DOM wait state; no third broad runner attempt in this lane."
+}
