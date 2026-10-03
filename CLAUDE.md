@@ -197,6 +197,10 @@ as a hang and kills a healthy run.
   contract) — never hand-roll a mint call, cache, or gateway URL. System:
   `/Users/armanisadeghi/code/common-docs/systems/architecture/token-broker/FEATURE.md`.
 
+## Release gate auth
+
+The strict tool-drift check needs a server token on BOTH release paths: CI mints it in `scripts/release-with-gate-auth.mjs`; local `./ship.sh` calls `release.sh` directly, so `release.sh` mints its own (`mint_gate_auth` → `--print-env`) from the gitignored `.env.release.local` (`AIDREAM_API_URL`, `AIDREAM_GATE_USERNAME`/`PASSWORD`/`ORGANIZATION_ID` — the admin@admin.com test account and a member org). Changing either path keeps the other minting; never make the gate advisory. Guard: `tests/unit/release-gate-auth-path.test.ts`.
+
 ## Conventions
 
 - Admin-only first for risky new capabilities; promote to GA after testing. Scary

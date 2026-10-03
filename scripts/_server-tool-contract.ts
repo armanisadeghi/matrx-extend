@@ -62,6 +62,12 @@ export function serverContractIssues(db: DbToolRow, detail: unknown): string[] {
   return issues;
 }
 
+// The token is supplied by the release path, never by this file: CI through
+// scripts/release-with-gate-auth.mjs (wraps release.sh), LOCAL ./ship.sh through
+// release.sh's own mint_gate_auth() (ship.sh never goes through the wrapper).
+// A release path that reaches the strict drift check without one stops every
+// release here — see the header of scripts/release-with-gate-auth.mjs and the
+// guard tests/unit/release-gate-auth-path.test.ts.
 export async function fetchServerToolContract(name: string): Promise<unknown> {
   const {
     AIDREAM_API_URL: base,

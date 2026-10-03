@@ -1,6 +1,18 @@
 #!/usr/bin/env node
 // Mint a point-use user session for the authenticated server contract gate.
 // The JWT exists only in this process and its release.sh child environment.
+//
+// TWO CALLERS, BOTH MUST WORK (break of 2026-10-03):
+//   CI     — .github/workflows/release.yml runs this file's main path, which
+//            mints from the AIDREAM_GATE_* secrets and spawns release.sh.
+//   LOCAL  — ./ship.sh calls release.sh DIRECTLY, never this wrapper. So
+//            release.sh's mint_gate_auth() calls `--print-env` here per
+//            candidate whenever no caller token exists, reading the identity
+//            from the gitignored .env.release.local. When this wrapper landed
+//            (e763cd8c) without that local path, every local release stopped
+//            at tool-drift with "records server contract UNVERIFIED".
+// Never make the gate advisory or skip it to get a release through; give the
+// failing path a token. Guard: tests/unit/release-gate-auth-path.test.ts.
 import { spawn } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
