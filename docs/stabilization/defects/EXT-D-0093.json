@@ -43,7 +43,11 @@
     ".research/audit-lock-ci-repair.json",
     ".research/audit-lock-unavailable-recovery.json",
     ".research/audit-unavailable-final-peer.json",
-    ".research/audit-history-guard-peer.json"
+    ".research/audit-history-guard-peer.json",
+    ".research/audit-native-independent.json",
+    ".research/audit-native-escalation.json",
+    ".research/audit-escalation-peer.json",
+    ".research/audit-receipt-native-door.json"
   ],
   "transition_history": [
     {
@@ -71,7 +75,7 @@
       "reason": "Production concurrency and capability recovery fixes passed focused RED/GREEN, mutation checks, full CI37129518563 and independent source reviews; history guard finding resolved inbefd9227 and freshpeerfaf1e928. Native acceptance remains required."
     }
   ],
-  "current_work": "Source fixes complete: concurrency43d28aa0, capability-specific recovery991385d9, fixture03b80268, history guardbefd9227. Fresh peerfaf1e928 accepted the missing-history assertion correction; 5/5 guarded tests passed and deliberate history corruption failed. Full CI37129518563 passed production991385d9 and produced immutable development artifact11275878549. No native D93 acceptance or Store shipment is implied.",
+  "current_work": "Independent exact-build native run audit-escalation-peer-native-20261003 passed T60/T86/T88; T87/T89 are partial for missing signed-receipt verification. Run stopped at lock_unavailable with generic audit_native_unverified before T90. T91 product verdict remains unverified pending exact failure diagnosis. Source stays fixed; no complete retest or Store shipment implied. Runner repairs (source-bound artifact version, Page.enable/new-document fault setup, snapshot scope and structural public-JWK comparison) passed focused guards, fresh source review and full CI37134787410.",
   "closure_requirement": "Independent review plus exact-build native Settings verification of actionable failures and single-rotation retry behavior without rotating real user/device keys.",
   "independent_source_review": {
     "commit": "22f29e68",
@@ -80,7 +84,8 @@
     "runtime_verdict": "partial_native_pending"
   },
   "remaining_work": [
-    "Exact artifact11275878549 from successful CI37129518563/source991385d9: native Settings failure/retry, successful versus uncertain single-rotation outcomes, and cross-context receipt verification. Use only fresh owned profiles; never rotate real user/device keys.",
-    "Subsequent release gates and exact guest/non-admin candidate acceptance before Store submission."
+    "Diagnose T91 lock_unavailable boundary with safe specific diagnostics; no blind unchanged rerun. T90 not reached.",
+    "Complete actual product-signed receipt verification after recovery/rotation and both-context reload, including tamper rejection for T87/T89/T90; actual signing/verifier door traced in .research/audit-receipt-native-door.json.",
+    "Subsequent release gates and exact guest/non-admin candidate acceptance before Store submission; main version0.2.177 alone is not release evidence."
   ]
 }

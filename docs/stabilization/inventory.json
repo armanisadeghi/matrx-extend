@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T14:54:06.508731+00:00",
+  "updated_at": "2026-10-03T16:01:17.791003+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -5951,6 +5951,24 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "audit-escalation-peer-native-20261003",
+              "native_run_status": "fail",
+              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "evidence": [
+                ".research/audit-escalation-peer.json"
+              ],
+              "detail": "Actual clipboard rejection showed failure and Retry export; retry copied a structurally equal public JWK with no private fields and success feedback. Storage remained unchanged.",
+              "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+            }
+          },
+          "linked_defects": [
+            "EXT-D-0093"
           ]
         },
         {
@@ -6830,6 +6848,24 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "audit-escalation-peer-native-20261003",
+              "native_run_status": "fail",
+              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "evidence": [
+                ".research/audit-escalation-peer.json"
+              ],
+              "detail": "Actual new-document read rejection showed actionable failure; Retry audit details recovered the same key with zero active-key writes.",
+              "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+            }
+          },
+          "linked_defects": [
+            "EXT-D-0093"
           ]
         },
         {
@@ -6858,6 +6894,24 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "audit-escalation-peer-native-20261003",
+              "native_run_status": "fail",
+              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "evidence": [
+                ".research/audit-escalation-peer.json"
+              ],
+              "detail": "Rejected history write caused no active-key mutation; a separately confirmed rotation succeeded. Prior product-signed receipt verification remains missing.",
+              "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+            }
+          },
+          "linked_defects": [
+            "EXT-D-0093"
           ]
         },
         {
@@ -6887,6 +6941,24 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "audit-escalation-peer-native-20261003",
+              "native_run_status": "fail",
+              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "evidence": [
+                ".research/audit-escalation-peer.json"
+              ],
+              "detail": "One actual rotation succeeded while its refresh failed; details-only retry and distinct-document reload preserved the same new public key with no second rotation.",
+              "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+            }
+          },
+          "linked_defects": [
+            "EXT-D-0093"
           ]
         },
         {
@@ -6916,6 +6988,24 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "audit-escalation-peer-native-20261003",
+              "native_run_status": "fail",
+              "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+              "evidence": [
+                ".research/audit-escalation-peer.json"
+              ],
+              "detail": "Persisted-then-rejected active write produced uncertain outcome and blocked further rotation until details recovery; reload retained the recovered key. Prior product-signed receipt verification remains missing.",
+              "release_scope": "Exact CI development artifact, not frozen Store package or full extension-update lifecycle."
+            }
+          },
+          "linked_defects": [
+            "EXT-D-0093"
           ]
         },
         {
@@ -7074,7 +7164,8 @@
             "native-0267-reload-001",
             "native-0268-reload-001",
             "isolated-permission-denial-006",
-            "settings-mounted-admin-full6-20261003-01"
+            "settings-mounted-admin-full6-20261003-01",
+            "audit-escalation-peer-native-20261003"
           ],
           "retest_status": "not-run"
         }
