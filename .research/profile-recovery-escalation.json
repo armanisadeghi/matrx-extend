@@ -1,0 +1,40 @@
+{
+  "defect_id": "EXT-D-0098",
+  "case_id": "EXT-F-0002-T09",
+  "status": "source_repair_ready_for_independent_review",
+  "scope": "Profile native acceptance fixture cleanup only",
+  "cause": "Warm/reload case helpers could perform UI writes and restoration, then throw before whole-case ownership version advancement.",
+  "repair": {
+    "per_write_intent": "Persist exact next version and intended preferred value privately before every owned-row Save; validate prior owner, organization, creation, value and version first.",
+    "failure_reconciliation": "Reconcile successful writes even when the action throws. Only the exact single intended successor advances ownership; the original action error remains primary.",
+    "durability_failure": "Keep the prior version and pending intent until confirmed progress is durably persisted; retry reconciliation on cleanup.",
+    "cleanup": "Owner-authenticated conditional DELETE binds the last verified intended value, exact version, owner, organization and creation timestamp. A temporary saved value is deletable only when its exact write intent was verified.",
+    "unknown_outcome": "A predecessor still visible after an interrupted Save is ambiguous. Refuse deletion and further Save actions while that intent remains unresolved; preserve the private receipt and report cleanup unverified. Never infer that no write is still in flight."
+  },
+  "evidence": {
+    "node_guards": "12 tests pass across profile-owned-write-journal.test.mjs and profile-empty-row-restoration.test.mjs",
+    "mutations": [
+      "Throw immediately after a write/action failure, skipping progress reconciliation: RED, expected_version 1 instead of 2.",
+      "Adopt current row.version instead of intended next version: RED, missing concurrent-version refusal.",
+      "Skip intent persistence: RED, disk-failure/no-write contract fails.",
+      "Return constant reconciliation result: RED.",
+      "Return undefined immediately from save: RED."
+    ],
+    "mutation_restore": "plant.py restored identical helper bytes after each mutation",
+    "targeted_biome": "passed",
+    "native_runner_syntax": "passed",
+    "native_browser_execution": "not_run",
+    "database_mutations": "none",
+    "live_cleanup_claim": "none; prior run row recovery remains the existing separately verified evidence"
+  },
+  "artifact": {
+    "source_sha": "9dfb5911cd7fef18f8c36b1cefd273096e866bbf",
+    "ci_run_id": 37159097093,
+    "artifact_id": 11286822448
+  },
+  "remaining": [
+    "Fresh independent source review before any mutating native acceptance.",
+    "Underlying extension reload error remains unknown; use a guarded read-only lifecycle diagnostic before another mutating run.",
+    "Controlled unit seams test the journal's real decisions and ordering, with external read/write/receipt boundaries simulated; they do not establish live product acceptance."
+  ]
+}

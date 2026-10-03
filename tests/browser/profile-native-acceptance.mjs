@@ -10,6 +10,7 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import { signInAdminSettings } from './admin-settings-signin.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { assertFirstSaveOwnedRow, ownedDeleteUrl } from './profile-empty-row-restoration.mjs';
+import { createOwnedWriteJournal } from './profile-owned-write-journal.mjs';
 import { panelIdentity } from './settings-native-auth-driver.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
@@ -429,7 +430,8 @@ async function caseBack(panel, original, email, mode, dimension) {
     },
   });
 }
-async function caseSaveDiscard(panel, original, email, mode, dimension) {
+async function caseSaveDiscard(panel, original, email, mode, dimension, journal = null) {
+  const save = async (value, action) => (journal ? journal.save(value, action) : action());
   const id = mode === 'member' ? 'EXT-F-1004-T03' : 'EXT-F-1004-T04';
   const startedAt = new Date().toISOString();
   const diagnostic = { mode, dimension, stages: [], requests: [] };
@@ -450,19 +452,21 @@ async function caseSaveDiscard(panel, original, email, mode, dimension) {
     10000,
   );
   await observe('discard_settled', original);
-  const savedValue = `Profile save ${randomUUID().slice(0, 8)}`;
+  const savedValue = `Profile save ${randomUUID()}`;
   await fillPreferred(panel, savedValue);
   await observe('save_draft', savedValue);
   let firstError = null;
   let cleanupError = null;
   try {
-    await clickProfileHeader(panel, 'Save');
-    await waitFor(
-      'profile_save_settled',
-      () => state(panel),
-      (s) => s.preferred === savedValue && !s.dirty && !s.error,
-      30000,
-    );
+    await save(savedValue, async () => {
+      await clickProfileHeader(panel, 'Save');
+      await waitFor(
+        'profile_save_settled',
+        () => state(panel),
+        (s) => s.preferred === savedValue && !s.dirty && !s.error,
+        30000,
+      );
+    });
     await observe('save_settled', savedValue);
     await click(panel, 'title', 'Back');
     await openProfile(panel, email);
@@ -486,13 +490,15 @@ async function caseSaveDiscard(panel, original, email, mode, dimension) {
       if (current.preferred !== original) {
         await fillPreferred(panel, original);
         await observe('cleanup_draft', original);
-        await clickProfileHeader(panel, 'Save');
-        await waitFor(
-          'profile_original_restored',
-          () => state(panel),
-          (s) => s.preferred === original && !s.dirty && !s.error,
-          30000,
-        );
+        await save(original, async () => {
+          await clickProfileHeader(panel, 'Save');
+          await waitFor(
+            'profile_original_restored',
+            () => state(panel),
+            (s) => s.preferred === original && !s.dirty && !s.error,
+            30000,
+          );
+        });
         await observe('cleanup_settled', original);
         await click(panel, 'title', 'Back');
         await openProfile(panel, email);
@@ -758,7 +764,7 @@ try {
       report.profile_row_existed_before = initialRow.row_present;
       report.original_preferred_present = Boolean(original);
       let owned = null;
-      let ownedVersion = 0;
+      let ownedJournal = null;
       let ownerConfig = null;
       let pendingMarker = null;
       let cleanupPanel = panel;
@@ -804,7 +810,6 @@ try {
             organizationId: stored.organizationId,
             marker,
           });
-          ownedVersion = 1;
           await persistPrivateOwnership({
             run_id: RUN_ID,
             original_row_absent: true,
@@ -814,6 +819,17 @@ try {
             created_at: owned.createdAt,
             expected_version: 1,
             state: 'first_save_verified',
+          });
+          ownedJournal = createOwnedWriteJournal({
+            owned,
+            baseUrl: ownerConfig.url,
+            read: () => readProfileOwnerRow(cleanupPanel, ownerConfig, identity.userId),
+            persist: (record) =>
+              persistPrivateOwnership({
+                run_id: RUN_ID,
+                original_row_absent: true,
+                ...record,
+              }),
           });
           original = marker;
           report.first_save = {
@@ -828,22 +844,7 @@ try {
           };
         }
         await caseBack(panel, original, identity.email, AUTH_MODE, 'warm');
-        await caseSaveDiscard(panel, original, identity.email, AUTH_MODE, 'warm');
-        if (owned) {
-          const row = await readProfileOwnerRow(panel, ownerConfig, identity.userId);
-          ownedDeleteUrl(ownerConfig.url, owned, row, 3);
-          ownedVersion = 3;
-          await persistPrivateOwnership({
-            run_id: RUN_ID,
-            original_row_absent: true,
-            user_id: owned.userId,
-            organization_id: owned.organizationId,
-            marker: owned.marker,
-            created_at: owned.createdAt,
-            expected_version: 3,
-            state: 'warm_save_verified',
-          });
-        }
+        await caseSaveDiscard(panel, original, identity.email, AUTH_MODE, 'warm', ownedJournal);
         await caseT25(panel, original, identity.email, AUTH_MODE, 'warm');
         report.stage = 'extension_reload';
         reloadAttempted = true;
@@ -862,22 +863,14 @@ try {
         assert.equal(after.organizationId, stored.organizationId, 'reload_organization_changed');
         await openProfile(reloaded.panel, identity.email);
         await caseBack(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
-        await caseSaveDiscard(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
-        if (owned) {
-          const row = await readProfileOwnerRow(reloaded.panel, ownerConfig, identity.userId);
-          ownedDeleteUrl(ownerConfig.url, owned, row, 5);
-          ownedVersion = 5;
-          await persistPrivateOwnership({
-            run_id: RUN_ID,
-            original_row_absent: true,
-            user_id: owned.userId,
-            organization_id: owned.organizationId,
-            marker: owned.marker,
-            created_at: owned.createdAt,
-            expected_version: 5,
-            state: 'reload_save_verified',
-          });
-        }
+        await caseSaveDiscard(
+          reloaded.panel,
+          original,
+          identity.email,
+          AUTH_MODE,
+          'reload',
+          ownedJournal,
+        );
         await caseT25(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
       } catch (error) {
         executionError = error;
@@ -900,14 +893,14 @@ try {
               organizationId: stored.organizationId,
               marker: pendingMarker,
             });
-            ownedVersion = 1;
           } else {
             report.restoration = { verified: true, original_absence_restored: true };
           }
         }
         if (owned) {
           report.stage = 'restore_original_absence';
-          await deleteOwnedProfileRow(cleanupPanel, ownerConfig, owned, ownedVersion);
+          const deletion = ownedJournal ? await ownedJournal.reconcile() : { owned, version: 1 };
+          await deleteOwnedProfileRow(cleanupPanel, ownerConfig, deletion.owned, deletion.version);
           report.restoration = { verified: true, original_absence_restored: true };
           if (report.first_save) {
             report.first_save.original_absence_restoration_pending = false;
