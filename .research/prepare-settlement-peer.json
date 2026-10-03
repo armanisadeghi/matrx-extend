@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "6b574159a04779e17d0fea4d2fb5d97206890bac",
+  "scope": "Independent source/evidence review of the native Prepare fault-settlement driver. No browser, test, or product acceptance run by reviewer.",
+  "verdict_A_causal_path": {
+    "status": "PASS_FOR_HARNESS_SETTLEMENT_REPAIR; ORIGINAL_ACCEPTANCE_REQUIRED",
+    "prior_failure": {
+      "run_receipt": "test-results/prepare-stale-result-native-c76b27da-b37a-4671-ab12-62abc45606b4.json",
+      "observed": "Initial Prepare succeeded; the retry was pending and prior success was absent. Synchronous fault release completed, then the old double-requestAnimationFrame wait failed at release_stage=animation_frames while document.visibilityState=hidden; transport_failure_class=command_timeout.",
+      "diagnostic_limit": "The visible signed-in admin state and successful initial Prepare are partial observations only; zero acceptance cases completed."
+    },
+    "repair_review": {
+      "mechanism": "The injected promise now marks a settled flag in finally after the held API promise resolves or rejects. releaseFault polls that flag, then polls the real Prepare UI state until two consecutive serialized observations match, and only then restores/removes the fault wrapper.",
+      "causal_order": "Promise settlement precedes the stable UI observations and unchanged caller assertions, preserving detection of stale retry success and reload late results.",
+      "assertions_preserved": [
+        "Retry begins pending with previous success absent.",
+        "Rejected retry is observed failed and button-ready, with old success still absent.",
+        "After reload, late success and late rejection are each required to leave the new document ready, button-ready, and without success, failure, or pending state.",
+        "Fresh-document success remains in the acceptance sequence."
+      ]
+    }
+  },
+  "verdict_B_guard_quality": {
+    "status": "PASS_WITH_RUNTIME_BOUNDARY",
+    "forcing_evidence_reported_by_builder": {
+      "real_fault_path": "The extracted production helper is exercised in node:vm with the actual executeScript wrapper; only browser/CDP dependencies are replaced. The simulated hidden panel never services requestAnimationFrame.",
+      "red": "Old exact double-rAF settlement helper times out with paused_frame_command_timeout.",
+      "green": "The new helper passes both controlled held-success and held-rejection branches, observes the injected promise outcome before stable UI observations, and restores the original API and removes fault state.",
+      "mutations": "Builder reports return-true mutation fails because pending is not rejection, and stable-observation bypass mutation fails its required post-settlement UI assertion; both mutations were restored identically."
+    },
+    "source_review": [
+      "The new helper does not accept an empty pre-settlement state as proof; it waits for the actual wrapped promise's finally callback before reading UI state.",
+      "The stability check is observation-based, not a fixed sleep. Subsequent unchanged original result predicates still have their own timeout and exact assertions.",
+      "No retry deadline, browser/resource guard, receipt/provenance check, credential handling, or product assertion was weakened or removed."
+    ],
+    "builder_checks": [
+      "Node harness regression passed",
+      "Focused Biome passed",
+      "pnpm compile passed before the helper-specific test addition"
+    ]
+  },
+  "limitations": [
+    "The RED/GREEN and mutation runs are retained by the builder under /Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/settlement-red.log, settlement-green.log, settlement-constant-mutant.log, and settlement-stability-mutant.log; this reviewer did not rerun tests under the no-heavy-test permit.",
+    "This is a harness repair only. A fresh original guarded run must still prove the rejection and late-result assertions complete against the actual native panel; no product acceptance is claimed."
+  ],
+  "recommendation": "No source blocker found. Proceed to one fresh original guarded run with the existing assertions intact; keep Prepare open until that evidence passes."
+}
