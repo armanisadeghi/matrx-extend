@@ -1,0 +1,30 @@
+{
+  "status": "prepared_not_executed",
+  "scope": "EXT-D-0084 and EXT-D-0086 native Settings storage acceptance in an owned disposable Chrome profile",
+  "runner": "tests/browser/settings-desktop-native-acceptance.mjs",
+  "storage_fault_helper": "tests/browser/settings-desktop-storage-faults.mjs",
+  "source_identity": {
+    "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+    "ci_run_id": 37129518563,
+    "artifact_id": 11275878549,
+    "source_contains_repairs": ["39ee192b", "cf0877f1", "17b8ea9d"],
+    "imported_artifact_directory": "test-results/ci-artifacts/991385d9816b31a568619522e4795c001b4d3a06/37129518563-1/chrome-mv3"
+  },
+  "prepared_cases": [
+    "Port rejected storage write preserves prior value, shows error, retries, and survives reload",
+    "Two port saves hold the first write and persist the later submitted value after reload",
+    "Held initial port read preserves a later edit and settles before its save",
+    "Pair-code rejected storage write preserves entered input and retries with a synthetic fixture code",
+    "Two pair-code saves hold the first write and preserve the later input and persisted value",
+    "Pair-code removal rejected write and retry only when the real UI offers Forget under HTTP transport",
+    "Local reset rejected clear keeps confirmation and prior storage, then retry clears storage and signs out"
+  ],
+  "audience": "Guest, member, and admin are parameterized through the shared native Settings authentication driver; each mode still needs its own runtime result.",
+  "limits": [
+    "No native browser run has occurred in this preparation lane; syntax checks only.",
+    "The storage fault helper wraps the panel Chrome API in an owned profile. It cannot establish a healthy desktop engine, actual pairing acceptance, or actual rediscovery.",
+    "Pair-code clear is marked unverified when native or disconnected transport hides Forget; a synthetic stored code alone does not make the HTTP-only control applicable.",
+    "The imported artifact belongs to the D84/D86 repair source but is an interim CI development build, not a published Store release."
+  ],
+  "next": "Wire a hosted case, run the exact artifact in all three auth modes under resource permits, inspect sanitized receipts, then obtain an independent peer verdict before any defect closure."
+}

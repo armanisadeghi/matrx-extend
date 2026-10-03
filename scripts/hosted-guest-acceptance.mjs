@@ -210,6 +210,9 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
       'settings-persistence',
       'settings-persistence-admin',
       'settings-persistence-member',
+      'desktop-settings-guest',
+      'desktop-settings-member',
+      'desktop-settings-admin',
       'audit-key-admin',
       'member-chat',
       'prepare-stale-results',
@@ -223,6 +226,8 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
       'ci_development_test',
       'Settings persistence requires CI development receipt',
     );
+  if (acceptanceCase.startsWith('desktop-settings-'))
+    assert.equal(kind, 'ci_development_test', 'Desktop Settings requires CI development receipt');
   if (acceptanceCase === 'audit-key-admin')
     assert.equal(kind, 'ci_development_test', 'Audit key requires CI development receipt');
   if (acceptanceCase === 'member-chat')
@@ -232,7 +237,11 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
   const memberLinkPath = join(dirname(relocatedReceipt), 'member-magic-link-private.json');
   const adminCredentialsPath = join(runtimeDir, 'prepare-admin-credentials-private.json');
   let adminCredentialsCreated = false;
-  if (acceptanceCase === 'member-chat' || acceptanceCase === 'settings-persistence-member') {
+  if (
+    acceptanceCase === 'member-chat' ||
+    acceptanceCase === 'settings-persistence-member' ||
+    acceptanceCase === 'desktop-settings-member'
+  ) {
     assert.ok(process.env.MATRX_HOSTED_MEMBER_LINK_JSON, 'member link secret required');
     await writeFile(memberLinkPath, process.env.MATRX_HOSTED_MEMBER_LINK_JSON, {
       mode: 0o600,
@@ -242,7 +251,8 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
   if (
     acceptanceCase === 'prepare-stale-results' ||
     acceptanceCase === 'settings-persistence-admin' ||
-    acceptanceCase === 'audit-key-admin'
+    acceptanceCase === 'audit-key-admin' ||
+    acceptanceCase === 'desktop-settings-admin'
   ) {
     assert.ok(process.env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON, 'Prepare admin secret required');
     const parsed = JSON.parse(process.env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON);
@@ -273,12 +283,22 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
                 : 'guest',
         }
       : {}),
-    ...(acceptanceCase === 'member-chat' || acceptanceCase === 'settings-persistence-member'
+    ...(acceptanceCase.startsWith('desktop-settings-')
+      ? {
+          MATRX_DESKTOP_SETTINGS_EXTENSION_DIR: extensionDir,
+          MATRX_DESKTOP_SETTINGS_RECEIPT: relocatedReceipt,
+          MATRX_DESKTOP_SETTINGS_AUTH_MODE: acceptanceCase.slice('desktop-settings-'.length),
+        }
+      : {}),
+    ...(acceptanceCase === 'member-chat' ||
+    acceptanceCase === 'settings-persistence-member' ||
+    acceptanceCase === 'desktop-settings-member'
       ? { MATRX_REVIEWER_MAGIC_LINK_FILE: memberLinkPath }
       : {}),
     ...(acceptanceCase === 'prepare-stale-results' ||
     acceptanceCase === 'settings-persistence-admin' ||
-    acceptanceCase === 'audit-key-admin'
+    acceptanceCase === 'audit-key-admin' ||
+    acceptanceCase === 'desktop-settings-admin'
       ? {
           MATRX_PREPARE_EXTENSION_DIR: extensionDir,
           MATRX_PREPARE_RECEIPT: relocatedReceipt,
@@ -309,15 +329,17 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
           repo,
           acceptanceCase === 'settings-controls'
             ? 'tests/browser/settings-local-controls-acceptance.mjs'
-            : acceptanceCase === 'audit-key-admin'
-              ? 'tests/browser/audit-key-native-acceptance.mjs'
-              : acceptanceCase.startsWith('settings-persistence')
-                ? 'tests/browser/settings-d87-native-acceptance.mjs'
-                : acceptanceCase === 'prepare-stale-results'
-                  ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
-                  : acceptanceCase === 'member-chat'
-                    ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
-                    : 'tests/browser/guest-chat-store-acceptance.mjs',
+            : acceptanceCase.startsWith('desktop-settings-')
+              ? 'tests/browser/settings-desktop-native-acceptance.mjs'
+              : acceptanceCase === 'audit-key-admin'
+                ? 'tests/browser/audit-key-native-acceptance.mjs'
+                : acceptanceCase.startsWith('settings-persistence')
+                  ? 'tests/browser/settings-d87-native-acceptance.mjs'
+                  : acceptanceCase === 'prepare-stale-results'
+                    ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
+                    : acceptanceCase === 'member-chat'
+                      ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
+                      : 'tests/browser/guest-chat-store-acceptance.mjs',
         ),
       ],
       {
@@ -336,7 +358,11 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
       `native side-panel acceptance exited ${result.code ?? result.signal}`,
     );
   } finally {
-    if (acceptanceCase === 'member-chat' || acceptanceCase === 'settings-persistence-member')
+    if (
+      acceptanceCase === 'member-chat' ||
+      acceptanceCase === 'settings-persistence-member' ||
+      acceptanceCase === 'desktop-settings-member'
+    )
       await unlink(memberLinkPath);
     if (adminCredentialsCreated) await unlink(adminCredentialsPath);
   }

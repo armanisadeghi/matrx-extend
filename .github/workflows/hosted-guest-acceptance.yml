@@ -31,6 +31,9 @@ on:
           - settings-persistence
           - settings-persistence-admin
           - settings-persistence-member
+          - desktop-settings-guest
+          - desktop-settings-member
+          - desktop-settings-admin
           - audit-key-admin
           - member-chat
           - prepare-stale-results
@@ -96,7 +99,7 @@ jobs:
           if [[ "$ACCEPTANCE_CASE" == member-chat ]]; then
             [[ -n "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
-          if [[ "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == audit-key-admin ]]; then
+          if [[ "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == desktop-settings-guest || "$ACCEPTANCE_CASE" == desktop-settings-member || "$ACCEPTANCE_CASE" == desktop-settings-admin || "$ACCEPTANCE_CASE" == audit-key-admin ]]; then
             [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
           if [[ "$ACCEPTANCE_CASE" == prepare-stale-results ]]; then
@@ -177,6 +180,7 @@ jobs:
             test-results/guest-chat-store-*.json
             test-results/settings-local-controls-acceptance.json
             test-results/settings-d87-native-*.json
+            test-results/settings-desktop-native-*.json
             test-results/audit-key-native-*.json
             test-results/reviewer-chat-store-*.json
             test-results/prepare-stale-result-native-*.json
