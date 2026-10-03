@@ -426,8 +426,25 @@ export async function runNativeSidepanelQa({
       launchError = error;
     });
 
-    cdp = await connectOwnedCdp({ preparedProfile, chromeExecutable });
-    if (launchError) throw launchError;
+    try {
+      cdp = await connectOwnedCdp({ preparedProfile, chromeExecutable });
+      if (launchError) throw launchError;
+    } catch (error) {
+      throw new Error(
+        `${error.message}:browser_startup:${JSON.stringify({
+          executable: chromeExecutable,
+          exitCode: child.exitCode,
+          signalCode: child.signalCode,
+          launchError: launchError?.message ?? null,
+          stderr: chromeStderr
+            .join('')
+            .slice(-2000)
+            .replace(/https?:\/\/[^\s"'<>]+/gi, '[URL]')
+            .replace(/Bearer\s+\S+/gi, 'Bearer [REDACTED]')
+            .replace(/eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, '[JWT]'),
+        })}`,
+      );
+    }
     const endpoint = await ownedEndpoint(profile);
     const commandLine = await cdp.send('Browser.getBrowserCommandLine');
     requireOwnedCommandLine(commandLine, profile);
