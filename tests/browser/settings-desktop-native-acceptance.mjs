@@ -101,6 +101,7 @@ async function state(panel) {
       portButton: [...(row?.querySelectorAll('button') ?? [])]
         .find((item) => ['Set', 'Save'].includes(item.textContent.trim()))?.textContent.trim() ?? null,
       portError: text.includes('Could not save port. Try again.'),
+      portRangeError: text.includes('Port must be 1–65535.'),
       pairAvailable: !!pair,
       pairInputPresent: !!pair?.value,
       pairStored: typeof local[${JSON.stringify(PAIR_KEY)}] === 'string' && !!local[${JSON.stringify(PAIR_KEY)}],
@@ -277,6 +278,22 @@ async function savePort(panel, value) {
   await click(panel, 'button', (await state(panel)).portButton);
 }
 
+async function setOwnedHttpTransport(attachWorker) {
+  const worker = await attachWorker();
+  try {
+    // This changes only the owned profile's rendered availability state. It is
+    // deliberately not an engine simulator or evidence of a connection.
+    const sent = await evaluate(
+      worker,
+      `chrome.runtime.sendMessage({ __matrx: true, kind: 'desktop:availability',
+        payload: { transport: 'http', health: null, lastChecked: Date.now() } })`,
+    );
+    assert.deepEqual(sent, { ack: true }, 'desktop_http_fixture_not_delivered');
+  } finally {
+    await worker.detach();
+  }
+}
+
 async function confirmPairForget(panel) {
   const point = await evaluate(
     panel,
@@ -411,7 +428,7 @@ function passed(name, observation) {
 
 try {
   assert.ok(['guest', 'member', 'admin'].includes(MODE), 'desktop_auth_mode_invalid');
-  assert.ok(['full', 'reset-census'].includes(CASE), 'desktop_case_invalid');
+  assert.ok(['full', 'reset-census', 'remaining'].includes(CASE), 'desktop_case_invalid');
   if (CASE === 'reset-census') assert.equal(MODE, 'guest', 'desktop_reset_diagnostic_guest_only');
   assert.ok(EXTENSION_DIR && RECEIPT_PATH, 'desktop_artifact_inputs_required');
   const extensionDir = resolve(EXTENSION_DIR);
@@ -451,7 +468,7 @@ try {
     onStage: (value) => {
       stage = `native_panel:${value}`;
     },
-    exercisePanel: async ({ page, panel, activatePanel }) => {
+    exercisePanel: async ({ page, panel, activatePanel, attachWorker }) => {
       if (MODE !== 'guest') {
         stage = 'authentication';
         const auth = await signInSettings({
@@ -482,7 +499,126 @@ try {
       stage = 'desktop_port';
       await openSettings(panel);
       await assertIdentity(panel);
-      if (CASE === 'full') {
+      if (CASE === 'remaining') {
+        stage = 'desktop_port_bounds';
+        await savePort(panel, 1);
+        await waitFor(
+          'desktop_port_minimum',
+          () => state(panel),
+          (s) => s?.portSaved === 1,
+        );
+        await savePort(panel, 65535);
+        await waitFor(
+          'desktop_port_maximum',
+          () => state(panel),
+          (s) => s?.portSaved === 65535,
+        );
+        await savePort(panel, 0);
+        await waitFor(
+          'desktop_port_zero_rejected',
+          () => state(panel),
+          (s) => s?.portSaved === 65535 && s.portInput === '0' && s.portRangeError,
+        );
+        await savePort(panel, 65536);
+        await waitFor(
+          'desktop_port_high_rejected',
+          () => state(panel),
+          (s) => s?.portSaved === 65535 && s.portInput === '65536' && s.portRangeError,
+        );
+        await replaceInput(panel, 'port', '12x3');
+        await waitFor(
+          'desktop_port_nondigit_filtered',
+          () => state(panel),
+          (s) => s?.portInput === '123' && s.portSaved === 65535,
+        );
+        await savePort(panel, '');
+        await waitFor(
+          'desktop_port_blank_cleared',
+          () => state(panel),
+          (s) => s?.portSaved === null && s.portInput === '' && !s.portRangeError,
+        );
+        await reload(panel);
+        assert.equal((await state(panel)).portSaved, null, 'desktop_blank_port_reappeared');
+        passed('port bounds, filtered input, and blank clear persist across reload', {
+          lower_bound: 1,
+          upper_bound: 65535,
+          invalid_values_rejected: true,
+          nondigit_filtered: true,
+          blank_cleared: true,
+        });
+
+        stage = 'desktop_http_fixture';
+        await replaceInput(panel, 'pair', PAIR_A);
+        await click(panel, 'button', 'Pair');
+        await waitFor(
+          'desktop_owned_pair_saved',
+          () => state(panel),
+          (s) => s?.pairIsA,
+        );
+        await setOwnedHttpTransport(attachWorker);
+        await waitFor(
+          'desktop_http_forget_visible',
+          () => state(panel),
+          (s) => s?.forgetVisible,
+        );
+        await click(panel, 'button', 'Forget pair code');
+        await waitFor(
+          'desktop_forget_cancel_dialog',
+          () => state(panel),
+          (s) => s?.pairDialog,
+        );
+        await click(panel, 'button', 'Cancel');
+        await waitFor(
+          'desktop_forget_cancel_closed',
+          () => state(panel),
+          (s) => !s?.pairDialog && s.pairIsA,
+        );
+        passed('HTTP fixture Forget cancel retains owned pair code', { pairing_preserved: true });
+        await fault(panel, 'remove', PAIR_KEY, 'reject');
+        try {
+          await click(panel, 'button', 'Forget pair code');
+          await waitFor(
+            'desktop_forget_refusal_dialog',
+            () => state(panel),
+            (s) => s?.pairDialog,
+          );
+          await confirmPairForget(panel);
+          await waitFor(
+            'desktop_forget_refusal',
+            () => state(panel),
+            (s) => s?.pairForgetError && s.pairIsA,
+          );
+          assert.equal((await faultState(panel)).calls, 1);
+          passed('HTTP fixture Forget refusal preserves owned pair code', {
+            pairing_preserved: true,
+            error_visible: true,
+          });
+        } finally {
+          await restoreFault(panel);
+        }
+        await click(panel, 'button', 'Forget pair code');
+        await waitFor(
+          'desktop_forget_retry_dialog',
+          () => state(panel),
+          (s) => s?.pairDialog,
+        );
+        await confirmPairForget(panel);
+        await waitFor(
+          'desktop_forget_retry',
+          () => state(panel),
+          (s) => s?.pairStored === false && !s.pairForgetError,
+        );
+        passed('HTTP fixture Forget retry removes owned browser pairing', {
+          pairing_removed: true,
+          engine_connection_unverified: true,
+        });
+        await savePort(panel, 65005);
+        await waitFor(
+          'desktop_reset_port_seed',
+          () => state(panel),
+          (s) => s?.portSaved === 65005,
+        );
+      } else if (CASE === 'full') {
         await savePort(panel, 65001);
         await waitFor(
           'desktop_port_baseline',
@@ -729,6 +865,37 @@ try {
         () => state(panel),
         (s) => s?.resetDialog,
       );
+      if (CASE === 'remaining') {
+        await click(panel, 'dialog', 'Cancel');
+        await waitFor(
+          'desktop_reset_cancel_closed',
+          () => state(panel),
+          (s) => !s?.resetDialog && s.portSaved === 65005,
+        );
+        const cancelledCensus = await storageCensus(panel, beforeReset.baseline);
+        assert.equal(cancelledCensus.local.missing, 0, 'desktop_cancel_removed_local_key');
+        assert.equal(cancelledCensus.session.missing, 0, 'desktop_cancel_removed_session_key');
+        assert.equal(
+          cancelledCensus.local.identical,
+          cancelledCensus.local.before,
+          'desktop_cancel_changed_local_value',
+        );
+        assert.equal(
+          cancelledCensus.session.identical,
+          cancelledCensus.session.before,
+          'desktop_cancel_changed_session_value',
+        );
+        passed('reset Cancel preserves complete local and session census', {
+          local_count: cancelledCensus.local.before,
+          session_count: cancelledCensus.session.before,
+        });
+        await click(panel, 'button', 'Clear local data on this device');
+        await waitFor(
+          'desktop_reset_reopened',
+          () => state(panel),
+          (s) => s?.resetDialog,
+        );
+      }
       await fault(panel, 'clear', null, 'reject');
       try {
         await click(panel, 'dialog', 'Clear & sign out');
