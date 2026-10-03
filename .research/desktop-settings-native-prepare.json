@@ -1,5 +1,5 @@
 {
-  "status": "guest_partial_native_evidence_reset_census_diagnostic_pending",
+  "status": "guest_partial_native_evidence_reset_census_source_traced",
   "scope": "EXT-D-0084 and EXT-D-0086 native Settings storage acceptance in an owned disposable Chrome profile",
   "runner": "tests/browser/settings-desktop-native-acceptance.mjs",
   "storage_fault_helper": "tests/browser/settings-desktop-storage-faults.mjs",
@@ -35,7 +35,15 @@
       "Pair save rejection and retry, then overlapping synthetic pair saves preserve newest input and persisted value",
       "Rejected local reset leaves dialog open and all seven prior local and one session key/value fingerprints unchanged"
     ],
-    "failed_boundary": "Successful reset retry after reload: prior local-key comparison found two identical unexplained overlaps among seven prior keys; one session fixture was removed. Safe key-name diagnostic is prepared."
+    "failed_boundary": "Successful reset retry after reload: prior local-key comparison found two identical unexplained overlaps among seven prior keys; one session fixture was removed.",
+    "reset_only_diagnostic": ".research/desktop-settings-reset-census-01.json",
+    "reset_only_resource_journal": ".research/desktop-settings-reset-resource-01.jsonl",
+    "overlap_key_names": ["matrx.chat.v1", "matrx.user.isAdmin"],
+    "source_trace": [
+      "The exact 991385d9 use-auth applyCanonicalSession guest boot writes a false matrx.user.isAdmin gate.",
+      "The exact 991385d9 ChatView identity effect calls clearForIdentityChange('guest'); src/state/chat.ts persists chatActorId, selectedAgentId, draft, variableValues, permissionMode, and boundComputeTarget.",
+      "The prior census predicate omitted chatActorId, so it misclassified a possibly fresh chat default. Key identity alone is insufficient; the next bounded check seeds an unsent nondefault draft through the trusted Chat composer and requires exact empty-draft guest default after reset."
+    ]
   },
   "limits": [
     "Guest runtime results are partial, not defect closure. Member and admin have not run.",
@@ -43,5 +51,5 @@
     "Pair-code clear is marked unverified when native or disconnected transport hides Forget; a synthetic stored code alone does not make the HTTP-only control applicable.",
     "The imported artifact belongs to the D84/D86 repair source but is an interim CI development build, not a published Store release."
   ],
-  "next": "Run the authorized reset-census-only guest diagnostic once to identify the two overlap key names without values; compare with source reinitialization, then decide whether reset has a product defect. Member/admin and real desktop connection remain separate later coverage."
+  "next": "After root scope decision, rerun reset-census only with a trusted nondefault Chat draft and exact fresh-default/admin-false predicates. Member/admin and real desktop connection remain separate later coverage."
 }

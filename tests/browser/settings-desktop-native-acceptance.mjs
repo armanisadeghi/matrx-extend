@@ -34,6 +34,7 @@ const PAIR_KEY = 'matrx.desktop.pairToken';
 const PAIR_A = 'fixture-pair-cedar-63';
 const PAIR_B = 'fixture-pair-maple-64';
 const PAIR_C = 'fixture-pair-willow-65';
+const RESET_DRAFT = 'Review Harbor Dental new-patient intake';
 const report = {
   schema_version: 1,
   defects: ['EXT-D-0084', 'EXT-D-0086'],
@@ -131,6 +132,7 @@ async function storageCensus(panel, baseline = null) {
       if (area === 'local' && ['matrx.guest.signature', 'matrx.guest.nonce', 'matrx.guest.createdAt'].includes(key)) return 'guest';
       if (area === 'local' && ['matrxLocalEnginePort', 'matrxLocalEngineLastGoodPort'].includes(key)) return 'discovery';
       if (area === 'local' && key === 'matrx.chat.v1') return 'chat';
+      if (area === 'local' && key === 'matrx.user.isAdmin') return 'guest_admin_gate';
       return 'other';
     };
     const freshChatDefault = (raw) => {
@@ -138,7 +140,8 @@ async function storageCensus(panel, baseline = null) {
       try {
         const parsed = JSON.parse(raw), state = parsed?.state;
         return parsed.version === 1 && state && Object.keys(state).sort().join(',') ===
-          'boundComputeTarget,draft,permissionMode,selectedAgentId,variableValues' &&
+          'boundComputeTarget,chatActorId,draft,permissionMode,selectedAgentId,variableValues' &&
+          state.chatActorId === 'guest' && state.selectedAgentId === null &&
           state.draft === '' && state.boundComputeTarget === null &&
           state.variableValues && Object.keys(state.variableValues).length === 0 &&
           state.permissionMode && Object.keys(state.permissionMode).length === 0;
@@ -148,6 +151,7 @@ async function storageCensus(panel, baseline = null) {
       key: await digest([area, key]), value: await digest([area, key, value]),
       label: key,
       category: category(area, key), freshDefault: key === 'matrx.chat.v1' && freshChatDefault(value),
+      guestAdminGate: key === 'matrx.user.isAdmin' && value === false,
     })));
     const current = { local: await entries('local', local), session: await entries('session', session) };
     if (!baseline) return { baseline: current,
@@ -161,7 +165,8 @@ async function storageCensus(panel, baseline = null) {
         if (!now) { result.missing++; continue; }
         if (now.value === prior.value) {
           result.identical++;
-          if (!['chat'].includes(prior.category) || !now.freshDefault) {
+          if (!((prior.category === 'chat' && now.freshDefault && !prior.freshDefault) ||
+            (prior.category === 'guest_admin_gate' && now.guestAdminGate))) {
             result.unexplained++;
             result.unexplainedKeys.push(prior.label);
           }
@@ -296,6 +301,55 @@ async function confirmPairForget(panel) {
     button: 'left',
     clickCount: 1,
   });
+}
+
+async function seedUnsentChatDraft(panel) {
+  await click(panel, 'title', 'Chat');
+  const point = await evaluate(
+    panel,
+    `(() => {
+    const tab = document.querySelector('button[role="tab"][title="Chat"][data-state="active"]');
+    const pane = tab ? document.getElementById(tab.getAttribute('aria-controls')) : null;
+    const input = pane?.querySelector('textarea');
+    if (!input) return null;
+    input.scrollIntoView({ block: 'center', behavior: 'instant' });
+    const r = input.getBoundingClientRect();
+    const x = r.left + r.width / 2, y = r.top + r.height / 2;
+    return document.elementFromPoint(x, y) === input ? { x, y } : null;
+  })()`,
+  );
+  assert.ok(point, 'desktop_chat_draft_input_unavailable');
+  await panel.send('Input.dispatchMouseEvent', {
+    type: 'mousePressed',
+    ...point,
+    button: 'left',
+    clickCount: 1,
+  });
+  await panel.send('Input.dispatchMouseEvent', {
+    type: 'mouseReleased',
+    ...point,
+    button: 'left',
+    clickCount: 1,
+  });
+  await panel.send('Input.insertText', { text: RESET_DRAFT });
+  await waitFor(
+    'desktop_chat_draft_persisted',
+    () =>
+      evaluate(
+        panel,
+        `(async () => {
+    const tab = document.querySelector('button[role="tab"][title="Chat"][data-state="active"]');
+    const pane = tab ? document.getElementById(tab.getAttribute('aria-controls')) : null;
+    const input = pane?.querySelector('textarea');
+    const raw = (await chrome.storage.local.get('matrx.chat.v1'))['matrx.chat.v1'];
+    let persisted = false;
+    try { persisted = JSON.parse(raw)?.state?.draft === ${JSON.stringify(RESET_DRAFT)}; } catch {}
+    return input?.value === ${JSON.stringify(RESET_DRAFT)} && persisted;
+  })()`,
+      ),
+    (value) => value === true,
+  );
+  await openSettings(panel);
 }
 
 async function openSettings(panel) {
@@ -647,12 +701,18 @@ try {
       }
 
       stage = 'desktop_reset';
+      await seedUnsentChatDraft(panel);
       await evaluate(
         panel,
         `chrome.storage.session.set({ 'matrx.qa.desktopSettings.session': 'owned-disposable-session' })`,
       );
       const beforeReset = await storageCensus(panel);
       assert.equal(beforeReset.sessionFixturePresent, true, 'desktop_session_fixture_missing');
+      assert.equal(
+        beforeReset.baseline.local.find((item) => item.category === 'chat')?.freshDefault,
+        false,
+        'desktop_nondefault_chat_fixture_missing',
+      );
       assert.ok(
         beforeReset.counts.local > 0 && beforeReset.counts.session > 0,
         'desktop_reset_census_empty',

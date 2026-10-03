@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "defects": [
+    "EXT-D-0084",
+    "EXT-D-0086"
+  ],
+  "scope": "native side-panel storage behavior in an owned disposable profile",
+  "case": "reset-census",
+  "role": "guest",
+  "status": "fail",
+  "build": {
+    "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+    "run_id": 37129518563,
+    "artifact_id": 11275878549,
+    "tree_sha256": "e4b22e28dca2b6acdea2684017a83e43ff74f0ba32c6813ad893dae084a01a55",
+    "version": "0.2.176"
+  },
+  "authentication": {
+    "mode": "guest",
+    "access_token_absent": true,
+    "profile_absent": true,
+    "admin_flag_absent": true
+  },
+  "cases": [
+    {
+      "name": "reset refusal keeps confirmation and saved value",
+      "status": "pass",
+      "observation": {
+        "error_visible": true,
+        "retry_available": true,
+        "prior_local_count": 6,
+        "prior_session_count": 1,
+        "prior_values_preserved": true
+      }
+    }
+  ],
+  "limits": [
+    "Storage fault injection does not establish a healthy desktop-engine connection.",
+    "Pair-code clear requires an HTTP transport and is not inferred from a stored synthetic code."
+  ],
+  "reset_census": {
+    "local": {
+      "before": 6,
+      "missing": 1,
+      "identical": 2,
+      "allowedFresh": 3,
+      "unexplained": 2,
+      "unexplainedKeys": [
+        "matrx.chat.v1",
+        "matrx.user.isAdmin"
+      ]
+    },
+    "session": {
+      "before": 1,
+      "missing": 1,
+      "identical": 0,
+      "allowedFresh": 0,
+      "unexplained": 0,
+      "unexplainedKeys": []
+    },
+    "session_fixture_present": false
+  },
+  "failure_stage": "desktop_reset",
+  "failure_code": "desktop_reset_local_overlap"
+}
