@@ -1,7 +1,11 @@
 {
   "reviewed_commits": ["cf0877f1", "17b8ea9d"],
   "verdict_a": "PASS on source and committed causal tests for the stated Settings outcomes: the initial port read snapshots input revision, the write queue waits for that read, and serialized writes make the latest submitted save or blank removal final; pair input clears only for the same revision.",
-  "verdict_a_evidence": ["SettingsView.tsx initial read and handleSaveEnginePort", "SettingsView.tsx pair save and confirmed removal", "SettingsView.about.test.tsx deferred read, read-before-save, overlapping port/pair saves, and retry cases"],
+  "verdict_a_evidence": [
+    "SettingsView.tsx initial read and handleSaveEnginePort",
+    "SettingsView.tsx pair save and confirmed removal",
+    "SettingsView.about.test.tsx deferred read, read-before-save, overlapping port/pair saves, and retry cases"
+  ],
   "verdict_b": "PASS with verification limits: queue tails absorb rejection so later retries run; per-key queues include pair removal; failure messages remain retryable. Tests exercise deferred storage boundaries and final values, but no independent RED mutation or local run was available under the task constraint.",
   "important_regressions": [],
   "cannot_verify": ["Hosted CI and exact-build browser behavior; parent owns those checks."],
