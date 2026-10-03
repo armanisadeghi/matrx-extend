@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_source_review",
+  "reviewed_commit": "df9ad6a2f848bd069c57e694bbb70949a9e207fd",
+  "scope": "EXT-D-0098 Profile native acceptance fixture cleanup; source and focused tests only",
+  "A_source_acceptance_and_launch_readiness": {
+    "source_decision": "accepted",
+    "mutating_native_run": "hold",
+    "next_step": "guarded read-only extension reload lifecycle diagnostic",
+    "reason": "Every owned-row Save in the warm and reload helper, including restoration in finally, now passes through a journal that persists the exact intended successor before the UI action and reconciles after an action or assertion failure. Cleanup requires verified ownership and an exact version and value. The underlying reload failure is still unknown and no fresh live acceptance was performed."
+  },
+  "B_quality": {
+    "decision": "pass_for_source_scope",
+    "findings": [
+      "Pending intent is durably recorded before Save; persistence failure prevents the UI action.",
+      "Only the intended next version and preferred value can advance the receipt. A predecessor, concurrent version, changed owner, organization or creation timestamp refuses reconciliation and deletion.",
+      "A successful write followed by an action error still advances a verified receipt while the original action error remains primary. A failed receipt update retains the pending intent for cleanup reconciliation.",
+      "Final conditional deletion checks owner, organization, creation timestamp, preferred value and exact version; uncertain cleanup records an unverified restoration and a failing report."
+    ],
+    "limitation": "The first insert uses its existing separate marker receipt and version-one verification. The journal tests simulate external reads, writes and receipt persistence; live browser and database behavior remain unverified."
+  },
+  "evidence": {
+    "focused_node_tests": "12 passed, 0 failed",
+    "syntax_and_targeted_biome": "passed",
+    "independent_temporary_mutations": {
+      "skip_post_action_reconcile": "red: 7 failed",
+      "adopt_observed_version": "red: 1 failed",
+      "skip_intent_persist": "red: 9 failed"
+    },
+    "builder_mutation_claims_not_replayed": "constant reconciliation result and immediate undefined save; their claimed outcomes remain builder evidence",
+    "browser_execution": "not_run",
+    "database_writes": "none",
+    "report_privacy": "No credentials or private owner, organization, or Profile values recorded in this review artifact."
+  }
+}
