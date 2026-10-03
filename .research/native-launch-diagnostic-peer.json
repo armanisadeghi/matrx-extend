@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "report_id": "native-launch-diagnostic-peer",
+  "reviewed_commit": "393dd1ee",
+  "review_scope": "Exact diff and surrounding native startup diagnostic paths; no heavy checks or browser run.",
+  "verdict_A_runtime": "PENDING_RUNTIME_EVIDENCE",
+  "verdict_A_reason": "The change only instruments failures from connectOwnedCdp; no guarded browser diagnostic run was performed, so it establishes neither a successful launch nor useful failure evidence from the runtime.",
+  "verdict_B_diagnostic_quality": "NEEDS_REVISION",
+  "verdict_B_reason": "The startup catch preserves the 5-second connectOwnedCdp deadline and does not change readiness sequencing, resource guards, or release receipt assertions. However, chromeStderr accumulates every chunk and is truncated only after joining, so memory use is unbounded. Sanitization only covers URLs, Bearer tokens, and JWT-shaped strings; it does not cover password/credential assignments, while error.message and launchError.message are interpolated unsanitized. The existing waitForExpectedExtension catch also appends a raw stderr tail. These paths can leak credentials and contradict the bounded-and-sanitized diagnostic requirement.",
+  "guarded_diagnostic_run": "NOT_ACCEPTED_PENDING_DIAGNOSTIC_FIX",
+  "evidence": {
+    "changed_file": "tests/browser/native-sidepanel-qa-harness.mjs",
+    "unchanged_contracts": "connectOwnedCdp retains its 5-second deadline; the surrounding owned-profile/CDP checks and subsequent extension, profile-owner, receipt, and panel readiness assertions are unchanged in this commit.",
+    "review_method": "Static exact-diff review plus tracing connectOwnedCdp and both stderr-reporting catches. No tests, build, or browser run were executed."
+  }
+}
