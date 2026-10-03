@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "defects": ["EXT-D-0058", "EXT-D-0059"],
+  "status": "native_acceptance_runner_prepared_not_executed",
+  "current_truth": "Existing Prepare hook and unit guards cover failed retry and stale completion at source level. The exact imported 0.2.175 native evidence proves only completed Prepare/Snapshot clearing after same-URL reload. The new native runner has passed static checks but has not run or established a product verdict. Both defects remain in-fix.",
+  "changes": [
+    "Added a receipt-bound owned Chrome side-panel case using the existing native harness and trusted pointer driver.",
+    "The case signs in as the existing admin test account, exercises real Prepare once, then holds the real chrome.scripting.executeScript result at the panel API boundary to test prior-success clearing on failed retry and late success/rejection after same-URL document replacement.",
+    "The case waits for the original in-page Prepare result before navigation, checks that Prepare is visibly pending before reload, releases the held result after a real reload, and verifies a fresh Prepare on the new document.",
+    "Added a narrow hosted workflow choice and helper dispatch for exact CI development artifacts. The helper writes point-of-use credentials as a mode-0600 file outside uploaded evidence roots, strips the JSON secret from the browser child environment, and removes the file after the child exits."
+  ],
+  "own_commit": "ddd8ac92",
+  "commit_collision": "The shared index already contained seven unrelated D87 evidence paths when git commit ran. They were unintentionally included in ddd8ac92 and pushed. Root was alerted immediately; no unrelated files were edited, reverted, or deleted in this lane.",
+  "verification": {
+    "static": [
+      "node --check tests/browser/prepare-stale-result-native-acceptance.mjs passed",
+      "node --check scripts/hosted-guest-acceptance.mjs passed",
+      "pnpm exec biome check on both JavaScript files passed",
+      "git diff --check passed"
+    ],
+    "native": "Not run: root holds the sole browser permit and requested independent review first.",
+    "product_verdict": "unverified"
+  },
+  "files": [
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "scripts/hosted-guest-acceptance.mjs",
+    "tests/browser/prepare-stale-result-native-acceptance.mjs"
+  ],
+  "credential_contract": {
+    "hosted_secret": "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+    "schema": { "email": "admin@admin.com", "password": "nonempty secret string" },
+    "provisioning": "Root will provision temporarily from the authorized admin test credentials after peer review, then remove it after the terminal run. No value is stored in this report."
+  },
+  "open_questions": [
+    "Fresh peer must inspect runner assertions, credential isolation, and hosted wiring before any native execution.",
+    "A resource-admitted hosted run must establish whether the browser API wrapper is writable and whether the real Showcase surface reaches the intended Prepare button and document state.",
+    "Pending Snapshot completion and other D59 page-derived consumers remain outside this bounded Prepare case. The original D58/D59 defects cannot close from this runner alone.",
+    "The frozen 0.2.176 Store submission remains pending Google review; this runner does not alter or verify that submission."
+  ]
+}
