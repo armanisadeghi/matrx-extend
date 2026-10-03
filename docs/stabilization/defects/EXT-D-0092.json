@@ -1,0 +1,46 @@
+{
+  "id": "EXT-D-0092",
+  "feature_id": "EXT-F-0003",
+  "case_ids": ["EXT-F-0003-T11"],
+  "surface": "Main CI integration",
+  "auth_mode": "all (shared release infrastructure)",
+  "title": "Frequent main evidence pushes cancel active verification before it can complete",
+  "reproduction": [
+    "Push a source change to main and observe its active CI run.",
+    "Push a subsequent evidence-only commit to the same main ref before the checks finish.",
+    "Observe ci-${github.ref} cancel-in-progress true cancel the prior verification; repeated pushes starve completion."
+  ],
+  "expected": "Main verification finishes for its immutable source; newer main work remains queued. Pull-request superseded checks may cancel.",
+  "actual": "Multiple main CI runs were cancelled by later evidence pushes, including37099813858,37099983831,37101068256 and37101482506.",
+  "severity": "S2: integration evidence repeatedly unavailable and compute wasted",
+  "priority": "P1: release verification throughput",
+  "state": "fixed",
+  "evidence": [".github/workflows/ci.yml", "25845342", ".research/guest-runtime-escalation.json"],
+  "transition_history": [
+    {
+      "at": "2026-10-03T06:15:36.310721+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Repeated exact-main CI cancellations observed."
+    },
+    {
+      "at": "2026-10-03T06:15:36.310721+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Ref-scoped cancel-in-progress true reproduced by following main pushes."
+    },
+    {
+      "at": "2026-10-03T06:15:36.310721+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Assigned narrow PR-only cancellation change to runtime escalation lane."
+    },
+    {
+      "at": "2026-10-03T06:15:36.310721+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "25845342 preserves active main checks and only cancels superseded PR runs; independent source and live overlap retest pending."
+    }
+  ],
+  "closure_requirement": "Fresh peer verifies concurrency semantics; following main push leaves current run active/completed rather than cancelled and latest pending run proceeds."
+}

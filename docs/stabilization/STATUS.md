@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-03 05:35 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T05:35:54.114220+00:00. 205 features · 739 cases · 1323 controls · 91 linked defect records.
+Generated 2026-10-03 06:15 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T06:15:36.310721+00:00. 205 features · 740 cases · 1324 controls · 92 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1183** — Pass: 59 · Partial: 47 · Fail: 4 · Unverified: 1072 · N/A: 1.
-Unverified splits into **122 explicitly marked unverified** and **950 with no result record**.
+Applicable case-by-role slots: **1186** — Pass: 59 · Partial: 47 · Fail: 4 · Unverified: 1075 · N/A: 1.
+Unverified splits into **125 explicitly marked unverified** and **950 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -17,7 +17,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | --- | ---: | --- | --- | --- | --- | ---: |
 | [Development installation](#development-installation) | 1 | 1 pass · 0 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 1 fail · 6 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 1 fail · 4 unverified · 0 deferred; 0/1 full | pass 2, partial 1, fail 3, unverified 15, n/a 0 | 2 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 7, partial 1, fail 1, unverified 14, n/a 0 | 3 |
-| [Release infrastructure](#release-infrastructure) | 1 | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 24, partial 0, fail 0, unverified 6, n/a 0 | 0 |
+| [Release infrastructure](#release-infrastructure) | 1 | 8 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 24, partial 0, fail 0, unverified 9, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 11 pass · 1 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 7 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | pass 18, partial 1, fail 0, unverified 53, n/a 1 | 3 |
@@ -179,11 +179,11 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Validate and publish exact release candidate (EXT-F-0003)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 10. **Controls:** 6.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 11. **Controls:** 7.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0092
 
-**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed)
+**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed), [EXT-D-0092](defects/EXT-D-0092.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -197,6 +197,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-0003-T08 Refuse a CI lint-red release candidate | Pass | Pass | Pass | EXT-F-0003-C03 |
 | EXT-F-0003-T09 Await asynchronous UI readiness in integration assertions | Unverified | Unverified | Unverified | EXT-F-0003-C03 |
 | EXT-F-0003-T10 Settle sidepanel lazy imports before test teardown | Unverified | Unverified | Unverified | No control mapped |
+| EXT-F-0003-T11 Main verification survives subsequent evidence pushes | Unverified | Unverified | Unverified | EXT-F-0003-C11 |
 
 **Recorded case details and evidence:**
 
@@ -245,6 +246,12 @@ These current-build checks supplement the inventory matrix; they do not promote 
 - EXT-F-0003-T08 · guest: Pass. Auth-independent engineering behavior shared by every mode; actual lint-red refusal and exact-candidate green publication, independently verified by ci-gate-runtime-peer and release018-peer.
 - EXT-F-0003-T08 · member: Pass. Auth-independent engineering behavior shared by every mode; actual lint-red refusal and exact-candidate green publication, independently verified by ci-gate-runtime-peer and release018-peer.
 - EXT-F-0003-T08 · admin: Pass. Auth-independent engineering behavior shared by every mode; actual lint-red refusal and exact-candidate green publication, independently verified by ci-gate-runtime-peer and release018-peer.
+- EXT-F-0003-T11 · guest: Unverified. Source fixed25845342; current37102258819 active with37102380063 pending. Completion/queued progression still unverified.
+  Evidence / build / date recorded: ['docs/stabilization/defects/EXT-D-0092.json']
+- EXT-F-0003-T11 · member: Unverified. Source fixed25845342; current37102258819 active with37102380063 pending. Completion/queued progression still unverified.
+  Evidence / build / date recorded: ['docs/stabilization/defects/EXT-D-0092.json']
+- EXT-F-0003-T11 · admin: Unverified. Source fixed25845342; current37102258819 active with37102380063 pending. Completion/queued progression still unverified.
+  Evidence / build / date recorded: ['docs/stabilization/defects/EXT-D-0092.json']
 
 **Other remaining work:** Real successful release proven; exhaustive operational feature acceptance still needs per-case evidence reconciliation.; T08 CI lint parity requires the root-owned guarded red/green release fixture before full feature cells can pass.
 

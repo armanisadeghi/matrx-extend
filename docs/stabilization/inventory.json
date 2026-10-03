@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T05:35:54.114220+00:00",
+  "updated_at": "2026-10-03T06:15:36.310721+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -1103,6 +1103,12 @@
           "label": "Produce matching commit tag and bundle receipt",
           "action": "Produce matching commit tag and bundle receipt",
           "basis": "Campaign acceptance requirement; verify against actual release behavior, not a claim it is implemented."
+        },
+        {
+          "id": "EXT-F-0003-C11",
+          "label": "Main CI run concurrency",
+          "kind": "automation",
+          "source": ".github/workflows/ci.yml"
         }
       ],
       "source_anchors": [
@@ -1626,11 +1632,57 @@
             "full-suite",
             "remote-CI"
           ]
+        },
+        {
+          "id": "EXT-F-0003-T11",
+          "title": "Main verification survives subsequent evidence pushes",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0003-C11"
+          ],
+          "preconditions": [
+            "Observe two immutable main pushes while first CI is active."
+          ],
+          "steps": [
+            "Push a source change to main and observe its active CI run.",
+            "Push a subsequent evidence-only commit to the same main ref before the checks finish.",
+            "Observe ci-${github.ref} cancel-in-progress true cancel the prior verification; repeated pushes starve completion."
+          ],
+          "expected": [
+            "Main verification finishes for its immutable source; newer main work remains queued. Pull-request superseded checks may cancel."
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "Source fixed25845342; current37102258819 active with37102380063 pending. Completion/queued progression still unverified.",
+              "evidence": [
+                "docs/stabilization/defects/EXT-D-0092.json"
+              ]
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "Source fixed25845342; current37102258819 active with37102380063 pending. Completion/queued progression still unverified.",
+              "evidence": [
+                "docs/stabilization/defects/EXT-D-0092.json"
+              ]
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Source fixed25845342; current37102258819 active with37102380063 pending. Completion/queued progression still unverified.",
+              "evidence": [
+                "docs/stabilization/defects/EXT-D-0092.json"
+              ]
+            }
+          }
         }
       ],
       "cells": {
         "guest": {
-          "test_status": "pass",
+          "test_status": "partial",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
@@ -1640,7 +1692,8 @@
             "EXT-D-0017",
             "EXT-D-0019",
             "EXT-D-0020",
-            "EXT-D-0085"
+            "EXT-D-0085",
+            "EXT-D-0092"
           ],
           "run_ids": [
             "release-red-001",
@@ -1663,10 +1716,10 @@
             "popup-teardown-green-002",
             "release-stabilization-027"
           ],
-          "retest_status": "pass"
+          "retest_status": "pending"
         },
         "member": {
-          "test_status": "pass",
+          "test_status": "partial",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
@@ -1676,7 +1729,8 @@
             "EXT-D-0017",
             "EXT-D-0019",
             "EXT-D-0020",
-            "EXT-D-0085"
+            "EXT-D-0085",
+            "EXT-D-0092"
           ],
           "run_ids": [
             "release-red-001",
@@ -1699,10 +1753,10 @@
             "popup-teardown-green-002",
             "release-stabilization-027"
           ],
-          "retest_status": "pass"
+          "retest_status": "pending"
         },
         "admin": {
-          "test_status": "pass",
+          "test_status": "partial",
           "defect_ids": [
             "EXT-D-0002",
             "EXT-D-0003",
@@ -1712,7 +1766,8 @@
             "EXT-D-0017",
             "EXT-D-0019",
             "EXT-D-0020",
-            "EXT-D-0085"
+            "EXT-D-0085",
+            "EXT-D-0092"
           ],
           "run_ids": [
             "release-red-001",
@@ -1735,7 +1790,7 @@
             "popup-teardown-green-002",
             "release-stabilization-027"
           ],
-          "retest_status": "pass"
+          "retest_status": "pending"
         }
       },
       "readiness_gaps": [
