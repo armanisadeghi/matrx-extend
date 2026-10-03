@@ -3540,7 +3540,7 @@
             "Reload/reopen Settings in the still-signed-out guest session; confirm the same guidance and absence of the selector."
           ],
           "expected": [
-            "The guest sees “Sign in to choose”; no organization selector or guest organization-choice action is exposed, and the guest guidance remains after reload."
+            "The guest sees \u201cSign in to choose\u201d; no organization selector or guest organization-choice action is exposed, and the guest guidance remains after reload."
           ],
           "dimensions": [
             "warm",
@@ -3571,7 +3571,7 @@
             "Verify the real signed-in principal is an ordinary non-admin member using the displayed account/role and known test-principal provenance."
           ],
           "steps": [
-            "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
+            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
             "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
             "Perform a full extension Reload and confirm the organization persists."
           ],
@@ -3600,7 +3600,7 @@
             "Verify the real signed-in principal is the authorized admin using the displayed account/role and known test-principal provenance."
           ],
           "steps": [
-            "Open Settings > Organization signed in with no device organization set; verify Choose… and required-selection guidance without implicit organization choice.",
+            "Open Settings > Organization signed in with no device organization set; verify Choose\u2026 and required-selection guidance without implicit organization choice.",
             "Choose an existing authorized test organization explicitly; verify Acting as displays it.",
             "Perform a full extension Reload and confirm the organization persists."
           ],
@@ -3652,15 +3652,15 @@
               "status": "partial",
               "run_id": "hosted-settings-37115406435",
               "native_run_status": "pass",
-              "scope": "D87 guest persistence retest on exact development artifact 0.2.176; six native cases cover Light/System saves, rejected-write feedback/retry, rapid-write ordering, and Settings panel reload persistence.",
-              "build_version": "0.2.176",
               "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+              "build_version": "0.2.176",
               "build_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
               "evidence": [
-                ".research/settings-acceptance-record.json",
-                ".research/settings-final-native.json"
+                ".research/settings-all-modes-evidence-peer.json",
+                ".research/settings-acceptance-record.json"
               ],
-              "detail": "All six receipt-recorded native guest assertions passed. Reload evidence is a Settings panel reload, not full Chrome extension Reload. Earlier full-extension-reload theme matrix remains retained in result_history; this retest does not cover member/admin or all Settings controls."
+              "detail": "Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.",
+              "release_scope": "Development artifact only; newer than frozen Store package."
             }
           },
           "linked_defects": [
@@ -3676,6 +3676,24 @@
                 "detail": "Light/Dark/System each visibly applied and persisted through separate full extension Reloads on0.2.51. OriginalSystem restored; resource healthy."
               },
               "retained_reason": "Earlier evidence covered Light, Dark, and System across separate full extension Reloads; the bounded D87 retest below used Settings panel reload only."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "hosted-settings-37115406435",
+                "native_run_status": "pass",
+                "scope": "D87 guest persistence retest on exact development artifact 0.2.176; six native cases cover Light/System saves, rejected-write feedback/retry, rapid-write ordering, and Settings panel reload persistence.",
+                "build_version": "0.2.176",
+                "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+                "build_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+                "evidence": [
+                  ".research/settings-acceptance-record.json",
+                  ".research/settings-final-native.json"
+                ],
+                "detail": "All six receipt-recorded native guest assertions passed. Reload evidence is a Settings panel reload, not full Chrome extension Reload. Earlier full-extension-reload theme matrix remains retained in result_history; this retest does not cover member/admin or all Settings controls."
+              },
+              "retained_reason": "Preserve earlier bounded evidence; current exact-development-artifact evidence separately identifies panel reload and visual limits."
             }
           ]
         },
@@ -3707,7 +3725,23 @@
           ],
           "linked_defects": [
             "EXT-D-0087"
-          ]
+          ],
+          "results": {
+            "member": {
+              "status": "partial",
+              "run_id": "settings-mounted-member-full6-20261003-01",
+              "native_run_status": "pass",
+              "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+              "evidence": [
+                ".research/settings-all-modes-evidence-peer.json",
+                ".research/settings-mounted-native.json"
+              ],
+              "detail": "Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.",
+              "release_scope": "Development artifact only; newer than frozen Store package."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T06",
@@ -3737,14 +3771,34 @@
           ],
           "results": {
             "admin": {
-              "status": "pass",
-              "run_id": "admin-settings-local-001",
-              "evidence": "docs/stabilization/runs/admin-settings-local-001.json",
-              "detail": "Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy."
+              "status": "partial",
+              "run_id": "settings-mounted-admin-full6-20261003-01",
+              "native_run_status": "pass",
+              "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+              "evidence": [
+                ".research/settings-all-modes-evidence-peer.json",
+                ".research/settings-mounted-native.json"
+              ],
+              "detail": "Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.",
+              "release_scope": "Development artifact only; newer than frozen Store package."
             }
           },
           "linked_defects": [
             "EXT-D-0087"
+          ],
+          "result_history": [
+            {
+              "mode": "admin",
+              "result": {
+                "status": "pass",
+                "run_id": "admin-settings-local-001",
+                "evidence": "docs/stabilization/runs/admin-settings-local-001.json",
+                "detail": "Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy."
+              },
+              "retained_reason": "Preserve earlier bounded evidence; current exact-development-artifact evidence separately identifies panel reload and visual limits."
+            }
           ]
         },
         {
@@ -3767,7 +3821,7 @@
             "Reload/reopen Settings in the same guest state; confirm the unavailable-state guidance remains."
           ],
           "expected": [
-            "The guest sees “Choose an organization above” and no agent picker or selection action; this unavailable-state guidance remains after reload."
+            "The guest sees \u201cChoose an organization above\u201d and no agent picker or selection action; this unavailable-state guidance remains after reload."
           ],
           "dimensions": [
             "warm",
@@ -4501,7 +4555,7 @@
             "Reload the extension and reopen Settings; repeat the expand/collapse check for visible sections."
           ],
           "expected": [
-            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show “No options yet”."
+            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show \u201cNo options yet\u201d."
           ],
           "dimensions": [
             "warm",
@@ -4537,7 +4591,7 @@
             "Reload the extension and reopen Settings; repeat the expand/collapse check for visible sections."
           ],
           "expected": [
-            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show “No options yet”."
+            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show \u201cNo options yet\u201d."
           ],
           "dimensions": [
             "warm",
@@ -4565,7 +4619,7 @@
             "Reload the extension and reopen Settings; repeat the expand/collapse check for visible sections."
           ],
           "expected": [
-            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show “No options yet”."
+            "Every section available to this role opens and closes without losing or mislabeling its content; role-gated sections stay absent. Empty Data/SEO cards truthfully show \u201cNo options yet\u201d."
           ],
           "dimensions": [
             "warm",
@@ -5674,11 +5728,11 @@
                     "docs/stabilization/reports/cookies-prompt-semantics.json",
                     "docs/stabilization/reports/native-denial-operator-005.json"
                   ],
-                  "detail": "Ruling inferred from official Chrome warning semantics and current broad-host manifest, corroborated by actual no-prompt OFF→ON observation. Not a denial pass. Re-evaluate on browser/manifest warning-policy change."
+                  "detail": "Ruling inferred from official Chrome warning semantics and current broad-host manifest, corroborated by actual no-prompt OFF\u2192ON observation. Not a denial pass. Re-evaluate on browser/manifest warning-policy change."
                 },
                 "current-grant-removal-reload": {
                   "status": "unverified",
-                  "detail": "Current005 only observed UI OFF→ON; prior build grant/removal/reload remains historical."
+                  "detail": "Current005 only observed UI OFF\u2192ON; prior build grant/removal/reload remains historical."
                 }
               }
             }
@@ -5944,7 +5998,7 @@
             "Select all, agent, pilot, parallel and webmcp receipt filters."
           ],
           "expected": [
-            "Visible receipt rows and counts match selected origin; empty filter shows “No receipts with origin=…”; all restores every row."
+            "Visible receipt rows and counts match selected origin; empty filter shows \u201cNo receipts with origin=\u2026\u201d; all restores every row."
           ],
           "dimensions": [
             "warm",
@@ -6361,7 +6415,7 @@
             "Reload the extension and reopen Settings; inspect Account and the footer action again."
           ],
           "expected": [
-            "Email is shown as unavailable (—), no Name or admin badge appears, and the footer action is Sign in both before and after reload."
+            "Email is shown as unavailable (\u2014), no Name or admin badge appears, and the footer action is Sign in both before and after reload."
           ],
           "dimensions": [
             "warm",
@@ -6634,6 +6688,25 @@
             "warm",
             "retry",
             "reload"
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "hosted-settings-37115406435",
+              "native_run_status": "pass",
+              "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+              "evidence": [
+                ".research/settings-all-modes-evidence-peer.json",
+                ".research/settings-acceptance-record.json"
+              ],
+              "detail": "Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. The actual Retry save control clears the failure and persists the latest choice; no other preference-control coverage inferred.",
+              "release_scope": "Development artifact only; newer than frozen Store package."
+            }
+          },
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -6662,6 +6735,25 @@
             "warm",
             "retry",
             "reload"
+          ],
+          "results": {
+            "member": {
+              "status": "pass",
+              "run_id": "settings-mounted-member-full6-20261003-01",
+              "native_run_status": "pass",
+              "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+              "evidence": [
+                ".research/settings-all-modes-evidence-peer.json",
+                ".research/settings-mounted-native.json"
+              ],
+              "detail": "Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. The actual Retry save control clears the failure and persists the latest choice; no other preference-control coverage inferred.",
+              "release_scope": "Development artifact only; newer than frozen Store package."
+            }
+          },
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -6690,6 +6782,25 @@
             "warm",
             "retry",
             "reload"
+          ],
+          "results": {
+            "admin": {
+              "status": "pass",
+              "run_id": "settings-mounted-admin-full6-20261003-01",
+              "native_run_status": "pass",
+              "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+              "build_version": "0.2.176",
+              "build_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+              "evidence": [
+                ".research/settings-all-modes-evidence-peer.json",
+                ".research/settings-mounted-native.json"
+              ],
+              "detail": "Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. The actual Retry save control clears the failure and persists the latest choice; no other preference-control coverage inferred.",
+              "release_scope": "Development artifact only; newer than frozen Store package."
+            }
+          },
+          "linked_defects": [
+            "EXT-D-0087"
           ]
         },
         {
@@ -6839,7 +6950,8 @@
             "guest-reset-007",
             "guest-settings-local-005",
             "guest-settings-local-006",
-            "guest-settings-dev089-001"
+            "guest-settings-dev089-001",
+            "hosted-settings-37115406435"
           ],
           "retest_status": "not-run"
         },
@@ -6852,7 +6964,9 @@
             "EXT-D-0086",
             "EXT-D-0087"
           ],
-          "run_ids": [],
+          "run_ids": [
+            "settings-mounted-member-full6-20261003-01"
+          ],
           "retest_status": "not-run"
         },
         "admin": {
@@ -6879,7 +6993,8 @@
             "isolated-permission-denial-005",
             "native-0267-reload-001",
             "native-0268-reload-001",
-            "isolated-permission-denial-006"
+            "isolated-permission-denial-006",
+            "settings-mounted-admin-full6-20261003-01"
           ],
           "retest_status": "not-run"
         }
@@ -8371,7 +8486,7 @@
                 "reload": "unverified",
                 "service-error": "unverified"
               },
-              "detail": "Switched Log → Bridges → Log. Both selected subviews rendered their intended content; Logs retained its current 113-row state when revisited, while Bridges showed its existing channel and health state. No bridge action was invoked.",
+              "detail": "Switched Log \u2192 Bridges \u2192 Log. Both selected subviews rendered their intended content; Logs retained its current 113-row state when revisited, while Bridges showed its existing channel and health state. No bridge action was invoked.",
               "remaining_criteria": [
                 "Reload and service-error observations required for the declared dimensions."
               ]
@@ -9539,7 +9654,7 @@
                 "reload": "unverified",
                 "service-error": "unverified"
               },
-              "detail": "Source=none deselected all source pills, reduced the row count to 0, and showed ‘No events match the current filter.’",
+              "detail": "Source=none deselected all source pills, reduced the row count to 0, and showed \u2018No events match the current filter.\u2019",
               "remaining_criteria": [
                 "Reload and service-error observations required for the declared dimensions."
               ]
@@ -9797,7 +9912,7 @@
                 "reload": "unverified",
                 "service-error": "unverified"
               },
-              "detail": "Level=none deselected all four level pills, reduced the row count to 0, and showed ‘No events match the current filter.’",
+              "detail": "Level=none deselected all four level pills, reduced the row count to 0, and showed \u2018No events match the current filter.\u2019",
               "remaining_criteria": [
                 "Reload and service-error observations required for the declared dimensions."
               ]
@@ -10381,7 +10496,7 @@
         {
           "id": "EXT-F-1006-C07",
           "label": "Desktop port override validation",
-          "action": "Enter blank, valid 1–65535, 0, >65535, fractional and nonnumeric values; Save."
+          "action": "Enter blank, valid 1\u201365535, 0, >65535, fractional and nonnumeric values; Save."
         },
         {
           "id": "EXT-F-1006-C09",
@@ -10684,7 +10799,7 @@
             "Signed in as an admin; open Debug > Bridges; use local test services and harmless requests."
           ],
           "steps": [
-            "Enter blank, valid 1–65535, 0, >65535, fractional and nonnumeric values; Save."
+            "Enter blank, valid 1\u201365535, 0, >65535, fractional and nonnumeric values; Save."
           ],
           "expected": [
             "Blank clears; valid integer persists and discovery reruns; invalid values are rejected and existing override remains."
@@ -12138,7 +12253,7 @@
             "Open Scrape before capturing, then navigate active tab to another URL."
           ],
           "expected": [
-            "Empty state invites capture; previous page’s content and Saved badge clear after navigation."
+            "Empty state invites capture; previous page\u2019s content and Saved badge clear after navigation."
           ],
           "dimensions": [
             "warm",
@@ -13093,7 +13208,7 @@
             "Run/auto-run on browser-internal or restricted URL."
           ],
           "expected": [
-            "No fabricated partial audit is shown; clear “cannot be audited” or capture failure appears."
+            "No fabricated partial audit is shown; clear \u201ccannot be audited\u201d or capture failure appears."
           ],
           "dimensions": [
             "warm",
@@ -13483,7 +13598,7 @@
                       "words": "10,488",
                       "sentences": "786",
                       "score": "44.48",
-                      "summary": "Difficult — college"
+                      "summary": "Difficult \u2014 college"
                     },
                     "metricValueCorrectness": "unverified"
                   }
@@ -13674,7 +13789,7 @@
             "Choose Ask the agent to fix this for a finding."
           ],
           "expected": [
-            "The finding’s section and message are staged in Chat composer; user can review before sending."
+            "The finding\u2019s section and message are staged in Chat composer; user can review before sending."
           ],
           "dimensions": [
             "warm",
@@ -15037,7 +15152,7 @@
         {
           "id": "EXT-F-1010-C08",
           "label": "Overlay stop toolbar control",
-          "action": "Click ✕ in injected highlighter toolbar."
+          "action": "Click \u2715 in injected highlighter toolbar."
         },
         {
           "id": "EXT-F-1010-C09",
@@ -15341,7 +15456,7 @@
             "Sign in; open Highlights on a controlled page with test text and selectable elements."
           ],
           "steps": [
-            "Click ✕ in injected highlighter toolbar."
+            "Click \u2715 in injected highlighter toolbar."
           ],
           "expected": [
             "Overlay sends inactive state and unmounts all page listeners/host."
@@ -17936,7 +18051,7 @@
               "evidence": [
                 "docs/stabilization/runs/showcase-installed-list-management-001.json"
               ],
-              "detail": "Renamed the exact owned List recipe from “Codex D45 fixture 20260927-2229Z” to “Codex D45 fixture 20260927-2229Z cleanup.” The new title persisted after Patterns Refresh and after leaving/reopening Patterns; its LIST type, OK status, and 249-row last-run summary remained. No-op and Cancel rename paths remain unverified."
+              "detail": "Renamed the exact owned List recipe from \u201cCodex D45 fixture 20260927-2229Z\u201d to \u201cCodex D45 fixture 20260927-2229Z cleanup.\u201d The new title persisted after Patterns Refresh and after leaving/reopening Patterns; its LIST type, OK status, and 249-row last-run summary remained. No-op and Cancel rename paths remain unverified."
             }
           }
         },
@@ -18143,7 +18258,7 @@
                 "docs/stabilization/reports/showcase-structured-journal-retest.json",
                 "docs/stabilization/reports/showcase-structured-save-navigation.json"
               ],
-              "detail": "Native JSONLD preview→draftchangedtoNewsArticle→save→leave/reopen→replay preserved executedBreadcrumbList config; exactowned91349863-4a89-4bd5-9248-8785ba1ec3fc. Existing savedJSONLD on404 shows no-match and routeguidance. Service-error remains unverified."
+              "detail": "Native JSONLD preview\u2192draftchangedtoNewsArticle\u2192save\u2192leave/reopen\u2192replay preserved executedBreadcrumbList config; exactowned91349863-4a89-4bd5-9248-8785ba1ec3fc. Existing savedJSONLD on404 shows no-match and routeguidance. Service-error remains unverified."
             }
           }
         },
@@ -18340,7 +18455,7 @@
                 "docs/stabilization/runs/showcase-installed-d43-001.json",
                 "docs/stabilization/runs/showcase-installed-d45-001.json"
               ],
-              "detail": "Saved List Pattern recipe “Codex D45 fixture 20260927-2229Z” on /vegas-edm-event-calendar/, left the builder, reopened Patterns, and replayed 249 rows with the same first visible event_title/locality samples. The UI exposed no record ID; 2026-09-27T22:29:53Z is the observed time immediately after “Pattern saved,” not a verified creation timestamp. Fixture remains intentionally retained. Partial: only 200 rows were visible, no reload or changed-source replay was tested, and deletion/cleanup was not tested.",
+              "detail": "Saved List Pattern recipe \u201cCodex D45 fixture 20260927-2229Z\u201d on /vegas-edm-event-calendar/, left the builder, reopened Patterns, and replayed 249 rows with the same first visible event_title/locality samples. The UI exposed no record ID; 2026-09-27T22:29:53Z is the observed time immediately after \u201cPattern saved,\u201d not a verified creation timestamp. Fixture remains intentionally retained. Partial: only 200 rows were visible, no reload or changed-source replay was tested, and deletion/cleanup was not tested.",
               "prior_run_ids": [
                 "showcase-installed-d43-001"
               ]
@@ -18996,9 +19111,9 @@
         "2026-09-27 user elevated Showcase to current priority; added shared-save and per-kind roundtrip acceptance before testing. Every added case starts unverified; admin-only product audience retained, guest/member denial remains separately tracked.",
         "D40 source-confirmed preview/config drift is linked; its focused regression and live saved/reopened retest remain pending. No added method case is promoted from source review.",
         "EXT-D-0042 investigates old picker events/cancellation reaching a new same-page session; source evidence at reports/showcase-picker-session-fix.json, boundary reproduction pending. This is separate from D39 handoff and D40 executed preview config, and no coverage is promoted.",
-        "EXT-D-0041 reserved for selected Network request → saved URL matching → repeat extraction; source-only investigation assigned while frozen .101 D39/D40 live review runs. No result claimed.",
-        "Fresh .101 live retest: original Doctor list seed arrives, but Pick more fields replaced event-card scope with one event’s nested list and returned3 rows. D43 assigned for independent diagnosis; D39 remains open until surrounding field/extraction behavior passes. No saved recipe persistence yet tested.",
-        "D40 real Microdata Event preview → unsent Place draft → saved pattern → reopened Patterns replay returned249 Event records with matching visible fields/sample values. T46 stays partial; full-value comparison/reload/errors and datasets remain unverified. Exact owned recipe retained as next persistence-test fixture.",
+        "EXT-D-0041 reserved for selected Network request \u2192 saved URL matching \u2192 repeat extraction; source-only investigation assigned while frozen .101 D39/D40 live review runs. No result claimed.",
+        "Fresh .101 live retest: original Doctor list seed arrives, but Pick more fields replaced event-card scope with one event\u2019s nested list and returned3 rows. D43 assigned for independent diagnosis; D39 remains open until surrounding field/extraction behavior passes. No saved recipe persistence yet tested.",
+        "D40 real Microdata Event preview \u2192 unsent Place draft \u2192 saved pattern \u2192 reopened Patterns replay returned249 Event records with matching visible fields/sample values. T46 stays partial; full-value comparison/reload/errors and datasets remain unverified. Exact owned recipe retained as next persistence-test fixture.",
         "Installed .108 real-calendar retest: Doctor handoff and seeded/fresh scope selection now work; title+href extraction249rows had matching sampled records and navigation cleared state. T04/T24/T29/T45/T51 remain partial; full rows beyond200, alternate-scope extraction, persistence and other dimensions still pending. No localhost UI was used.",
         "T53-T55 and C44-C45 added for EXT-D-0041 Network matcher/replay identity follow-up. These are unverified planning coverage only; no admin, guest, or member result was promoted. Guest/member denial remains the existing T38 case. Network evidence may record only sanitized fixed fields and local-producer digest presence; never raw request payload, credentials, or headers.",
         "Installed .109 D48 live run: one actual GET capture was saved, reopened from Patterns and interactively replayed with all four visible response values matching; recognized/unknown synthetic query-key masking controls were observed and the real matcher restored before save. T50/T53/T58 are partial only; no credential-bearing pattern was persisted or inspected, and D48 remains open pending full installed privacy acceptance."
@@ -22797,7 +22912,7 @@
             "On a conversation with disposable plan/task/todo rows, click Wipe all and cancel; verify rows remain. Reopen, confirm, then refresh."
           ],
           "expected": [
-            "Cancel preserves all rows; confirm removes that conversation’s plan, tasks and todos; dialog names permanent consequence."
+            "Cancel preserves all rows; confirm removes that conversation\u2019s plan, tasks and todos; dialog names permanent consequence."
           ],
           "dimensions": [
             "warm",
@@ -25554,7 +25669,7 @@
           ],
           "steps": [
             "Refresh list; search distinct title, URL, and description tokens; clear search; open capture; use Back; use Load more; on empty list use Go to Scrape.",
-            "As member B, search and open A’s Source with the page-local organization filter set to All organizations; check Captured by labeling for self, readable creator, and an unavailable creator name. Change the active organization and confirm it only changes the destination of new writes/API calls; exercise any explicit page-local organization filter separately."
+            "As member B, search and open A\u2019s Source with the page-local organization filter set to All organizations; check Captured by labeling for self, readable creator, and an unavailable creator name. Change the active organization and confirm it only changes the destination of new writes/API calls; exercise any explicit page-local organization filter separately."
           ],
           "expected": [
             "Search filters list; detail corresponds to selected capture; pagination adds results without duplicates; empty-state shortcut opens Scrape.",
@@ -26060,7 +26175,7 @@
             "Signed-in member who belongs to two organizations; other membership has a controlled waiting handoff."
           ],
           "steps": [
-            "Open Capture with active organization A; use “waiting elsewhere” control to switch to organization B; wait for subscription refresh."
+            "Open Capture with active organization A; use \u201cwaiting elsewhere\u201d control to switch to organization B; wait for subscription refresh."
           ],
           "expected": [
             "Only a membership-listed organization can be selected; device org switches and queue refreshes; pointer clears after successful switch; membership loss yields explicit explanation."
@@ -26117,7 +26232,7 @@
             "Signed-in member with controlled needs_drive handoff and safe test page."
           ],
           "steps": [
-            "Open it; perform page sign-in/navigation manually; enter page-specific note and capture. Repeat with another handoff and choose This one won’t work with a reason. Follow a valid pickup pointer."
+            "Open it; perform page sign-in/navigation manually; enter page-specific note and capture. Repeat with another handoff and choose This one won\u2019t work with a reason. Follow a valid pickup pointer."
           ],
           "expected": [
             "Extension leaves page actions to user until explicit capture; capture completes and updates status; skip removes only selected handoff and records note; pickup opens matching item/tab."
@@ -29896,7 +30011,7 @@
       "name": "Run built-in browser AI scenarios",
       "surface": "Tools Smart tests",
       "entry_points": [
-        "Tools tab → Tools Smart tests"
+        "Tools tab \u2192 Tools Smart tests"
       ],
       "controls": [
         {
@@ -30139,7 +30254,7 @@
             "For cap, selected-label, and invalid-input assertions, use the owned long synthetic fixture. A read-only public page is also valid for a positive summary/classification native acceptance run; record the page identity without copying page text into the run report."
           ],
           "steps": [
-            "In Tools → Smart tests, expand Summarize active page; set cap to 1k, type to key-points, and length to medium. Run once.",
+            "In Tools \u2192 Smart tests, expand Summarize active page; set cap to 1k, type to key-points, and length to medium. Run once.",
             "Inspect timing, result or visible refusal, and expand input the model saw. Verify the request event includes the selected type/length and page content is capped at 1,000 characters; use only fixture text.",
             "Expand Classify active page, replace labels with 'article, landing page', and Run. Then enter the invalid one-label value 'article' and Run once more."
           ],
@@ -30190,7 +30305,7 @@
           ],
           "steps": [
             "Expand Detect page language and Run on the active fixture.",
-            "Expand Proofread selection; return to the fixture, select only 'Thiss sentense has a speling mistake.', reopen Tools → Smart tests, and Run.",
+            "Expand Proofread selection; return to the fixture, select only 'Thiss sentense has a speling mistake.', reopen Tools \u2192 Smart tests, and Run.",
             "Activate the owned controlled fixture. Expand Prompt-injection scan and Run on its harmless synthetic PAPERCLIP instruction.",
             "On the owned fixture, expand Describe first image, set the question to What color is the circle?, and Run on the page with the local PNG. Then activate the owned sibling no-image fixture and Run once to exercise the missing-image path."
           ],
@@ -30282,7 +30397,7 @@
       "name": "Record active browser tab",
       "surface": "Tools Recorder",
       "entry_points": [
-        "Tools tab → Tools Recorder"
+        "Tools tab \u2192 Tools Recorder"
       ],
       "controls": [
         {
@@ -30463,7 +30578,7 @@
             "Complete shared artifact/profile setup; sign in as a member or admin with an explicitly selected open organization on this device. Use the owned fixture tab; for the audio-on run, have that tab play only a locally generated test tone after a user gesture."
           ],
           "steps": [
-            "Open Tools → Recorder. Set Duration (sec) to 1, then 60, and confirm the field accepts both displayed bounds. Set it to 2 for each short capture; toggle Capture audio off for the first and on for the second.",
+            "Open Tools \u2192 Recorder. Set Duration (sec) to 1, then 60, and confirm the field accepts both displayed bounds. Set it to 2 for each short capture; toggle Capture audio off for the first and on for the second.",
             "With the fixture active, click Record. If Chrome asks for optional tabCapture permission, grant it for this positive path. Observe Checking permission/Starting/Recording and elapsed time, then click Stop before the duration expires.",
             "Wait for Finalizing/Uploading to finish; inspect the saved row, duration, title, MIME, size, and audio badge. Reload the side panel/extension using the documented artifact cycle and confirm the metadata row rehydrates."
           ],
@@ -30538,7 +30653,7 @@
             "Use a separate profile already signed out; complete artifact identity and reload setup."
           ],
           "steps": [
-            "Open the side panel, inspect main navigation, and attempt Tools → Recorder only through visible navigation."
+            "Open the side panel, inspect main navigation, and attempt Tools \u2192 Recorder only through visible navigation."
           ],
           "expected": [
             "Signed-in Tools and nested Recorder content are unavailable to guest; a visible sign-in path remains. No Record or list-management control is reachable."
@@ -30604,7 +30719,7 @@
       "name": "Generate and use credentials",
       "surface": "Vault password generator",
       "entry_points": [
-        "Tools tab → Vault password generator"
+        "Tools tab \u2192 Vault password generator"
       ],
       "controls": [
         {
@@ -33667,7 +33782,7 @@
         {
           "id": "EXT-F-4025-C01",
           "label": "Run get_active_tab on owned synthetic fixture",
-          "action": "Open the exact canonical tool row in Tools → Catalog and run {} against the active synthetic fixture tab; compare returned tab metadata to the browser tab."
+          "action": "Open the exact canonical tool row in Tools \u2192 Catalog and run {} against the active synthetic fixture tab; compare returned tab metadata to the browser tab."
         }
       ],
       "source_anchors": [
@@ -33735,7 +33850,7 @@
             "Complete shared build/reload cycle and synthetic fixture preconditions; fixture tab stays active when opening Tools. See shared setup and fixture contract in docs/stabilization/reports/tool-procedure-batch-20261001.json."
           ],
           "steps": [
-            "In Tools → Catalog, leave Surface=Canonical and Tier=all; search get_active_tab and expand the exact canonical row.",
+            "In Tools \u2192 Catalog, leave Surface=Canonical and Tier=all; search get_active_tab and expand the exact canonical row.",
             "Confirm the displayed schema has no required arguments and required permission activeTab; leave the default {} in the JSON editor.",
             "Click Run once. Record the inline output and compare tab_id/title/url/status to the active synthetic fixture tab's browser tab and address bar. Do not copy the full URL if it contains anything beyond the local fixture origin/path."
           ],

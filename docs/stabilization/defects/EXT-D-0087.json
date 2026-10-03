@@ -34,7 +34,10 @@
     "EXT-F-1003-T42",
     "EXT-F-1003-T67",
     "EXT-F-1003-T68",
-    "EXT-F-1003-T69"
+    "EXT-F-1003-T69",
+    "EXT-F-1003-T82",
+    "EXT-F-1003-T83",
+    "EXT-F-1003-T84"
   ],
   "surface": "Settings persisted preferences",
   "auth_mode": "guest/member/admin",
@@ -45,8 +48,8 @@
     "Reload Settings after storage recovers and compare the displayed choice with the previous in-memory choice; repeat with two rapid preference changes whose writes settle out of order."
   ],
   "expected": "Each preference control reports failed persistence and offers a retry; rapid choices persist the latest successful intent and reload shows the saved choice.",
-  "actual": "Exact development artifact 0.2.176 passed a receipt-bound native guest retest: Light and System saves, visible rejected-write error/retry, latest rapid choice, and retry/overlap persistence after Settings panel reload (six cases). Member/admin and broader Settings coverage remain pending; this is not all-controls or all-roles evidence.",
-  "reproduction_status": "Guest bounded native retest PASS on hosted run 37115406435; six receipt-recorded cases and post-interaction tree check passed for source 3092444e73094cb0023f6086202869ccbd22978b / tree 025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660. Member/admin remain pending; D87 stays fixed with bounded acceptance only, not closed.",
+  "actual": "Original storage rejection, retry and rapid-write reproduction no longer reproduces in guest, member or admin native Settings on the exact development artifact. Each mode passed six cases. Broader Settings controls, rendered theme appearance and full extension Reload remain separate incomplete inventory coverage; frozen public Store 0.2.176 does not contain this fix.",
+  "reproduction_status": "All-mode bounded native retest accepted by independent evidence review a6a345a8. Source 3092444e73094cb0023f6086202869ccbd22978b; tree 025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660. This closes the original defect, not the whole Settings feature or a release.",
   "evidence": [
     "src/state/settings.ts",
     "src/lib/storage/zustand-adapter.ts",
@@ -62,11 +65,13 @@
     ".research/settings-baseline-peer.json",
     ".research/settings-changed-baseline-native.json",
     ".research/settings-acceptance-record.json",
-    ".research/settings-final-native.json"
+    ".research/settings-final-native.json",
+    ".research/settings-mounted-native.json",
+    ".research/settings-all-modes-evidence-peer.json"
   ],
   "severity": "S2: a visible preference can fail to survive reload",
   "priority": "P1: make Settings preference persistence truthful",
-  "state": "fixed",
+  "state": "closed",
   "transition_history": [
     {
       "at": "2026-10-03T03:39:17.879520+00:00",
@@ -91,7 +96,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Focused store/UI regression, rejection mutation, skipped-write mutation, compile, and formatting checks pass; browser and peer closure gates remain."
+    },
+    {
+      "at": "2026-10-03T14:19:27.324256+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent native guest/member/admin original and adjacent save/retry/order cases passed, with receipt and resource audit a6a345a8."
+    },
+    {
+      "at": "2026-10-03T14:19:27.324256+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Root accepted prior source/regression review plus exact-build native Settings panel reload evidence. Full-extension Reload and theme visual appearance stay partial inventory dimensions, not implied by closure."
     }
   ],
-  "closure_requirement": "Controlled failing-then-passing component/store regression for storage rejection, retry, and rapid writes; independent review; exact-build browser reload acceptance. Do not close from source alone or from D86 desktop-control repair."
+  "closure_requirement": "Controlled failing-then-passing component/store regression for storage rejection, retry, and rapid writes; independent review; exact-build browser reload acceptance. Do not close from source alone or from D86 desktop-control repair.",
+  "release_status": "Not in frozen public 0.2.176; subsequent candidate and Store release pending."
 }

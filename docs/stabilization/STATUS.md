@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-03 12:49 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T12:40:00Z. 205 features · 757 cases · 1331 controls · 93 linked defect records.
+Generated 2026-10-03 14:19 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T12:40:00Z. 205 features · 757 cases · 1331 controls · 93 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1203** — Pass: 61 · Partial: 48 · Fail: 4 · Unverified: 1089 · N/A: 1.
-Unverified splits into **122 explicitly marked unverified** and **967 with no result record**.
+Applicable case-by-role slots: **1203** — Pass: 63 · Partial: 50 · Fail: 4 · Unverified: 1085 · N/A: 1.
+Unverified splits into **122 explicitly marked unverified** and **963 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -20,7 +20,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 10 pass · 2 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 26 unverified · 0 deferred; 0/1 full | 7 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 17, partial 2, fail 0, unverified 70, n/a 1 | 4 |
+| [Settings](#settings) | 1 | 11 pass · 2 partial · 0 fail · 12 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 7 pass · 1 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | pass 19, partial 4, fail 0, unverified 66, n/a 1 | 3 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 32, n/a 0 | 0 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -345,11 +345,11 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Review and change extension settings (EXT-F-1003)
 
-**Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 89. **Controls:** 38.
+**Role status:** guest: Partial · member: Partial · admin: Partial. **Cases:** 89. **Controls:** 38.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0084, EXT-D-0086, EXT-D-0087, EXT-D-0093
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0084, EXT-D-0086, EXT-D-0093
 
-**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0006](defects/EXT-D-0006.json) (closed), [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0009](defects/EXT-D-0009.json) (closed), [EXT-D-0011](defects/EXT-D-0011.json) (closed), [EXT-D-0012](defects/EXT-D-0012.json) (closed), [EXT-D-0015](defects/EXT-D-0015.json) (closed), [EXT-D-0084](defects/EXT-D-0084.json) (fixed), [EXT-D-0086](defects/EXT-D-0086.json) (fixed), [EXT-D-0087](defects/EXT-D-0087.json) (fixed), [EXT-D-0093](defects/EXT-D-0093.json) (in-fix)
+**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0006](defects/EXT-D-0006.json) (closed), [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0009](defects/EXT-D-0009.json) (closed), [EXT-D-0011](defects/EXT-D-0011.json) (closed), [EXT-D-0012](defects/EXT-D-0012.json) (closed), [EXT-D-0015](defects/EXT-D-0015.json) (closed), [EXT-D-0084](defects/EXT-D-0084.json) (fixed), [EXT-D-0086](defects/EXT-D-0086.json) (fixed), [EXT-D-0087](defects/EXT-D-0087.json) (closed), [EXT-D-0093](defects/EXT-D-0093.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -357,8 +357,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1003-T02 member: Organization selector | N/A | Unverified | N/A | EXT-F-1003-C01 |
 | EXT-F-1003-T03 admin: Organization selector | N/A | N/A | Pass | EXT-F-1003-C01 |
 | EXT-F-1003-T04 guest: Theme | Partial | N/A | N/A | EXT-F-1003-C02 |
-| EXT-F-1003-T05 member: Theme | N/A | Unverified | N/A | EXT-F-1003-C02 |
-| EXT-F-1003-T06 admin: Theme | N/A | N/A | Pass | EXT-F-1003-C02 |
+| EXT-F-1003-T05 member: Theme | N/A | Partial | N/A | EXT-F-1003-C02 |
+| EXT-F-1003-T06 admin: Theme | N/A | N/A | Partial | EXT-F-1003-C02 |
 | EXT-F-1003-T07 guest: Default agent | Pass | N/A | N/A | EXT-F-1003-C03 |
 | EXT-F-1003-T08 member: Default agent | N/A | Unverified | N/A | EXT-F-1003-C03 |
 | EXT-F-1003-T09 admin: Default agent | N/A | N/A | Pass | EXT-F-1003-C03 |
@@ -435,9 +435,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1003-T80 member: Desktop bridge status and health | N/A | Unverified | N/A | EXT-F-1003-C34 |
 | EXT-F-1003-T81 admin: Desktop bridge status and health | N/A | N/A | Unverified | EXT-F-1003-C34 |
 | EXT-F-1003-T85 admin: Retry permission status read | N/A | N/A | Unverified | EXT-F-1003-C35 |
-| EXT-F-1003-T82 guest: Retry saving preferences | Unverified | N/A | N/A | EXT-F-1003-C36 |
-| EXT-F-1003-T83 member: Retry saving preferences | N/A | Unverified | N/A | EXT-F-1003-C36 |
-| EXT-F-1003-T84 admin: Retry saving preferences | N/A | N/A | Unverified | EXT-F-1003-C36 |
+| EXT-F-1003-T82 guest: Retry saving preferences | Pass | N/A | N/A | EXT-F-1003-C36 |
+| EXT-F-1003-T83 member: Retry saving preferences | N/A | Pass | N/A | EXT-F-1003-C36 |
+| EXT-F-1003-T84 admin: Retry saving preferences | N/A | N/A | Pass | EXT-F-1003-C36 |
 | EXT-F-1003-T86 Audit details read failure and retry | N/A | N/A | Unverified | EXT-F-1003-C09, EXT-F-1003-C37 |
 | EXT-F-1003-T87 Audit rotation failure before mutation | N/A | N/A | Unverified | EXT-F-1003-C25 |
 | EXT-F-1003-T88 Successful rotation with failed details refresh | N/A | N/A | Unverified | EXT-F-1003-C25, EXT-F-1003-C37 |
@@ -449,10 +449,12 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: guest-settings-007, docs/stabilization/runs/guest-settings-007.json
 - EXT-F-1003-T03 · admin: Pass. Initialunset did not chooseimplicitly; explicitfixture selected, Actingas and fullreload persistence verified. Nonexistent clear-step corrected from source/UI.
   Evidence / build / date recorded: admin-org-001, docs/stabilization/runs/admin-org-001.json
-- EXT-F-1003-T04 · guest: Partial. All six receipt-recorded native guest assertions passed. Reload evidence is a Settings panel reload, not full Chrome extension Reload. Earlier full-extension-reload theme matrix remains retained in result_history; this retest does not cover member/admin or all Settings controls.
-  Evidence / build / date recorded: hosted-settings-37115406435, ['.research/settings-acceptance-record.json', '.research/settings-final-native.json']
-- EXT-F-1003-T06 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.
-  Evidence / build / date recorded: admin-settings-local-001, docs/stabilization/runs/admin-settings-local-001.json
+- EXT-F-1003-T04 · guest: Partial. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.
+  Evidence / build / date recorded: hosted-settings-37115406435, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-acceptance-record.json']
+- EXT-F-1003-T05 · member: Partial. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.
+  Evidence / build / date recorded: settings-mounted-member-full6-20261003-01, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-mounted-native.json']
+- EXT-F-1003-T06 · admin: Partial. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.
+  Evidence / build / date recorded: settings-mounted-admin-full6-20261003-01, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-mounted-native.json']
 - EXT-F-1003-T07 · guest: Pass. Native Chrome guest controls matched all expected criteria warm and after full extension Reload; ID/path/version0.2.51 verified, resource healthy.
   Evidence / build / date recorded: guest-settings-007, docs/stabilization/runs/guest-settings-007.json
 - EXT-F-1003-T09 · admin: Pass. FreshSol visual+AX/detail reconciled sameQuickTestAgent plus2memberbadge; actualchosenidentity persisted afterfullreload, originalMatrxBrowserAgent restored.
@@ -505,6 +507,12 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: hosted-settings-37099860144, ['docs/stabilization/runs/hosted-settings-20261003.json', '.research/settings-hosted-retest.json']
 - EXT-F-1003-T72 · admin: Unverified.
   Evidence / build / date recorded: release-native-verification, docs/stabilization/runs/release-native-verification.json
+- EXT-F-1003-T82 · guest: Pass. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. The actual Retry save control clears the failure and persists the latest choice; no other preference-control coverage inferred.
+  Evidence / build / date recorded: hosted-settings-37115406435, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-acceptance-record.json']
+- EXT-F-1003-T83 · member: Pass. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. The actual Retry save control clears the failure and persists the latest choice; no other preference-control coverage inferred.
+  Evidence / build / date recorded: settings-mounted-member-full6-20261003-01, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-mounted-native.json']
+- EXT-F-1003-T84 · admin: Pass. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. The actual Retry save control clears the failure and persists the latest choice; no other preference-control coverage inferred.
+  Evidence / build / date recorded: settings-mounted-admin-full6-20261003-01, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-mounted-native.json']
 
 
 ## Profile
