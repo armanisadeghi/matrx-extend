@@ -259,12 +259,13 @@ const installed = await ownedProcess('npm', [
   runtimeDir,
   '--no-save',
   '--ignore-scripts',
-  'playwright@1.56.1',
+  'playwright-core@1.56.1',
 ]);
-assert.equal(installed.code, 0, 'pinned Playwright install failed');
-const browser = await ownedProcess(join(runtimeDir, 'node_modules/.bin/playwright'), [
+assert.equal(installed.code, 0, 'pinned Playwright core install failed');
+const browser = await ownedProcess(join(runtimeDir, 'node_modules/.bin/playwright-core'), [
   'install',
   'chromium',
+  '--no-shell',
 ]);
 assert.equal(browser.code, 0, 'bundled Chromium install failed');
 await run(prepared);

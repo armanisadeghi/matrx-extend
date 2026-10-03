@@ -97,7 +97,7 @@ jobs:
       - name: Exercise the actual signed-out Chrome side panel
         shell: bash
         env:
-          MATRX_PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser-runtime/node_modules/playwright/index.mjs
+          MATRX_PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser-runtime/node_modules/playwright-core/index.mjs
           MATRX_HOSTED_BROWSER_RUNTIME_DIR: ${{ runner.temp }}/browser-runtime
           PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
           MATRX_HOSTED_RELEASE_ARTIFACT_DIR: ${{ steps.release.outputs.artifact_dir }}
