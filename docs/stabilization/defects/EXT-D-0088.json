@@ -22,11 +22,13 @@
     "docs/stabilization/runs/hosted-guest-controlled-20261003.json",
     ".research/guest-provenance-hosted-result.json",
     ".research/guest-provenance-escalation.json",
-    ".research/release-acceptance-final-peer.json"
+    ".research/release-acceptance-final-peer.json",
+    ".research/candidate176-guest-acceptance.json",
+    ".research/member176-receipt-retest.json"
   ],
   "severity": "S0: public core no-login Chat fails immediately",
   "priority": "P0: supersedes deferred Chat sequencing; restore live guest promise now",
-  "state": "fixed",
+  "state": "retest-pass",
   "transition_history": [
     {
       "at": "2026-10-03T03:45:02.531723+00:00",
@@ -51,10 +53,16 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "aidream c01faa52660a2720fcc888af3e10210688bc80cc fixes browser capability and bundle discovery. Deployment and three bounded guest API replays now confirm server/API restoration; original signed-out extension reproduction and reload remain unverified, so the defect is not closed."
+    },
+    {
+      "at": "2026-10-03T08:04:27.988486+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent exact176 guest and nonadmin native acceptance passed; root inspected both screenshots. Original published130 payload also returned guest initial/reload answers after serverrepair; metadata-only integrity difference independently proven. Other Chat/Records cases remain open."
     }
   ],
   "closure_requirement": "Original published guest request succeeds on deployed fix, real signed-out extension reply and reload verified, independent peer and surrounding member/guest regressions pass. Do not close from source or ordinary CI.",
   "deployed_server_sha": "9bd979a894ba71141d6548069d621aa59a526bde",
   "published_extension_version": "0.2.130",
-  "bounded_retest": "Published130 functional guest first reply and reload follow-up observed in runs37103324918 and37105304739. Original integrity failures retained; exact176 and surrounding nonadmin acceptance pending. State fixed, not closed."
+  "bounded_retest": "Published130 functional guest initial/reload evidence retained with explicit Google metadata-only integrity distinction. Exact release176 guest37106907229 PASSED first/reload answers and unchangedtree; independent member37107947183 PASSED real web+extension auth, nonadmin authority, explicit org and real answer. Both resource-valid. Member tree checked before load only; guest separately rehashed identical release after interaction."
 }
