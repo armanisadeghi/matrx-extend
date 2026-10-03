@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "status": "bounded_native_failure_overlap_reload",
+  "run": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "run_id": 37114473568,
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37114473568",
+    "workflow_source_sha": "1f056b5b6cbc5b96e34395d36ecd343e90c2155e",
+    "conclusion": "failure",
+    "case": "settings-persistence",
+    "development_run_id": 37107627454,
+    "development_artifact_id": 11268886169,
+    "development_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "development_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "release_run_id": "",
+    "published_store_crx": false,
+    "acceptance_artifact_id": 11271078490,
+    "acceptance_artifact_name": "hosted-guest-37114473568-1"
+  },
+  "setup": {
+    "indexing_disabled": "success, 2026-10-03T09:52:09Z-09:52:10Z; repeated status output was Indexing disabled.",
+    "package_readiness": "success, three healthy samples (0.11, 0.01, 0.58 busy); step completed 09:52:43Z",
+    "browser_driver_resource_permit": "success; admitted at 09:53:51Z, childExitCode=0, resourceInvalid=false, decision=valid at 09:53:54Z",
+    "browser_readiness": "success, three healthy samples (0.06, 0.01, 0.01 busy); step completed 09:54:40Z",
+    "full_chromium_resource_permit": "success; admitted at 09:55:47Z, childExitCode=0, resourceInvalid=false, decision=valid at 09:55:57Z",
+    "acceptance_readiness": "success, three healthy samples (0.52, 0.01, 0.02 busy); step completed 09:56:36Z"
+  },
+  "native_receipt": {
+    "path_in_artifact": "test-results/settings-d87-native-c9124ce5-467f-499a-adbf-7b7837fd9845.json",
+    "sha256": "b4763584b75ccab2092eb84733640fdf10b710d40e8a1d4000ad09d77ac204fe",
+    "schema_version": 1,
+    "defect": "EXT-D-0087",
+    "scope": "receipt-bound owned Chrome-for-Testing native Settings panel; guest",
+    "status": "fail",
+    "version": "0.2.176",
+    "receipt_kind": "local_dev_unpacked",
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "artifact_id": 11268886169,
+    "cases": [
+      {
+        "name": "first changed choice saved through UI",
+        "status": "pass",
+        "observation": {
+          "theme": "Light",
+          "storedTheme": "light",
+          "error": false,
+          "retry": false,
+          "guest": true,
+          "settingsActive": true
+        }
+      },
+      {
+        "name": "system choice saved through UI",
+        "status": "pass",
+        "observation": {
+          "theme": "System",
+          "storedTheme": "system",
+          "error": false,
+          "retry": false,
+          "guest": true,
+          "settingsActive": true
+        }
+      },
+      {
+        "name": "rejected write visible with retry",
+        "status": "pass",
+        "observation": {
+          "theme": "Dark",
+          "storedTheme": "system",
+          "error": true,
+          "retry": true,
+          "guest": true,
+          "settingsActive": true
+        }
+      },
+      {
+        "name": "retry persisted after reload",
+        "status": "pass",
+        "before_reload": {
+          "theme": "Dark",
+          "storedTheme": "dark",
+          "error": false,
+          "retry": false,
+          "guest": true,
+          "settingsActive": true
+        },
+        "observation": {
+          "theme": "Dark",
+          "storedTheme": "dark",
+          "error": false,
+          "retry": false,
+          "guest": true,
+          "settingsActive": true
+        }
+      },
+      {
+        "name": "latest rapid choice persisted",
+        "status": "pass",
+        "before_release": {
+          "theme": "System",
+          "storedTheme": "dark",
+          "error": false,
+          "retry": false,
+          "guest": true,
+          "settingsActive": true
+        },
+        "observation": {
+          "theme": "System",
+          "storedTheme": "system",
+          "error": false,
+          "retry": false,
+          "guest": true,
+          "settingsActive": true
+        }
+      }
+    ],
+    "failure": {
+      "stage": "overlap_reload",
+      "code": "d87_system_saved_not_observed",
+      "operation": "reloaded_theme",
+      "observation": {
+        "theme": "Light",
+        "storedTheme": "light",
+        "error": false,
+        "retry": false,
+        "guest": true,
+        "settingsActive": true
+      },
+      "expected": { "theme": "System", "storedTheme": "system" }
+    }
+  },
+  "resource": {
+    "policy_file": "docs/stabilization/resource-policy.json",
+    "policy_schema": 1,
+    "unsafe_samples_to_stop": 2,
+    "watch_interval_seconds": 15,
+    "acceptance_journal_path_in_artifact": "docs/stabilization/resource-journals/hosted-guest-37114473568-1.jsonl",
+    "acceptance_journal_sha256": "8f12d49436c9c5fc3fa2f71a2640cd85e32f12341c28d15af5c6a446926379e5",
+    "events": [
+      {
+        "at": "2026-10-03T09:57:44.130Z",
+        "code": "RESOURCE_ADMITTED",
+        "busy": 0.10714285714285714,
+        "one_minute_load": 1.62,
+        "reasons": []
+      },
+      {
+        "at": "2026-10-03T09:58:00.312Z",
+        "code": "RESOURCE_WATCH_HEALTHY",
+        "busy": 0.48,
+        "one_minute_load": 2.09,
+        "reasons": []
+      },
+      { "at": "2026-10-03T09:58:15.249Z", "code": "RESOURCE_JOB_EXIT", "child_exit_code": 1 },
+      {
+        "at": "2026-10-03T09:58:15.429Z",
+        "code": "RESOURCE_FINAL_DECISION",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 1,
+        "decision": "child_failed"
+      }
+    ],
+    "interpretation": "No unsafe sample was recorded during this acceptance permit; the two-consecutive-unsafe stop threshold was not reached. Resource validity and product outcome are separate: the resource wrapper judged the permit valid, while the native acceptance child failed."
+  },
+  "post_interaction_tree_check": "Not reached or not reported after the native child failed; no post-exercise hash assertion can be claimed.",
+  "screenshots": {
+    "files": [
+      "test-results/native-sidepanel-qa-oPjyps/native-side-panel.png",
+      "test-results/native-sidepanel-qa-oPjyps/normal-target-after-open.png"
+    ],
+    "interpretation": "Generic native-panel QA captures only; neither shows the failing D87 overlap-after-reload state. No post-exercise screenshot proves the requested System state."
+  },
+  "scope": {
+    "result": "Five D87 cases passed. Overlap-after-reload failed because the observed UI and storage were Light/light rather than System/system. This is a bounded product acceptance failure for the stated native guest Settings case.",
+    "defects_closed": [],
+    "limits": [
+      "One native guest Settings persistence mode only; not all Settings, roles, or modes.",
+      "The failed case has no successful post-exercise tree hash assertion.",
+      "A valid resource decision does not establish a product pass."
+    ]
+  }
+}
