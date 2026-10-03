@@ -28,7 +28,7 @@
   ],
   "severity": "S0: public core no-login Chat fails immediately",
   "priority": "P0: supersedes deferred Chat sequencing; restore live guest promise now",
-  "state": "retest-pass",
+  "state": "closed",
   "transition_history": [
     {
       "at": "2026-10-03T03:45:02.531723+00:00",
@@ -59,6 +59,12 @@
       "from": "fixed",
       "to": "retest-pass",
       "reason": "Independent exact176 guest and nonadmin native acceptance passed; root inspected both screenshots. Original published130 payload also returned guest initial/reload answers after serverrepair; metadata-only integrity difference independently proven. Other Chat/Records cases remain open."
+    },
+    {
+      "at": "2026-10-03T08:17:48.179147+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Root verified original published130 guest request/reload functional evidence and independent metadata-only byte comparison, exact176 guest unchanged-tree initial/reload acceptance, and independent nonadmin member surrounding acceptance. Live server repair is deployed. Closure applies only to the startup schema crash; Google176 approval and exhaustive Chat remain separate."
     }
   ],
   "closure_requirement": "Original published guest request succeeds on deployed fix, real signed-out extension reply and reload verified, independent peer and surrounding member/guest regressions pass. Do not close from source or ordinary CI.",

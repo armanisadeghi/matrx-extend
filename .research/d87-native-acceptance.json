@@ -1,9 +1,10 @@
 {
   "schema": 1,
   "defect": "EXT-D-0087",
-  "status": "SETUP_NOT_ADMITTED",
-  "native_acceptance": "NOT_RUN",
+  "status": "BASELINE_FAILED_UNVERIFIED",
+  "native_acceptance": "ATTEMPTED_FAILED_BEFORE_CASES",
   "product_verdict": null,
+  "latest_attempt_run_id": 37108672704,
   "hosted_run": {
     "id": 37108409909,
     "attempt": 1,
@@ -72,7 +73,8 @@
     "note": "The upload also contained journals for hosted run 37105304739; they were excluded from this run's evidence."
   },
   "defect_record_updated": false,
-  "reason": "The first owned resource-guarded package phase refused admission because CPU busy fraction and one-minute load exceeded the existing thresholds. The guard exited before package preparation; Chromium preparation and all native UI/storage assertions were skipped. This is setup evidence only, not a product pass or failure.",
+  "initial_attempt_status": "SETUP_NOT_ADMITTED",
+  "initial_attempt_reason": "The first owned resource-guarded package phase refused admission because CPU busy fraction and one-minute load exceeded the existing thresholds. The guard exited before package preparation; Chromium preparation and all native UI/storage assertions were skipped. This is setup evidence only, not a product pass or failure.",
   "overall_status": "NO_PRODUCT_VERDICT",
   "follow_up_attempts": [
     {
@@ -154,5 +156,6 @@
         "screenshot_observation": "The screenshots show the controlled article page and the initial guest chat panel. They do not show Settings or any D87 assertion."
       }
     }
-  ]
+  ],
+  "current_reason": "The single authorized follow-up reached and launched the exact-artifact native panel, then failed in baseline before recording any D87 case. Available evidence does not distinguish a Settings/product baseline problem from a native interaction/setup problem; no product pass or failure verdict is assigned."
 }
