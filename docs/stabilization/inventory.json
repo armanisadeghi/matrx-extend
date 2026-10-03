@@ -3469,6 +3469,16 @@
           "id": "EXT-F-1003-C36",
           "label": "Retry saving preferences",
           "action": "After a preference save failure, activate Retry save and verify the latest choice persists without losing newer edits."
+        },
+        {
+          "id": "EXT-F-1003-C37",
+          "label": "Retry audit details",
+          "action": "After an audit details read fails, retry only that read; never rotate a key as part of read recovery."
+        },
+        {
+          "id": "EXT-F-1003-C38",
+          "label": "Retry public key export",
+          "action": "Recover an unsuccessful public-key copy without false copied feedback or private-key exposure."
         }
       ],
       "source_anchors": [
@@ -4463,7 +4473,7 @@
             "Reload Settings and inspect the card again; do not infer success from source code or a loading placeholder."
           ],
           "expected": [
-            "The admin sees the actual public key ID, creation time, receipt count and current recent rows. Empty values are represented by the visible placeholder; a failed read without in-product feedback remains an observed limitation and does not pass error handling."
+            "The admin sees the actual public key ID, creation time, receipt count and current recent rows. Failed reads show an actionable error instead of indefinite loading or misleading empty success."
           ],
           "dimensions": [
             "warm",
@@ -5866,7 +5876,8 @@
             "admin"
           ],
           "control_ids": [
-            "EXT-F-1003-C24"
+            "EXT-F-1003-C24",
+            "EXT-F-1003-C38"
           ],
           "preconditions": [
             "Signed in as admin; Settings > Advanced agent capabilities > Audit key.",
@@ -5881,8 +5892,7 @@
           ],
           "expected": [
             "Success copies only the public JWK and shows copied feedback.",
-            "Clipboard failure produces an actionable in-product error and retry path, clears busy state, and never reports success or copied state.",
-            "The current source catches export failure only in the console; that source observation is a lead, not a pass or confirmed runtime defect. The failure behavior remains unverified until exercised in the installed extension."
+            "Clipboard failure produces an actionable in-product error and retry path, clears busy state, and never reports success or copied state."
           ],
           "dimensions": [
             "warm",
@@ -6681,6 +6691,121 @@
             "retry",
             "reload"
           ]
+        },
+        {
+          "id": "EXT-F-1003-T86",
+          "title": "Audit details read failure and retry",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1003-C09",
+            "EXT-F-1003-C37"
+          ],
+          "preconditions": [
+            "Record a resource permit and build receipt for the Settings audit source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never treat source inspection as a result.",
+            "Wait for a fresh build to finish, load its generated extension output, fully Reload after relevant source/manifest/permission/environment changes, then reopen the actual side panel and verify the running extension identity.",
+            "Verify the actual principal is a known authorized admin, not merely signed in.",
+            "Use an owned disposable browser profile and isolated audit keys; never rotate or overwrite a real user profile key. Record only public identifiers, operation counts and redacted failures."
+          ],
+          "steps": [
+            "Open the actual admin Audit key card with a controlled details-read rejection.",
+            "Verify visible failure, clear the injected rejection, and activate Retry audit details.",
+            "Verify details recover and the key-rotation operation was never invoked."
+          ],
+          "expected": [
+            "Read failure is actionable, retry recovers actual details, and read recovery does not mutate the key."
+          ],
+          "dimensions": [
+            "warm",
+            "reload"
+          ]
+        },
+        {
+          "id": "EXT-F-1003-T87",
+          "title": "Audit rotation failure before mutation",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1003-C25"
+          ],
+          "preconditions": [
+            "Record a resource permit and build receipt for the Settings audit source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never treat source inspection as a result.",
+            "Wait for a fresh build to finish, load its generated extension output, fully Reload after relevant source/manifest/permission/environment changes, then reopen the actual side panel and verify the running extension identity.",
+            "Verify the actual principal is a known authorized admin, not merely signed in.",
+            "Use an owned disposable browser profile and isolated audit keys; never rotate or overwrite a real user profile key. Record only public identifiers, operation counts and redacted failures."
+          ],
+          "steps": [
+            "Record the isolated active public key ID and history, confirm Re-key with a controlled failure before persistence.",
+            "Verify the visible failure and unchanged active key/history.",
+            "Restore the operation and explicitly confirm a new Re-key attempt."
+          ],
+          "expected": [
+            "Failed rotation preserves the old key and history; a separately confirmed successful attempt changes the key once and preserves verification of prior receipts."
+          ],
+          "dimensions": [
+            "warm",
+            "reload"
+          ]
+        },
+        {
+          "id": "EXT-F-1003-T88",
+          "title": "Successful rotation with failed details refresh",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1003-C25",
+            "EXT-F-1003-C37"
+          ],
+          "preconditions": [
+            "Record a resource permit and build receipt for the Settings audit source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never treat source inspection as a result.",
+            "Wait for a fresh build to finish, load its generated extension output, fully Reload after relevant source/manifest/permission/environment changes, then reopen the actual side panel and verify the running extension identity.",
+            "Verify the actual principal is a known authorized admin, not merely signed in.",
+            "Use an owned disposable browser profile and isolated audit keys; never rotate or overwrite a real user profile key. Record only public identifiers, operation counts and redacted failures."
+          ],
+          "steps": [
+            "Confirm one Re-key on an isolated profile, then reject only its following details read.",
+            "Verify the completed rotation is acknowledged alongside the read failure.",
+            "Restore reads and retry details, then reload the panel and compare public key identity and rotation count."
+          ],
+          "expected": [
+            "Exactly one rotation occurs. Retrying details never rotates again; recovered and reloaded details identify the same new key."
+          ],
+          "dimensions": [
+            "warm",
+            "reload"
+          ]
+        },
+        {
+          "id": "EXT-F-1003-T89",
+          "title": "Audit key late persistence failure",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1003-C25",
+            "EXT-F-1003-C37"
+          ],
+          "preconditions": [
+            "Record a resource permit and build receipt for the Settings audit source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never treat source inspection as a result.",
+            "Wait for a fresh build to finish, load its generated extension output, fully Reload after relevant source/manifest/permission/environment changes, then reopen the actual side panel and verify the running extension identity.",
+            "Verify the actual principal is a known authorized admin, not merely signed in.",
+            "Use an owned disposable browser profile and isolated audit keys; never rotate or overwrite a real user profile key. Record only public identifiers, operation counts and redacted failures."
+          ],
+          "steps": [
+            "In an isolated native harness, interrupt the actual key/history persistence boundary after an earlier write could succeed; retain only public-ID and operation-count evidence.",
+            "Inspect the actual stored key/history and displayed operation outcome before activating any offered recovery.",
+            "Execute the offered recovery and reload; verify prior receipts remain verifiable and no unintended second rotation occurred."
+          ],
+          "expected": [
+            "A partial or uncertain mutation is not reported as a definite no-change failure. Recovery preserves key/history consistency and never silently repeats a completed rotation."
+          ],
+          "dimensions": [
+            "warm",
+            "reload"
+          ]
         }
       ],
       "cells": {
@@ -6738,7 +6863,8 @@
             "EXT-D-0007",
             "EXT-D-0084",
             "EXT-D-0086",
-            "EXT-D-0087"
+            "EXT-D-0087",
+            "EXT-D-0093"
           ],
           "run_ids": [
             "admin-org-001",
