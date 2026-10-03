@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "review_type": "fresh independent zero-product-authorship source review and pending native acceptance",
+  "scope": ["EXT-D-0094", "EXT-D-0095"],
+  "product_commits": [
+    "dccc196abb1945664b8ac756825526a5a9a6c7c5",
+    "ac49ac2f8fb9f9c3d538aef81149a1c4a6eb2418"
+  ],
+  "verdict_a_scope": "PASS_BOUNDED_SOURCE_FOR_SIGNED_IN_OWNER; NATIVE_UNVERIFIED",
+  "verdict_b_quality": "PASS_BOUNDED_SOURCE_EVIDENCE; NATIVE_UNVERIFIED",
+  "source_findings": [
+    "Profile reads users.user_form_profile through usersDb, filtered by the current authenticated owner's user_id. A denied read, missing row, and malformed row have distinct outcomes; the restricted context RPC is not used.",
+    "The hook binds loaded state to an owner lifetime and read sequence. The first render after identity change masks the prior draft, a stale save continuation cannot start an old-owner read, and a same-tick refresh invalidates the loaded baseline before Save.",
+    "A failed initial or post-save read presents an alert with Retry. ProfileView hides editors and dirty footer and disables the header Save; the hook refuses writes until a successful owner read."
+  ],
+  "evidence_reviewed": {
+    "red": [".research/profile-owner-red-01.log", ".research/profile-refresh-save-red-01.log"],
+    "green": ".research/profile-owner-green-02.log",
+    "constant_mutations": [
+      ".research/profile-owner-constant-01.log",
+      ".research/profile-view-constant-01.log",
+      ".research/profile-read-constant-02.log"
+    ],
+    "source_sha256": {
+      "src/hooks/use-user-profile.ts": "4fe09c0b1bd81f36aeec376da59506a609f874994e5cffef26cd62360ea58788",
+      "src/features/profile/ProfileView.tsx": "6e625da07d0c552378ca4c7577da4c33fc18ca7a2a40b1347505d586b003bca8",
+      "src/lib/supabase/user-profile.ts": "ffeddb3c7d8cf8aaf59c90a0cdd19487548e442358f8a9136e6732bfee6e34cd"
+    }
+  },
+  "native": {
+    "status": "pending_successful_exact_ci_artifact_and_sole_heavy_permit",
+    "ci_run_id": 37150495327,
+    "source_sha": "ac49ac2f8fb9f9c3d538aef81149a1c4a6eb2418",
+    "required": "Admin T02 and T04 real save/reopen/restore; denied owner-row read and Retry through a real browser network boundary; identity transition remains partial if real UI cannot be exercised."
+  },
+  "limits": "Mocked source tests cannot prove RLS or native persistence. No overall Profile inventory pass is claimed. Member behavior and real cross-identity UI remain unverified."
+}
