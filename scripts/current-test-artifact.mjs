@@ -8,7 +8,11 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import { fileURLToPath } from 'node:url';
-import { recordLocalDevBuild, requireLocalDevReceipt } from './record-local-dev-build.mjs';
+import {
+  recordLocalDevBuild,
+  requireLocalDevReceipt,
+  sourcePackageVersion,
+} from './record-local-dev-build.mjs';
 import { hashReleaseTree } from './sync-unpacked-release.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -346,7 +350,7 @@ export async function verifyImportedNativeEvidence(extensionDir, localReceiptPat
     fail('test_artifact_native_evidence_refused');
   const ciReceipt = JSON.parse(ciReceiptBytes);
   const provenance = JSON.parse(provenanceBytes);
-  const version = (await json(join(REPO, 'package.json'))).version;
+  const version = sourcePackageVersion(sourceSha);
   if (localReceipt.version !== version) fail('test_artifact_native_version_refused');
   await verifyDownloadedTree(
     build,
@@ -403,9 +407,9 @@ async function importArtifact(runId, artifactId) {
     const provenanceBytes = await readFile(provenancePath);
     const receipt = JSON.parse(ciReceiptBytes);
     const provenance = JSON.parse(provenanceBytes);
-    const version = (await json(join(REPO, 'package.json'))).version;
-    await verifyDownloadedTree(build, receipt, provenance, run, version);
     const state = await sourceState(run.head_sha);
+    const version = sourcePackageVersion(run.head_sha);
+    await verifyDownloadedTree(build, receipt, provenance, run, version);
     const target = await withReservedImportTarget(
       run.head_sha,
       run.id,

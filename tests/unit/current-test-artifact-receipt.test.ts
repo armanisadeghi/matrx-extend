@@ -46,13 +46,14 @@ afterEach(async () => {
   for (const path of owned.splice(0)) await rm(path, { recursive: true, force: true });
 });
 
-async function fixture() {
+async function fixture(versionOverride?: string) {
   const source = randomBytes(20).toString('hex');
   const root = join(repo, 'test-results', 'ci-artifacts', source);
   owned.push(root);
   const build = join(root, '37020466023-1', 'chrome-mv3');
   await mkdir(build, { recursive: true });
-  const version = JSON.parse(await readFile(join(repo, 'package.json'), 'utf8')).version;
+  const version =
+    versionOverride ?? JSON.parse(await readFile(join(repo, 'package.json'), 'utf8')).version;
   const config = await readFile(join(repo, 'wxt.config.ts'), 'utf8');
   const key = /const devExtensionKey =\s*'([^']+)'/.exec(config)?.[1];
   assert.ok(key, 'the checked-in development key is required for this fixture');
@@ -62,7 +63,16 @@ async function fixture() {
   );
   await writeFile(join(build, 'sidepanel.js'), 'development guest entry');
   const localReceiptPath = join(root, '37020466023-1', 'local-dev-receipt.json');
-  const receipt = await recordLocalDevBuild({ extensionDir: build, outputPath: localReceiptPath });
+  const receipt = {
+    schema_version: 1,
+    kind: 'local_dev_unpacked',
+    publish_state: 'not_published',
+    observedAt: new Date().toISOString(),
+    extensionDir: build,
+    version,
+    treeSha256: hashReleaseTree(build),
+  };
+  await writeFile(localReceiptPath, JSON.stringify(receipt));
   const ciReceipt = {
     ...receipt,
     extensionDir: '/home/runner/work/matrx-extend/matrx-extend/.output/chrome-mv3',
@@ -310,7 +320,8 @@ it('refuses a CI receipt with malformed schema, timestamp, or original build pat
 });
 
 it('binds the native result to unchanged CI evidence and freshly classifies source drift', async () => {
-  const { root, build, receipt, ciReceipt, provenance, localReceiptPath } = await fixture();
+  const { root, build, receipt, ciReceipt, provenance, localReceiptPath } =
+    await fixture('0.0.123');
   const target = resolve(build, '..');
   const sourceSha = basename(root);
   const nativeProvenance = { ...provenance, sourceSha };
@@ -335,7 +346,7 @@ it('binds the native result to unchanged CI evidence and freshly classifies sour
   await mkdir(fakeBin);
   await writeFile(
     join(fakeBin, 'git'),
-    '#!/bin/sh\ncase "$1 $2" in\n  "fetch --quiet") exit 0;;\n  "rev-parse origin/main") printf "%s\\n" "$FAKE_ORIGIN_SHA";;\n  "rev-parse HEAD") printf "%s\\n" "$FAKE_LOCAL_SHA";;\n  "status --porcelain") printf "%s" "$FAKE_TRACKED_DIRT";;\n  "ls-files --others") printf "%s" "$FAKE_UNTRACKED_RUNNER";;\n  *) exit 3;;\nesac\n',
+    '#!/bin/sh\ncase "$1 $2" in\n  "show "*) printf \'%s\\n\' \'{"version":"0.0.123"}\';;\n  "fetch --quiet") exit 0;;\n  "rev-parse origin/main") printf "%s\\n" "$FAKE_ORIGIN_SHA";;\n  "rev-parse HEAD") printf "%s\\n" "$FAKE_LOCAL_SHA";;\n  "status --porcelain") printf "%s" "$FAKE_TRACKED_DIRT";;\n  "ls-files --others") printf "%s" "$FAKE_UNTRACKED_RUNNER";;\n  *) exit 3;;\nesac\n',
     { mode: 0o700 },
   );
   const oldPath = process.env.PATH;
@@ -345,6 +356,12 @@ it('binds the native result to unchanged CI evidence and freshly classifies sour
     process.env.FAKE_LOCAL_SHA = sourceSha;
     process.env.FAKE_TRACKED_DIRT = '';
     process.env.FAKE_UNTRACKED_RUNNER = '';
+    await rm(localReceiptPath);
+    const recorded = await recordLocalDevBuild({
+      extensionDir: build,
+      outputPath: localReceiptPath,
+    });
+    assert.equal(recorded.version, '0.0.123');
     const current = await verifyImportedNativeEvidence(build, localReceiptPath);
     assert.equal(current.artifactId, artifact.id);
     assert.equal(current.githubArtifactDigest, digest);

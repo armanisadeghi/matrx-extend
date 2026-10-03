@@ -17,3 +17,5 @@ export function recordLocalDevBuild(input: {
   extensionDir?: string;
   outputPath: string;
 }): Promise<LocalDevBuildReceipt>;
+
+export function sourcePackageVersion(sourceSha: string): string;

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 /** Snapshot a local keyed WXT build without claiming a published release. */
+import { execFileSync } from 'node:child_process';
 import { open, readFile } from 'node:fs/promises';
-import { dirname, resolve } from 'node:path';
+import { basename, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from './sync-unpacked-release.mjs';
 
@@ -40,6 +41,17 @@ export function requireLocalDevReceipt(receipt, extensionDir) {
   return receipt;
 }
 
+export function sourcePackageVersion(sourceSha) {
+  if (!/^[a-f0-9]{40}$/.test(sourceSha)) throw new Error('local_dev_source_refused');
+  return JSON.parse(
+    execFileSync('git', ['show', `${sourceSha}:package.json`], {
+      cwd: REPO,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }),
+  ).version;
+}
+
 export async function recordLocalDevBuild({ extensionDir = DEFAULT_BUILD, outputPath }) {
   const build = resolve(extensionDir);
   if (!isAdmittedBuild(build)) throw new Error('local_dev_build_path_refused');
@@ -54,7 +66,9 @@ export async function recordLocalDevBuild({ extensionDir = DEFAULT_BUILD, output
     throw new Error('local_dev_receipt_output_refused');
   const [manifest, pkg] = await Promise.all([
     readFile(resolve(build, 'manifest.json'), 'utf8').then(JSON.parse),
-    readFile(resolve(REPO, 'package.json'), 'utf8').then(JSON.parse),
+    importedParent
+      ? { version: sourcePackageVersion(basename(dirname(importedParent))) }
+      : readFile(resolve(REPO, 'package.json'), 'utf8').then(JSON.parse),
   ]);
   if (
     manifest.manifest_version !== 3 ||
