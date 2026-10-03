@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { storageFaultInstallerSource } from './d87-storage-fault-injector.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
@@ -162,37 +163,7 @@ async function reload(panel, expectedTheme) {
 }
 
 async function installStorageFault(panel, mode) {
-  const installed = await evaluate(
-    panel,
-    `(() => {
-    const key = ${JSON.stringify(KEY)};
-    const area = chrome.storage.local;
-    const original = area.set;
-    const nativeSet = original.bind(area);
-    const fault = { mode: ${JSON.stringify(mode)}, calls: 0, released: false, release: null };
-    const wrapper = (items) => {
-      if (!Object.hasOwn(items, key)) return nativeSet(items);
-      fault.calls += 1;
-      if (fault.calls !== 1) return nativeSet(items);
-      if (fault.mode === 'reject') return Promise.reject(new Error('d87 controlled storage refusal'));
-      return new Promise((resolve, reject) => {
-        fault.release = () => {
-          fault.released = true;
-          nativeSet(items).then(resolve, reject);
-        };
-      });
-    };
-    area.set = wrapper;
-    if (area.set !== wrapper) return false;
-    window.__d87StorageFault = {
-      state: () => ({ calls: fault.calls, released: fault.released,
-        held: typeof fault.release === 'function' && !fault.released }),
-      release: () => fault.release?.(),
-      restore: () => { area.set = original; },
-    };
-    return true;
-  })()`,
-  );
+  const installed = await evaluate(panel, storageFaultInstallerSource(KEY, mode));
   assert.equal(installed, true, 'd87_injection_not_installed');
 }
 
