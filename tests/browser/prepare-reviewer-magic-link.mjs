@@ -70,6 +70,23 @@ async function main() {
     .eq('user_id', identity.id);
   stage = 'admin_role';
   if (roleError || count !== 0) throw new Error('reviewer_nonadmin_role_unverified');
+  const { data: memberships, error: membershipError } = await admin
+    .schema('iam')
+    .from('memberships')
+    .select('container_id')
+    .eq('user_id', identity.id)
+    .eq('container_type', 'organization')
+    .eq('status', 'active');
+  if (membershipError || memberships?.length !== 1)
+    throw new Error('reviewer_organization_membership_unverified');
+  const { data: organization, error: organizationError } = await admin
+    .schema('iam')
+    .from('organizations')
+    .select('name')
+    .eq('id', memberships[0].container_id)
+    .single();
+  if (organizationError || organization?.name !== "Matrx's Org")
+    throw new Error('reviewer_test_organization_unverified');
   if (process.env.MATRX_REVIEWER_DRY_RUN === '1') {
     process.stdout.write('READY existing_reviewer_nonadmin_authority\n');
     return;
