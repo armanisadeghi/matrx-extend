@@ -49,6 +49,7 @@ const report = {
     'panel-target run proves rendered live behavior; it does not observe offscreen fetch HTTP status',
   build: null,
   completed_turns: [],
+  send_observations: [],
   exhausted_turn: null,
   owner_table_gets_after_observer_attachment: [],
   failure_stage: null,
@@ -332,11 +333,24 @@ try {
             .map((part) => part.innerText ?? '').join('\\n')) : [];
         return { guest: visible(document.querySelector('button[title="Account"]')),
           composer: visible(pane?.querySelector('textarea')), replyCount: replies.length,
-          latest: replies.at(-1) ?? '', streaming: !!pane?.querySelector('button[title="Stop"]'),
+          sendReady: [...(pane?.querySelectorAll('button[title="Send"], button:not([title])[data-matrx-title="Send"]') ?? [])].filter(b => visible(b) && !b.disabled).length === 1,
+          latest: replies.at(-1) ?? '', streaming: !!pane?.querySelector('button[title="Stop"], button:not([title])[data-matrx-title="Stop"]'),
           retryVisible: pane ? [...pane.querySelectorAll('button')].some((b) => visible(b) && /^retry$/i.test(b.innerText.trim())) : false };
       })()`,
         );
       await waitFor('guest_chat_ready', state, (s) => s?.guest && s.composer, 30_000);
+      report.guest_identity = await evaluate(
+        panel,
+        `(async () => {
+        const values = await chrome.storage.local.get(['matrx.auth.accessToken', 'matrx.user.profile']);
+        return { banner_present: document.body.innerText.includes("You're using Matrx as a guest."),
+          access_token_absent: !values['matrx.auth.accessToken'], profile_absent: !values['matrx.user.profile'] };
+      })()`,
+      );
+      assert.ok(
+        Object.values(report.guest_identity).every((value) => value === true),
+        'explicit signed-out guest identity',
+      );
 
       const reads = new Map();
       await panel.send('Network.enable');
@@ -370,8 +384,33 @@ try {
           await waitFor(
             `turn_${index + 1}_send_ready`,
             state,
-            (s) => s?.replyCount === before.replyCount && !s.streaming && s.composer,
+            (s) => s?.replyCount === before.replyCount && !s.streaming && s.composer && s.sendReady,
             10_000,
+          ).catch(async (error) => {
+            report.send_wait_failure = await evaluate(
+              panel,
+              `(() => {
+              const tab = document.querySelector('button[role="tab"][title="Chat"]');
+              const pane = document.getElementById(tab?.getAttribute('aria-controls') ?? '');
+              return { buttons: [...(pane?.querySelectorAll('button') ?? [])].map(el => ({title: el.title, preserved_title: el.getAttribute('data-matrx-title'), label: el.getAttribute('aria-label'), disabled: el.disabled})), pane_present: !!pane };
+            })()`,
+            );
+            throw error;
+          });
+          report.send_observations.push(
+            await evaluate(
+              panel,
+              `(() => {
+            const tabs = [...document.querySelectorAll('button[role="tab"][title="Chat"]')];
+            const pane = document.getElementById(tabs[0]?.getAttribute('aria-controls') ?? '');
+            const rect = (el) => { const r = el.getBoundingClientRect(); return { width: r.width, height: r.height }; };
+            return { tabs: tabs.map(el => ({ selected: el.getAttribute('aria-selected'), state: el.getAttribute('data-state') })),
+              paneState: pane?.getAttribute('data-state'),
+              composers: [...(pane?.querySelectorAll('textarea') ?? [])].map(el => ({ ...rect(el), focused: el === document.activeElement, length: el.value.length })),
+              sends: [...(pane?.querySelectorAll('button[title="Send"], button:not([title])[data-matrx-title="Send"]') ?? [])].map(el => ({ ...rect(el), disabled: el.disabled })),
+              stops: pane?.querySelectorAll('button[title="Stop"], button:not([title])[data-matrx-title="Stop"]').length ?? 0 };
+          })()`,
+            ),
           );
           await click(panel, 'active-chat-send', 'Send');
           const finished = await waitFor(
@@ -449,6 +488,7 @@ try {
   report.status = 'pass';
 } catch (error) {
   report.failure_stage = stage;
+  report.driver_failure = error?.driverFailure ?? null;
   report.failure_code = String(error?.message ?? 'unknown_error')
     .split(':', 1)[0]
     .replace(/[^a-z0-9_]/gi, '_')

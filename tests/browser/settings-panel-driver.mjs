@@ -124,11 +124,12 @@ export async function click(panel, kind, label) {
         style.display !== 'none' && !el.closest('[inert]');
     };
     let candidates;
-    if (kind === 'title') candidates = [...document.querySelectorAll('button[title]')]
-      .filter((el) => el.title === label);
+    // The shared title tooltip temporarily preserves a hovered title in data-matrx-title.
+    if (kind === 'title') candidates = [...document.querySelectorAll('button[title], button[data-matrx-title]')]
+      .filter((el) => (el.getAttribute('title') ?? el.getAttribute('data-matrx-title')) === label);
     else if (kind === 'active-chat-send') {
       const chatPanel = ${activeTabPanelExpression('Chat')};
-      candidates = [...(chatPanel?.querySelectorAll('button[title="Send"]') ?? [])]
+      candidates = [...(chatPanel?.querySelectorAll('button[title="Send"], button:not([title])[data-matrx-title="Send"]') ?? [])]
         .filter((el) => label === 'Send');
     }
     else if (kind === 'context-values') {
