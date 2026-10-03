@@ -1,9 +1,9 @@
 {
-  "status": "PENDING_BOUNDED_HOSTED_DIAGNOSTIC",
+  "status": "ROOT_CAUSE_PROVEN; preparation fix awaits independent review and second runtime",
   "scope": "Published Store 0.2.130 guest acceptance and artifact provenance; no receipt or resource guard weakening",
   "started_at": "2026-10-03T06:57:00Z",
   "limit": "20 minutes active elapsed, maximum two runtime attempts; no subagents",
-  "diagnostic_commits": ["393dd1ee", "f4c9e93e", "42aad142"],
+  "diagnostic_commits": ["393dd1ee", "f4c9e93e", "42aad142", "ae0aeabf"],
   "hypotheses": [
     {
       "cause": "Downloaded local Chromium startup is killed or cannot load its signed resources",
@@ -15,19 +15,19 @@
       "cause": "Chrome changes only Google installation metadata in unpacked CRX",
       "prediction": "Post-browser before/after inventory lists only metadata paths; all payload hashes remain equal",
       "test": "Fresh resource-admitted hosted run using existing strict receipt and changed-file diagnostics",
-      "state": "Pending"
+      "state": "Confirmed by exact one-file diff and independent in-memory reconstruction"
     },
     {
       "cause": "Payload is mutated during native use",
       "prediction": "Changed-file inventory identifies manifest/script/assets beyond declared prelaunch manifest.key adaptation",
       "test": "Same strict hosted run",
-      "state": "Pending"
+      "state": "Ruled out for this run: every application payload file unchanged"
     },
     {
       "cause": "Hosted host resource saturation prevents any product test",
       "prediction": "Unchanged preflight refuses before native startup",
       "test": "One fresh hosted environment; no repeat after CPU refusal",
-      "state": "Pending"
+      "state": "Ruled out for this run: all setup/admission phases valid"
     }
   ],
   "local_static_evidence": {
@@ -44,6 +44,76 @@
     "product_ran": false,
     "guard_changed": false
   },
-  "runtime_attempts": [],
-  "verdict": "UNVERIFIED; no new actual guest evidence yet"
+  "runtime_attempts": [
+    {
+      "run_id": 37105304739,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37105304739",
+      "source_sha": "e20d95e22c026aa9a93ef18d652d562b023348ef",
+      "mode": "published_store_crx 0.2.130 guest-chat",
+      "status": "completed_failure",
+      "reason": "One fresh hosted environment after prior resource refusal; original hosted environment had reached real UI and strict artifact failure",
+      "artifact_id": 11267493147,
+      "resource": {
+        "admitted": true,
+        "resourceInvalid": false,
+        "decision": "child_failed"
+      },
+      "failure_stage": "artifact_unchanged",
+      "functional_observation": {
+        "opening": "terminal_answer; exact unpredictable page code plus Capture/Understand/Use in order",
+        "followup": "terminal_answer after real panel reload; distinct exact page code plus fixture heading",
+        "guest": "fresh signed out; absent session after reload; no login/paywall/error"
+      },
+      "integrity_failure": {
+        "expected_tree_sha256": "725e732b6861550a0f288e6ac8b53779dab57c50fedf148fd495ac0fed1835ae",
+        "actual_tree_sha256": "2cdf926b90edb760b1f0724b628c10de0aa6d17162f4b3ee09b80aa1198d4eec",
+        "before_file_count": 521,
+        "after_file_count": 520,
+        "changed_files": [
+          {
+            "path": "_metadata/verified_contents.json",
+            "before": {
+              "bytes": 70528,
+              "sha256": "e03b9df0b19dd343f106312b4915c5a6eb5c81d0315ad8b0299c561d1198f394"
+            },
+            "after": null
+          }
+        ]
+      }
+    }
+  ],
+  "verdict": "Published 0.2.130 functional guest behavior verified twice in resource-valid hosted runs; overall integrity assertion remained failed. Latest diagnostic proves only Google metadata deletion, with all application payload bytes unchanged. Preparation fix not yet runtime verified.",
+  "review": {
+    "commit": "e20d95e22c026aa9a93ef18d652d562b023348ef",
+    "reviewer": "root independent of diagnostic authorship",
+    "verdict": "PASS_SOURCE_DIAGNOSTIC_ONLY",
+    "limitation": "Fresh peer spawn refused three times by thread limit; root reviewed final flags-only delta. No product acceptance claim authorized."
+  },
+  "diagnostic_validation": [
+    "Biome check passed",
+    "node --check passed",
+    "Adversarial JSON token/password/URL/prefixless long secret inputs emitted only boolean flags; dyld/code-signature marker flags verified"
+  ],
+  "counterfactual_proof": {
+    "method": "Read original locally adapted known pinned CRX tree without writing; hash same sorted path/NUL/bytes/NUL sequence while skipping only diagnosed deleted metadata file. Separately verified metadata bytes/hash against original Google ZIP.",
+    "removed_path": "_metadata/verified_contents.json",
+    "bytes": 70528,
+    "sha256": "e03b9df0b19dd343f106312b4915c5a6eb5c81d0315ad8b0299c561d1198f394",
+    "computed_tree_sha256": "2cdf926b90edb760b1f0724b628c10de0aa6d17162f4b3ee09b80aa1198d4eec",
+    "matches_hosted_actual": true,
+    "original_files_mutated": false
+  },
+  "live_server_after": "9bd979a894ba71141d6548069d621aa59a526bde",
+  "repair": {
+    "scope": "Published Store CRX preparation only",
+    "change": "After exact public CRX SHA verification and manifest key adaptation, remove only _metadata/verified_contents.json, recording original byte count/SHA/path in receipt, then snapshot strict immutable runtime tree. Original CRX unchanged.",
+    "unchanged": [
+      "hashReleaseTree",
+      "resource guard",
+      "initial and final strict runtime tree assertions",
+      "all other preparation modes"
+    ],
+    "authorization": "Root explicitly directed this now-proven exact adaptation after diagnosis",
+    "validation": "Biome and node syntax passed; fresh independent review and next runtime required"
+  }
 }

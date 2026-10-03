@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { access, mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { access, mkdir, readFile, readdir, unlink, writeFile } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { matchingCrx3RsaKey } from './crx3-identity.mjs';
@@ -163,6 +163,17 @@ async function preparePublishedStoreCrx(outputDir) {
   // unpacked copy needs it to keep the primary item ID under --load-extension.
   manifest.key = signingKey.toString('base64');
   await writeFile(join(extensionDir, 'manifest.json'), `${JSON.stringify(manifest)}\n`);
+  // Chromium removes Store verification metadata when this signed CRX is loaded
+  // as an unpacked extension. Record that exact adaptation before the immutable
+  // runtime receipt; every remaining file stays covered by the strict tree hash.
+  const metadataPath = '_metadata/verified_contents.json';
+  const metadataBytes = await readFile(join(extensionDir, metadataPath));
+  const removedStoreMetadata = {
+    path: metadataPath,
+    bytes: metadataBytes.length,
+    sha256: sha256(metadataBytes),
+  };
+  await unlink(join(extensionDir, metadataPath));
   const treeSha256 = hashReleaseTree(extensionDir);
   const receipt = {
     kind: 'published_store_crx_unpacked',
@@ -174,7 +185,8 @@ async function preparePublishedStoreCrx(outputDir) {
     downloadSource:
       'Google Chrome public update service; byte-identical to authenticated primary publisher Published main.crx',
     unpackedAdaptation:
-      'Temporary manifest.key copied from CRX3 RSA signing proof for unpacked Chromium loading; original CRX unchanged',
+      'Temporary manifest.key copied from CRX3 RSA signing proof; exact Store verification metadata removed for unpacked Chromium loading; original CRX unchanged',
+    removedStoreMetadata,
   };
   const relocatedReceipt = join(outputDir, 'published-store-crx-receipt.json');
   await writeFile(relocatedReceipt, `${JSON.stringify(receipt, null, 2)}\n`, { mode: 0o600 });
