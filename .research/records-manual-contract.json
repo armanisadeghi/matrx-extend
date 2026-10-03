@@ -1,0 +1,20 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Manual Records execution in the extension Tools panel only; no server, database, or chat routing edits.",
+  "implemented": [
+    "Tools Records row reads the active registered server contract from GET /tools/test/list and displays its unflattened $variants action map.",
+    "Manual Run sends exact canonical action/args JSON to the existing authenticated POST /tools/test/execute with the extension's selected-organization header. If no organization is selected, the request waits for the canonical picker choice; token and organization are rechecked before dispatch. The returned headers must contain the canonical organization header with the selected value, so a malformed stored id cannot send an authenticated org-less stream.",
+    "NDJSON completion returns the server's full tool receipt; transport errors and missing completions fail visibly; success=false produces an error timeline phase.",
+    "Focused tests cover the actual Tools Run click, canonical action envelope, held organization selection, actor changes during preparation, malformed-id refusal through the real header builder, completed receipt, and refusal handling."
+  ],
+  "evidence": [
+    "Aidream tool_testing router and service show active-only list, authenticated route, dedicated system conversation, and ToolExecutor execution in AppContext.",
+    "Aidream package_integration.py intentionally leaves tool_authorization_hook unwired per Arman's 2026-09-22 decision; the manual Run click authorizes exact arguments under the existing UI policy.",
+    "The source-only repair adds held-request, actor-change, and real header-builder malformed-id regression tests. Earlier remote CI 37101616207 failed the second manual Tools test because its first render was not cleaned up; explicit per-test cleanup now fixes that fixture isolation. The release owner's disk-floor constraint prohibits local test/typecheck execution; a fresh remote CI replacement remains required."
+  ],
+  "open": [
+    "Strict tool drift remains: Chrome-bound local records handler has a flat Zod schema while the canonical DB/server contract has action plus args and 25 $variants. This tranche does not change chat/registry ownership or the strict gate.",
+    "No live signed-in/guest Chrome run or remote CI rerun yet; release owner must verify actual server completion and a store refusal.",
+    "The local Chrome Records handler still refuses 14 platform actions when reached directly. A separate executor-ownership decision must remove or reconcile that route without excluding the real drift gate."
+  ]
+}

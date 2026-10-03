@@ -46,9 +46,10 @@
     "docs/stabilization/reports/list-picker-source-peer.json",
     "docs/stabilization/reports/picker-navigation-escalation.json",
     "docs/stabilization/reports/d59-pattern-probe-ownership-20261002.json",
-    "docs/stabilization/reports/d59-pattern-probe-final-peer-20261002.json"
+    "docs/stabilization/reports/d59-pattern-probe-final-peer-20261002.json",
+    ".research/prepare-native-acceptance-peer.json"
   ],
-  "verification_status": "Fresh exact-loaded-path175 native repeat proves completed Prepare/Snapshot same-URL clearing only. Original late-settlement/failed-retry and broad class closure remain pending.",
+  "verification_status": "Bounded native admin evidence on the exact 0.2.176 CI development artifact covers Prepare same-URL and different-full-URL old-document late settlements. D59 remains in-fix: Snapshot on the current artifact and the broader shared document-identity consumers are still unverified.",
   "transition_history": [
     {
       "at": "2026-09-28T15:30:38.553635+00:00",
@@ -78,10 +79,18 @@
     "unverified": "Controlled old invocation completion/rejection, failed retry after success, pending Snapshot, broader D59 consumers. Neither defect closes.",
     "correction": "Admin clone retained frozen173 registration; runtime path was not established. These observations do not verify imported175. See docs/stabilization/reports/artifact-profile-identity-audit-20261002.json"
   },
-  "current_native_evidence": {
+  "previous_native_evidence": {
     "report": "docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json",
     "status": "partial",
     "verified": "Path-verified imported175 completed Prepare and Snapshot clear on same-tab/same-URL reload.",
     "unverified": "Failed retry, controlled late completion/rejection, pending Snapshot and broader D59 consumers."
+  },
+  "current_native_evidence": {
+    "report": ".research/prepare-native-acceptance-peer.json",
+    "run": "prepare-local-native-20261003-08",
+    "status": "partial",
+    "artifact": "CI development test run 37107627454 artifact 11268886169; source 3092444e73094cb0023f6086202869ccbd22978b; tree 025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "verified": "Current-artifact Prepare passed same-URL reload and distinct-full-URL late success/rejection cases; destination document identity changed and stale outcomes did not surface.",
+    "scope_limit": "Prepare only. Snapshot on this current artifact and the remaining shared document-identity consumers are unverified; keep D59 in-fix."
   }
 }

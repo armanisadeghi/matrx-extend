@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "reviewed_commits": ["c7887ebd4290a0d9aa369315300e62e277fde966", "3d908f3a"],
+  "verdict": "ACCEPT_STATIC_SCOPE_AND_EVIDENCE_NATIVE_ENVIRONMENT_UNVERIFIED",
+  "review": {
+    "diagnostic_run": 37111946024,
+    "diagnostic_source_sha": "b52378f25c301643baa0d7296c8067fe6fb0b12f",
+    "evidence_file": ".research/native-resource-diagnostic-37111946024/hosted-resource-diagnostic.json",
+    "paired_host_samples": 7,
+    "maximum_top_iostat_difference": 0.0545,
+    "indexer_cpu_percent_samples_2_to_7": [127.3, 330.0, 328.4, 210.8, 384.1, 371.1],
+    "cpu_count": 4,
+    "product_or_browser_ran": false,
+    "assessment": "The paired host samplers corroborate sustained saturation; process snapshots attribute substantial concurrent CPU to mds, mds_stores, and mdworker_shared. This supports indexing as a plausible disposable-runner environmental contributor, not as a proven cause on the two earlier expired runs or proof the proposed change repairs readiness."
+  },
+  "scope_review": {
+    "result": "PASS_STATIC",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "observations": [
+      "The only change in c7887ebd is an inline workflow step immediately before the first readiness check.",
+      "The step requires RUNNER_ENVIRONMENT=github-hosted and RUNNER_OS=macOS before sudo mdutil; self-hosted and non-macOS runs fail closed.",
+      "The step is not exposed as a local helper or called by normal local workflow code; the workflow itself runs only by workflow_dispatch.",
+      "It changes indexing only on that disposable hosted runner, checks status, and has no process kills, trustd/security setting changes, or user-Mac mutation path.",
+      "Existing readiness checks, resource guard limits, concurrency group, and artifact provenance steps are unchanged in the reviewed diff."
+    ],
+    "status_check": "Requires at least one Indexing disabled status and rejects any Indexing enabled status; command failures abort under set -euo pipefail."
+  },
+  "quality_review": {
+    "separate_from_verdict": true,
+    "notes": [
+      "The evidence establishes correlation on the diagnostic VM; process CPU uses its own sampling interval and does not provide exact accounting for the paired host samples.",
+      "Static review cannot verify mdutil behavior, readiness recovery, or the acceptance path on a fresh hosted VM.",
+      "This review does not assert a Settings result, D87 closure, native Chromium launch result, or Store artifact replacement."
+    ]
+  },
+  "required_next_evidence": "One authorized GitHub-hosted acceptance run must show indexing status verification, pass the existing readiness gates, and produce the selected case's native acceptance evidence before calling the environment repair verified."
+}

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "report_id": "audit-lock-unavailable-recovery-20261003",
+  "scope": "EXT-D-0093 known missing Web Locks recovery in the Settings audit key card",
+  "root_cause": "The audit key primitive rejected missing navigator.locks before storage access with an ordinary Error. Settings treated that error as a retryable rotation or clipboard failure, inviting another mutation although the browser context could not lock storage.",
+  "repair": "The primitive now throws DeviceKeyLockUnavailableError without weakening its exclusive origin lock. Details load, export, and rotation show one specific capability error, clear stale details, and block Re-key and export until a successful details-only read. Unknown active-key outcomes retain their separate re-key block; ordinary failures retain their existing retry paths.",
+  "verification": {
+    "red": "Guard d93-lock-recovery-red-20261003-01: 4 expected failures across UI and core; Settings showed generic retry/copy errors and the primitive had no typed unavailable error.",
+    "green": "Guard d93-lock-recovery-green-20261003-01: 13/13 tests passed across the focused Settings and device-key suites.",
+    "compile": "Guard d93-lock-recovery-compile-20261003-01: pnpm compile exit 0.",
+    "gut": "plant.py replaced the AuditKeyCard with a constant unavailable alert. Guard d93-lock-recovery-gut-20261003-01 made the UI suite RED and plant.py restored the file byte-identically.",
+    "mutation": "plant.py disabled the unavailable-rotation branch. Guard d93-lock-recovery-mutation-20261003-01 made its named UI test RED and plant.py restored the file byte-identically.",
+    "format": "Biome formatted only the four owned TypeScript files; git diff --check passed."
+  },
+  "peer_followup": {
+    "review": "Fresh source review at .research/audit-unavailable-final-peer.json found implementation sound but the unsupported-lock test did not assert unchanged persisted public-key history.",
+    "guard": "The existing test now snapshots the nonempty history created by real first-use key generation and compares it after unsupported rotation, in addition to the unchanged active key ID.",
+    "mutation": "plant.py inserted a history-clearing write before the typed unsupported-lock error. Guard d93-history-mutation-20261003-01 failed only the named invariant with expected [] versus the seeded history; plant.py restored production source byte-identically.",
+    "green": "Guard d93-history-green-20261003-01: focused device-key concurrency suite 5/5 passed on restored code."
+  },
+  "resource": "All test/typecheck/gut/mutation commands used the sole heavy permit. GREEN and compile finished valid; expected RED runs finished child_failed after admission. Final child exit was observed, the heavy lease was absent, and no runner or Vitest process remained before transfer.",
+  "limits": "No native Chrome Settings interaction, development build, release, or deployment in this lane. The parent coordinator owns exact-build native acceptance and final defect disposition."
+}

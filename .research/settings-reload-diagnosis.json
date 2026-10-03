@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "status": "RUNNER_NAVIGATION_ASSUMPTION_CORRECTED_RUNTIME_RECHECK_PENDING",
+  "scope": "Diagnose run 37113625864 and repair only the D87 native Settings acceptance navigation; no Chrome launch.",
+  "evidence": {
+    "run_id": 37113625864,
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37113625864",
+    "runner_source_sha": "ed025f4d2a938710a1144e711a75cf289ca69fd7",
+    "development_artifact_id": 11268886169,
+    "development_artifact_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "native_result": ".research/settings-launch-diagnostic-native.json",
+    "failed_case": "d87_reloaded_guest_not_observed",
+    "failed_observation": {
+      "guest": true,
+      "stored_theme": "dark",
+      "settings_active": false,
+      "theme": null,
+      "error": false,
+      "retry": false
+    },
+    "completed_cases": [
+      "Changed Light choice persisted through the Settings UI and Chrome storage.",
+      "System choice persisted through the Settings UI and Chrome storage.",
+      "Rejected Dark write kept stored System, showed a visible error and Retry save action."
+    ],
+    "retry_before_reload": "The runner clicked Retry save and settled the Dark UI/storage value before Page.reload. The failed receipt records storedTheme=dark after reload, but the Settings view was inactive and its theme control absent.",
+    "screenshot": "The uploaded native-side-panel.png shows guest Chat after the page reload; Settings is not selected.",
+    "resource_context": "The settings permit was admitted. Its watcher recorded unsafe then healthy samples; final resourceInvalid=false and child exit 1. This does not explain the inactive Settings tab or indicate a storage failure."
+  },
+  "hypotheses": [
+    {
+      "cause": "The runner assumes selected sidepanel tab state survives a full extension-page reload",
+      "prediction": "After reload the guest page is present, Settings is inactive, no theme control is rendered, and Chrome storage retains the saved theme",
+      "result": "CONFIRMED: the failed receipt has exactly this state. The exact artifact source 3092444 initializes the in-memory sidepanel store with tab='chat'; the tab store is not persisted. The neighboring settings-local-controls runner waits for the guest page, clicks Settings again, then verifies Settings state."
+    },
+    {
+      "cause": "Theme retry failed to persist",
+      "prediction": "After reopening Settings, the displayed or stored theme would differ from Dark",
+      "result": "NOT SUPPORTED BY CURRENT EVIDENCE: storage reports dark after reload, but the UI was never reopened, so visible hydration remains unobserved. Keep the post-reload UI and storage assertions."
+    },
+    {
+      "cause": "Panel reload failed or returned to a signed-in/login state",
+      "prediction": "The guest state would be absent or the expected native guest panel would not be visible",
+      "result": "CONTRADICTED: guest=true and the retained screenshot shows the guest Chat panel after reload."
+    }
+  ],
+  "repair": {
+    "file": "tests/browser/settings-d87-native-acceptance.mjs",
+    "behavior": "After Page.reload, wait for the guest panel, call the existing openSettings(panel) navigation helper, and then assert the expected visible theme, stored theme, guest state, active Settings tab and absence of a save error. Return and record the actual post-reload observation.",
+    "coverage": "The shared reload helper is used for both retry-after-reload and the later rapid-choice overlap reload. It preserves the guest-mode check and saved-value assertions. No product source or test acceptance condition was weakened."
+  },
+  "verification": {
+    "source_comparison": "The neighboring settings-local-controls and settings-local-reset acceptance runners both reopen Settings after reloading the extension page; the D87 runner now follows that established sequence.",
+    "artifact_source_check": "git show 3092444e73094cb0023f6086202869ccbd22978b:src/state/sidepanel-tab.ts confirms the exact tested artifact initializes its in-memory tab to chat.",
+    "local_checks": "PASS: node --check tests/browser/settings-d87-native-acceptance.mjs; formatter-enabled Biome check on the runner and report; git diff --check. No behavior test or browser run was claimed.",
+    "runtime": "No browser launch or acceptance rerun was performed."
+  },
+  "limits": [
+    "The first hosted run failed before its retry-after-reload assertion could inspect a reopened Settings view; product persistence after the retry is therefore unverified in the browser.",
+    "The overlapping-write and subsequent reload cases were not reached in the hosted run. Their assertions remain in the runner, but runtime is unverified.",
+    "The post-interaction artifact tree hash assertion was not reached in the hosted run."
+  ],
+  "next_action": "Obtain fresh independent source review of the runner-only correction, then root may authorize one guarded acceptance rerun. The rerun must reopen guest Settings and observe Dark after retry, then preserve the existing overlap and final System reload assertions."
+}

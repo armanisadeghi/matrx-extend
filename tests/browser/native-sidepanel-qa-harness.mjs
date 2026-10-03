@@ -71,6 +71,24 @@ function resolveExpectedRelease({ receipt, extensionDir, expectedRelease, localD
       version: dev.version,
     });
   }
+  if (receipt?.kind === 'published_store_crx_unpacked') {
+    if (
+      !extensionDir ||
+      !expectedRelease ||
+      expectedRelease.treeSha256 !== receipt.treeSha256 ||
+      expectedRelease.version !== receipt.version
+    )
+      throw new Error('native_sidepanel_store_crx_provenance_refused');
+    return Object.freeze({
+      kind: receipt.kind,
+      extensionDir: resolve(extensionDir),
+      treeSha256: receipt.treeSha256,
+      version: receipt.version,
+      crxPath: receipt.crxPath,
+      crxSha256: receipt.crxSha256,
+      extensionId: receipt.extensionId,
+    });
+  }
   const released = requireReleaseReceipt(receipt);
   if (extensionDir !== undefined) {
     if (
@@ -103,6 +121,23 @@ async function verifyReleasedArtifact(expected) {
   if (hashReleaseTree(expected.extensionDir) !== expected.treeSha256)
     throw new Error('native_sidepanel_release_tree_refused');
   if (expected.kind === 'local_dev_unpacked') return;
+  if (expected.kind === 'published_store_crx_unpacked') {
+    if (
+      !/^[a-f0-9]{64}$/.test(expected.crxSha256 ?? '') ||
+      expected.extensionId !== 'hnfolienncfklkgmdjjmhhegglimlamg'
+    )
+      throw new Error('native_sidepanel_store_crx_receipt_refused');
+    const crx = await readFile(expected.crxPath);
+    if (sha256(crx) !== expected.crxSha256)
+      throw new Error('native_sidepanel_store_crx_hash_refused');
+    const key = Buffer.from(manifest.key ?? '', 'base64');
+    const actualId = [...sha256(key).slice(0, 32)]
+      .map((digit) => String.fromCharCode(97 + Number.parseInt(digit, 16)))
+      .join('');
+    if (actualId !== expected.extensionId)
+      throw new Error('native_sidepanel_store_crx_identity_refused');
+    return;
+  }
   let zip;
   try {
     zip = await readFile(expected.storeZipPath);
@@ -324,6 +359,38 @@ function testPage(extensionId) {
     </script>`;
 }
 
+function browserDiagnosticFlags(value) {
+  // Never emit arbitrary Chromium output: even a bounded tail can start inside
+  // a credential and lose the label needed by a text redactor.
+  const text = String(value);
+  return {
+    hadStderr: text.length > 0,
+    codeSignature: /code sign|codesign|signature|signed resource/i.test(text),
+    dynamicLoader: /dyld|library not loaded|symbol not found/i.test(text),
+    permissionDenied: /permission denied|operation not permitted/i.test(text),
+    sandbox: /sandbox/i.test(text),
+    crash: /fatal|crash|segmentation|illegal instruction/i.test(text),
+    devtoolsListening: /DevTools listening on/i.test(text),
+  };
+}
+
+const SAFE_STARTUP_FAILURES = new Set([
+  'owned_cdp_configuration_refused',
+  'owned_cdp_endpoint_refused',
+  'owned_cdp_endpoint_timeout',
+  'owned_cdp_owner_refused',
+  'owned_cdp_process_inspection_failed',
+  'owned_cdp_socket_construction_failed',
+  'owned_cdp_open_timeout',
+  'owned_cdp_open_failed',
+  'owned_cdp_transport_failed',
+]);
+
+function safeStartupFailureCode(error) {
+  const code = error instanceof Error ? error.message : '';
+  return SAFE_STARTUP_FAILURES.has(code) ? code : 'unclassified';
+}
+
 export async function runNativeSidepanelQa({
   headed = false,
   extensionDir,
@@ -333,8 +400,11 @@ export async function runNativeSidepanelQa({
   chromeExecutable,
   expectedExtensionId = EXPECTED_EXTENSION_ID,
   artifactRoot = join(REPO, 'test-results'),
+  publicDemoUrl,
   exercisePanel,
+  onStage = () => {},
 } = {}) {
+  onStage('receipt');
   let receipt;
   try {
     receipt = JSON.parse(await readFile(localDevReceiptPath ?? releaseReceiptPath, 'utf8'));
@@ -351,7 +421,9 @@ export async function runNativeSidepanelQa({
     expectedRelease,
     localDev: localDevReceiptPath !== undefined,
   });
+  onStage('artifact_verify');
   await verifyReleasedArtifact(expected);
+  onStage('browser_runtime');
   const browserRuntime = await resolveBrowserRuntime({ chromeExecutable });
   chromeExecutable = browserRuntime.executablePath;
   const verifiedExtensionDir = expected.extensionDir;
@@ -360,6 +432,7 @@ export async function runNativeSidepanelQa({
   await mkdir(artifactRoot, { recursive: true, mode: 0o700 });
   const artifacts = await mkdtemp(join(artifactRoot, 'native-sidepanel-qa-'));
   await mkdir(profile, { mode: 0o700 });
+  onStage('profile_prepare');
   const preparedProfile = await prepareOwnedProfile(profile);
   let child;
   let cdp;
@@ -368,7 +441,10 @@ export async function runNativeSidepanelQa({
   let serverPort;
   let verified = false;
   let launchError;
+  let startupStartedAt;
   try {
+    onStage('browser_spawn');
+    startupStartedAt = performance.now();
     child = spawn(
       chromeExecutable,
       [
@@ -376,6 +452,7 @@ export async function runNativeSidepanelQa({
         '--enable-automation',
         '--no-first-run',
         '--no-default-browser-check',
+        '--use-mock-keychain',
         '--remote-debugging-address=127.0.0.1',
         '--remote-debugging-port=0',
         `--user-data-dir=${profile}`,
@@ -384,26 +461,53 @@ export async function runNativeSidepanelQa({
       ],
       { stdio: ['ignore', 'ignore', 'pipe'] },
     );
-    const chromeStderr = [];
-    child.stderr.on('data', (chunk) => chromeStderr.push(String(chunk)));
+    let chromeStderr = '';
+    child.stderr.on('data', (chunk) => {
+      chromeStderr = (chromeStderr + String(chunk)).slice(-2000);
+    });
     child.once('error', (error) => {
       launchError = error;
     });
 
-    cdp = await connectOwnedCdp({ preparedProfile, chromeExecutable });
-    if (launchError) throw launchError;
+    try {
+      onStage('cdp_connect');
+      cdp = await connectOwnedCdp({ preparedProfile, chromeExecutable });
+      if (launchError) throw launchError;
+    } catch (error) {
+      const startupDiagnostic = {
+        failureCode: safeStartupFailureCode(error),
+        elapsedMs: Math.max(0, Math.round(performance.now() - startupStartedAt)),
+        exitCode: child.exitCode,
+        signalCode: child.signalCode,
+        launchFailed: Boolean(launchError),
+        stderrFlags: browserDiagnosticFlags(chromeStderr),
+      };
+      // Guest result summaries truncate errors; preserve bounded startup evidence
+      // in the runner log before forwarding the unchanged failure.
+      process.stderr.write(`BROWSER_STARTUP_FAILURE ${JSON.stringify(startupDiagnostic)}\n`);
+      throw error;
+    }
+    onStage('endpoint_read');
     const endpoint = await ownedEndpoint(profile);
+    onStage('command_line_query');
     const commandLine = await cdp.send('Browser.getBrowserCommandLine');
+    onStage('command_line_verify');
     requireOwnedCommandLine(commandLine, profile);
     let extensionWorker;
     try {
+      onStage('extension_worker');
       extensionWorker = await waitForExpectedExtension(cdp, expectedExtensionId);
     } catch (error) {
-      throw new Error(`${error.message}:${chromeStderr.join('').slice(-1000)}`);
+      process.stderr.write(
+        `BROWSER_EXTENSION_FAILURE ${JSON.stringify(browserDiagnosticFlags(chromeStderr))}\n`,
+      );
+      throw error;
     }
+    onStage('spawn_owner');
     requireSpawnedProfileOwner(await readlink(join(profile, 'SingletonLock')), child.pid);
     verified = true;
 
+    onStage('local_server');
     server = createServer((_request, response) => {
       response
         .writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' })
@@ -416,14 +520,19 @@ export async function runNativeSidepanelQa({
 
     // This attach is derived exclusively from this profile's DevToolsActivePort,
     // after the process/profile/extension checks above. It is never a shared port.
+    onStage('playwright_connect');
     playwrightBrowser = await browserRuntime.chromium.connectOverCDP(
       `http://127.0.0.1:${endpoint.port}`,
     );
+    onStage('page_create');
     const context = playwrightBrowser.contexts()[0];
     const page = await context.newPage();
+    onStage('local_page_navigation');
     await page.goto(`http://localhost:${serverPort}/`);
+    onStage('panel_open');
     await page.locator('#open-panel').click(); // Real trusted Chromium input.
     await page.locator('#result').waitFor({ state: 'visible' });
+    onStage('panel_reply');
     const reply = JSON.parse((await page.locator('#result').textContent()) || '{}');
     if (reply?.ok !== true || reply?.result?.opened !== true)
       throw new Error(`native_sidepanel_open_refused:${JSON.stringify(reply)}`);
@@ -433,17 +542,30 @@ export async function runNativeSidepanelQa({
     );
     if (!normalTarget) throw new Error('native_sidepanel_normal_target_missing');
     const panelUrl = `chrome-extension://${expectedExtensionId}/sidepanel.html`;
+    onStage('panel_target');
     const panelTarget = await waitForPanelTarget(cdp, panelUrl);
     if (panelTarget.targetId === normalTarget.targetId)
       throw new Error('native_sidepanel_target_not_distinct');
+    onStage('panel_context');
     requireSidePanelContext(await sidePanelContexts(cdp, extensionWorker.targetId), panelUrl);
+    onStage('panel_settle');
     const readyPanel = await waitForSettledGuestPanel(cdp, panelTarget.targetId);
+
+    if (publicDemoUrl) {
+      if (publicDemoUrl !== 'https://www.aimatrx.com/matrx-extend-demo')
+        throw new Error('native_sidepanel_public_demo_url_refused');
+      onStage('demo_navigation');
+      await page.goto(publicDemoUrl);
+      await page.locator('main article').waitFor({ state: 'visible' });
+    }
 
     const normalPng = join(artifacts, 'normal-target-after-open.png');
     const panelPng = join(artifacts, 'native-side-panel.png');
+    onStage('screenshot');
     await captureTarget(cdp, normalTarget.targetId, normalPng);
     await captureTarget(cdp, panelTarget.targetId, panelPng);
     await readyPanel.detach();
+    onStage('exercise_panel');
     if (exercisePanel) {
       const panel = await attachTargetSession(cdp, panelTarget.targetId);
       try {
@@ -451,6 +573,9 @@ export async function runNativeSidepanelQa({
           Object.freeze({
             page,
             panel,
+            activatePanel: () =>
+              cdp.send('Target.activateTarget', { targetId: panelTarget.targetId }),
+            transportFailureClass: () => cdp.failureClass,
             panelTarget,
             artifacts,
             attachWorker: () => attachTargetSession(cdp, extensionWorker.targetId),
@@ -496,4 +621,5 @@ export {
   requireSpawnedProfileOwner,
   resolveExpectedRelease,
   verifyReleasedArtifact,
+  safeStartupFailureCode,
 };

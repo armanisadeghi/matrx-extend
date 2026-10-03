@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "status": "unverified_admin_extension_ready_failed",
+  "run": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "run_id": 37114892944,
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37114892944",
+    "workflow_source_sha": "1f056b5b6cbc5b96e34395d36ecd343e90c2155e",
+    "conclusion": "failure",
+    "case": "prepare-stale-results",
+    "development_run_id": 37107627454,
+    "development_artifact_id": 11268886169,
+    "development_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "development_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "release_run_id": "",
+    "published_store_crx": false,
+    "acceptance_artifact_id": 11271159104,
+    "acceptance_artifact_name": "hosted-guest-37114892944-1"
+  },
+  "setup": {
+    "indexing_disabled": "success, 2026-10-03T10:00:03Z-10:00:05Z; status output was Indexing disabled.",
+    "package_readiness": "success, three healthy samples (busy 0.52, 0.21, 0.16); step completed 10:00:38Z",
+    "browser_driver_resource_permit": "success; admitted at 10:01:46Z, childExitCode=0, resourceInvalid=false, decision=valid at 10:01:50Z",
+    "browser_readiness": "success, three healthy samples (busy 0.08, 0.02, 0.02); step completed 10:02:35Z",
+    "full_chromium_resource_permit": "success; admitted at 10:03:43Z, browser ready, childExitCode=0, resourceInvalid=false, decision=valid at 10:03:57Z",
+    "acceptance_readiness": "success, three healthy samples (busy 0.11, 0.01, 0.36); step completed 10:04:31Z"
+  },
+  "native_receipt": {
+    "path_in_artifact": "test-results/prepare-stale-result-native-ca2f398c-c5b1-47a7-a2a6-c3e9c1ec8e11.json",
+    "sha256": "dbeb9d54ebb44b1927c24fe6ba9164963b3c044f9b4d067ba9109b8bd3d53fa1",
+    "schema_version": 1,
+    "defects": ["EXT-D-0058", "EXT-D-0059"],
+    "status": "unverified",
+    "artifact": {
+      "version": "0.2.176",
+      "source_sha": null,
+      "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+      "kind": "local_dev_unpacked"
+    },
+    "cases": [],
+    "stage": "admin_extension_ready",
+    "failure_code": "admin_extension_ready_failed",
+    "signin_observations": { "web_dashboard_reached": true }
+  },
+  "resource": {
+    "policy_file": "docs/stabilization/resource-policy.json",
+    "policy_schema": 1,
+    "unsafe_samples_to_stop": 2,
+    "watch_interval_seconds": 15,
+    "acceptance_journal_path_in_artifact": "docs/stabilization/resource-journals/hosted-guest-37114892944-1.jsonl",
+    "acceptance_journal_sha256": "b789b19e06648098f9a4776c37c1dc627523b37b7ecce08287f865105e88ef50",
+    "events": [
+      {
+        "at": "2026-10-03T10:05:39.723Z",
+        "code": "RESOURCE_ADMITTED",
+        "busy": 0.1842857142857143,
+        "one_minute_load": 1.49,
+        "reasons": []
+      },
+      {
+        "at": "2026-10-03T10:05:55.783Z",
+        "code": "RESOURCE_WATCH_UNSAFE",
+        "busy": 1,
+        "one_minute_load": 3.45,
+        "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"]
+      },
+      {
+        "at": "2026-10-03T10:06:11.958Z",
+        "code": "RESOURCE_WATCH_HEALTHY",
+        "busy": 0.49,
+        "one_minute_load": 3.21,
+        "reasons": []
+      },
+      { "at": "2026-10-03T10:06:22.511Z", "code": "RESOURCE_JOB_EXIT", "child_exit_code": 1 },
+      {
+        "at": "2026-10-03T10:06:22.723Z",
+        "code": "RESOURCE_FINAL_DECISION",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 1,
+        "decision": "child_failed"
+      }
+    ],
+    "interpretation": "One unsafe sample was followed by a healthy sample before child exit. The unchanged policy requires two consecutive unsafe samples to stop, so no stop occurred; the resource wrapper reported a valid permit and the acceptance child independently failed."
+  },
+  "credential_handling": {
+    "provisioning": "A temporary repository secret was populated at point of use from the existing aidream .env after verifying AI_ADMIN_USERNAME=admin@admin.com and a nonempty password. The secret value is not recorded.",
+    "cleanup": "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON was deleted immediately after terminal run completion; gh secret list confirmed the name absent.",
+    "observations": "The sanitized receipt reports web_dashboard_reached=true; it does not report extension readiness. The flow failed before the admin extension wait completed, before any Prepare case, and before the native extension click could be evaluated."
+  },
+  "screenshots": {
+    "files": [
+      "test-results/native-sidepanel-qa-63irkS/native-side-panel.png",
+      "test-results/native-sidepanel-qa-63irkS/normal-target-after-open.png"
+    ],
+    "interpretation": "Baseline/normal-target captures only; neither proves the extension sign-in or admin readiness state."
+  },
+  "scope": {
+    "result": "No Prepare product cases ran. Web dashboard login reached, but the native run failed at admin_extension_ready_failed. Browser and resource setup completed; this run does not establish the exact extension-side readiness cause.",
+    "defects_closed": [],
+    "open": ["EXT-D-0058", "EXT-D-0059"],
+    "pending_google_review": "0.2.176 unchanged and not verified by this run.",
+    "limits": [
+      "Native receipt source_sha is null; the exact development artifact SHA/tree are established separately by DEVELOPMENT_TEST_IMPORTED and PREPARED_DEVELOPMENT logs.",
+      "No Prepare case result or product pass is established."
+    ]
+  }
+}

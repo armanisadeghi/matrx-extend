@@ -2,7 +2,7 @@
 /** Real guest Chat acceptance in a fresh, receipt-bound native side panel. */
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
@@ -20,8 +20,6 @@ const EXTENSION_DIR = resolve(
   process.env.MATRX_GUEST_CHAT_EXTENSION_DIR ?? join(REPO, '.output', 'chrome-mv3-dev'),
 );
 const OUTPUT = join(REPO, 'test-results', `guest-chat-store-${randomUUID()}.json`);
-const WEB_ORIGIN = 'https://www.aimatrx.com';
-const DEMO_PATH = '/matrx-extend-demo';
 const FIRST_QUESTION =
   'Read the unique opening check code from the article on my current tab. What are the three workflow stages in order? Include the exact code.';
 const FOLLOWUP_QUESTION =
@@ -29,11 +27,41 @@ const FOLLOWUP_QUESTION =
 const REQUIRED_ANSWER_TERMS = ['Capture', 'Understand', 'Use'];
 const digest = (value) => createHash('sha256').update(value).digest('hex').slice(0, 16);
 
+async function fileInventory(root) {
+  const files = new Map();
+  async function walk(directory, prefix = '') {
+    for (const entry of await readdir(directory, { withFileTypes: true })) {
+      const relativePath = prefix ? `${prefix}/${entry.name}` : entry.name;
+      const absolutePath = join(directory, entry.name);
+      if (entry.isDirectory()) {
+        await walk(absolutePath, relativePath);
+      } else if (entry.isFile()) {
+        const bytes = await readFile(absolutePath);
+        files.set(relativePath, {
+          bytes: bytes.length,
+          sha256: createHash('sha256').update(bytes).digest('hex'),
+        });
+      } else {
+        throw new Error(`artifact_inventory_non_file:${relativePath}`);
+      }
+    }
+  }
+  await walk(root);
+  return files;
+}
+
+function changedFiles(before, after) {
+  return [...new Set([...before.keys(), ...after.keys()])]
+    .sort()
+    .filter((path) => JSON.stringify(before.get(path)) !== JSON.stringify(after.get(path)))
+    .map((path) => ({ path, before: before.get(path) ?? null, after: after.get(path) ?? null }));
+}
+
 let stage = 'receipt';
 const report = {
   schema_version: 1,
   scope:
-    'fresh owned guest profile; unpredictable page fixture; real Chat answer and post-reload guest follow-up',
+    'fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat answer and post-reload guest follow-up',
   status: 'unverified',
   build: null,
   guest: null,
@@ -133,7 +161,7 @@ async function installStreamTrace(panel, fixture, fixtureTabId) {
       now: Date.now,
       markers: ${JSON.stringify([fixture.openingCode, fixture.followupCode, fixture.title])},
       fixtureTabId: ${JSON.stringify(fixtureTabId)},
-      fixtureUrl: ${JSON.stringify(`${WEB_ORIGIN}${DEMO_PATH}#${fixture.fragment}`)},
+      fixtureUrl: ${JSON.stringify(fixture.url)},
     });
     const listener = (message) => collector.accept(message);
     chrome.runtime.onMessage.addListener(listener);
@@ -236,7 +264,7 @@ async function watchGuestAiRequests(panel) {
 }
 
 async function installPageFixture(page, existingFixture = null) {
-  const expectedOrigin = `${WEB_ORIGIN}`;
+  const originalUrl = new URL(page.url());
   const originalTitle = await page.title();
   const fixture = existingFixture ?? {
     fragment: `guest-chat-${randomUUID()}`,
@@ -245,10 +273,10 @@ async function installPageFixture(page, existingFixture = null) {
     followupCode: randomUUID().toUpperCase(),
   };
   const installed = await page.evaluate((values) => {
-    const article = document.querySelector('main[data-public-main="true"] article');
+    const article = document.querySelector('main article');
     const articleHeader = article?.querySelector(':scope > header');
-    if (!article || !articleHeader) {
-      throw new Error('the public demo primary article is missing');
+    if (!article) {
+      throw new Error('the owned tab primary article is missing');
     }
     article.querySelector('[data-guest-chat-fixture]')?.remove();
     // get_page_text prefers <main> and removes headers before reading it.
@@ -265,7 +293,8 @@ async function installPageFixture(page, existingFixture = null) {
     const followup = document.createElement('p');
     followup.textContent = `Follow-up check code: ${values.followupCode}`;
     fixtureSection.append(heading, opening, stages, followup);
-    articleHeader.after(fixtureSection);
+    if (articleHeader) articleHeader.after(fixtureSection);
+    else article.prepend(fixtureSection);
     history.replaceState(null, '', `${location.pathname}#${values.fragment}`);
     const style = getComputedStyle(fixtureSection);
     const rect = fixtureSection.getBoundingClientRect();
@@ -289,8 +318,8 @@ async function installPageFixture(page, existingFixture = null) {
       readerText: readerClone?.textContent ?? '',
     };
   }, fixture);
-  assert.equal(new URL(installed.url).origin, expectedOrigin);
-  assert.equal(new URL(installed.url).pathname, DEMO_PATH);
+  assert.equal(new URL(installed.url).origin, originalUrl.origin);
+  assert.equal(new URL(installed.url).pathname, originalUrl.pathname);
   assert.equal(new URL(installed.url).hash, `#${fixture.fragment}`);
   assert.equal(installed.title, originalTitle);
   assert.equal(installed.inPrimaryArticle, true);
@@ -301,14 +330,13 @@ async function installPageFixture(page, existingFixture = null) {
   assert.ok(installed.readerText.includes(fixture.title));
   assert.ok(installed.readerText.includes(fixture.openingCode));
   assert.ok(installed.readerText.includes(fixture.followupCode));
+  fixture.url = installed.url;
   return fixture;
 }
 
 async function readableFixturePresent(page, fixture) {
   return page.evaluate((values) => {
-    const section = document.querySelector(
-      'main[data-public-main="true"] article [data-guest-chat-fixture]',
-    );
+    const section = document.querySelector('main article [data-guest-chat-fixture]');
     const style = section ? getComputedStyle(section) : null;
     const rect = section?.getBoundingClientRect();
     const clone = document.querySelector('main, article, [role="main"]')?.cloneNode(true);
@@ -333,7 +361,7 @@ async function readableFixturePresent(page, fixture) {
 
 async function fixtureIdentitySnapshot(attachWorker, page, fixture, fixtureTabId, panel = null) {
   const readable = await readableFixturePresent(page, fixture).catch(() => false);
-  const pageUrlMatches = page.url() === `${WEB_ORIGIN}${DEMO_PATH}#${fixture.fragment}`;
+  const pageUrlMatches = page.url() === fixture.url;
   const base = { readableMarkerPresent: readable, pageUrlMatches };
   let worker = null;
   try {
@@ -368,7 +396,7 @@ async function fixtureIdentitySnapshot(attachWorker, page, fixture, fixtureTabId
     return {
       ...base,
       activeTabMatchesFixture: active.id === fixtureTabId,
-      activeUrlMatchesFixture: active.url === `${WEB_ORIGIN}${DEMO_PATH}#${fixture.fragment}`,
+      activeUrlMatchesFixture: active.url === fixture.url,
       assignedTabMatchesFixture,
     };
   } catch {
@@ -502,6 +530,8 @@ async function capture(panel, path) {
 
 try {
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
+  const beforeFiles = await fileInventory(EXTENSION_DIR);
+  assert.equal(hashReleaseTree(EXTENSION_DIR), receipt.treeSha256, 'loaded extension initial tree');
   report.build = {
     version: receipt.version,
     tree_sha256: receipt.treeSha256,
@@ -512,6 +542,10 @@ try {
     extensionDir: EXTENSION_DIR,
     expectedRelease: receipt,
     releaseReceiptPath: RECEIPT,
+    ...(receipt.kind === 'published_store_crx_unpacked' && {
+      expectedExtensionId: receipt.extensionId,
+      publicDemoUrl: 'https://www.aimatrx.com/matrx-extend-demo',
+    }),
     ...(receipt.kind === 'local_dev_unpacked' && { localDevReceiptPath: RECEIPT }),
     exercisePanel: async ({ page, panel, artifacts, attachWorker }) => {
       markStage('fresh_guest');
@@ -528,24 +562,20 @@ try {
       );
       report.guest = { fresh: true, chat_visible: initial.chatVisible, after_reload: false };
 
-      const web = await page.context().newPage();
+      const web = page;
       let fixture = null;
       let networkWatch = null;
       try {
-        markStage('public_demo_page');
-        await web.goto(`${WEB_ORIGIN}${DEMO_PATH}`, {
-          waitUntil: 'domcontentloaded',
-          timeout: 60_000,
-        });
+        markStage('owned_article_page');
         assert.equal(
-          `${new URL(web.url()).origin}${new URL(web.url()).pathname}`,
-          `${WEB_ORIGIN}${DEMO_PATH}`,
+          new URL(web.url()).hostname,
+          receipt.kind === 'published_store_crx_unpacked' ? 'www.aimatrx.com' : 'localhost',
         );
         await waitFor(
-          'public_demo_content',
-          () => web.locator('body').innerText(),
-          (body) => REQUIRED_ANSWER_TERMS.every((term) => body.includes(term)),
-          30_000,
+          'owned_article_content',
+          () => web.locator('main article').count(),
+          (count) => count === 1,
+          10_000,
         );
 
         markStage('page_specific_fixture');
@@ -576,6 +606,12 @@ try {
           'opening fixture must remain in the primary readable article before send',
         );
         const fixtureTabId = await requireActiveFixtureTab(attachWorker, web, fixture);
+        report.grounding_diagnostics.before_first_send = await fixtureIdentitySnapshot(
+          attachWorker,
+          web,
+          fixture,
+          fixtureTabId,
+        );
         await installStreamTrace(panel, fixture, fixtureTabId);
         networkWatch.arm('opening');
         await submitQuestion(panel, FIRST_QUESTION, 'opening_question');
@@ -645,7 +681,7 @@ try {
 
         markStage('guest_followup_composer');
         await click(panel, 'title', 'Chat');
-        const beforeFollowup = await waitFor(
+        await waitFor(
           'guest_chat_followup_composer',
           () => observe(panel),
           (state) => state?.chatSelected && state.paneVisible && state.composerVisible,
@@ -664,6 +700,12 @@ try {
           'follow-up fixture must remain in the primary readable article before send',
         );
         const followupFixtureTabId = await requireActiveFixtureTab(attachWorker, web, fixture);
+        report.grounding_diagnostics.before_followup_send = await fixtureIdentitySnapshot(
+          attachWorker,
+          web,
+          fixture,
+          followupFixtureTabId,
+        );
         await installStreamTrace(panel, fixture, followupFixtureTabId);
         await submitQuestion(panel, FOLLOWUP_QUESTION, 'followup_question');
 
@@ -738,7 +780,18 @@ try {
     },
   });
   markStage('artifact_unchanged');
-  assert.equal(hashReleaseTree(EXTENSION_DIR), receipt.treeSha256);
+  const afterTreeSha256 = hashReleaseTree(EXTENSION_DIR);
+  if (afterTreeSha256 !== receipt.treeSha256) {
+    const afterFiles = await fileInventory(EXTENSION_DIR);
+    report.build.integrity_failure = {
+      expected_tree_sha256: receipt.treeSha256,
+      actual_tree_sha256: afterTreeSha256,
+      before_file_count: beforeFiles.size,
+      after_file_count: afterFiles.size,
+      changed_files: changedFiles(beforeFiles, afterFiles),
+    };
+  }
+  assert.equal(afterTreeSha256, receipt.treeSha256, 'loaded extension tree changed');
   report.build.extension_id = run.extensionId;
   report.build.artifact_unchanged = true;
   report.status = 'pass';

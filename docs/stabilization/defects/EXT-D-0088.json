@@ -11,18 +11,26 @@
     "Observe immediate error; correlate server stream_crash for source_app matrx-extend and source_feature chat."
   ],
   "expected": "Signed-out users receive a streamed Chat response without a paid account or login.",
-  "actual": "Published0.2.130 guest request previously failed during server browser-tool schema construction. Server c01faa52660a2720fcc888af3e10210688bc80cc is now live; bounded API replays completed a first guest turn, same-conversation follow-up, and fresh guest conversation. The original signed-out extension reproduction and extension reload remain unverified.",
+  "actual": "Original server startup crash repaired. Version 0.2.176 is Published - public. Fresh exact176 unpacked release native Chromium smoke against server4ec65fdb passed signed-out grounded first answer and distinct follow-up after real panel reload, with unchanged artifact tree and valid resource exit. This retest does not certify Store installation/update lifecycle or broader Chat features.",
   "evidence": [
     ".research/guest-live-incident-server.json",
     ".research/guest-live-incident-extension.json",
     ".research/guest-final-release-peer.json",
     "https://github.com/AI-Matrix-Engine/aidream/commit/c01faa52660a2720fcc888af3e10210688bc80cc",
     "https://github.com/AI-Matrix-Engine/aidream/actions/runs/37094559311",
-    "Three consecutive /health/version samples reported c01faa52660a2720fcc888af3e10210688bc80cc; direct guest API first turn, same-guest follow-up, and fresh conversation each returned HTTP 200 with successful completion and no error event (.research/guest-live-incident-server.json)."
+    "Three consecutive /health/version samples reported c01faa52660a2720fcc888af3e10210688bc80cc; direct guest API first turn, same-guest follow-up, and fresh conversation each returned HTTP 200 with successful completion and no error event (.research/guest-live-incident-server.json).",
+    "docs/stabilization/runs/hosted-guest-controlled-20261003.json",
+    ".research/guest-provenance-hosted-result.json",
+    ".research/guest-provenance-escalation.json",
+    ".research/release-acceptance-final-peer.json",
+    ".research/candidate176-guest-acceptance.json",
+    ".research/member176-receipt-retest.json",
+    ".research/publisher-session-restore.json",
+    ".research/published176-guest-server-refresh.json"
   ],
   "severity": "S0: public core no-login Chat fails immediately",
   "priority": "P0: supersedes deferred Chat sequencing; restore live guest promise now",
-  "state": "fixed",
+  "state": "closed",
   "transition_history": [
     {
       "at": "2026-10-03T03:45:02.531723+00:00",
@@ -47,9 +55,33 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "aidream c01faa52660a2720fcc888af3e10210688bc80cc fixes browser capability and bundle discovery. Deployment and three bounded guest API replays now confirm server/API restoration; original signed-out extension reproduction and reload remain unverified, so the defect is not closed."
+    },
+    {
+      "at": "2026-10-03T08:04:27.988486+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent exact176 guest and nonadmin native acceptance passed; root inspected both screenshots. Original published130 payload also returned guest initial/reload answers after serverrepair; metadata-only integrity difference independently proven. Other Chat/Records cases remain open."
+    },
+    {
+      "at": "2026-10-03T08:17:48.179147+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Root verified original published130 guest request/reload functional evidence and independent metadata-only byte comparison, exact176 guest unchanged-tree initial/reload acceptance, and independent nonadmin member surrounding acceptance. Live server repair is deployed. Closure applies only to the startup schema crash; Google176 approval and exhaustive Chat remain separate."
     }
   ],
   "closure_requirement": "Original published guest request succeeds on deployed fix, real signed-out extension reply and reload verified, independent peer and surrounding member/guest regressions pass. Do not close from source or ordinary CI.",
-  "deployed_server_sha": "c01faa52660a2720fcc888af3e10210688bc80cc",
-  "published_extension_version": "0.2.130"
+  "deployed_server_sha": "9bd979a894ba71141d6548069d621aa59a526bde",
+  "published_extension_version": "0.2.176",
+  "bounded_retest": "Published130 functional guest initial/reload evidence retained with explicit Google metadata-only integrity distinction. Exact release176 guest37106907229 PASSED first/reload answers and unchangedtree; independent member37107947183 PASSED real web+extension auth, nonadmin authority, explicit org and real answer. Both resource-valid. Member tree checked before load only; guest separately rehashed identical release after interaction.",
+  "latest_verified_server_sha": "4ec65fdb63a8d15e7c11d4404e0516317ebfaabd",
+  "latest_bounded_retest": {
+    "run_id": "published176-guest-server-refresh-20261003-01",
+    "report": ".research/published176-guest-server-refresh.json",
+    "commit": "031ccb34",
+    "report_correction": "b224611d",
+    "resource_exit": 0,
+    "resource_invalid": false,
+    "scope": "Headless native Chromium with exact unpacked release artifact; actual guest replies and Settings-independent panel reload. Not installed Store lifecycle.",
+    "owner_verification": "Receipt/journal SHA-256 recomputed and matched; follow-up screenshot opened and visibly showed guest banner with actual answer."
+  }
 }

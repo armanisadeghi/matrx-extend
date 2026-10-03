@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-10-03T08:03:00Z",
+  "case": "fresh owned Chrome-for-Testing profile; existing signed-in nonadmin member; native Chat on exact published 0.2.176 release",
+  "verdicts": {
+    "A_source_review": {
+      "status": "pass",
+      "review_basis": "Fresh narrow source review of the acceptance contract and repair at 884a0b1841588587fd324a7b8e8aed8968128707.",
+      "receipt_forwarding": "The runner reads the relocated RECEIPT and passes that exact path as releaseReceiptPath to runNativeSidepanelQa.",
+      "failure_recording": "Only exact members of SAFE_FAILURE_CODES are printed as failure_code; every other exception becomes unclassified_failure. No exception message, URL, link, token, or secret is recorded."
+    },
+    "B_runtime": {
+      "status": "pass",
+      "workflow_run_id": 37107947183,
+      "workflow_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37107947183",
+      "workflow_head_sha": "884a0b1841588587fd324a7b8e8aed8968128707",
+      "terminal": "success",
+      "acceptance_case": "member-chat",
+      "release_run_id": 37105966615,
+      "release_artifact_id": 11267544261,
+      "workflow_artifact_id": 11269085343,
+      "workflow_artifact_name": "hosted-guest-37107947183-1"
+    }
+  },
+  "release_integrity": {
+    "version": "0.2.176",
+    "source_sha": "3fe608d949a06aa10bfea57b43c9b05638386bc1",
+    "tree_sha256": "755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272",
+    "publish_state": "pushed",
+    "release_artifact_present_and_unexpired": true,
+    "local_zip_sha256_matches_receipt": true,
+    "store_zip_sha256_matches_receipt": true,
+    "independently_unpacked_local_tree_matches_receipt": true,
+    "member_loaded_build_report": {
+      "version": "0.2.176",
+      "tree_sha256": "755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272",
+      "receipt_kind": "release",
+      "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+    },
+    "post_run_tree_boundary": "The member runner confirms the exact tree before interaction but does not record a member-specific post-run rehash. The independent same-artifact guest acceptance for this release records artifact_unchanged=true."
+  },
+  "resource_receipts": {
+    "hosted-package-37107947183-1": {
+      "admitted": true,
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "run_ids_match": true
+    },
+    "hosted-browser-37107947183-1": {
+      "admitted": true,
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "run_ids_match": true
+    },
+    "hosted-guest-37107947183-1": {
+      "admitted": true,
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "run_ids_match": true
+    }
+  },
+  "member_observation": {
+    "authentication_method": "existing_user_magic_link",
+    "reviewer_fingerprint": "3d6137db6c081c07",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "canonical_extension_admin_check": {
+      "http_status": 200,
+      "matched_current_extension_user": true,
+      "returned_rows": 0
+    },
+    "observed_role_category": "absent_by_design_for_nonadmin",
+    "organization_picker_available": true,
+    "organization_selected": true,
+    "organization": "Matrx's Org",
+    "real_chat": {
+      "visible": true,
+      "accepted": true,
+      "completed_real_answer": true,
+      "completed_reply_count": 1,
+      "answer_names_capture_understand_use": true,
+      "question_fingerprint": "3461006324ce0420"
+    }
+  },
+  "screenshots": {
+    "first_answer": "reviewer-chat-before.png",
+    "sent_question": "reviewer-chat-action.png",
+    "completed_answer": "reviewer-chat-result.png",
+    "store_candidate": "reviewer-chat-store-640x400.png",
+    "visual_review": "All four panel-only screenshots from workflow artifact 11269085343 were opened and inspected; completed answer visibly contains the three ordered stages. No auth-form screenshot was recorded."
+  },
+  "ephemeral_auth_cleanup": {
+    "scoped_github_secret_deleted": true,
+    "secret_list_confirmed_absent": true,
+    "local_one_time_link_deleted": true,
+    "private_identity_file_preserved": true,
+    "credential_or_link_values_recorded": false
+  },
+  "previous_attempt": {
+    "workflow_run_id": 37107334126,
+    "classification": "pre-interaction harness receipt-path failure; not a member or Chat product failure",
+    "repaired_and_retested_once": true
+  },
+  "limits": [
+    "This proves this existing-account magic-link signed-in member Chat path; it does not prove password-form readiness.",
+    "This is a scoped member Chat acceptance, not exhaustive extension health or the Google-installed-extension lifecycle."
+  ]
+}

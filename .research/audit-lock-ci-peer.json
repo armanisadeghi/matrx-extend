@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "03b80268b24de9904b99e90465affe838956e51e",
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_a_full_ci": {
+    "result": "PENDING",
+    "reason": "This was a scoped source review. The new full CI run belongs to the builder and was not run or claimed here. The earlier 03b80268 CI stopped before unit tests on peer report formatting, so it cannot settle the original 13 capture failures."
+  },
+  "verdict_b_quality": {
+    "result": "PASS_WITH_LIMIT",
+    "evidence": [
+      "The original fixture defined only request(name, options, callback); save-capture.ts calls request(name, operation). The new typed overload dispatch selects the callback in both forms and returns its result or rejection.",
+      "The fixture queues per lock name, lets the next callback proceed after a rejection, supplies exclusive lock metadata, and rejects unmodeled options explicitly. The dedicated tests cover these observable behaviors.",
+      "Global tests/setup.ts no longer installs the fixture. Only three named suites opt in; the concurrency suite has its own lock setup. vitest.config.ts does not disable per-file isolation. The opt-in suites do not run unmocked Supabase auth SDK lock flows.",
+      "The capture test diff adds only the fixture import and install call. All original capture assertions remain; production save-capture.ts still takes the real two-argument request path.",
+      "The builder records a 13/16 capture RED reproduction, 53/53 scoped GREEN after scoping, and a 4/4 constant-result gut mutation failure. Committed resource journals support admitted child exit codes and restoration is reported, but they do not preserve full assertion output."
+    ],
+    "limit": "The fixture installation is not explicitly restored at the end of each opt-in test file; safety depends on Vitest file isolation and these files' scoped imports. No independent test execution was performed because the native Settings lane owns the resource permit."
+  },
+  "source_checks": "git show 03b80268; current fixture, setup, capture caller and tests; Vitest config; builder repair record and committed resource journals. No production bypass or deleted assertion found."
+}

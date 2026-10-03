@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0087",
+  "reviewed_source": {
+    "runner_commit": "2fa4e1708bd3e70bfd2c533cbd68383f81a6fc0c",
+    "product_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "workflow_run_id": 37107627454,
+    "artifact_id": 11268886169,
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "receipt_verified_before_launch": true
+  },
+  "verdict_a": {
+    "status": "PARTIAL_NATIVE_FAILURE_ADMIN_MEMBER_PENDING",
+    "admin": {
+      "status": "FAIL_AFTER_IDENTITY_AND_FIRST_CASE",
+      "identity": "Before interaction, real admin@admin.com first-party identity matched the extension profile; the rendered email and admin role, stored admin flag, and organization consistency assertions passed. The receipt records fingerprint only.",
+      "cases_passed": ["first changed choice saved through UI"],
+      "failure": "Next case stopped at operation theme_menu_open with pointer_stable_hit_not_observed. No reload cases ran.",
+      "attempts": 2,
+      "reproducibility": "Two fresh native profiles failed at the same operation with the same diagnostics after the same first case. Further retries stopped at the authorized cap."
+    },
+    "member": "NOT_RUN: the shared trusted-pointer boundary reproduced twice in admin mode; did not launch member through the same broken path.",
+    "guest": "Existing prior six-case native pass remains as previously recorded; not rerun in this execution.",
+    "missing_cases": "Admin: five of six cases including both reload checks. Member: all six."
+  },
+  "verdict_b": {
+    "status": "NATIVE_POINTER_BOUNDARY_CONCERN",
+    "auth_and_credentials": "Admin sign-in and identity/role assertions passed on both runs. Credentials were parsed from aidream/.env in a private launcher process, passed in that process environment to the hosted wrapper, written by the wrapper to a mode-0600 file, and removed by its finally block. No password or email value is in the receipts or copied logs.",
+    "provenance": "Each run logged HOSTED_BROWSER_READY 1194 and PREPARED_DEVELOPMENT with the exact source SHA and tree hash above; the native receipt independently records that tree and artifact id.",
+    "failure_evidence": "At theme_menu_open, one visible enabled target with stable geometry had computed pointer-events:none; no trusted point hit it and all nine tested points retargeted to the HTML ancestor. No modal/dialog/overlay was identified. Identical result in two fresh profiles.",
+    "additional_pointer_context": "The runner receipt does not expose body visibilityState, dropdown state, animation list, or portal census. No assertions or runner code were changed to collect them.",
+    "quality": "The driver refused to click without a hit-tested point; the native harness produced a bounded, content-safe failure receipt. This is a reproduced runner/UI hit-testing boundary, not evidence of an auth failure or a product defect by itself.",
+    "new_breakage": "No new product-code breakage established. A deterministic pointer-hit failure blocks the remaining native cases and needs a separate diagnostic/repair lane."
+  },
+  "execution": {
+    "prelaunch_attempt": "An initial setup command had a shell quoting error while extracting the admin input. It was interrupted during resource preflight before the acceptance child launched; the journal is preserved separately.",
+    "admin_attempt_02": {
+      "receipt": "docs/stabilization/reports/settings-signedin-native-20261003/admin-attempt-02.receipt.json",
+      "receipt_sha256": "de160af2288c53b3b3928dc0a10e97a6c3ec781d82d9404d3ea6d89a1facffb6",
+      "journal": "docs/stabilization/reports/settings-signedin-native-20261003/admin-attempt-02.resource-journal.jsonl",
+      "journal_sha256": "91e3e0a745970bd528b4e1758f30d5e08d52637d46ce3b0ad3bc0311b3bd62f6",
+      "log": "docs/stabilization/reports/settings-signedin-native-20261003/admin-attempt-02.hosted.log",
+      "log_sha256": "8202192ca01da5d3cfbd2af371c0459b96f9e79cf63367059fe171f63430a799"
+    },
+    "admin_attempt_03": {
+      "receipt": "docs/stabilization/reports/settings-signedin-native-20261003/admin-attempt-03.receipt.json",
+      "receipt_sha256": "de160af2288c53b3b3928dc0a10e97a6c3ec781d82d9404d3ea6d89a1facffb6",
+      "journal": "docs/stabilization/reports/settings-signedin-native-20261003/admin-attempt-03.resource-journal.jsonl",
+      "journal_sha256": "af43fceb20620e18c88bcfa8476bcac290a93dd3e58a6119a5ab698ce6f47a26",
+      "log": "docs/stabilization/reports/settings-signedin-native-20261003/admin-attempt-03.hosted.log",
+      "log_sha256": "4f083a53f1ef7f7b40d49d217deec918d0af013305a269e431c962a13388d08a"
+    },
+    "prelaunch_interrupted_journal": {
+      "path": "docs/stabilization/reports/settings-signedin-native-20261003/admin-prelaunch-interrupted.resource-journal.jsonl",
+      "sha256": "584cb619543ba362214eb78fdd6caf44a6272290bc4a0711632b7c718b6dfd6a"
+    },
+    "copied_json_verification": {
+      "attempt_02_raw_sha256": "de160af2288c53b3b3928dc0a10e97a6c3ec781d82d9404d3ea6d89a1facffb6",
+      "attempt_02_formatted_sha256": "de160af2288c53b3b3928dc0a10e97a6c3ec781d82d9404d3ea6d89a1facffb6",
+      "attempt_02_parsed_equal": true,
+      "attempt_03_raw_sha256": "de160af2288c53b3b3928dc0a10e97a6c3ec781d82d9404d3ea6d89a1facffb6",
+      "attempt_03_formatted_sha256": "de160af2288c53b3b3928dc0a10e97a6c3ec781d82d9404d3ea6d89a1facffb6",
+      "attempt_03_parsed_equal": true,
+      "biome": "Both final copied receipts checked; no formatting changes were needed."
+    }
+  },
+  "cleanup": {
+    "hosted_admin_credential_file": "Removed by hosted wrapper finally block.",
+    "member_magic_link": "Not minted.",
+    "native_browser_profile": "Temporary profile removed by native harness.",
+    "resource_guard": "Both completed runs ended child_failed with resourceInvalid=false and released the heavy permit. No D87-owned resource process remains."
+  },
+  "reviewer": "fresh final peer native execution owner"
+}

@@ -1,0 +1,161 @@
+{
+  "schema": 1,
+  "defect": "EXT-D-0087",
+  "status": "BASELINE_FAILED_UNVERIFIED",
+  "native_acceptance": "ATTEMPTED_FAILED_BEFORE_CASES",
+  "product_verdict": null,
+  "latest_attempt_run_id": 37108672704,
+  "hosted_run": {
+    "id": 37108409909,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37108409909",
+    "job_id": 111161344083,
+    "job_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37108409909/job/111161344083",
+    "conclusion": "failure",
+    "workflow_runner_sha": "40c659ae85019bae133db1a9dbf9e43ede60c0ee",
+    "started_at": "2026-10-03T08:03:28Z",
+    "completed_at": "2026-10-03T08:04:51Z"
+  },
+  "inputs": {
+    "acceptance_case": "settings-persistence",
+    "development_run_id": 37107627454,
+    "development_artifact_id": 11268886169,
+    "development_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "release_run_id": "",
+    "published_store_crx": false
+  },
+  "development_artifact_provenance": {
+    "ci_conclusion": "success",
+    "ci_event": "push",
+    "ci_branch": "main",
+    "artifact_name": "matrx-extend-development-test-3092444e73094cb0023f6086202869ccbd22978b-37107627454-1",
+    "expired": false
+  },
+  "guarded_phases": [
+    {
+      "phase": "package",
+      "status": "REFUSED_BEFORE_CHILD_START",
+      "resource_code": "RESOURCE_CPU_HIGH_LOAD_BUSY",
+      "decision": "refused",
+      "exit_code": 2,
+      "measurement": {
+        "pressure_level": 1,
+        "available_memory_gib": 12.74,
+        "required_memory_gib": 4,
+        "one_minute_load": 31.02,
+        "logical_cpus": 4,
+        "cpu_busy_fraction": 0.6742857142857143,
+        "swap_used_mib": 0,
+        "repo_free_gib": 107.71697998046875,
+        "profile_free_gib": 107.71697998046875,
+        "safety_free_gib": 107.71697998046875,
+        "system_free_gib": 107.71697998046875
+      }
+    },
+    {
+      "phase": "chromium",
+      "status": "SKIPPED_AFTER_PACKAGE_REFUSAL"
+    },
+    {
+      "phase": "settings-persistence-native-case",
+      "status": "SKIPPED_AFTER_PACKAGE_REFUSAL"
+    }
+  ],
+  "downloaded_evidence": {
+    "artifact_id": 11268608177,
+    "artifact_name": "hosted-guest-37108409909-1",
+    "expired": false,
+    "matching_run_files": [
+      "docs/stabilization/resource-journals/hosted-package-37108409909-1.jsonl"
+    ],
+    "native_result_report_present": false,
+    "screenshots_present": false,
+    "note": "The upload also contained journals for hosted run 37105304739; they were excluded from this run's evidence."
+  },
+  "defect_record_updated": false,
+  "initial_attempt_status": "SETUP_NOT_ADMITTED",
+  "initial_attempt_reason": "The first owned resource-guarded package phase refused admission because CPU busy fraction and one-minute load exceeded the existing thresholds. The guard exited before package preparation; Chromium preparation and all native UI/storage assertions were skipped. This is setup evidence only, not a product pass or failure.",
+  "overall_status": "NO_PRODUCT_VERDICT",
+  "follow_up_attempts": [
+    {
+      "hosted_run": {
+        "id": 37108672704,
+        "attempt": 1,
+        "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37108672704",
+        "job_id": 111162126098,
+        "job_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37108672704/job/111162126098",
+        "conclusion": "failure",
+        "workflow_runner_sha": "9cccafdf59e5484489c58eec76ebeb7682047d05",
+        "started_at": "2026-10-03T08:08:17Z",
+        "completed_at": "2026-10-03T08:13:15Z"
+      },
+      "inputs": {
+        "acceptance_case": "settings-persistence",
+        "development_run_id": 37107627454,
+        "development_artifact_id": 11268886169,
+        "development_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+        "release_run_id": "",
+        "published_store_crx": false
+      },
+      "native_attempt_status": "BASELINE_FAILED_UNVERIFIED",
+      "product_verdict": null,
+      "failure_stage": "baseline",
+      "failure_code": "d87_acceptance_failed",
+      "recorded_cases": [],
+      "build": {
+        "version": "0.2.176",
+        "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+        "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+        "receipt_kind": "local_dev_unpacked",
+        "artifact_id": 11268886169
+      },
+      "guarded_phases": [
+        { "phase": "package", "status": "ADMITTED_AND_COMPLETED_VALID" },
+        { "phase": "chromium", "status": "ADMITTED_AND_COMPLETED_VALID" },
+        {
+          "phase": "settings-persistence-native-case",
+          "status": "CHILD_FAILED",
+          "resource_invalid": false,
+          "exit_code": 1,
+          "resource_events": [
+            {
+              "code": "RESOURCE_WATCH_UNSAFE",
+              "at": "2026-10-03T08:12:39.494Z",
+              "reason": "RESOURCE_CPU_BUSY",
+              "cpu_busy_fraction": 1,
+              "one_minute_load": 2.09,
+              "logical_cpus": 4
+            },
+            {
+              "code": "RESOURCE_WATCH_HEALTHY",
+              "at": "2026-10-03T08:12:55.582Z",
+              "reason": null,
+              "cpu_busy_fraction": 0.1,
+              "one_minute_load": 4.6,
+              "logical_cpus": 4
+            }
+          ]
+        }
+      ],
+      "diagnosis": "The native script imported and verified the exact development artifact, launched the guest side panel, then exited during baseline before recording any case. The report exposes no underlying interaction/assertion detail beyond the generic failure code. The resource owner recorded child_failed with resourceInvalid=false, so it did not terminate the child. This is a bounded native-run baseline failure; available evidence does not distinguish a Settings/product baseline problem from a native interaction/setup problem.",
+      "artifact": {
+        "id": 11268623810,
+        "name": "hosted-guest-37108672704-1",
+        "expired": false,
+        "downloaded_root": ".research/d87-native-acceptance-run-37108672704",
+        "native_report": ".research/d87-native-acceptance-run-37108672704/test-results/settings-d87-native-a27962ee-9269-41fc-b23d-cc80e0172d4b.json",
+        "screenshots": [
+          ".research/d87-native-acceptance-run-37108672704/test-results/native-side-panel.png",
+          ".research/d87-native-acceptance-run-37108672704/test-results/normal-target-after-open.png"
+        ],
+        "resource_journals": [
+          ".research/d87-native-acceptance-run-37108672704/resource-journals/hosted-package-37108672704-1.jsonl",
+          ".research/d87-native-acceptance-run-37108672704/resource-journals/hosted-browser-37108672704-1.jsonl",
+          ".research/d87-native-acceptance-run-37108672704/resource-journals/hosted-guest-37108672704-1.jsonl"
+        ],
+        "screenshot_observation": "The screenshots show the controlled article page and the initial guest chat panel. They do not show Settings or any D87 assertion."
+      }
+    }
+  ],
+  "current_reason": "The single authorized follow-up reached and launched the exact-artifact native panel, then failed in baseline before recording any D87 case. Available evidence does not distinguish a Settings/product baseline problem from a native interaction/setup problem; no product pass or failure verdict is assigned."
+}

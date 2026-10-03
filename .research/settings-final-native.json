@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "status": "bounded_native_pass",
+  "run": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "run_id": 37115406435,
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37115406435",
+    "workflow_source_sha": "4e08df5549a84ce26a7d53c262b1fe0caef15866",
+    "conclusion": "success",
+    "case": "settings-persistence",
+    "development_run_id": 37107627454,
+    "development_artifact_id": 11268886169,
+    "development_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "development_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "release_run_id": "",
+    "published_store_crx": false,
+    "acceptance_artifact_id": 11270464051,
+    "acceptance_artifact_name": "hosted-guest-37115406435-1",
+    "native_fix_commit": "250d39fc87a6d3534496cbf99fb930cc9e4dd02c",
+    "fresh_review_commit": "b5adb48995ef721b8266fbd8fd4f437a288bbc44"
+  },
+  "setup": {
+    "indexing_disabled": "success at 10:08:48Z-10:08:50Z; repeated status output was Indexing disabled.",
+    "package_readiness": "success, three healthy samples (busy 0.18, 0.02, 0.01); step completed 10:09:23Z",
+    "browser_driver_resource_permit": "success; admitted at 10:10:31Z, childExitCode=0, resourceInvalid=false, decision=valid at 10:10:34Z",
+    "browser_readiness": "success, three healthy samples (busy 0.05, 0.18, 0.02); step completed 10:11:20Z",
+    "full_chromium_resource_permit": "success; admitted at 10:12:28Z, browser ready, childExitCode=0, resourceInvalid=false, decision=valid at 10:12:36Z",
+    "acceptance_readiness": "success, three healthy samples (busy 0.05, 0.02, 0); step completed 10:13:16Z"
+  },
+  "native_receipt": {
+    "path_in_artifact": "test-results/settings-d87-native-705dd6c4-7f75-48c1-b0f6-fb5409a83fa1.json",
+    "sha256": "0d5e97229e70a390b9e7a19fe588b4b8fbc0279ca520915d1e2681963b7bee5c",
+    "schema_version": 1,
+    "defect": "EXT-D-0087",
+    "scope": "receipt-bound owned Chrome-for-Testing native Settings panel; guest",
+    "status": "pass",
+    "version": "0.2.176",
+    "receipt_kind": "local_dev_unpacked",
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "development_artifact_id": 11268886169,
+    "cases": [
+      {
+        "name": "first changed choice saved through UI",
+        "status": "pass",
+        "observation": {
+          "settingsActive": true,
+          "theme": "Light",
+          "storedTheme": "light",
+          "error": false,
+          "retry": false,
+          "guest": true
+        }
+      },
+      {
+        "name": "system choice saved through UI",
+        "status": "pass",
+        "observation": {
+          "settingsActive": true,
+          "theme": "System",
+          "storedTheme": "system",
+          "error": false,
+          "retry": false,
+          "guest": true
+        }
+      },
+      {
+        "name": "rejected write visible with retry",
+        "status": "pass",
+        "observation": {
+          "settingsActive": true,
+          "theme": "Dark",
+          "storedTheme": "system",
+          "error": true,
+          "retry": true,
+          "guest": true
+        }
+      },
+      {
+        "name": "retry persisted after reload",
+        "status": "pass",
+        "before_reload": {
+          "settingsActive": true,
+          "theme": "Dark",
+          "storedTheme": "dark",
+          "error": false,
+          "retry": false,
+          "guest": true
+        },
+        "observation": {
+          "settingsActive": true,
+          "theme": "Dark",
+          "storedTheme": "dark",
+          "error": false,
+          "retry": false,
+          "guest": true
+        }
+      },
+      {
+        "name": "latest rapid choice persisted",
+        "status": "pass",
+        "before_release": {
+          "settingsActive": true,
+          "theme": "System",
+          "storedTheme": "dark",
+          "error": false,
+          "retry": false,
+          "guest": true
+        },
+        "observation": {
+          "settingsActive": true,
+          "theme": "System",
+          "storedTheme": "system",
+          "error": false,
+          "retry": false,
+          "guest": true
+        }
+      },
+      {
+        "name": "latest rapid choice survives reload",
+        "status": "pass",
+        "observation": {
+          "settingsActive": true,
+          "theme": "System",
+          "storedTheme": "system",
+          "error": false,
+          "retry": false,
+          "guest": true
+        }
+      }
+    ],
+    "failure_stage": null,
+    "failure_code": null
+  },
+  "resource": {
+    "policy_file": "docs/stabilization/resource-policy.json",
+    "policy_schema": 1,
+    "unsafe_samples_to_stop": 2,
+    "acceptance_journal_path_in_artifact": "docs/stabilization/resource-journals/hosted-guest-37115406435-1.jsonl",
+    "acceptance_journal_sha256": "1a647df0a0ed65eeb1c62c4b10282dff5f44029ab582f50a340d258da577f205",
+    "events": [
+      {
+        "at": "2026-10-03T10:14:24.499Z",
+        "code": "RESOURCE_ADMITTED",
+        "busy": 0.1442857142857143,
+        "one_minute_load": 0.73,
+        "reasons": []
+      },
+      {
+        "at": "2026-10-03T10:14:40.686Z",
+        "code": "RESOURCE_WATCH_HEALTHY",
+        "busy": 0.15,
+        "one_minute_load": 0.66,
+        "reasons": []
+      },
+      { "at": "2026-10-03T10:14:44.852Z", "code": "RESOURCE_JOB_EXIT", "child_exit_code": 0 },
+      {
+        "at": "2026-10-03T10:14:44.990Z",
+        "code": "RESOURCE_FINAL_DECISION",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      }
+    ],
+    "interpretation": "Acceptance resource permit was admitted, its watcher sample was healthy, and final resource decision was valid. Product receipt also passed; these are distinct receipts."
+  },
+  "post_interaction_tree_check": {
+    "status": "pass",
+    "evidence": "The D87 runner calls hashReleaseTree(extensionDir) === receipt.treeSha256 after all six cases and before setting receipt status pass. The native child exited 0, emitted PASS D87, and the resource wrapper recorded childExitCode=0/final decision valid.",
+    "expected_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660"
+  },
+  "screenshots": {
+    "files": [
+      "test-results/native-sidepanel-qa-3nLfM8/native-side-panel.png",
+      "test-results/native-sidepanel-qa-3nLfM8/normal-target-after-open.png"
+    ],
+    "interpretation": "Artifact contains generic native-panel QA captures, not a screenshot of the post-exercise D87 Settings state. The final post-reload UI/storage observation is in the native receipt."
+  },
+  "scope": {
+    "result": "This one receipt-bound native guest Settings persistence case passed all six recorded cases, including rejected-write/retry, overlapping choice, real page reload, and the post-interaction release-tree hash assertion.",
+    "defect_closure": "Bounded D87 case evidence for root review; no claim that all Settings surfaces, modes, roles, or the full extension are healthy.",
+    "defects_closed": [],
+    "pending_google_review": "0.2.176 unchanged; preserve its pending submission.",
+    "limits": [
+      "Only the native guest Settings persistence case was exercised.",
+      "No actual post-exercise Settings screenshot is present in the artifact.",
+      "This does not certify other Settings cases, roles, or application features."
+    ]
+  }
+}

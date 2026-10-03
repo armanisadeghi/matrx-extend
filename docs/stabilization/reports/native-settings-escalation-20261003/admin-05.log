@@ -1,0 +1,27 @@
+{"schema":1,"at":"2026-10-03T13:42:21.495Z","runId":"native-settings-escalation-admin-05","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/native-settings-escalation-admin-05.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-03T13:43:28.731Z","runId":"native-settings-escalation-admin-05","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":11.2,"requiredMemoryGiB":4,"oneMinuteLoad":2.6,"logicalCpus":10,"cpuBusyFraction":0.19714285714285715,"swapUsedMiB":2633.5,"repoFreeGiB":1690.3364524841309,"profileFreeGiB":1690.3364524841309,"safetyFreeGiB":30.570697784423828,"systemFreeGiB":30.570697784423828},"cpuBusySamples":[0.17,0.26,0.13,0.26,0.15,0.25,0.16],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+HOSTED_BROWSER_READY 1194 acceptance
+PREPARED_DEVELOPMENT 3092444e73094cb0023f6086202869ccbd22978b 025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660
+FAIL D87 native acceptance: /Volumes/Samsung2TB/code/matrx-extend/test-results/settings-d87-native-b95ba434-b1ab-433b-a721-ee819addc7bd.json
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: native side-panel acceptance exited 1
+
+1 !== 0
+
+    at run (file:///Volumes/Samsung2TB/code/matrx-extend/scripts/hosted-guest-acceptance.mjs:323:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///Volumes/Samsung2TB/code/matrx-extend/scripts/hosted-guest-acceptance.mjs:402:1 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.6.0
+{"schema":1,"at":"2026-10-03T13:43:39.194Z","runId":"native-settings-escalation-admin-05","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-03T13:43:39.240Z","runId":"native-settings-escalation-admin-05","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}

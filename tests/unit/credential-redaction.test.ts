@@ -1,6 +1,6 @@
 /**
  * Redaction hardening — the fix for gap 9 of
- * /Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/PLAN.md.
+ * /Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/REGISTER.md.
  *
  * Before this change every page-reading tool keyed redaction on the LIVE
  * `type === 'password'` property, so:

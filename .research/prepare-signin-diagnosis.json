@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "status": "extension_click_readiness_repaired_native_verdict_pending",
+  "source_runs": [37109492705, 37110454728],
+  "source_result": "Second admitted run reached the real web dashboard and Settings, then failed at admin_extension_click; cases=[] and no after-exercise screenshot.",
+  "finding": "The runner skipped the Account-section readiness step used by the proven isolated-admin helper before the trusted Sign in click. The prior artifact lacks pointer details, so the exact click failure remains unproven.",
+  "change": "Prepare runner now waits for Account and the enabled Sign in control before click, and records fixed pointer-failure categories if the click still fails.",
+  "secret_handling": "No password, auth URL, token, raw browser error, console, or network body is recorded.",
+  "native_execution": "No browser run after this edit; a fresh peer review and root permit are required.",
+  "next_check": "One admitted hosted Prepare run should show whether the readiness step clears the click boundary or a fixed pointer category identifies a remaining failure.",
+  "defects_closed": []
+}

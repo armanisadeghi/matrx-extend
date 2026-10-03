@@ -1,0 +1,14 @@
+{
+  "reviewed": ["a33fa05c", "6c5b4eb5"],
+  "verdict_a": {
+    "status": "PARTIAL",
+    "evidence": "settingsAvailable requires a Settings button, enabled state, and nonzero box; reload waits for this plus expected guest state. This blocks the observed blank unmounted shell. Original admin native run remains 3/6 cases; remaining admin/member acceptance is unverified. No native pass implied."
+  },
+  "verdict_b": {
+    "status": "PASS_WITH_NOTE",
+    "evidence": "Later identity verification still checks first-party identity, role, profile, and organization. Timeout and pointer uniqueness/hit testing remain unchanged. Guard exercises admin/member/guest modes and kills true, false, and missing-mount mutants. Note: settingsAvailable checks box dimensions but not computed visibility; strict click visibility/hit checks still prevent a false acceptance."
+  },
+  "runtime_and_tests": "Harness headed:true omits --headless=new and is compatible with an interactive native host; it requires a display. node --check passed on all 3 touched JS files; scoped Biome check passed; git diff --check passed.",
+  "native_status": "PENDING: source review only; no headed admin full six-case run and no member run performed.",
+  "commits": ["a33fa05c", "6c5b4eb5"]
+}

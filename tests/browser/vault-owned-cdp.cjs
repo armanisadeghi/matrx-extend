@@ -70,7 +70,12 @@ async function connectOwnedCdp({
   }
   const match = /-(\d+)$/.exec(lock);
   if (!match) throw new Error('owned_cdp_owner_refused');
-  const owner = await processInspector(Number(match[1]));
+  let owner;
+  try {
+    owner = await processInspector(Number(match[1]));
+  } catch {
+    throw new Error('owned_cdp_process_inspection_failed');
+  }
   const escapedProfile = profile.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const hasProfile = new RegExp(
     `(?:^|[\\s\\0])--user-data-dir=${escapedProfile}(?=$|[\\s\\0])`,
@@ -142,7 +147,11 @@ async function connectOwnedCdp({
       fail('listener');
     }
   };
-  socket = new WebSocketCtor(`ws://127.0.0.1:${port}${lines[1]}`);
+  try {
+    socket = new WebSocketCtor(`ws://127.0.0.1:${port}${lines[1]}`);
+  } catch {
+    throw new Error('owned_cdp_socket_construction_failed');
+  }
   const closeSocket = () =>
     new Promise((resolve) => {
       const timer = setTimeout(resolve, timeoutMs);
@@ -167,9 +176,10 @@ async function connectOwnedCdp({
       clearTimeout(timer);
       reject(new Error('owned_cdp_open_failed'));
     };
-  }).catch(async () => {
+  }).catch(async (error) => {
     deliberateClose = true;
     await closeSocket();
+    if (error?.message === 'owned_cdp_open_timeout') throw error;
     throw new Error('owned_cdp_open_failed');
   });
   socket.onmessage = (event) => dispatch(event.data);

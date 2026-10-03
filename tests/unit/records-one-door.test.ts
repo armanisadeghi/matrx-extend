@@ -22,7 +22,7 @@
  * if you change the patterns.
  */
 
-import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
@@ -83,4 +83,12 @@ describe('the record store has exactly one door in this repo', () => {
     });
     expect(builders.map((file) => relative(REPO, file))).toEqual([]);
   });
+});
+
+// Routing ownership must not regress into a second partial Records executor.
+it('Records has no browser handler or browser registration', () => {
+  expect(existsSync(join(REPO, 'src/lib/tools/handlers/records.ts'))).toBe(false);
+  expect(readFileSync(join(REPO, 'src/lib/tools/registry.ts'), 'utf8')).not.toMatch(
+    /records_handlers|handlers\/records/,
+  );
 });

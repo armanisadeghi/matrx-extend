@@ -1,18 +1,17 @@
 /** Shapes returned by the private tool catalog read. A malformed response is
  * unverified, never an empty or matching catalog. */
+export interface DbToolParameter {
+  type?: string | string[];
+  enum?: unknown[];
+  required?: boolean | string[];
+  [k: string]: unknown;
+}
+
 export interface DbToolRow {
   id: string;
   name: string;
   description: string | null;
-  parameters: Record<
-    string,
-    {
-      type?: string | string[];
-      enum?: unknown[];
-      required?: boolean | string[];
-      [k: string]: unknown;
-    }
-  >;
+  parameters: Record<string, unknown>;
   tier: string | null;
   admin_only: boolean | null;
   is_active: boolean | null;
@@ -61,7 +60,13 @@ export function isDbToolRow(value: unknown): value is DbToolRow {
   )
     return false;
 
-  return Object.values(value.parameters).every((param) => {
+  const parameters = value.parameters as Record<string, unknown>;
+  return Object.entries(parameters).every(([name, param]) => {
+    // Registry-level JSON Schema metadata describes the tool, not a field.
+    if (name === '$envelope') return typeof param === 'string' && isRecord(parameters[param]);
+    if (name === '$variants' || name === '$defs') return isRecord(param);
+    if (name === '$schema') return typeof param === 'string';
+    if (name.startsWith('$')) return false;
     if (!isRecord(param)) return false;
     if (
       param.type !== undefined &&
@@ -80,6 +85,17 @@ export function isDbToolRow(value: unknown): value is DbToolRow {
       return false;
     return true;
   });
+}
+
+/** Tool-call arguments only; registry metadata is never an argument. */
+export function toolParameterProperties(
+  parameters: DbToolRow['parameters'],
+): Record<string, DbToolParameter> {
+  return Object.fromEntries(
+    Object.entries(parameters)
+      .filter(([name]) => !name.startsWith('$'))
+      .map(([name, parameter]) => [name, parameter as DbToolParameter]),
+  );
 }
 
 export function isDbSurfaceDefaultsRow(value: unknown): value is DbSurfaceDefaultsRow {

@@ -1,0 +1,16 @@
+{
+  "status": "PARTIAL_WITH_CONCERN",
+  "scope": "Zero-authorship source review of extension 15d457e7 and aidream c2ca494da7; reused reviewer seat because a fresh agent thread was unavailable",
+  "verdict_a_extension": "PASS with type-contract concern: table_list asks canonical tableListEverywhere for default app-table visibility; include_app_tables=true returns spanning list; bucket plus group_by forwards to canonical recordAggregate; unsupported nondefault as_of, order, and related_to explicitly refuse before a read",
+  "verdict_b_package": "PASS at source: recordAggregateAsOf routes to the table owner's client when spanning organizations and maps recorded_at, measure, field_key, group_by, and match to the registered custom.record_aggregate_as_of door; focused test asserts owner routing",
+  "concern": "Extension SpanningDoors.recordAggregate arg type omits bucket although runtime fallback spreads it to the canonical client; update the wrapper type and prove the actual fallback or published-package path, since the Vitest mock alone cannot establish delivery",
+  "publication_boundary": "npm latest @ai-matrx/records was 0.61.1 at review; aidream commit source package says 0.63.0, so this review does not claim the historical aggregate method is published or adopted",
+  "guide_boundary": "Generated guide advertises as_of, order, and related_to while extension explicitly refuses nondefault forms; this tranche does not make the strict Records drift gate green",
+  "overall": "PARTIAL D91 only; no live database, installed-package, or release-gate acceptance performed",
+  "evidence": [
+    "git show 15d457e7",
+    "git show c2ca494da7",
+    "canonical RecordsClient and DOORS source",
+    "npm view @ai-matrx/records version"
+  ]
+}

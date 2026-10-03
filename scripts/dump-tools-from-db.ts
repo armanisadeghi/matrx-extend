@@ -30,6 +30,7 @@ import {
   type DbToolRow,
   isDbBindingRow,
   isDbToolRow,
+  toolParameterProperties,
 } from './_tool-db-row-validation';
 
 const EXECUTOR_NAME = 'chrome-extension';
@@ -42,8 +43,9 @@ async function fetchToolsViaManagementApi(): Promise<DbToolRow[]> {
 }
 
 function paramSummary(params: DbToolRow['parameters']): string {
-  if (!params || Object.keys(params).length === 0) return '_No parameters._';
-  const parts = Object.entries(params).map(([name, def]) => {
+  const properties = toolParameterProperties(params);
+  if (Object.keys(properties).length === 0) return '_No parameters._';
+  const parts = Object.entries(properties).map(([name, def]) => {
     const t = def?.type;
     const type = Array.isArray(t) ? t.join('|') : (t ?? 'any');
     const req = def?.required === true ? ', required' : '';

@@ -1,0 +1,3 @@
+{"schema":1,"at":"2026-10-03T06:25:50.563Z","runId":"records-canonical-catalog","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-03T06:25:50.622Z","runId":"records-canonical-catalog","processEvidence":{"matches":[{"pid":27316,"ppid":62457,"processStart":"Fri Oct  2 23:24:33 2026","executable":"node","reason":"script-operand"}],"overflow":0},"code":"RESOURCE_LEGACY_RUNNER_BUSY"}
+{"schema":1,"at":"2026-10-03T06:25:50.625Z","runId":"records-canonical-catalog","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}

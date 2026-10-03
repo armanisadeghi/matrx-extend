@@ -1,0 +1,52 @@
+{
+  "feature_id": "EXT-F-1003",
+  "surface": "Settings",
+  "inventory_source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
+  "reviewed_head": "6f4e9d0211315949f50a3d11b35dfa732822abec",
+  "source_of_record": "/Volumes/Samsung2TB/code/common-docs/systems/apps/extension/STATE.md",
+  "source_complete": true,
+  "runtime_status": "unverified",
+  "global_scope_complete": false,
+  "controls_added": [
+    "EXT-F-1003-C32 account identity and role",
+    "EXT-F-1003-C33 organization archive filter",
+    "EXT-F-1003-C34 desktop bridge status and health",
+    "EXT-F-1003-C35 retry permission status read",
+    "EXT-F-1003-C36 retry saving preferences"
+  ],
+  "cases_added": ["EXT-F-1003-T73 through EXT-F-1003-T85"],
+  "cases_refined": [
+    "EXT-F-1003-T23 and T24 correct member denial/admin access behavior",
+    "EXT-F-1003-T25 and T26 assert hidden audit-key access for guest/member",
+    "EXT-F-1003-T27 specifies actual admin audit-card outcomes",
+    "EXT-F-1003-T28 through T30 enumerate visible groups and their contents",
+    "EXT-F-1003-T43 through T45 make transport-dependent pairing controls explicit",
+    "EXT-F-1003-T46 through T48 specify port boundaries, clearing and persistence",
+    "EXT-F-1003-T60 records that export failure currently has no in-product message",
+    "EXT-F-1003-T63 avoids testing an artificial direct component mount",
+    "EXT-F-1003-T85 retains permission retry procedure after new cases were assigned",
+    "EXT-F-1003-T60 requires actionable visible clipboard failure feedback, no false copied state and retry; console-only handling is a source lead pending real runtime evidence."
+  ],
+  "source_reconciliation": [
+    "SettingsView.tsx exposes an Organization ArchiveFilter only when a user exists.",
+    "Account shows email/name and admin badge conditionally; footer sign-in/sign-out remains separately inventoried.",
+    "Desktop bridge exposes settled status plus conditional health, version, degraded and failed service rows.",
+    "AdvancedAgentCapabilities exposes Retry permission check only after permission reads fail.",
+    "Settings preference persistence exposes Retry save after a failed write.",
+    "DevTools Protocol is required at installation and has no supported on/off toggle; corrected C19 wording.",
+    "AuditKeyCard catches export errors only in the console; no user-facing error message is currently rendered."
+  ],
+  "constraints": [
+    "Preserved all prior case IDs, historical results and evidence links.",
+    "All added cells/cases are unverified; no source-only pass or defect-based N/A was added.",
+    "No browser run, product change, or heavy test was performed."
+  ],
+  "files": [
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/STATUS.md",
+    "docs/stabilization/CHECKLIST.md",
+    "docs/stabilization/STATUS.html",
+    ".research/settings-inventory-delta.json"
+  ],
+  "settings_audit_source_sha": "6f4e9d0211315949f50a3d11b35dfa732822abec"
+}

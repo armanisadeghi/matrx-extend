@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "status": "unverified_extension_signin_click_failed",
+  "run": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "run_id": 37110454728,
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37110454728",
+    "workflow_source_sha": "195d5dbc3eab96385d7b2798d4d166d64566ca1d",
+    "conclusion": "failure",
+    "case": "prepare-stale-results",
+    "development_run_id": 37107627454,
+    "development_artifact_id": 11268886169,
+    "development_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "release_run_id": "",
+    "published_store_crx": false,
+    "acceptance_artifact_id": 11269791824,
+    "acceptance_artifact_name": "hosted-guest-37110454728-1"
+  },
+  "evidence": {
+    "artifact_import": "DEVELOPMENT_TEST_IMPORTED exact_pushed_commit_only; PREPARED_DEVELOPMENT source SHA and tree SHA matched CI provenance",
+    "native_receipt": {
+      "version": "0.2.176",
+      "source_sha": null,
+      "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+      "kind": "local_dev_unpacked"
+    },
+    "case_result": {
+      "status": "unverified",
+      "stage": "admin_extension_click",
+      "failure_code": "admin_extension_click_failed",
+      "cases": [],
+      "signin_observations": {
+        "web_dashboard_reached": true
+      }
+    },
+    "interpretation": "Web login reached /dashboard. The failure was in the subsequent extension Sign in click boundary. The report has no extension readiness booleans, and the execution never reached the admin-extension wait or any Prepare case; no more specific cause is established.",
+    "screenshots": {
+      "panel": "test-results/native-sidepanel-qa-UbQyuY/native-side-panel.png",
+      "capture_timing": "Baseline before exercise; shows the initial guest surface and is not evidence of the failed click state.",
+      "normal_target": "test-results/native-sidepanel-qa-UbQyuY/normal-target-after-open.png"
+    },
+    "resource_journals": {
+      "package": "admitted=true, resourceInvalid=false, decision=valid, childExitCode=0",
+      "browser": "admitted=true, resourceInvalid=false, decision=valid, childExitCode=0",
+      "acceptance": "admitted=true, resourceInvalid=false, decision=child_failed, childExitCode=1"
+    },
+    "credential_cleanup": "Deleted MATRX_PREPARE_ADMIN_CREDENTIALS_JSON at run termination and verified the secret name absent. No credential value is recorded."
+  },
+  "scope": {
+    "defects_closed": [],
+    "open": ["EXT-D-0058", "EXT-D-0059"],
+    "pending_google_review": "0.2.176 unchanged and not verified by this diagnostic",
+    "limits": [
+      "The native receipt source_sha is null; the development artifact provenance establishes 3092444e73094cb0023f6086202869ccbd22978b separately.",
+      "This single authorized run produced no Prepare-case result and does not establish a product pass or a specific cause inside the extension click boundary."
+    ]
+  }
+}

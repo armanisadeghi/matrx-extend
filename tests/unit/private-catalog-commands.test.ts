@@ -9,6 +9,8 @@ import type { DbToolRow } from '../../scripts/_tool-db-row-validation';
 import { main as drift } from '../../scripts/check-tool-db-drift';
 import { main as generateDocs } from '../../scripts/dump-tools-from-db';
 
+const canonicalSurfaceFixture = vi.hoisted(() => new Set<string>(['google_workspace']));
+
 vi.mock('../../scripts/_supabase-rest', async (original) => ({
   ...(await original<typeof import('../../scripts/_supabase-rest')>()),
   loadSupabaseEnv: vi.fn(() => null),
@@ -27,7 +29,7 @@ vi.mock('../../src/lib/tools/catalog', () => ({
   }),
 }));
 vi.mock('../../src/lib/tools/categories', () => ({
-  CANONICAL_SURFACE: new Set(['google_workspace']),
+  CANONICAL_SURFACE: canonicalSurfaceFixture,
 }));
 vi.mock('node:fs', async (original) => ({
   ...(await original<typeof import('node:fs')>()),
@@ -51,10 +53,13 @@ let direct: string[];
 let bundles: string[];
 let membership: unknown;
 let membershipStatus: number;
+let serverDetail: unknown;
+let serverStatus = 200;
 let read: ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
   process.argv = [...argv, '--strict'];
+  canonicalSurfaceFixture.delete('records');
   vi.mocked(loadSupabaseEnv).mockReturnValue(null);
   vi.stubEnv('MATRX_SUPABASE_PROJECT_REF', 'brsgrqvjdzwihsvnfqkf');
   vi.stubEnv('SUPABASE_ACCESS_TOKEN', 'operator-fixture-token');
@@ -63,11 +68,20 @@ beforeEach(() => {
   bundles = [];
   membership = [];
   membershipStatus = 201;
+  serverStatus = 200;
+  serverDetail = null;
   vi.spyOn(console, 'log').mockImplementation(() => {});
   vi.spyOn(console, 'warn').mockImplementation(() => {});
   vi.spyOn(console, 'error').mockImplementation(() => {});
   vi.mocked(writeFileSync).mockClear();
   read = vi.fn(async (_url: string, init: RequestInit) => {
+    if (_url.includes('/tools/test/records')) {
+      expect(init.headers).toMatchObject({
+        Authorization: 'Bearer server-fixture-session',
+        'X-Organization-Id': 'selected-org',
+      });
+      return new Response(JSON.stringify(serverDetail), { status: serverStatus });
+    }
     const body = JSON.parse(String(init.body));
     if (body.read_only !== true) throw new Error('Read must be server-enforced read_only');
     const sql = String(body.query);
@@ -89,7 +103,9 @@ beforeEach(() => {
       rows = membership;
       status = membershipStatus;
     } else if (sql.includes('from tool.binding')) {
-      rows = [{ tool_id: tool.id, executor_name: 'chrome-extension', is_active: true }];
+      rows = definitions
+        .filter((row): row is DbToolRow => !!row && typeof row === 'object' && 'id' in row)
+        .map((row) => ({ tool_id: row.id, executor_name: 'chrome-extension', is_active: true }));
     } else if (sql.includes('from tool.definition')) {
       rows = definitions;
     } else if (sql.includes('from tool.surface_defaults')) {
@@ -303,5 +319,73 @@ describe('public catalog response validation through the real REST reader', () =
   ])('refuses malformed public surface rows: %j', async ({ surfaces }) => {
     publicRead({ surfaces });
     expect(await drift()).toBe(3);
+  });
+});
+
+describe('registered server contract through the complete strict command', () => {
+  function serverFixture() {
+    canonicalSurfaceFixture.add('records');
+    const parameters = {
+      action: { type: 'string', enum: ['guide'] },
+      args: { type: 'object' },
+      $variants: { guide: {} },
+    };
+    const records = {
+      ...tool,
+      id: 'records-fixture-id',
+      name: 'records',
+      tier: 'action',
+      category: 'records',
+      parameters,
+    };
+    definitions.push(records);
+    direct.push('records');
+    vi.stubEnv('AIDREAM_API_URL', 'https://server.invalid/api');
+    vi.stubEnv('AIDREAM_API_TOKEN', 'server-fixture-session');
+    vi.stubEnv('AIDREAM_ORGANIZATION_ID', 'selected-org');
+    const contract = {
+      resolved_executor: 'server',
+      declared_executor: 'aidream',
+      active_bindings: ['aidream', 'chrome-extension'],
+      declared_parameters: structuredClone(parameters),
+      execution_schema: {
+        discriminator: { mapping: { guide: '#/$defs/Guide' } },
+        oneOf: [{ $ref: '#/$defs/Guide' }],
+        $defs: { Guide: {} },
+      },
+      validation: {
+        fully_verified: true,
+        checked: ['records'],
+        exempt: [],
+        unverified: [],
+        findings: [],
+      },
+    };
+    serverDetail = { tool: { name: 'records', parameters, execution_contract: contract } };
+    return contract;
+  }
+  it('verifies browser and server contracts in one measured catalog', async () => {
+    serverFixture();
+    expect(await drift()).toBe(0);
+    expect(read).toHaveBeenCalledWith(
+      'https://server.invalid/api/tools/test/records',
+      expect.anything(),
+    );
+  });
+  it('refuses missing server proof instead of treating it as a browser-only catalog', async () => {
+    serverFixture();
+    serverStatus = 503;
+    expect(await drift()).toBe(3);
+    expect(console.error).toHaveBeenCalledWith(
+      expect.stringContaining('records server contract UNVERIFIED'),
+    );
+  });
+  it('reports the canonical server contract drift through the real command', async () => {
+    const contract = serverFixture();
+    contract.execution_schema.oneOf = [];
+    expect(await drift()).toBe(1);
+    expect(console.log).toHaveBeenCalledWith(
+      expect.stringContaining('full execution variants are incomplete'),
+    );
   });
 });

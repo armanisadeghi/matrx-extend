@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "status": "NATIVE_LAUNCH_SUCCEEDED_SETTINGS_RELOAD_CASE_FAILED",
+  "scope": "One authorized hosted guest settings-persistence acceptance after the safe startup diagnostic; no retry.",
+  "provenance": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 37113625864,
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37113625864",
+    "conclusion": "failure",
+    "event": "workflow_dispatch",
+    "head_branch": "main",
+    "head_sha": "ed025f4d2a938710a1144e711a75cf289ca69fd7",
+    "diagnostic_source_commit": "265ce55ca979c406b09e07ee79e6730b2e4867cf",
+    "diagnostic_review_commit": "ed025f4d2a938710a1144e711a75cf289ca69fd7",
+    "diagnostic_review": ".research/hosted-launch-diagnostic-review.json",
+    "acceptance_case": "settings-persistence",
+    "development_run_id": 37107627454,
+    "development_artifact_id": 11268886169,
+    "development_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "release_run_id": "",
+    "published_store_crx": false,
+    "version": "0.2.176",
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660"
+  },
+  "indexing_setup": {
+    "status": "success",
+    "host_guard": "RUNNER_ENVIRONMENT=github-hosted and RUNNER_OS=macOS passed",
+    "command": "sudo /usr/bin/mdutil -a -i off",
+    "verification": "/usr/bin/mdutil -a -s",
+    "disabled_status_lines": 6,
+    "enabled_status_lines": 0
+  },
+  "readiness": {
+    "status": "all_three_gates_passed",
+    "gates": [
+      {
+        "step": "Wait for measured package readiness",
+        "status": "success",
+        "healthy_samples": 3,
+        "samples": [
+          { "busy": 0.06, "load_per_cpu": 1.4 },
+          { "busy": 0.08, "load_per_cpu": 1.11 },
+          { "busy": 0.18, "load_per_cpu": 0.8825 }
+        ]
+      },
+      {
+        "step": "Wait for measured browser readiness",
+        "status": "success",
+        "healthy_samples": 3,
+        "samples": [
+          { "busy": 0.11, "load_per_cpu": 0.3325 },
+          { "busy": 0.25, "load_per_cpu": 0.3275 },
+          { "busy": 0.01, "load_per_cpu": 0.33 }
+        ]
+      },
+      {
+        "step": "Wait for measured acceptance readiness",
+        "status": "success",
+        "healthy_samples": 3,
+        "samples": [
+          { "busy": 0.05, "load_per_cpu": 0.3175 },
+          { "busy": 0.09, "load_per_cpu": 0.2475 },
+          { "busy": 0, "load_per_cpu": 0.2325 }
+        ]
+      }
+    ]
+  },
+  "resource_guards": {
+    "policy": {
+      "unsafe_samples_to_stop": 2,
+      "watch_interval_seconds": 15,
+      "source": "docs/stabilization/resource-policy.json"
+    },
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "final_decision": "valid",
+      "refusal": false
+    },
+    "browser_setup": {
+      "admitted": true,
+      "watcher_event": "RESOURCE_WATCH_UNSAFE",
+      "watcher_reasons": ["RESOURCE_CPU_BUSY"],
+      "watcher_busy_fraction": 0.86,
+      "child_exit_code": 0,
+      "resource_invalid": false,
+      "final_decision": "valid",
+      "refusal": false
+    },
+    "settings_acceptance": {
+      "admitted": true,
+      "initial_busy_fraction": 0.02142857142857143,
+      "initial_reasons": [],
+      "watcher_events": [
+        {
+          "at": "2026-10-03T09:43:25.416Z",
+          "code": "RESOURCE_WATCH_UNSAFE",
+          "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+          "busy_fraction": 1,
+          "one_minute_load": 4.8
+        },
+        {
+          "at": "2026-10-03T09:43:41.469Z",
+          "code": "RESOURCE_WATCH_HEALTHY",
+          "reasons": [],
+          "busy_fraction": 0.37,
+          "one_minute_load": 5.6
+        }
+      ],
+      "child_exit_code": 1,
+      "resource_invalid": false,
+      "final_decision": "child_failed",
+      "hardguard_admission_refusal": false,
+      "interpretation": "The acceptance child was admitted. One unsafe watcher sample was followed by one healthy sample; the policy stops only after two consecutive unsafe samples, and the healthy sample resets that count. No resource stop or resourceInvalid verdict occurred. The child later exited 1 from the failed Settings assertion, so the final decision is child_failed."
+    }
+  },
+  "native_launch_diagnostic": {
+    "browser_startup_failure_event": "not emitted",
+    "fixed_failure_code": null,
+    "elapsed_ms": null,
+    "observation": "The run proceeded through native browser launch, opened the extension panel, and recorded three actual Settings UI/storage cases. The diagnostic's failure record applies to failed startup; no startup failure occurred in this run."
+  },
+  "settings_acceptance": {
+    "receipt_artifact_id": 11270827545,
+    "receipt_artifact_name": "hosted-guest-37113625864-1",
+    "receipt_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37113625864/artifacts/11270827545",
+    "receipt_path": "test-results/settings-d87-native-42728c33-42fb-40d6-b5d3-b1cadc761b12.json",
+    "receipt_sha256": "ed0861adcb865a8eaae840b7f849895ce5c0d3855fe914fc00e1f6e270b4e971",
+    "defect": "EXT-D-0087",
+    "status": "fail",
+    "failure_stage": "retry",
+    "failure_code": "d87_reloaded_guest_not_observed",
+    "failure_operation": "reloaded_guest",
+    "cases": [
+      {
+        "name": "first changed choice saved through UI",
+        "status": "pass",
+        "theme": "Light",
+        "stored_theme": "light",
+        "error": false,
+        "retry": false,
+        "guest": true
+      },
+      {
+        "name": "system choice saved through UI",
+        "status": "pass",
+        "theme": "System",
+        "stored_theme": "system",
+        "error": false,
+        "retry": false,
+        "guest": true
+      },
+      {
+        "name": "rejected write visible with retry",
+        "status": "pass",
+        "theme": "Dark",
+        "stored_theme": "system",
+        "error": true,
+        "retry": true,
+        "guest": true
+      }
+    ],
+    "failure_observation": {
+      "settings_active": false,
+      "theme": null,
+      "stored_theme": "dark",
+      "error": false,
+      "retry": false,
+      "guest": true
+    },
+    "retry_write_before_reload": "The harness clicked Retry save and awaited the Dark theme write, but the reloaded_guest predicate failed before the retry-persisted-after-reload case was recorded.",
+    "overlap_case": "not reached",
+    "overlap_reload_case": "not reached",
+    "post_interaction_tree_hash": "not recorded; the post-run hash assertion is after the native harness return and was skipped when the assertion failed",
+    "product_cause": "undetermined"
+  },
+  "artifacts": {
+    "acceptance": {
+      "id": 11270827545,
+      "name": "hosted-guest-37113625864-1",
+      "expired": false,
+      "size_bytes": 55280,
+      "sha256_zip": "6e3f2135076ae30ac275a837dbf45b9161bc6a2b110365194df67e284f25f007",
+      "contains": [
+        "test-results/settings-d87-native-42728c33-42fb-40d6-b5d3-b1cadc761b12.json",
+        "docs/stabilization/resource-journals/hosted-package-37113625864-1.jsonl",
+        "docs/stabilization/resource-journals/hosted-browser-37113625864-1.jsonl",
+        "docs/stabilization/resource-journals/hosted-guest-37113625864-1.jsonl",
+        "test-results/native-sidepanel-qa-AJei6N/native-side-panel.png",
+        "test-results/native-sidepanel-qa-AJei6N/normal-target-after-open.png"
+      ]
+    }
+  },
+  "limitations": [
+    "This is a bounded guest Settings persistence case, not all Settings controls or all user modes.",
+    "Three Settings cases passed; retry after reload, overlap ordering, overlap reload, and the post-interaction artifact-tree hash were not completed.",
+    "The run proves the native browser and panel launched far enough to exercise real Settings UI; it does not determine why Settings was inactive after Page.reload.",
+    "No retry or product-source change was made. The Store 0.2.176 submission remains distinct from this development-artifact result."
+  ],
+  "next_action": "Return the bounded receipt and resource evidence to root; no additional run authorized by this report."
+}

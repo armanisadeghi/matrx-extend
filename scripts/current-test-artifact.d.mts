@@ -88,3 +88,10 @@ export function withReservedImportTarget(
   attempt: number,
   writeImport: (target: string) => Promise<void>,
 ): Promise<string>;
+
+export function selectOrImportNativeTarget(
+  sourceRoot: string,
+  runId: string,
+  artifactId: string,
+  importMissing: () => Promise<void>,
+): Promise<{ target: string; sourceSha: string }>;

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "ddd8ac925f9325803f9736cc6b529d634658006f",
+  "review_scope": [
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "scripts/hosted-guest-acceptance.mjs",
+    "tests/browser/prepare-stale-result-native-acceptance.mjs"
+  ],
+  "verdict_a": {
+    "outcome": "NOT_RUN",
+    "native_readiness": "READY_FOR_BOUNDED_RUN",
+    "reason": "Static review finds a receipt-bound native runner with real admin UI interaction and controlled async ordering; no browser or native execution was performed in this peer review.",
+    "product_status": "unverified"
+  },
+  "verdict_b": {
+    "quality": "PASS_WITH_SCOPE_LIMITS",
+    "findings": [
+      {
+        "claim": "Failed retry is meaningfully forced after a real successful Prepare.",
+        "evidence": "Runner first observes the real Prepare success, installs a hold-then-reject wrapper at chrome.scripting.executeScript, confirms visible pending state with no prior success, releases the rejection, then requires the failure UI and absence of success. The wrapper is installed only after signing in and selecting the real admin-only Showcase Prepare surface."
+      },
+      {
+        "claim": "Same-URL old-document late completion and rejection are controlled and observed.",
+        "evidence": "For each outcome the real executeScript call is made and its result held; the runner confirms pending UI, reloads the actual target page, observes a changed performance.timeOrigin, waits for cleared state on the same side panel, releases the prior call, and verifies the new document remains clear. It then requires fresh Prepare success."
+      },
+      {
+        "claim": "Artifact identity and credential handling are sufficiently bounded for the run.",
+        "evidence": "The runner checks unpacked-tree SHA and manifest version against the imported receipt; native-sidepanel-qa-harness verifies the receipt and loaded extension identity. Hosted dispatch restricts this case to a CI development artifact. Admin credentials are restricted to admin@admin.com, written mode 0600 outside uploaded evidence roots, passed by file path, and the source secret variable is cleared before child spawn; cleanup is in finally. Upload globs include the case result and harness screenshots, not runtime credentials or the private runtime directory."
+      }
+    ],
+    "scope_limits": [
+      "This proves only bounded Prepare retry and same-URL reload behavior; it does not close D58/D59 or cover pending Snapshot and other D59 page-derived consumers, consistent with the source report and defect records.",
+      "The helper clears the secret env property by assigning undefined, which Node serializes to the literal string 'undefined' in the child. The credential value itself does not reach the child; omitting the property would be clearer but is not a credential leak or readiness blocker.",
+      "The case result records receipt identity and named outcomes, while harness screenshots document the native surface; a passing run is still required before any product claim."
+    ]
+  },
+  "evidence_read": [
+    ".research/prepare-remaining-acceptance.json",
+    "docs/stabilization/defects/EXT-D-0058.json",
+    "docs/stabilization/defects/EXT-D-0059.json",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "src/hooks/use-page-prep.ts",
+    "src/features/showcase/tabs/PrepareTab.tsx",
+    "forcing-function-tests skill"
+  ],
+  "runtime_execution": "Not run by peer reviewer as instructed.",
+  "report_commit": "e838851a"
+}

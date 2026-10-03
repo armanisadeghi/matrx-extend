@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "ef049a2c44a4b9be10f6082b8b120b28467d7740",
+  "review_scope": [
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/browser/prepare-stale-result-native-acceptance.mjs",
+    ".research/prepare-readiness-escalation.json"
+  ],
+  "verdict_a_actual_intent": {
+    "outcome": "PASS_SOURCE_SCOPE_ONLY",
+    "evidence": "The captured failure had account_present=true, account_expanded=true, and sign_in_count=2; the workflow never reached the extension click. The new resolver requires exactly one active Settings tab and its linked active tabpanel. Both sign-in readiness and settings-button lookup use it; the existing account/admin identity predicate and real website login remain.",
+    "runtime": "UNVERIFIED: no native browser run performed; EXT-D-0058 and EXT-D-0059 remain open."
+  },
+  "verdict_b_quality": {
+    "outcome": "PASS_WITH_SCOPE_LIMITS",
+    "evidence": [
+      "Independent happy-dom reproduction from the current shared expression: prior document-wide Sign in count=2, active Settings panel count=1; inactive Settings is refused.",
+      "The `settings-button` candidate is selected only inside that same active Settings panel, then passes the existing unique-visible-target, stability, hit-testing, and trusted pointer dispatch checks.",
+      "Sibling census: the scoped click kind is only used by Prepare; existing generic sibling clicks and their readiness logic are untouched. No auth predicate, credential handling, or provenance check was weakened.",
+      "Focused Biome check passed for both changed runners and this report."
+    ],
+    "limits": [
+      "The DOM reproduction validates selector behavior only, not extension-panel lifecycle, OAuth, or the Prepare cases.",
+      "The readiness wait accepts one enabled Sign in control; it does not recheck active Settings before the subsequent click, though click resolution independently refuses if Settings is no longer uniquely active."
+    ]
+  },
+  "verification": {
+    "biome_command": "pnpm exec biome check --no-errors-on-unmatched tests/browser/settings-panel-driver.mjs tests/browser/prepare-stale-result-native-acceptance.mjs .research/prepare-readiness-escalation.json .research/prepare-scoped-signin-peer.json",
+    "biome_result": "Passed (4 files).",
+    "browser_tests": "Not run as instructed."
+  }
+}

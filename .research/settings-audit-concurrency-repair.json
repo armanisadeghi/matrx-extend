@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0093",
+  "status": "source-repaired-and-guarded; fresh peer and exact-build native acceptance pending",
+  "finding_verdict": "CONFIRMED by real audit primitive in independent module instances, isolated storage and real WebCrypto",
+  "root_cause": "An unlocked read/modify/write of active key and shared history allowed one activation to overwrite another activation\u2019s verification lineage. Cached key reuse also trusted delayed storage notifications.",
+  "repair": "One native origin-wide Web Lock surrounds complete creation, rotation and history snapshots. Import cache is reused only after reading persisted active id under the lock. No local mutex fallback, timeout or retry added. Existing ambiguous-write outcome handling retained.",
+  "reproduction": "First active write paused; second writer either queues on native lock or reaches active write without it. Both activations must remain in history after independent module restart. RED used native Node Web Locks; portable CI test doubles only platform lock and storage dependencies.",
+  "red": "audit-concurrency-red-20261003-02: 4/4 assertion failures: lost lineage, duplicate first creation, stale cache, unsupported lock writes. Prior run without --maxWorkers=1 refused before child launch.",
+  "green": "audit-concurrency-green-20261003: 23/23 tests, including both overlapping activated-key signatures and altered-payload rejection, partial writes, receipts and connected Settings UI.",
+  "verification_pending": [
+    "Fresh independent review",
+    "New exact CI artifact and native Chrome Settings acceptance"
+  ],
+  "safety": "No real device keys read, logged, exported or rotated; no manual release/build/deploy/migration.",
+  "journals": [
+    "docs/stabilization/resource-journals/audit-concurrency-red-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-concurrency-red-20261003-02.jsonl",
+    "docs/stabilization/resource-journals/audit-concurrency-green-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-concurrency-lock-mutant-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-concurrency-gut-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-concurrency-compile-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-concurrency-final-20261003.jsonl"
+  ],
+  "mutation": "audit-concurrency-lock-mutant-20261003: bypassing Web Locks reopens overlap and duplicate-creation failures (2 failed/2 passed); plant.py confirmed byte-identical restore.",
+  "gut_check": "audit-concurrency-gut-20261003: constant null public-key lookup fails activated-signature and absent-versus-active forcing cases (2 failed/3 passed); plant.py confirmed byte-identical restore.",
+  "test_boundary": "Production primitive, key generation, imports, key selection, history updates and signature verification run unchanged. Chrome storage is isolated in memory with forced operation barriers. Native Node Web Locks run where available; Node22 CI uses an explicit browser-lock dependency double. Independent module reloads model separate caches, not browser process isolation.",
+  "compile": "audit-concurrency-compile-20261003: pnpm exec tsc --noEmit exited 0, resource-valid.",
+  "final_green": "audit-concurrency-final-20261003: 24/24 focused tests pass; concurrency suite uses native Node25 Web Locks, other suites use browser dependency double. Resource-valid."
+}

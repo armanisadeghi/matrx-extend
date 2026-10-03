@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "PASS_BOUNDED_PEER_AUDIT_PENDING",
+  "completed_at": "2026-10-03T12:08:55Z",
+  "defects": ["EXT-D-0058", "EXT-D-0059"],
+  "run": {
+    "run_id": "prepare-local-native-20261003-08",
+    "runner_source_commit": "b576f20c402911b41b4c3cab3195462a14488c0e",
+    "acceptance_case": "prepare-stale-results",
+    "resource_admitted": true,
+    "resource_invalid": false,
+    "child_exit_code": 0,
+    "resource_decision": "valid"
+  },
+  "artifact": {
+    "kind": "ci_development_test",
+    "run_id": 37107627454,
+    "artifact_id": 11268886169,
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "post_run_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "provenance": "Authenticated imported CI evidence reverified with unchanged verifyImportedNativeEvidence; current Prepare source paths have zero diff from artifact source. Native local-dev receipt source_sha is null and is not treated as source proof."
+  },
+  "native_result": {
+    "status": "pass_bounded",
+    "stage": "complete",
+    "admin_signin": "Web dashboard and extension admin account/role observed; no credentials retained.",
+    "case_names": [
+      "failed_retry_after_success",
+      "old_document_late_success",
+      "old_document_late_rejection",
+      "fresh_document_prepare",
+      "cross_url_old_document_late_success",
+      "cross_url_old_document_late_rejection"
+    ],
+    "cross_url_observation": "Each held run started on https://www.aimatrx.com/matrx-extend-demo and navigated to the same owned public demo route with a distinct query URL; after navigation Chrome webNavigation reported a different top-frame documentId and exact destination URL before the old result settled. The destination remained free of old success, rejection, and pending state after settlement. This checks a different full URL and document; it does not claim cross-origin behavior."
+  },
+  "evidence": {
+    "receipt_path": "docs/stabilization/reports/prepare-cross-url-native-20261003/acceptance-receipt.json",
+    "resource_journal_path": "docs/stabilization/reports/prepare-cross-url-native-20261003/resource-journal.jsonl",
+    "resource_journal_sha256": "fe7ec5b1adb7903893708709169f8f01422ff27e176dfe401cfe61b94df5ac50",
+    "acceptance_log_path": "docs/stabilization/reports/prepare-cross-url-native-20261003/acceptance.log",
+    "acceptance_log_sha256": "c8c7693d8ab28c4336b28e3229e3785add1eff9ea08310772ca626b7d570a452",
+    "receipt_raw_path": "test-results/prepare-stale-result-native-dda043d6-e3df-42bf-9376-0fcebf720cef.json",
+    "receipt_raw_sha256": "0d448deed0bcc2216c17cb32280aa2b0b073e642d590bddbcf194154ad5cc71d",
+    "receipt_formatted_sha256": "30cc1153e1f164ed9df4024b03bc37f27bd715e3efbeacc4d2e66abf3c5e2bb9",
+    "receipt_semantically_identical": true
+  },
+  "cleanup": {
+    "private_admin_credential_file_removed": true,
+    "owned_chromium_process_remaining": false,
+    "heavy_resource_permit_released": true
+  },
+  "scope": "All four prior same-URL/failed-retry/fresh cases retained and passed alongside two different-URL cases. No product code changed, app built, Store artifact tested, or new browser feature claimed. EXT-D-0058 closure tracking awaits independent audit; EXT-D-0059 broader Snapshot/shared-consumer coverage is outside this run.",
+  "source_checks": [
+    "prepare-fault-driver.test.mjs passed",
+    "node --check on runner passed",
+    "focused Biome and git diff --check passed",
+    "Prepare product source unchanged against requested CI source"
+  ]
+}

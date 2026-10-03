@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0087",
+  "lane": "fresh zero-authorship receipt, provenance, assertion-path, and scope audit",
+  "reviewed_at": "2026-10-03",
+  "artifact": {
+    "version": "0.2.176",
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "development_run_id": 37107627454,
+    "development_artifact_id": 11268886169,
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "identity_match": "guest hosted receipt and both mounted receipts name the same version, source, artifact, and tree"
+  },
+  "verdict_a_actual_scope": {
+    "status": "PASS_D87_NATIVE_REPRO_AND_ADJACENT_CASES_ALL_MODES; INVENTORY_THEME_CASES_PARTIAL",
+    "modes": {
+      "guest": {
+        "status": "PASS_BOUNDED",
+        "receipt_sha256": "0d5e97229e70a390b9e7a19fe588b4b8fbc0279ca520915d1e2681963b7bee5c",
+        "evidence": "Hosted run 37115406435 raw receipt downloaded and hash independently matched; six of six cases pass."
+      },
+      "admin": {
+        "status": "PASS_BOUNDED",
+        "receipt_sha256": "db1261b3a963b3a609f50556b628b3645a878297d06c5ec27dbb96fb1f24d558",
+        "evidence": "Six of six mounted native cases; admin identity, rendered role/profile/organization, and both reload identity checks match."
+      },
+      "member": {
+        "status": "PASS_BOUNDED",
+        "receipt_sha256": "5d1bc7afb46dc7bbd429eecb62aab5942aa6cc55ed6540e683038b14bab2af62",
+        "evidence": "Six of six mounted native cases; first-party and extension identity match; canonical admin check returns HTTP 200 and zero rows before and after reload."
+      }
+    },
+    "original_reproduction": "All three modes exercised the real Settings Theme control and actual chrome.storage.local boundary: a controlled rejection leaves stored System while Dark shows an error and Retry; retry stores Dark; a held Light write followed by System proves ordering, and System remains after Settings panel reload.",
+    "inventory_case_assessment": {
+      "EXT-F-1003-T04_guest_theme": "PARTIAL: exact artifact proves Light/System saves, Dark retry persistence, and panel reload through UI/storage observations. No post-exercise Settings visual proof or full extension Reload on this artifact. Earlier full-reload guest result is 0.2.51 and does not upgrade this candidate result.",
+      "EXT-F-1003-T05_member_theme": "PARTIAL: same bounded persisted-value coverage as guest; no visual-appearance proof or full extension Reload.",
+      "EXT-F-1003-T06_admin_theme": "PARTIAL: same bounded persisted-value coverage as guest; no visual-appearance proof or full extension Reload. Earlier admin full-reload result is 0.2.51 and does not upgrade this candidate result.",
+      "other_D87_linked_inventory_cases": "UNVERIFIED by these runs; no pass is inferred for other Settings controls or preference families."
+    },
+    "closure_gate": "The original rejection and rapid-write reproduction plus directly adjacent normal save, retry-save, and latest-intent-after-reload behaviors pass for guest/admin/member on the same exact artifact. The defect record also requires the controlled component/store regression and independent review, which are outside this receipt-only verdict. Page.reload is the Settings panel target reload; a full Chrome extension Reload and rendered-color verification are broader EXT-F-1003-T04/T05/T06 coverage limits, not an additional failure-class behavior missing from these D87 receipts."
+  },
+  "verdict_b_evidence_quality": {
+    "status": "PASS_BOUNDED_WITH_LIMITS",
+    "receipt_and_artifact_provenance": "Downloaded guest raw receipt SHA-256 matched the acceptance record; admin/member receipt hashes independently recomputed. All three receipts match the same version, source, artifact ID, and tree. Runner source checks imported run/source/artifact/tree identity, repair ancestry, version, and tree hash before launch and re-hashes the tree after all cases. Guest hosted-run/artifact metadata beyond the raw receipt is inherited from the prior acceptance record, not re-queried in this review.",
+    "resource_journals": {
+      "guest_sha256": "1a647df0a0ed65eeb1c62c4b10282dff5f44029ab582f50a340d258da577f205",
+      "admin_sha256": "1902991de1945d46a07abd40ffa7ffeb77e1b681c6caf8fc04a791cc1873c0bc",
+      "member_sha256": "65c3c976d98b0b30edb0bbc11651c5f0fab5b8ece31fafbbe2bda9ca05e5ad89",
+      "assessment": "Each journal hash matches its recorded value; admission/watcher were healthy, child exit was 0, and final decision was valid."
+    },
+    "assertion_path": "Receipt assertions read the rendered Theme label, actual Chrome storage blob, visible error/Retry, and persisted state after reload. The fault installer wraps chrome.storage.local.set and delegates non-fault writes to the original method. UI actions use trusted CDP mouse input; the driver requires a unique visible hit-tested target and two stable samples before dispatch. pointer_boundary=null is a success-path default; it is populated only for a specific click failure.",
+    "limits": [
+      "Reload is Page.reload on the Settings panel target, not Chrome's full extension Reload.",
+      "Screenshots are generic native-panel/normal-target captures, not post-exercise Settings or theme-appearance evidence; receipt observations establish text and storage, not rendered colors.",
+      "This is repository and receipt review; I did not replay the native run."
+    ]
+  },
+  "reviewer_decision": "Accept the three-mode bounded native evidence for D87 original-repro and directly adjacent save/retry/order behavior. Keep EXT-F-1003-T04/T05/T06 partial for whole-theme appearance/full-extension-reload criteria; this evidence does not certify all Settings cases."
+}

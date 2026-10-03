@@ -1,0 +1,10 @@
+{
+  "status": "source_readiness_accepted; hosted_native_outcome_unverified",
+  "reviewed_commits": ["508e05c9", "5de4bfaf", "e7cde4af"],
+  "reviewer": "root coordinator; no source authorship; owner reverify after fresh-agent allocation and unrelated-peer reactivation both failed with agent thread limit reached",
+  "finding": "Original independent peer85c2aedf found runtime install outside resource run.",
+  "finding_disposition": "ADDRESSED: workflow now invokes only the existing guarded allowlisted helper; helper prepares receipts, installs Playwright and Chromium, and runs native acceptance as children inheriting MATRX_RESOURCE_OWNER. The guard sets the token and owns process group/descendants. No separate install step remains.",
+  "verdict_A": "SOURCE_READINESS_PASS; actual native reply/reload not yet measured",
+  "verdict_B": "SOURCE_PASS_WITH_LIMITS: exact command allowlist, configured thresholds, concurrency cap and receipt/tree/source/hash checks remain. Reviewer inspected final code and did not run a local heavy test. This is not a fresh context peer rerun and is recorded as owner adjudication, not relabelled independent runtime proof.",
+  "next": "One hosted browser run after a successful immutable release artifact; inspect valid resource receipt, actual reply, reload followup, screenshots and runtime failures before any acceptance claim."
+}

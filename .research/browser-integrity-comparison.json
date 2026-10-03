@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "status": "CONTENT_IDENTICAL_STARTUP_UNVERIFIED",
+  "completed_at": "2026-10-03T11:08:00Z",
+  "defects": ["EXT-D-0058", "EXT-D-0059"],
+  "attempt_count": 1,
+  "source": {
+    "playwright_core": "1.56.1",
+    "chromium_version": "141.0.7390.37",
+    "revision": 1194,
+    "official_archive_url": "https://cdn.playwright.dev/dbazure/download/playwright/builds/chromium/1194/chromium-mac-arm64.zip",
+    "archive_sha256": "bb13e2bab465de3305277559395805c19ef8f221420e9a7d830a149c8e4d9e3d",
+    "archive_path": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/chromium-mac-arm64.zip"
+  },
+  "comparison": {
+    "cached_root": "/Volumes/Samsung2TB/.codex-guest-runtime/browsers/chromium-1194/chrome-mac",
+    "fresh_root": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/extracted/chrome-mac",
+    "inventory": "640 entries each; 0 missing, 0 extra, 0 differing common entries (regular-file SHA-256 and symlink targets compared)",
+    "executable_sha256_both": "a01de8bb11d24acc6f91848415c9df9744965bea7fd58763f2930d4f280d5b84",
+    "bundle_codesign_both": "code has no resources but signature indicates they must be present",
+    "codesign_metadata_both": "adhoc signature; sealed resources none; Info.plist not bound; same CDHash 59139e2958d9ed53fdb893ada005b22e45a81e25"
+  },
+  "verdict": "Cached content exactly matches the freshly downloaded official same-revision archive. Local content corruption is ruled out for this bundle. The codesign diagnostic is identical in the official package and is not evidence that cache damage caused the endpoint timeout. Runtime startup cause remains unknown.",
+  "next_action": "Root may review and test the fresh candidate executable at /Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/extracted/chrome-mac/Chromium.app/Contents/MacOS/Chromium under a fresh owned profile and the existing resource guard. Do not treat content equality as launch or acceptance evidence.",
+  "scope": "No browser launched; no original cache or profile changed; no signing bypass, quarantine removal, security-setting change, endpoint-timeout increase, app build, release, or acceptance run.",
+  "resource_journal": "/Volumes/Samsung2TB/.codex-guest-runtime/browser-integrity-20261003/resource-journal.jsonl; admitted, healthy, terminal decision valid"
+}

@@ -1,0 +1,54 @@
+{
+  "status": "DONE_WITH_CONCERNS_SOURCE_VERIFIED_LIVE_PENDING",
+  "server_commit": "c971bc6314",
+  "list": [
+    {
+      "what": "browser Records executor + guide mirror",
+      "where": "src/lib/tools/handlers/records.ts + generated/records-guide.json",
+      "status": "removed; canonical server preserves all actions"
+    },
+    {
+      "what": "manual Tools row",
+      "where": "src/lib/tools/server-catalog.ts + src/features/tools/ToolsView.tsx",
+      "status": "explicit server entry; 22 focused tests and typecheck passed"
+    },
+    {
+      "what": "legacy category discovery",
+      "where": "src/lib/tools/handlers/discover.ts",
+      "status": "registered server references retained; focused discovery test passed"
+    },
+    {
+      "what": "strict release gate",
+      "where": "scripts/check-tool-db-drift.ts + _server-tool-contract.ts",
+      "status": "requires canonical resolver, active binding, complete model schema, all generated DB variants and measured server validation"
+    },
+    {
+      "what": "server inspection",
+      "where": "aidream /tools/test/{name}",
+      "status": "new execution_contract committed; CI and deploy pending"
+    }
+  ],
+  "verification": [
+    "resource-guard typecheck passed",
+    "22 focused tests passed under valid resource guard",
+    "catalog generated 168 browser handlers after Records removal",
+    "Python AST parse and git diff checks passed",
+    "final discovery, contract and manual UI suite: 13 tests passed under valid resource guard",
+    "DB-sourced tool docs regenerated: 82 tools, Records retained",
+    "sole heavy permit released and transferred to hosted_acceptance_peer"
+  ],
+  "open": [
+    "new server endpoint remote tests, peer review, deploy",
+    "live strict gate through ephemeral release credentials",
+    "browser manual and signed-in/guest chat acceptance",
+    "package 0.63.0 unrelated spa template originality failure blocks publish/adopt",
+    "whole extension typecheck was before final discovery-reference addition; full CI must cover final tree",
+    "canonical common-docs extension STATE still contains stale eight-action/two-executor claims; release owner must update when live accepted",
+    "adversarial mutation red/green not run locally; seven gate drift fixtures fail closed and all tests pass"
+  ],
+  "limits": [
+    "existing server shape validator is lossy for unions; full Pydantic schema and canonical Records generated projection are exposed independently, no invented validation",
+    "resource guard refused arbitrary shell wrapper; only allowlisted direct commands used"
+  ],
+  "db_mutations": false
+}

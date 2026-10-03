@@ -1,0 +1,71 @@
+{
+  "id": "EXT-D-0091",
+  "feature_id": "EXT-F-4130",
+  "case_ids": ["EXT-F-4130-T01"],
+  "surface": "Records tool / canonical per-action contract and extension execution",
+  "auth_mode": "guest/member/admin; action applicability requires actual authorization checks",
+  "title": "Flat extension Records schema loses canonical action arguments and lacks actions",
+  "reproduction": [
+    "After D90 row validation repair, run strict live tool catalog comparison; records schema mismatch remains.",
+    "Compare live records $variants per-action schemas with the actual extension RecordsArgs schema and dispatcher. Pass a supported canonical field such as include_app_tables to its applicable action and observe that the flat Zod schema omits it.",
+    "Compare all25 advertised actions against extension handler dispatch. Exact unsupported-action census is14, listed in unsupported_actions; original12count omitted entity_read and entity_write."
+  ],
+  "expected": "Each advertised action accepts its canonical per-action arguments and executes its declared behavior; the gate compares the actual executor contract after server envelope handling.",
+  "actual": "Source/live-schema comparison found5 DB-only fields (include_app_tables, as_of, order, bucket, related_to),7 conflicting field schemas across action variants, and14 unsupported actions. A flat union cannot preserve action-dependent rows type, defaults, or required fields. Initial startup recovery is separate.",
+  "severity": "S1: advertised Records requests can silently lose inputs or fail as unsupported",
+  "priority": "P1: real release-blocking contract drift; do not skip gate or hide capability",
+  "state": "in-fix",
+  "evidence": [
+    "scripts/check-tool-db-drift.ts",
+    "src/lib/tools/handlers/records.ts",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37097488341",
+    ".research/records-contract-escalation.json",
+    ".research/records-routing-peer.json",
+    ".research/records-canonical-escalation.json",
+    "https://github.com/armanisadeghi/matrx-extend/commit/41670d8d",
+    "https://github.com/AI-Matrix-Engine/aidream/commit/c971bc6314",
+    ".research/records-current-evidence.json",
+    ".research/release176-artifact.json",
+    ".research/records-canonical-independent-check.json",
+    ".research/records-manual-contract.json",
+    ".research/records-canonical-escalation.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-03T05:01:17.774052+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Strict comparison exposed Records mismatch after valid metadata accepted."
+    },
+    {
+      "at": "2026-10-03T05:01:17.774052+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Live25-action variant census and source handler comparison distinguish genuine missing behavior from metadata validation."
+    },
+    {
+      "at": "2026-10-03T05:01:17.774052+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Implementation lane investigating canonical shared executor/validation; fresh escalation unavailable due agent thread limit."
+    }
+  ],
+  "closure_requirement": "Canonical per-action validation and implementation, all advertised action census, meaningful regression guards, independent review, strict live drift pass, actual supported read-only Records execution with parameter preservation. No union-flattening or exclusions to manufacture pass.",
+  "unsupported_actions": [
+    "form_propose",
+    "booking_propose",
+    "import_propose",
+    "dashboard_propose",
+    "pipeline_propose",
+    "document_propose",
+    "checklist_propose",
+    "capture_propose",
+    "enrich_propose",
+    "portal_propose",
+    "signature_request",
+    "subscription_propose",
+    "entity_read",
+    "entity_write"
+  ],
+  "current_work": "Release 0.2.176 (source 3fe608d949a06aa10bfea57b43c9b05638386bc1) includes extension commit 41670d8d; aidream source c971bc6314 supplies the canonical server contract. The release artifact records strict release gates exiting 0, and source review confirms the executor retirement, retained discovery/manual UI, and complete contract gate. This supersedes the stale claim that source review and the strict gate are still pending. D91 remains in-fix: the retained independent live check predates server deployment, no post-deployment Records user result is recorded, and the focused native Manual Tools Records read-only case is still not executed. Do not infer all-action acceptance from the strict gate or unrelated guest/member Chat runs."
+}

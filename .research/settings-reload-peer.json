@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "e0b463fccc18e8c98e7a85cfabc6aba1f750b846",
+  "target_artifact_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+  "verdict_A_acceptance_intent_and_runtime_limits": "PASS_FOR_ACCEPTANCE_INTENT; RUNTIME_UNVERIFIED. The existing acceptance conditions remain strict: rejected write requires optimistic Dark plus stored System, visible save error, and Retry; retry is checked both before reload and after reloading/reopening Settings; overlap holds the first write, confirms the later System choice is visible while storage remains Dark and only one write occurred, then checks System storage and checks again after a real Page.reload. Guest mode and active Settings are required in every settings observation. No browser rerun was performed, so these remain source-level assertions, not runtime proof.",
+  "verdict_B_quality": "PASS. In artifact 3092444, useSidepanelTabStore initializes tab to chat and is an in-memory zustand store, so a full extension-page reload returns to Chat. The repaired helper waits for guest Chat, invokes the same Settings-tab click and Appearance expansion path used initially, then checks the expected visible and stored theme with Settings active and no error. The runner captures the post-reload observation in both retry and overlap cases. The change does not relax guest, visibility, storage, provenance, or release-tree assertions. No material source defect found.",
+  "evidence": {
+    "runtime_navigation": "src/state/sidepanel-tab.ts at target artifact 3092444 initializes tab='chat'; it has no persistence middleware.",
+    "runner_navigation": "tests/browser/settings-d87-native-acceptance.mjs: reload now awaits d87_reloaded_guest, calls openSettings (which clicks Settings, waits for active guest Settings, and opens Appearance), and returns a visible+stored expected-theme observation.",
+    "unmodified_acceptance": "Rejected write still requires theme=Dark, storedTheme=system, error=true, retry=true and one faulted write. Retry checks Dark before reload and after reload. The overlap case holds the Light write, makes System the later choice, confirms stored Dark before release, requires two writes to finish, and confirms System after a real reload.",
+    "limits": "No native browser rerun was performed. Runtime persistence, overlap behavior, and the post-interaction tree-hash assertion are unverified until the guarded rerun."
+  },
+  "saved_bytes_check": "PASS: formatter-enabled Biome check completed after final report save; report bytes were not modified by the check."
+}

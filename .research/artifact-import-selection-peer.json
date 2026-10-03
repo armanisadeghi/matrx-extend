@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "review_scope": "scripts/hosted-guest-acceptance.mjs focused multi-import selection repair",
+  "verdict_a": {
+    "outcome": "PASS",
+    "selection_contract": "The wrapper scans imports instead of assuming one source/run exists, filters by requested run ID and artifact ID, refuses missing or ambiguous candidates, then retains full verifyImportedNativeEvidence and asserts returned run/artifact IDs and directory source SHA consistency.",
+    "identity_binding": "scripts/current-test-artifact.mjs verifies the supplied run against authenticated GitHub metadata and ties the exact artifact ID, workflow run, run head SHA, and downloaded artifact digest together. The native verifier checks imported status, receipts, provenance, package version, and full tree hash. Static task-specific SHA/tree literals are unnecessary for this generic immutable run/artifact selector.",
+    "bounded_run_evidence": "Builder reports PREPARED_DEVELOPMENT 3092444e73094cb0023f6086202869ccbd22978b 025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660 at 2026-10-03 10:45:04Z; root owns verification of that exact output and receipt.",
+    "identity": {
+      "required_run_id": 37107627454,
+      "required_artifact_id": 11268886169,
+      "required_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+      "required_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660"
+    },
+    "runtime_execution": "Not run; builder holds the local acceptance permit."
+  },
+  "verdict_b": {
+    "outcome": "PASS",
+    "quality": "The focused change handles multiple local imports safely, refuses zero or multiple matches, and retains the strongest existing evidence verifier. No code quality blocker found.",
+    "formatter": "pnpm exec biome check scripts/hosted-guest-acceptance.mjs passed."
+  },
+  "evidence": [
+    "Current diff at scripts/hosted-guest-acceptance.mjs: source directories are filtered to SHA-shaped names; attempts are filtered by requested run ID; import-status artifactId selects candidates; exactly one is required.",
+    "scripts/current-test-artifact.mjs:verifyImportedNativeEvidence validates the candidate's complete evidence chain but derives expected head_sha and treeSha256 from that candidate's own status and receipts.",
+    "The importer checks authenticated GitHub run/artifact metadata and downloaded artifact digest; verifyImportedNativeEvidence checks local provenance/receipt hashes and full tree content."
+  ]
+}

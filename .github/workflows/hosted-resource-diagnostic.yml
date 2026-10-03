@@ -1,0 +1,28 @@
+name: Hosted resource diagnosis
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: macos-15-intel
+    timeout-minutes: 5
+    concurrency:
+      group: hosted-guest-side-panel
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Compare bounded read-only CPU samplers
+        run: node scripts/hosted-resource-diagnostic.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: resource-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+          path: test-results/hosted-resource-diagnostic.json
+          if-no-files-found: error

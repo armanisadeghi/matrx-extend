@@ -1,0 +1,86 @@
+{
+  "id": "EXT-D-0093",
+  "feature_id": "EXT-F-1003",
+  "case_ids": [
+    "EXT-F-1003-T27",
+    "EXT-F-1003-T60",
+    "EXT-F-1003-T86",
+    "EXT-F-1003-T87",
+    "EXT-F-1003-T88",
+    "EXT-F-1003-T89",
+    "EXT-F-1003-T90",
+    "EXT-F-1003-T91"
+  ],
+  "surface": "Settings \u2192 Advanced agent capabilities \u2192 Audit key",
+  "auth_mode": "admin",
+  "title": "Audit-key load, export, and rotation failures lack actionable UI",
+  "reproduction": [
+    "In an isolated component test, reject the audit details read during the actual Advanced agent capabilities mount: the original card remains at loading and raises an unhandled rejection.",
+    "Reject clipboard writing after Export public key: the original card logs a warning but renders no failure or retry.",
+    "Let rotation succeed but reject its follow-up details read: the original handler raises an unhandled rejection and gives no honest rotation outcome.",
+    "At the real storage boundary, let the active-key write persist then reject: the original primitive throws after the key has changed, so the UI can invite another rotation. Initial key creation has the same partial-write seam.",
+    "Force two independent audit module contexts to overlap first activation or rotation; the previous code loses one activated public key from visible history and reuses a stale cache before storage change notification."
+  ],
+  "expected": "Every failure is visible with an action that retries only the failed operation. A successful rotation remains acknowledged when its refresh fails; retrying details never rotates again.",
+  "actual": "The component initially had no failure state; load and rotation refresh rejected outside a catch, while export caught only to console. The primitive wrote history, active key, and imported key sequentially, so a late rejection could obscure a persisted key change.",
+  "severity": "S2: admin cannot tell whether key rotation succeeded or recover failed reads and copy",
+  "priority": "P2",
+  "state": "fixed",
+  "evidence": [
+    "src/features/settings/AdvancedAgentCapabilities.audit-key.test.tsx",
+    "tests/unit/device-key-partial-write.test.ts",
+    "docs/stabilization/resource-journals/audit-key-red-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-key-green-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-key-partial-red-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-key-history-final-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-key-history-compile-2-20261003.jsonl",
+    ".research/settings-audit-error-peer.json",
+    ".research/settings-audit-error-repair.json",
+    ".research/settings-audit-error-final-peer.json",
+    ".research/settings-audit-concurrency-repair.json",
+    "tests/unit/device-key-concurrency.test.ts",
+    ".research/settings-audit-concurrency-peer.json",
+    ".research/audit-lock-ci-repair.json",
+    ".research/audit-lock-unavailable-recovery.json",
+    ".research/audit-unavailable-final-peer.json",
+    ".research/audit-history-guard-peer.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-03T12:41:13.751Z",
+      "from": null,
+      "to": "open",
+      "reason": "Guarded connected-component red run reproduced three missing failure outcomes."
+    },
+    {
+      "at": "2026-10-03T12:41:13.751Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "First-load, export, and rotation-refresh paths were traced to the audit card boundary."
+    },
+    {
+      "at": "2026-10-03T12:45:45Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Source repair committed; native acceptance remained pending."
+    },
+    {
+      "at": "2026-10-03T14:36:52.932142+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Production concurrency and capability recovery fixes passed focused RED/GREEN, mutation checks, full CI37129518563 and independent source reviews; history guard finding resolved inbefd9227 and freshpeerfaf1e928. Native acceptance remains required."
+    }
+  ],
+  "current_work": "Source fixes complete: concurrency43d28aa0, capability-specific recovery991385d9, fixture03b80268, history guardbefd9227. Fresh peerfaf1e928 accepted the missing-history assertion correction; 5/5 guarded tests passed and deliberate history corruption failed. Full CI37129518563 passed production991385d9 and produced immutable development artifact11275878549. No native D93 acceptance or Store shipment is implied.",
+  "closure_requirement": "Independent review plus exact-build native Settings verification of actionable failures and single-rotation retry behavior without rotating real user/device keys.",
+  "independent_source_review": {
+    "commit": "22f29e68",
+    "report": ".research/settings-audit-concurrency-peer.json",
+    "quality_verdict": "pass_with_minor",
+    "runtime_verdict": "partial_native_pending"
+  },
+  "remaining_work": [
+    "Exact artifact11275878549 from successful CI37129518563/source991385d9: native Settings failure/retry, successful versus uncertain single-rotation outcomes, and cross-context receipt verification. Use only fresh owned profiles; never rotate real user/device keys.",
+    "Subsequent release gates and exact guest/non-admin candidate acceptance before Store submission."
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "4a3a317c",
+  "reviewer_lane": "fresh source-based reverify; no tests, build, browser, or runtime calls",
+  "prior_finding_disposition": {
+    "EXT-F-4023-T01 no-match false oracle": {
+      "status": "ADDRESSED",
+      "evidence": "The arbitrary no-match case was removed. The positive oracle now requires find to return a current read_page candidate ref mapped to the known Example Domain heading, and records AI refusal/missing match as non-pass. page-refs.ts still sends zero-score candidates to AI, so the procedure no longer assumes AI abstains."
+    },
+    "EXT-F-4027-T01 summary versus structured output": {
+      "status": "ADDRESSED",
+      "evidence": "The title and expected result describe SoupResult fields and explicitly permit identical shallow/deep content; read.ts returns cap.soup and pipeline.ts defines the structured fields."
+    },
+    "EXT-F-4041-T01 history time-bound fixture": {
+      "status": "ADDRESSED",
+      "evidence": "The procedure records numeric Unix epoch milliseconds before seeding visits and immediately before the first query, then reuses those exact bounds and checks returned last_visit_ms values. browser-data.ts passes these values to chrome.history.search."
+    },
+    "Warm and reloaded runs not separately specified": {
+      "status": "ADDRESSED",
+      "evidence": "Each case now explicitly performs a warm pass and a later extension/panel reload pass, with fresh refs or tab IDs where required. Shared setup establishes the receipt-bound artifact before either pass."
+    }
+  },
+  "verdict_a_procedure_fidelity": {
+    "outcome": "PASS_SOURCE_ONLY; ALL_RUNTIME_UNVERIFIED",
+    "evidence": [
+      "All ten cases remain within their named read-tool scope, provide warm and post-reload runs, distinguish explicit handler errors from successful empty results where relevant, and keep member/admin applicability while stating that Tools manual Run skips dispatcher authorization.",
+      "Arguments and assertions checked against page-refs.ts, read.ts, inspect.ts, tabs.ts, browser-data.ts, ToolsView.tsx, and the shared SoupResult definition. The history bounds and find candidate-ref oracle match current handler behavior.",
+      "Personal bookmark/history cases are restricted to synthetic fixtures in a disposable profile; the page-reference DOM metadata side effect is disclosed."
+    ],
+    "limitations": [
+      "No case was executed. Artifact identity, native rendering, actual Chrome permission behavior, and all inventory test statuses remain unverified; the procedure design does not clear the separate permission/access readiness gaps."
+    ]
+  },
+  "verdict_b_source_quality": {
+    "outcome": "PASS_SOURCE_REVIEW",
+    "new_breakage": [],
+    "evidence": [
+      "The revised cases avoid asserting fixed refs, exact page scrape sizes, AI abstention, shallow/deep output differences, or everyday-profile personal data.",
+      "Warm/reload comparisons reacquire page refs and ephemeral tab IDs after reload; history reuses a bounded fixture interval and bookmark/tree reads remain scoped to the disposable profile."
+    ],
+    "limitations": [
+      "No browser, build, test, or runtime verification was performed, per lane constraints."
+    ]
+  },
+  "status_promotion": "None; all ten inventory cases remain unverified and separate permission/access cases remain outstanding.",
+  "evidence_sources": [
+    "4a3a317c:.research/tool-procedures-next-batch.json",
+    ".research/tool-procedures-next-peer.json",
+    "src/lib/tools/handlers/page-refs.ts",
+    "src/lib/tools/handlers/read.ts",
+    "src/lib/scrape/pipeline.ts",
+    "src/lib/tools/handlers/inspect.ts",
+    "src/lib/tools/handlers/tabs.ts",
+    "src/lib/tools/handlers/browser-data.ts",
+    "src/features/tools/ToolsView.tsx"
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "scope": "Hosted native acceptance CPU measurement before product execution",
+  "source_run": {
+    "id": 37106015241,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37106015241",
+    "head_sha": "7faa2849407654ee052599f9b924d822a456868e",
+    "first_failure": "Diagnose host measurement readiness: /usr/bin/top -l 2 -s 1 -n 0 was SIGTERM-killed at the 5-second execFile bound; stdout contained no CPU rows; stderr was empty",
+    "product_phase_started": false,
+    "classification": "host measurement unavailable, no product verdict"
+  },
+  "boundary_finding": "The workflow readiness step and resource guard separately invoked the same two-iteration top command. The hosted failure proves a command timeout before CPU data existed. It does not prove why top was slow on that runner. Process census overhead is plausible but unmeasured; local top completed in 1.37 seconds.",
+  "hypotheses": [
+    {
+      "cause": "top process enumeration occasionally exceeds the 5-second bound",
+      "prediction": "A CPU-only interval sampler returns two readings within the same bound while top does not",
+      "result": "Local iostat completed in 1.01 seconds; hosted comparison remains unverified"
+    },
+    {
+      "cause": "the hosted machine was unsafe by CPU threshold",
+      "prediction": "a working sampler would return a fraction above the policy threshold",
+      "result": "unknown: top produced no CPU rows; a saturated host could itself delay top"
+    },
+    {
+      "cause": "product or browser failure",
+      "prediction": "package, browser, or product phase would start",
+      "result": "contradicted by recorded phase flags and workflow log"
+    }
+  ],
+  "repair": "Both guard and hosted readiness consume the shared iostat CPU sampler. It reads the second one-second interval row, refuses missing or malformed readings, and propagates subprocess timeout. The guard's 5-second command timeout and CPU policy thresholds remain unchanged.",
+  "verification": {
+    "red": "New CPU sampler test failed on old top invocation with actual /usr/bin/top versus expected /usr/sbin/iostat. This proves the command migration, not the hosted latency cause.",
+    "green": "CPU sampler and safety tests passed; disk and safety-state guard integration tests passed sequentially; direct bounded live iostat sampling returned a finite CPU fraction",
+    "mutation": "An in-memory constant 0.2 return failed the second forcing input, which expects 0.45",
+    "format": "Biome check and git diff --check passed for owned files",
+    "hosted_retest": "pending; no native acceptance or guarded heavy browser launch was performed in this diagnosis"
+  },
+  "limits": "The replacement removes top from the measurement path, but this local investigation cannot establish the cause of hosted top latency, the hosted CPU threshold state, or hosted iostat latency. A hosted timeout remains an explicit infrastructure refusal and cannot count as product acceptance. Fresh independent review and hosted runtime evidence are pending."
+}

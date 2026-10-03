@@ -1,0 +1,26 @@
+{
+  "status": "DONE_WITH_VERIFICATION_LIMITS",
+  "reviewed": {
+    "aidream": "ee954e0e12a5b423dbb6d4e4d072af8fa04a5dc5",
+    "extension": ["426cb64a855ee8b0f763e5fbfcc58f64253dae5e", "e01cc885"]
+  },
+  "verdict_A_behavior": {
+    "aidream": "PARTIAL_SOURCE_ONLY: Browser auto-load and bundle discovery now classify native Records as RegisteredToolSpec using the registry's declaration-aware resolver. The merge keeps Records advertised and out of client_tools; ToolExecutor reaches the Records entry point with the supplied action, nested arguments, user and organization without a Chrome delegation. The test replaces _dispatch, _campaign_enabled and _allowed_actions, so actual Records database execution, real policy and deployed behavior remain unverified.",
+    "extension": "PARTIAL_SOURCE_ONLY: The hosted path downloads Google's public CRX, pins its exact SHA-256, checks CRX3 framing, ZIP entry paths, manifest version and key-derived extension ID, then runs the real native side panel against the public demo page. The acceptance requires a streamed terminal answer containing an unpredictable page code and ordered stages, then a distinct answer after a real panel reload. No successful Store 130 hosted run was supplied or executed in this review. Chrome loads the extracted, byte-identical payload with --load-extension; the test does not prove Google's installed-extension lifecycle."
+  },
+  "verdict_B_source_quality": {
+    "aidream": "PASS_WITH_VERIFICATION_LIMIT: The fix uses the existing registry ownership resolver in both discovery paths and preserves request-time executor liveness in merge. The focused test checks browser-only delegation, detached-browser exclusion, explicit exclusion, identity and argument propagation, and guest-without-identity refusal. No source-blocking defect found. I found no executed mutation or local test result in this review; the test's authenticated=False branch retains user_id and organization_id, so it is not evidence of signed-out access control.",
+    "extension": "PASS_WITH_VERIFICATION_LIMIT: The Store path is mutually exclusive with release/development artifact modes; the receipt is rechecked before browser launch; the harness verifies its owned Chrome process/profile and expected extension worker. The acceptance inspects network and stream outcomes rather than fabricating a client reply. Exact extraction is path-checked and pinned to the public CRX hash. Formatting follow-up e01cc885 has no semantic change. No source-blocking defect found."
+  },
+  "blocking_findings": [],
+  "release_conditions": [
+    "Run the guarded hosted published_store_crx guest-chat job from the reviewed source and inspect its receipt, first terminal answer, post-reload follow-up, and failure artifacts; a green source check is insufficient.",
+    "Deploy an aidream build containing ee954e0e12, confirm its running version, and exercise Records with a real authorized person and organization; the stubbed unit test cannot certify the store path.",
+    "Describe the CRX native run as unpacked published-payload evidence, not as proof of Google-installed extension lifecycle."
+  ],
+  "review_checks": [
+    "Read both commit diffs and relevant discovery, merge, executor, Records and native harness source.",
+    "node --check passed for hosted-guest-acceptance.mjs, native-sidepanel-qa-harness.mjs and guest-chat-store-acceptance.mjs; git show --check passed for 426cb64a and e01cc885.",
+    "No local heavy tests, browser launch, network download, deployment or live database call were performed because this lane was bounded to source review and local disk was below the stated 20 GiB floor."
+  ]
+}

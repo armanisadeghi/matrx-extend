@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "8d989bc3",
+  "lane": "independent source-based procedure review; no tests, builds, browser, or runtime calls",
+  "verdict_a_procedure_fidelity": {
+    "outcome": "PARTIAL_SOURCE_ONLY; ALL_RUNTIME_UNVERIFIED",
+    "evidence": [
+      "All ten named tools and the supplied arguments match their current Zod handler schemas and catalog input schemas. The signed-in-only Tools tab is confirmed by src/config/sidepanel-visibility.ts:35; ToolsView directly invokes local handlers and documents that manual execution skips the dispatcher permission gate (src/features/tools/ToolsView.tsx:11-14, 453-462). The batch correctly limits its claimed scope to manual-handler behavior and leaves test statuses untouched.",
+      "The batch is explicitly design-only. No result establishes runtime behavior, loaded artifact identity, permission enforcement, or completion of an inventory cell."
+    ],
+    "limitations": [
+      "Each case lists reload as a dimension, but shared setup performs extension/tab reload before the cases and no case defines separate warm and post-reload executions. PLAN.md: build/reload contract requires warm and cold/reloaded runs; this batch does not yet give executable evidence steps for both.",
+      "The inventory records gated/negative permission cases as a readiness gap for these registered-tool features. The batch correctly says the manual Run cannot cover that gate, but the separate dispatch/access cases remain outstanding and must not be cleared by merging these procedures.",
+      "No browser or manual tool run was performed; every outcome remains unverified."
+    ]
+  },
+  "verdict_b_source_quality": {
+    "outcome": "PARTIAL_WITH_CASE_FINDINGS",
+    "case_findings": [
+      {
+        "case_id": "EXT-F-4023-T01",
+        "severity": "material_expected_outcome_mismatch",
+        "finding": "The no-match control cannot reliably expect an empty matches list. find deliberately sends candidates to AI even when every text-prefilter score is zero (src/lib/tools/handlers/page-refs.ts:606-612), and accepts the AI-provided matches (652-668); only its text fallback guarantees empty output for a zero-score query. The same procedure can therefore return a candidate for the sentinel query.",
+        "recommendation": "Remove the deterministic empty-list assertion for this AI-backed path, or redesign the case around a deterministic source-level boundary that does not depend on AI abstention."
+      },
+      {
+        "case_id": "EXT-F-4027-T01",
+        "severity": "minor_title_and_expectation_precision",
+        "finding": "The case calls read_active_page a concise summary, but the handler returns the full SoupResult from captureWithFallback (src/lib/tools/handlers/read.ts:106-112; SoupResult includes article content, media, links, structured data, SEO and metadata in src/lib/scrape/pipeline.ts:33-52). Also, deep=true triggers a scroll-to-load pass but does not promise that the returned representation differs from shallow output.",
+        "recommendation": "Describe the result as a structured page capture; assert its known fields and that deep mode requests lazy loading, without requiring a shorter summary or differing output."
+      },
+      {
+        "case_id": "EXT-F-4041-T01",
+        "severity": "procedure_incomplete_fixture_bound",
+        "finding": "The lower-bound variable visit-window-start-ms is never assigned. Preconditions say to visit both URLs and record a run-start time, while the call also needs a lower bound preceding those visits. The Chrome query uses start_time_ms/end_time_ms directly (src/lib/tools/handlers/browser-data.ts:100-108), so an operator cannot reproduce the intended window from the written sequence alone.",
+        "recommendation": "Record the lower-bound timestamp immediately before seeding visits, then record the end bound immediately before running the case; specify milliseconds since epoch and keep both numeric JSON values."
+      }
+    ],
+    "minor_cross_case_note": "read_page stamps and clears data-matrx-ref attributes in the page DOM (src/lib/tools/handlers/page-refs.ts:279-280, 351-352). Its procedure claims no page content is edited, which is true for visible content, but should avoid implying zero DOM mutation.",
+    "positive_checks": [
+      "The provided read_page, find, read_active_page, get_element_details, tabs, bookmark and history arguments conform to the local schemas checked against the implementation/catalog.",
+      "The examples use public targets or explicitly synthetic personal-data fixtures, correctly distinguish visible handler errors from successful empty results, and retain member/admin applicability with guest gated at the Tools tab."
+    ]
+  },
+  "status_promotion": "None; inventory modes/cells and cases remain unverified.",
+  "evidence": [
+    "8d989bc3:.research/tool-procedures-next-batch.json",
+    "docs/stabilization/INVENTORY-CONTRACT.md",
+    "docs/stabilization/PLAN.md build/reload contract",
+    "src/lib/tools/handlers/page-refs.ts",
+    "src/lib/tools/handlers/read.ts",
+    "src/lib/tools/handlers/browser-data.ts",
+    "src/lib/scrape/pipeline.ts",
+    "src/features/tools/ToolsView.tsx",
+    "src/config/sidepanel-visibility.ts"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "status": "implemented",
+  "credential_source": "existing authorized admin test account",
+  "organization_source": "existing TEST_ORGANIZATION_ID, verified against mbr_for_user",
+  "github_secrets": [
+    "AIDREAM_GATE_USERNAME",
+    "AIDREAM_GATE_PASSWORD",
+    "AIDREAM_GATE_ORGANIZATION_ID"
+  ],
+  "token_handling": "point-use JWT in release child environment only",
+  "verification": "local live sign-in and membership passed; two focused unit tests passed",
+  "hosted_release": "not yet run"
+}

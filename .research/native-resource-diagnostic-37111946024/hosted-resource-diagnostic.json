@@ -1,0 +1,1192 @@
+{
+  "schema": 1,
+  "verdict": "DIAGNOSTIC_ONLY_NO_ADMISSION_OR_PRODUCT_RESULT",
+  "samples": [
+    {
+      "iostat": {
+        "startedAt": "2026-10-03T09:06:59.808Z",
+        "completedAt": "2026-10-03T09:07:00.839Z",
+        "value": 0.77
+      },
+      "top": {
+        "startedAt": "2026-10-03T09:06:59.816Z",
+        "completedAt": "2026-10-03T09:07:01.393Z",
+        "value": 0.7402
+      },
+      "processes": {
+        "startedAt": "2026-10-03T09:06:59.822Z",
+        "completedAt": "2026-10-03T09:06:59.925Z",
+        "value": [
+          {
+            "pid": 163,
+            "parentPid": 1,
+            "cpuPercent": 66.1,
+            "executable": "trustd"
+          },
+          {
+            "pid": 956,
+            "parentPid": 951,
+            "cpuPercent": 36.6,
+            "executable": "Runner.Worker"
+          },
+          {
+            "pid": 1192,
+            "parentPid": 1191,
+            "cpuPercent": 16,
+            "executable": "node"
+          },
+          {
+            "pid": 93,
+            "parentPid": 1,
+            "cpuPercent": 14.8,
+            "executable": "accessoryupdaterd"
+          },
+          {
+            "pid": 1194,
+            "parentPid": 1193,
+            "cpuPercent": 10.1,
+            "executable": "(diskutil)"
+          },
+          {
+            "pid": 114,
+            "parentPid": 1,
+            "cpuPercent": 8.5,
+            "executable": "diskarbitrationd"
+          },
+          {
+            "pid": 938,
+            "parentPid": 936,
+            "cpuPercent": 6.2,
+            "executable": "provjobd3822622731"
+          },
+          {
+            "pid": 555,
+            "parentPid": 1,
+            "cpuPercent": 4.5,
+            "executable": "networkserviceproxy"
+          },
+          {
+            "pid": 1,
+            "parentPid": 0,
+            "cpuPercent": 4.4,
+            "executable": "launchd"
+          },
+          {
+            "pid": 232,
+            "parentPid": 1,
+            "cpuPercent": 4.2,
+            "executable": "authd"
+          },
+          {
+            "pid": 934,
+            "parentPid": 930,
+            "cpuPercent": 3.1,
+            "executable": "hosted-compute-agent"
+          },
+          {
+            "pid": 88,
+            "parentPid": 1,
+            "cpuPercent": 2.4,
+            "executable": "fseventsd"
+          },
+          {
+            "pid": 274,
+            "parentPid": 1,
+            "cpuPercent": 2.2,
+            "executable": "mds_stores"
+          },
+          {
+            "pid": 585,
+            "parentPid": 1,
+            "cpuPercent": 2.2,
+            "executable": "iCloudNotificationAgent"
+          },
+          {
+            "pid": 1191,
+            "parentPid": 956,
+            "cpuPercent": 2,
+            "executable": "bash"
+          },
+          {
+            "pid": 460,
+            "parentPid": 1,
+            "cpuPercent": 1.6,
+            "executable": "cloudd"
+          },
+          {
+            "pid": 520,
+            "parentPid": 1,
+            "cpuPercent": 1.6,
+            "executable": "cloudd"
+          },
+          {
+            "pid": 233,
+            "parentPid": 1,
+            "cpuPercent": 1.4,
+            "executable": "storagekitd"
+          },
+          {
+            "pid": 152,
+            "parentPid": 1,
+            "cpuPercent": 1.2,
+            "executable": "runningboardd"
+          },
+          {
+            "pid": 83,
+            "parentPid": 1,
+            "cpuPercent": 1,
+            "executable": "logd"
+          },
+          {
+            "pid": 144,
+            "parentPid": 1,
+            "cpuPercent": 0.9,
+            "executable": "notifyd"
+          },
+          {
+            "pid": 1195,
+            "parentPid": 1193,
+            "cpuPercent": 0.9,
+            "executable": "(grep)"
+          },
+          {
+            "pid": 1197,
+            "parentPid": 1193,
+            "cpuPercent": 0.9,
+            "executable": "(sed)"
+          },
+          {
+            "pid": 175,
+            "parentPid": 1,
+            "cpuPercent": 0.8,
+            "executable": "mDNSResponder"
+          },
+          {
+            "pid": 1196,
+            "parentPid": 1193,
+            "cpuPercent": 0.8,
+            "executable": "(sed)"
+          },
+          {
+            "pid": 111,
+            "parentPid": 1,
+            "cpuPercent": 0.7,
+            "executable": "mds"
+          },
+          {
+            "pid": 124,
+            "parentPid": 1,
+            "cpuPercent": 0.6,
+            "executable": "launchservicesd"
+          },
+          {
+            "pid": 151,
+            "parentPid": 1,
+            "cpuPercent": 0.6,
+            "executable": "cfprefsd"
+          },
+          {
+            "pid": 461,
+            "parentPid": 1,
+            "cpuPercent": 0.5,
+            "executable": "accountsd"
+          },
+          {
+            "pid": 1193,
+            "parentPid": 1108,
+            "cpuPercent": 0.5,
+            "executable": "(bash)"
+          },
+          {
+            "pid": 122,
+            "parentPid": 1,
+            "cpuPercent": 0.4,
+            "executable": "opendirectoryd"
+          },
+          {
+            "pid": 422,
+            "parentPid": 1,
+            "cpuPercent": 0.4,
+            "executable": "trustd"
+          },
+          {
+            "pid": 664,
+            "parentPid": 1,
+            "cpuPercent": 0.4,
+            "executable": "logd_helper"
+          },
+          {
+            "pid": 1108,
+            "parentPid": 1,
+            "cpuPercent": 0.4,
+            "executable": "bash"
+          },
+          {
+            "pid": 110,
+            "parentPid": 1,
+            "cpuPercent": 0.3,
+            "executable": "warmd"
+          },
+          {
+            "pid": 187,
+            "parentPid": 1,
+            "cpuPercent": 0.3,
+            "executable": "analyticsd"
+          },
+          {
+            "pid": 239,
+            "parentPid": 1,
+            "cpuPercent": 0.3,
+            "executable": "com.apple.CodeSigningHelper"
+          },
+          {
+            "pid": 620,
+            "parentPid": 1,
+            "cpuPercent": 0.2,
+            "executable": "rtcreportingd"
+          },
+          {
+            "pid": 932,
+            "parentPid": 1,
+            "cpuPercent": 0.2,
+            "executable": "BackgroundTaskManagementAgent"
+          },
+          {
+            "pid": 85,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "UserEventAgent"
+          },
+          {
+            "pid": 135,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "distnoted"
+          },
+          {
+            "pid": 153,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "loginwindow"
+          },
+          {
+            "pid": 252,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "nsurlsessiond"
+          },
+          {
+            "pid": 492,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "remindd"
+          },
+          {
+            "pid": 538,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "com.apple.geod"
+          },
+          {
+            "pid": 580,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "mdbulkimport"
+          }
+        ]
+      },
+      "load": {
+        "startedAt": "2026-10-03T09:06:59.826Z",
+        "completedAt": "2026-10-03T09:06:59.835Z",
+        "value": 60.38
+      },
+      "cpus": {
+        "startedAt": "2026-10-03T09:06:59.828Z",
+        "completedAt": "2026-10-03T09:06:59.835Z",
+        "value": 4
+      }
+    },
+    {
+      "iostat": {
+        "startedAt": "2026-10-03T09:07:16.402Z",
+        "completedAt": "2026-10-03T09:07:17.434Z",
+        "value": 0.73
+      },
+      "top": {
+        "startedAt": "2026-10-03T09:07:16.404Z",
+        "completedAt": "2026-10-03T09:07:17.825Z",
+        "value": 0.7203
+      },
+      "processes": {
+        "startedAt": "2026-10-03T09:07:16.405Z",
+        "completedAt": "2026-10-03T09:07:16.490Z",
+        "value": [
+          {
+            "pid": 111,
+            "parentPid": 1,
+            "cpuPercent": 91.2,
+            "executable": "mds"
+          },
+          {
+            "pid": 166,
+            "parentPid": 1,
+            "cpuPercent": 35.7,
+            "executable": "contextstored"
+          },
+          {
+            "pid": 274,
+            "parentPid": 1,
+            "cpuPercent": 35.7,
+            "executable": "mds_stores"
+          },
+          {
+            "pid": 163,
+            "parentPid": 1,
+            "cpuPercent": 33.7,
+            "executable": "trustd"
+          },
+          {
+            "pid": 93,
+            "parentPid": 1,
+            "cpuPercent": 8.1,
+            "executable": "accessoryupdaterd"
+          },
+          {
+            "pid": 537,
+            "parentPid": 1,
+            "cpuPercent": 1.9,
+            "executable": "homed"
+          },
+          {
+            "pid": 956,
+            "parentPid": 951,
+            "cpuPercent": 1,
+            "executable": "Runner.Worker"
+          },
+          {
+            "pid": 520,
+            "parentPid": 1,
+            "cpuPercent": 0.9,
+            "executable": "cloudd"
+          },
+          {
+            "pid": 83,
+            "parentPid": 1,
+            "cpuPercent": 0.6,
+            "executable": "logd"
+          },
+          {
+            "pid": 938,
+            "parentPid": 936,
+            "cpuPercent": 0.5,
+            "executable": "provjobd3822622731"
+          },
+          {
+            "pid": 828,
+            "parentPid": 1,
+            "cpuPercent": 0.4,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 636,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "CloudTelemetryService"
+          }
+        ]
+      },
+      "load": {
+        "startedAt": "2026-10-03T09:07:16.408Z",
+        "completedAt": "2026-10-03T09:07:16.417Z",
+        "value": 47.93
+      },
+      "cpus": {
+        "startedAt": "2026-10-03T09:07:16.411Z",
+        "completedAt": "2026-10-03T09:07:16.420Z",
+        "value": 4
+      }
+    },
+    {
+      "iostat": {
+        "startedAt": "2026-10-03T09:07:32.834Z",
+        "completedAt": "2026-10-03T09:07:33.879Z",
+        "value": 1
+      },
+      "top": {
+        "startedAt": "2026-10-03T09:07:32.836Z",
+        "completedAt": "2026-10-03T09:07:34.210Z",
+        "value": 1
+      },
+      "processes": {
+        "startedAt": "2026-10-03T09:07:32.838Z",
+        "completedAt": "2026-10-03T09:07:32.902Z",
+        "value": [
+          {
+            "pid": 274,
+            "parentPid": 1,
+            "cpuPercent": 85,
+            "executable": "mds_stores"
+          },
+          {
+            "pid": 111,
+            "parentPid": 1,
+            "cpuPercent": 38.2,
+            "executable": "mds"
+          },
+          {
+            "pid": 163,
+            "parentPid": 1,
+            "cpuPercent": 29.5,
+            "executable": "trustd"
+          },
+          {
+            "pid": 1239,
+            "parentPid": 1,
+            "cpuPercent": 24.3,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1372,
+            "parentPid": 1,
+            "cpuPercent": 21.1,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1249,
+            "parentPid": 1,
+            "cpuPercent": 20.8,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1243,
+            "parentPid": 1,
+            "cpuPercent": 20.6,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1307,
+            "parentPid": 1,
+            "cpuPercent": 20.5,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1373,
+            "parentPid": 1,
+            "cpuPercent": 20.4,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1237,
+            "parentPid": 1,
+            "cpuPercent": 20.2,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1370,
+            "parentPid": 1,
+            "cpuPercent": 19.9,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1244,
+            "parentPid": 1,
+            "cpuPercent": 19.6,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1371,
+            "parentPid": 1,
+            "cpuPercent": 19.4,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 520,
+            "parentPid": 1,
+            "cpuPercent": 16.9,
+            "executable": "cloudd"
+          },
+          {
+            "pid": 166,
+            "parentPid": 1,
+            "cpuPercent": 7.4,
+            "executable": "contextstored"
+          },
+          {
+            "pid": 93,
+            "parentPid": 1,
+            "cpuPercent": 5.9,
+            "executable": "accessoryupdaterd"
+          },
+          {
+            "pid": 956,
+            "parentPid": 951,
+            "cpuPercent": 2.1,
+            "executable": "Runner.Worker"
+          },
+          {
+            "pid": 83,
+            "parentPid": 1,
+            "cpuPercent": 0.3,
+            "executable": "logd"
+          },
+          {
+            "pid": 636,
+            "parentPid": 1,
+            "cpuPercent": 0.2,
+            "executable": "CloudTelemetryService"
+          },
+          {
+            "pid": 938,
+            "parentPid": 936,
+            "cpuPercent": 0.2,
+            "executable": "provjobd3822622731"
+          }
+        ]
+      },
+      "load": {
+        "startedAt": "2026-10-03T09:07:32.841Z",
+        "completedAt": "2026-10-03T09:07:32.846Z",
+        "value": 35.87
+      },
+      "cpus": {
+        "startedAt": "2026-10-03T09:07:32.843Z",
+        "completedAt": "2026-10-03T09:07:32.849Z",
+        "value": 4
+      }
+    },
+    {
+      "iostat": {
+        "startedAt": "2026-10-03T09:07:49.218Z",
+        "completedAt": "2026-10-03T09:07:50.240Z",
+        "value": 0.97
+      },
+      "top": {
+        "startedAt": "2026-10-03T09:07:49.220Z",
+        "completedAt": "2026-10-03T09:07:50.627Z",
+        "value": 0.9155
+      },
+      "processes": {
+        "startedAt": "2026-10-03T09:07:49.223Z",
+        "completedAt": "2026-10-03T09:07:49.293Z",
+        "value": [
+          {
+            "pid": 274,
+            "parentPid": 1,
+            "cpuPercent": 68.3,
+            "executable": "mds_stores"
+          },
+          {
+            "pid": 111,
+            "parentPid": 1,
+            "cpuPercent": 30.5,
+            "executable": "mds"
+          },
+          {
+            "pid": 1371,
+            "parentPid": 1,
+            "cpuPercent": 23.8,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1502,
+            "parentPid": 1,
+            "cpuPercent": 23.8,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1373,
+            "parentPid": 1,
+            "cpuPercent": 23.6,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1494,
+            "parentPid": 1,
+            "cpuPercent": 22.6,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1493,
+            "parentPid": 1,
+            "cpuPercent": 21.8,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1492,
+            "parentPid": 1,
+            "cpuPercent": 20.8,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1237,
+            "parentPid": 1,
+            "cpuPercent": 20.1,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1243,
+            "parentPid": 1,
+            "cpuPercent": 20.1,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1491,
+            "parentPid": 1,
+            "cpuPercent": 19.8,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1307,
+            "parentPid": 1,
+            "cpuPercent": 19.7,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1501,
+            "parentPid": 1,
+            "cpuPercent": 8.3,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 166,
+            "parentPid": 1,
+            "cpuPercent": 5.7,
+            "executable": "contextstored"
+          },
+          {
+            "pid": 1454,
+            "parentPid": 1,
+            "cpuPercent": 2,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1464,
+            "parentPid": 1,
+            "cpuPercent": 1.6,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1,
+            "parentPid": 0,
+            "cpuPercent": 0.8,
+            "executable": "launchd"
+          },
+          {
+            "pid": 956,
+            "parentPid": 951,
+            "cpuPercent": 0.7,
+            "executable": "Runner.Worker"
+          },
+          {
+            "pid": 1452,
+            "parentPid": 1,
+            "cpuPercent": 0.6,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1453,
+            "parentPid": 1,
+            "cpuPercent": 0.6,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 826,
+            "parentPid": 1,
+            "cpuPercent": 0.4,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 389,
+            "parentPid": 1,
+            "cpuPercent": 0.3,
+            "executable": "cfprefsd"
+          },
+          {
+            "pid": 122,
+            "parentPid": 1,
+            "cpuPercent": 0.2,
+            "executable": "opendirectoryd"
+          },
+          {
+            "pid": 152,
+            "parentPid": 1,
+            "cpuPercent": 0.2,
+            "executable": "runningboardd"
+          },
+          {
+            "pid": 83,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "logd"
+          },
+          {
+            "pid": 96,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "powerd"
+          },
+          {
+            "pid": 144,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "notifyd"
+          },
+          {
+            "pid": 151,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "cfprefsd"
+          },
+          {
+            "pid": 938,
+            "parentPid": 936,
+            "cpuPercent": 0.1,
+            "executable": "provjobd3822622731"
+          }
+        ]
+      },
+      "load": {
+        "startedAt": "2026-10-03T09:07:49.226Z",
+        "completedAt": "2026-10-03T09:07:49.232Z",
+        "value": 28.95
+      },
+      "cpus": {
+        "startedAt": "2026-10-03T09:07:49.228Z",
+        "completedAt": "2026-10-03T09:07:49.234Z",
+        "value": 4
+      }
+    },
+    {
+      "iostat": {
+        "startedAt": "2026-10-03T09:08:05.631Z",
+        "completedAt": "2026-10-03T09:08:06.639Z",
+        "value": 0.88
+      },
+      "top": {
+        "startedAt": "2026-10-03T09:08:05.633Z",
+        "completedAt": "2026-10-03T09:08:07.049Z",
+        "value": 0.868
+      },
+      "processes": {
+        "startedAt": "2026-10-03T09:08:05.635Z",
+        "completedAt": "2026-10-03T09:08:05.695Z",
+        "value": [
+          {
+            "pid": 1616,
+            "parentPid": 1,
+            "cpuPercent": 23.6,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1606,
+            "parentPid": 1,
+            "cpuPercent": 20.9,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1608,
+            "parentPid": 1,
+            "cpuPercent": 19.8,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1373,
+            "parentPid": 1,
+            "cpuPercent": 18.8,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1607,
+            "parentPid": 1,
+            "cpuPercent": 18.8,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1615,
+            "parentPid": 1,
+            "cpuPercent": 18.4,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1601,
+            "parentPid": 1,
+            "cpuPercent": 16.9,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1602,
+            "parentPid": 1,
+            "cpuPercent": 16.8,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1603,
+            "parentPid": 1,
+            "cpuPercent": 16.8,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 111,
+            "parentPid": 1,
+            "cpuPercent": 16.7,
+            "executable": "mds"
+          },
+          {
+            "pid": 1493,
+            "parentPid": 1,
+            "cpuPercent": 14.7,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 166,
+            "parentPid": 1,
+            "cpuPercent": 3.6,
+            "executable": "contextstored"
+          },
+          {
+            "pid": 1614,
+            "parentPid": 1,
+            "cpuPercent": 3.1,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1617,
+            "parentPid": 1,
+            "cpuPercent": 2.7,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 274,
+            "parentPid": 1,
+            "cpuPercent": 1.8,
+            "executable": "mds_stores"
+          },
+          {
+            "pid": 1,
+            "parentPid": 0,
+            "cpuPercent": 1.1,
+            "executable": "launchd"
+          },
+          {
+            "pid": 1593,
+            "parentPid": 1,
+            "cpuPercent": 0.8,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 122,
+            "parentPid": 1,
+            "cpuPercent": 0.6,
+            "executable": "opendirectoryd"
+          },
+          {
+            "pid": 144,
+            "parentPid": 1,
+            "cpuPercent": 0.5,
+            "executable": "notifyd"
+          },
+          {
+            "pid": 389,
+            "parentPid": 1,
+            "cpuPercent": 0.4,
+            "executable": "cfprefsd"
+          },
+          {
+            "pid": 938,
+            "parentPid": 936,
+            "cpuPercent": 0.4,
+            "executable": "provjobd3822622731"
+          },
+          {
+            "pid": 151,
+            "parentPid": 1,
+            "cpuPercent": 0.3,
+            "executable": "cfprefsd"
+          },
+          {
+            "pid": 83,
+            "parentPid": 1,
+            "cpuPercent": 0.2,
+            "executable": "logd"
+          },
+          {
+            "pid": 956,
+            "parentPid": 951,
+            "cpuPercent": 0.2,
+            "executable": "Runner.Worker"
+          },
+          {
+            "pid": 1597,
+            "parentPid": 1,
+            "cpuPercent": 0.2,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 114,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "diskarbitrationd"
+          },
+          {
+            "pid": 152,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "runningboardd"
+          },
+          {
+            "pid": 557,
+            "parentPid": 1,
+            "cpuPercent": 0.1,
+            "executable": "amsengagementd"
+          }
+        ]
+      },
+      "load": {
+        "startedAt": "2026-10-03T09:08:05.637Z",
+        "completedAt": "2026-10-03T09:08:05.642Z",
+        "value": 23.76
+      },
+      "cpus": {
+        "startedAt": "2026-10-03T09:08:05.639Z",
+        "completedAt": "2026-10-03T09:08:05.644Z",
+        "value": 4
+      }
+    },
+    {
+      "iostat": {
+        "startedAt": "2026-10-03T09:08:22.050Z",
+        "completedAt": "2026-10-03T09:08:23.088Z",
+        "value": 1
+      },
+      "top": {
+        "startedAt": "2026-10-03T09:08:22.052Z",
+        "completedAt": "2026-10-03T09:08:23.457Z",
+        "value": 0.996
+      },
+      "processes": {
+        "startedAt": "2026-10-03T09:08:22.054Z",
+        "completedAt": "2026-10-03T09:08:22.122Z",
+        "value": [
+          {
+            "pid": 274,
+            "parentPid": 1,
+            "cpuPercent": 105.7,
+            "executable": "mds_stores"
+          },
+          {
+            "pid": 111,
+            "parentPid": 1,
+            "cpuPercent": 41,
+            "executable": "mds"
+          },
+          {
+            "pid": 1602,
+            "parentPid": 1,
+            "cpuPercent": 26.2,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1615,
+            "parentPid": 1,
+            "cpuPercent": 25.7,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1769,
+            "parentPid": 1,
+            "cpuPercent": 24.9,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1493,
+            "parentPid": 1,
+            "cpuPercent": 24.7,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1766,
+            "parentPid": 1,
+            "cpuPercent": 23.3,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1607,
+            "parentPid": 1,
+            "cpuPercent": 23.2,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1608,
+            "parentPid": 1,
+            "cpuPercent": 22.6,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1767,
+            "parentPid": 1,
+            "cpuPercent": 22.6,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1768,
+            "parentPid": 1,
+            "cpuPercent": 22.2,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1606,
+            "parentPid": 1,
+            "cpuPercent": 22,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 166,
+            "parentPid": 1,
+            "cpuPercent": 6.2,
+            "executable": "contextstored"
+          },
+          {
+            "pid": 956,
+            "parentPid": 951,
+            "cpuPercent": 1.2,
+            "executable": "Runner.Worker"
+          },
+          {
+            "pid": 951,
+            "parentPid": 934,
+            "cpuPercent": 0.5,
+            "executable": "Runner.Listener"
+          }
+        ]
+      },
+      "load": {
+        "startedAt": "2026-10-03T09:08:22.056Z",
+        "completedAt": "2026-10-03T09:08:22.061Z",
+        "value": 19.67
+      },
+      "cpus": {
+        "startedAt": "2026-10-03T09:08:22.058Z",
+        "completedAt": "2026-10-03T09:08:22.064Z",
+        "value": 4
+      }
+    },
+    {
+      "iostat": {
+        "startedAt": "2026-10-03T09:08:38.458Z",
+        "completedAt": "2026-10-03T09:08:39.467Z",
+        "value": 0.99
+      },
+      "top": {
+        "startedAt": "2026-10-03T09:08:38.460Z",
+        "completedAt": "2026-10-03T09:08:39.823Z",
+        "value": 0.9915999999999999
+      },
+      "processes": {
+        "startedAt": "2026-10-03T09:08:38.462Z",
+        "completedAt": "2026-10-03T09:08:38.529Z",
+        "value": [
+          {
+            "pid": 274,
+            "parentPid": 1,
+            "cpuPercent": 93.5,
+            "executable": "mds_stores"
+          },
+          {
+            "pid": 111,
+            "parentPid": 1,
+            "cpuPercent": 45.5,
+            "executable": "mds"
+          },
+          {
+            "pid": 1933,
+            "parentPid": 1,
+            "cpuPercent": 24.9,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1861,
+            "parentPid": 1,
+            "cpuPercent": 24.8,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1922,
+            "parentPid": 1,
+            "cpuPercent": 24.4,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1606,
+            "parentPid": 1,
+            "cpuPercent": 23.6,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1921,
+            "parentPid": 1,
+            "cpuPercent": 23.5,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1918,
+            "parentPid": 1,
+            "cpuPercent": 23,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1930,
+            "parentPid": 1,
+            "cpuPercent": 22.5,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1932,
+            "parentPid": 1,
+            "cpuPercent": 22.3,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1931,
+            "parentPid": 1,
+            "cpuPercent": 21.7,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 1897,
+            "parentPid": 1,
+            "cpuPercent": 21.4,
+            "executable": "mdworker_shared"
+          },
+          {
+            "pid": 166,
+            "parentPid": 1,
+            "cpuPercent": 8.2,
+            "executable": "contextstored"
+          },
+          {
+            "pid": 956,
+            "parentPid": 951,
+            "cpuPercent": 1,
+            "executable": "Runner.Worker"
+          },
+          {
+            "pid": 938,
+            "parentPid": 936,
+            "cpuPercent": 0.1,
+            "executable": "provjobd3822622731"
+          }
+        ]
+      },
+      "load": {
+        "startedAt": "2026-10-03T09:08:38.464Z",
+        "completedAt": "2026-10-03T09:08:38.471Z",
+        "value": 16.13
+      },
+      "cpus": {
+        "startedAt": "2026-10-03T09:08:38.466Z",
+        "completedAt": "2026-10-03T09:08:38.473Z",
+        "value": 4
+      }
+    }
+  ]
+}

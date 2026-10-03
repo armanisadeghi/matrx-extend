@@ -1,0 +1,46 @@
+{
+  "status": "PARTIAL_NATIVE_ACCEPTANCE",
+  "feature": "EXT-F-1003",
+  "defects": ["EXT-D-0084", "EXT-D-0086", "EXT-D-0087"],
+  "runner_commit": "49469326499f9bfc19501611be6cd8127075b8d0",
+  "selected_ci_run": 37098705982,
+  "selected_artifact_id": 11265247199,
+  "selected_source_sha": "2b554c62e5e52339ba2340636de2e84f57cd4522",
+  "source_proof": "17b8ea9d Settings latest-input repair is an ancestor of selected source; CI run concluded success; artifact was listed unexpired",
+  "hosted_run": 37099617740,
+  "hosted_result": "RESOURCE_PREFLIGHT_REFUSED before artifact import or Chrome launch: CPU busy and high load; 5.88 GiB available memory, 95.20 GiB free disk",
+  "retry_run": 37099860144,
+  "retry_runner_sha": "2ea9860f",
+  "retry_resource_decision": "valid",
+  "retry_verified_tree_sha256": "efbcd70e6d07fa791c29dfb6378e4f06374163d5e0d5bab7b3c8238656a8477b",
+  "retry_evidence_artifact_id": 11265099567,
+  "retry_evidence_artifact_name": "hosted-guest-37099860144-1",
+  "executed_cases": [
+    {
+      "id": "EXT-F-1003-T22",
+      "status": "pass",
+      "coverage": "Guest/admin controls absent before and after reload"
+    },
+    {
+      "id": "EXT-F-1003-T37",
+      "status": "pass",
+      "coverage": "Deep clean hint and toggle persist after reload"
+    },
+    {
+      "id": "EXT-F-1003-T46",
+      "status": "pass",
+      "coverage": "Port save, actual worker rediscovery, reload, invalid range retention, blank clear"
+    },
+    {
+      "id": "EXT-F-1003-T70",
+      "status": "unverified",
+      "coverage": "Identity, readiness and no-update result passed; unavailable API and other update branches not exercised"
+    }
+  ],
+  "open_issues": [
+    "D84 native storage-failure feedback and retry unverified",
+    "D86 native overlapping latest-choice behavior unverified",
+    "D87 preference persistence still triaged",
+    "D84 storage rejection and retry and D86 overlapping write race were not part of these guest cases"
+  ]
+}

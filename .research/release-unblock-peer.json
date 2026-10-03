@@ -1,0 +1,43 @@
+{
+  "role": "fresh_zero_authorship_source_peer_2",
+  "reviewed_commits": {
+    "aidream": "5318c105968feabd14ce1143f31506061aa4efc2",
+    "matrx_extend": "7a3c5311f03cb9ee3a01bae128837220bf024f48"
+  },
+  "verdict_A_behavior": {
+    "aidream_ci_repairs": "PASS_SOURCE_PENDING_REMOTE_CI",
+    "matrx_extend_manual_records": "PARTIAL",
+    "evidence": [
+      "The graph DB guard itself is unchanged. Its repaired tests register a local inert config, then substitute production host or pooler-user fingerprints in the isolated registry; the unchanged guard still raises ProductionDatabaseRefused on both cases and retains its explicit escape-hatch test.",
+      "Workflow node stream kind now comes from the generated NodeStreamEvent union, which includes media; projection still advances lastTransportSeq while excluding media payload from answer text. The new test asserts both behaviors.",
+      "The server GET /tools/test/list returns active registered definitions with parameters. POST /tools/test/execute accepts tool_name and arguments, calls ToolExecutor.execute, and emits a completion containing result.full_result. The extension reads that envelope and renders a negative tool receipt as failure.",
+      "The extension's GET definition call uses apiGet, but its execute call uses buildHeaders plus streamFetch directly. buildHeaders can return an authenticated header set without an organization; only rawRequest performs holdForActiveOrganizationId before sending. Clearing the selected organization after the definition loads lets manual Run send the authenticated POST without X-Organization-Id instead of opening the organization picker and resuming. src/lib/tools/manual-server.ts:23-28; src/lib/api/client.ts:741-772.",
+      "No signed-in live Chrome run was performed in this review. Strict local Records flat-schema drift remains open and is not covered by these commits."
+    ],
+    "finding": {
+      "severity": "important",
+      "unit": "matrx_extend_manual_records",
+      "title": "Manual server execution bypasses the canonical organization hold",
+      "required_result": "An authenticated manual Records execution with no selected organization must hold for the person's choice, then send the canonical header with the exact submitted arguments; no authenticated request may leave without its organization."
+    }
+  },
+  "verdict_B_source_quality": {
+    "aidream_ci_repairs": "PASS_WITH_VERIFICATION_LIMIT",
+    "matrx_extend_manual_records": "PASS_WITH_TEST_GAP",
+    "evidence": [
+      "The aidream change updates typed workflow fixtures, derives the projection discriminant from the generated event contract, and removes an unused Records binding. It does not change the production refusal guard or introduce a test escape hatch.",
+      "Manual Records reuses the existing registered server tool list and single-tool execute door; the server still uses the platform ToolExecutor. The exact-arguments Run click remains the established manual authorization product contract.",
+      "Extension transport tests mock buildHeaders to always return an organization header, so they cannot expose the missing-organization hold path. Tests also mock the stream boundary; they establish envelope handling, not live browser behavior.",
+      "The generated media test checks media exclusion and subsequent chunk progression with distinct outputs. No mutation or return-expected gut-check execution was performed under the disk constraint."
+    ]
+  },
+  "remote_ci": {
+    "aidream_run": "https://github.com/AI-Matrix-Engine/aidream/actions/runs/37101347825",
+    "status_at_review": "in_progress",
+    "extension_commit_ci": "No successful CI completion for reviewed extension SHA observed at review time."
+  },
+  "limits": [
+    "Read-only source and remote status review; no local heavy tests, typecheck, browser, or installation due to the disk floor.",
+    "No product source edits made."
+  ]
+}

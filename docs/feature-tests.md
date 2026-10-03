@@ -23,10 +23,10 @@ extension ID or intended-folder hash alone does not establish the running build.
 - **When tests don't apply (e.g. internal-only utility):** still add an
   entry with a one-liner explaining why no manual test is meaningful
   and pointing to the unit test that covers it.
-- **For agent tools:** the canonical UI for manual testing is
-  **Side panel → Tools tab** — search the tool name, edit JSON args,
-  click Run. The Tools tab routes through the same dispatcher path
-  agents use, so it's a real end-to-end test.
+- **For agent tools:** use **Side panel → Tools tab** — search the tool name,
+  edit JSON args, click Run. Browser handlers run locally; Records runs through
+  the registered server tool test door under the signed-in person and selected
+  organization.
 
 ### Sidepanel browser module load and speech
 
@@ -789,8 +789,7 @@ Every entry follows this shape:
 ### Side panel — Tools tab
 - **What it does:** Visible catalog of every registered tool with
   search/filter, JSON argument editor, per-tool **Run** button.
-  Routes through the same dispatcher path agents use → it's the
-  canonical end-to-end manual test rig.
+  Browser handlers run locally; Records uses the registered server tool test door.
 - **Where to test:** Side panel → **Tools** tab.
 - **Steps:**
   1. Search for a tool by name.
@@ -805,6 +804,18 @@ Every entry follows this shape:
   With the network available, every canonical tool shows its `tool.definition`
   description; offline (or before the fetch resolves) it shows `—`, never
   a stale string.
+
+### Records manual run
+- **What it does:** Shows the active server Records action contract, including
+  every per-action variant, and runs one chosen action under the person's session.
+- **Where to test:** Side panel → Tools → search `records`.
+- **Steps:** Sign in and select an organization. Open Records and inspect the
+  `server action contract`. Run `{"action":"guide","args":{}}`, then run a
+  permitted write such as `form_propose` with its required arguments.
+- **Expected:** The contract includes `$variants` and all 25 actions. The guide
+  returns its server result; the write returns its real result or a named store
+  refusal. A rejected tool call appears as failed, never as completed. Without
+  sign-in, selected organization, or an active server definition, Run refuses.
 
 ### Tool descriptions read live from the DB (Rule 4)
 - **What it does:** No tool descriptions live in the extension's code — they
@@ -1718,6 +1729,18 @@ Every entry follows this shape:
   6. Open Settings → Advanced agent capabilities → Audit key. Note the
      public-key ID and receipt count. Click "Export public key" — JWK
      copied. Click "Re-key" → confirm. Receipt count is preserved.
+     For failure checks, use an isolated test profile and simulated storage or
+     clipboard rejection. A failed load shows "Audit details unavailable"
+     with "Retry audit details"; a failed copy shows "Public key copy failed"
+     with "Retry export" and no copied checkmark. After a successful rotation
+     whose details refresh fails, "Key rotated" remains visible and retrying
+     details does not rotate again. A failed rotation reports failure and
+     requires a fresh Re-key confirmation. If storage cannot confirm whether
+     the key changed, "Key status unknown" blocks Re-key until "Retry audit
+     details" succeeds. If Web Locks is unavailable during details load,
+     public-key export, or rotation, the card names the missing capability,
+     blocks Re-key, and offers a details-only retry; a successful details
+     read restores Re-key without rotating again.
   7. Run another tool. Verify the new receipt's `publicKeyId` matches
      the new active key. Open an old receipt — it still shows
      "Signature valid" (verified against the retired key in history).
@@ -2059,6 +2082,12 @@ Every entry follows this shape:
   "Ask before acting" → the approval card appears.
 - **Edge cases worth poking:** Privileged-tier tools still confirm even in act
   mode (unchanged). First-run with no setting persisted → defaults to ask.
+
+### Settings preference save and retry
+- **What it does:** Settings reports a rejected preference save and offers Retry save. Overlapping changes are written in choice order so the latest selection survives reload.
+- **Where to test:** Settings → Appearance, Chat, Privacy, or Scrape in an unpacked development extension.
+- **Steps:** Change Theme, then immediately change it again. Close and reopen Settings; the second choice remains. In a controlled test with `chrome.storage.local.set` rejecting `matrx.settings.v1`, change Theme and observe the error; restore storage and select Retry save, then reload.
+- **Expected:** Failed storage shows “Could not save preferences” and Retry save. After retry, the error clears and the chosen Theme survives reload. A rapid earlier choice cannot overwrite a later one.
 
 ### Auto-scrape mode — Scroll & capture
 - **What it does:** Settings → Scrape → "Auto-scrape mode" = *Scroll & capture*
@@ -3310,21 +3339,17 @@ Every entry follows this shape:
 
 ### The organization's records (the `records` tool)
 
-- **What it does:** Lets the browser agent use the organization's custom records through the record store's doors. The shared `records` contract currently declares 24 actions. The Chrome executor performs Table listing, one-record reads, aggregates, create/update (including bulk create), delete/restore, history, and version restore; it returns a clear executor-unavailable result for platform workflows that do not yet have a browser implementation. It carries exactly the authority of the person operating it, in their active organization.
-- **Where to test:** Sidepanel → Tools tab → `records` (signed in). It is the same tool the agent calls mid-turn.
-- **Prereq:** The record store must be switched on for your active organization. It is off at platform scope and turned on per organization; `admin@admin.com`'s Workspace has it on.
+- **What it does:** Offers all 25 canonical server actions in Chat and the manual Tools runner. Records has no browser executor; its Chrome binding preserves discovery.
+- **Where to test:** Signed-in Sidepanel → Tools → `records`, then a Records Chat turn.
 - **Steps:**
-  1. Open the Tools tab, search `records`, open the row.
-  2. Run `{"action":"table_list"}` — the Tables your organization holds come back with their ids.
-  3. Run `{"action":"record_write","table_id":"<one of them>","values":{"title":"hello"}}` — you get the new record's id.
-  4. Run `{"action":"record_read","record_id":"<that id>"}` — the values come back.
-  5. Run `{"action":"record_write","record_id":"<that id>","values":{"title":"changed"}}` — the record is patched, not duplicated.
-- **Expected:** Every action answers either the data or the store's own sentence. A field the store decided you may not see comes back present with its reason, never a silent blank.
-- **Edge cases worth poking:**
-  - Switch to an organization the store is off for: every action says so in one sentence and names who turns it on — it never returns an empty list.
-  - Sign out or clear the organization: the tool says no organization is selected and where to choose one.
-  - Pass `expected_version` on an update after someone else changed the record: the store refuses and tells you which fields are contested instead of overwriting them.
-- **The automated version:** `pnpm build && node tests/browser/records-agent-turn-e2e.mjs --table <uuid> --record <uuid>` runs all of this in headless Chrome as `admin@admin.com` against the live store, and confirms every write from outside the browser through the store's read door.
+  1. Expand Records; confirm the server contract includes all action variants.
+  2. Run `{"action":"guide","args":{}}`; expect the server's complete guide receipt.
+  3. Run `{"action":"table_list","args":{}}`; confirm visible tables span memberships. App tables appear only when requested.
+  4. Use the guide's `form_propose` example on an authorized test table. Expect a server receipt, never a browser executor-unavailable refusal.
+  5. Choose no active organization and click Run. Select an organization in the picker; the held call resumes. Signing out while it waits must refuse the call.
+  6. In Chat, discover Records and request a read. Confirm a server result and persisted receipt with no `tool_delegated` event.
+- **Expected:** Closed-store, authority, and version conflicts remain visible refusals from the canonical server. Guest Chat must preserve its existing authority limits.
+- **Release proof:** The strict catalog gate reads authenticated `/tools/test/records`, verifies native ownership, compares every generated DB action variant, and requires the full runtime action schema and the existing server validator's measured verdict. Missing credentials, an old server, or missing variants cannot pass a strict release.
 
 ### The panel opens by itself when the web app sends you
 
@@ -3584,3 +3609,10 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 - **Where to test:** Tools tab "Run" in the side panel, or a Pilot chat.
 - **Steps:** Run `chrome_history` action=recent limit=3; `chrome_cookies` set with expires_in_seconds=3600 then inspect the cookie in DevTools; `tabs` close a tab_id; `wait_for` condition=network_idle on another tab's id; `get_request_body` with a string tab_id; `request_user_takeover` with both texts and a tab_id.
 - **Expected:** 3 history rows; the cookie has an expiry one hour out; the tab closes; network_idle resolves for the named tab; the body returns (or a named reason, never "No active tab"); the takeover card shows both texts with the named tab in front. Unit proof: `src/lib/tools/handlers/canonical-delegate-contract.test.ts`.
+
+### Records filtered date aggregates (EXT-D-0091)
+
+- **What it does:** Preserves scalar and date-window match filters in the store aggregate call; date buckets group by the period once.
+- **Where to test:** Signed-in Tools, Records runner, with a table containing dates in the same month and two different statuses.
+- **Steps:** Ask for a monthly count with `group_by` naming the date key, `bucket: "month"`, and `match` naming one status. Repeat with the other status and without a bucket.
+- **Expected:** The store receives the filter each time. Monthly results combine same-month dates; unbucketed results group by the raw date. Invalid match values return a refusal before querying. D91 remains open for the full per-action contract and unsupported workflows.

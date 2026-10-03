@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0087",
+  "status": "RUNNER_BASELINE_REPAIRED_NATIVE_UNVERIFIED",
+  "prior_native_run": 37109936928,
+  "product_artifact": {
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "version": "0.2.176",
+    "artifact_id": 11268886169,
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660"
+  },
+  "cause": "The fresh owned Chrome profile has no Settings storage key, while the store initializes theme to system. The native runner first clicked the already-selected System option and expected a persisted key. The installed Radix controlled Select suppresses onValueChange when the selected value equals its current value, so this click does not call setTheme or write storage.",
+  "source_evidence": [
+    "tests/browser/native-sidepanel-qa-harness.mjs creates a new profile with mkdtemp before starting Chrome.",
+    "src/state/settings.ts initializes theme to system and persists only through the setTheme setter.",
+    "src/features/settings/SettingsView.tsx passes settings.theme as the controlled Select value and calls setTheme in onValueChange.",
+    "Installed @radix-ui/react-select 2.3.7 delegates SelectItem selection to useControllableState; its installed controlled-state implementation invokes onChange only when the next value differs from prop.",
+    "Run 37109936928 observed System in the guest Settings UI, no recognized stored theme, and no save error or retry."
+  ],
+  "repair": "Choose Light first and assert the actual Chrome storage value, then choose System and assert its storage value before the existing rejection, retry, overlap, reload, and storage assertions.",
+  "verification": {
+    "node_check": "pass",
+    "biome": "pass",
+    "native": "not run; owner permits and a fresh peer are required",
+    "product_verdict": null
+  }
+}

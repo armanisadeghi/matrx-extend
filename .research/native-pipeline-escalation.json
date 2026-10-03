@@ -1,0 +1,355 @@
+{
+  "schema_version": 1,
+  "status": "PASS_BOUNDED_ORIGINAL_PREPARE_ACCEPTANCE",
+  "completed_at": "2026-10-03T11:56:34.898101+00:00",
+  "defects": ["EXT-D-0058", "EXT-D-0059"],
+  "attempts": 4,
+  "artifact": {
+    "run_id": 37107627454,
+    "artifact_id": 11268886169,
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660"
+  },
+  "confirmed": [
+    "Both guarded original acceptance runs opened native panel and completed real web and extension admin sign-in.",
+    "Both completed initial Prepare success and reached the first failed-retry case.",
+    "Second run proved fault held, pending Preparing state true, and previous success absent; failure was releaseFault before rejection observation.",
+    "Earlier generic native_panel failure did not reproduce; no causal fix claimed.",
+    "Decisive -06 probe proved release completed but double animation-frame wait in hidden native panel timed out.",
+    "Peer-reviewed settlement repair completes all four unchanged original acceptance cases on -07; tree hash unchanged after run."
+  ],
+  "narrowed_boundary": {
+    "confirmed_operation": "Double requestAnimationFrame wait in releaseFault; synchronous controlled release succeeded.",
+    "actual_evidence": "release_stage=animation_frames, release_visibility=hidden, transport_failure_class=command_timeout",
+    "repair_commit": "6b574159",
+    "repair": "Intercepted API promise publishes settled acknowledgement in finally. Node waits for that acknowledgement then polls UI for two consecutive matching observations, preserving existing positive/negative case predicates. No frame clock required.",
+    "self_red": "Actual old injected helper in node:vm with unserviced rAF fails paused_frame_command_timeout.",
+    "self_green": "Actual new injected helper passes held success and rejection, verifies response outcome before UI stability observations, and restores original API.",
+    "mutations": "plant.py return-true and bypass-stability mutants both RED at named assertion, both restored byte-identical.",
+    "acceptance": "-07 passes all four original cases after peer review; resource valid exit0."
+  },
+  "code_change": {
+    "commit": "23ed2dd6",
+    "behavior": "Static native boundary callback and exact retry-operation stages persist first failure location; no raw exception, URLs, credentials, gates, assertions, timeout or cleanup changes.",
+    "peer": "/root/native_launch_diagnostic_peer reviewed frozen commit; no blocker.",
+    "checks": [
+      "node tests/browser/native-sidepanel-qa-harness.test.mjs passed",
+      "pnpm compile passed",
+      "focused Biome and git diff --check passed",
+      "Actual paused-frame red/green test and two restored mutation guards passed",
+      "Post-repair pnpm compile passed",
+      "Final focused Biome and git diff --check passed"
+    ]
+  },
+  "runs": [
+    {
+      "run_id": "prepare-local-native-20261003-04",
+      "runner_commit": "eeea4611 + diagnostic working diff",
+      "runner_diff_sha256": "4e27c20db97915255d912701f703ba1cdaee66f736480c27ebcc3f1b75f107ab",
+      "resource_valid": true,
+      "exit_code": 1,
+      "stage": "failed_retry",
+      "native_stage": "exercise_panel",
+      "cases": [],
+      "signin_observations": {
+        "web_dashboard_reached": true,
+        "extension_after_account_open": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": false,
+          "admin_role": false,
+          "sign_in_count": 1,
+          "sign_in_enabled": true,
+          "sign_out_present": false,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        },
+        "extension_guest_ready": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": false,
+          "admin_role": false,
+          "sign_in_count": 1,
+          "sign_in_enabled": true,
+          "sign_out_present": false,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        },
+        "extension_last": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": true,
+          "admin_role": true,
+          "sign_in_count": 0,
+          "sign_in_enabled": false,
+          "sign_out_present": true,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        }
+      },
+      "evidence": [
+        {
+          "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-pipeline-boundary.log",
+          "sha256": "4140bde6ec3e0ecde3f87e222033b635a242cde738ddce64786f927a71f796de"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-pipeline-boundary-resource-journal.jsonl",
+          "sha256": "dc714dbc6d5d8b9b99534e60d4d544aa555abcb04521d7ffbca4ecf15196cab0"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/prepare-stale-result-native-740f520f-900b-488a-adfd-8263161e4c5c.json",
+          "sha256": "ad02ad04bd0786bf98cf6c5ab73ce4620761fbfdda194b9a82a476c59b4df6df"
+        }
+      ]
+    },
+    {
+      "run_id": "prepare-local-native-20261003-05",
+      "runner_commit": "23ed2dd6",
+      "runner_diff_sha256": null,
+      "resource_valid": true,
+      "exit_code": 1,
+      "stage": "failed_retry_release",
+      "native_stage": "exercise_panel",
+      "cases": [],
+      "signin_observations": {
+        "web_dashboard_reached": true,
+        "extension_after_account_open": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": false,
+          "admin_role": false,
+          "sign_in_count": 1,
+          "sign_in_enabled": true,
+          "sign_out_present": false,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        },
+        "extension_guest_ready": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": false,
+          "admin_role": false,
+          "sign_in_count": 1,
+          "sign_in_enabled": true,
+          "sign_out_present": false,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        },
+        "extension_last": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": true,
+          "admin_role": true,
+          "sign_in_count": 0,
+          "sign_in_enabled": false,
+          "sign_out_present": true,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        }
+      },
+      "evidence": [
+        {
+          "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-pipeline-retry-boundary.log",
+          "sha256": "86d363536c6a945e610474985b960b41d429f15e515808b3230678628040ebba"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-pipeline-retry-boundary-resource-journal.jsonl",
+          "sha256": "699223512c03e6f37597880d47bd142560d58d9fcbf9e2760d11becdf5d263b7"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/prepare-stale-result-native-074b7f0a-15c2-49d3-9fd0-47602556cd3f.json",
+          "sha256": "d812e6a91464d55f62c59371f38815fb4eededfcc45dd1cb46bfe4c450a27479"
+        }
+      ]
+    },
+    {
+      "run_id": "prepare-local-native-20261003-06",
+      "runner_commit": "f09f7405",
+      "resource_valid": true,
+      "exit_code": 1,
+      "stage": "failed_retry_release",
+      "native_stage": "exercise_panel",
+      "release_stage": "animation_frames",
+      "release_visibility": "hidden",
+      "transport_failure_class": "command_timeout",
+      "cases": [],
+      "evidence": [
+        {
+          "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-pipeline-release-boundary.log",
+          "sha256": "2f207ce1f223bf08f6d81d4259e6873a4657e6a5489897f78b65b547a04bbdea"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-pipeline-release-boundary-resource-journal.jsonl",
+          "sha256": "17537e873c15be4ede4526864949270926503488ad5d1dc38fbc5b7b39e03606"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/prepare-stale-result-native-c76b27da-b37a-4671-ab12-62abc45606b4.json",
+          "sha256": "74d015cc2d6c1ed3462e5b083539188a21365aadab5470166dc8d9c9173586f0"
+        }
+      ]
+    },
+    {
+      "run_id": "prepare-local-native-20261003-07",
+      "runner_commit": "6b574159 (with peer-report-only HEAD 9777bd5c)",
+      "resource_valid": true,
+      "exit_code": 0,
+      "status": "pass_bounded",
+      "stage": "complete",
+      "native_stage": "exercise_panel",
+      "release_stage": "complete",
+      "cases": [
+        {
+          "case": "failed_retry_after_success",
+          "status": "pass"
+        },
+        {
+          "case": "old_document_late_success",
+          "status": "pass"
+        },
+        {
+          "case": "old_document_late_rejection",
+          "status": "pass"
+        },
+        {
+          "case": "fresh_document_prepare",
+          "status": "pass"
+        }
+      ],
+      "signin_observations": {
+        "web_dashboard_reached": true,
+        "extension_after_account_open": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": false,
+          "admin_role": false,
+          "sign_in_count": 1,
+          "sign_in_enabled": true,
+          "sign_out_present": false,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        },
+        "extension_guest_ready": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": false,
+          "admin_role": false,
+          "sign_in_count": 1,
+          "sign_in_enabled": true,
+          "sign_out_present": false,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        },
+        "extension_last": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": true,
+          "admin_role": true,
+          "sign_in_count": 0,
+          "sign_in_enabled": false,
+          "sign_out_present": true,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        }
+      },
+      "post_run_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+      "evidence": [
+        {
+          "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-pipeline-settlement-fix.log",
+          "sha256": "a101cbac18d18a71404896aa90399996d96f91f1cf0612df9772ebefefe39914"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-pipeline-settlement-fix-resource-journal.jsonl",
+          "sha256": "03e137d0f84ec9a98d237257b2c1efa82d5b99aa8dd82aa530a3cd14696045af"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/prepare-stale-result-native-2197a6f2-c38a-4c5e-ba81-157525a9e68c.json",
+          "sha256": "74e8645c630989050098d964dc42b68c2536afec8021b1ff4d2e636998483937"
+        }
+      ]
+    }
+  ],
+  "product_verdict": "PASS_BOUNDED for EXT-D-0058/0059 original native Prepare acceptance on authenticated CI development artifact 3092444e. This does not establish Store/public-release acceptance or broader extension stabilization.",
+  "credentials_file_removed": true,
+  "scope": "No app build, release, migration, signature, keychain or security changes. Two initial bounded diagnostics; root explicitly authorized one decisive inner-boundary probe and one peer-reviewed repair acceptance run.",
+  "repair_evidence": [
+    {
+      "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/settlement-constant-mutant.log",
+      "sha256": "9dc4fe275e5cbe777e42e29944180d003012627433715d36d37a58754c36e393"
+    },
+    {
+      "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/settlement-green.log",
+      "sha256": "a700a9e6b04c2f11430973dc5ccbef528eb1d00f1d134e4c9455854e78ac8233"
+    },
+    {
+      "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/settlement-red.log",
+      "sha256": "e675feb0d368224973325cd649474a9981fb55cb9cad044a7e349ba991d3ccf1"
+    },
+    {
+      "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/settlement-stability-mutant.log",
+      "sha256": "06edb0dbc9aec1573870419c3b44351f520cd00205d154689c9935dd7ec33322"
+    }
+  ],
+  "repair_peer_commits": ["54fc4663", "9777bd5c"],
+  "elapsed_minutes_approx": 19,
+  "owned_browser_cleanup": "No Chromium executable processes remained after wrapper exit.",
+  "committed_raw_evidence": [
+    {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/reports/prepare-native-20261003/acceptance-receipt.json",
+      "sha256": "6cddc767c90869de636e5a995e759844e964c3630ed9210c8dbdeb73a088e020",
+      "source_raw_sha256": "74e8645c630989050098d964dc42b68c2536afec8021b1ff4d2e636998483937",
+      "representation": "Biome-formatted JSON; parsed content identical to source raw receipt",
+      "source_raw_path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/prepare-stale-result-native-2197a6f2-c38a-4c5e-ba81-157525a9e68c.json"
+    },
+    {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/reports/prepare-native-20261003/frame-timeout-receipt.json",
+      "sha256": "864f37249c797f8aa886cb8a4d1b7e2beaee0a3e6348cd88cfde3a757b27772b",
+      "source_raw_sha256": "74d015cc2d6c1ed3462e5b083539188a21365aadab5470166dc8d9c9173586f0",
+      "representation": "Biome-formatted JSON; parsed content identical to source raw receipt",
+      "source_raw_path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/prepare-stale-result-native-c76b27da-b37a-4671-ab12-62abc45606b4.json"
+    },
+    {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/reports/prepare-native-20261003/resource-journal.jsonl",
+      "sha256": "03e137d0f84ec9a98d237257b2c1efa82d5b99aa8dd82aa530a3cd14696045af"
+    },
+    {
+      "path": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/reports/prepare-native-20261003/acceptance.log",
+      "sha256": "a101cbac18d18a71404896aa90399996d96f91f1cf0612df9772ebefefe39914"
+    }
+  ]
+}

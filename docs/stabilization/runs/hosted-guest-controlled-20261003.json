@@ -1,0 +1,175 @@
+{
+  "id": "hosted-guest-controlled-20261003",
+  "observed_at": "2026-10-03T05:17:26.738743+00:00",
+  "status": "pass",
+  "scope": "Exact CI development175 controlled-page guest firstreply and post-panel-reload followup only",
+  "hosted_run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37098718754",
+  "source_sha": "38bc59215ff12077b7949c34aaabcfe30c6a0274",
+  "ci_run": 37096827559,
+  "artifact_id": 11264666911,
+  "resource_result": {
+    "decision": "valid",
+    "exit_code": 0,
+    "resourceInvalid": false
+  },
+  "build": {
+    "version": "0.2.175",
+    "tree_sha256": "54162a180ed723dd4eb4b18cfbe6c0d9253be6d72b545c722cb4ed4a68a35068",
+    "receipt_kind": "local_dev_unpacked",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "artifact_unchanged": true
+  },
+  "guest": {
+    "fresh": true,
+    "chat_visible": true,
+    "after_reload": true,
+    "fixture_reinstalled_before_first_send": false,
+    "session_absent_after_reload": true,
+    "fixture_reinstalled_after_reload": false
+  },
+  "chat": {
+    "opening_question_fingerprint": "8b0041e45eb47431",
+    "fixture_fragment_fingerprint": "6d1fee8418f93aa4",
+    "opening_code_fingerprint": "1a2aec9686619a51",
+    "completed_reply_count": 1,
+    "answer_contains_unpredictable_page_code": true,
+    "answer_names_page_stages": true,
+    "answer_stages_in_order": true,
+    "no_login_paywall_or_error": true,
+    "followup_completed_after_reload": true,
+    "followup_question_fingerprint": "be2d5336e111bd21",
+    "followup_code_fingerprint": "78285813abaf319a",
+    "followup_reply_count": 1,
+    "followup_contains_unpredictable_page_code": true,
+    "followup_names_fixture_heading": true
+  },
+  "grounding_diagnostics": {
+    "before_first_send": {
+      "readableMarkerPresent": true,
+      "pageUrlMatches": true,
+      "activeTabMatchesFixture": true,
+      "activeUrlMatchesFixture": true,
+      "assignedTabMatchesFixture": null
+    },
+    "opening": {
+      "toolEvents": [
+        {
+          "name": "context",
+          "phase": "tool_started",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "context",
+          "phase": "tool_completed",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": true,
+          "resultContainsFollowupCode": true,
+          "resultContainsFixtureHeading": true
+        }
+      ],
+      "toolBoundaryChecks": [
+        {
+          "eventIndex": 1,
+          "toolName": "context",
+          "phase": "tool_started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 2,
+          "toolName": "context",
+          "phase": "tool_completed",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        }
+      ],
+      "terminal": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": true
+      }
+    },
+    "before_followup_send": {
+      "readableMarkerPresent": true,
+      "pageUrlMatches": true,
+      "activeTabMatchesFixture": true,
+      "activeUrlMatchesFixture": true,
+      "assignedTabMatchesFixture": null
+    },
+    "followup": {
+      "toolEvents": [
+        {
+          "name": "context",
+          "phase": "tool_started",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "context",
+          "phase": "tool_completed",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": true,
+          "resultContainsFollowupCode": true,
+          "resultContainsFixtureHeading": true
+        }
+      ],
+      "toolBoundaryChecks": [
+        {
+          "eventIndex": 1,
+          "toolName": "context",
+          "phase": "tool_started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 2,
+          "toolName": "context",
+          "phase": "tool_completed",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        }
+      ],
+      "terminal": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": true
+      }
+    }
+  },
+  "independent_owner_check": "Root inspected report and both actual sidepanel screenshots: guest banner and real rendered answers. No source authorship of implementation or harness.",
+  "separate_server_observation": {
+    "at": "2026-10-03T05:10:00Z",
+    "git_sha": "23053275714b3401ff514339706635f8fc051d0d",
+    "source": "Root public /health/version read; not captured inside browser run"
+  },
+  "limits": [
+    "Not the Store130 installed package or next Storecandidate.",
+    "Not public demo page acceptance, Records execution, signed-in flows, or exhaustive Chat/Pilot.",
+    "Request-level AI network watcher returned no records; real UI/tool-result/nonce grounding is the available native evidence."
+  ]
+}

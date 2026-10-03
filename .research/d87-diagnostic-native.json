@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0087",
+  "status": "BASELINE_FAILED_UNVERIFIED",
+  "product_verdict": null,
+  "diagnostic_run": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "run_id": 37109936928,
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37109936928",
+    "job_id": 111165708101,
+    "job_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37109936928/job/111165708101",
+    "conclusion": "failure",
+    "runner_sha": "ea72fa8881aa7d34fc5379959bccaefd15970a0e",
+    "started_at": "2026-10-03T08:30:41Z",
+    "completed_at": "2026-10-03T08:35:31Z",
+    "inputs": {
+      "acceptance_case": "settings-persistence",
+      "development_run_id": 37107627454,
+      "development_artifact_id": 11268886169,
+      "release_run_id": "",
+      "published_store_crx": false
+    }
+  },
+  "product_artifact": {
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "version": "0.2.176",
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "receipt_kind": "local_dev_unpacked",
+    "artifact_id": 11268886169,
+    "ci_run_id": 37107627454,
+    "ci_conclusion": "success"
+  },
+  "evidence_artifact": {
+    "id": 11269087715,
+    "name": "hosted-guest-37109936928-1",
+    "expired": false
+  },
+  "case": {
+    "status": "fail",
+    "cases_recorded": [],
+    "failure_stage": "baseline",
+    "failure_operation": "theme_persisted",
+    "failure_code": "d87_system_saved_not_observed",
+    "safe_observation": {
+      "settingsActive": true,
+      "theme": "System",
+      "storedTheme": null,
+      "error": false,
+      "retry": false,
+      "guest": true
+    }
+  },
+  "guarded_phases": [
+    {
+      "phase": "package",
+      "decision": "valid",
+      "exit_code": 0
+    },
+    {
+      "phase": "browser",
+      "decision": "valid",
+      "exit_code": 0
+    },
+    {
+      "phase": "settings-persistence-native-case",
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "exit_code": 1,
+      "resource_event": {
+        "code": "RESOURCE_WATCH_UNSAFE",
+        "reason": "RESOURCE_CPU_BUSY",
+        "at": "2026-10-03T08:34:59.310Z"
+      }
+    }
+  ],
+  "diagnosis": "The exact artifact imported and the native Settings baseline reached the persistence assertion. The UI showed System, while the bounded Chrome storage observation returned no recognized stored theme; no save error or retry indicator was present. This localizes the failure to the UI-to-storage persistence/observation boundary, but does not distinguish a missing write from a mismatch in the observed storage representation. The resource watcher recorded transient CPU pressure but did not terminate the child (resource_invalid=false). No Settings case passed; this run assigns no product verdict.",
+  "hypothesis_status": "Unverified; selecting the already-selected System option may not trigger a write, but this run does not establish that cause.",
+  "prior_context": {
+    "baseline_report": ".research/d87-baseline-diagnosis.json",
+    "peer_review": ".research/d87-diagnostic-peer.json",
+    "accepted_instrumentation_commit": "d6b94f2e",
+    "peer_acceptance_commit": "e9f57e98",
+    "local_head_when_dispatched": "9ecc157fc29d90f0c63fb9bf6f6dc3991d29a92a",
+    "workflow_runner_sha": "ea72fa8881aa7d34fc5379959bccaefd15970a0e",
+    "instrumentation_and_peer_acceptance_in_runner_history": true
+  }
+}

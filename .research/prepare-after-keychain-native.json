@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "EXACT_ARTIFACT_PREPARED_NATIVE_PANEL_UNVERIFIED",
+  "defects": ["EXT-D-0058", "EXT-D-0059"],
+  "requested_artifact": {
+    "run_id": 37107627454,
+    "artifact_id": 11268886169,
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "kind": "ci_development_test"
+  },
+  "first_after_keychain_attempt": {
+    "run_id": "prepare-local-native-20261003-02",
+    "resource_decision": "child_failed, resource valid",
+    "failure_stage": "authenticated CI development artifact import before browser launch",
+    "failure": "test_artifact_operation_failed from EEXIST on already authenticated immutable import target",
+    "prepared_development": false,
+    "browser_started": false,
+    "signin_started": false,
+    "cases": [],
+    "credentials_file_removed": true,
+    "log_path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-after-keychain.log",
+    "resource_journal_path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-after-keychain-resource-journal.jsonl",
+    "log_sha256": "4ea01d18902751f39ce14dda607b916753dd8c024e3fdd8e6269556b8a42ebe5",
+    "resource_journal_sha256": "4ca1608d9a16fa3101d4cc4f931d481691d8078559abcd0bddb49a6397fde4bb"
+  },
+  "runner_repair": {
+    "behavior": "Select unique existing run/artifact target and pass unchanged verifyImportedNativeEvidence before native run; call authenticated importer only when no matching target exists. Existing imports remain immutable and are never deleted or replaced.",
+    "red": "Original actual guarded run failed at duplicate target reservation; existing withReservedImportTarget filesystem test also confirms EEXIST without mutation.",
+    "green": "Focused real-filesystem test reuses exact target, refuses wrong/ambiguous/incomplete selections and tampered CI receipt, and imports when missing; real preflight verified exact existing run/artifact/source/tree with no reimport.",
+    "checks": [
+      "Focused vitest 10/10 passed",
+      "pnpm compile passed",
+      "Focused Biome and git diff --check passed"
+    ]
+  },
+  "product_verdict": "NONE; exact source/tree preparation passed but native_panel failed before sign-in and all Prepare cases. EXT-D-0058 and EXT-D-0059 remain open/in-fix.",
+  "completed_at": "2026-10-03T11:36:01Z",
+  "post_repair_native_attempt": {
+    "run_id": "prepare-local-native-20261003-03",
+    "source_commit": "36a37d6cc7e7f19e953bdc0284a76ad38019df4c",
+    "resource_decision": "child_failed, admitted and resource valid",
+    "runner_preparation": "PREPARED_DEVELOPMENT exact requested source and tree",
+    "native_receipt": {
+      "path": "test-results/prepare-stale-result-native-fc33acb5-fb60-4f29-83fc-61346a09b2a2.json",
+      "sha256": "d2d555ab576d41a3f531fd7a5a4d1dfe46d2b5bd43b14b9102e219b28104ef5e",
+      "status": "unverified",
+      "stage": "native_panel",
+      "failure_code": "native_panel_failed",
+      "source_sha": null,
+      "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+      "cases": [],
+      "signin_observations": {}
+    },
+    "browser_boundary": "Native harness created an empty owned artifact directory, but there was no BROWSER_STARTUP_FAILURE or BROWSER_EXTENSION_FAILURE log. Inner exception is swallowed by receipt catch; browser, extension, and panel readiness remain unproven.",
+    "log": {
+      "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-after-import-repair.log",
+      "sha256": "acc8d0b14a95e0754a99f77b45395bc21adbb186d439997603168cf418562dd2",
+      "mode": "0600"
+    },
+    "resource_journal": {
+      "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-after-import-repair-resource-journal.jsonl",
+      "sha256": "d09f3969926a6b39d2797f5014a27ef8569c672eeb8126fd10d0f78c1ced08b8"
+    },
+    "credential_file_removed": true
+  },
+  "next_action": "Independent native pipeline escalation owns source-only localization of the swallowed native_panel exception. No further browser launch or source edit in this lane; preserve both resource-valid failure logs and exact imported artifact."
+}

@@ -1,0 +1,10 @@
+{
+  "source_commit": "3edb09961c",
+  "cause": "Spa emergency contact repeated a person from the painting template",
+  "fix": "Changed only the spa fixture contact; originality guard unchanged",
+  "local_verification": "JSON parsed, corrected value present, no duplicate name in template census",
+  "nomination_run": "https://github.com/AI-Matrix-Engine/aidream/actions/runs/37103425601",
+  "nomination_status": "in_progress",
+  "npm_publication": "pending",
+  "version_note": "Existing 0.63.0 tag is immutable and points to the failed source; corrected package requires a successor tag"
+}

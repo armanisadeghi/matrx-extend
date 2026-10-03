@@ -1,0 +1,14 @@
+{
+  "status": "source_repair_static_verified_native_pending",
+  "evidence": {
+    "run": "37110879950",
+    "phase": "package",
+    "guard_decision": "refused before child; admitted=false; RESOURCE_CPU_HIGH_LOAD_BUSY",
+    "sample": "one-minute load 10.33 on 4 logical CPUs; 60-second CPU busy average 0.6442857142857142; samples 0.95, 1, 1, 0.7, 0.34, 0.26, 0.26",
+    "product_result": "unmeasured"
+  },
+  "cause": "The hosted workflow sampled CPU once for diagnostics and then immediately ran the guarded package phase; browser and acceptance had no preceding readiness wait either.",
+  "repair": "A bounded policy-derived wait now requires consecutive CPU readings below the existing admission thresholds immediately before package, browser, and acceptance. The unchanged guard retains final admission authority and its full resource checks.",
+  "verification": "node --check, targeted Biome check, YAML parser, and git diff --check passed; no hosted or browser run was started.",
+  "remaining": "A later hosted run must produce a valid guard receipt and actual native acceptance result; previous refusals remain setup evidence, not product failures or passes."
+}

@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "status": "inconclusive_http_422_before_stream_probe_incomplete",
+  "target": {
+    "published_extension_version": "0.2.176 (publication status supplied by task context)",
+    "endpoint": "https://server.app.matrxserver.com/v2/ai/mandates/extend.browser_chat",
+    "source_app": "matrx-extend",
+    "source_feature": "chat",
+    "auth": "No Authorization header, account, paid identity, or organization header was used."
+  },
+  "server_health": {
+    "before": {
+      "checked_at": "2026-10-03T10:43:06.247Z",
+      "http_status": 200,
+      "git_sha": "7207d2ad6be42ae495ac4dd235a66db2f20d7f0a",
+      "built_at": "2026-10-03T09:14:47Z"
+    },
+    "after": {
+      "checked_at": "2026-10-03T10:43:07.267Z",
+      "http_status": 200,
+      "git_sha": "7207d2ad6be42ae495ac4dd235a66db2f20d7f0a",
+      "built_at": "2026-10-03T09:14:47Z"
+    }
+  },
+  "reproducer": {
+    "contract_source": ".research/guest-live-incident-extension.json fresh_guest_start.body_core; src/hooks/use-chat-stream.ts request assembly; src/lib/chat/context/request-context.ts context fields",
+    "fidelity_limit": "The saved incident report gives the published extension body core and header contract, not a full byte-for-byte captured request including per-send page context. All attempts below are source-derived API requests, not native extension captures or UI tests. The follow-up diagnostics also used synthetic browser-dom state rather than values captured from a running published extension; their 422s cannot distinguish probe incompleteness from a server-side product contract mismatch.",
+    "headers": [
+      "Content-Type: application/json",
+      "Accept: text/event-stream",
+      "X-Fingerprint-ID: ephemeral SHA-256-shaped guest install fingerprint"
+    ],
+    "conversation": "One ephemeral client-minted conversation UUID and one ephemeral guest fingerprint were held only in process memory; neither is recorded here.",
+    "body_fields": [
+      "user_input",
+      "conversation_id",
+      "is_new",
+      "variables=null",
+      "context_withheld=[]",
+      "stream=true",
+      "store=true",
+      "source_app=matrx-extend",
+      "source_feature=chat",
+      "initiation=user",
+      "client.capabilities=[browser-dom]",
+      "client.state.browser-dom.is_guest=true"
+    ],
+    "first_message": "Please reply in one brief sentence confirming you can help with browser tasks.",
+    "followup_message": "Name one simple thing you can help with in a browser, in one brief sentence."
+  },
+  "attempts": [
+    {
+      "label": "first_guest_turn",
+      "started_at": "2026-10-03T10:43:06.719Z",
+      "http_status": 422,
+      "duration_ms": 548,
+      "stream_opened": false,
+      "answer_observed": false,
+      "error_event_observed": false,
+      "end_reason_observed": null,
+      "completion_status_observed": null,
+      "interpretation": "HTTP 422 arrived before any stream events. The response body was not retained, so the validation cause is unknown. This first source-derived probe did not contain an exact captured per-send request."
+    },
+    {
+      "label": "same_guest_followup",
+      "attempted": false,
+      "reason": "The first turn did not create a confirmed successful conversation; no follow-up was sent."
+    },
+    {
+      "label": "diagnostic_source_derived_replay_1",
+      "started_at": "2026-10-03 (timestamp not retained by caller)",
+      "http_status": 422,
+      "duration_ms": 754,
+      "stream_opened": false,
+      "answer_observed": false,
+      "validation_detail": [],
+      "interpretation": "Response was parsed locally for validation loc/type/msg only; no validation entries were present in the parsed shape. Raw response and request identifiers were not retained. Request used synthetic browser-dom metadata and omitted exact per-send page context, so this is not a faithful replay."
+    },
+    {
+      "label": "diagnostic_source_derived_replay_2",
+      "started_at": "2026-10-03 (timestamp not retained by caller)",
+      "http_status": 422,
+      "duration_ms": 965,
+      "stream_opened": false,
+      "answer_observed": false,
+      "validation_detail": [],
+      "interpretation": "Second diagnostic response likewise yielded no loc/type/msg entries. Raw response and request identifiers were not retained. No further request was sent."
+    }
+  ],
+  "scope": {
+    "result": "No actual successful answer or stream completion was observed. The HTTP 422 remains unclassified: the available source-derived requests are incomplete relative to a native capture, and do not establish either a product failure or a product pass.",
+    "next_step_limit": "The saved reproducer did not include full captured per-send context or browser-dom values. The two diagnostic replays did not recover safe validation entries; no additional or corrected requests were sent.",
+    "native_published_install": "Not verified by this direct API probe."
+  }
+}

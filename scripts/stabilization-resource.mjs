@@ -24,7 +24,12 @@ import {
   resourceLeaseRoot,
 } from './stabilization-resource-lease.mjs';
 import { classifyLegacyRunner, parseProcessIdentity } from './stabilization-resource-process.mjs';
-import { diskIsLow, sampleDiskSpace, writeSafetyState } from './stabilization-resource-safety.mjs';
+import {
+  cpuBusyFraction,
+  diskIsLow,
+  sampleDiskSpace,
+  writeSafetyState,
+} from './stabilization-resource-safety.mjs';
 import { resourceVerdict } from './stabilization-resource-verdict.mjs';
 
 const run = promisify(execFile);
@@ -141,15 +146,6 @@ function validatePolicy() {
     !['unsafeSamplesToStop', 'healthySamplesToResume'].every((key) => Number.isInteger(policy[key]))
   )
     throw new Error('RESOURCE_POLICY_INVALID');
-}
-
-async function cpuBusyFraction() {
-  const raw = await output('/usr/bin/top', ['-l', '2', '-s', '1', '-n', '0']);
-  const readings = [...raw.matchAll(/CPU usage:.*?([\d.]+)% idle/g)];
-  if (readings.length < 2) throw new Error('RESOURCE_MEASUREMENT_INVALID:cpu-busy');
-  const idle = number(readings.at(-1)[1], 'cpu-idle');
-  if (idle > 100) throw new Error('RESOURCE_MEASUREMENT_INVALID:cpu-idle');
-  return 1 - idle / 100;
 }
 
 async function processIdentity(pid) {
@@ -276,7 +272,7 @@ async function sample(profileDir) {
     sysctl('vm.loadavg'),
     sysctl('vm.swapusage'),
     sampleDiskSpace({ repo, profileDir, leaseRoot: root }),
-    cpuBusyFraction(),
+    cpuBusyFraction(output),
   ]);
   const freePercent = number(
     memory.match(/System-wide memory free percentage:\s*([\d.]+)%/)?.[1],

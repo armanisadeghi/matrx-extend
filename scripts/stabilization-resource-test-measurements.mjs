@@ -16,7 +16,7 @@ export async function setHealthyHostMeasurements(scripts) {
     ["sysctl('hw.logicalcpu'),", "Promise.resolve('8'),"],
     ["sysctl('vm.loadavg'),", "Promise.resolve('{ 0.5 0.5 0.5 }'),"],
     ["sysctl('vm.swapusage'),", "Promise.resolve('used = 0M'),"],
-    ['cpuBusyFraction(),', 'Promise.resolve(0.1),'],
+    ['cpuBusyFraction(output),', 'Promise.resolve(0.1),'],
   ];
   for (const [original, replacement] of substitutions) {
     assert.equal(source.split(original).length, 2, `missing unique host measurement: ${original}`);

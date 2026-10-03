@@ -38,7 +38,7 @@
  *      "system", or a saved preference: a guessed organization writes a
  *      person's work into the wrong tenant, which is the defect class this
  *      whole contract exists to end
- *      (common-docs/projects/no-db-assigned-org).
+ *      (common-docs/systems/architecture/database/projects/no-db-assigned-org/PLAN.md).
  */
 
 import { ENV, STORAGE_KEYS } from '@/config/env';

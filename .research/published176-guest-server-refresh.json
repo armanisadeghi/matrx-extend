@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "scope": "One native Chromium headless guest Chat smoke on frozen release 0.2.176 against the refreshed live aidream server; fresh profile, first grounded answer, actual side-panel reload, grounded follow-up.",
+  "backend": {
+    "health_url": "https://server.app.matrxserver.com/health/version",
+    "before": {
+      "git_sha": "4ec65fdb63a8d15e7c11d4404e0516317ebfaabd",
+      "built_at": "2026-10-03T12:46:53Z"
+    },
+    "after": {
+      "git_sha": "4ec65fdb63a8d15e7c11d4404e0516317ebfaabd",
+      "built_at": "2026-10-03T12:46:53Z"
+    }
+  },
+  "release_artifact": {
+    "release_run_id": 37105966615,
+    "github_artifact_id": 11267544261,
+    "github_artifact_name": "matrx-extend-v0.2.176",
+    "github_artifact_digest": "sha256:6f727ce611c2e726591fe7d82c1650b0da2b44042861a29a724a80e61375b878",
+    "workflow_head_sha": "7faa2849407654ee052599f9b924d822a456868e",
+    "embedded_release_source_sha": "3fe608d949a06aa10bfea57b43c9b05638386bc1",
+    "source_tag": "v0.2.176",
+    "version": "0.2.176",
+    "tree_sha256_before_and_after": "755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272",
+    "local_zip_sha256": "2bb4ddc89f113897829271d5125e46b438a625c60cf28017dd1c6f35838cbb93",
+    "store_zip_sha256": "813715b8dcd6421d4ee001c04e99c3729f6dad439064f8bf5922e6fb38ce09f8",
+    "input_artifact_unchanged": true,
+    "receipt_kind": "release; native run exercised the exact unpacked local ZIP, not the installed Chrome Web Store lifecycle"
+  },
+  "runner": {
+    "source": "scripts/hosted-guest-acceptance.mjs → tests/browser/guest-chat-store-acceptance.mjs",
+    "acceptance_case": "guest-chat",
+    "browser_mode": "Chromium headless; no visible window asserted",
+    "run_id": "published176-guest-server-refresh-20261003-01",
+    "resource_decision": "valid",
+    "exit_code": 0,
+    "resource_invalid": false,
+    "journal": "docs/stabilization/resource-journals/published176-guest-server-refresh-20261003-01.jsonl",
+    "journal_sha256": "0815b92e508ed27392c8273e979286617e495ea792aa81ab9f9c3afbbbaceded",
+    "receipt": "docs/stabilization/reports/published176-guest-server-refresh-20261003/guest-chat.receipt.json",
+    "raw_receipt_sha256": "bb8bec40d5bdd82dcfc005ad981c14f0de36db221cba3ef511e0deea690033b5",
+    "formatted_receipt_sha256": "bb8bec40d5bdd82dcfc005ad981c14f0de36db221cba3ef511e0deea690033b5",
+    "raw_formatted_parsed_equal": true
+  },
+  "guest_acceptance": {
+    "fresh_profile": true,
+    "guest_visible": true,
+    "opening_prompt": "Read the unique opening check code from the article on my current tab. What are the three workflow stages in order? Include the exact code.",
+    "opening_terminal_answer": true,
+    "opening_answer_contains_unpredictable_page_code": true,
+    "opening_answer_names_capture_understand_use_in_order": true,
+    "real_side_panel_reload": true,
+    "guest_visible_after_reload": true,
+    "auth_profile_and_organization_absent_after_reload": true,
+    "followup_prompt": "Read the unique follow-up check code from the article on my current tab and name the heading directly above the check codes. Include the exact code.",
+    "followup_terminal_answer": true,
+    "followup_contains_distinct_unpredictable_page_code": true,
+    "followup_names_fixture_heading": true,
+    "page_fixture_reinstalled_before_first_send": false,
+    "page_fixture_reinstalled_after_reload": false,
+    "login_paywall_or_error": false,
+    "screenshots": [
+      {
+        "path": "docs/stabilization/reports/published176-guest-server-refresh-20261003/guest-chat-real-answer.png",
+        "sha256": "f554bf45bca724a2cc361c00a06eff177199bfd12eb8c84697b940d3f5648bbf"
+      },
+      {
+        "path": "docs/stabilization/reports/published176-guest-server-refresh-20261003/guest-chat-real-followup-answer.png",
+        "sha256": "93e37be25211ebefd77cf6e62fd9f645217d5facce9411213e120dcdf0b0abf3"
+      }
+    ],
+    "request_watcher_limit": "No guest_ai_requests were recorded; acceptance rests on the real rendered terminal answers, unpredictable per-page fixture codes, follow-up heading, post-reload guest state, and unchanged artifact tree."
+  },
+  "cleanup": {
+    "heavy_lease_present": false,
+    "unsafe_hold_present": false,
+    "owned_runner_or_pinned_browser_processes_remaining": 0
+  },
+  "local_paths": {
+    "downloaded_release_artifact": "/Volumes/Samsung2TB/.codex-guest-runtime/acceptance/release176-artifact-37105966615/.output",
+    "prepared_unpacked_tree": "/Volumes/Samsung2TB/.codex-guest-runtime/acceptance/published176-guest-server-refresh-output-01/chrome-mv3-dev",
+    "raw_receipt": "test-results/guest-chat-store-690acb02-9f21-4538-87c6-bf8929353310.json"
+  },
+  "verification": {
+    "authenticated_artifact_metadata_and_embedded_zip_hashes": "pass",
+    "release_source_tag_and_tree_match": "pass",
+    "guest_native_run": "pass: first answer and post-reload follow-up",
+    "final_biome": "pass"
+  }
+}

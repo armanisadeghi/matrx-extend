@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "36a37d6cc7e7f19e953bdc0284a76ad38019df4c",
+  "scope": "Independent source and retained-evidence review of development CI artifact reuse before native Prepare acceptance. No browser or acceptance run.",
+  "verdict_A_actual_import_path": {
+    "status": "PASS_FOR_IMPORT_REPAIR; PREPARE_ACCEPTANCE_PENDING",
+    "red": {
+      "evidence": ".research/prepare-after-keychain-native.json",
+      "actual_guarded_attempt": "The existing immutable target for run 37107627454/artifact 11268886169 failed with EEXIST during a duplicate import reservation, before development preparation, browser launch, sign-in, or cases.",
+      "log_sha256": "4ea01d18902751f39ce14dda607b916753dd8c024e3fdd8e6269556b8a42ebe5"
+    },
+    "green": {
+      "filesystem_regression": "The focused report records 10/10 passing real-filesystem tests: exact existing target is reused without invoking importer or changing bytes; missing target imports; wrong artifact, ambiguous match, and incomplete target refuse.",
+      "retained_import": "The selected immutable directory contains artifact 11268886169, run 37107627454 attempt 1, source 3092444e73094cb0023f6086202869ccbd22978b, and tree 025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660.",
+      "independent_verification": "I ran the unchanged verifyImportedNativeEvidence against that directory. It returned the same source/run/artifact/tree, eligibleStore=false, and source claim exact_pushed_commit_only; source/local HEAD both equaled reviewed pushed commit 36a37d6c with no tracked dirt or untracked runner inputs."
+    },
+    "boundary": "This establishes the duplicate-import runner repair and exact retained artifact verification only. No Prepare case, authentication step, or product outcome was reached or claimed."
+  },
+  "verdict_B_source_quality": {
+    "status": "PASS",
+    "findings": [
+      "Selection scopes candidates to the requested run and artifact; more than one match fails closed.",
+      "A truly missing target invokes the authenticated importer, then requires one matching result. A present incomplete or wrong target does not get replaced or deleted.",
+      "The native runner immediately calls verifyImportedNativeEvidence before emitting PREPARED_DEVELOPMENT. That verifier binds the immutable target path to source SHA, run and attempt; checks import-status artifact ID and digests for CI receipt/provenance; verifies the CI receipt, source provenance, manifest and full tree; and classifies source freshness.",
+      "The exact target remains immutable; no replacement, receipt fabrication, verification skip, auth shortcut, or acceptance assertion change was found."
+    ],
+    "verification_recorded_by_builder": [
+      "10 focused Vitest cases passed",
+      "pnpm compile passed",
+      "Focused Biome and git diff --check passed"
+    ],
+    "limits": [
+      "The regression test exercises the actual selector against temporary filesystem state; CI artifact contents and authenticated network import are not fabricated as a successful acceptance.",
+      "The missing-target production importer remains subject to its existing remote metadata and digest checks; this review did not repeat a download.",
+      "One concurrent import race was not separately exercised; exclusive target reservation fails closed if another import wins after selection."
+    ]
+  },
+  "recommendation": "This review supports one fresh guarded Prepare acceptance attempt. It does not itself authorize or certify that acceptance."
+}

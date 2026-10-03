@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "reviewed_acceptance": "prepare-local-native-20261003-08",
+  "receipt": "docs/stabilization/reports/prepare-cross-url-native-20261003/acceptance-receipt.json",
+  "resource_journal": "docs/stabilization/reports/prepare-cross-url-native-20261003/resource-journal.jsonl",
+  "acceptance_log": "docs/stabilization/reports/prepare-cross-url-native-20261003/acceptance.log",
+  "verdict_A_actual_outcome": {
+    "status": "PASS_BOUNDED",
+    "actual_native_result": "The retained native receipt is pass_bounded and all six Prepare cases passed: the four previously covered retry, same-URL late-settlement, and fresh-document cases, plus different-full-URL late success and late rejection. Each different-URL case recorded exact destination URL and changed top-frame documentId before old settlement; destination UI remained free of stale result, error, or pending state.",
+    "authorization_mode": "Authenticated admin acceptance. Receipt records web dashboard reached and expected admin identity/role/sign-out observations; credentials were not retained.",
+    "artifact_provenance": {
+      "loaded_extension": "CI development test artifact 11268886169 from workflow run 37107627454, source SHA 3092444e73094cb0023f6086202869ccbd22978b, tree SHA-256 025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660.",
+      "receipt_boundary": "Local-dev receipt reports version 0.2.176 and tree hash; source_sha is null and is not treated as source proof. Separate authenticated imported-CI evidence binds the source, run, artifact, and complete tree. The independent post-run tree hash matches.",
+      "runner": "Cross-URL harness at b576f20c402911b41b4c3cab3195462a14488c0e; all four prior cases retained. Independent checks did not run browser/tests."
+    },
+    "resource_integrity": {
+      "journal_run_id": "prepare-local-native-20261003-08",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "final_decision": "valid",
+      "journal_sha256": "fe7ec5b1adb7903893708709169f8f01422ff27e176dfe401cfe61b94df5ac50",
+      "log_sha256": "c8c7693d8ab28c4336b28e3229e3785add1eff9ea08310772ca626b7d570a452"
+    },
+    "post_run_integrity": {
+      "recorded_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+      "independently_rehashed_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+      "result": "matches the loaded CI development artifact"
+    }
+  },
+  "verdict_B_scope_and_quality": {
+    "status": "D58_CLOSED_BOUNDED; D59_OPEN",
+    "D58": {
+      "verified": "The documented different-URL A-to-B ordering is covered: both success and rejection are held on the source document, navigation changes the full URL and top-frame documentId on the same-origin public demo route, and settling the old operation leaves the destination free of stale success/error/pending UI. Failed retry after previous success and the prior original cases also pass.",
+      "closure_basis": "The source repair is commit 46b22e50c91566ccdff4d85ceb64558f8eae8bc6 with guarded regressions. The original D58 reproduction explicitly requires page A to page B at a different URL before resolving/rejecting A. The two -08 cases satisfy that identity boundary and both settlement outcomes on the actual admin panel. Transition history records fixed at the source repair, retest-pass on this evidence, then closed; scope remains bounded to Showcase Prepare on this CI development artifact.",
+      "limits": "The two URLs share origin and route; no cross-origin behavior is claimed. This does not close T08 or certify Store/public release."
+    },
+    "D59": {
+      "verified": "Current artifact Prepare passes same-URL reload and distinct-full-URL old-document late success/rejection cases.",
+      "not_closed_because": "D59 covers shared document identity, Snapshot and broader live consumers. This Prepare-only run does not verify Snapshot on the current artifact or those sibling consumers; keep D59 in-fix."
+    },
+    "quality": [
+      "All six original/added native predicates passed without weakening; same-origin cross-URL navigation is proven by exact URLs and changed top-frame document IDs.",
+      "No Store/public release, full feature, cross-origin, or broad shared-consumer pass is inferred.",
+      "The native worker attests private credential removal, no owned Chromium process remaining, and permit release."
+    ]
+  },
+  "independent_checks": {
+    "receipt_raw_sha256": "0d448deed0bcc2216c17cb32280aa2b0b073e642d590bddbcf194154ad5cc71d",
+    "receipt_sha256": "30cc1153e1f164ed9df4024b03bc37f27bd715e3efbeacc4d2e66abf3c5e2bb9",
+    "receipt_representation": "Biome-formatted durable copy; parsed JSON is semantically identical to raw retained native receipt.",
+    "resource_verification": "Run ID matches; journal admitted=true/resourceInvalid=false/exit 0/final decision valid, and journal/log SHA-256 match durable evidence.",
+    "artifact_verification": "Authenticated imported-CI provenance ties run 37107627454, artifact 11268886169, source commit 3092444e73094cb0023f6086202869ccbd22978b, and tree 025e7931...; post-run independent full-tree rehash matches.",
+    "cleanup": "Durable run report attests private admin credential file removed, no owned Chromium process remaining, and heavy-resource permit released.",
+    "source_fix": "Verified source repair commit 46b22e50c91566ccdff4d85ceb64558f8eae8bc6 in src/hooks/use-page-prep.ts; loaded CI artifact source 3092444e73094cb0023f6086202869ccbd22978b includes the repair. Native runner adds only the cross-URL probes; no product source was changed for this run."
+  },
+  "recommended_record_state": {
+    "EXT-D-0058": "Close through in-fix \u2192 fixed \u2192 retest-pass \u2192 closed based on the original documented different-full-URL Prepare reproduction passing for both held late success and rejection on the authenticated exact CI development artifact. Keep the bounded artifact/same-origin limitations explicit.",
+    "EXT-D-0059": "Remain in-fix; record bounded current-artifact Prepare evidence only. Snapshot and broader shared live consumers are not covered.",
+    "EXT-F-1012-T08_admin": "Partial: six Prepare cases pass, but other T08 dimensions/controls, Snapshot and Store/public release remain unverified."
+  },
+  "limits": [
+    "Independent peer performed read-only receipt/source/artifact/resource/hash review; no browser or test command was run by this reviewer.",
+    "Evidence is bounded to admin Showcase Prepare on the exact 0.2.176 CI development artifact and same-origin different-full-URL navigation; no Store/public-release or whole-feature acceptance claim."
+  ],
+  "previous_acceptance_07": {
+    "reviewed_acceptance": "prepare-local-native-20261003-07",
+    "receipt": "docs/stabilization/reports/prepare-native-20261003/acceptance-receipt.json",
+    "resource_journal": "docs/stabilization/reports/prepare-native-20261003/resource-journal.jsonl",
+    "acceptance_log": "docs/stabilization/reports/prepare-native-20261003/acceptance.log",
+    "verdict_A_actual_outcome": {
+      "status": "PASS_BOUNDED",
+      "actual_native_result": "The receipt is pass_bounded and all four original Prepare cases pass: failed_retry_after_success, old_document_late_success, old_document_late_rejection, and fresh_document_prepare. Sign-in observations reached the asserted admin state; the private admin credentials file was removed after the run.",
+      "authorization_mode": "Admin acceptance. The runner reads a private mode-restricted credentials file and asserts the expected admin identity before sign-in; the receipt records admin-role and signed-in account observations without retaining credentials.",
+      "artifact_provenance": {
+        "loaded_extension": "CI development test artifact 11268886169 from run 37107627454, source SHA 3092444e73094cb0023f6086202869ccbd22978b, tree SHA-256 025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660.",
+        "receipt_boundary": "The native receipt reports version 0.2.176 and the tree hash; its source_sha is null because it is a local-dev receipt. The separate imported-CI evidence verifies the source SHA, run, artifact, provenance, and full tree; these are distinct receipt layers.",
+        "runner": "The acceptance used the peer-reviewed settlement harness at commit 6b574159. The current imported-artifact verifier independently returns the same CI source/run/artifact/tree; no untracked runner inputs are reported."
+      },
+      "resource_integrity": {
+        "journal_run_id": "prepare-local-native-20261003-07",
+        "admitted": true,
+        "resource_invalid": false,
+        "child_exit_code": 0,
+        "final_decision": "valid",
+        "journal_sha256": "03e137d0f84ec9a98d237257b2c1efa82d5b99aa8dd82aa530a3cd14696045af",
+        "log_sha256": "a101cbac18d18a71404896aa90399996d96f91f1cf0612df9772ebefefe39914"
+      },
+      "post_run_integrity": {
+        "recorded_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+        "independently_rehashed_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+        "result": "matches the loaded artifact"
+      }
+    },
+    "independent_checks": {
+      "receipt_sha256": "6cddc767c90869de636e5a995e759844e964c3630ed9210c8dbdeb73a088e020",
+      "imported_artifact_verification": "Reran verifyImportedNativeEvidence read-only for the preserved target; it verified source/run/artifact/provenance and exact tree. Recomputed hashReleaseTree independently; it matched the receipt tree.",
+      "resource_verification": "Checked the run-scoped durable resource journal and sanitized acceptance log; their SHA-256 values match the retained evidence record, run IDs match, and final decision is valid.",
+      "source_raw_receipt_sha256": "74e8645c630989050098d964dc42b68c2536afec8021b1ff4d2e636998483937",
+      "receipt_representation": "Biome-formatted committed copy; parsed JSON equality with the raw source independently checked during formatting repair"
+    }
+  }
+}

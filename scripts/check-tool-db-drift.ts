@@ -10,6 +10,10 @@ import { resolve } from 'node:path';
  * handler — the exact object the dispatcher validates against at
  * src/lib/tools/dispatch.ts — and diffs it against `tool.definition`. There
  * is NO intermediate file: the schema we check is the schema that runs.
+ * Server-owned catalog entries are verified through the authenticated live
+ * tool-detail door: canonical resolver, native binding, full execution model,
+ * complete DB variant projection and the existing server validator verdict.
+ * A Chrome binding also supplies discovery; it does not override native ownership.
  *
  * Schema (post 2026-06 schema canonicalization — tables moved from `public`
  * to the `tool` schema):
@@ -52,6 +56,8 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { buildToolCatalogManifest } from '../src/lib/tools/catalog';
 import { CANONICAL_SURFACE } from '../src/lib/tools/categories';
+import { SERVER_CATALOG } from '../src/lib/tools/server-catalog';
+import { fetchServerToolContract, serverContractIssues } from './_server-tool-contract';
 import { selectRowsViaManagementApi } from './_supabase-management';
 import { fetchPublicJson, loadSupabaseEnv } from './_supabase-rest';
 import {
@@ -63,6 +69,7 @@ import {
   isDbBundleMemberRow,
   isDbSurfaceDefaultsRow,
   isDbToolRow,
+  toolParameterProperties,
 } from './_tool-db-row-validation';
 
 interface LocalTool {
@@ -253,9 +260,7 @@ function compareTool(local: LocalTool, db: DbToolRow): string[] {
   // Parameter shape comparison
   const localProps = local.input_schema?.properties ?? {};
   // `$`-prefixed keys ($variants, …) are contract metadata, NOT tool parameters.
-  const dbProps = Object.fromEntries(
-    Object.entries(db.parameters ?? {}).filter(([k]) => !k.startsWith('$')),
-  );
+  const dbProps = toolParameterProperties(db.parameters);
   // Zod's JSON-schema emitter marks a `.default(null)` property as required,
   // even though Zod accepts an omitted value and supplies the default. JSON
   // Schema's `default` also describes an omission, not a required input. Do
@@ -374,7 +379,14 @@ export async function main(): Promise<number> {
   // names. Everything else is an "absorbed" handler that lives behind a
   // mega-tool router (e.g. take_screenshot behind `computer`) and has no
   // business being in tool_def.
-  const local = localAll.filter((t) => CANONICAL_SURFACE.has(t.name));
+  const serverNames = new Set(SERVER_CATALOG.map((tool) => tool.name));
+  const local = [
+    ...localAll.filter((t) => CANONICAL_SURFACE.has(t.name)),
+    ...SERVER_CATALOG.filter((t) => CANONICAL_SURFACE.has(t.name)).map((t) => ({
+      ...t,
+      input_schema: { type: 'object' as const, properties: {} },
+    })),
+  ];
   const localByName = new Map(local.map((t) => [t.name, t]));
   const dbByName = new Map(dbDefs.map((r) => [r.name, r]));
   const dbById = new Map(dbDefs.map((r) => [r.id, r]));
@@ -428,7 +440,20 @@ export async function main(): Promise<number> {
       continue;
     }
     if (d.is_active === false) dbInactive.push(name);
-    const issues = compareTool(l, d);
+    let issues: string[];
+    if (serverNames.has(name)) {
+      try {
+        issues = serverContractIssues(d, await fetchServerToolContract(name));
+        if (localAll.some((tool) => tool.name === name))
+          issues.push('server-owned tool still has a local executor');
+        if (l.tier !== d.tier) issues.push('manual catalog tier differs from DB');
+      } catch (error) {
+        console.error(`drift-check: ${name} server contract UNVERIFIED: ${String(error)}`);
+        return strict ? 3 : 0;
+      }
+    } else {
+      issues = compareTool(l, d);
+    }
     if (issues.length) drifts.push({ name, issues });
 
     // Binding check — every advertised tool MUST have an active

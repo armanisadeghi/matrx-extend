@@ -5,12 +5,12 @@
  *   1. Browse — filter by tier or bundle, search, see description + schema.
  *   2. Inspect — expand to view the JSON Schema and required Chrome perms.
  *   3. Test — fill in args (JSON), hit "Run", see the result inline. The
- *      tool runs through the SAME dispatcher path as the agent, so this is
- *      a true end-to-end smoke test (including approval prompts for
- *      action-tier tools when you're in Ask mode).
+ *      browser tools run locally and server-owned tools use the registered
+ *      tool test door. This is a one-tool execution test.
  *
- * The "Run" button calls the handler directly — no SSE round-trip. It
- * skips the permission gate (since it's user-initiated). Results render in
+ * The "Run" button calls browser handlers directly; registered server-owned
+ * Records runs through the existing authenticated one-tool test endpoint.
+ * It skips the permission gate (since it's user-initiated). Results render in
  * the inline output section below the form; the chat transcript timeline is
  * deliberately dispatcher-only (manual runs would otherwise attach stray
  * tool rows to whatever assistant message happens to be last).
@@ -33,8 +33,14 @@ import {
   categoryOf,
   isCanonicalSurface,
 } from '@/lib/tools/categories';
+import { getManualServerToolDefinition, runManualServerTool } from '@/lib/tools/manual-server';
 import { listAllHandlers } from '@/lib/tools/registry';
-import type { AnyToolHandler, ToolTier } from '@/lib/tools/types';
+import {
+  SERVER_CATALOG,
+  type ToolCatalogEntry,
+  isServerCatalogEntry,
+} from '@/lib/tools/server-catalog';
+import type { ToolTier } from '@/lib/tools/types';
 import { cn } from '@/lib/utils';
 import {
   Badge,
@@ -58,7 +64,7 @@ import {
   ShieldAlert,
   Wrench,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { zodToJsonSchema } from 'zod-to-json-schema';
 
 type TierFilter = 'all' | ToolTier;
@@ -66,7 +72,7 @@ type CategoryFilter = 'all' | ToolCategory;
 type SurfaceFilter = 'canonical' | 'internal' | 'all';
 
 export function ToolsView() {
-  const handlers = useMemo(() => listAllHandlers(), []);
+  const handlers = useMemo(() => [...listAllHandlers(), ...SERVER_CATALOG], []);
 
   return (
     <div className="flex h-full flex-col">
@@ -112,7 +118,7 @@ function ToolsTab({ value, children }: { value: string; children: React.ReactNod
   );
 }
 
-function CatalogPane({ handlers }: { handlers: AnyToolHandler[] }) {
+function CatalogPane({ handlers }: { handlers: ToolCatalogEntry[] }) {
   const [query, setQuery] = useState('');
   const [tier, setTier] = useState<TierFilter>('all');
   const [category, setCategory] = useState<CategoryFilter>('all');
@@ -239,7 +245,7 @@ function ToolRow({
   handler,
   description,
 }: {
-  handler: AnyToolHandler;
+  handler: ToolCatalogEntry;
   description?: string | undefined;
 }) {
   const [open, setOpen] = useState(false);
@@ -341,14 +347,41 @@ function ToolDetail({
   handler,
   description,
 }: {
-  handler: AnyToolHandler;
+  handler: ToolCatalogEntry;
   description?: string | undefined;
 }) {
-  const schema = useMemo(
-    () => zodToJsonSchema(handler.argsSchema, { $refStrategy: 'none', target: 'jsonSchema7' }),
+  const localSchema = useMemo(
+    () =>
+      isServerCatalogEntry(handler)
+        ? {}
+        : zodToJsonSchema(handler.argsSchema, { $refStrategy: 'none', target: 'jsonSchema7' }),
     [handler],
   );
-  const sampleArgs = useMemo(() => buildSampleArgs(schema), [schema]);
+  const serverOwned = isServerCatalogEntry(handler);
+  const [serverSchema, setServerSchema] = useState<Record<string, unknown> | null>(null);
+  const [schemaError, setSchemaError] = useState<string | null>(null);
+  useEffect(() => {
+    if (!serverOwned) return;
+    let active = true;
+    void getManualServerToolDefinition(handler.name)
+      .then((tool) => {
+        if (active) setServerSchema(tool.parameters);
+      })
+      .catch((reason: unknown) => {
+        if (active) setSchemaError(reason instanceof Error ? reason.message : String(reason));
+      });
+    return () => {
+      active = false;
+    };
+  }, [handler.name, serverOwned]);
+  const schema = serverOwned ? serverSchema : localSchema;
+  const sampleArgs = useMemo(
+    () =>
+      serverOwned
+        ? JSON.stringify({ action: 'guide', args: {} }, null, 2)
+        : buildSampleArgs(localSchema),
+    [serverOwned, localSchema],
+  );
   const [argsText, setArgsText] = useState(sampleArgs);
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<unknown>(undefined);
@@ -364,6 +397,13 @@ function ToolDetail({
       setError(`Invalid JSON: ${(e as Error).message}`);
       return;
     }
+    if (
+      serverOwned &&
+      (!parsedArgs || typeof parsedArgs !== 'object' || Array.isArray(parsedArgs))
+    ) {
+      setError('Records arguments must be a JSON object.');
+      return;
+    }
     let observedArgs: unknown;
     try {
       observedArgs = sanitizeNetworkToolSaveArgs(handler.name, parsedArgs);
@@ -371,42 +411,65 @@ function ToolDetail({
       setError(e instanceof Error ? e.message : 'Invalid Network capture recipe.');
       return;
     }
-    const validated = handler.argsSchema.safeParse(observedArgs);
-    if (!validated.success) {
+    const validated = isServerCatalogEntry(handler)
+      ? null
+      : handler.argsSchema.safeParse(observedArgs);
+    if (validated && !validated.success) {
       setError(`Schema mismatch:\n${JSON.stringify(validated.error.format(), null, 2)}`);
       return;
     }
+    if (serverOwned && !serverSchema) {
+      setError(schemaError ?? 'Server Records contract is not available.');
+      return;
+    }
+    const runInput = serverOwned
+      ? (observedArgs as Record<string, unknown>)
+      : validated?.success
+        ? validated.data
+        : null;
+    if (!runInput) return;
     const callId = newId('manual');
     setRunning(true);
     broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
       callId,
       toolName: handler.name,
       phase: 'started',
-      args: validated.data,
+      args: runInput,
     });
     try {
-      const runArgs = validated.data as { action?: string; pattern_id?: string };
+      const runArgs = runInput as { action?: string; pattern_id?: string };
       const isSavedRun =
         handler.name === 'data_patterns' && runArgs.action === 'run' && runArgs.pattern_id;
       const savedRunTab = isSavedRun
         ? await (await import('@/lib/chat/active-tab')).resolveActiveTab()
         : null;
       if (isSavedRun && savedRunTab?.id == null) throw new Error('No active tab for saved replay.');
-      const out = isSavedRun
-        ? await (
-            await import('@/lib/data-pattern/document-network-transport')
-          ).openSavedPatternOperation(runArgs.pattern_id!, savedRunTab!.id!)
-        : await handler.run(validated.data as never, {
-            conversationId: null,
-            runId: 'manual-test',
-            callId,
-            agentName: 'manual',
-            permissionMode: 'act',
-            // Tools-tab "Run" button targets whatever tab is currently
-            // focused — there is no agent assignment to honor here.
-            assignedTabId: null,
-          });
+      const out = isServerCatalogEntry(handler)
+        ? await runManualServerTool(handler.name, runInput as Record<string, unknown>)
+        : isSavedRun
+          ? await (
+              await import('@/lib/data-pattern/document-network-transport')
+            ).openSavedPatternOperation(runArgs.pattern_id!, savedRunTab!.id!)
+          : await handler.run(runInput as never, {
+              conversationId: null,
+              runId: 'manual-test',
+              callId,
+              agentName: 'manual',
+              permissionMode: 'act',
+              // Tools-tab "Run" button targets whatever tab is currently
+              // focused — there is no agent assignment to honor here.
+              assignedTabId: null,
+            });
       setResult(out);
+      if (serverOwned && out && typeof out === 'object' && 'success' in out && !out.success) {
+        broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
+          callId,
+          toolName: handler.name,
+          phase: 'error',
+          message: 'Tool call failed.',
+        });
+        return;
+      }
       broadcast(CHANNELS.TOOL_TIMELINE_EVENT, {
         callId,
         toolName: handler.name,
@@ -445,7 +508,7 @@ function ToolDetail({
       </Section>
 
       <Section
-        label="input schema (JSON Schema 7)"
+        label={serverOwned ? 'server action contract' : 'input schema (JSON Schema 7)'}
         trailing={
           <CopyButton
             text={() => JSON.stringify(schema, null, 2)}
@@ -455,7 +518,7 @@ function ToolDetail({
         }
       >
         <pre className="max-h-60 overflow-auto rounded bg-background/60 p-1.5 text-[10px] leading-snug">
-          {JSON.stringify(schema, null, 2)}
+          {schemaError ?? JSON.stringify(schema, null, 2)}
         </pre>
       </Section>
 
@@ -471,7 +534,12 @@ function ToolDetail({
           placeholder='{"selector": "h1"}'
         />
         <div className="mt-1.5 flex items-center gap-1.5">
-          <Button size="sm" className="h-6 gap-1" onClick={runManually} disabled={running}>
+          <Button
+            size="sm"
+            className="h-6 gap-1"
+            onClick={runManually}
+            disabled={running || (serverOwned && !serverSchema)}
+          >
             {running ? <Loader2 className="size-3 animate-spin" /> : <Play className="size-3" />}
             Run
           </Button>

@@ -5,8 +5,35 @@ on:
     inputs:
       release_run_id:
         description: Successful Hosted release run whose exact validated artifact will be tested
-        required: true
+        required: false
         type: string
+      development_run_id:
+        description: Successful CI main-push run for interim development-build evidence
+        required: false
+        type: string
+      development_artifact_id:
+        description: Exact CI development artifact ID, verified by the existing importer
+        required: false
+        type: string
+      published_store_crx:
+        description: Test exact published 0.2.130 CRX from Google's public update service
+        required: false
+        default: false
+        type: boolean
+      acceptance_case:
+        description: Native-panel case to exercise
+        required: false
+        default: guest-chat
+        type: choice
+        options:
+          - guest-chat
+          - settings-controls
+          - settings-persistence
+          - settings-persistence-admin
+          - settings-persistence-member
+          - audit-key-admin
+          - member-chat
+          - prepare-stale-results
 
 permissions:
   actions: read
@@ -14,7 +41,7 @@ permissions:
 
 jobs:
   guest:
-    runs-on: macos-latest
+    runs-on: macos-15-intel
     timeout-minutes: 15
     concurrency:
       group: hosted-guest-side-panel
@@ -32,6 +59,7 @@ jobs:
 
       - name: Require a successful published release artifact
         id: release
+        if: inputs.release_run_id != ''
         shell: bash
         env:
           RELEASE_RUN_ID: ${{ inputs.release_run_id }}
@@ -55,15 +83,85 @@ jobs:
           source_sha="$(git rev-parse "v${version}^{commit}")"
           echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
 
-      - name: Exercise the actual signed-out Chrome side panel
+      - name: Require exactly one artifact provenance mode
         shell: bash
         env:
-          MATRX_PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser-runtime/node_modules/playwright/index.mjs
+          RELEASE_RUN_ID: ${{ inputs.release_run_id }}
+          DEVELOPMENT_RUN_ID: ${{ inputs.development_run_id }}
+          DEVELOPMENT_ARTIFACT_ID: ${{ inputs.development_artifact_id }}
+          PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx }}
+          ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
+        run: |
+          set -euo pipefail
+          if [[ "$ACCEPTANCE_CASE" == member-chat ]]; then
+            [[ -n "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
+          fi
+          if [[ "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == audit-key-admin ]]; then
+            [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
+          fi
+          if [[ "$ACCEPTANCE_CASE" == prepare-stale-results ]]; then
+            [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
+          fi
+          if [[ "$PUBLISHED_STORE_CRX" == true ]]; then
+            [[ -z "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" ]] || exit 1
+          elif [[ -n "$RELEASE_RUN_ID" ]]; then
+            [[ -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" ]] || exit 1
+          else
+            [[ "$DEVELOPMENT_RUN_ID" =~ ^[1-9][0-9]*$ && "$DEVELOPMENT_ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]] || exit 1
+          fi
+
+      - name: Disable indexing on the disposable hosted VM
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$RUNNER_ENVIRONMENT" == github-hosted && "$RUNNER_OS" == macOS ]] || exit 1
+          sudo /usr/bin/mdutil -a -i off
+          status="$(/usr/bin/mdutil -a -s)"
+          printf '%s\n' "$status"
+          [[ "$status" == *"Indexing disabled."* ]] || exit 1
+          [[ "$status" != *"Indexing enabled."* ]] || exit 1
+
+      - name: Wait for measured package readiness
+        run: node scripts/hosted-resource-readiness.mjs
+
+      - name: Prepare pinned browser driver under an owned permit
+        env:
+          MATRX_HOSTED_PHASE: package
+          MATRX_HOSTED_BROWSER_RUNTIME_DIR: ${{ runner.temp }}/browser-runtime
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
+        run: |
+          mkdir -p "$RUNNER_TEMP/guest-resource-profile"
+          node scripts/stabilization-resource.mjs run --run-id "hosted-package-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
+
+      - name: Wait for measured browser readiness
+        run: node scripts/hosted-resource-readiness.mjs
+
+      - name: Prepare full Chromium under a fresh owned permit
+        env:
+          MATRX_HOSTED_PHASE: browser
+          MATRX_HOSTED_BROWSER_RUNTIME_DIR: ${{ runner.temp }}/browser-runtime
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
+        run: |
+          node scripts/stabilization-resource.mjs run --run-id "hosted-browser-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
+
+      - name: Wait for measured acceptance readiness
+        run: node scripts/hosted-resource-readiness.mjs
+
+      - name: Exercise the selected Chrome side-panel case
+        shell: bash
+        env:
+          MATRX_PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser-runtime/node_modules/playwright-core/index.mjs
           MATRX_HOSTED_BROWSER_RUNTIME_DIR: ${{ runner.temp }}/browser-runtime
           PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
           MATRX_HOSTED_RELEASE_ARTIFACT_DIR: ${{ steps.release.outputs.artifact_dir }}
           MATRX_HOSTED_GUEST_OUTPUT_DIR: ${{ runner.temp }}/guest-acceptance
           MATRX_HOSTED_RELEASE_SHA: ${{ steps.release.outputs.source_sha }}
+          MATRX_HOSTED_DEV_RUN_ID: ${{ inputs.development_run_id }}
+          MATRX_HOSTED_DEV_ARTIFACT_ID: ${{ inputs.development_artifact_id }}
+          MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.130' || '' }}
+          MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
+          MATRX_HOSTED_MEMBER_LINK_JSON: ${{ secrets.MATRX_REVIEWER_MAGIC_LINK_JSON }}
+          MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: ${{ secrets.MATRX_PREPARE_ADMIN_CREDENTIALS_JSON }}
         run: |
           mkdir -p "$RUNNER_TEMP/guest-resource-profile"
           node scripts/stabilization-resource.mjs run --run-id "hosted-guest-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
@@ -75,5 +173,11 @@ jobs:
           name: hosted-guest-${{ github.run_id }}-${{ github.run_attempt }}
           if-no-files-found: ignore
           path: |
+            docs/stabilization/resource-journals/hosted-*.jsonl
             test-results/guest-chat-store-*.json
+            test-results/settings-local-controls-acceptance.json
+            test-results/settings-d87-native-*.json
+            test-results/audit-key-native-*.json
+            test-results/reviewer-chat-store-*.json
+            test-results/prepare-stale-result-native-*.json
             test-results/native-sidepanel-qa-*/*.png

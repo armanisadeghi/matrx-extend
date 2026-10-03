@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0087",
+  "status": "PARTIAL_NATIVE_THREE_CASES_READINESS_CANDIDATE_PENDING",
+  "source": {
+    "runtime_fix": "5886319b",
+    "runtime_peer": ".research/native-runtime-peer.json",
+    "headed_and_mount_candidate": "a33fa05c",
+    "followup_guard": "6c5b4eb5"
+  },
+  "confirmed_findings": {
+    "runtime": "Hosted wrapper verifies explicit Playwright but child previously resolved absent repository module; no-browser differential failed without MATRX_PLAYWRIGHT_MODULE and succeeded with exact supplied module. Wrapper now passes verified package to child.",
+    "visibility": "Admin04 headless passed actual admin authentication then failed visible-document gate. Sole headed:true differential admin05 passed visibility and first three original cases.",
+    "reload": "Admin05 retry persisted Dark; after Page.reload blank/unmounted shell guest=false satisfied old text-absence identity predicate. Settings click matched zero targets. Candidate requires positive mounted control and preserves later real identity/role/org assertions."
+  },
+  "ruled_out": {
+    "product_save_failure": "Retry persisted Dark in real Chrome storage before reload readiness failure.",
+    "auth_failure": "Both native trials verified first-party and extension admin account, role and organization consistency."
+  },
+  "attempt_limit": {
+    "actual_failed_native_trials": 2,
+    "further_native": "Stopped; switched to connected readiness guard and fresh peer before another run.",
+    "refused_prelaunch_runs": [
+      "native-settings-escalation-admin-01",
+      "native-settings-escalation-admin-02",
+      "native-settings-escalation-admin-03"
+    ]
+  },
+  "artifact": {
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "run_id": 37107627454,
+    "artifact_id": 11268886169,
+    "post_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660"
+  },
+  "runs": {
+    "04": {
+      "receipt": "docs/stabilization/reports/native-settings-escalation-20261003/admin-04.receipt.json",
+      "raw_receipt_path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/settings-d87-native-dbb531b3-63fc-42db-9b40-779619a3f1b1.json",
+      "raw_sha256": "a91724f9b8aca9fa1ebb00ae01969eb4583a1de9eb0d41af00dbacda63b0403a",
+      "formatted_sha256": "a91724f9b8aca9fa1ebb00ae01969eb4583a1de9eb0d41af00dbacda63b0403a",
+      "parsed_equal": true,
+      "log": "docs/stabilization/reports/native-settings-escalation-20261003/admin-04.log",
+      "log_sha256": "45df039ee0a475aeadebc60a46b21d7f09777d2b0a3ee618747fcbc205b1ee24",
+      "journal": "docs/stabilization/resource-journals/native-settings-escalation-admin-04.jsonl",
+      "status": "fail",
+      "failure_stage": "authentication",
+      "failure_code": "d87_panel_foreground_not_observed",
+      "cases_passed": 0,
+      "auth_passed": true,
+      "journal_sha256": "6b755f2e3e09b35667c2b20e1d396d6d5c632060825d851fb9f5b9f63dabd420"
+    },
+    "05": {
+      "receipt": "docs/stabilization/reports/native-settings-escalation-20261003/admin-05.receipt.json",
+      "raw_receipt_path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/settings-d87-native-b95ba434-b1ab-433b-a721-ee819addc7bd.json",
+      "raw_sha256": "1ec1626b6043bedecfbee78539db105539d25289e9bb4576aef577d35f62cfd0",
+      "formatted_sha256": "1ec1626b6043bedecfbee78539db105539d25289e9bb4576aef577d35f62cfd0",
+      "parsed_equal": true,
+      "log": "docs/stabilization/reports/native-settings-escalation-20261003/admin-05.log",
+      "log_sha256": "eb433d2d7ac058fa057f5f96f22f03e8ff6de365496e97d85de3d31cf19441d0",
+      "journal": "docs/stabilization/resource-journals/native-settings-escalation-admin-05.jsonl",
+      "status": "fail",
+      "failure_stage": "retry",
+      "failure_code": "pointer_target_not_unique",
+      "cases_passed": 3,
+      "auth_passed": true,
+      "journal_sha256": "3f5d7ef1803b9b1ee7552003e0a9c4d91c2cca4294a5a8ba0b986559b98a5858"
+    }
+  },
+  "remaining": "Admin cases 4-6 and both reload identity checks; member all six cases. No member magic link minted.",
+  "discarded_candidate": "Trusted re-open experiment ee8b189f/e834f4e9 was reverted before execution by 44f347ac/3334490b; headed-only discriminant used original owned CDP activation.",
+  "cleanup": {
+    "admin_credential_file_removed": true,
+    "native_profile_directories_remaining": 0,
+    "original_receipts_preserved": true,
+    "post_hash_matches": true,
+    "guard_invalid": false,
+    "member_link_not_minted": true,
+    "owned_browser_processes_remaining": 0,
+    "final_guard_process_exited": true,
+    "heavy_lease_removed": true,
+    "permit_released_to_parent": true
+  },
+  "verification": {
+    "syntax": "pass",
+    "connected_guard": "PASS 5/5: real imported readiness helper used by initial/reload wait; in-memory constant true, constant false, missing-mount mutants killed by contract assertions",
+    "biome": "PASS exact seven source/report/receipt files; no fixes",
+    "independent_peer": "pending for headed/readiness candidate"
+  },
+  "verdict_a": "PARTIAL: headed admin first three original cases passed; remaining admin/member unverified.",
+  "verdict_b": "Runtime plumbing source peer passed; headed/readiness candidate requires fresh peer. No timeout, CSS, animation, DOM or hit-test bypass.",
+  "guard": {
+    "journal": "docs/stabilization/resource-journals/native-settings-readiness-guard.jsonl",
+    "log": "docs/stabilization/reports/native-settings-escalation-20261003/readiness-guard.log",
+    "exit_code": 0,
+    "resource_invalid": false,
+    "log_sha256": "d93c88ca0e70d4d68c2acdc48c61894e2e7e931d9fb80d5ae64e2537443d2015",
+    "journal_sha256": "6192d886f9f6ba6c1a5099289f0239608df70c3f7dfddf6038b80f08ce1e3468"
+  }
+}

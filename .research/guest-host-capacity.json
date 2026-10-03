@@ -1,0 +1,46 @@
+{
+  "status": "host_guard_refused; Store_130_native_guest_outcome_unverified",
+  "scope": "Hosted guarded acceptance of the exact public Store 0.2.130 CRX: first grounded guest answer and a distinct answer after panel reload",
+  "source": {
+    "runner_commit": "647d8f46",
+    "runtime_commit": "32c7ef62a7a3abc4c915ac464bb12b16f20d6fc3",
+    "source_peer": ".research/guest-runtime-peer.json",
+    "runner_reason": "GitHub's standard macos-15-intel runner has 4 CPUs and 14 GB RAM for this public repository; the existing guard supports macOS only",
+    "runner_reference": "https://docs.github.com/en/actions/reference/runners/github-hosted-runners",
+    "playwright_reference": "https://raw.githubusercontent.com/microsoft/playwright/v1.56.1/packages/playwright-core/src/cli/program.ts",
+    "runtime_change": "Pinned playwright-core@1.56.1 and chromium --no-shell retain the full extension-capable Chromium binary and avoid downloading the unused headless shell; thresholds and guard ownership unchanged"
+  },
+  "attempts": [
+    {
+      "run_id": 37101561850,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37101561850",
+      "result": "guard_admitted_then_watchdog_invalid",
+      "resource_evidence": "4 logical CPUs, 12.6 GiB available memory, 108.78 GiB free disk at admission; CPU busy 0.9965 and 1.0 on consecutive watchdog samples during npm and Chromium installation; RESOURCE_STOP_AT_SAFE_BOUNDARY, exit 3",
+      "product_boundary": "Pinned public CRX version 0.2.130 and keyed unpacked tree were prepared; no native browser or Chat verdict"
+    },
+    {
+      "run_id": 37101979299,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37101979299",
+      "result": "guard_measurement_refused_before_admission",
+      "resource_evidence": "RESOURCE_MEASUREMENT_FAILED from /usr/bin/top -l 2 -s 1 -n 0 at 2026-10-03T06:07:51Z; guard exit 2, admitted=false",
+      "product_boundary": "No CRX preparation, runtime installation, native browser, or Chat verdict"
+    }
+  ],
+  "server_version": {
+    "before_second_attempt": "d74d7e58a6356525a2ea7bf11ce50af6f94471d7",
+    "after_second_attempt": "d74d7e58a6356525a2ea7bf11ce50af6f94471d7",
+    "limit": "Point snapshots do not prove the server version was unchanged throughout the interval"
+  },
+  "existing_chrome_inventory": {
+    "result": "Chrome is running with one CUA-exposed browser session named armansadeghi.com. A new HTTPS public demo tab loaded and eventually showed Arman's signed-in frontend. The native Extensions popup's Full access list showed seven other extensions and no visible Matrx Extend entry; this does not prove extension absence elsewhere or establish an extension guest state",
+    "profile_identity": "unverified; CUA security policy denied chrome://version and forbade indirect inspection of that blocked browser page",
+    "disposition": "No new browser/profile launch, account change, or Store guest acceptance in this personal session"
+  },
+  "remaining": [
+    "Diagnose the macOS top measurement failure: the current guard log has only execFile's generic Command failed text, with no exit code, signal, or stderr; a bounded readiness probe should capture those nonsecret fields before another browser run",
+    "Obtain a fresh guarded admission on an adequate compatible host and keep all runtime preparation under its owned permit",
+    "Run exact public Store 0.2.130 CRX in the owned native Chrome side panel against the public demo page",
+    "Observe the first grounded guest answer and a distinct follow-up after panel reload",
+    "Preserve a complete resource receipt and browser artifact; no result from these two attempts can be promoted to product acceptance"
+  ]
+}

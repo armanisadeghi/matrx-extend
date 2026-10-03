@@ -98,6 +98,18 @@ function pointerFailure(code, location) {
   return error;
 }
 
+// Resolve only the panel owned by one active tab, including when sibling views
+// remain mounted. Shared by observations and trusted pointer target resolution.
+export function activeTabPanelExpression(title) {
+  return `(() => {
+    const tabs = [...document.querySelectorAll('button[role="tab"][data-state="active"]')]
+      .filter((tab) => tab.title === ${JSON.stringify(title)});
+    const id = tabs.length === 1 ? tabs[0].getAttribute('aria-controls') : null;
+    const pane = id ? document.getElementById(id) : null;
+    return pane?.matches('[role="tabpanel"][data-state="active"]') ? pane : null;
+  })()`;
+}
+
 export async function click(panel, kind, label) {
   const pointerSample = () =>
     evaluate(
@@ -114,6 +126,8 @@ export async function click(panel, kind, label) {
     let candidates;
     if (kind === 'title') candidates = [...document.querySelectorAll('button[title]')]
       .filter((el) => el.title === label);
+    else if (kind === 'settings-button') candidates = [...(${activeTabPanelExpression('Settings')}?.querySelectorAll('button') ?? [])]
+      .filter((el) => el.textContent.trim() === label);
     else if (kind === 'screenshot-open') {
       const tab=document.querySelector('button[role="tab"][title="Screenshots"][data-state="active"]');
       const pane=tab?document.getElementById(tab.getAttribute('aria-controls')):null;

@@ -1,0 +1,28 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "reviewed_commits": ["1f032d80", "9c6bc7b3"],
+  "verdict_A_runtime": {
+    "published_store_crx_guest": "PARTIAL: resource-valid hosted run 37105304739 produced real opening and post-reload terminal answers with distinct unpredictable page codes, then failed the immutable tree assertion. Its before/after inventory reports only deletion of _metadata/verified_contents.json (70528 bytes, SHA-256 e03b9df0b19dd343f106312b4915c5a6eb5c81d0315ad8b0299c561d1198f394). The 1f032d80 preparation change has not yet run in hosted Chromium, so full acceptance is unverified.",
+    "existing_nonadmin_member": "UNVERIFIED: the helper's reported live dry run established the existing account and zero admin.admins assignments without generating a link. No link was consumed, first-party session or OAuth completed, or signed-in Chat answer observed for this candidate."
+  },
+  "verdict_B_source_quality": {
+    "published_store_crx_guest": "PASS: the original 0.2.130 Google CRX SHA-256 remains pinned; CRX3, ZIP paths, version, signing key and extension ID checks precede adaptation. The only new removal is the exact Store verification metadata path, whose byte count and SHA-256 are recorded before deletion and before the runtime tree hash. The original CRX remains intact; initial and final tree assertions and resource gate were not relaxed. This proves an unpacked published-payload path, not Google's installed-extension lifecycle.",
+    "existing_nonadmin_member": "FAIL_IMPORTANT: the private helper verifies the existing confirmed, unbanned Auth user and zero admin assignments before Supabase Admin generateLink, then writes a create-exclusive mode-0600 first-party /auth/confirm magiclink URL without email or password changes. The runner follows that URL through the normal verifyOtp callback, checks first-party whoami, then proceeds through extension OAuth and Chat. However, its nonadmin UI predicate accepts an absent Role row (line 347: observedRoleCategory !== 'admin'; line 148 maps missing role to 'absent'). Require observedRoleCategory === 'non_admin' before claiming live nonadmin UI proof."
+  },
+  "findings": [
+    {
+      "severity": "Important",
+      "scope": "member_runner_source_quality",
+      "file": "tests/browser/reviewer-chat-store-acceptance.mjs",
+      "line": 347,
+      "finding": "A missing Role row satisfies the current nonadmin acceptance predicate. The runner can report identity success without observing a nonadmin role in the extension UI.",
+      "required_fix": "Require observedRoleCategory === 'non_admin' and rerun source checks before live member acceptance."
+    }
+  ],
+  "evidence": [
+    "Reviewed exact commit diffs and source paths for 1f032d80 and 9c6bc7b3.",
+    "Read .research/guest-provenance-hosted-result.json and .research/guest-provenance-escalation.json; inspected harness initial and final hash assertions.",
+    "Read the first-party ai-matrx /auth/confirm route; magiclink token_hash is consumed by Supabase verifyOtp.",
+    "git show --check and node --check passed for the changed scripts; no heavy tests, live link generation, browser run or new download in this review."
+  ]
+}

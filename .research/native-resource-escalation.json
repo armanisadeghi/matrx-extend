@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "status": "HOST_INDEXING_CONFIRMED_REPAIR_PREPARED_NATIVE_UNVERIFIED",
+  "scope": "One bounded read-only hosted diagnosis and a disposable-VM-only setup repair; no acceptance rerun.",
+  "diagnostic_run": {
+    "id": 37111946024,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37111946024",
+    "source_sha": "b52378f25c301643baa0d7296c8067fe6fb0b12f",
+    "conclusion": "success",
+    "evidence": ".research/native-resource-diagnostic-37111946024/hosted-resource-diagnostic.json"
+  },
+  "hypotheses": [
+    {
+      "cause": "iostat incorrectly reports busy CPU",
+      "prediction": "Simultaneous top interval readings materially disagree",
+      "result": "Not supported: seven paired measurements differ by at most 0.0545; both observe sustained near-saturation."
+    },
+    {
+      "cause": "actual host work consumes CPU",
+      "prediction": "Process CPU census identifies work during matching busy intervals",
+      "result": "Confirmed for diagnostic VM: Spotlight mds/mds_stores/mdworker_shared sum 330.0,328.4,210.8,384.1,371.1 percent of one CPU in samples 3-7 on four CPUs."
+    },
+    {
+      "cause": "readiness comparison differs from hardguard",
+      "prediction": "Latest failed readings would pass policy averaging",
+      "result": "Contradicted: recorded latest failure point samples average 0.7914, exceeding 0.75 as well as 0.60 high-load threshold. Readiness is stricter about consecutive points, but that does not explain this failure."
+    },
+    {
+      "cause": "product or pinned Chromium causes resource-stage refusal",
+      "prediction": "Browser/product begins before failure",
+      "result": "Contradicted: both earlier attempts stopped before package admission; this diagnostic launched no package, browser, or product."
+    }
+  ],
+  "evidence": {
+    "iostat_busy": [0.77, 0.73, 1, 0.97, 0.88, 1, 0.99],
+    "top_busy": [0.7402, 0.7203, 1, 0.9155, 0.868, 0.996, 0.9915999999999999],
+    "maximum_paired_difference": 0.05449999999999999,
+    "indexing_cpu_percent": [2.9, 127.3, 330.0, 328.4, 210.8, 384.1, 371.1],
+    "working_sibling": "Guest run 37106907229 used same macos-15 image 20260824.0482.1 and iostat sampler; package samples [0.54,0.26,0.01,0,0.01,0.02,0] admitted at mean 0.12.",
+    "earlier_refusals": "37110879950 and 37111474440 remain valid infrastructure refusals and carry no product verdict."
+  },
+  "repair": {
+    "file": ".github/workflows/hosted-guest-acceptance.yml",
+    "behavior": "Before readiness, require RUNNER_ENVIRONMENT=github-hosted and RUNNER_OS=macOS; disable Spotlight indexing with mdutil on disposable VM; require at least one disabled status and no enabled status. Existing readiness, hardguards, concurrency, thresholds, and exact artifact provenance remain unchanged.",
+    "local_mutation": false,
+    "process_kills": false,
+    "trustd_or_security_changes": false,
+    "runtime_verification": "Pending fresh peer and one authorized acceptance run; no causal before/after repair claim yet."
+  },
+  "verification": [
+    "Diagnostic completed seven real paired host samples and uploaded numeric/sanitized executable evidence.",
+    "Downloaded evidence schema/count/timestamps/basenames checked.",
+    "node --check and targeted Biome check passed for diagnostic code.",
+    "Both workflow YAML files parsed; extracted setup shell passes bash -n.",
+    "git diff --check passed."
+  ],
+  "own_commits": ["b52378f25c301643baa0d7296c8067fe6fb0b12f", "c7887ebd"],
+  "files": [
+    "scripts/hosted-resource-diagnostic.mjs",
+    ".github/workflows/hosted-resource-diagnostic.yml",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    ".research/native-resource-escalation.json",
+    ".research/native-resource-diagnostic-37111946024/hosted-resource-diagnostic.json"
+  ],
+  "limitations": [
+    "Spotlight attribution is directly established on the new diagnostic VM, not retroactively on the two expired VMs; their process census was absent.",
+    "ps CPU uses its own averaging interval and is not an exact accounting identity for paired interval samplers; diagnostic sampler overhead also exists.",
+    "No Settings assertion, D87 closure, native Chromium launch conclusion, or Store 176 replacement follows from this report.",
+    "Setup repair is static-checked only and must pass independent review plus actual hosted execution before a behavior claim."
+  ],
+  "next_action": "Root fresh peer reviews setup change; then root owns one guarded D87 acceptance using existing CI artifact 11268886169 from run 37107627454, source 3092444e73094cb0023f6086202869ccbd22978b."
+}

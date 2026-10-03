@@ -1,5 +1,8 @@
 {
-  "reviewed_commits": ["508e05c985d50d2c696ba3933b6df254caee179e", "5de4bfaff75afe1f31def8bc8530d0a1f3de887d"],
+  "reviewed_commits": [
+    "508e05c985d50d2c696ba3933b6df254caee179e",
+    "5de4bfaff75afe1f31def8bc8530d0a1f3de887d"
+  ],
   "verdict_A_outcome_readiness": "UNMEASURED: no hosted native-browser result, receipt, or screenshots yet; source path is wired but original workflow has one confirmed readiness defect",
   "verdict_B_quality": "CHANGES_REQUESTED on original commits: Playwright and Chromium installation occurred outside the single guarded resource run; builder is repairing this concurrently",
   "confirmed_chain": "workflow_dispatch selects successful Hosted release run and unique versioned artifact; helper verifies tag/source SHA, published receipt, both ZIP hashes and unpacked tree hash, relocates ZIP paths; existing native side-panel harness opens fresh owned Chromium profile and checks real guest answer plus grounded post-panel-reload follow-up",

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0087",
+  "status": "round1_repair_guard_passed_peer_pending",
+  "scope": "Six existing native Settings persistence cases in guest, authenticated admin, and existing non-admin member modes",
+  "exact_development_artifact": {
+    "workflow_run_id": 37107627454,
+    "artifact_id": 11268886169,
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660"
+  },
+  "product_paths": "At candidate commit 1d49da3a, the Settings persistence product paths matched pinned source 3092444e. A separate concurrent Audit Key product lane is outside this D87 runner repair and was not staged here.",
+  "auth_contract": {
+    "guest": "Existing default, six UI/storage/reload cases retained",
+    "admin": "The Prepare runner and D87 use the same actual first-party web-to-extension sign-in helper; D87 additionally matches first-party user UUID to extension storage and requires the admin role",
+    "member": "D87 and reviewer share first-party whoami identity and canonical admin.admins zero-row proof for the same extension user; D87 requires the existing member fingerprint and the named preauthorized organization fixture",
+    "after_each_reload": "A newly rendered Account email and role must match the initial first-party user; a new first-party whoami read must return that same UUID; member role must have a fresh canonical zero-row network read observed from before reload; selected organization storage UUID/name must match the rendered selection",
+    "private_inputs": "The hosted wrapper creates mode-specific mode-0600 files from existing CI secrets and deletes them after the child exits; no credential or magic-link values enter receipts"
+  },
+  "verification": {
+    "biome": "final check pending after report update",
+    "node_syntax": "owned source checks pass",
+    "compile": "guarded pnpm compile pass; d87-round1-compile-20261003 admitted valid exit 0",
+    "member_proof_test": "guarded node --test pass; d87-round1-helpers-20261003 admitted valid exit 0; matching zero-row read accepted, admin row or wrong user refused",
+    "settings_auth_test": "same guarded command pass; real storage expression reads {id,name}; cached values with wrong rendered email, role, selected label, or UUID refuse",
+    "resource_policy": "Only the exact two helper test paths were added as one admitted node --test command; thresholds, concurrency and refusal rules unchanged",
+    "product_diff_check": "git diff --exit-code 3092444e73094cb0023f6086202869ccbd22978b -- src/features/settings src/lib/settings src/hooks/use-settings pass"
+  },
+  "runtime_verdict": {
+    "guest": "Prior six-case native pass in .research/settings-final-native.json; not rerun in this source lane",
+    "admin": "not_run_peer_gate_pending",
+    "member": "not_run_peer_gate_pending"
+  },
+  "round1_peer_finding": {
+    "reviewed_commit": "1d49da3a935444e56e53df7b6a9c37069fe88d52",
+    "material": "Post-reload assertion checked cached extension storage without current Account UI, first-party identity, or a new canonical member role read",
+    "repair": "Subscribe to the canonical role read before reload, then verify current Account and Organization rendering, original first-party UUID, and member zero-row read after each reload",
+    "runner_bug_found": "matrx.org.active is an {id,name} object; the prior string predicate could never accept a member selection. Corrected only in the native runner, with a focused storage-shape guard; no product code changed",
+    "organization_fixture": "Select only the named preauthorized Matrx's Org option when needed, then require its stored UUID and name to match the rendered selected label before and after reload"
+  },
+  "limits": [
+    "No browser was launched in this source lane; signed-in UI/storage/reload behavior remains unverified until peer approval and an owned native run",
+    "The existing member magic link is one-time; the execution owner must supply a fresh authorized link through the existing private CI input without creating an account or sending mail"
+  ]
+}

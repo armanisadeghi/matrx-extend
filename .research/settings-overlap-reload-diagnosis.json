@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "status": "RUNNER_FAULT_INJECTOR_REPAIR_READY_FOR_INDEPENDENT_REVIEW",
+  "scope": "Diagnose D87 overlap reload failure from hosted run 37114473568; no browser launch.",
+  "evidence": {
+    "run_id": 37114473568,
+    "artifact_id": 11270827545,
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "receipt": "/tmp/settings-reload-37114473568/hosted-guest-37114473568-1/test-results/settings-d87-native-c9124ce5-467f-499a-adbf-7b7837fd9845.json",
+    "failure": {
+      "stage": "overlap_reload",
+      "code": "d87_system_saved_not_observed",
+      "observation": {
+        "guest": true,
+        "settings_active": true,
+        "theme": "Light",
+        "stored_theme": "light",
+        "error": false,
+        "retry": false
+      }
+    },
+    "last_passed_overlap_observation": {
+      "theme": "System",
+      "stored_theme": "system"
+    }
+  },
+  "cause": {
+    "classification": "acceptance_runner_fault_injector_cleanup_wrote_stale_value",
+    "detail": "The hold injector captures the first Light write in fault.release. The overlap scenario calls release once, then waits until the later System write is observed in Chrome storage. Its finally block calls restoreFault, which unconditionally calls release again. Because release had no idempotency guard, this second invocation issued the captured Light write after System had saved. Reload then correctly observed Light. The application write queue was not the cause.",
+    "source_evidence": [
+      "tests/browser/settings-d87-native-acceptance.mjs: release previously issued nativeSet(items) on every call",
+      "tests/browser/settings-d87-native-acceptance.mjs: restoreFault unconditionally invokes the release callback",
+      "tests/browser/settings-d87-native-acceptance.mjs: overlap case explicitly releases the held write, waits for latest System persistence, then enters finally cleanup"
+    ]
+  },
+  "repair": {
+    "file": "tests/browser/settings-d87-native-acceptance.mjs",
+    "behavior": "Make the fault injector's release callback idempotent by returning when fault.released is already true. Cleanup still releases a held write if an earlier assertion fails, while cleanup after a successful release no longer replays its captured stale value.",
+    "acceptance_assertions": "Unchanged: the runner still verifies latest rapid choice persistence and the System value after a real panel reload."
+  },
+  "verification": {
+    "source_reasoning": "The duplicate release writes the exact stale Light snapshot observed after reload and occurs after the runner's System storage assertion. The added guard prevents that second native write.",
+    "red": "PASS: before the idempotency guard, the focused test observed two Light writes after calling release twice, reproducing cleanup's stale write.",
+    "green": "PASS: after the guard, the focused test observes exactly one Light write across explicit release plus cleanup; the original storage setter is restored.",
+    "checks": "PASS: node tests/browser/d87-storage-fault-injector.test.mjs; node --check on the runner and injector; Biome formatting and check; git diff --check. No browser launch, hosted run, or product-source change was performed."
+  },
+  "limits": [
+    "This diagnosis is based on the exact failed receipt and runner control flow; no additional browser run was performed.",
+    "An independent source review is required before any guarded hosted rerun."
+  ]
+}

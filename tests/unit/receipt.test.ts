@@ -1,3 +1,4 @@
+import { installWebLocksForTest } from '../helpers/web-locks';
 /**
  * Unit tests for cryptographic run receipts (CLAUDE.md roadmap item #8).
  *
@@ -129,3 +130,5 @@ describe('ToolReceipt schema v1 backward compatibility', () => {
     expect(v.reason).toContain('unsupported schema version');
   });
 });
+
+installWebLocksForTest();

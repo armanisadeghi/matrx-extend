@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0087",
+  "scope": "receipt-bound owned Chrome-for-Testing native Settings panel; admin",
+  "auth_mode": "admin",
+  "authentication": {
+    "mode": "admin",
+    "account_fingerprint": "5edfa2692bdacc5e",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "admin_role": true,
+    "canonical_nonadmin_check": null,
+    "organization_selected": null,
+    "rendered_identity": {
+      "rendered_email_matches_first_party": true,
+      "rendered_role_matches_mode": true,
+      "profile_matches_first_party": true,
+      "selected_organization_matches_stored_uuid_and_name": true
+    }
+  },
+  "reload_auth_checks": [],
+  "pointer_boundary": null,
+  "status": "fail",
+  "build": {
+    "version": "0.2.176",
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "receipt_kind": "local_dev_unpacked",
+    "artifact_id": 11268886169
+  },
+  "cases": [
+    {
+      "name": "first changed choice saved through UI",
+      "status": "pass",
+      "observation": {
+        "settingsActive": true,
+        "theme": "Light",
+        "storedTheme": "light",
+        "error": false,
+        "retry": false,
+        "guest": false
+      }
+    },
+    {
+      "name": "system choice saved through UI",
+      "status": "pass",
+      "observation": {
+        "settingsActive": true,
+        "theme": "System",
+        "storedTheme": "system",
+        "error": false,
+        "retry": false,
+        "guest": false
+      }
+    },
+    {
+      "name": "rejected write visible with retry",
+      "status": "pass",
+      "observation": {
+        "settingsActive": true,
+        "theme": "Dark",
+        "storedTheme": "system",
+        "error": true,
+        "retry": true,
+        "guest": false
+      }
+    }
+  ],
+  "failure_stage": "retry",
+  "failure_code": "pointer_target_not_unique",
+  "failure_operation": "settings_click",
+  "driver_failure": {
+    "code": "pointer_target_not_unique",
+    "sampleStage": null,
+    "matchedTargetCount": 0,
+    "visibleMatchCount": 0,
+    "uniqueVisibleTarget": false,
+    "hitTarget": false,
+    "animating": false,
+    "stableSamples": 0,
+    "positionStable": false,
+    "targetHasArea": null,
+    "clippedTargetHasArea": null,
+    "selectedPointAvailable": null,
+    "centerHitCategory": null,
+    "targetDisabled": null,
+    "pointerEventsNone": null,
+    "clippingAncestorCount": null,
+    "testedPointCount": null,
+    "interiorHitKinds": null,
+    "targetRectangle": null,
+    "centerOccluder": null,
+    "firstInteriorOccluder": null
+  },
+  "failure_observation": {
+    "settingsActive": false,
+    "theme": null,
+    "storedTheme": "dark",
+    "error": false,
+    "retry": false,
+    "guest": false
+  }
+}

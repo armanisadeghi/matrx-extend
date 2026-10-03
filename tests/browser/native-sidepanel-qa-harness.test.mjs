@@ -170,3 +170,21 @@ const source = await readFile(
 assert.doesNotMatch(source, /9222/);
 assert.doesNotMatch(source, /Browser\.close\(/);
 console.log('PASS native sidepanel harness refuses foreign CDP/browser identities');
+
+const { safeStartupFailureCode } = await import('./native-sidepanel-qa-harness.mjs');
+assert.equal(
+  safeStartupFailureCode(new Error('owned_cdp_endpoint_timeout')),
+  'owned_cdp_endpoint_timeout',
+);
+assert.equal(safeStartupFailureCode(new Error('owned_cdp_open_failed')), 'owned_cdp_open_failed');
+assert.equal(
+  safeStartupFailureCode(new Error('owned_cdp_process_inspection_failed')),
+  'owned_cdp_process_inspection_failed',
+);
+assert.equal(safeStartupFailureCode(new Error('owned_cdp_open_timeout')), 'owned_cdp_open_timeout');
+assert.equal(
+  safeStartupFailureCode(new Error('spawn /private/path with private startup detail failed')),
+  'unclassified',
+);
+assert.equal(safeStartupFailureCode({ message: 'owned_cdp_endpoint_timeout' }), 'unclassified');
+console.log('PASS native startup diagnostic exposes only fixed owned-CDP failure codes');

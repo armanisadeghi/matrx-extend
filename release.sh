@@ -52,7 +52,7 @@ OUTPUT_DIR="$REPO_ROOT/.output"
 REMOTE="origin"
 BRANCH="main"
 WEBSTORE_UPLOAD_URL="https://chrome.google.com/webstore/devconsole"
-GENERATED_PATHS=(types/python-generated types/tool-catalog.json types/tool-catalog.md docs/TOOLS.generated.md src/lib/tools/generated/records-guide.json)
+GENERATED_PATHS=(types/python-generated types/tool-catalog.json types/tool-catalog.md docs/TOOLS.generated.md)
 SHIP_PUSH_ATTEMPTS=5
 SHIP_START=$SECONDS
 GIT_ABS_DIR="$(git rev-parse --absolute-git-dir 2>/dev/null)"
@@ -294,7 +294,7 @@ regen_artifacts() {
     export_snapshot "$BASE_TREE" "$BASE" prepare && snap="$SNAP_DIR" || hard_stop "could not export the release tree to regenerate artifacts"
     local jd; jd="$(dirname "$snap")/jobs"; mkdir -p "$jd"
     $SKIP_TYPES   || { ( cd "$snap" && bounded 180 pnpm -s update-api-types --skip-typecheck ) > "$jd/api-types.out" 2>&1; echo $? > "$jd/api-types.rc"; }
-    $SKIP_CATALOG || { ( cd "$snap" && RECORDS_GUIDE_SOURCE="$(dirname "$snap")/aidream" bounded 180 pnpm -s catalog:tools:md ) > "$jd/catalog.out" 2>&1; echo $? > "$jd/catalog.rc"; }
+    $SKIP_CATALOG || { ( cd "$snap" && bounded 180 pnpm -s catalog:tools:md ) > "$jd/catalog.out" 2>&1; echo $? > "$jd/catalog.rc"; }
     { ( cd "$snap" && bounded 120 pnpm -s docs:tools ) > "$jd/docs.out" 2>&1; echo $? > "$jd/docs.rc"; }
     for name in api-types catalog docs; do
         [[ -f "$jd/$name.rc" ]] || continue
@@ -381,7 +381,7 @@ mandate_scan_step() {
     if command -v timeout >/dev/null 2>&1; then runner=(timeout 300)
     elif command -v gtimeout >/dev/null 2>&1; then runner=(gtimeout 300); fi
     out="${JOBS:-${TMPDIR:-/tmp}}/check-mandate-references.out"
-    ( cd "${CHECK_SNAP:-.}" && RECORDS_GUIDE_SOURCE="$(dirname "${CHECK_SNAP:-.}")/aidream" ${runner[@]+"${runner[@]}"} pnpm -s check:mandate-references ) > "$out" 2>&1
+    ( cd "${CHECK_SNAP:-.}" && ${runner[@]+"${runner[@]}"} pnpm -s check:mandate-references ) > "$out" 2>&1
     rc=$?
     { echo "--- check mandate-references (exit $rc, never blocks) ---"; cat "$out"; } >> "${RELEASE_LOG_FILE:-/dev/null}" 2>/dev/null || true
     if [[ "$rc" == 124 ]]; then
@@ -400,7 +400,7 @@ run_checks() {
     local row name secs rc
     for row in "${CHECKS[@]}"; do
         IFS='|' read -r name secs _ _ _ cmd <<< "$row"
-        ( cd "$CHECK_SNAP" && RECORDS_GUIDE_SOURCE="$(dirname "$CHECK_SNAP")/aidream" eval "bounded $secs $cmd" ) > "$JOBS/check-$name.out" 2>&1
+        ( cd "$CHECK_SNAP" && eval "bounded $secs $cmd" ) > "$JOBS/check-$name.out" 2>&1
         rc=$?
         { echo "--- check $name (exit $rc) ---"; cat "$JOBS/check-$name.out"; } >> "$RELEASE_LOG_FILE"
         if [[ "$rc" != 0 ]]; then

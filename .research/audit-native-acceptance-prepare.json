@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0093",
+  "status": "native runner prepared with T90 product receipt verification explicitly incomplete; fresh source peer and actual browser acceptance pending",
+  "target": {
+    "source_prefix": "991385d9",
+    "ci_run_id": 37129518563,
+    "development_artifact_id": 11275878549,
+    "scope": "real headed Chrome Settings Audit key in a fresh owned disposable profile"
+  },
+  "runner": "tests/browser/audit-key-native-acceptance.mjs",
+  "browser_fault_boundary": "tests/browser/audit-key-native-faults.mjs wraps only the isolated panel document's chrome.storage.local get/set and navigator.clipboard.writeText, then restores the exact original methods. Web Locks and WebCrypto remain browser native. A second extension document shares the same origin and real persistent storage.",
+  "covered_cases": [
+    "T86 initial details read failure and read-only recovery",
+    "T60 clipboard export failure and retry",
+    "T87 partial: rejected history write before active mutation and separately confirmed rotation; prior product-signed receipt verification missing",
+    "T88 successful rotation followed by failed details read; retry preserves new active ID",
+    "T89 partial: persisted but rejected active write plus rejected readback; mutation blocked until details read; prior product-signed receipt verification missing",
+    "T91 unavailable Web Locks during initial load, export and rotation; history unchanged and details-only recovery",
+    "T90 partial: overlapping rotations from two same-origin extension documents queue on native Web Locks and retain both activated public IDs in history; this deliberately cannot pass T90 without product-signed receipt verification after reload and tamper rejection"
+  ],
+  "verification": {
+    "source_checks": "node --check on both new runner/helper and hosted helper passed; git diff --check passed",
+    "resource_preflight": "audit-native-preflight-20261003-02: admitted and valid, pressure 1, 11.2 GiB available memory, 0.219 CPU busy and 30.46 GiB system free",
+    "first_preflight_refusal": "audit-native-preflight-20261003: refused before measurement because the newly chosen profile directory did not exist; directory created and one corrected preflight admitted",
+    "native": "not run; fresh zero-authorship peer must review runner and private credential/artifact plumbing first",
+    "red_green_gut": "Fault-helper no-op gut made all four connected guards fail under audit-native-fault-gut-20261003. Restored helper passed all four under audit-native-fault-green-20261003, resource-valid. No product logic changed and no native result claimed; product RED/GREEN and gut guards are in EXT-D-0093 repair reports."
+  },
+  "ready_hosted_dispatch_after_peer": "gh workflow run hosted-guest-acceptance.yml -f development_run_id=37129518563 -f development_artifact_id=11275878549 -f acceptance_case=audit-key-admin",
+  "expected_verdict": "The runner exits 2 with a structured partial receipt after its bounded checks, even if they all pass, because T87/T89/T90 still need actual product-signed receipt verification. This is not a full acceptance pass.",
+  "credential_flow": "Hosted workflow reads its existing MATRX_PREPARE_ADMIN_CREDENTIALS_JSON secret; existing helper validates admin@admin.com, writes a mode-0600 private file outside uploaded evidence, passes only its path to the child, strips the JSON secret from that child environment, and deletes the file after completion. Local execution requires MATRX_PREPARE_ADMIN_CREDENTIALS_FILE as an existing mode-0600 file.",
+  "safety": "No user profile read or reset; no local build, browser runtime install, release, workflow dispatch, or audit key mutation performed in this preparation lane. Native key operations are scoped to the harness's newly created profile and the private credential file is removed by the hosted helper.",
+  "remaining": [
+    "Fresh peer review of exact runner assertions and fault timing, especially early document injection and second-context lock queue",
+    "Full T90 product-signed receipt creation and verification from both activated keys after reload, plus altered-receipt rejection. Existing browser UI/runtime path not yet proven; runner exits incomplete rather than claim T90 pass.",
+    "Guarded authenticated import of the exact CI artifact if absent, then headed browser acceptance under a fresh resource permit",
+    "Independent native tester verdict; failures remain setup/product distinguished by the structured result"
+  ]
+}

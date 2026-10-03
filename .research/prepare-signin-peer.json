@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "85ad568fd4971a888148c5ed89bcb7428c47dcbf",
+  "verdict_a": {
+    "outcome": "NOT_RUN",
+    "readiness": "READY_FOR_ONE_BOUNDED_DIAGNOSTIC_RUN",
+    "product_status": "unverified",
+    "reason": "Static review only; the D87 owner retains the native permit. No browser or hosted run was started."
+  },
+  "verdict_b": {
+    "outcome": "PASS_WITH_LIMITS",
+    "diagnostic_boundary": "Fixed stages separate navigation, route validation, credential read, form fill, web submit, Settings open, extension sign-in click, and extension readiness wait. A failed web submit adds only a fixed route category and alert_present boolean; extension observations are booleans only.",
+    "privacy": "Reviewed path writes no password, token, raw auth URL, query value, browser error, console, or network body. URL inspection reduces origin/path to fixed categories. The existing report carries only receipt version/SHA fields and fixed UI booleans.",
+    "assertions_preserved": "Credential file permission and admin identity/password checks, web /login to /dashboard assertion, extension email/admin-role readiness assertion, all original Prepare cases, release-tree hash, manifest version, and harness expected-release identity checks remain.",
+    "predicate_review": "No impossible predicate found. Settings Account defaults open (src/components/ui/collapsible.tsx); the current SettingsView Row/Badge text matches Emailadmin@admin.com and Roleadmin; those checks require the existing admin account to be authenticated.",
+    "limits": [
+      "extension_last is updated only after a successful panel evaluation; if later polls fail, the saved booleans may be the last successful sample, while stage still identifies admin_extension_wait_failed.",
+      "source_sha remains receipt.sourceSha ?? null; prior provenance evidence says the CI provenance SHA existed even though the native result omitted it. Tree SHA and version checks remain, but the report may not independently name the source commit."
+    ],
+    "evidence": [
+      "tests/browser/prepare-stale-result-native-acceptance.mjs: signIn, receipt checks, and original Prepare assertions",
+      "src/features/settings/SettingsView.tsx: Account rows and Sign in/Sign out action",
+      "src/components/ui/collapsible.tsx: Account defaultOpen behavior",
+      ".research/prepare-native-acceptance.json: prior run result and source-SHA gap"
+    ]
+  },
+  "execution": "No implementation edits; no browser/heavy test run."
+}

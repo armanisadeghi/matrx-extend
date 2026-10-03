@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "1d49da3a935444e56e53df7b6a9c37069fe88d52",
+  "reviewed_scope": "Candidate commit only; source review, no browser or heavy test run",
+  "verdict_a": {
+    "status": "PARTIAL_NATIVE_PENDING",
+    "six_settings_cases": "Retained in the shared acceptance runner: initial change, system selection, rejected-write visibility/retry, retry persistence after reload, latest rapid choice persistence, and latest choice after reload.",
+    "guest": "Prior native pass is cited by readiness report; not independently rerun in this lane.",
+    "admin": "Not run. Source links admin@admin.com first-party /api/whoami UUID to extension profile UUID; checks UI admin role and stored admin flag before and after reload.",
+    "member": "Not run. Source links known first-party /api/whoami UUID to extension profile UUID, observes HTTP 200 admin-schema admins read returning zero rows for that UUID, and requires organization selection before and after reload.",
+    "cannot_verify": [
+      "Native Settings/storage/reload outcomes for admin and member remain unverified until owned native runs complete.",
+      "After reload, identity/role/org are verified only from extension storage: profile UUID, token-present, cached isAdmin, and nonempty active-org string. The first-party whoami identity, displayed admin role, and canonical member zero-row admin lookup are established before reload, not re-established after reload.",
+      "Member organization selection hardcodes the visible option Matrx's Org and does not independently verify the stored organization UUID against that option or a server membership response after reload."
+    ],
+    "missing_extra_misunderstood": "No missing or extra Settings persistence case found in source."
+  },
+  "verdict_b": {
+    "status": "CONCERN_REQUIRES_REVIEW",
+    "identity_and_role": "Before reload, admin/member identity comparisons are explicit; member non-admin proof is tied to the same UUID by the captured canonical query and zero-row response. After reload, only cached extension storage values are checked, so the runner does not meet the explicit identity/role/org proof-after-reload requirement.",
+    "credentials": "Hosted wrapper writes admin and magic-link inputs as mode-0600 private files, removes those values from the child environment, and deletes files in finally; receipts contain fingerprints/booleans, not credentials or links.",
+    "reuse_and_assertions": "Admin sign-in and member identity/admin-check helpers are reused by existing acceptance runners; shared six-case assertions remain intact.",
+    "minor_concern": "Member organization selection hardcodes Matrx's Org, then treats a nonempty active-org string and selected label as sufficient. This can select the wrong organization for a valid member with another authorized organization, and does not prove the active UUID matches the displayed selection.",
+    "test_quality": "The member observer unit test checks zero-row acceptance and rejects an admin row or wrong UUID using synthetic protocol events. It does not prove real Supabase authorization or native behavior; that remains the explicit live-run gate. No false live green is reported.",
+    "finding": "Material: reload() calls openSettings(), whose assertExpectedIdentity() checks local Chrome storage only. It does not revisit Account UI or fetch first-party identity / canonical role proof after reload. A stale cached role/org can therefore satisfy the post-reload guard."
+  },
+  "evidence": [
+    "git show 1d49da3a935444e56e53df7b6a9c37069fe88d52 -- tests/browser/settings-d87-native-acceptance.mjs tests/browser/settings-native-auth-driver.mjs tests/browser/admin-settings-signin.mjs tests/browser/member-native-auth-proof.mjs tests/browser/member-native-auth-proof.test.mjs scripts/hosted-guest-acceptance.mjs .github/workflows/hosted-guest-acceptance.yml",
+    "Candidate readiness report .research/settings-signedin-readiness.json explicitly marks admin/member not_run_peer_gate_pending.",
+    "Reviewed candidate by SHA; shared checkout HEAD was c2626265 during review."
+  ],
+  "reviewer": "independent source-only lane"
+}

@@ -1,0 +1,8 @@
+{
+  "report": ".research/native-settings-escalation.json",
+  "raw_path": "test-results/native-settings-escalation/report.raw.json",
+  "raw_sha256": "e886692a49579478a9f051421be87658a2003ab51e4cdc8b18d32cc547e4b2a1",
+  "formatted_sha256": "e886692a49579478a9f051421be87658a2003ab51e4cdc8b18d32cc547e4b2a1",
+  "parsed_equal": true,
+  "biome": "Final report and both copied receipts passed; no changes."
+}

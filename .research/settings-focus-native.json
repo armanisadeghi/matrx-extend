@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0087",
+  "requested_discriminating_trial": "Admin native run of b23a5a8c activation plus visible-document gate against exact artifact 37107627454/11268886169",
+  "verdict_a_actual_runtime": {
+    "status": "NOT_ESTABLISHED_BEFORE_AUTH_OR_ACTIVATION",
+    "setup_attempt_01": {
+      "run_id": "d87-focus-admin-activation-20261003-01",
+      "resource": "admitted=true; child_failed; resourceInvalid=false",
+      "result": "Hosted wrapper stopped before artifact preparation because its runtime path omitted the supplied /node component. This is setup-only evidence."
+    },
+    "native_attempt_02": {
+      "run_id": "d87-focus-admin-activation-20261003-02",
+      "resource": "admitted=true; child_failed; resourceInvalid=false",
+      "artifact": {
+        "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+        "workflow_run_id": 37107627454,
+        "artifact_id": 11268886169,
+        "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660"
+      },
+      "receipt": "docs/stabilization/reports/settings-focus-native-20261003/admin-activation-attempt-02.receipt.json",
+      "failure_stage": "native_panel",
+      "failure_code": "d87_acceptance_failed",
+      "authentication": null,
+      "cases": [],
+      "interpretation": "The harness failed before the exercise callback, so sign-in, Target.activateTarget, visibility readiness, and all six acceptance cases did not run. This result does not confirm or refute the focus candidate.",
+      "failure_detail": "The durable acceptance receipt contains only generic d87_acceptance_failed; the underlying harness exception was not captured. Root cause remains unknown from this run."
+    },
+    "permit": "Released by resource guard with resourceInvalid=false. No additional native attempt was made."
+  },
+  "verdict_b_source_quality": {
+    "status": "PASS_SOURCE_REVIEW_ONLY",
+    "basis": ".research/settings-focus-peer.json: exact owned panel target is activated after authenticated sign-in and visibility is asserted before pointer actions; no CSS, DOM, animation, timing, or hit-test bypass was introduced.",
+    "runtime_caveat": "The candidate source behavior was not reached in this run."
+  },
+  "credential_handling": "AI_ADMIN_PASSWORD was read with Node parseEnv from aidream/.env into a private child environment. No credential or account identity value appears in the receipt, logs, or report. The hosted wrapper removed its mode-0600 credential file; the native harness removed its owned profile.",
+  "evidence": {
+    "attempt_02_receipt_sha256": "ad8bde027af369f72f5cc8d3097155cc6390add0c53ad20247a9eecd3a2c51f5",
+    "attempt_02_resource_journal_sha256": "2c73f80fc4b1d9cfd83c0112943ad95556b438dc8031ec027b7a27f62782a8e2",
+    "attempt_01_resource_journal_sha256": "c5397183b79add712799829580ca155769be07853885d80a3c16d10f11ea418c",
+    "attempt_02_hosted_log_sha256": "57b008d02808c7d96ce256fff8d81b03669a2b3fae75c8fd4ce12ff8e2dfe1d8",
+    "biome": "pnpm exec biome check --diagnostic-level=error . passed under a valid resource permit (exit 0; 2556 files checked; no fixes applied).",
+    "attempt_02_receipt_raw_sha256": "ad8bde027af369f72f5cc8d3097155cc6390add0c53ad20247a9eecd3a2c51f5",
+    "attempt_02_receipt_formatted_sha256": "ad8bde027af369f72f5cc8d3097155cc6390add0c53ad20247a9eecd3a2c51f5",
+    "attempt_02_receipt_parsed_equal": true,
+    "report_validation_journals": [
+      {
+        "path": "docs/stabilization/resource-journals/d87-focus-report-biome-20261003-01.jsonl",
+        "sha256": "d2fee0e38cb8f9aab33c1cb4633c98530c67df9f593e2c0fe4f4c2303c9faf68",
+        "records": 4,
+        "final_event": {
+          "schema": 1,
+          "at": "2026-10-03T13:33:32.667Z",
+          "runId": "d87-focus-report-biome-20261003-01",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      },
+      {
+        "path": "docs/stabilization/resource-journals/d87-focus-report-biome-final-20261003-01.jsonl",
+        "sha256": "d1ccbd0c17180fcd06a1645d0fd448a54022321b0286eb6d5457b9371382be8f",
+        "records": 4,
+        "final_event": {
+          "schema": 1,
+          "at": "2026-10-03T13:35:20.364Z",
+          "runId": "d87-focus-report-biome-final-20261003-01",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      },
+      {
+        "path": "docs/stabilization/resource-journals/d87-focus-report-biome-final-20261003-02.jsonl",
+        "sha256": "f01017d362b3a4172b6bbb06c5bc0a00e3778e360f39708eeb39828e7e4e5c4c",
+        "records": 4,
+        "final_event": {
+          "schema": 1,
+          "at": "2026-10-03T13:37:07.222Z",
+          "runId": "d87-focus-report-biome-final-20261003-02",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      }
+    ]
+  }
+}

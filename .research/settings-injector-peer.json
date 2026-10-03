@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "250d39fc87a6d3534496cbf99fb930cc9e4dd02c",
+  "verdict_A_acceptance_scope": "PASS_SOURCE; the receipt-bound runner verifies a Dark UI selection is rejected while stored System remains, exposes the alert and Retry save control, then retries and verifies Dark in Chrome storage after a real panel reload. Its overlap case holds Light, selects System, verifies the first write is still held and the latest choice is stored after release, then reloads and verifies System. These checks exercise the native panel and Chrome storage; no browser run was performed in this review.",
+  "verdict_B_quality": "PASS; diagnosis matches the recorded failing receipt and runner control flow. restoreFault always called release during finally, replaying the captured Light snapshot after explicit release. The extracted injector now makes release idempotent. Focused regression executes the installer and release/cleanup sequence against the storage boundary, asserts exactly one write, and verifies original setter restoration. No assertion is manufactured or erased by cleanup: runtime acceptance observations read live DOM and chrome.storage.local, and failure output retains stage, operation, observed state, and artifact provenance.",
+  "connected_red_green_review": "The committed diagnosis records the pre-fix focused assertion as RED with two Light writes and the repaired assertion as GREEN with one. Source confirms the defect is in the injected release callback and the repair guards its second invocation. This reviewer did not rerun the historical pre-fix mutation; the current focused test passed.",
+  "checks": {
+    "focused_injector_test": "PASS: node tests/browser/d87-storage-fault-injector.test.mjs",
+    "syntax": "PASS: node --check tests/browser/settings-d87-native-acceptance.mjs and tests/browser/d87-storage-fault-injector.mjs",
+    "final_biome": "PASS: pnpm exec biome check tests/browser/d87-storage-fault-injector.mjs tests/browser/d87-storage-fault-injector.test.mjs tests/browser/settings-d87-native-acceptance.mjs .research/settings-overlap-reload-diagnosis.json — Checked 4 files in 4ms. No fixes applied.",
+    "diff_check": "PASS: git diff --check"
+  },
+  "limits": "No heavy suite, browser launch, hosted run, or product change was performed. This is a source and focused guard review; the exact artifact's native app serialization, error/retry presentation, and post-reload behavior remain unverified at runtime until acceptance is rerun."
+}

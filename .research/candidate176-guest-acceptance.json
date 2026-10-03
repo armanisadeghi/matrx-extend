@@ -1,0 +1,60 @@
+{
+  "observed_at": "2026-10-03T07:41:40Z",
+  "status": "pass",
+  "case": "hosted guest Chat first answer and post-panel-reload follow-up",
+  "release": {
+    "version": "0.2.176",
+    "release_run_id": 37105966615,
+    "release_artifact_id": 11267544261,
+    "source_sha": "3fe608d949a06aa10bfea57b43c9b05638386bc1",
+    "tree_sha256": "755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272",
+    "artifact_unchanged": true
+  },
+  "runner": {
+    "workflow_run_id": 37106907229,
+    "workflow_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37106907229",
+    "workflow_head_sha": "d62e634a10144c92d0b703e45f730735b1495f2f",
+    "workflow_source": "synchronized origin/main",
+    "case_input": "guest-chat",
+    "artifact_id": 11267818741,
+    "artifact_name": "hosted-guest-37106907229-1",
+    "artifact_digest": "sha256:9a9d25c9d2b5e973ae9d432689e11f3aa71bd998151afcaf8d5d52aeffc92109",
+    "terminal": "success"
+  },
+  "resource_guard": {
+    "package_setup": "passed",
+    "chromium_setup": "passed",
+    "acceptance_run_id": "hosted-guest-37106907229-1",
+    "decision": "valid",
+    "exit_code": 0,
+    "resource_invalid": false,
+    "unsafe_samples": 0,
+    "refusal": false
+  },
+  "guest": {
+    "fresh_profile": true,
+    "chat_visible": true,
+    "session_absent_after_reload": true,
+    "fixture_reinstalled_before_first_send": false,
+    "fixture_reinstalled_after_reload": false,
+    "opening_answer_terminal": true,
+    "opening_answer_has_unpredictable_page_code": true,
+    "opening_answer_names_stages_in_order": true,
+    "followup_terminal_after_real_panel_reload": true,
+    "followup_has_distinct_unpredictable_page_code": true,
+    "followup_names_fixture_heading": true,
+    "login_paywall_or_error": false,
+    "opening_code_fingerprint": "56a23283a6bb58a2",
+    "followup_code_fingerprint": "0f87903f384b68a8"
+  },
+  "screenshots": {
+    "first_answer": "guest-chat-real-answer.png: signed-out guest banner visible and ordered Capture, Understand, Use answer stages rendered",
+    "post_reload_followup": "guest-chat-real-followup-answer.png: distinct follow-up response includes the fixture heading",
+    "visual_review": "Both screenshots opened and inspected from artifact 11267818741."
+  },
+  "limitations": [
+    "This proves the hosted unpacked release ZIP path, not Google's installed-extension lifecycle.",
+    "The run covers guest Chat only; it does not establish member acceptance or exhaustive Chat/Pilot health.",
+    "The native request watcher recorded no guest_ai_requests; evidence is the actual rendered terminal replies, the fresh per-page fixture fingerprints, context tool results, reload state, and unchanged artifact assertion."
+  ]
+}

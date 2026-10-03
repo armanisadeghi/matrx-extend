@@ -1,0 +1,20 @@
+{
+  "observed_at_utc": "2026-10-03T10:39:53Z",
+  "publisher": "Matrx",
+  "primary_item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "dashboard_status": "Published - public",
+  "draft_version": "0.2.176",
+  "published_version": "0.2.176",
+  "pending_review_observed": false,
+  "published_status_text": "This draft is published and available to the public.",
+  "draft_status_text": "This draft is unpublished.",
+  "approval_time_utc": null,
+  "source_commit": "3fe608d949a06aa10bfea57b43c9b05638386bc1",
+  "source_tag": "v0.2.176",
+  "submitted_store_zip_sha256": "813715b8dcd6421d4ee001c04e99c3729f6dad439064f8bf5922e6fb38ce09f8",
+  "policy_surface": "Unchanged from the previously approved 0.2.130 baseline; only publishedVersion and publishedSourceCommit advanced.",
+  "evidence_screenshot": "docs/stabilization/evidence/release176/store-published.png",
+  "evidence_screenshot_sha256": "ea3c183176232b64272795d7da597629b8afb7a61b21cbddab52ff70cd0c2e3f",
+  "credential_handling": "Existing Chrome saved password and AI Matrx Vault Authenticator code were entered through their normal UI controls; no credential or code value was logged or saved in this report.",
+  "store_changes": "None; dashboard inspection only."
+}

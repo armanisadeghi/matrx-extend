@@ -13,6 +13,7 @@ import { STORAGE_KEYS } from '@/config/env';
  */
 import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { installWebLocksForTest } from '../helpers/web-locks';
 
 const mocks = vi.hoisted(() => ({
   apiPost: vi.fn(),
@@ -652,3 +653,5 @@ describe('Save never loses input', () => {
     ).toContain('Intro, edited.');
   });
 });
+
+installWebLocksForTest();

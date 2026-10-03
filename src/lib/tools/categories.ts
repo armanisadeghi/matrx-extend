@@ -223,7 +223,7 @@ export const CATEGORIES: Record<ToolCategory, CategoryMeta> = {
     category: 'records',
     label: "The organization's records",
     description:
-      "Read and write this organization's own custom records — the Tables a person defined for their work (clients, jobs, properties, whatever they keep). `records` is ONE tool with eight actions: list the Tables, search their metadata, read a record, aggregate over a Table, write or update a record, delete or restore one, and propose a new Field or Table. It acts with exactly the authority of the person operating you, in their active organization, and every value the store decided you may not see comes back with the reason instead of a silent blank. The store is switched on per organization: when it is off, every action says so and says who turns it on.",
+      "Read and write the custom records the person can access. The server runs every Records action under the person's authority and the store's policy. Use guide for the current action contract.",
     list_tool_name: 'list_records_tools',
   },
 };

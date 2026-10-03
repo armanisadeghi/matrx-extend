@@ -6,9 +6,14 @@
  */
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, stat, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  authenticatedWebIdentity,
+  observeCanonicalAdminCheck,
+  supabaseOrigin,
+} from './member-native-auth-proof.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
@@ -21,11 +26,21 @@ const RECEIPT = resolve(
   process.env.MATRX_REVIEWER_RELEASE_RECEIPT ?? join(REPO, '.output', 'release-receipt.json'),
 );
 const CREDENTIALS = process.env.MATRX_REVIEWER_CREDENTIALS_FILE;
+const MAGIC_LINK = process.env.MATRX_REVIEWER_MAGIC_LINK_FILE;
 const INTERACTIVE_REVIEWER = process.env.MATRX_REVIEWER_INTERACTIVE === '1';
 const INTERACTIVE_REVIEWER_EMAIL = process.env.MATRX_REVIEWER_EMAIL?.trim() || null;
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const DEMO_PATH = '/matrx-extend-demo';
 const QUESTION = 'What are the three workflow stages on this page?';
+const SAFE_FAILURE_CODES = new Set([
+  'native_sidepanel_release_receipt_missing',
+  'native_sidepanel_release_receipt_refused',
+  'native_sidepanel_override_provenance_refused',
+  'native_sidepanel_local_build_receipt_missing',
+  'native_sidepanel_local_build_provenance_refused',
+]);
+const REVIEWER_FINGERPRINT = '3d6137db6c081c07';
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 let stage = 'not_started';
 const report = {
@@ -34,9 +49,11 @@ const report = {
   status: 'unverified',
   build: null,
   account: null,
+  authentication_method: null,
   chat: null,
   screenshots: null,
   failure_stage: null,
+  failure_code: null,
 };
 
 function hash(value) {
@@ -61,6 +78,25 @@ async function credentials() {
   return { email: parsed.email, password: parsed.password };
 }
 
+async function magicLink() {
+  if (!MAGIC_LINK) throw new Error('reviewer_magic_link_file_required');
+  const metadata = await stat(MAGIC_LINK);
+  if ((metadata.mode & 0o077) !== 0) throw new Error('reviewer_magic_link_file_not_private');
+  const parsed = JSON.parse(await readFile(MAGIC_LINK, 'utf8'));
+  if (typeof parsed.email !== 'string' || !parsed.email || typeof parsed.action_link !== 'string')
+    throw new Error('reviewer_magic_link_unavailable');
+  const link = new URL(parsed.action_link);
+  if (
+    link.protocol !== 'https:' ||
+    link.origin !== WEB_ORIGIN ||
+    link.pathname !== '/auth/confirm' ||
+    link.searchParams.get('type') !== 'magiclink' ||
+    !link.searchParams.get('token_hash')
+  )
+    throw new Error('reviewer_magic_link_authority_unverified');
+  return { email: parsed.email, url: link.href };
+}
+
 /** Assert the cookie-backed web identity through the first-party, credential-free whoami door. */
 async function authenticatedWebEmail(page) {
   const location = safeLocation(page.url());
@@ -83,6 +119,19 @@ async function authenticatedWebEmail(page) {
     throw new Error('reviewer_web_identity_mismatch');
   }
   return identity;
+}
+
+async function memberPanelIdentity(panel) {
+  return evaluate(
+    panel,
+    `(() => chrome.storage.local.get([
+      'matrx.auth.accessToken', 'matrx.user.profile', 'matrx.user.isAdmin',
+    ]).then((stored) => ({
+      profileId: stored['matrx.user.profile']?.id ?? null,
+      accessTokenPresent: typeof stored['matrx.auth.accessToken'] === 'string',
+      isAdmin: stored['matrx.user.isAdmin'] === true ? true : stored['matrx.user.isAdmin'] === false ? false : null,
+    })))()`,
+  );
 }
 
 async function capture(panel, artifacts, label) {
@@ -243,16 +292,32 @@ try {
     headed: INTERACTIVE_REVIEWER,
     extensionDir: EXTENSION_DIR,
     expectedRelease: receipt,
+    releaseReceiptPath: RECEIPT,
     ...(receipt.kind === 'local_dev_unpacked' && { localDevReceiptPath: RECEIPT }),
     exercisePanel: async ({ page, panel, artifacts }) => {
-      stage = 'open_reviewer_web_login';
+      stage = MAGIC_LINK ? 'open_reviewer_magic_link' : 'open_reviewer_web_login';
       const web = await page.context().newPage();
       try {
-        await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-        if (safeLocation(web.url()) !== `${WEB_ORIGIN}/login`)
-          throw new Error('reviewer_login_route_unverified');
+        if (!MAGIC_LINK) {
+          await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+          if (safeLocation(web.url()) !== `${WEB_ORIGIN}/login`)
+            throw new Error('reviewer_login_route_unverified');
+        }
         let email;
-        if (INTERACTIVE_REVIEWER) {
+        if (MAGIC_LINK) {
+          const auth = await magicLink();
+          email = auth.email;
+          report.authentication_method = 'existing_user_magic_link';
+          report.account = { reviewer_fingerprint: hash(email), web_signed_in: false };
+          await web.goto(auth.url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+          email = await waitFor(
+            'reviewer_magic_link_web_session',
+            () => authenticatedWebEmail(web),
+            (value) => value?.toLowerCase() === auth.email.toLowerCase(),
+            90_000,
+          );
+        } else if (INTERACTIVE_REVIEWER) {
+          report.authentication_method = 'manual_password_login';
           stage = 'ready_manual_reviewer_login';
           process.stdout.write('STAGE ready_manual_reviewer_login\n');
           email = await waitFor(
@@ -262,6 +327,7 @@ try {
             180_000,
           );
         } else {
+          report.authentication_method = 'password_login';
           const auth = await credentials();
           email = auth.email;
           report.account = { reviewer_fingerprint: hash(email), web_signed_in: false };
@@ -277,6 +343,15 @@ try {
             90_000,
           );
         }
+        const webIdentity = await waitFor(
+          'reviewer_web_identity',
+          () => authenticatedWebIdentity(web, REVIEWER_FINGERPRINT),
+          (value) => UUID.test(value?.userId ?? ''),
+          30_000,
+        );
+        if (webIdentity.email.toLowerCase() !== email.toLowerCase())
+          throw new Error('reviewer_web_identity_mismatch');
+        email = webIdentity.email;
         report.account = { reviewer_fingerprint: hash(email), web_signed_in: false };
         report.account.web_signed_in = true;
         stage = 'open_demo_page';
@@ -291,42 +366,54 @@ try {
         await click(panel, 'title', 'Settings');
         stage = 'extension_account_open';
         await openSection(panel, 'Account');
-        stage = 'extension_signin_click';
-        await click(panel, 'button', 'Sign in');
-        stage = 'extension_organization_open';
-        await openSection(panel, 'Organization');
-        stage = 'extension_identity_wait';
-        let account;
+        const adminCheck = observeCanonicalAdminCheck(panel, await supabaseOrigin(REPO));
+        await adminCheck.start();
+        let canonicalAdminCheck;
         try {
-          account = await waitFor(
-            'reviewer_non_admin_identity',
-            async () => {
-              const consent = await approveOwnedOauthConsent(page.context());
-              if (consent === 'authorized') report.account.oauth_consent = 'authorized';
-              return accountObservation(panel, email);
-            },
-            (state) =>
-              state?.emailMatchesReviewer &&
-              state.observedRoleCategory !== 'admin' &&
-              state.signOutVisible &&
-              state.chatVisible,
-            90_000,
-          );
-        } catch {
-          const observed = await accountObservation(panel, email).catch(() => null);
-          const storage = await storedSessionShape(panel).catch(() => null);
-          report.account = {
-            ...report.account,
-            timeout_observation: observed,
-            storage_shape: storage,
-          };
-          report.screenshots = {
-            timeout_panel: await capture(panel, artifacts, 'reviewer-chat-timeout'),
-          };
-          throw new Error('reviewer_extension_identity_unverified');
+          stage = 'extension_signin_click';
+          await click(panel, 'button', 'Sign in');
+          stage = 'extension_organization_open';
+          await openSection(panel, 'Organization');
+          stage = 'extension_identity_wait';
+          try {
+            await waitFor(
+              'reviewer_non_admin_identity',
+              async () => {
+                const consent = await approveOwnedOauthConsent(page.context());
+                if (consent === 'authorized') report.account.oauth_consent = 'authorized';
+                return {
+                  ...(await accountObservation(panel, email)),
+                  ...(await memberPanelIdentity(panel)),
+                };
+              },
+              (state) =>
+                state?.emailMatchesReviewer &&
+                state.profileId === webIdentity.userId &&
+                state.accessTokenPresent &&
+                state.isAdmin !== true &&
+                state.signOutVisible &&
+                state.chatVisible,
+              90_000,
+            );
+          } catch {
+            const observed = await accountObservation(panel, email).catch(() => null);
+            const storage = await storedSessionShape(panel).catch(() => null);
+            report.account = {
+              ...report.account,
+              timeout_observation: observed,
+              storage_shape: storage,
+            };
+            report.screenshots = {
+              timeout_panel: await capture(panel, artifacts, 'reviewer-chat-timeout'),
+            };
+            throw new Error('reviewer_extension_identity_unverified');
+          }
+          canonicalAdminCheck = await adminCheck.verify(webIdentity.userId);
+        } finally {
+          await adminCheck.stop();
         }
         stage = 'reviewer_organization_resolve';
-        account = await waitFor(
+        let account = await waitFor(
           'reviewer_organization_resolved',
           () => accountObservation(panel, email),
           (state) => state?.organizationSelected || state?.organizationPickerAvailable,
@@ -364,6 +451,7 @@ try {
           web_signed_in: true,
           extension_signed_in: account.emailMatchesReviewer,
           observed_role_category: account.observedRoleCategory,
+          canonical_extension_admin_check: canonicalAdminCheck,
           sign_out_visible: account.signOutVisible,
           default_organization_selected: account.organizationSelected,
           organization_picker_available: account.organizationPickerAvailable,
@@ -429,8 +517,11 @@ try {
   });
   report.build.extension_id = run.extensionId;
   report.status = 'pass';
-} catch {
+} catch (error) {
   report.failure_stage = stage;
+  report.failure_code = SAFE_FAILURE_CODES.has(error?.message)
+    ? error.message
+    : 'unclassified_failure';
   report.status = 'unverified';
 }
 await mkdir(dirname(OUTPUT), { recursive: true, mode: 0o700 });

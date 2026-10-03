@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "defects": ["EXT-D-0058", "EXT-D-0059"],
+  "status": "unverified_admin_signin_failed_before_cases",
+  "identity": {
+    "kind": "ci_development_test",
+    "version": "0.2.176",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "provenance": "test-results/ci-build-provenance.json in development artifact 11268886169; the native case result itself recorded source_sha=null"
+  },
+  "run": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "run_id": 37109492705,
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37109492705",
+    "workflow_source_sha": "0bd348f4919517c206aa6a00eff70eafaf2a40f5",
+    "status": "completed",
+    "conclusion": "failure",
+    "case": "prepare-stale-results",
+    "development_run_id": 37107627454,
+    "development_artifact_id": 11268886169,
+    "development_artifact_name": "matrx-extend-development-test-3092444e73094cb0023f6086202869ccbd22978b-37107627454-1",
+    "release_run_id": "",
+    "published_store_crx": false,
+    "acceptance_artifact_id": 11269276891,
+    "acceptance_artifact_name": "hosted-guest-37109492705-1"
+  },
+  "evidence": {
+    "case_result": {
+      "artifact_path": "test-results/prepare-stale-result-native-02304943-54f1-4eb9-9542-7978edcb9b7b.json",
+      "status": "unverified",
+      "stage": "admin_signin",
+      "failure_code": "admin_signin_failed",
+      "cases": []
+    },
+    "resource_journals": {
+      "package": "admitted=true, resourceInvalid=false, decision=valid, childExitCode=0",
+      "browser": "admitted=true, resourceInvalid=false, decision=valid, childExitCode=0",
+      "acceptance": "admitted=true; one RESOURCE_WATCH_UNSAFE sample was recorded; resourceInvalid=false, decision=child_failed, childExitCode=1"
+    },
+    "screenshots": {
+      "panel": "test-results/native-sidepanel-qa-zdGLtY/native-side-panel.png",
+      "panel_sha256": "2ab3d0e5544ad29132a9707d0e8186abdb50aca3666a5e50bc4e6b6e60991198",
+      "capture_timing": "The harness captures this baseline before calling exercisePanel; it shows the initial guest/sign-in surface and does not show the failed sign-in state.",
+      "normal_target": "test-results/native-sidepanel-qa-zdGLtY/normal-target-after-open.png",
+      "normal_target_sha256": "d04b19d25df332033ff20befc4678cc57ac91ad15143dcc686e9b3496cab71ae"
+    },
+    "credential_cleanup": "Deleted MATRX_PREPARE_ADMIN_CREDENTIALS_JSON after terminal run and verified the secret name absent. No credential value is recorded."
+  },
+  "scope": {
+    "result": "No Prepare assertion ran: admin sign-in failed before the Showcase/Prepare surface; cases=[] is not a product pass or product failure.",
+    "resource_result": "Both setup phases completed with valid admissions. The acceptance permit admitted the child; its single unsafe sample did not produce resourceInvalid or a resource-stop verdict.",
+    "defects_closed": [],
+    "store_submission": "The pending 0.2.176 Google review was not changed or verified by this run."
+  },
+  "open_questions": [
+    "Determine why the existing admin sign-in did not complete. The available result records only admin_signin_failed; no granular cause is asserted here. Root requested diagnosis before any further run.",
+    "The native case result omitted source_sha although imported CI provenance recorded the exact source SHA; repair evidence reporting before relying on that field in a future run.",
+    "D58/D59 remain in-fix. This bounded Prepare run does not cover pending Snapshot completion or other D59 page-derived consumers."
+  ]
+}

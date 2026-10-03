@@ -524,6 +524,17 @@ export interface ContextDecidedBy {
   max_inline_chars: "default" | "page" | "agent" | "you";
 }
 
+export interface ContextDeliveredRef {
+  chars: number;
+  sha256: string;
+}
+
+export interface ContextReceiptBlock {
+  id: string;
+  label: string;
+  delivered: ContextDeliveredRef;
+}
+
 export interface ContextReceiptRow {
   key: string;
   label: string;
@@ -540,6 +551,8 @@ export interface ContextReceiptRow {
   blocked_by?: "model" | "self_check" | null;
   consumed_as?: "expanded" | "directive" | "renamed" | "unaccounted" | null;
   consumed_into?: string[];
+  delivered?: ContextDeliveredRef | null;
+  on_request?: ContextDeliveredRef | null;
 }
 
 export interface ContextRule {
@@ -555,6 +568,7 @@ export interface ContextReceiptData {
   model_reads_context?: boolean;
   rows?: ContextReceiptRow[];
   rules_error?: string | null;
+  blocks?: ContextReceiptBlock[];
 }
 
 export interface ConversationIdData {
@@ -2679,6 +2693,7 @@ export interface TimingStatsResult {
   processing_duration?: number | null;
   iterations?: number | null;
   avg_iteration_duration?: number | null;
+  first_token_seconds?: number | null;
 }
 
 export interface ToolCallByTool {

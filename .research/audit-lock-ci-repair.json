@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "CI fixture regression resolved; full CI green",
+  "self_introduced_by": "43d28aa0: incomplete Web Locks fixture installed globally",
+  "failed_ci": {
+    "run": 37127065220,
+    "head": "3334490b",
+    "result": "13/16 save-never-loses-input tests failed; 276 other files passed; prior 24 focused checks were insufficient breadth."
+  },
+  "root_cause": "The fixture accepted only request(name, options, callback). A valid two-argument request supplied undefined as the Promise.then callback, silently skipping capture persistence.",
+  "reproduction": "Guarded audit-lock-fixture-red-20261003-02 reproduced the exact 13/16 capture failures plus 3/3 new helper contract failures. First attempted run was refused RESOURCE_HEAVY_BUSY; no child launched.",
+  "census": {
+    "repo": "save-capture uses request(name, callback); audit and auth use request(name, {mode: exclusive}, callback).",
+    "dependencies": "Installed @supabase/auth-js navigatorLock uses signal, ifAvailable, steal, lock metadata and query. A limited fixture must not be installed globally."
+  },
+  "repair": "Both typed request overloads now execute callbacks and propagate values/rejections, with exclusive lock metadata and per-name serialization. Unsupported options fail explicitly. Removed the global setup installation; only device-key-partial-write, receipt, and save-never-loses-input suites explicitly install the fixture. The concurrency suite keeps its own native-or-fixture setup. Capture assertions are unchanged and still exercise the repaired two-argument path.",
+  "production_changes": "None; audit primitive, capture implementation and browser contracts unchanged.",
+  "verification": {
+    "first_green": "audit-lock-fixture-green-20261003: 53/53 across 8 relevant helper/capture/audit/auth suites.",
+    "final_scoped_green": "audit-lock-fixture-scoped-green-20261003: same 53/53 after explicit fixture scoping. Includes all 16 original capture cases.",
+    "gut": "audit-lock-fixture-gut-20261003: replacing request with constant capture-persisted result fails 4/4 guards; plant.py reports byte-identical restoration.",
+    "compile": "audit-lock-fixture-compile-20261003: pnpm exec tsc --noEmit exit0, resource-valid.",
+    "full_ci": {
+      "run": 37128201197,
+      "head": "8ea64d6e4b7d6ad312d5e106c8cb7ea38983eecd",
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37128201197",
+      "conclusion": "success",
+      "unit_tests": "1946 passed, 6 existing skipped; 278 files passed, 2 existing skipped",
+      "other_checks": "lint, TypeScript, resource guard integration, keyed development test build and artifact upload passed",
+      "code_commit": "03b80268b24de9904b99e90465affe838956e51e",
+      "intermediate_run": "37128064460 passed TypeScript but stopped before unit tests on unrelated peer-report JSON formatting; root whitespace-only fix 8ea64d6e allowed full CI to execute."
+    }
+  },
+  "journals": [
+    "docs/stabilization/resource-journals/audit-lock-fixture-red-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-lock-fixture-red-20261003-02.jsonl",
+    "docs/stabilization/resource-journals/audit-lock-fixture-green-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-lock-fixture-scoped-green-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-lock-fixture-gut-20261003.jsonl",
+    "docs/stabilization/resource-journals/audit-lock-fixture-compile-20261003.jsonl"
+  ],
+  "limits": "No native browser work, real key rotation, manual build/release/deploy or migration. D93 native/independent-review requirements remain open."
+}

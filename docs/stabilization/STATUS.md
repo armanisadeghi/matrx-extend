@@ -1,26 +1,26 @@
 # Extension stabilization status
 
-Generated 2026-10-03 04:36 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T04:33:36.264624+00:00. 205 features · 738 cases · 1322 controls · 89 linked defect records.
+Generated 2026-10-03 14:54 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T14:54:06.508731+00:00. 205 features · 759 cases · 1331 controls · 93 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1180** — Pass: 58 · Partial: 47 · Fail: 2 · Unverified: 1072 · N/A: 1.
-Unverified splits into **122 explicitly marked unverified** and **950 with no result record**.
-Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
+Applicable case-by-role slots: **1205** — Pass: 63 · Partial: 50 · Fail: 4 · Unverified: 1087 · N/A: 1.
+Unverified splits into **124 explicitly marked unverified** and **963 with no result record**.
+Full feature-role pairs: **0/394**. Procedure gaps: 148 cases without steps, 147 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
 ## Tab and surface overview
 
 | Tab or surface | Features | Guest cases | Member cases | Admin cases | All-role case slots | Active defects |
 | --- | ---: | --- | --- | --- | --- | ---: |
-| [Development installation](#development-installation) | 1 | 1 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 2, partial 1, fail 0, unverified 15, n/a 0 | 1 |
+| [Development installation](#development-installation) | 1 | 1 pass · 0 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 1 fail · 6 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 1 fail · 4 unverified · 0 deferred; 0/1 full | pass 2, partial 1, fail 3, unverified 15, n/a 0 | 2 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 7, partial 1, fail 1, unverified 14, n/a 0 | 3 |
-| [Release infrastructure](#release-infrastructure) | 1 | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 24, partial 0, fail 0, unverified 6, n/a 0 | 0 |
+| [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 11 pass · 1 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 7 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | pass 18, partial 1, fail 0, unverified 53, n/a 1 | 3 |
+| [Settings](#settings) | 1 | 11 pass · 2 partial · 0 fail · 12 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 7 pass · 1 partial · 0 fail · 32 unverified · 0 deferred; 0/1 full | pass 19, partial 4, fail 0, unverified 68, n/a 1 | 3 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 32, n/a 0 | 0 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -29,7 +29,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
-| [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 28 partial · 0 fail · 29 unverified · 0 deferred; 0/1 full | pass 1, partial 28, fail 0, unverified 29, n/a 0 | 12 |
+| [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 28 partial · 0 fail · 29 unverified · 0 deferred; 0/1 full | pass 1, partial 28, fail 0, unverified 29, n/a 0 | 11 |
 | [Token broker](#token-broker) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 9, n/a 0 | 0 |
 | [Content-page overlays / context menus / commands](#content-page-overlays--context-menus--commands) | 1 | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 57, n/a 0 | 0 |
 | [Profile/auth/org picker](#profileauthorg-picker) | 1 | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
@@ -46,31 +46,31 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Capture side-panel](#capture-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Vault side-panel](#vault-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 0 |
 | [Tools/manual runner](#toolsmanual-runner) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 0 |
-| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 0 pass · 0 partial · 1 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 1, unverified 25, n/a 0 | 3 |
+| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 1 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 1, partial 0, fail 0, unverified 25, n/a 0 | 2 |
 | [Pilot (deferred wave D)](#pilot-deferred-wave-d) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 5, n/a 0 | 1 |
 | [Tools Smart tests](#tools-smart-tests) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Tools Recorder](#tools-recorder) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Vault password generator](#vault-password-generator) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
-| [Tools / registered executor](#tools--registered-executor) | 169 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 153 unverified · 0 deferred; 0/149 full | 0 pass · 0 partial · 0 fail · 172 unverified · 0 deferred; 0/168 full | pass 0, partial 0, fail 0, unverified 325, n/a 0 | 3 |
+| [Tools / registered executor](#tools--registered-executor) | 169 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 153 unverified · 0 deferred; 0/149 full | 0 pass · 0 partial · 0 fail · 172 unverified · 0 deferred; 0/168 full | pass 0, partial 0, fail 0, unverified 325, n/a 0 | 4 |
 
 Role counts include only case-role combinations listed in each case. The all-role column includes every applicable recorded or unrecorded slot. Open each feature for case evidence, defects, and next action.
 
 ## Current artifact and bounded acceptance
 
-**Release:** 0.2.173 at `d6d6d6b83c937652525f473082ac2f2492c9eabe`. Last frozen validated candidate is0.2.173 at the receipt/tag shown (1862 tests,5skipped and strict gates passed). Primary Store0.2.130 is Published-public, verified October2 13:12UTC. Main is0.2.175 plus newer fixes, with no matching ZIP; latest hosted packaging awaits scoped credential approval. Candidate173 is not latestmain and has not been uploaded.
-**Local artifact:** Frozen 0.2.173 keyed tree SHA256 494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064; Store ZIP SHA256 1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff. Candidate receipt/hash verified; no personal Chrome runtime claim. Current development-only175 artifact11236112494 from CI37027762568/sourceb41fd0b3 imported with tree a7f9728b45d9dcc407e392092c15383cd541de030d71330322d08617524e73ba; not Store-eligible.
-**Native evidence:** Exact173: D64 Files admin/member error and Retry passed, closed; D65 member pending. Exact development175/sourceb41fd0b3: guest SEO17 targets passed including Airbnb auto/manual audit and hreflang/schema links; independent0c84ddbd verified receipt chain and D76 guest spinner closed. One Wikipedia metadata-door candidate unavailable; broader SEO remains partial. D58 native active; D59 and D74 native pending. Chat/Pilot breadth, signout privacy, full modes/controls remain unverified.
+**Release:** 0.2.173 at `d6d6d6b83c937652525f473082ac2f2492c9eabe`. Last frozen validated Store candidate remains 0.2.173 at this receipt/tag. Published Store version is 0.2.130. Main development version is 0.2.175 with newer fixes, but no newer Store package has passed all release gates or been uploaded. Hosted credentials are working; current release blocker is genuine Records contract drift (D91), after D90 validator repair.
+**Local artifact:** Frozen Store candidate173 keyed tree494b817a4de35ee52c3b00718d902538c2fa597f4af6b2f4fb1c66ea83458064 and Store ZIP1c640b6770ec442d173db92c8a624cfd935e1118785f2f6f48b238cec5c99bff remain unchanged. Guest development175 artifact11264666911 tree54162a180ed723dd4eb4b18cfbe6c0d9253be6d72b545c722cb4ed4a68a35068 is not Store-eligible.
+**Native evidence:** Development175 controlled-article guest first answer/reload passed37098718754; bounded Settings guest cases passed37099860144 (runs/hosted-settings-20261003.json). Published130 adapted original Google CRX run37103324918 observed two grounded signed-out answers, but failed final artifact-integrity assertion: whole-run acceptance remains unverified pending diagnostic37103982014. See .research/guest-published-runtime.json. Current live server5318c105 contains startup/envelope/routing repairs; new endpoint revision9bd979a894 passed train37103660096 and deploy37103864282 is pending. No full Chat, Records, member or overall product health claim; historical case passes retain exact build boundaries.
 These current-build checks supplement the inventory matrix; they do not promote unobserved cases or certify whole features.
 
 ## Development installation
 
 ### Development build, reload and runtime identity (EXT-F-0001)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Partial. **Cases:** 6. **Controls:** 6.
+**Role status:** guest: Fail · member: Fail · admin: Fail. **Cases:** 7. **Controls:** 7.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0077
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0077, EXT-D-0090
 
-**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed), [EXT-D-0080](defects/EXT-D-0080.json) (closed)
+**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed), [EXT-D-0080](defects/EXT-D-0080.json) (closed), [EXT-D-0090](defects/EXT-D-0090.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -80,6 +80,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-0001-T04 Service-worker and offscreen restart | Unverified | Unverified | Unverified | EXT-F-0001-C04 |
 | EXT-F-0001-T05 Development identity auth redirect | Unverified | Unverified | Unverified | EXT-F-0001-C05 |
 | EXT-F-0001-T06 Automatic CI development artifact is trustworthy and usable without local build | Unverified | Unverified | Partial | EXT-F-0001-C06 |
+| EXT-F-0001-T07 Strict release gate accepts valid registry metadata and rejects actual drift | Fail | Fail | Fail | EXT-F-0001-C07 |
 
 **Recorded case details and evidence:**
 
@@ -95,6 +96,12 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: ['docs/stabilization/reports/current-test-artifact-20261002.json', 'docs/stabilization/reports/current-test-artifact-contract-peer-20261002.json']
 - EXT-F-0001-T06 · admin: Partial. D80 actual profile/loaded-path/version check validated with fresh admin repeat; complete CI import collision/error matrix and all artifact coverage remain unverified.
   Evidence / build / date recorded: docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json
+- EXT-F-0001-T07 · guest: Fail. Shared release gate exit3. Management API returned82 bound rows; records row rejected valid $envelope string. Auth-independent gate evidence only.
+  Evidence / build / date recorded: 37097488341, docs/stabilization/defects/EXT-D-0090.json
+- EXT-F-0001-T07 · member: Fail. Shared release gate exit3. Management API returned82 bound rows; records row rejected valid $envelope string. Auth-independent gate evidence only.
+  Evidence / build / date recorded: 37097488341, docs/stabilization/defects/EXT-D-0090.json
+- EXT-F-0001-T07 · admin: Fail. Shared release gate exit3. Management API returned82 bound rows; records row rejected valid $envelope string. Auth-independent gate evidence only.
+  Evidence / build / date recorded: 37097488341, docs/stabilization/defects/EXT-D-0090.json
 
 **Other remaining work:** Concrete procedure and evidence required before executing each control.
 
@@ -172,11 +179,11 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Validate and publish exact release candidate (EXT-F-0003)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 10. **Controls:** 6.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 11. **Controls:** 7.
 
 **Next:** Run the remaining role cases in the extension and attach a result.
 
-**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed)
+**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed), [EXT-D-0092](defects/EXT-D-0092.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -190,6 +197,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-0003-T08 Refuse a CI lint-red release candidate | Pass | Pass | Pass | EXT-F-0003-C03 |
 | EXT-F-0003-T09 Await asynchronous UI readiness in integration assertions | Unverified | Unverified | Unverified | EXT-F-0003-C03 |
 | EXT-F-0003-T10 Settle sidepanel lazy imports before test teardown | Unverified | Unverified | Unverified | No control mapped |
+| EXT-F-0003-T11 Main verification survives subsequent evidence pushes | Pass | Pass | Pass | EXT-F-0003-C11 |
 
 **Recorded case details and evidence:**
 
@@ -238,6 +246,12 @@ These current-build checks supplement the inventory matrix; they do not promote 
 - EXT-F-0003-T08 · guest: Pass. Auth-independent engineering behavior shared by every mode; actual lint-red refusal and exact-candidate green publication, independently verified by ci-gate-runtime-peer and release018-peer.
 - EXT-F-0003-T08 · member: Pass. Auth-independent engineering behavior shared by every mode; actual lint-red refusal and exact-candidate green publication, independently verified by ci-gate-runtime-peer and release018-peer.
 - EXT-F-0003-T08 · admin: Pass. Auth-independent engineering behavior shared by every mode; actual lint-red refusal and exact-candidate green publication, independently verified by ci-gate-runtime-peer and release018-peer.
+- EXT-F-0003-T11 · guest: Pass. Shared auth-independent CI infrastructure: active main37102258819 and subsequent37102380063 finished successfully despite intervening pushes. Does not certify product or release gate health.
+  Evidence / build / date recorded: main-ci-continuity-20261003, ['docs/stabilization/defects/EXT-D-0092.json', '.research/guarded-phases-peer.json']
+- EXT-F-0003-T11 · member: Pass. Shared auth-independent CI infrastructure: active main37102258819 and subsequent37102380063 finished successfully despite intervening pushes. Does not certify product or release gate health.
+  Evidence / build / date recorded: main-ci-continuity-20261003, ['docs/stabilization/defects/EXT-D-0092.json', '.research/guarded-phases-peer.json']
+- EXT-F-0003-T11 · admin: Pass. Shared auth-independent CI infrastructure: active main37102258819 and subsequent37102380063 finished successfully despite intervening pushes. Does not certify product or release gate health.
+  Evidence / build / date recorded: main-ci-continuity-20261003, ['docs/stabilization/defects/EXT-D-0092.json', '.research/guarded-phases-peer.json']
 
 **Other remaining work:** Real successful release proven; exhaustive operational feature acceptance still needs per-case evidence reconciliation.; T08 CI lint parity requires the root-owned guarded red/green release fixture before full feature cells can pass.
 
@@ -331,20 +345,20 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Review and change extension settings (EXT-F-1003)
 
-**Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 72. **Controls:** 31.
+**Role status:** guest: Partial · member: Partial · admin: Partial. **Cases:** 91. **Controls:** 38.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0084, EXT-D-0086, EXT-D-0087
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0084, EXT-D-0086, EXT-D-0093
 
-**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0006](defects/EXT-D-0006.json) (closed), [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0009](defects/EXT-D-0009.json) (closed), [EXT-D-0011](defects/EXT-D-0011.json) (closed), [EXT-D-0012](defects/EXT-D-0012.json) (closed), [EXT-D-0015](defects/EXT-D-0015.json) (closed), [EXT-D-0084](defects/EXT-D-0084.json) (fixed), [EXT-D-0086](defects/EXT-D-0086.json) (fixed), [EXT-D-0087](defects/EXT-D-0087.json) (triaged)
+**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0006](defects/EXT-D-0006.json) (closed), [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0009](defects/EXT-D-0009.json) (closed), [EXT-D-0011](defects/EXT-D-0011.json) (closed), [EXT-D-0012](defects/EXT-D-0012.json) (closed), [EXT-D-0015](defects/EXT-D-0015.json) (closed), [EXT-D-0084](defects/EXT-D-0084.json) (fixed), [EXT-D-0086](defects/EXT-D-0086.json) (fixed), [EXT-D-0087](defects/EXT-D-0087.json) (closed), [EXT-D-0093](defects/EXT-D-0093.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-1003-T01 guest: Organization selector | Pass | N/A | N/A | EXT-F-1003-C01 |
 | EXT-F-1003-T02 member: Organization selector | N/A | Unverified | N/A | EXT-F-1003-C01 |
 | EXT-F-1003-T03 admin: Organization selector | N/A | N/A | Pass | EXT-F-1003-C01 |
-| EXT-F-1003-T04 guest: Theme | Pass | N/A | N/A | EXT-F-1003-C02 |
-| EXT-F-1003-T05 member: Theme | N/A | Unverified | N/A | EXT-F-1003-C02 |
-| EXT-F-1003-T06 admin: Theme | N/A | N/A | Pass | EXT-F-1003-C02 |
+| EXT-F-1003-T04 guest: Theme | Partial | N/A | N/A | EXT-F-1003-C02 |
+| EXT-F-1003-T05 member: Theme | N/A | Partial | N/A | EXT-F-1003-C02 |
+| EXT-F-1003-T06 admin: Theme | N/A | N/A | Partial | EXT-F-1003-C02 |
 | EXT-F-1003-T07 guest: Default agent | Pass | N/A | N/A | EXT-F-1003-C03 |
 | EXT-F-1003-T08 member: Default agent | N/A | Unverified | N/A | EXT-F-1003-C03 |
 | EXT-F-1003-T09 admin: Default agent | N/A | N/A | Pass | EXT-F-1003-C03 |
@@ -363,8 +377,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1003-T22 guest: Advanced agent capabilities | Pass | N/A | N/A | EXT-F-1003-C08 |
 | EXT-F-1003-T23 member: Advanced agent capabilities | N/A | Unverified | N/A | EXT-F-1003-C08 |
 | EXT-F-1003-T24 admin: Advanced agent capabilities | N/A | N/A | Unverified | EXT-F-1003-C08 |
-| EXT-F-1003-T25 guest: Audit key | N/A | N/A | N/A | EXT-F-1003-C09 |
-| EXT-F-1003-T26 member: Audit key | N/A | Unverified | N/A | EXT-F-1003-C09 |
+| EXT-F-1003-T25 guest: Audit key access denial | N/A | N/A | N/A | EXT-F-1003-C09 |
+| EXT-F-1003-T26 member: Audit key access denial | N/A | Unverified | N/A | EXT-F-1003-C09 |
 | EXT-F-1003-T27 admin: Audit key | N/A | N/A | Unverified | EXT-F-1003-C09 |
 | EXT-F-1003-T28 guest: Collapsible groups | Pass | N/A | N/A | EXT-F-1003-C10 |
 | EXT-F-1003-T29 member: Collapsible groups | N/A | Unverified | N/A | EXT-F-1003-C10 |
@@ -398,7 +412,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1003-T57 Optional permission: Page archive (MHTML) | N/A | N/A | Unverified | EXT-F-1003-C21 |
 | EXT-F-1003-T58 Optional permission: Clipboard read | N/A | N/A | Pass | EXT-F-1003-C22 |
 | EXT-F-1003-T59 Optional permission: Tab video capture | N/A | N/A | Unverified | EXT-F-1003-C23 |
-| EXT-F-1003-T60 Audit key export | N/A | N/A | Unverified | EXT-F-1003-C24 |
+| EXT-F-1003-T60 Audit key export | N/A | N/A | Unverified | EXT-F-1003-C24, EXT-F-1003-C38 |
 | EXT-F-1003-T61 Audit key re-key confirmation | N/A | N/A | Unverified | EXT-F-1003-C25 |
 | EXT-F-1003-T62 Audit receipt origin filters | N/A | N/A | Unverified | EXT-F-1003-C26 |
 | EXT-F-1003-T63 Advanced capabilities member denial | Unverified | Unverified | N/A | EXT-F-1003-C27 |
@@ -411,6 +425,25 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1003-T70 guest: About browser readiness and extension update status | Unverified | N/A | N/A | EXT-F-1003-C10, EXT-F-1003-C30, EXT-F-1003-C31 |
 | EXT-F-1003-T71 member: About browser readiness and extension update status | N/A | Unverified | N/A | EXT-F-1003-C10, EXT-F-1003-C30, EXT-F-1003-C31 |
 | EXT-F-1003-T72 admin: About browser readiness and extension update status | N/A | N/A | Unverified | EXT-F-1003-C10, EXT-F-1003-C30, EXT-F-1003-C31 |
+| EXT-F-1003-T73 guest: Account identity and role | Unverified | N/A | N/A | EXT-F-1003-C32 |
+| EXT-F-1003-T74 member: Account identity and role | N/A | Unverified | N/A | EXT-F-1003-C32 |
+| EXT-F-1003-T75 admin: Account identity and role | N/A | N/A | Unverified | EXT-F-1003-C32 |
+| EXT-F-1003-T76 guest: Organization archive filter visibility | Unverified | N/A | N/A | EXT-F-1003-C33 |
+| EXT-F-1003-T77 member: Organization archive filter | N/A | Unverified | N/A | EXT-F-1003-C33 |
+| EXT-F-1003-T78 admin: Organization archive filter | N/A | N/A | Unverified | EXT-F-1003-C33 |
+| EXT-F-1003-T79 guest: Desktop bridge status and health | Unverified | N/A | N/A | EXT-F-1003-C34 |
+| EXT-F-1003-T80 member: Desktop bridge status and health | N/A | Unverified | N/A | EXT-F-1003-C34 |
+| EXT-F-1003-T81 admin: Desktop bridge status and health | N/A | N/A | Unverified | EXT-F-1003-C34 |
+| EXT-F-1003-T85 admin: Retry permission status read | N/A | N/A | Unverified | EXT-F-1003-C35 |
+| EXT-F-1003-T82 guest: Retry saving preferences | Pass | N/A | N/A | EXT-F-1003-C36 |
+| EXT-F-1003-T83 member: Retry saving preferences | N/A | Pass | N/A | EXT-F-1003-C36 |
+| EXT-F-1003-T84 admin: Retry saving preferences | N/A | N/A | Pass | EXT-F-1003-C36 |
+| EXT-F-1003-T86 Audit details read failure and retry | N/A | N/A | Unverified | EXT-F-1003-C09, EXT-F-1003-C37 |
+| EXT-F-1003-T87 Audit rotation failure before mutation | N/A | N/A | Unverified | EXT-F-1003-C25 |
+| EXT-F-1003-T88 Successful rotation with failed details refresh | N/A | N/A | Unverified | EXT-F-1003-C25, EXT-F-1003-C37 |
+| EXT-F-1003-T89 Audit key late persistence failure | N/A | N/A | Unverified | EXT-F-1003-C25, EXT-F-1003-C37 |
+| EXT-F-1003-T90 Concurrent audit key rotation preserves receipt verification | N/A | N/A | Unverified | EXT-F-1003-C09, EXT-F-1003-C25 |
+| EXT-F-1003-T91 Audit storage locking unavailable recovery | N/A | N/A | Unverified | EXT-F-1003-C09, EXT-F-1003-C24, EXT-F-1003-C25, EXT-F-1003-C37 |
 
 **Recorded case details and evidence:**
 
@@ -418,10 +451,12 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: guest-settings-007, docs/stabilization/runs/guest-settings-007.json
 - EXT-F-1003-T03 · admin: Pass. Initialunset did not chooseimplicitly; explicitfixture selected, Actingas and fullreload persistence verified. Nonexistent clear-step corrected from source/UI.
   Evidence / build / date recorded: admin-org-001, docs/stabilization/runs/admin-org-001.json
-- EXT-F-1003-T04 · guest: Pass. Light/Dark/System each visibly applied and persisted through separate full extension Reloads on0.2.51. OriginalSystem restored; resource healthy.
-  Evidence / build / date recorded: guest-theme-001, docs/stabilization/runs/guest-theme-001.json
-- EXT-F-1003-T06 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.
-  Evidence / build / date recorded: admin-settings-local-001, docs/stabilization/runs/admin-settings-local-001.json
+- EXT-F-1003-T04 · guest: Partial. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.
+  Evidence / build / date recorded: hosted-settings-37115406435, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-acceptance-record.json']
+- EXT-F-1003-T05 · member: Partial. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.
+  Evidence / build / date recorded: settings-mounted-member-full6-20261003-01, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-mounted-native.json']
+- EXT-F-1003-T06 · admin: Partial. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.
+  Evidence / build / date recorded: settings-mounted-admin-full6-20261003-01, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-mounted-native.json']
 - EXT-F-1003-T07 · guest: Pass. Native Chrome guest controls matched all expected criteria warm and after full extension Reload; ID/path/version0.2.51 verified, resource healthy.
   Evidence / build / date recorded: guest-settings-007, docs/stabilization/runs/guest-settings-007.json
 - EXT-F-1003-T09 · admin: Pass. FreshSol visual+AX/detail reconciled sameQuickTestAgent plus2memberbadge; actualchosenidentity persisted afterfullreload, originalMatrxBrowserAgent restored.
@@ -434,8 +469,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: admin-settings-local-001, docs/stabilization/runs/admin-settings-local-001.json
 - EXT-F-1003-T16 · guest: Unverified.
   Evidence / build / date recorded: guest-settings-002, docs/stabilization/runs/guest-settings-002.json
-- EXT-F-1003-T22 · guest: Pass. Guest admin-only section and controls absent warm and after real panel reload.
-  Evidence / build / date recorded: guest-settings-dev089-001, ['docs/stabilization/runs/guest-settings-dev089-001.json', 'docs/stabilization/reports/guest-settings-dev089-001-peer.json']
+- EXT-F-1003-T22 · guest: Pass. Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches.
+  Evidence / build / date recorded: hosted-settings-37099860144, ['docs/stabilization/runs/hosted-settings-20261003.json', '.research/settings-hosted-retest.json']
 - EXT-F-1003-T25 · guest: N/A. Audit key is admin-only: source isAdmin gate and actual guest T22 evidence confirm absence. Negative access remains covered byT22/T63; this does not waive member/direct-state checks.
   Evidence / build / date recorded: ['docs/stabilization/reports/guest-settings-applicability.json', 'docs/stabilization/runs/guest-settings-local-003.json']
 - EXT-F-1003-T28 · guest: Pass.
@@ -446,12 +481,12 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: guest-settings-002, docs/stabilization/runs/guest-settings-002.json
 - EXT-F-1003-T34 · guest: Unverified.
   Evidence / build / date recorded: guest-settings-002, docs/stabilization/runs/guest-settings-002.json
-- EXT-F-1003-T37 · guest: Pass. Coming-soon preference toggles and persists after reload; functional deep cleaning is not implemented or verified by this case.
-  Evidence / build / date recorded: guest-settings-dev089-001, ['docs/stabilization/runs/guest-settings-dev089-001.json', 'docs/stabilization/reports/guest-settings-dev089-001-peer.json']
+- EXT-F-1003-T37 · guest: Pass. Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches.
+  Evidence / build / date recorded: hosted-settings-37099860144, ['docs/stabilization/runs/hosted-settings-20261003.json', '.research/settings-hosted-retest.json']
 - EXT-F-1003-T40 · guest: Partial. Actual profile and Loaded from path verified before and after reload. Auto-scrape On persisted; no-send context preview displayed Page content/count only. Restored Off and Capture.
   Evidence / build / date recorded: guest-autoscrape-native-20261002-01, docs/stabilization/reports/guest-autoscrape-native-20261002.json
-- EXT-F-1003-T46 · guest: Pass. Valid override saves and survives reload, real Save-bounded worker rediscovery observed, invalid range preserves value, blank clears value/error and persists; isolated probe returns503, no healthy desktop claim.
-  Evidence / build / date recorded: guest-settings-dev089-001, ['docs/stabilization/runs/guest-settings-dev089-001.json', 'docs/stabilization/reports/guest-settings-dev089-001-peer.json']
+- EXT-F-1003-T46 · guest: Pass. Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches.
+  Evidence / build / date recorded: hosted-settings-37099860144, ['docs/stabilization/runs/hosted-settings-20261003.json', '.research/settings-hosted-retest.json']
 - EXT-F-1003-T48 · admin: Unverified.
   Evidence / build / date recorded: native-0258-port-verification, docs/stabilization/runs/native-0258-port-verification.json
 - EXT-F-1003-T49 · guest: Pass. Real native0.2.57 isolated guest Cancel/Confirm/reload acceptance after shared driver repair.
@@ -470,10 +505,16 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: permissions-auth-native-sol, docs/stabilization/runs/permissions-auth-native-sol.json
 - EXT-F-1003-T67 · guest: Pass. Capture and Scroll & capture each persisted after full extension Reload. Restored Capture and verified after final reload.
   Evidence / build / date recorded: guest-autoscrape-native-20261002-01, docs/stabilization/reports/guest-autoscrape-native-20261002.json
-- EXT-F-1003-T70 · guest: Unverified. Identity/readiness and real no-update result observed; API-unavailable, update-available, throttled, and error alternatives remain unverified.
-  Evidence / build / date recorded: guest-settings-dev089-001, ['docs/stabilization/runs/guest-settings-dev089-001.json', 'docs/stabilization/reports/guest-settings-dev089-001-peer.json']
+- EXT-F-1003-T70 · guest: Unverified. Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches.
+  Evidence / build / date recorded: hosted-settings-37099860144, ['docs/stabilization/runs/hosted-settings-20261003.json', '.research/settings-hosted-retest.json']
 - EXT-F-1003-T72 · admin: Unverified.
   Evidence / build / date recorded: release-native-verification, docs/stabilization/runs/release-native-verification.json
+- EXT-F-1003-T82 · guest: Pass. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. The actual Retry save control clears the failure and persists the latest choice; no other preference-control coverage inferred.
+  Evidence / build / date recorded: hosted-settings-37115406435, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-acceptance-record.json']
+- EXT-F-1003-T83 · member: Pass. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. The actual Retry save control clears the failure and persists the latest choice; no other preference-control coverage inferred.
+  Evidence / build / date recorded: settings-mounted-member-full6-20261003-01, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-mounted-native.json']
+- EXT-F-1003-T84 · admin: Pass. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. The actual Retry save control clears the failure and persists the latest choice; no other preference-control coverage inferred.
+  Evidence / build / date recorded: settings-mounted-admin-full6-20261003-01, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-mounted-native.json']
 
 
 ## Profile
@@ -914,9 +955,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: N/A · member: N/A · admin: Partial. **Cases:** 59. **Controls:** 49.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0040, EXT-D-0041, EXT-D-0042, EXT-D-0043, EXT-D-0044, EXT-D-0046, EXT-D-0047, EXT-D-0048, EXT-D-0054, EXT-D-0057, EXT-D-0058, EXT-D-0059
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0040, EXT-D-0041, EXT-D-0042, EXT-D-0043, EXT-D-0044, EXT-D-0046, EXT-D-0047, EXT-D-0048, EXT-D-0054, EXT-D-0057, EXT-D-0059
 
-**Linked defects:** [EXT-D-0039](defects/EXT-D-0039.json) (closed), [EXT-D-0040](defects/EXT-D-0040.json) (fixed), [EXT-D-0041](defects/EXT-D-0041.json) (fixed), [EXT-D-0042](defects/EXT-D-0042.json) (in-fix), [EXT-D-0043](defects/EXT-D-0043.json) (fixed), [EXT-D-0044](defects/EXT-D-0044.json) (fixed), [EXT-D-0045](defects/EXT-D-0045.json) (closed), [EXT-D-0046](defects/EXT-D-0046.json) (fixed), [EXT-D-0047](defects/EXT-D-0047.json) (in-fix), [EXT-D-0048](defects/EXT-D-0048.json) (fixed), [EXT-D-0049](defects/EXT-D-0049.json) (closed), [EXT-D-0050](defects/EXT-D-0050.json) (closed), [EXT-D-0052](defects/EXT-D-0052.json) (closed), [EXT-D-0053](defects/EXT-D-0053.json) (closed), [EXT-D-0054](defects/EXT-D-0054.json) (fixed), [EXT-D-0055](defects/EXT-D-0055.json) (closed), [EXT-D-0057](defects/EXT-D-0057.json) (fixed), [EXT-D-0058](defects/EXT-D-0058.json) (in-fix), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0078](defects/EXT-D-0078.json) (closed)
+**Linked defects:** [EXT-D-0039](defects/EXT-D-0039.json) (closed), [EXT-D-0040](defects/EXT-D-0040.json) (fixed), [EXT-D-0041](defects/EXT-D-0041.json) (fixed), [EXT-D-0042](defects/EXT-D-0042.json) (in-fix), [EXT-D-0043](defects/EXT-D-0043.json) (fixed), [EXT-D-0044](defects/EXT-D-0044.json) (fixed), [EXT-D-0045](defects/EXT-D-0045.json) (closed), [EXT-D-0046](defects/EXT-D-0046.json) (fixed), [EXT-D-0047](defects/EXT-D-0047.json) (in-fix), [EXT-D-0048](defects/EXT-D-0048.json) (fixed), [EXT-D-0049](defects/EXT-D-0049.json) (closed), [EXT-D-0050](defects/EXT-D-0050.json) (closed), [EXT-D-0052](defects/EXT-D-0052.json) (closed), [EXT-D-0053](defects/EXT-D-0053.json) (closed), [EXT-D-0054](defects/EXT-D-0054.json) (fixed), [EXT-D-0055](defects/EXT-D-0055.json) (closed), [EXT-D-0057](defects/EXT-D-0057.json) (fixed), [EXT-D-0058](defects/EXT-D-0058.json) (closed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0078](defects/EXT-D-0078.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -984,8 +1025,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 - EXT-F-1012-T04 · admin: Partial.
   Evidence / build / date recorded: showcase-installed-d43-001, docs/stabilization/runs/showcase-installed-d43-001.json
-- EXT-F-1012-T08 · admin: Partial. Actual Chrome owned profile and loaded175 folder/version verified before/after extension Reload. Withheld Prepare recovered through exact-origin Allow plus separate Reload; fresh Prepare757ms/3steps. Completed Prepare and Snapshot clear on same-URL reload. Admin Deny, controlled late results, failure retry and broad remaining controls unverified.
-  Evidence / build / date recorded: siteaccess-prepare-pathchecked-sol-20261002-01, docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json
+- EXT-F-1012-T08 · admin: Partial. Authenticated native admin on exact imported CI development artifact 0.2.176; all six bounded Prepare cases passed, including held late success/rejection after navigation to a distinct full URL with changed top-frame documentId. Same-origin demo route only. Snapshot on this artifact, remaining T08 controls/dimensions, and Store/public-release acceptance remain unverified.
+  Evidence / build / date recorded: prepare-local-native-20261003-08, .research/prepare-native-acceptance-peer.json
 - EXT-F-1012-T09 · admin: Partial. Actual Chrome owned profile and loaded175 folder/version verified before/after extension Reload. Withheld Prepare recovered through exact-origin Allow plus separate Reload; fresh Prepare757ms/3steps. Completed Prepare and Snapshot clear on same-URL reload. Admin Deny, controlled late results, failure retry and broad remaining controls unverified.
   Evidence / build / date recorded: siteaccess-prepare-pathchecked-sol-20261002-01, docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json
 - EXT-F-1012-T10 · admin: Partial. Type chip and blank/matching/nonexistent filters verified on actual Google Article page. Auth-transition, service-error and broader chips remain unverified.
@@ -1456,11 +1497,11 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Use assistant chat and conversation controls (EXT-F-2013)
 
-**Role status:** guest: Fail · member: Unverified · admin: Unverified. **Cases:** 11. **Controls:** 138.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 11. **Controls:** 138.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0074, EXT-D-0075, EXT-D-0088
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0074, EXT-D-0075
 
-**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (fixed)
+**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1473,12 +1514,13 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-2013-T07 Send explicit page Source status in Chat context | N/A | Unverified | Unverified | EXT-F-2013-C134 |
 | EXT-F-2013-T08 Apply account default model when no extension model is selected | Unverified | Unverified | Unverified | EXT-F-2013-C135 |
 | EXT-F-2013-T09 Render typed decision answer in Chat live stream and conversation history | Unverified | Unverified | Unverified | EXT-F-2013-C136 |
-| EXT-F-2013-T10 Public guest Chat sends page-grounded answers before and after reload | Fail | N/A | N/A | EXT-F-2013-C08, EXT-F-2013-C10 |
+| EXT-F-2013-T10 Public guest Chat sends page-grounded answers before and after reload | Pass | N/A | N/A | EXT-F-2013-C08, EXT-F-2013-C10 |
 | EXT-F-2013-T11 Inspect actual context receipt blocks and delivered text | Unverified | Unverified | Unverified | EXT-F-2013-C137, EXT-F-2013-C138 |
 
 **Recorded case details and evidence:**
 
-- EXT-F-2013-T10 · guest: Fail. Published0.2.105 remains the failing Store baseline;0.2.130 pending review. Exact candidate0.2.173 independently passed fresh guest opening and post-panel-reload page-grounded answers on Oct1. Earlier candidate marker miss remains unexplained; live signout privacy remains unverified.
+- EXT-F-2013-T10 · guest: Pass. Exact release0.2.176 guest first/reload grounded answers, all resource phases valid, artifact unchanged after interaction. Hosted unpacked receipt-bound acceptance; not Google-installed lifecycle or exhaustive Chat. Original startup schema incident EXT-D-0088 closed with separate published130 functional and nonadmin surrounding evidence.
+  Evidence / build / date recorded: 37106907229, .research/candidate176-guest-acceptance.json
 
 **Controls without a mapped case:** EXT-F-2013-C01 Retry loading / dismiss error; EXT-F-2013-C02 Refresh agents; EXT-F-2013-C03 New chat; EXT-F-2013-C04 History popover / refresh / select; EXT-F-2013-C05 Task panel chip; EXT-F-2013-C06 Ask/Act permission mode popover; EXT-F-2013-C07 Conversation customization popover; EXT-F-2013-C09 Microphone; EXT-F-2013-C11 Suggestion chip; EXT-F-2013-C12 Copy message/reply/conversation; EXT-F-2013-C13 Agent approval/ask-user cards; EXT-F-2013-C14 Gmail review card; EXT-F-2013-C15 Tool receipt dialog; EXT-F-2013-C16 Variable panel; EXT-F-2013-C17 Attachment chips; EXT-F-2013-C18 Select agent from dropdown; EXT-F-2013-C19 Select language; EXT-F-2013-C20 Choose Ask permission mode; EXT-F-2013-C21 Choose Act permission mode; EXT-F-2013-C22 Open history; EXT-F-2013-C23 Retry history load; EXT-F-2013-C24 Choose history conversation; EXT-F-2013-C25 Choose Your default model; EXT-F-2013-C26 Choose model preset; EXT-F-2013-C27 Toggle auto page capture; EXT-F-2013-C28 Toggle deep capture; EXT-F-2013-C29 Press Enter to send; EXT-F-2013-C30 Press Shift Enter for newline; EXT-F-2013-C31 Queue message while streaming; EXT-F-2013-C32 Interrupt and send now; EXT-F-2013-C33 Stop current stream; EXT-F-2013-C34 Dismiss voice error; EXT-F-2013-C35 Start microphone capture; EXT-F-2013-C36 Stop microphone capture; EXT-F-2013-C37 Open Google files picker; EXT-F-2013-C38 Attach one Google file; EXT-F-2013-C39 Detach all Google files; EXT-F-2013-C40 Retry Google file list; EXT-F-2013-C41 Open compute target picker; EXT-F-2013-C42 Refresh compute targets; EXT-F-2013-C43 Bind compute target; EXT-F-2013-C44 Detach compute target; EXT-F-2013-C45 Open install local flow; EXT-F-2013-C46 Open create sandbox flow; EXT-F-2013-C47 Open copy conversation options; EXT-F-2013-C48 Toggle copy user messages; EXT-F-2013-C49 Toggle copy assistant messages; EXT-F-2013-C50 Toggle copy agent info; EXT-F-2013-C51 Toggle copy thinking; EXT-F-2013-C52 Toggle copy tool calls; EXT-F-2013-C53 Toggle copy full tool results; EXT-F-2013-C54 Toggle copy AI instructions; EXT-F-2013-C55 Copy entire conversation; EXT-F-2013-C56 Copy individual reply Markdown; EXT-F-2013-C57 Copy individual reply plain text; EXT-F-2013-C58 Copy individual reply for AI; EXT-F-2013-C59 Approve action card; EXT-F-2013-C60 Deny action card; EXT-F-2013-C61 Supply approval text input; EXT-F-2013-C62 Answer ask-user text; EXT-F-2013-C63 Choose ask-user single option; EXT-F-2013-C64 Choose ask-user multiple options; EXT-F-2013-C65 Confirm ask-user yes; EXT-F-2013-C66 Confirm ask-user no; EXT-F-2013-C67 Choose ask-user Other; EXT-F-2013-C68 Write message instead; EXT-F-2013-C69 Add extra instructions; EXT-F-2013-C70 Cancel ask-user card; EXT-F-2013-C71 Send Gmail review card; EXT-F-2013-C72 Decline Gmail review card; EXT-F-2013-C73 Dismiss Gmail review card; EXT-F-2013-C74 Open tool receipt; EXT-F-2013-C75 Copy receipt JSON; EXT-F-2013-C76 Copy receipt JWS; EXT-F-2013-C77 Queue message edit; EXT-F-2013-C78 Queue message save edit; EXT-F-2013-C79 Queue message cancel edit; EXT-F-2013-C80 Queue message remove; EXT-F-2013-C81 Queue message interrupt current run; EXT-F-2013-C82 Expand tool timeline row; EXT-F-2013-C83 Copy tool result; EXT-F-2013-C84 Open agent variables panel; EXT-F-2013-C85 Edit agent text variable; EXT-F-2013-C86 Edit agent multiline variable; EXT-F-2013-C87 Observe required variable gap; EXT-F-2013-C88 Open attached highlight; EXT-F-2013-C89 Clear attached highlight; EXT-F-2013-C90 Enter credential fields on capture card; EXT-F-2013-C91 Save credential and continue; EXT-F-2013-C92 Cancel credential capture; EXT-F-2013-C93 Dismiss expired credential card; EXT-F-2013-C94 Retry failed credential save; EXT-F-2013-C95 Open queued message edit; EXT-F-2013-C96 Cancel queued message; EXT-F-2013-C97 Save queued message edit; EXT-F-2013-C98 Choose notify action; EXT-F-2013-C99 Choose notify Other; EXT-F-2013-C100 Choose secret answer; EXT-F-2013-C101 Choose action choice; EXT-F-2013-C104 Agent picker search; EXT-F-2013-C105 Agent picker clear search; EXT-F-2013-C106 Agent picker Mine tab; EXT-F-2013-C107 Agent picker Shared tab; EXT-F-2013-C108 Agent picker All tab; EXT-F-2013-C109 Agent picker Public tab; EXT-F-2013-C110 Agent picker Sort menu; EXT-F-2013-C111 Agent picker choose sort; EXT-F-2013-C112 Agent picker favorites filter; EXT-F-2013-C113 Agent picker archive filter; EXT-F-2013-C114 Agent picker category filter; EXT-F-2013-C115 Agent picker category search; EXT-F-2013-C116 Agent picker select category; EXT-F-2013-C117 Agent picker clear categories; EXT-F-2013-C118 Agent picker tags filter; EXT-F-2013-C119 Agent picker tag search; EXT-F-2013-C120 Agent picker select tag; EXT-F-2013-C121 Agent picker clear tags; EXT-F-2013-C122 Agent picker reset filters; EXT-F-2013-C123 Agent picker select row; EXT-F-2013-C124 Agent picker favorite toggle; EXT-F-2013-C125 Agent picker show details; EXT-F-2013-C126 Agent picker detail select; EXT-F-2013-C127 Agent picker detail sneak peek; EXT-F-2013-C128 Agent picker detail open chat; EXT-F-2013-C129 Agent picker detail open new tab; EXT-F-2013-C130 Agent picker dismiss default drift; EXT-F-2013-C131 Agent picker retry default row
 
@@ -1855,7 +1897,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4022-T01 Controlled manual execution: read_page | N/A | Unverified | Unverified | EXT-F-4022-C01 |
+| EXT-F-4022-T01 Read visible controls and text from a public page | N/A | Unverified | Unverified | EXT-F-4022-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -1868,7 +1910,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4023-T01 Controlled manual execution: find | N/A | Unverified | Unverified | EXT-F-4023-C01 |
+| EXT-F-4023-T01 Find a known heading on the active public page before and after reload | N/A | Unverified | Unverified | EXT-F-4023-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -1920,7 +1962,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4027-T01 Controlled manual execution: read_active_page | N/A | Unverified | Unverified | EXT-F-4027-C01 |
+| EXT-F-4027-T01 Capture structured data from the assigned active page | N/A | Unverified | Unverified | EXT-F-4027-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -2024,7 +2066,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4035-T01 Controlled manual execution: get_element_details | N/A | Unverified | Unverified | EXT-F-4035-C01 |
+| EXT-F-4035-T01 Inspect a page element using a fresh read_page reference | N/A | Unverified | Unverified | EXT-F-4035-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -2037,7 +2079,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4036-T01 Controlled manual execution: list_open_tabs | N/A | Unverified | Unverified | EXT-F-4036-C01 |
+| EXT-F-4036-T01 List loaded tabs and filter to a public target | N/A | Unverified | Unverified | EXT-F-4036-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -2050,7 +2092,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4037-T01 Controlled manual execution: get_tab_groups | N/A | Unverified | Unverified | EXT-F-4037-C01 |
+| EXT-F-4037-T01 Read the tab-group list, including the empty state | N/A | Unverified | Unverified | EXT-F-4037-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -2063,7 +2105,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4038-T01 Controlled manual execution: get_tab_info | N/A | Unverified | Unverified | EXT-F-4038-C01 |
+| EXT-F-4038-T01 Look up details for a known open public tab | N/A | Unverified | Unverified | EXT-F-4038-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -2076,7 +2118,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4039-T01 Controlled manual execution: search_bookmarks | N/A | Unverified | Unverified | EXT-F-4039-C01 |
+| EXT-F-4039-T01 Search only synthetic public bookmarks in an isolated profile | N/A | Unverified | Unverified | EXT-F-4039-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -2089,7 +2131,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4040-T01 Controlled manual execution: list_bookmark_tree | N/A | Unverified | Unverified | EXT-F-4040-C01 |
+| EXT-F-4040-T01 Read the shallow tree of synthetic public bookmarks | N/A | Unverified | Unverified | EXT-F-4040-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -2102,7 +2144,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4041-T01 Controlled manual execution: search_history | N/A | Unverified | Unverified | EXT-F-4041-C01 |
+| EXT-F-4041-T01 Search known public visits in an isolated profile | N/A | Unverified | Unverified | EXT-F-4041-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -3256,9 +3298,9 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 2. **Controls:** 25.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0071, EXT-D-0089
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0071, EXT-D-0089, EXT-D-0091
 
-**Linked defects:** [EXT-D-0071](defects/EXT-D-0071.json) (fixed), [EXT-D-0089](defects/EXT-D-0089.json) (fixed)
+**Linked defects:** [EXT-D-0071](defects/EXT-D-0071.json) (fixed), [EXT-D-0089](defects/EXT-D-0089.json) (fixed), [EXT-D-0091](defects/EXT-D-0091.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |

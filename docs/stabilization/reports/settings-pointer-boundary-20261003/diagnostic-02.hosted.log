@@ -1,0 +1,27 @@
+{"schema":1,"at":"2026-10-03T13:13:21.921Z","runId":"d87-pointer-diagnostic-20261003-02","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/d87-pointer-diagnostic-20261003-02.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-03T13:14:29.147Z","runId":"d87-pointer-diagnostic-20261003-02","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":11.52,"requiredMemoryGiB":4,"oneMinuteLoad":2.37,"logicalCpus":10,"cpuBusyFraction":0.15,"swapUsedMiB":2649.5,"repoFreeGiB":1690.3394889831543,"profileFreeGiB":1690.3394889831543,"safetyFreeGiB":30.66356658935547,"systemFreeGiB":30.66356658935547},"cpuBusySamples":[0.14,0.15,0.18,0.15,0.15,0.15,0.13],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+HOSTED_BROWSER_READY 1194 acceptance
+PREPARED_DEVELOPMENT 3092444e73094cb0023f6086202869ccbd22978b 025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660
+FAIL D87 native acceptance: /Volumes/Samsung2TB/code/matrx-extend/test-results/settings-d87-native-06083caf-83ab-4cf0-bdb7-9a903e3e56b5.json
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: native side-panel acceptance exited 1
+
+1 !== 0
+
+    at run (file:///Volumes/Samsung2TB/code/matrx-extend/scripts/hosted-guest-acceptance.mjs:321:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///Volumes/Samsung2TB/code/matrx-extend/scripts/hosted-guest-acceptance.mjs:400:1 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.6.0
+{"schema":1,"at":"2026-10-03T13:14:40.442Z","runId":"d87-pointer-diagnostic-20261003-02","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-03T13:14:40.488Z","runId":"d87-pointer-diagnostic-20261003-02","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}

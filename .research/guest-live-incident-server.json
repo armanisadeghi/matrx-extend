@@ -1,6 +1,6 @@
 {
   "incident": "EXT-D-0088",
-  "status": "primary_guest_chat_restored; delegated_records_envelope_followup_in_progress",
+  "status": "primary_guest_chat_restored; delegated_records_envelope_server_fix_deployed; native_delegation_unverified",
   "live_server_before_fix": {
     "git_sha": "41aff687f768a1c0997dce70f595ea978a4f326c",
     "built_at": "2026-10-03T02:48:47Z"
@@ -36,6 +36,8 @@
     "qualification": "Git authoring and a row update time do not establish who deployed the row or when guests first failed."
   },
   "remaining": [
-    "Repair the separate delegated records args-envelope metadata loss (EXT-D-0089); InlineToolSpec projection drops $envelope before executor argument unwrapping."
+    "EXT-D-0089 server repair deployed at 23053275714b3401ff514339706635f8fc051d0d; hosted workflow 37097006365 succeeded and /health/version served that SHA twice. Source-path test traversed browser capability, merge, executor, and flat delegated event (31 passed, 12 skipped). Native Store 0.2.130 delegated Records execution and resume remain unverified.",
+    "A bounded fresh guest API probe after rollout got HTTP 200 on first message, same-conversation follow-up, and Records guide request, but its diagnostic parser mistakenly expected SSE data: prefixes while the extension stream is NDJSON. It discarded event bodies, so these statuses cannot establish assistant output, tool delegation, or terminal success. The original guest fingerprint returned expected guest_ai_allowance_used 403 at 3/3. No further guest identities were created after identifying the probe flaw.",
+    "EXT-D-0090 strict release gate row validation rejected the live records row because $envelope is a string. Local validator guard failed before repair, passed after; scoped tests 3/3 and TypeScript compile passed. Actual strict gate now reads 82 rows and detects a separate records contract drift between DB envelope/per-action variants and the extension's flat handler."
   ]
 }

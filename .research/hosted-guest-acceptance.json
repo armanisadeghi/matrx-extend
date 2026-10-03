@@ -1,12 +1,15 @@
 {
-  "status": "READY_FOR_PEER_REVIEW",
-  "scope": "Hosted macOS native side-panel guest reply and post-reload follow-up on exact validated release artifact",
-  "browser_result": "UNMEASURED: release run 37097382594 remains in progress; no validated artifact was available for dispatch",
+  "status": "PASS_DEVELOPMENT_CONTROLLED_PAGE",
+  "scope": "Hosted macOS native side-panel guest reply and post-reload follow-up on a controlled article tab using an exact validated release or CI development artifact",
+  "browser_result": "Fresh signed-out Chrome side panel produced a visible terminal answer with the unpredictable article code and ordered stages; after a real panel reload with no guest session, a second terminal answer contained the distinct follow-up code and article heading",
   "release_input": "Successful Hosted release run only; one versioned artifact, published receipt, remote tag/source SHA, both ZIP hashes and unpacked tree hash are required",
+  "development_input": "Successful main-push CI run and exact artifact ID, imported and reverified by current-test-artifact.mjs; explicitly ineligible for Store",
   "runtime": "Pinned Playwright CDP client and bundled Chromium install inside the guarded helper; existing native side-panel harness opens a fresh owned profile",
   "resources": "Existing macOS stabilization guard preflights and owns ZIP extraction, runtime install and browser execution with memory, CPU, swap and disk watchdogs",
-  "checks": "Node syntax, YAML parse, all workflow shell blocks bash -n, targeted Biome, policy JSON and diff whitespace pass",
-  "artifact_shape": "Existing local release ZIP has 541 root files including manifest.json, matching the promoted tree file count",
-  "remaining": "Fresh peer verdict, successful release artifact, one hosted native-browser run and review of its receipt/report/screenshots",
-  "release_run": 37097382594
+  "remaining": "This validates only the CI development artifact and controlled localhost article; Store 130, public demo page, exact next release candidate, and deployed server SHA are not certified by this run",
+  "hosted_run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37098718754",
+  "development_source_sha": "38bc59215ff12077b7949c34aaabcfe30c6a0274",
+  "development_artifact_id": 11264666911,
+  "development_tree_sha256": "54162a180ed723dd4eb4b18cfbe6c0d9253be6d72b545c722cb4ed4a68a35068",
+  "resource_decision": "valid"
 }

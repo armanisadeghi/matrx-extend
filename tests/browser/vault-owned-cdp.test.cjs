@@ -41,6 +41,16 @@ class WS {
     setImmediate(() => this.onclose());
   }
 }
+class NeverOpenWS {
+  close() {
+    setImmediate(() => this.onclose());
+  }
+}
+class ThrowingWS {
+  constructor() {
+    throw new Error('private socket construction detail');
+  }
+}
 (async () => {
   const p = await prepareOwnedProfile('/p', fs);
   files.set('/p/DevToolsActivePort', '9222\n/devtools/browser/a-b');
@@ -74,6 +84,53 @@ class WS {
         }),
       }),
     /owner/,
+  );
+  await assert.rejects(
+    () =>
+      connectOwnedCdp({
+        preparedProfile: p,
+        chromeExecutable:
+          '/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+        fileSystem: fs,
+        WebSocketCtor: WS,
+        processInspector: async () => {
+          throw new Error('private process inspection detail');
+        },
+      }),
+    /owned_cdp_process_inspection_failed/,
+  );
+  await assert.rejects(
+    () =>
+      connectOwnedCdp({
+        preparedProfile: p,
+        chromeExecutable:
+          '/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+        fileSystem: fs,
+        WebSocketCtor: NeverOpenWS,
+        processInspector: async () => ({
+          executable:
+            '/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+          args: '\0--user-data-dir=/p\0--headless',
+        }),
+        timeoutMs: 5,
+      }),
+    /owned_cdp_open_timeout/,
+  );
+  await assert.rejects(
+    () =>
+      connectOwnedCdp({
+        preparedProfile: p,
+        chromeExecutable:
+          '/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+        fileSystem: fs,
+        WebSocketCtor: ThrowingWS,
+        processInspector: async () => ({
+          executable:
+            '/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+          args: '\0--user-data-dir=/p\0--headless',
+        }),
+      }),
+    /owned_cdp_socket_construction_failed/,
   );
   process.stdout.write('PASS: owned flat CDP validates profile and correlates responses\n');
 })().catch((e) => {

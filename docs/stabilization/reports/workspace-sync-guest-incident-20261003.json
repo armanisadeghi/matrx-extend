@@ -1,7 +1,7 @@
 {
-  "observed_at": "2026-10-03T04:40:46.153966+00:00",
-  "last_all_remotes_fetched": "2026-10-03T04:35:00Z",
-  "baseline": "docs/stabilization/reports/workspace-sync-close-20261002.json",
+  "observed_at": "2026-10-03T14:37:43.133740+00:00",
+  "last_all_remotes_fetched": "2026-10-03T14:37:43.133740+00:00",
+  "baseline": "2026-10-03T14:10:32.923926+00:00",
   "repositories": [
     {
       "repo": "workspace",
@@ -21,9 +21,9 @@
     },
     {
       "repo": "aidream",
-      "origin_main": "23053275714b3401ff514339706635f8fc051d0d",
-      "last_update": "2026-10-02T21:34:30-07:00",
-      "files_modified_since_prior_ledger": 1126,
+      "origin_main": "5f596382a02510dd9765f614f9859a310d895e02",
+      "last_update": "2026-10-03T06:50:30-07:00",
+      "files_modified_since_prior_ledger": 0,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -31,15 +31,15 @@
       "other_branches": ["main"],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/aidream",
-        "HEAD 23053275714b3401ff514339706635f8fc051d0d",
+        "HEAD 5f596382a02510dd9765f614f9859a310d895e02",
         "branch refs/heads/main"
       ]
     },
     {
       "repo": "ai-matrx",
-      "origin_main": "6c95f651c35032fc96d1a4358e8d26e422d31745",
-      "last_update": "2026-10-02T21:34:40-07:00",
-      "files_modified_since_prior_ledger": 1684,
+      "origin_main": "a918c9bbe14eab9a0bd3896545eb87fcef850931",
+      "last_update": "2026-10-03T06:41:14-07:00",
+      "files_modified_since_prior_ledger": 0,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -47,35 +47,31 @@
       "other_branches": ["main"],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/ai-matrx",
-        "HEAD 6c95f651c35032fc96d1a4358e8d26e422d31745",
+        "HEAD a918c9bbe14eab9a0bd3896545eb87fcef850931",
         "branch refs/heads/main"
       ]
     },
     {
       "repo": "matrx-extend",
-      "origin_main": "78e49da635805528969b7931d94b08f54862085c",
-      "last_update": "2026-10-02T21:39:40-07:00",
-      "files_modified_since_prior_ledger": 55,
+      "origin_main": "9d3d0186de58c224eb25cc97491b559c6db99a34",
+      "last_update": "2026-10-03T07:36:53-07:00",
+      "files_modified_since_prior_ledger": 34,
       "branch": "main",
       "ahead_behind": "0\t0",
-      "dirty_paths": [
-        "M docs/stabilization/resource-policy.json",
-        "?? .github/workflows/hosted-guest-acceptance.yml",
-        "?? scripts/hosted-guest-acceptance.mjs"
-      ],
+      "dirty_paths": [],
       "stashes": [],
       "other_branches": ["main"],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-extend",
-        "HEAD 78e49da635805528969b7931d94b08f54862085c",
+        "HEAD 9d3d0186de58c224eb25cc97491b559c6db99a34",
         "branch refs/heads/main"
       ]
     },
     {
       "repo": "matrx-local",
-      "origin_main": "1119e1f6a42aa94f974af26732be9879a4d43c7a",
-      "last_update": "2026-10-02T21:18:52-07:00",
-      "files_modified_since_prior_ledger": 69,
+      "origin_main": "7649e5317b791ef878b9fed1304bb759c6ee0c57",
+      "last_update": "2026-10-03T02:44:41-07:00",
+      "files_modified_since_prior_ledger": 0,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -83,15 +79,15 @@
       "other_branches": ["main"],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-local",
-        "HEAD 1119e1f6a42aa94f974af26732be9879a4d43c7a",
+        "HEAD 7649e5317b791ef878b9fed1304bb759c6ee0c57",
         "branch refs/heads/main"
       ]
     },
     {
       "repo": "matrx-sandbox",
-      "origin_main": "867ce5b6225a272c1a54bba9c6fc8bd1c977e7b0",
-      "last_update": "2026-10-02T18:45:33-07:00",
-      "files_modified_since_prior_ledger": 9,
+      "origin_main": "d6a890022d82af77594cb765e300ea8fa5146b10",
+      "last_update": "2026-10-03T02:44:43-07:00",
+      "files_modified_since_prior_ledger": 0,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -99,15 +95,15 @@
       "other_branches": ["main"],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-sandbox",
-        "HEAD 867ce5b6225a272c1a54bba9c6fc8bd1c977e7b0",
+        "HEAD d6a890022d82af77594cb765e300ea8fa5146b10",
         "branch refs/heads/main"
       ]
     },
     {
       "repo": "matrx-ship",
-      "origin_main": "e98bc7d9420e9aff0c68378138249b0ad4829d2d",
-      "last_update": "2026-10-02T18:45:48-07:00",
-      "files_modified_since_prior_ledger": 6,
+      "origin_main": "e0ebc307f8430dfc01b0716d9487d5993bf249ed",
+      "last_update": "2026-10-03T02:44:45-07:00",
+      "files_modified_since_prior_ledger": 0,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -115,15 +111,15 @@
       "other_branches": ["main"],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-ship",
-        "HEAD e98bc7d9420e9aff0c68378138249b0ad4829d2d",
+        "HEAD e0ebc307f8430dfc01b0716d9487d5993bf249ed",
         "branch refs/heads/main"
       ]
     },
     {
       "repo": "my-matrx",
-      "origin_main": "9af212db67f547090e51412315cb9cd6eaa5bda9",
-      "last_update": "2026-10-02T18:45:41-07:00",
-      "files_modified_since_prior_ledger": 3,
+      "origin_main": "0f05c284b031cf161420c72b7db5dc54aa14a527",
+      "last_update": "2026-10-03T03:08:37-07:00",
+      "files_modified_since_prior_ledger": 0,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -131,15 +127,15 @@
       "other_branches": ["main"],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/my-matrx",
-        "HEAD 9af212db67f547090e51412315cb9cd6eaa5bda9",
+        "HEAD 0f05c284b031cf161420c72b7db5dc54aa14a527",
         "branch refs/heads/main"
       ]
     },
     {
       "repo": "matrx-common-docs",
-      "origin_main": "782cde0f37a1cffccabbae0efd2da052275b70a6",
-      "last_update": "2026-10-02T21:38:39-07:00",
-      "files_modified_since_prior_ledger": 1090,
+      "origin_main": "6d06833d3e9fafbe6e6c843d1a1f373c52663244",
+      "last_update": "2026-10-03T07:34:29-07:00",
+      "files_modified_since_prior_ledger": 15,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -147,7 +143,7 @@
       "other_branches": ["main"],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-common-docs",
-        "HEAD 782cde0f37a1cffccabbae0efd2da052275b70a6",
+        "HEAD 6d06833d3e9fafbe6e6c843d1a1f373c52663244",
         "branch refs/heads/main"
       ]
     },
@@ -155,7 +151,7 @@
       "repo": "matrx-package-template",
       "origin_main": "d795643c38c1dfa9d9970b2baa9b3ae20f8a493c",
       "last_update": "2026-10-02T18:45:27-07:00",
-      "files_modified_since_prior_ledger": 3,
+      "files_modified_since_prior_ledger": 0,
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -167,5 +163,15 @@
         "branch refs/heads/main"
       ]
     }
-  ]
+  ],
+  "verification": {
+    "full_ci_run": 37129518563,
+    "full_ci_conclusion": "success",
+    "full_ci_source": "991385d9816b31a568619522e4795c001b4d3a06",
+    "guest_smoke": "published176-guest-server-refresh-20261003-01 passed original guest initial/reload against server4ec65fdb; exact unpacked release176, not Store install lifecycle",
+    "settings": "D87 closed after guest/member/admin native and fresh evidence audit; broad Theme cases remain partial",
+    "audit_key": "D93 fixed; history non-mutation5/5 and fresh peer accepted; native acceptance on artifact11275878549 remains pending",
+    "scope": "No new Store submission, no overall-health claim; all delegated lanes terminal."
+  },
+  "snapshot_note": "Remote baselines and checkout states observed before committing this ledger itself."
 }

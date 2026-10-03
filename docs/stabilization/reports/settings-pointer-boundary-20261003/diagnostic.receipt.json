@@ -1,0 +1,174 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0087",
+  "scope": "receipt-bound owned Chrome-for-Testing native Settings panel; admin",
+  "auth_mode": "admin",
+  "authentication": {
+    "mode": "admin",
+    "account_fingerprint": "5edfa2692bdacc5e",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "admin_role": true,
+    "canonical_nonadmin_check": null,
+    "organization_selected": null,
+    "rendered_identity": {
+      "rendered_email_matches_first_party": true,
+      "rendered_role_matches_mode": true,
+      "profile_matches_first_party": true,
+      "selected_organization_matches_stored_uuid_and_name": true
+    }
+  },
+  "reload_auth_checks": [],
+  "pointer_boundary": {
+    "visibility": "hidden",
+    "body_inline_pointer_events_none": true,
+    "body_computed_pointer_events_none": true,
+    "theme_computed_pointer_events_none": true,
+    "listbox_count": 1,
+    "listbox_open_count": 0,
+    "listbox_closed_count": 1,
+    "listbox_running_animation_count": 0,
+    "listbox_paused_animation_count": 0,
+    "listbox_finished_animation_count": 0,
+    "dialog_count": 0
+  },
+  "status": "fail",
+  "build": {
+    "version": "0.2.176",
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+    "receipt_kind": "local_dev_unpacked",
+    "artifact_id": 11268886169
+  },
+  "cases": [
+    {
+      "name": "first changed choice saved through UI",
+      "status": "pass",
+      "observation": {
+        "settingsActive": true,
+        "theme": "Light",
+        "storedTheme": "light",
+        "error": false,
+        "retry": false,
+        "guest": false
+      }
+    }
+  ],
+  "failure_stage": "baseline",
+  "failure_code": "pointer_stable_hit_not_observed",
+  "failure_operation": "theme_menu_open",
+  "driver_failure": {
+    "code": "pointer_stable_hit_not_observed",
+    "sampleStage": null,
+    "matchedTargetCount": 1,
+    "visibleMatchCount": 1,
+    "uniqueVisibleTarget": true,
+    "hitTarget": false,
+    "animating": false,
+    "stableSamples": 0,
+    "positionStable": true,
+    "targetHasArea": true,
+    "clippedTargetHasArea": true,
+    "selectedPointAvailable": false,
+    "centerHitCategory": "target_ancestor",
+    "targetDisabled": false,
+    "pointerEventsNone": true,
+    "clippingAncestorCount": 4,
+    "testedPointCount": 9,
+    "interiorHitKinds": [
+      "target_ancestor",
+      "target_ancestor",
+      "target_ancestor",
+      "target_ancestor",
+      "target_ancestor",
+      "target_ancestor",
+      "target_ancestor",
+      "target_ancestor",
+      "target_ancestor"
+    ],
+    "targetRectangle": {
+      "x": 256.484375,
+      "y": 200.28125,
+      "width": 68.515625,
+      "height": 28
+    },
+    "centerOccluder": {
+      "tag": "other",
+      "role": "other_or_none",
+      "relation": "target_ancestor",
+      "position": "static",
+      "pointer_events": "enabled",
+      "owning_panel": "none",
+      "owning_panel_state": "none_or_other",
+      "tabpanel_ancestor_count": 0,
+      "known_paragraph": "other_or_none",
+      "known_notice": "none",
+      "in_app_root": false,
+      "in_dialog": false,
+      "in_alert": false,
+      "in_known_modal_overlay": false,
+      "ancestor_chain": [
+        {
+          "tag": "html",
+          "role": "other_or_none",
+          "slot": "other_or_none",
+          "state": "other_or_none",
+          "position": "static",
+          "displayNone": false,
+          "pointerEventsNone": false,
+          "isAppRoot": false,
+          "isVaultPanel": false
+        }
+      ],
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 360,
+        "height": 373
+      }
+    },
+    "firstInteriorOccluder": {
+      "tag": "other",
+      "role": "other_or_none",
+      "relation": "target_ancestor",
+      "position": "static",
+      "pointer_events": "enabled",
+      "owning_panel": "none",
+      "owning_panel_state": "none_or_other",
+      "tabpanel_ancestor_count": 0,
+      "known_paragraph": "other_or_none",
+      "known_notice": "none",
+      "in_app_root": false,
+      "in_dialog": false,
+      "in_alert": false,
+      "in_known_modal_overlay": false,
+      "ancestor_chain": [
+        {
+          "tag": "html",
+          "role": "other_or_none",
+          "slot": "other_or_none",
+          "state": "other_or_none",
+          "position": "static",
+          "displayNone": false,
+          "pointerEventsNone": false,
+          "isAppRoot": false,
+          "isVaultPanel": false
+        }
+      ],
+      "rectangle": {
+        "x": 0,
+        "y": 0,
+        "width": 360,
+        "height": 373
+      }
+    }
+  },
+  "failure_observation": {
+    "settingsActive": true,
+    "theme": "Light",
+    "storedTheme": "light",
+    "error": false,
+    "retry": false,
+    "guest": false
+  }
+}

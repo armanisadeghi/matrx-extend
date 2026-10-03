@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "review_id": "audit-unavailable-final-peer-20261003",
+  "reviewed_commit": "991385d9816b31a568619522e4795c001b4d3a06",
+  "verdict_A_actual_outcome": "PASS in source; native surface PARTIAL/unverified.",
+  "A_evidence": "Missing Web Locks is typed before storage callback execution; Settings clears key details, identifies Web Locks, blocks re-key/export, and offers a read-only details retry. Ordinary rotation and clipboard failures keep their retry paths; unknown key outcomes remain separately blocked. Focused tests cover initial load, export, rotation and recovery; journals record RED/GREEN and a passing mutation/gut check. I did not run tests or native acceptance.",
+  "A_missing_extra_misunderstood": "No source-level scope miss found. Exact-build Chrome behavior remains for parent acceptance.",
+  "verdict_B_quality": "PARTIAL: implementation is sound; one explicit invariant lacks a complete automated assertion.",
+  "B_finding": "tests/unit/device-key-concurrency.test.ts checks that unsupported rotation leaves the active key ID unchanged, but does not assert publicKeyHistory is unchanged. The brief explicitly requires no key/history mutation. Add a before/after history assertion in the same test; do not infer it from the active-key check.",
+  "B_doctrine": "Uses the existing shared Web Locks primitive; no unlocked fallback or duplicate mechanism. Typed failure is visible. The guard has reported RED/GREEN plus executed gut and mutation checks, though this reviewer did not replay them.",
+  "open_items": "Native Settings acceptance and the history non-mutation assertion remain open."
+}

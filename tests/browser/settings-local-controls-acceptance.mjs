@@ -13,7 +13,9 @@ import { click, evaluate, openSection, waitFor } from './settings-panel-driver.m
 // UI actions use trusted CDP pointer/keyboard input; DOM and Chrome API reads are evidence only.
 const REPO = resolve(import.meta.dirname, '..', '..');
 const OUTPUT = join(REPO, 'test-results', 'settings-local-controls-acceptance.json');
-const DEV_EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3-dev');
+const DEV_EXTENSION_DIR = process.env.SETTINGS_DEV_EXTENSION_DIR
+  ? resolve(process.env.SETTINGS_DEV_EXTENSION_DIR)
+  : join(REPO, '.output', 'chrome-mv3-dev');
 const DEV_BUILD_RECEIPT = process.env.SETTINGS_DEV_BUILD_RECEIPT;
 const EXTENSION_ID = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
 const DISCOVERY_SCAN_START = 22140;
