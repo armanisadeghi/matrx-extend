@@ -261,6 +261,7 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
       throw new Error('native_extension_old_worker_retired_before_reload');
     await reload.click(); // Chrome's own extension-management UI, using trusted input.
     let replacementWorker;
+    let retirementEvidence;
     for (let attempt = 0; attempt < ATTEMPTS; attempt += 1) {
       const { targetInfos } = await cdp.send('Target.getTargets');
       const ids = new Set(targetInfos.map((target) => target.targetId));
@@ -270,6 +271,18 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
           target.url.startsWith(workerUrlPrefix) &&
           target.targetId !== oldWorkerId,
       );
+      retirementEvidence = {
+        old_worker_destroyed_event: destroyedTargets.has(oldWorkerId),
+        old_worker_absent: !ids.has(oldWorkerId),
+        old_panel_absent: !ids.has(oldPanelId),
+        replacement_worker_present: Boolean(replacementWorker),
+        replacement_worker_created_event: Boolean(
+          replacementWorker && createdWorkers.has(replacementWorker.targetId),
+        ),
+        observed_worker_count: targetInfos.filter(
+          (target) => target.type === 'service_worker' && target.url.startsWith(workerUrlPrefix),
+        ).length,
+      };
       if (
         destroyedTargets.has(oldWorkerId) &&
         !ids.has(oldWorkerId) &&
@@ -281,7 +294,11 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
       replacementWorker = undefined;
       await wait(WAIT_MS);
     }
-    if (!replacementWorker) throw new Error('native_extension_worker_retirement_unverified');
+    if (!replacementWorker) {
+      const error = new Error('native_extension_worker_retirement_unverified');
+      error.lifecycleEvidence = retirementEvidence;
+      throw error;
+    }
     await page.bringToFront();
     await page.locator('#open-panel').click();
     let replacementPanel;

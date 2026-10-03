@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "task": "reload-lifecycle-repair",
+  "status": "unresolved_escalated",
+  "recorded_at_utc": "2026-10-03T23:45:00Z",
+  "scope": "Guarded guest-only extension reload diagnostics against the frozen imported development artifact. No Profile or database requests or writes.",
+  "artifact": {
+    "source_sha": "9dfb5911cd7fef18f8c36b1cefd273096e866bbf",
+    "ci_run_id": 37159097093,
+    "artifact_id": 11286822448,
+    "version": "0.2.184",
+    "tree_sha256": "2e99c4093efb34e2981f76581cc0c1bc66cdea7888e8296e2d47629e5a1cccb4"
+  },
+  "reproduction": {
+    "command": "node scripts/stabilization-resource.mjs run --run-id <unique-id> --profile-dir <precreated-external-0700-profile> -- node tests/browser/profile-reload-readonly.mjs",
+    "required_environment": {
+      "PROFILE_OUTPUT_DIR": "precreated external 0700 evidence directory",
+      "PROFILE_RUN_ID": "same unique id as resource guard",
+      "PROFILE_DEV_BUILD_RECEIPT": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/9dfb5911cd7fef18f8c36b1cefd273096e866bbf/37159097093-1/local-dev-receipt.json",
+      "PROFILE_EXPECTED_SOURCE_SHA": "9dfb5911cd7fef18f8c36b1cefd273096e866bbf",
+      "PROFILE_EXPECTED_CI_RUN_ID": "37159097093",
+      "PROFILE_EXPECTED_ARTIFACT_ID": "11286822448",
+      "MATRX_PLAYWRIGHT_MODULE": "/Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+      "MATRX_CHROME_PATH": "/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+      "TMPDIR": "/Volumes/Samsung2TB/code/.stabilization-scratch"
+    },
+    "policy": "The guard's exact command allowlist already contains the probe. Use a new run ID and one heavy lease."
+  },
+  "runs": [
+    {
+      "run_id": "profile-reload-repair-01",
+      "kind": "original_oracle_with_target_predicate_diagnostics",
+      "status": "reload_failed_observed",
+      "failure_code": "native_extension_worker_retirement_unverified",
+      "resource_decision": "valid",
+      "transport_failure_class": "none",
+      "evidence": {
+        "old_worker_destroyed_event": false,
+        "old_worker_absent": true,
+        "old_panel_absent": true,
+        "replacement_worker_present": false,
+        "replacement_worker_created_event": false,
+        "observed_worker_count": 0
+      },
+      "runner_report_external": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-reload-repair-01/evidence/profile-reload-readonly-profile-reload-repair-01.json",
+      "runner_report_sha256": "77a3963f4c297d5d82a93202226a80d5ce9f4a84b520ecebf453df30583a37bc",
+      "resource_journal": "docs/stabilization/resource-journals/profile-reload-repair-01.jsonl",
+      "resource_journal_sha256": "76ba2b83758b70a10a10b350e48a93c8dc8433a72ec1255fb3e46d932137b130"
+    },
+    {
+      "run_id": "profile-reload-repair-02",
+      "kind": "repair_attempt_one_wake_after_old_target_retirement",
+      "status": "reload_failed_observed",
+      "failure_code": "native_extension_replacement_worker_unverified",
+      "resource_decision": "valid",
+      "transport_failure_class": "none",
+      "runner_report_external": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-reload-repair-02/evidence/profile-reload-readonly-profile-reload-repair-02.json",
+      "runner_report_sha256": "482d0be6d60e29650b9735bebd674ff1f3302e53371d56c798461a8897c4d554",
+      "resource_journal": "docs/stabilization/resource-journals/profile-reload-repair-02.jsonl",
+      "resource_journal_sha256": "7a5c149846da285df901acab338c15fd79cfb503d3b33c5d13ee62682aa43012"
+    },
+    {
+      "run_id": "profile-reload-repair-03",
+      "kind": "repair_attempt_one_with_replacement_and_reply_diagnostics",
+      "status": "reload_failed_observed",
+      "failure_code": "native_extension_replacement_worker_unverified",
+      "resource_decision": "valid",
+      "transport_failure_class": "none",
+      "evidence": {
+        "different_worker_present": false,
+        "different_worker_created_event": false,
+        "different_panel_present": false,
+        "old_worker_present": false,
+        "old_panel_present": false,
+        "open_panel_reply_observed": true,
+        "open_panel_reply_ok": false
+      },
+      "runner_report_external": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-reload-repair-03/evidence/profile-reload-readonly-profile-reload-repair-03.json",
+      "runner_report_sha256": "efc77819a039a1d00f9dc88880efbefde36f3fa60fc50deace2c127c8d32f40e",
+      "resource_journal": "docs/stabilization/resource-journals/profile-reload-repair-03.jsonl",
+      "resource_journal_sha256": "519cd9d9ce021178bd0e933355d88f49ecee4b497066f44ca2fb7ed1771cac23"
+    }
+  ],
+  "diagnosis": {
+    "confirmed": "Chrome's target snapshots showed both original targets absent after clicking the native management reload control. The targetDestroyed event for the original worker was not delivered to this CDP observer. No replacement worker appeared in the original oracle's observation window. A trusted openPanel action after old-target retirement returned a failure and still produced no replacement worker or panel.",
+    "hypotheses": [
+      {
+        "cause": "CDP transport failure",
+        "result": "ruled_out_in_all_three_runs_by_transport_failure_class_none"
+      },
+      {
+        "cause": "Only the strict destroyed-event requirement blocked an otherwise visible replacement",
+        "result": "ruled_out_by_zero_replacement_workers_in_run_01"
+      },
+      {
+        "cause": "Replacement worker was merely lazy and a trusted openPanel message would activate it",
+        "result": "ruled_out_for_this_run_by_failed_reply_and_no_new_worker_or_panel_in_runs_02_and_03"
+      },
+      {
+        "cause": "Chrome did not reactivate the extension after the native reload action, or the test page could no longer reach its external message listener",
+        "result": "still_open; raw reply reason was not retained and cannot be reconstructed from the boolean report"
+      }
+    ],
+    "event_limit": "A missing targetDestroyed event does not negate observed target absence, but a snapshot alone cannot prove why Chrome did not reactivate the extension. The original lifecycle oracle remains unchanged.",
+    "next_diagnostic": "Capture a bounded, allowlisted failure class from the openPanel reply and inspect the extension management state after reload in a fresh guarded run before changing the lifecycle predicate."
+  },
+  "implementation": {
+    "retained": "Failure-only target predicate diagnostics in the canonical native helper and read-only probe.",
+    "reverted": "The unsuccessful wake-after-retirement sequencing experiment; no acceptance criterion was relaxed.",
+    "tests": "node --check on both changed scripts; native-sidepanel-qa-harness.test.mjs passed; three resource-valid native guest runs stayed red. No negative oracle test was added because there is no confirmed repair to guard."
+  }
+}
