@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-03 14:41 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T14:41:01.040297+00:00. 205 features · 759 cases · 1331 controls · 93 linked defect records.
+Generated 2026-10-03 14:54 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T14:54:06.508731+00:00. 205 features · 759 cases · 1331 controls · 93 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -8,7 +8,7 @@ A feature is fully verified for a role only when every applicable case explicitl
 
 Applicable case-by-role slots: **1205** — Pass: 63 · Partial: 50 · Fail: 4 · Unverified: 1087 · N/A: 1.
 Unverified splits into **124 explicitly marked unverified** and **963 with no result record**.
-Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
+Full feature-role pairs: **0/394**. Procedure gaps: 148 cases without steps, 147 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
 ## Tab and surface overview
@@ -1897,7 +1897,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4022-T01 Controlled manual execution: read_page | N/A | Unverified | Unverified | EXT-F-4022-C01 |
+| EXT-F-4022-T01 Read visible controls and text from a public page | N/A | Unverified | Unverified | EXT-F-4022-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -1910,7 +1910,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4023-T01 Controlled manual execution: find | N/A | Unverified | Unverified | EXT-F-4023-C01 |
+| EXT-F-4023-T01 Find a known heading on the active public page before and after reload | N/A | Unverified | Unverified | EXT-F-4023-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -1962,7 +1962,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4027-T01 Controlled manual execution: read_active_page | N/A | Unverified | Unverified | EXT-F-4027-C01 |
+| EXT-F-4027-T01 Capture structured data from the assigned active page | N/A | Unverified | Unverified | EXT-F-4027-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -2066,7 +2066,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4035-T01 Controlled manual execution: get_element_details | N/A | Unverified | Unverified | EXT-F-4035-C01 |
+| EXT-F-4035-T01 Inspect a page element using a fresh read_page reference | N/A | Unverified | Unverified | EXT-F-4035-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -2079,7 +2079,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4036-T01 Controlled manual execution: list_open_tabs | N/A | Unverified | Unverified | EXT-F-4036-C01 |
+| EXT-F-4036-T01 List loaded tabs and filter to a public target | N/A | Unverified | Unverified | EXT-F-4036-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -2092,7 +2092,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4037-T01 Controlled manual execution: get_tab_groups | N/A | Unverified | Unverified | EXT-F-4037-C01 |
+| EXT-F-4037-T01 Read the tab-group list, including the empty state | N/A | Unverified | Unverified | EXT-F-4037-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -2105,7 +2105,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4038-T01 Controlled manual execution: get_tab_info | N/A | Unverified | Unverified | EXT-F-4038-C01 |
+| EXT-F-4038-T01 Look up details for a known open public tab | N/A | Unverified | Unverified | EXT-F-4038-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -2118,7 +2118,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4039-T01 Controlled manual execution: search_bookmarks | N/A | Unverified | Unverified | EXT-F-4039-C01 |
+| EXT-F-4039-T01 Search only synthetic public bookmarks in an isolated profile | N/A | Unverified | Unverified | EXT-F-4039-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -2131,7 +2131,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4040-T01 Controlled manual execution: list_bookmark_tree | N/A | Unverified | Unverified | EXT-F-4040-C01 |
+| EXT-F-4040-T01 Read the shallow tree of synthetic public bookmarks | N/A | Unverified | Unverified | EXT-F-4040-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 
@@ -2144,7 +2144,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4041-T01 Controlled manual execution: search_history | N/A | Unverified | Unverified | EXT-F-4041-C01 |
+| EXT-F-4041-T01 Search known public visits in an isolated profile | N/A | Unverified | Unverified | EXT-F-4041-C01 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T14:41:01.040297+00:00",
+  "updated_at": "2026-10-03T14:54:06.508731+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -33529,7 +33529,7 @@
       "cases": [
         {
           "id": "EXT-F-4022-T01",
-          "title": "Controlled manual execution: read_page",
+          "title": "Read visible controls and text from a public page",
           "control_ids": [
             "EXT-F-4022-C01"
           ],
@@ -33539,16 +33539,40 @@
           ],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Follow the full resource/build/reload preflight in docs/stabilization/PLAN.md. Use a current imported development artifact selected from its receipt set, not a directory name. Confirm ci-receipt.json, provenance.json, import-status.json, local-dev-receipt.json agree on source SHA, run/attempt, artifact ID/digest, extension version/ID and tree hash; compare the loaded chrome-mv3 tree to local-dev-receipt.json. Stop if identity or hash differs.",
+            "Before assertions, record chrome://version profile path and chrome://extensions extension ID/version/Loaded from path. Load the exact receipt-bound chrome-mv3 folder if needed, reload the extension, close/reopen the side panel, then reload the selected target tab. Keep each case unverified until actually run against that artifact.",
+            "Use an existing signed-in member profile and repeat in an existing signed-in admin profile; do not change account roles. In Tools, find the named tool, expand its argument form, enter the case JSON, select Run, and inspect the inline result. This is a one-tool, user-initiated local run.",
+            "ToolsView.tsx says the manual Run skips the permission gate. Therefore these procedures verify manual handler behavior only; they do not verify dispatcher Ask/Act authorization or prove that a withheld Chrome permission is enforced. Do not remove permissions to manufacture a denial. Any permission refusal observed in normal operation is reportable, but is not a required negative test here.",
+            "Use a dedicated disposable Chrome profile containing only public targets and synthetic bookmarks/history for the browser-data cases. Never inspect or report the user's ordinary bookmarks or browsing history. Public page reads are read-only; do not submit forms or copy arbitrary page content into reports.",
+            "Complete shared receipt-bound build/profile/reload setup.",
+            "Open public https://example.org/ in the active tab and confirm it is fully loaded; use no logged-in or personal page.",
+            "Warm/reload repetition: Run once on the warm loaded page; then reload extension, panel, and same target tab and rerun both filter calls."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Warm execution: perform the following tool action(s) once before any case-specific extension/tab reload and record the inline result for comparison.",
+            "In Tools, open read_page and run with {\"filter\":\"all\",\"include_text\":true,\"include_bounds\":false,\"max_nodes\":200}.",
+            "Inspect the inline result for the active page title/URL and returned element roles, names/text, and refs. Confirm the visible heading text appears; do not enable lazy-load or hidden-element collection for this baseline.",
+            "Run again with {\"filter\":\"interactive\",\"include_text\":true,\"max_nodes\":200} and compare the returned elements.",
+            "After this warm pass, reload the extension, close/reopen Tools, and reload the same public tab. Repeat both read_page calls and apply the same heading/filter checks; compare visible content rather than refs."
+          ],
+          "expected": [
+            "The all-elements result includes visible page content and element metadata, including the public heading; the interactive result contains only interactive elements. Visible page text and navigation remain unchanged. read_page clears/reapplies data-matrx-ref attributes in the DOM, so this is a visible-content-preserving read with a DOM metadata side effect.",
+            "If the tab is unsupported or scripting access is unavailable, the tool returns a visible refusal/error; do not count an empty/error result as a successful content read."
+          ],
           "dimensions": [
+            "warm",
             "valid-input",
-            "invalid-input",
-            "permissions",
+            "filter",
             "reload"
+          ],
+          "procedure_evidence": [
+            ".research/tool-procedures-next-batch.json",
+            ".research/tool-procedures-next-reverify.json"
+          ],
+          "procedure_limits": [
+            "Exact node count and refs can vary with page/browser rendering; assert visible heading and role/filter behavior, not a fixed whole-page scrape.",
+            "The handler removes stale data-matrx-ref attributes and stamps current refs; do not describe the call as causing zero DOM mutation.",
+            "Inventory says guest is not applicable because Tools requires sign-in. Member/admin are applicable. Manual Run bypasses dispatcher authorization; this case does not cover Ask/Act."
           ]
         }
       ],
@@ -33673,7 +33697,7 @@
       "cases": [
         {
           "id": "EXT-F-4023-T01",
-          "title": "Controlled manual execution: find",
+          "title": "Find a known heading on the active public page before and after reload",
           "control_ids": [
             "EXT-F-4023-C01"
           ],
@@ -33683,16 +33707,41 @@
           ],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Follow the full resource/build/reload preflight in docs/stabilization/PLAN.md. Use a current imported development artifact selected from its receipt set, not a directory name. Confirm ci-receipt.json, provenance.json, import-status.json, local-dev-receipt.json agree on source SHA, run/attempt, artifact ID/digest, extension version/ID and tree hash; compare the loaded chrome-mv3 tree to local-dev-receipt.json. Stop if identity or hash differs.",
+            "Before assertions, record chrome://version profile path and chrome://extensions extension ID/version/Loaded from path. Load the exact receipt-bound chrome-mv3 folder if needed, reload the extension, close/reopen the side panel, then reload the selected target tab. Keep each case unverified until actually run against that artifact.",
+            "Use an existing signed-in member profile and repeat in an existing signed-in admin profile; do not change account roles. In Tools, find the named tool, expand its argument form, enter the case JSON, select Run, and inspect the inline result. This is a one-tool, user-initiated local run.",
+            "ToolsView.tsx says the manual Run skips the permission gate. Therefore these procedures verify manual handler behavior only; they do not verify dispatcher Ask/Act authorization or prove that a withheld Chrome permission is enforced. Do not remove permissions to manufacture a denial. Any permission refusal observed in normal operation is reportable, but is not a required negative test here.",
+            "Use a dedicated disposable Chrome profile containing only public targets and synthetic bookmarks/history for the browser-data cases. Never inspect or report the user's ordinary bookmarks or browsing history. Public page reads are read-only; do not submit forms or copy arbitrary page content into reports.",
+            "Complete shared setup; active tab is loaded https://example.org/.",
+            "Confirm the visible page heading before using its text as the search query.",
+            "A preceding read_page call on the active tab must return a candidate ref for the visible heading. Preserve that candidate evidence for checking find output; AI availability is required for this positive result path.",
+            "Warm/reload repetition: Warm run: acquire the heading candidate with read_page before find. Reload extension, panel, and target tab; reacquire a fresh candidate with read_page before the second find run."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Warm execution: perform this sequence once before any case-specific extension/tab reload and record the inline results.",
+            "In Tools, run read_page on the active public target with {\"filter\":\"all\",\"include_text\":true,\"max_nodes\":200}; record the returned ref and candidate text/role for the visible Example Domain heading.",
+            "In Tools, run find with {\"query\":\"Example Domain\",\"include_content\":true,\"limit\":5}. Compare returned match refs against the current read_page candidate refs and check the matched candidate text/role is the visible heading.",
+            "Inspect used_cache and mode. A successful positive case requires a returned match whose ref is among current candidates and whose candidate text/role identifies the heading; a refusal, unavailable AI, missing match, or invented/unknown ref is not a pass.",
+            "For the separate reloaded run, reload the extension, close/reopen Tools, and reload the public tab. Run read_page again to reacquire the current heading candidate/ref, then repeat the same find query and candidate/ref/text check."
+          ],
+          "expected": [
+            "For both warm and reloaded runs, find returns a match tied to a current read_page candidate ref whose candidate text/role identifies the visible Example Domain heading. Require the specific known match; any nonempty match list is insufficient.",
+            "If AI is unavailable/refuses, the expected result is an explicit unsuccessful/unverified run, not a pass. Do not assert an empty result for arbitrary no-match text: source sends zero-score candidates to AI, which can select one."
+          ],
           "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
+            "known-match",
+            "ai-availability",
+            "candidate-ref-validity",
+            "warm",
             "reload"
+          ],
+          "procedure_evidence": [
+            ".research/tool-procedures-next-batch.json",
+            ".research/tool-procedures-next-reverify.json"
+          ],
+          "procedure_limits": [
+            "AI-backed ranking can vary. The pass oracle is specifically a returned current candidate ref mapped to the visible known heading; record model refusal or a wrong/unknown ref as non-pass.",
+            "Member/admin applicable; guest not applicable at Tools surface. Manual execution does not exercise the dispatcher gate."
           ]
         }
       ],
@@ -34170,7 +34219,7 @@
       "cases": [
         {
           "id": "EXT-F-4027-T01",
-          "title": "Controlled manual execution: read_active_page",
+          "title": "Capture structured data from the assigned active page",
           "control_ids": [
             "EXT-F-4027-C01"
           ],
@@ -34180,16 +34229,40 @@
           ],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Follow the full resource/build/reload preflight in docs/stabilization/PLAN.md. Use a current imported development artifact selected from its receipt set, not a directory name. Confirm ci-receipt.json, provenance.json, import-status.json, local-dev-receipt.json agree on source SHA, run/attempt, artifact ID/digest, extension version/ID and tree hash; compare the loaded chrome-mv3 tree to local-dev-receipt.json. Stop if identity or hash differs.",
+            "Before assertions, record chrome://version profile path and chrome://extensions extension ID/version/Loaded from path. Load the exact receipt-bound chrome-mv3 folder if needed, reload the extension, close/reopen the side panel, then reload the selected target tab. Keep each case unverified until actually run against that artifact.",
+            "Use an existing signed-in member profile and repeat in an existing signed-in admin profile; do not change account roles. In Tools, find the named tool, expand its argument form, enter the case JSON, select Run, and inspect the inline result. This is a one-tool, user-initiated local run.",
+            "ToolsView.tsx says the manual Run skips the permission gate. Therefore these procedures verify manual handler behavior only; they do not verify dispatcher Ask/Act authorization or prove that a withheld Chrome permission is enforced. Do not remove permissions to manufacture a denial. Any permission refusal observed in normal operation is reportable, but is not a required negative test here.",
+            "Use a dedicated disposable Chrome profile containing only public targets and synthetic bookmarks/history for the browser-data cases. Never inspect or report the user's ordinary bookmarks or browsing history. Public page reads are read-only; do not submit forms or copy arbitrary page content into reports.",
+            "Complete shared setup; with the Tools panel open, leave https://example.org/ as the active browser tab. Confirm its title and URL.",
+            "Warm/reload repetition: Run shallow/deep on the warm loaded target. Reload extension, panel, and target tab before repeating both captures."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Warm execution: perform the following tool action(s) once before any case-specific extension/tab reload and record the inline result for comparison.",
+            "In Tools, open read_active_page and run with {} (deep defaults to false).",
+            "Inspect the inline SoupResult for url, capturedAt, metadata, article fields (title/content/excerpt), and arrays such as links/images; do not describe it as a concise summary.",
+            "Run {\"deep\":true}; this requests scrollToLoadLazy before capture. Verify it still captures the same public URL and valid structured fields, without requiring output to differ from shallow mode.",
+            "After extension and target reload, repeat the shallow and deep calls and check the same required structured fields and URL."
+          ],
+          "expected": [
+            "Both successful calls return a structured SoupResult for the same public URL, including url, capturedAt, metadata, article, and media/link/structured-data collections as defined by SoupResult. The deep=true call first requests a bounded lazy-load scroll; identical shallow/deep content is acceptable.",
+            "Blocked Chrome pages, no active assigned tab, or capture failures return an explicit refusal/error; these do not count as a successful capture."
+          ],
           "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
+            "structured-capture",
+            "shallow",
+            "deep-lazy-load-request",
+            "unsupported-target",
+            "warm",
             "reload"
+          ],
+          "procedure_evidence": [
+            ".research/tool-procedures-next-batch.json",
+            ".research/tool-procedures-next-reverify.json"
+          ],
+          "procedure_limits": [
+            "Do not expect a summary string or require deep output to differ. Lazy-loaded content and collection sizes vary by page/runtime.",
+            "Inventory applicability is member/admin only. Tools manual run targets the focused tab and skips dispatcher permission checks; this is not proof of per-turn assigned-tab behavior."
           ]
         }
       ],
@@ -35321,7 +35394,7 @@
       "cases": [
         {
           "id": "EXT-F-4035-T01",
-          "title": "Controlled manual execution: get_element_details",
+          "title": "Inspect a page element using a fresh read_page reference",
           "control_ids": [
             "EXT-F-4035-C01"
           ],
@@ -35331,16 +35404,38 @@
           ],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Follow the full resource/build/reload preflight in docs/stabilization/PLAN.md. Use a current imported development artifact selected from its receipt set, not a directory name. Confirm ci-receipt.json, provenance.json, import-status.json, local-dev-receipt.json agree on source SHA, run/attempt, artifact ID/digest, extension version/ID and tree hash; compare the loaded chrome-mv3 tree to local-dev-receipt.json. Stop if identity or hash differs.",
+            "Before assertions, record chrome://version profile path and chrome://extensions extension ID/version/Loaded from path. Load the exact receipt-bound chrome-mv3 folder if needed, reload the extension, close/reopen the side panel, then reload the selected target tab. Keep each case unverified until actually run against that artifact.",
+            "Use an existing signed-in member profile and repeat in an existing signed-in admin profile; do not change account roles. In Tools, find the named tool, expand its argument form, enter the case JSON, select Run, and inspect the inline result. This is a one-tool, user-initiated local run.",
+            "ToolsView.tsx says the manual Run skips the permission gate. Therefore these procedures verify manual handler behavior only; they do not verify dispatcher Ask/Act authorization or prove that a withheld Chrome permission is enforced. Do not remove permissions to manufacture a denial. Any permission refusal observed in normal operation is reportable, but is not a required negative test here.",
+            "Use a dedicated disposable Chrome profile containing only public targets and synthetic bookmarks/history for the browser-data cases. Never inspect or report the user's ordinary bookmarks or browsing history. Public page reads are read-only; do not submit forms or copy arbitrary page content into reports.",
+            "Complete shared setup; active target is https://example.org/ and contains no private or credential fields.",
+            "Warm/reload repetition: Run on the warm loaded target. After extension, panel, and target reload, reacquire the heading ref with read_page; never reuse the old ref."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Warm execution: perform the following tool action(s) once before any case-specific extension/tab reload and record the inline result for comparison.",
+            "Run read_page with {\"filter\":\"all\",\"include_text\":true,\"max_nodes\":200}.",
+            "Choose the returned ref attached to the visible Example Domain heading and copy that exact ref into get_element_details; do not invent a selector or reuse a ref after navigation.",
+            "Run get_element_details with {\"ref\":\"<returned-ref>\",\"include_html\":false,\"include_styles\":false} and inspect the result.",
+            "After extension and target reload, run read_page again to obtain a fresh heading ref, then rerun get_element_details using only that newly returned ref."
+          ],
+          "expected": [
+            "The result identifies the heading tag/text, attributes, bounding rectangle, visible=true, and child count. HTML/styles are not requested. This is an inspection; read_page may stamp data-matrx-ref attributes, but the visible page content is unchanged.",
+            "If the ref is absent/stale, an explicit no-element result is a failed setup for this positive case; reload the public target and create a fresh ref before retrying."
+          ],
           "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
+            "warm",
+            "fresh-ref",
+            "visible-element",
             "reload"
+          ],
+          "procedure_evidence": [
+            ".research/tool-procedures-next-batch.json",
+            ".research/tool-procedures-next-reverify.json"
+          ],
+          "procedure_limits": [
+            "Ref identifiers and coordinates vary per page load/window size. The input schema's tab_id representation should be checked against the current live catalog/handler before execution; this procedure omits it and relies on the active tab.",
+            "Member/admin applicable, guest not applicable at Tools. Catalog permission list is empty for this handler; manual run still does not establish any dispatcher permission behavior."
           ]
         }
       ],
@@ -35445,7 +35540,7 @@
       "cases": [
         {
           "id": "EXT-F-4036-T01",
-          "title": "Controlled manual execution: list_open_tabs",
+          "title": "List loaded tabs and filter to a public target",
           "control_ids": [
             "EXT-F-4036-C01"
           ],
@@ -35455,16 +35550,39 @@
           ],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Follow the full resource/build/reload preflight in docs/stabilization/PLAN.md. Use a current imported development artifact selected from its receipt set, not a directory name. Confirm ci-receipt.json, provenance.json, import-status.json, local-dev-receipt.json agree on source SHA, run/attempt, artifact ID/digest, extension version/ID and tree hash; compare the loaded chrome-mv3 tree to local-dev-receipt.json. Stop if identity or hash differs.",
+            "Before assertions, record chrome://version profile path and chrome://extensions extension ID/version/Loaded from path. Load the exact receipt-bound chrome-mv3 folder if needed, reload the extension, close/reopen the side panel, then reload the selected target tab. Keep each case unverified until actually run against that artifact.",
+            "Use an existing signed-in member profile and repeat in an existing signed-in admin profile; do not change account roles. In Tools, find the named tool, expand its argument form, enter the case JSON, select Run, and inspect the inline result. This is a one-tool, user-initiated local run.",
+            "ToolsView.tsx says the manual Run skips the permission gate. Therefore these procedures verify manual handler behavior only; they do not verify dispatcher Ask/Act authorization or prove that a withheld Chrome permission is enforced. Do not remove permissions to manufacture a denial. Any permission refusal observed in normal operation is reportable, but is not a required negative test here.",
+            "Use a dedicated disposable Chrome profile containing only public targets and synthetic bookmarks/history for the browser-data cases. Never inspect or report the user's ordinary bookmarks or browsing history. Public page reads are read-only; do not submit forms or copy arbitrary page content into reports.",
+            "Complete shared setup in the disposable profile. Open https://example.org/ and one other public tab; no personal tabs should be present.",
+            "Warm/reload repetition: Run on the warm disposable profile. After extension/panel and both target-tab reloads, repeat both tab-list calls."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Warm execution: perform the following tool action(s) once before any case-specific extension/tab reload and record the inline result for comparison.",
+            "Run list_open_tabs with {\"all_windows\":true,\"loaded_only\":true}.",
+            "Verify the result contains the two known public tabs and note count, titles, URLs, status, and active flag.",
+            "Run {\"all_windows\":true,\"url\":\"https://example.org/*\",\"loaded_only\":true} and inspect the filtered result.",
+            "After this warm pass, reload the extension, close/reopen Tools, and reload both known public tabs. Repeat both list_open_tabs queries and check the same target-membership/filter criteria."
+          ],
+          "expected": [
+            "The first result includes loaded tabs in the profile and count equals the returned tabs array length. The URL-filtered call includes the matching example.org tab and excludes the other target. The tool does not open, close, or modify tabs.",
+            "If Chrome URL matching semantics or a wildcard differs, record actual filter behavior as a catalog/handler mismatch rather than asserting a guessed match."
+          ],
           "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
+            "warm",
+            "all-tabs",
+            "url-filter",
+            "loaded-only",
             "reload"
+          ],
+          "procedure_evidence": [
+            ".research/tool-procedures-next-batch.json",
+            ".research/tool-procedures-next-reverify.json"
+          ],
+          "procedure_limits": [
+            "Tab IDs/order/status may vary; only assert known targets, count consistency, and documented filters.",
+            "Inventory lists tabs permission; member/admin applicable. Manual Run bypasses permission gate, so no permission-denial result can be required here."
           ]
         }
       ],
@@ -35556,7 +35674,7 @@
       "cases": [
         {
           "id": "EXT-F-4037-T01",
-          "title": "Controlled manual execution: get_tab_groups",
+          "title": "Read the tab-group list, including the empty state",
           "control_ids": [
             "EXT-F-4037-C01"
           ],
@@ -35566,16 +35684,37 @@
           ],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Follow the full resource/build/reload preflight in docs/stabilization/PLAN.md. Use a current imported development artifact selected from its receipt set, not a directory name. Confirm ci-receipt.json, provenance.json, import-status.json, local-dev-receipt.json agree on source SHA, run/attempt, artifact ID/digest, extension version/ID and tree hash; compare the loaded chrome-mv3 tree to local-dev-receipt.json. Stop if identity or hash differs.",
+            "Before assertions, record chrome://version profile path and chrome://extensions extension ID/version/Loaded from path. Load the exact receipt-bound chrome-mv3 folder if needed, reload the extension, close/reopen the side panel, then reload the selected target tab. Keep each case unverified until actually run against that artifact.",
+            "Use an existing signed-in member profile and repeat in an existing signed-in admin profile; do not change account roles. In Tools, find the named tool, expand its argument form, enter the case JSON, select Run, and inspect the inline result. This is a one-tool, user-initiated local run.",
+            "ToolsView.tsx says the manual Run skips the permission gate. Therefore these procedures verify manual handler behavior only; they do not verify dispatcher Ask/Act authorization or prove that a withheld Chrome permission is enforced. Do not remove permissions to manufacture a denial. Any permission refusal observed in normal operation is reportable, but is not a required negative test here.",
+            "Use a dedicated disposable Chrome profile containing only public targets and synthetic bookmarks/history for the browser-data cases. Never inspect or report the user's ordinary bookmarks or browsing history. Public page reads are read-only; do not submit forms or copy arbitrary page content into reports.",
+            "Complete shared setup in a disposable Chrome profile. If a group already exists, record its displayed title/color and one member tab; do not change group state.",
+            "Warm/reload repetition: Run on the warm disposable Chrome profile, then after extension reload and Tools reopen repeat the group query and visible group comparison."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Warm execution: perform the following tool action(s) once before any case-specific extension/tab reload and record the inline result for comparison.",
+            "Run get_tab_groups with {}.",
+            "Inspect count and groups. If the isolated profile already has a group, compare its id/title/color/collapsed/window_id/tab_ids with Chrome's visible group and tabs. If there are no groups, record the empty state.",
+            "After this warm pass, reload the extension and reopen Tools, then run get_tab_groups again and compare the current visible Chrome groups using the same count/membership criteria."
+          ],
+          "expected": [
+            "On supported Chrome, result contains count equal to groups array length; each reported tab_ids entry belongs to that group. Zero groups is a valid observed empty state.",
+            "If chrome.tabGroups is unavailable, handler returns {ok:false,reason:'tabGroups API unavailable'}; report browser capability mismatch, not a successful empty result."
+          ],
           "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
+            "warm",
+            "populated-or-empty",
+            "browser-api-availability",
             "reload"
+          ],
+          "procedure_evidence": [
+            ".research/tool-procedures-next-batch.json",
+            ".research/tool-procedures-next-reverify.json"
+          ],
+          "procedure_limits": [
+            "No group is created or edited by this procedure. Current catalog permission declarations should be reconciled with Chrome's effective capability before claiming a gate result.",
+            "Inventory lists tabs and tabGroups permissions; handler advertises Chrome support only. Member/admin applicable. Manual run does not exercise authorization gate."
           ]
         }
       ],
@@ -35672,7 +35811,7 @@
       "cases": [
         {
           "id": "EXT-F-4038-T01",
-          "title": "Controlled manual execution: get_tab_info",
+          "title": "Look up details for a known open public tab",
           "control_ids": [
             "EXT-F-4038-C01"
           ],
@@ -35682,16 +35821,38 @@
           ],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Follow the full resource/build/reload preflight in docs/stabilization/PLAN.md. Use a current imported development artifact selected from its receipt set, not a directory name. Confirm ci-receipt.json, provenance.json, import-status.json, local-dev-receipt.json agree on source SHA, run/attempt, artifact ID/digest, extension version/ID and tree hash; compare the loaded chrome-mv3 tree to local-dev-receipt.json. Stop if identity or hash differs.",
+            "Before assertions, record chrome://version profile path and chrome://extensions extension ID/version/Loaded from path. Load the exact receipt-bound chrome-mv3 folder if needed, reload the extension, close/reopen the side panel, then reload the selected target tab. Keep each case unverified until actually run against that artifact.",
+            "Use an existing signed-in member profile and repeat in an existing signed-in admin profile; do not change account roles. In Tools, find the named tool, expand its argument form, enter the case JSON, select Run, and inspect the inline result. This is a one-tool, user-initiated local run.",
+            "ToolsView.tsx says the manual Run skips the permission gate. Therefore these procedures verify manual handler behavior only; they do not verify dispatcher Ask/Act authorization or prove that a withheld Chrome permission is enforced. Do not remove permissions to manufacture a denial. Any permission refusal observed in normal operation is reportable, but is not a required negative test here.",
+            "Use a dedicated disposable Chrome profile containing only public targets and synthetic bookmarks/history for the browser-data cases. Never inspect or report the user's ordinary bookmarks or browsing history. Public page reads are read-only; do not submit forms or copy arbitrary page content into reports.",
+            "Complete shared setup in the disposable profile. Use list_open_tabs to obtain the numeric id for the open https://example.org/ tab.",
+            "Warm/reload repetition: Warm run: obtain tab ID from list_open_tabs immediately before lookup. After extension, panel, and target reload, reacquire the ID from list_open_tabs before the second lookup."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Warm execution: perform the following tool action(s) once before any case-specific extension/tab reload and record the inline result for comparison.",
+            "Run get_tab_info with {\"tab_id\":<numeric ID returned by list_open_tabs>}.",
+            "Compare returned id, URL, title, active/pinned state, status, and window_id against list_open_tabs and Chrome's tab strip.",
+            "Do not use an ID from a previous profile or earlier browser session.",
+            "After this warm pass, reload the extension, close/reopen Tools, and reload the target tab. Run list_open_tabs again to reacquire the current numeric tab ID, then rerun get_tab_info and compare current metadata."
+          ],
+          "expected": [
+            "The returned record describes the same open target and its current state. No tab is changed.",
+            "A stale/unknown ID returns {ok:false,reason:<Chrome error>} and should be recorded as a stale-fixture input, not a successful lookup."
+          ],
           "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
+            "warm",
+            "valid-tab-id",
+            "stale-id-negative",
             "reload"
+          ],
+          "procedure_evidence": [
+            ".research/tool-procedures-next-batch.json",
+            ".research/tool-procedures-next-reverify.json"
+          ],
+          "procedure_limits": [
+            "Use only IDs discovered in the current run; tab identifiers are ephemeral.",
+            "Inventory lists tabs permission; member/admin applicable. Manual run skips dispatcher permission gate."
           ]
         }
       ],
@@ -35795,7 +35956,7 @@
       "cases": [
         {
           "id": "EXT-F-4039-T01",
-          "title": "Controlled manual execution: search_bookmarks",
+          "title": "Search only synthetic public bookmarks in an isolated profile",
           "control_ids": [
             "EXT-F-4039-C01"
           ],
@@ -35805,16 +35966,40 @@
           ],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Follow the full resource/build/reload preflight in docs/stabilization/PLAN.md. Use a current imported development artifact selected from its receipt set, not a directory name. Confirm ci-receipt.json, provenance.json, import-status.json, local-dev-receipt.json agree on source SHA, run/attempt, artifact ID/digest, extension version/ID and tree hash; compare the loaded chrome-mv3 tree to local-dev-receipt.json. Stop if identity or hash differs.",
+            "Before assertions, record chrome://version profile path and chrome://extensions extension ID/version/Loaded from path. Load the exact receipt-bound chrome-mv3 folder if needed, reload the extension, close/reopen the side panel, then reload the selected target tab. Keep each case unverified until actually run against that artifact.",
+            "Use an existing signed-in member profile and repeat in an existing signed-in admin profile; do not change account roles. In Tools, find the named tool, expand its argument form, enter the case JSON, select Run, and inspect the inline result. This is a one-tool, user-initiated local run.",
+            "ToolsView.tsx says the manual Run skips the permission gate. Therefore these procedures verify manual handler behavior only; they do not verify dispatcher Ask/Act authorization or prove that a withheld Chrome permission is enforced. Do not remove permissions to manufacture a denial. Any permission refusal observed in normal operation is reportable, but is not a required negative test here.",
+            "Use a dedicated disposable Chrome profile containing only public targets and synthetic bookmarks/history for the browser-data cases. Never inspect or report the user's ordinary bookmarks or browsing history. Public page reads are read-only; do not submit forms or copy arbitrary page content into reports.",
+            "For page tools, use the public https://example.org/ page (title and visible heading provide stable public text) as the basic read-only target. For find/get_element_details, first run read_page and use one of its returned ref values. For reproducible browser-data results, prepare an isolated test profile with a small known set of bookmarks to public example.org URLs and visits to those same URLs; record only these public URLs and the isolated profile identifier. Do not seed or inspect the everyday profile.",
+            "Complete shared setup. Prepare an isolated test profile with a small known set of bookmarks to public example.org URLs, including one titled 'Matrx public fixture alpha'; do not use the everyday profile.",
+            "Warm/reload repetition: Run in the same isolated profile before and after extension reload/Tools reopen; do not switch to an everyday profile."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Warm execution: perform the following tool action(s) once before any case-specific extension/tab reload and record the inline result for comparison.",
+            "Run search_bookmarks with {\"query\":\"Matrx public fixture alpha\",\"limit\":10}.",
+            "Compare returned count, total_match, title and URL with the single synthetic bookmark you created for this isolated test profile.",
+            "Run {\"query\":\"zz-no-such-test-bookmark-zz\",\"limit\":10} to inspect the no-match response.",
+            "After this warm pass, reload the extension and reopen Tools, then rerun both bookmark queries in the same isolated profile and compare the known fixture bookmark and no-match response."
+          ],
+          "expected": [
+            "The first result includes the synthetic bookmark and total_match reflects the full match count; count is capped at limit. The second returns zero matches. This tool only reads bookmarks.",
+            "An API-unavailable or permission error is visible and is not equivalent to an empty successful result. Do not expose bookmark data from other profiles in evidence."
+          ],
           "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
+            "warm",
+            "known-match",
+            "no-match",
+            "limit",
             "reload"
+          ],
+          "procedure_evidence": [
+            ".research/tool-procedures-next-batch.json",
+            ".research/tool-procedures-next-reverify.json"
+          ],
+          "procedure_limits": [
+            "Bookmark setup is a prerequisite performed only in a disposable profile; this proposed tool case itself is read-only. No real user bookmark should be surfaced or recorded.",
+            "Inventory lists bookmarks permission; member/admin applicable. Manual Run skips dispatcher permission checks; this is a read of profile-local personal data, restricted to the isolated fixture profile."
           ]
         }
       ],
@@ -35915,7 +36100,7 @@
       "cases": [
         {
           "id": "EXT-F-4040-T01",
-          "title": "Controlled manual execution: list_bookmark_tree",
+          "title": "Read the shallow tree of synthetic public bookmarks",
           "control_ids": [
             "EXT-F-4040-C01"
           ],
@@ -35925,16 +36110,39 @@
           ],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Follow the full resource/build/reload preflight in docs/stabilization/PLAN.md. Use a current imported development artifact selected from its receipt set, not a directory name. Confirm ci-receipt.json, provenance.json, import-status.json, local-dev-receipt.json agree on source SHA, run/attempt, artifact ID/digest, extension version/ID and tree hash; compare the loaded chrome-mv3 tree to local-dev-receipt.json. Stop if identity or hash differs.",
+            "Before assertions, record chrome://version profile path and chrome://extensions extension ID/version/Loaded from path. Load the exact receipt-bound chrome-mv3 folder if needed, reload the extension, close/reopen the side panel, then reload the selected target tab. Keep each case unverified until actually run against that artifact.",
+            "Use an existing signed-in member profile and repeat in an existing signed-in admin profile; do not change account roles. In Tools, find the named tool, expand its argument form, enter the case JSON, select Run, and inspect the inline result. This is a one-tool, user-initiated local run.",
+            "ToolsView.tsx says the manual Run skips the permission gate. Therefore these procedures verify manual handler behavior only; they do not verify dispatcher Ask/Act authorization or prove that a withheld Chrome permission is enforced. Do not remove permissions to manufacture a denial. Any permission refusal observed in normal operation is reportable, but is not a required negative test here.",
+            "Use a dedicated disposable Chrome profile containing only public targets and synthetic bookmarks/history for the browser-data cases. Never inspect or report the user's ordinary bookmarks or browsing history. Public page reads are read-only; do not submit forms or copy arbitrary page content into reports.",
+            "For page tools, use the public https://example.org/ page (title and visible heading provide stable public text) as the basic read-only target. For find/get_element_details, first run read_page and use one of its returned ref values. For reproducible browser-data results, prepare an isolated test profile with a small known set of bookmarks to public example.org URLs and visits to those same URLs; record only these public URLs and the isolated profile identifier. Do not seed or inspect the everyday profile.",
+            "Complete shared setup. In the isolated profile, identify a test bookmark folder containing only public example.org URLs and record its folder ID; do not point at a personal profile's tree.",
+            "Warm/reload repetition: Run in the same isolated profile before and after extension reload/Tools reopen. If profile recreation changes folder IDs, reacquire the fixture folder ID before the second query."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Warm execution: perform the following tool action(s) once before any case-specific extension/tab reload and record the inline result for comparison.",
+            "Run list_bookmark_tree with {\"folder_id\":\"<isolated-test-folder-id>\",\"max_depth\":2}.",
+            "Inspect the returned tree for the known folder and fixture bookmark titles/URLs. Confirm traversal stops at the requested depth.",
+            "If testing default-root behavior, run {} only in this isolated profile and compare it to the small known fixture tree.",
+            "After this warm pass, reload the extension and reopen Tools, then rerun list_bookmark_tree with the same isolated folder ID and depth. If the profile was recreated, reacquire the folder ID from that profile before running."
+          ],
+          "expected": [
+            "The result contains tree nodes with id/title/date_added and public URL values for bookmark nodes; child traversal is bounded by max_depth. The handler does not modify bookmarks.",
+            "A missing folder ID returns an explicit API error; do not substitute a guessed ID or treat an unrelated root as success."
+          ],
           "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
+            "warm",
+            "folder-scope",
+            "depth-limit",
             "reload"
+          ],
+          "procedure_evidence": [
+            ".research/tool-procedures-next-batch.json",
+            ".research/tool-procedures-next-reverify.json"
+          ],
+          "procedure_limits": [
+            "Tree shape depends on the browser's standard folders. Avoid asserting full root shape; use the isolated folder and exact synthetic entries.",
+            "Inventory lists bookmarks permission; member/admin applicable. Manual run bypasses dispatcher gate. Restrict use to the isolated synthetic profile because a full tree can reveal personal data."
           ]
         }
       ],
@@ -36043,7 +36251,7 @@
       "cases": [
         {
           "id": "EXT-F-4041-T01",
-          "title": "Controlled manual execution: search_history",
+          "title": "Search known public visits in an isolated profile",
           "control_ids": [
             "EXT-F-4041-C01"
           ],
@@ -36053,16 +36261,40 @@
           ],
           "design_status": "needed",
           "preconditions": [
-            "Resource permit and current build receipt",
-            "Controlled owned target and no unauthorized external effects"
+            "Follow the full resource/build/reload preflight in docs/stabilization/PLAN.md. Use a current imported development artifact selected from its receipt set, not a directory name. Confirm ci-receipt.json, provenance.json, import-status.json, local-dev-receipt.json agree on source SHA, run/attempt, artifact ID/digest, extension version/ID and tree hash; compare the loaded chrome-mv3 tree to local-dev-receipt.json. Stop if identity or hash differs.",
+            "Before assertions, record chrome://version profile path and chrome://extensions extension ID/version/Loaded from path. Load the exact receipt-bound chrome-mv3 folder if needed, reload the extension, close/reopen the side panel, then reload the selected target tab. Keep each case unverified until actually run against that artifact.",
+            "Use an existing signed-in member profile and repeat in an existing signed-in admin profile; do not change account roles. In Tools, find the named tool, expand its argument form, enter the case JSON, select Run, and inspect the inline result. This is a one-tool, user-initiated local run.",
+            "ToolsView.tsx says the manual Run skips the permission gate. Therefore these procedures verify manual handler behavior only; they do not verify dispatcher Ask/Act authorization or prove that a withheld Chrome permission is enforced. Do not remove permissions to manufacture a denial. Any permission refusal observed in normal operation is reportable, but is not a required negative test here.",
+            "Use a dedicated disposable Chrome profile containing only public targets and synthetic bookmarks/history for the browser-data cases. Never inspect or report the user's ordinary bookmarks or browsing history. Public page reads are read-only; do not submit forms or copy arbitrary page content into reports.",
+            "For page tools, use the public https://example.org/ page (title and visible heading provide stable public text) as the basic read-only target. For find/get_element_details, first run read_page and use one of its returned ref values. For reproducible browser-data results, prepare an isolated test profile with a small known set of bookmarks to public example.org URLs and visits to those same URLs; record only these public URLs and the isolated profile identifier. Do not seed or inspect the everyday profile.",
+            "Complete shared setup in a disposable profile. Before seeding visits, record start_time_ms as the current Unix epoch timestamp in milliseconds. Then visit https://example.org/ and https://example.org/?matrx-history-fixture=2 in that profile; do not use the everyday profile. Immediately before the first tool invocation, record end_time_ms as current Unix epoch milliseconds. Use those recorded numeric values in both query objects.",
+            "Warm/reload repetition: Run in the same isolated profile before and after extension reload/Tools reopen, reusing the recorded numeric time bounds exactly."
           ],
-          "steps": [],
-          "expected": [],
+          "steps": [
+            "Warm execution: perform this sequence once before any case-specific extension reload and record the inline results.",
+            "Run search_history with {\"query\":\"example.org\",\"start_time_ms\":<recorded-numeric-start-ms>,\"end_time_ms\":<recorded-numeric-end-ms>,\"max_results\":100}. Both numeric bounds are Unix epoch milliseconds; start was recorded before seeding visits and end immediately before this invocation.",
+            "Inspect count/items; require the two seeded public URLs to appear with last_visit_ms between the recorded bounds.",
+            "Run the no-match query {\"query\":\"zz-no-such-test-history-zz\",\"start_time_ms\":<same-recorded-start-ms>,\"end_time_ms\":<same-recorded-end-ms>,\"max_results\":100}.",
+            "After extension reload, reopen Tools and rerun both queries with the exact same numeric bounds; verify the seeded visits remain in-window and the sentinel query remains empty."
+          ],
+          "expected": [
+            "The positive query returns the two seeded public-profile URLs within the explicitly recorded numeric millisecond interval and count equals items.length; the sentinel query returns no items matching its unique query. The tool itself does not navigate or change history.",
+            "A missing history capability/error is explicit. Do not interpret an empty positive result as success until the isolated profile's known visits and recorded bounds are confirmed."
+          ],
           "dimensions": [
-            "valid-input",
-            "invalid-input",
-            "permissions",
+            "warm",
+            "known-visit",
+            "time-window",
+            "no-match",
             "reload"
+          ],
+          "procedure_evidence": [
+            ".research/tool-procedures-next-batch.json",
+            ".research/tool-procedures-next-reverify.json"
+          ],
+          "procedure_limits": [
+            "Record start before visiting https://example.org/ and https://example.org/?matrx-history-fixture=2; record end immediately before the first query, both as Unix epoch milliseconds. Require those exact seeded URLs and in-window last_visit_ms values. Repeat with identical bounds after reload.",
+            "Inventory lists history permission; member/admin applicable. Manual Run bypasses dispatcher gating. History is personal data, so run only in the disposable profile seeded with public targets; never inspect ordinary browsing history."
           ]
         }
       ],
