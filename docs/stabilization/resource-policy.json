@@ -145,6 +145,7 @@
     ["node", "tests/browser/screenshot-full-page-acceptance.mjs"],
     ["node", "tests/browser/screenshot-gallery-failure-acceptance.mjs"],
     ["node", "tests/browser/guest-chat-store-acceptance.mjs"],
+    ["node", "scripts/hosted-guest-acceptance.mjs"],
     ["node", "tests/browser/guest-chat-store-screenshot.mjs"],
     ["node", "tests/browser/reviewer-chat-store-acceptance.mjs"],
     ["bash", "release.sh", "--patch", "--message", "EXT-D-0066 restore verified public guest Chat"],

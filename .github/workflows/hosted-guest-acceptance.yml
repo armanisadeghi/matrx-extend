@@ -1,0 +1,91 @@
+name: Hosted guest side-panel acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_run_id:
+        description: Successful Hosted release run whose exact validated artifact will be tested
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  guest:
+    runs-on: macos-latest
+    timeout-minutes: 15
+    concurrency:
+      group: hosted-guest-side-panel
+      cancel-in-progress: false
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Require a successful published release artifact
+        id: release
+        shell: bash
+        env:
+          RELEASE_RUN_ID: ${{ inputs.release_run_id }}
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_RUN_ID" =~ ^[0-9]+$ ]] || { echo 'Release run ID must be numeric.' >&2; exit 1; }
+          gh run view "$RELEASE_RUN_ID" --json conclusion,event,workflowName,headBranch \
+            --jq 'select(.conclusion == "success" and .event == "workflow_dispatch" and .workflowName == "Hosted release" and .headBranch == "main") | .conclusion' \
+            | grep -qx success
+          names="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${RELEASE_RUN_ID}/artifacts" \
+            --jq '.artifacts[] | select(.expired == false and (.name | test("^matrx-extend-v[0-9]+\\.[0-9]+\\.[0-9]+$"))) | .name')"
+          [[ "$names" =~ ^matrx-extend-v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'Expected exactly one validated release artifact.' >&2; exit 1; }
+          mkdir -p "$RUNNER_TEMP/release-artifact"
+          gh run download "$RELEASE_RUN_ID" --name "$names" --dir "$RUNNER_TEMP/release-artifact"
+          receipts="$(find "$RUNNER_TEMP/release-artifact" -type f -name release-receipt.json)"
+          [[ -f "$receipts" ]] || { echo 'Expected exactly one release receipt.' >&2; exit 1; }
+          echo "artifact_dir=$(dirname "$receipts")" >> "$GITHUB_OUTPUT"
+          version="$(node -p "JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')).version" "$receipts")"
+          [[ "$names" == "matrx-extend-v${version}" ]] || { echo 'Artifact name and receipt version differ.' >&2; exit 1; }
+          git fetch --quiet origin "refs/tags/v${version}:refs/tags/v${version}"
+          source_sha="$(git rev-parse "v${version}^{commit}")"
+          echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Refuse an unsafe host before installing browser runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/guest-resource-profile"
+          node scripts/stabilization-resource.mjs check --profile-dir "$RUNNER_TEMP/guest-resource-profile"
+
+      - name: Install isolated Playwright CDP client
+        shell: bash
+        env:
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
+        run: |
+          npm install --prefix "$RUNNER_TEMP/browser-runtime" --no-save --ignore-scripts playwright@1.56.1
+          "$RUNNER_TEMP/browser-runtime/node_modules/.bin/playwright" install chromium
+
+      - name: Exercise the actual signed-out Chrome side panel
+        shell: bash
+        env:
+          MATRX_PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser-runtime/node_modules/playwright/index.mjs
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
+          MATRX_HOSTED_RELEASE_ARTIFACT_DIR: ${{ steps.release.outputs.artifact_dir }}
+          MATRX_HOSTED_GUEST_OUTPUT_DIR: ${{ runner.temp }}/guest-acceptance
+          MATRX_HOSTED_RELEASE_SHA: ${{ steps.release.outputs.source_sha }}
+        run: node scripts/stabilization-resource.mjs run --run-id "hosted-guest-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
+
+      - name: Upload browser result and native-panel screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hosted-guest-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: ignore
+          path: |
+            test-results/guest-chat-store-*.json
+            test-results/native-sidepanel-qa-*/*.png
