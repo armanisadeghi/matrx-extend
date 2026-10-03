@@ -63,6 +63,7 @@ const OBSERVATION_CODES = new Set([
   'd87_expected_identity',
   'd87_rendered_identity',
   'd87_reload_first_party',
+  'd87_panel_foreground',
 ]);
 const POINTER_CODES = new Set([
   'pointer_initial_evaluation_failed',
@@ -80,6 +81,7 @@ const report = {
   auth_mode: AUTH_MODE,
   authentication: null,
   reload_auth_checks: [],
+  pointer_boundary: null,
   status: 'unverified',
   build: null,
   cases: [],
@@ -125,6 +127,33 @@ async function observation(panel) {
       error,
       retry,
       guest: (document.body?.innerText ?? '').includes('Sign in to choose'),
+    };
+  })()`,
+  );
+}
+
+async function pointerBoundary(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+    const listboxes = [...document.querySelectorAll('[role="listbox"]')];
+    const animations = listboxes.flatMap((node) => node.getAnimations({ subtree: false }));
+    const theme = [...document.querySelectorAll('span')]
+      .find((node) => node.textContent.trim() === 'Theme')
+      ?.parentElement?.parentElement?.querySelector('button[role="combobox"]');
+    return {
+      visibility: ['visible', 'hidden', 'prerender'].includes(document.visibilityState)
+        ? document.visibilityState : 'other',
+      body_inline_pointer_events_none: document.body.style.pointerEvents === 'none',
+      body_computed_pointer_events_none: getComputedStyle(document.body).pointerEvents === 'none',
+      theme_computed_pointer_events_none: theme ? getComputedStyle(theme).pointerEvents === 'none' : null,
+      listbox_count: listboxes.length,
+      listbox_open_count: listboxes.filter((node) => node.getAttribute('data-state') === 'open').length,
+      listbox_closed_count: listboxes.filter((node) => node.getAttribute('data-state') === 'closed').length,
+      listbox_running_animation_count: animations.filter((animation) => animation.playState === 'running').length,
+      listbox_paused_animation_count: animations.filter((animation) => animation.playState === 'paused').length,
+      listbox_finished_animation_count: animations.filter((animation) => animation.playState === 'finished').length,
+      dialog_count: document.querySelectorAll('[role="dialog"], [role="alertdialog"]').length,
     };
   })()`,
   );
@@ -313,7 +342,7 @@ try {
     expectedRelease: receipt,
     releaseReceiptPath: receiptPath,
     ...(receipt.kind === 'local_dev_unpacked' && { localDevReceiptPath: receiptPath }),
-    exercisePanel: async ({ page, panel }) => {
+    exercisePanel: async ({ page, panel, activatePanel }) => {
       try {
         if (AUTH_MODE !== 'guest') {
           stage = 'authentication';
@@ -333,6 +362,12 @@ try {
           expectedEmail = email;
           expectedOrganizationId = organizationId;
           report.authentication = safeAuthentication;
+          await activatePanel();
+          await waitFor(
+            'd87_panel_foreground',
+            () => evaluate(panel, 'document.visibilityState === "visible"'),
+            (visible) => visible === true,
+          );
         }
         stage = 'baseline';
         await openSettings(panel);
@@ -428,6 +463,12 @@ try {
       } catch (error) {
         report.failure_operation = operation;
         if (error?.driverFailure) report.driver_failure = error.driverFailure;
+        if (
+          operation === 'theme_menu_open' &&
+          error?.driverFailure?.code === 'pointer_stable_hit_not_observed'
+        ) {
+          report.pointer_boundary = await pointerBoundary(panel).catch(() => null);
+        }
         // Only the fixed Settings predicates below cross from the panel. A
         // destroyed execution context is recorded as unavailable.
         report.failure_observation = await observation(panel).catch(() => null);

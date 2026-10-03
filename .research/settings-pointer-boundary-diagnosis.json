@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "status": "source_candidate_ready_runtime_unverified",
+  "defect": "EXT-D-0087",
+  "artifact": {
+    "run_id": "37107627454",
+    "artifact_id": "11268886169",
+    "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660"
+  },
+  "guard": {
+    "run_id": "d87-pointer-diagnostic-20261003-02",
+    "admitted": true,
+    "resource_invalid": false,
+    "terminal_decision": "child_failed"
+  },
+  "first_failure": {
+    "stage": "baseline",
+    "operation": "theme_menu_open",
+    "code": "pointer_stable_hit_not_observed",
+    "admin_authentication_passed": true,
+    "first_choice_passed": true
+  },
+  "pointer_boundary": {
+    "visibility": "hidden",
+    "body_inline_pointer_events_none": true,
+    "body_computed_pointer_events_none": true,
+    "theme_computed_pointer_events_none": true,
+    "listbox_count": 1,
+    "listbox_open_count": 0,
+    "listbox_closed_count": 1,
+    "listbox_running_animation_count": 0,
+    "listbox_paused_animation_count": 0,
+    "listbox_finished_animation_count": 0,
+    "dialog_count": 0
+  },
+  "ranked_hypotheses": [
+    {
+      "cause": "Hidden sidepanel suspends closed Radix Select portal lifecycle after the admin web tab was brought to front",
+      "prediction": "Hidden document, closed listbox retained, body pointer lock remains",
+      "result": "supported_by_probe_not_yet_discriminated_against_hidden_sidepanel_baseline"
+    },
+    {
+      "cause": "Select remains open after value update",
+      "prediction": "Open listbox remains",
+      "result": "ruled_out"
+    },
+    {
+      "cause": "Another dialog or overlay holds pointer lock",
+      "prediction": "Dialog present or hit points occluded",
+      "result": "ruled_down"
+    },
+    {
+      "cause": "Body lock remains after every portal unmounts",
+      "prediction": "No listbox but inline body pointer-events none",
+      "result": "ruled_out"
+    }
+  ],
+  "source_boundary": "Native harness opens verified sidepanel from normal page; shared admin sign-in driver closes auth web tab then calls page.bringToFront() on normal page. Radix Presence retains closed Select until unmount; DismissableLayer holds body pointer-events none while mounted.",
+  "next_discriminating_check": "Activate the verified owned sidepanel target after authentication, verify document visibility, then rerun original trusted UI path under resource guard. No CSS/DOM/timer/pointer bypass.",
+  "evidence": {
+    "receipt_path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/settings-d87-native-06083caf-83ab-4cf0-bdb7-9a903e3e56b5.json",
+    "receipt_sha256": "7d32dc8869748688012eac79bf8aff6639b65d4c9776ad50cb936479e804fba4",
+    "log_path": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/reports/settings-pointer-boundary-20261003/diagnostic-02.hosted.log",
+    "log_sha256": "21a1568406668ee172848c25a819f5aa0f3c301840118ab0552008ebb4a07f89",
+    "formatted_durable_receipt_path": "docs/stabilization/reports/settings-pointer-boundary-20261003/diagnostic.receipt.json",
+    "formatted_durable_receipt_sha256": "7d32dc8869748688012eac79bf8aff6639b65d4c9776ad50cb936479e804fba4",
+    "durable_log_path": "docs/stabilization/reports/settings-pointer-boundary-20261003/diagnostic-02.hosted.log"
+  },
+  "credential_temp_file_removed": true,
+  "product_verdict": "unverified_after_first_theme_choice",
+  "source_candidate": {
+    "files": [
+      "tests/browser/native-sidepanel-qa-harness.mjs",
+      "tests/browser/settings-d87-native-acceptance.mjs"
+    ],
+    "behavior": "After authenticated web tab closes, activate only the sidepanel target whose identity was verified by the native harness; require visible document before any Theme pointer action.",
+    "security_scope": "Owned browser CDP target only; no profile, CSS, DOM, animation, timeout or pointer-check bypass.",
+    "verification": "Node syntax and Biome pass; native rerun pending independent source review and heavy permit."
+  }
+}
