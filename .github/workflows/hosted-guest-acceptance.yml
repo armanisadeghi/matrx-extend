@@ -104,10 +104,21 @@ jobs:
         run: |
           node --input-type=module <<'NODE'
           import { execFile } from 'node:child_process';
-          execFile('/usr/bin/top', ['-l', '2', '-s', '1', '-n', '0'], { timeout: 5000 }, (error, stdout, stderr) => {
-            console.log(JSON.stringify({ measurement: 'top', code: error?.code ?? 0, signal: error?.signal ?? null, killed: error?.killed ?? false, stderr: stderr.slice(0, 1000), cpu: stdout.match(/CPU usage:.*/g) ?? [] }));
-            process.exitCode = error ? 1 : 0;
-          });
+          import { promisify } from 'node:util';
+          import { cpuBusyFraction } from './scripts/stabilization-resource-safety.mjs';
+          try {
+            const fraction = await cpuBusyFraction(async (command, args) => {
+              const { stdout } = await promisify(execFile)(command, args, {
+                timeout: 5000,
+                maxBuffer: 33554432,
+              });
+              return stdout.trim();
+            });
+            console.log(JSON.stringify({ measurement: 'iostat', cpu_busy_fraction: fraction }));
+          } catch {
+            console.error('Host CPU measurement unavailable.');
+            process.exitCode = 1;
+          }
           NODE
 
       - name: Prepare pinned browser driver under an owned permit

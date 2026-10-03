@@ -27,6 +27,8 @@ const INTERACTIVE_REVIEWER_EMAIL = process.env.MATRX_REVIEWER_EMAIL?.trim() || n
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 const DEMO_PATH = '/matrx-extend-demo';
 const QUESTION = 'What are the three workflow stages on this page?';
+const REVIEWER_FINGERPRINT = '3d6137db6c081c07';
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 let stage = 'not_started';
 const report = {
@@ -104,6 +106,128 @@ async function authenticatedWebEmail(page) {
     throw new Error('reviewer_web_identity_mismatch');
   }
   return identity;
+}
+
+async function authenticatedWebIdentity(page) {
+  const identity = await page.evaluate(async () => {
+    const response = await fetch('/api/whoami', { credentials: 'include', cache: 'no-store' });
+    if (!response.ok) return null;
+    const result = await response.json();
+    return result?.signed_in === true ? { email: result.email, userId: result.user_id } : null;
+  });
+  if (
+    typeof identity?.email !== 'string' ||
+    !UUID.test(identity.userId ?? '') ||
+    hash(identity.email.toLowerCase()) !== REVIEWER_FINGERPRINT
+  )
+    throw new Error('reviewer_web_identity_unverified');
+  return identity;
+}
+
+async function memberPanelIdentity(panel) {
+  return evaluate(
+    panel,
+    `(() => chrome.storage.local.get([
+      'matrx.auth.accessToken', 'matrx.user.profile', 'matrx.user.isAdmin',
+    ]).then((stored) => ({
+      profileId: stored['matrx.user.profile']?.id ?? null,
+      accessTokenPresent: typeof stored['matrx.auth.accessToken'] === 'string',
+      isAdmin: stored['matrx.user.isAdmin'] === true ? true : stored['matrx.user.isAdmin'] === false ? false : null,
+    })))()`,
+  );
+}
+
+async function supabaseOrigin() {
+  const source = await readFile(join(REPO, '.env.production'), 'utf8');
+  const line = source.split(/\r?\n/).find((entry) => entry.startsWith('WXT_SUPABASE_URL='));
+  if (!line) throw new Error('supabase_origin_unavailable');
+  const url = new URL(line.slice('WXT_SUPABASE_URL='.length).replace(/^['"]|['"]$/g, ''));
+  if (url.protocol !== 'https:' || url.pathname !== '/') throw new Error('supabase_origin_invalid');
+  return url.origin;
+}
+
+function observeCanonicalAdminCheck(panel, origin) {
+  const requests = new Map();
+  const offRequest = panel.on('Network.requestWillBeSent', (event) => {
+    try {
+      const url = new URL(event.request.url);
+      const profile = Object.entries(event.request.headers ?? {}).find(
+        ([key]) => key.toLowerCase() === 'accept-profile',
+      )?.[1];
+      const userId = /^eq\.([0-9a-f-]{36})$/i.exec(url.searchParams.get('user_id') ?? '')?.[1];
+      if (
+        url.origin === origin &&
+        url.pathname === '/rest/v1/admins' &&
+        event.request.method === 'GET' &&
+        String(profile).toLowerCase() === 'admin' &&
+        url.searchParams.get('select') === 'user_id' &&
+        UUID.test(userId ?? '')
+      )
+        requests.set(event.requestId, { userId, status: null, rowCount: null, outcome: 'pending' });
+    } catch {
+      /* Ignore unrelated requests. */
+    }
+  });
+  const offResponse = panel.on('Network.responseReceived', (event) => {
+    const request = requests.get(event.requestId);
+    if (request) request.status = event.response.status;
+  });
+  const offFinished = panel.on('Network.loadingFinished', (event) => {
+    const request = requests.get(event.requestId);
+    if (!request) return;
+    void panel
+      .send('Network.getResponseBody', { requestId: event.requestId })
+      .then((body) => {
+        try {
+          const rows = JSON.parse(
+            body.base64Encoded ? Buffer.from(body.body, 'base64').toString('utf8') : body.body,
+          );
+          request.rowCount = Array.isArray(rows) ? rows.length : null;
+          request.outcome = Array.isArray(rows) ? 'complete' : 'invalid_body_shape';
+        } catch {
+          request.outcome = 'invalid_body';
+        }
+      })
+      .catch(() => {
+        request.outcome = 'body_unavailable';
+      });
+  });
+  const offFailed = panel.on('Network.loadingFailed', (event) => {
+    const request = requests.get(event.requestId);
+    if (request) request.outcome = 'request_failed';
+  });
+  return {
+    async start() {
+      await panel.send('Network.enable');
+      await panel.send('Network.setCacheDisabled', { cacheDisabled: true });
+    },
+    async verify(expectedUserId) {
+      const result = await waitFor(
+        'reviewer_canonical_admin_assignment_read',
+        () =>
+          [...requests.values()].find(
+            (request) =>
+              request.userId === expectedUserId &&
+              request.status === 200 &&
+              request.outcome === 'complete' &&
+              request.rowCount === 0,
+          ) ?? null,
+        Boolean,
+        60_000,
+      );
+      if (result.status !== 200 || result.outcome !== 'complete' || result.rowCount !== 0)
+        throw new Error('reviewer_canonical_nonadmin_role_unverified');
+      return { matched_current_extension_user: true, http_status: 200, returned_rows: 0 };
+    },
+    async stop() {
+      offRequest();
+      offResponse();
+      offFinished();
+      offFailed();
+      await panel.send('Network.setCacheDisabled', { cacheDisabled: false }).catch(() => {});
+      await panel.send('Network.disable').catch(() => {});
+    },
+  };
 }
 
 async function capture(panel, artifacts, label) {
@@ -314,6 +438,15 @@ try {
             90_000,
           );
         }
+        const webIdentity = await waitFor(
+          'reviewer_web_identity',
+          () => authenticatedWebIdentity(web),
+          (value) => UUID.test(value?.userId ?? ''),
+          30_000,
+        );
+        if (webIdentity.email.toLowerCase() !== email.toLowerCase())
+          throw new Error('reviewer_web_identity_mismatch');
+        email = webIdentity.email;
         report.account = { reviewer_fingerprint: hash(email), web_signed_in: false };
         report.account.web_signed_in = true;
         stage = 'open_demo_page';
@@ -328,42 +461,54 @@ try {
         await click(panel, 'title', 'Settings');
         stage = 'extension_account_open';
         await openSection(panel, 'Account');
-        stage = 'extension_signin_click';
-        await click(panel, 'button', 'Sign in');
-        stage = 'extension_organization_open';
-        await openSection(panel, 'Organization');
-        stage = 'extension_identity_wait';
-        let account;
+        const adminCheck = observeCanonicalAdminCheck(panel, await supabaseOrigin());
+        await adminCheck.start();
+        let canonicalAdminCheck;
         try {
-          account = await waitFor(
-            'reviewer_non_admin_identity',
-            async () => {
-              const consent = await approveOwnedOauthConsent(page.context());
-              if (consent === 'authorized') report.account.oauth_consent = 'authorized';
-              return accountObservation(panel, email);
-            },
-            (state) =>
-              state?.emailMatchesReviewer &&
-              state.observedRoleCategory === 'non_admin' &&
-              state.signOutVisible &&
-              state.chatVisible,
-            90_000,
-          );
-        } catch {
-          const observed = await accountObservation(panel, email).catch(() => null);
-          const storage = await storedSessionShape(panel).catch(() => null);
-          report.account = {
-            ...report.account,
-            timeout_observation: observed,
-            storage_shape: storage,
-          };
-          report.screenshots = {
-            timeout_panel: await capture(panel, artifacts, 'reviewer-chat-timeout'),
-          };
-          throw new Error('reviewer_extension_identity_unverified');
+          stage = 'extension_signin_click';
+          await click(panel, 'button', 'Sign in');
+          stage = 'extension_organization_open';
+          await openSection(panel, 'Organization');
+          stage = 'extension_identity_wait';
+          try {
+            await waitFor(
+              'reviewer_non_admin_identity',
+              async () => {
+                const consent = await approveOwnedOauthConsent(page.context());
+                if (consent === 'authorized') report.account.oauth_consent = 'authorized';
+                return {
+                  ...(await accountObservation(panel, email)),
+                  ...(await memberPanelIdentity(panel)),
+                };
+              },
+              (state) =>
+                state?.emailMatchesReviewer &&
+                state.profileId === webIdentity.userId &&
+                state.accessTokenPresent &&
+                state.isAdmin !== true &&
+                state.signOutVisible &&
+                state.chatVisible,
+              90_000,
+            );
+          } catch {
+            const observed = await accountObservation(panel, email).catch(() => null);
+            const storage = await storedSessionShape(panel).catch(() => null);
+            report.account = {
+              ...report.account,
+              timeout_observation: observed,
+              storage_shape: storage,
+            };
+            report.screenshots = {
+              timeout_panel: await capture(panel, artifacts, 'reviewer-chat-timeout'),
+            };
+            throw new Error('reviewer_extension_identity_unverified');
+          }
+          canonicalAdminCheck = await adminCheck.verify(webIdentity.userId);
+        } finally {
+          await adminCheck.stop();
         }
         stage = 'reviewer_organization_resolve';
-        account = await waitFor(
+        let account = await waitFor(
           'reviewer_organization_resolved',
           () => accountObservation(panel, email),
           (state) => state?.organizationSelected || state?.organizationPickerAvailable,
@@ -401,6 +546,7 @@ try {
           web_signed_in: true,
           extension_signed_in: account.emailMatchesReviewer,
           observed_role_category: account.observedRoleCategory,
+          canonical_extension_admin_check: canonicalAdminCheck,
           sign_out_visible: account.signOutVisible,
           default_organization_selected: account.organizationSelected,
           organization_picker_available: account.organizationPickerAvailable,

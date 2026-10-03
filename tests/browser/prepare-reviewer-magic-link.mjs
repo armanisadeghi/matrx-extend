@@ -8,6 +8,7 @@ const IDENTITY_FILE = process.env.MATRX_REVIEWER_IDENTITY_FILE;
 const ADMIN_ENV_FILE = process.env.MATRX_ADMIN_ENV_FILE;
 const LINK_FILE = process.env.MATRX_REVIEWER_MAGIC_LINK_FILE;
 const PROJECT_REF = 'brsgrqvjdzwihsvnfqkf';
+const REVIEWER_FINGERPRINT = '3d6137db6c081c07';
 const WEB_ORIGIN = 'https://www.aimatrx.com';
 let stage = 'input';
 
@@ -37,6 +38,7 @@ async function main() {
     typeof identity.id !== 'string' ||
     typeof identity.email !== 'string' ||
     identity.project_ref !== PROJECT_REF ||
+    identity.fingerprint !== REVIEWER_FINGERPRINT ||
     identity.fingerprint !==
       createHash('sha256').update(identity.email.toLowerCase()).digest('hex').slice(0, 16)
   )
