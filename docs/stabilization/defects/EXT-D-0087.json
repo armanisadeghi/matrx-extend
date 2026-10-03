@@ -59,7 +59,7 @@
   ],
   "severity": "S2: a visible preference can fail to survive reload",
   "priority": "P1: make Settings preference persistence truthful",
-  "state": "in_progress",
+  "state": "fixed",
   "transition_history": [
     {
       "at": "2026-10-03T03:39:17.879520+00:00",
@@ -76,8 +76,14 @@
     {
       "at": "2026-10-03T07:40:00+00:00",
       "from": "triaged",
-      "to": "in_progress",
-      "reason": "Controlled real-store race reproduced red and focused store/UI repair tests pass; browser and peer closure gates remain."
+      "to": "in-fix",
+      "reason": "Controlled real-store race reproduced red; repairing serialized settings writes and visible save failure."
+    },
+    {
+      "at": "2026-10-03T07:44:00+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Focused store/UI regression, rejection mutation, skipped-write mutation, compile, and formatting checks pass; browser and peer closure gates remain."
     }
   ],
   "closure_requirement": "Controlled failing-then-passing component/store regression for storage rejection, retry, and rapid writes; independent review; exact-build browser reload acceptance. Do not close from source alone or from D86 desktop-control repair."
