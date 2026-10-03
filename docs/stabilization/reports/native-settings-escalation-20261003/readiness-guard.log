@@ -1,0 +1,17 @@
+{"schema":1,"at":"2026-10-03T13:47:13.148Z","runId":"native-settings-readiness-guard","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/native-settings-readiness-guard.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-03T13:48:20.379Z","runId":"native-settings-readiness-guard","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":11.04,"requiredMemoryGiB":4,"oneMinuteLoad":2.26,"logicalCpus":10,"cpuBusyFraction":0.2285714285714286,"swapUsedMiB":2569.5,"repoFreeGiB":1690.3358879089355,"profileFreeGiB":1690.3358879089355,"safetyFreeGiB":30.56317138671875,"systemFreeGiB":30.56317138671875},"cpuBusySamples":[0.16,0.28,0.25,0.16,0.23,0.27,0.25],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+✔ canonical non-admin proof requires zero admin rows for the current extension user (310.574125ms)
+✔ Settings readiness requires mounted controls before initial and reload clicks (0.592292ms)
+✔ readiness guard kills constant-return and missing-mount mutations in memory (1.943375ms)
+✔ Settings identity reads the real active-organization object shape (0.487667ms)
+✔ reload identity rejects cached storage with wrong rendered role or organization (0.135875ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 388.706667
+{"schema":1,"at":"2026-10-03T13:48:20.870Z","runId":"native-settings-readiness-guard","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-03T13:48:20.933Z","runId":"native-settings-readiness-guard","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}
