@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "status": "candidate_packaged_native_acceptance_pending_not_submitted",
+  "hosted_run_id": 37155938434,
+  "hosted_conclusion": "success",
+  "artifact_id": 11286485029,
+  "artifact_digest": "sha256:0124db8dd6467c6a5d84de0fb0b555c377ccdc4c62c5b837b403ceb3f56bf35a",
+  "version": "0.2.181",
+  "source_sha": "bcf1d1615e90f873cada20209eae7ddce742ecf4",
+  "store_zip_sha256": "b816f01b1f2bbc3c5dae378415c701f2e73233e18998af6adc72fa2b87ab987c",
+  "publisher_receipt_sha256": "fc236a96872d1da6eb25ab079750db03f38a571898f55e1b38e73e5059edc1e0",
+  "receipt_local_tree_sha256": "fa184521e71b9bd71eed11799a90ea2c3f5328d0e12b3472e2bf0f49dad6e9c4",
+  "store_tree_sha256": "827d1a10c42955cf83e007039d4768e3d33b25dc97521b3a97c6ab56eab45cf8",
+  "provenance_limit": "Publisher receipt tree represents keyed local build, not Store ZIP. Actual Store and local bundles differ. Native Store-payload acceptance must validate exact Store bytes with only explicitly recorded manifest.key adaptation. No Store-installation or publication claim.",
+  "fix_ancestry_verified": ["b54877e7", "62e1ce4c"],
+  "release_gate_result": "Hosted strict release contract succeeded; mandate references remain advisory warnings.",
+  "store_upload": "not_started"
+}
