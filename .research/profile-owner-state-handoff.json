@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "at": "2026-10-03T19:50:00Z",
+  "status": "implementation_transferred_incomplete",
+  "diagnosis": "The original Profile failure was an authenticated 403/42501 from get_user_form_context after successful profile writes, not failed clearing of an empty input. D94 replaces that forbidden read with an owner-scoped table read; D95 UI and identity-state work is unfinished.",
+  "pushed_commits": {
+    "diagnostic_runner": "0866cff1",
+    "d94_product_fix": "dccc196a",
+    "d94_evidence": "7d53b131"
+  },
+  "uncommitted_product_files_transferred": [
+    "docs/feature-tests.md",
+    "src/features/profile/ProfileView.tsx",
+    "src/features/profile/ProfileView.load-error.test.tsx",
+    "src/hooks/use-user-profile.ts",
+    "src/hooks/use-user-profile.identity.test.tsx",
+    "src/lib/supabase/user-profile.read.test.ts",
+    "tests/browser/profile-native-acceptance.mjs"
+  ],
+  "guarded_evidence": [
+    {
+      "run_id": "profile-d95-ui-red-01",
+      "decision": "child_failed_expected_mutant",
+      "mutation": "remove top-level load-error branch",
+      "restored_source_sha256_prefix": "57f85a7771bd",
+      "journal": "docs/stabilization/resource-journals/profile-d95-ui-red-01.jsonl"
+    },
+    {
+      "run_id": "profile-d95-identity-red-01",
+      "decision": "child_failed_expected_mutant",
+      "mutation": "remove draft reset on identity change",
+      "restored_source_sha256_prefix": "efade23f910e",
+      "journal": "docs/stabilization/resource-journals/profile-d95-identity-red-01.jsonl"
+    },
+    {
+      "run_id": "profile-d94-d95-green-01",
+      "decision": "valid",
+      "result": "3 test files, 7 tests passed",
+      "journal": "docs/stabilization/resource-journals/profile-d94-d95-green-01.jsonl"
+    }
+  ],
+  "remaining_peer_findings": [
+    "Gate the dirty footer and hook save when loadError prevents a valid baseline; a successful write followed by failed refresh currently leaves Save available.",
+    "Guard the save continuation after await upsert by owner identity/generation so an old user's save cannot load into a new user's state.",
+    "Tag exposed profile/draft state by owner to prevent the prior user's data appearing on the first render after auth changes, before effects run.",
+    "Add typed complete captured-row tests, retry-success and denied-second-owner UI tests, and save-in-flight identity race coverage; run meaningful guarded RED/GREEN."
+  ],
+  "decisions": [
+    "Leave the restricted get_user_form_context RPC and database grants unchanged.",
+    "Do not claim a native Profile pass from the old 0.2.177 artifact or the current incomplete D95 UI.",
+    "Do not commit the uncommitted product files in this evidence-only handoff."
+  ],
+  "active_browser_or_mutation": false
+}
