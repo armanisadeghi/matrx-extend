@@ -1,0 +1,31 @@
+{
+  "reviewed_commit": "22994d49",
+  "prior_review": ".research/popup-profile-final-peer.json at 7530704e",
+  "review_scope": "Fresh zero-authorship source and inventory check of the correction; no browser, build, database write, or runtime test",
+  "verdict_a_requirements_procedure_integration_readiness": "READY_WITH_FIXTURE_DEPENDENCIES",
+  "verdict_a_findings": [
+    "Addressed: T10 records guest Chat sign-in only as negative trigger evidence and preserves all three mic-grant popup acceptance branches behind a demonstrated guest-reachable fixture.",
+    "Addressed: T11/T12 grant and deny rows remain independently ready; no-device popup rows require a controlled zero-input fixture while the actual window stays open. The Chat NO_DEVICE toast is explicitly excluded as popup evidence.",
+    "Addressed: T23 has distinct no-immediate-reload warm and extension-reload executions, each with separate sign-out preparation and evidence.",
+    "No new inventory loss: all 48 original case IDs, mode applicability, matrix keys, and copied preconditions, steps, expected outcomes, dimensions, and build variants remain preserved. All 176 distinct rows have null outcome, empty evidence references, and unverified status.",
+    "Readiness propagates consistently: 38 ready cases and 10 requires_fixture cases; 102 ready rows and 74 requires_fixture rows. Every ready case has only ready rows."
+  ],
+  "verdict_b_rules_quality": "PASS_FOR_UNVERIFIED_PROCEDURE",
+  "verdict_b_findings": [
+    "The correction prevents a green result from being assigned to a guest Chat gate or offscreen no-device toast as if either exercised mic-grant popup behavior.",
+    "Unproven fixtures remain labeled as such. The procedure does not claim Chrome execution, account or role mutation, fixture provisioning, or a product pass.",
+    "Actual runtime acceptance remains unverified until each applicable row is executed with its own observed outcome and evidence."
+  ],
+  "remaining_dependencies": [
+    "Demonstrate a guest-reachable launch fixture for T10's real mic-grant popup branches.",
+    "Demonstrate the controlled in-popup zero-input fixture for T10-T12 no-device rows.",
+    "Name and execute the other existing controlled fault, context, and pre-existing-row fixtures before closing their rows."
+  ],
+  "source_anchors_checked": [
+    "docs/stabilization/inventory.json",
+    "src/features/chat/ChatView.tsx:1371-1395,1447-1455",
+    "src/lib/audio/mic-recorder-offscreen.ts:425-475",
+    "src/entrypoints/mic-grant/index.ts:70-113",
+    ".research/popup-profile-procedures.json"
+  ]
+}
