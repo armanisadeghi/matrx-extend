@@ -1,0 +1,34 @@
+{
+  "status": "D88 fixed_server_api; not closed; D89 fixed_source; deployment and native acceptance open",
+  "changes": [
+    "D88 records live server c01faa restoration and three successful bounded guest API conversations; the original signed-out extension reproduction/reload stays unverified.",
+    "D89 records the delegated Records envelope loss, accepted aidream source fix 549b4064d1/peer 8266fee4, deployment run 37097006365, exact source test seam, example nested guide call, and flat expected dispatch arguments.",
+    "Records inventory case EXT-F-4130-T01 links to D89; stabilization tracker files were regenerated from inventory; CURRENT COORDINATOR checkpoint reflects current open boundaries.",
+    "Canonical Chrome Web Store current-check paragraph records published0.2.130, live API restoration, D89 status, and pending hosted extension candidate37096886801."
+  ],
+  "evidence": [
+    ".research/guest-live-incident-server.json: deployed c01faa health samples and successful first, follow-up, and fresh guest API calls.",
+    ".research/guest-live-incident-extension.json: published0.2.130 contract and source boundary; native Records call not observed.",
+    ".research/records-oracle-peer.json: independent review confirms canonical guide parity does not prove Chrome-handler compatibility.",
+    "Aidream repair549b4064d1 independently accepted by8266fee4; hosted deploy37097006365 integrated source230532757f, live deployment verification pending.",
+    "Hosted extension candidate37096886801 failed package-twins; root static scan traced three numeric freeGiB threshold-conversion false positives to the stabilization resource-safety scripts. Nothing was published."
+  ],
+  "files": [
+    "docs/stabilization/defects/EXT-D-0088.json",
+    "docs/stabilization/defects/EXT-D-0089.json",
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/COORDINATOR.md",
+    "docs/stabilization/STATUS.md",
+    "docs/stabilization/STATUS.html",
+    "docs/stabilization/CHECKLIST.md",
+    ".research/records-oracle-peer.json",
+    ".research/guest-incident-tracking.json",
+    "common-docs: systems/apps/extension/CHROME-WEB-STORE.md"
+  ],
+  "open_issues": [
+    "D88 cannot close until the original signed-out extension repro and reload are verified.",
+    "D89 deployment/live server verification and native read-only guide plus parameterized list/read acceptance remain open.",
+    "The hosted extension candidate run37096886801 result is pending; do not claim Store candidate or full product acceptance.",
+    "Hosted extension candidate37096886801 failed package-twins on numeric freeGiB conversion false positives; repair lane owns the guard issue, and nothing was published."
+  ]
+}

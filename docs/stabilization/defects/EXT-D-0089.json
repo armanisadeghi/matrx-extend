@@ -1,0 +1,53 @@
+{
+  "id": "EXT-D-0089",
+  "feature_id": "EXT-F-4130",
+  "case_ids": ["EXT-F-4130-T01"],
+  "surface": "Delegated Records tool arguments on the Chrome extension surface",
+  "auth_mode": "guest/member/admin; native call not yet observed",
+  "title": "Delegated Records args envelope is lost in server request-local tool definitions",
+  "reproduction": [
+    "Native reproduction is pending. The server source regression seam is packages/matrx-ai/tests/test_args_envelope.py::test_browser_inline_merge_delegates_flat_arguments (introduced in aidream commit 549b4064d1).",
+    "Use the Records guide call {\"action\":\"guide\",\"args\":{\"topic\":\"table_list\"}}; expected tool_delegated arguments for the published Chrome handler are {\"action\":\"guide\",\"topic\":\"table_list\"}.",
+    "For native acceptance, invoke a read-only Records guide and a parameterized list/read through the published Chrome extension, then confirm the displayed result reflects the requested topic and arguments."
+  ],
+  "expected": "Server delegation preserves or normalizes the Records args envelope so the published Chrome handler receives its declared flat arguments and applies the requested guide topic, read parameters, and list limit.",
+  "actual": "Source trace showed browser-dom projecting the live DB tool row into InlineToolSpec input_schema.properties, then merge_request_tools stashing a request-local ToolDefinition from only that projection. ToolExecutor.execute preferred that projected definition over the DB registry row, so $envelope/$variants were absent and args unwrapping was skipped. Aidream source repair 549b4064d1 preserves registry dispatch metadata; independent source acceptance 8266fee4 accepted the scoped fix. Hosted deployment run 37097006365 integrated source 230532757f; live deployment verification remains pending. Native reproduction and acceptance are pending. The independent oracle confirmed the canonical guide-parity assertion does not establish Chrome handler compatibility. This is separate from the repaired initial Chat-start failure.",
+  "evidence": [
+    ".research/guest-live-incident-extension.json",
+    ".research/guest-live-incident-server.json",
+    ".research/records-oracle-peer.json",
+    "Aidream source repair 549b4064d1; independent source acceptance 8266fee4; hosted deployment run 37097006365 integrated source 230532757f (live server deployment verification pending).",
+    "src/lib/tools/handlers/records.ts",
+    "https://github.com/AI-Matrix-Engine/aidream/commit/c01faa52660a2720fcc888af3e10210688bc80cc"
+  ],
+  "severity": "S1: delegated Records calls can silently omit user-requested topic and parameters",
+  "priority": "P1: preserve the tool registry envelope through delegated dispatch",
+  "state": "fixed",
+  "transition_history": [
+    {
+      "at": "2026-10-03T04:34:40Z",
+      "from": null,
+      "to": "open",
+      "reason": "Cross-repository source trace found nested Records arguments reaching a published flat-schema extension handler."
+    },
+    {
+      "at": "2026-10-03T04:34:40Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Independent oracle review confirmed the server guide's provider args-envelope wording does not match the Chrome handler's flat contract; exact canonical parity assertion is valid only for parity and does not establish browser contract compatibility."
+    },
+    {
+      "at": "2026-10-03T04:34:40Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Server lane owns preserving the envelope or normalizing nested arguments; native Records acceptance remains pending."
+    },
+    {
+      "at": "2026-10-03T04:34:40Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Aidream source repair 549b4064d1 was independently accepted by peer 8266fee4. Deployment, read-only native guide and parameterized Records acceptance remain open; this transition does not close the defect."
+    }
+  ],
+  "closure_requirement": "Deploy the accepted aidream repair; verify with a native read-only guide and parameterized list/read call against the published Chrome handler; retain an assertion that the generated guide call shape is accepted by that handler; independent review. Do not close from source trace, source review, or canonical text parity alone."
+}

@@ -11,13 +11,14 @@
     "Observe immediate error; correlate server stream_crash for source_app matrx-extend and source_feature chat."
   ],
   "expected": "Signed-out users receive a streamed Chat response without a paid account or login.",
-  "actual": "User reports immediate error. Live server captured 2026-10-03T03:38:58Z: prepare_agent_run → apply_unified_tools → resolve_client_capabilities → browser_dom._build_auto_load_specs → InlineToolSpec validation rejects input_schema.properties.$envelope.type=args. Guest mandate resolution returns200. Exact request replay pending.",
+  "actual": "Published0.2.130 guest request previously failed during server browser-tool schema construction. Server c01faa52660a2720fcc888af3e10210688bc80cc is now live; bounded API replays completed a first guest turn, same-conversation follow-up, and fresh guest conversation. The original signed-out extension reproduction and extension reload remain unverified.",
   "evidence": [
     ".research/guest-live-incident-server.json",
     ".research/guest-live-incident-extension.json",
     ".research/guest-final-release-peer.json",
     "https://github.com/AI-Matrix-Engine/aidream/commit/c01faa52660a2720fcc888af3e10210688bc80cc",
-    "https://github.com/AI-Matrix-Engine/aidream/actions/runs/37094559311"
+    "https://github.com/AI-Matrix-Engine/aidream/actions/runs/37094559311",
+    "Three consecutive /health/version samples reported c01faa52660a2720fcc888af3e10210688bc80cc; direct guest API first turn, same-guest follow-up, and fresh conversation each returned HTTP 200 with successful completion and no error event (.research/guest-live-incident-server.json)."
   ],
   "severity": "S0: public core no-login Chat fails immediately",
   "priority": "P0: supersedes deferred Chat sequencing; restore live guest promise now",
@@ -45,10 +46,10 @@
       "at": "2026-10-03T03:52:42.350615+00:00",
       "from": "in-fix",
       "to": "fixed",
-      "reason": "aidream c01faa52660a2720fcc888af3e10210688bc80cc fixes both browser capability and bundle discovery via canonical shared schema. Independent final source review accepted. Hosteddeployment37094559311 pending; live recovery not yet verified."
+      "reason": "aidream c01faa52660a2720fcc888af3e10210688bc80cc fixes browser capability and bundle discovery. Deployment and three bounded guest API replays now confirm server/API restoration; original signed-out extension reproduction and reload remain unverified, so the defect is not closed."
     }
   ],
   "closure_requirement": "Original published guest request succeeds on deployed fix, real signed-out extension reply and reload verified, independent peer and surrounding member/guest regressions pass. Do not close from source or ordinary CI.",
-  "deployed_server_sha": "41aff687f768a1c0997dce70f595ea978a4f326c",
+  "deployed_server_sha": "c01faa52660a2720fcc888af3e10210688bc80cc",
   "published_extension_version": "0.2.130"
 }

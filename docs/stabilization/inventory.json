@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T03:45:02.531723+00:00",
+  "updated_at": "2026-10-03T04:33:36.264624+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -47231,6 +47231,9 @@
             "invalid-input",
             "permissions",
             "reload"
+          ],
+          "defect_ids": [
+            "EXT-D-0089"
           ]
         },
         {
