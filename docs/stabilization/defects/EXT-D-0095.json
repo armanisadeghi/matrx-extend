@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0095",
   "feature_id": "EXT-F-1004",
-  "case_ids": [
-    "EXT-F-1004-T25"
-  ],
+  "case_ids": ["EXT-F-1004-T25"],
   "surface": "Profile",
   "auth_mode": "admin source-observed; member unverified",
   "title": "Profile read failure leaves an editable blank form and can retain a prior user draft",
@@ -24,19 +22,19 @@
   ],
   "transition_history": [
     {
-      "at": "2026-10-03T20:00:00Z",
+      "at": "2026-10-03T19:43:33Z",
       "from": null,
       "to": "open",
       "reason": "Independent source review found an editable blank Profile after initial read failure and possible retention of the previous user draft after an identity change with a failed new read."
     },
     {
-      "at": "2026-10-03T20:00:00Z",
+      "at": "2026-10-03T19:43:33Z",
       "from": "open",
       "to": "triaged",
       "reason": "Separate safety and identity-isolation defect linked to EXT-F-1004-T25; source-confirmed, native behavior unverified. Severity reflects user impact; priority reflects the active Profile repair lane."
     },
     {
-      "at": "2026-10-03T20:00:00Z",
+      "at": "2026-10-03T19:43:33Z",
       "from": "triaged",
       "to": "in-fix",
       "reason": "The assigned native_empty_input_fix builder owns the source and focused regression repair; no cross-identity runtime claim is made."
