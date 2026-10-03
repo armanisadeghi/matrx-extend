@@ -1,9 +1,6 @@
 {
   "schema_version": 1,
-  "defects": [
-    "EXT-D-0058",
-    "EXT-D-0059"
-  ],
+  "defects": ["EXT-D-0058", "EXT-D-0059"],
   "status": "unverified",
   "artifact": {
     "version": "0.2.176",

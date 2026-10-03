@@ -331,11 +331,17 @@
   "committed_raw_evidence": [
     {
       "path": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/reports/prepare-native-20261003/acceptance-receipt.json",
-      "sha256": "74e8645c630989050098d964dc42b68c2536afec8021b1ff4d2e636998483937"
+      "sha256": "6cddc767c90869de636e5a995e759844e964c3630ed9210c8dbdeb73a088e020",
+      "source_raw_sha256": "74e8645c630989050098d964dc42b68c2536afec8021b1ff4d2e636998483937",
+      "representation": "Biome-formatted JSON; parsed content identical to source raw receipt",
+      "source_raw_path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/prepare-stale-result-native-2197a6f2-c38a-4c5e-ba81-157525a9e68c.json"
     },
     {
       "path": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/reports/prepare-native-20261003/frame-timeout-receipt.json",
-      "sha256": "74d015cc2d6c1ed3462e5b083539188a21365aadab5470166dc8d9c9173586f0"
+      "sha256": "864f37249c797f8aa886cb8a4d1b7e2beaee0a3e6348cd88cfde3a757b27772b",
+      "source_raw_sha256": "74d015cc2d6c1ed3462e5b083539188a21365aadab5470166dc8d9c9173586f0",
+      "representation": "Biome-formatted JSON; parsed content identical to source raw receipt",
+      "source_raw_path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/prepare-stale-result-native-c76b27da-b37a-4671-ab12-62abc45606b4.json"
     },
     {
       "path": "/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/reports/prepare-native-20261003/resource-journal.jsonl",

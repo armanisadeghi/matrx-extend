@@ -45,9 +45,11 @@
     ]
   },
   "independent_checks": {
-    "receipt_sha256": "74e8645c630989050098d964dc42b68c2536afec8021b1ff4d2e636998483937",
+    "receipt_sha256": "6cddc767c90869de636e5a995e759844e964c3630ed9210c8dbdeb73a088e020",
     "imported_artifact_verification": "Reran verifyImportedNativeEvidence read-only for the preserved target; it verified source/run/artifact/provenance and exact tree. Recomputed hashReleaseTree independently; it matched the receipt tree.",
-    "resource_verification": "Checked the run-scoped durable resource journal and sanitized acceptance log; their SHA-256 values match the retained evidence record, run IDs match, and final decision is valid."
+    "resource_verification": "Checked the run-scoped durable resource journal and sanitized acceptance log; their SHA-256 values match the retained evidence record, run IDs match, and final decision is valid.",
+    "source_raw_receipt_sha256": "74e8645c630989050098d964dc42b68c2536afec8021b1ff4d2e636998483937",
+    "receipt_representation": "Biome-formatted committed copy; parsed JSON equality with the raw source independently checked during formatting repair"
   },
   "recommended_record_state": {
     "EXT-D-0058": "Remain in-fix; record the failed-retry and same-URL new-document partial native pass. Different-URL A-to-B late success/rejection remains unverified.",
