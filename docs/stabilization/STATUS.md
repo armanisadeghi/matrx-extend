@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-03 12:14 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T12:12:45Z. 205 features · 740 cases · 1324 controls · 92 linked defect records.
+Generated 2026-10-03 12:28 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T12:40:00Z. 205 features · 753 cases · 1329 controls · 92 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1186** — Pass: 61 · Partial: 48 · Fail: 4 · Unverified: 1072 · N/A: 1.
-Unverified splits into **122 explicitly marked unverified** and **950 with no result record**.
+Applicable case-by-role slots: **1199** — Pass: 61 · Partial: 48 · Fail: 4 · Unverified: 1085 · N/A: 1.
+Unverified splits into **122 explicitly marked unverified** and **963 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -20,7 +20,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 10 pass · 2 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 7 pass · 0 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | pass 17, partial 2, fail 0, unverified 53, n/a 1 | 3 |
+| [Settings](#settings) | 1 | 10 pass · 2 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 26 unverified · 0 deferred; 0/1 full | 7 pass · 0 partial · 0 fail · 27 unverified · 0 deferred; 0/1 full | pass 17, partial 2, fail 0, unverified 66, n/a 1 | 3 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 32, n/a 0 | 0 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -345,7 +345,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Review and change extension settings (EXT-F-1003)
 
-**Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 72. **Controls:** 31.
+**Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 85. **Controls:** 36.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0084, EXT-D-0086, EXT-D-0087
 
@@ -377,8 +377,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1003-T22 guest: Advanced agent capabilities | Pass | N/A | N/A | EXT-F-1003-C08 |
 | EXT-F-1003-T23 member: Advanced agent capabilities | N/A | Unverified | N/A | EXT-F-1003-C08 |
 | EXT-F-1003-T24 admin: Advanced agent capabilities | N/A | N/A | Unverified | EXT-F-1003-C08 |
-| EXT-F-1003-T25 guest: Audit key | N/A | N/A | N/A | EXT-F-1003-C09 |
-| EXT-F-1003-T26 member: Audit key | N/A | Unverified | N/A | EXT-F-1003-C09 |
+| EXT-F-1003-T25 guest: Audit key access denial | N/A | N/A | N/A | EXT-F-1003-C09 |
+| EXT-F-1003-T26 member: Audit key access denial | N/A | Unverified | N/A | EXT-F-1003-C09 |
 | EXT-F-1003-T27 admin: Audit key | N/A | N/A | Unverified | EXT-F-1003-C09 |
 | EXT-F-1003-T28 guest: Collapsible groups | Pass | N/A | N/A | EXT-F-1003-C10 |
 | EXT-F-1003-T29 member: Collapsible groups | N/A | Unverified | N/A | EXT-F-1003-C10 |
@@ -425,6 +425,19 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1003-T70 guest: About browser readiness and extension update status | Unverified | N/A | N/A | EXT-F-1003-C10, EXT-F-1003-C30, EXT-F-1003-C31 |
 | EXT-F-1003-T71 member: About browser readiness and extension update status | N/A | Unverified | N/A | EXT-F-1003-C10, EXT-F-1003-C30, EXT-F-1003-C31 |
 | EXT-F-1003-T72 admin: About browser readiness and extension update status | N/A | N/A | Unverified | EXT-F-1003-C10, EXT-F-1003-C30, EXT-F-1003-C31 |
+| EXT-F-1003-T73 guest: Account identity and role | Unverified | N/A | N/A | EXT-F-1003-C32 |
+| EXT-F-1003-T74 member: Account identity and role | N/A | Unverified | N/A | EXT-F-1003-C32 |
+| EXT-F-1003-T75 admin: Account identity and role | N/A | N/A | Unverified | EXT-F-1003-C32 |
+| EXT-F-1003-T76 guest: Organization archive filter visibility | Unverified | N/A | N/A | EXT-F-1003-C33 |
+| EXT-F-1003-T77 member: Organization archive filter | N/A | Unverified | N/A | EXT-F-1003-C33 |
+| EXT-F-1003-T78 admin: Organization archive filter | N/A | N/A | Unverified | EXT-F-1003-C33 |
+| EXT-F-1003-T79 guest: Desktop bridge status and health | Unverified | N/A | N/A | EXT-F-1003-C34 |
+| EXT-F-1003-T80 member: Desktop bridge status and health | N/A | Unverified | N/A | EXT-F-1003-C34 |
+| EXT-F-1003-T81 admin: Desktop bridge status and health | N/A | N/A | Unverified | EXT-F-1003-C34 |
+| EXT-F-1003-T85 admin: Retry permission status read | N/A | N/A | Unverified | EXT-F-1003-C35 |
+| EXT-F-1003-T82 guest: Retry saving preferences | Unverified | N/A | N/A | EXT-F-1003-C36 |
+| EXT-F-1003-T83 member: Retry saving preferences | N/A | Unverified | N/A | EXT-F-1003-C36 |
+| EXT-F-1003-T84 admin: Retry saving preferences | N/A | N/A | Unverified | EXT-F-1003-C36 |
 
 **Recorded case details and evidence:**
 
