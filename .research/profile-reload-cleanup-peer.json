@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_source_review",
+  "reviewed_commit": "e3cd809325654c834b9724c0e02414762a5de5bc",
+  "merged_at": "c7362b27",
+  "scope": "Profile native runner cleanup after failed extension reload; source and existing local evidence only",
+  "A_launch_readiness": {
+    "decision": "hold_next_mutating_native_run",
+    "reason": "Source defects below conflict with the required failure provenance and durable pre-mutation receipt. This review did not run a browser or write the database.",
+    "known_state": "The prior owned test row was recovered and original absence restored; the underlying reload failure remains unknown. No reload acceptance case is promoted."
+  },
+  "B_quality": {
+    "decision": "changes_requested",
+    "positive_findings": [
+      "A private receipt is created with exclusive creation before the first UI save and checks that group/other mode bits are zero.",
+      "Cleanup uses an owner, organization, marker, creation timestamp, and expected version compare before deletion, then checks owner-read absence; a concurrent version change fails closed.",
+      "A failed reload before returning a replacement panel now attempts to attach a live extension panel; cleanup failure reports restoration as unverified and cannot produce a passed run."
+    ],
+    "blockers": [
+      {
+        "file": "tests/browser/profile-native-acceptance.mjs",
+        "line": 905,
+        "finding": "When execution and cleanup both fail, cleanupError is thrown first and becomes report.failure_code. report.execution_failure_code survives as secondary evidence, but the original execution error is still masked as the primary failure. Preserve the original as primary while recording cleanup failure separately; a failed cleanup must still mark restoration unverified."
+      },
+      {
+        "file": "tests/browser/profile-native-acceptance.mjs",
+        "line": 74,
+        "finding": "writeFile and rename do not sync file content or the containing directory before Save. The receipt can be lost across a process or host crash after the database mutation, so the claimed durable pre-mutation ownership proof is not established. Sync the new file and directory before mutation, and sync replacement receipt updates."
+      },
+      {
+        "file": "tests/browser/native-sidepanel-qa-harness.mjs",
+        "line": 319,
+        "finding": "attachTargetSession is outside the transient-target try block. If a target disappears between Target.getTargets and attachment, the recovery helper exits immediately rather than retrying another live panel. Put attachment and verification in one retryable block."
+      }
+    ],
+    "remaining_verification": "After source repair, use a fresh private receipt path and a bounded native run to establish whether Chrome reload itself works and whether cleanup restores absence on an actual reload failure."
+  },
+  "evidence": {
+    "recovery_report_sha256_verified": "f4f3b370f717212df9fccc8e92244b4680af6bcf5f9eee3144c68aa53ceb253e",
+    "recovery_journal_sha256_verified": "06dc65cbef1a55cbb20e851bbef999137e962a3ae5060f5483ef46cc8b115e2f",
+    "recovery_source": ".research/profile-member-reload-recovery.json",
+    "native_execution_this_review": "not_run"
+  }
+}
