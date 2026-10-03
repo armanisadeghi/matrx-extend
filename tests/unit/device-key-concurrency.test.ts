@@ -21,6 +21,7 @@ vi.mock('@/lib/storage/chrome-local', () => ({
   },
 }));
 const ACTIVE = 'matrx.audit.deviceKey';
+const HISTORY = 'matrx.audit.publicKeyHistory';
 function signal() {
   let resolve!: () => void;
   const promise = new Promise<void>((done) => {
@@ -124,14 +125,19 @@ it('observes another context rotation even before storage change events arrive',
   expect((await a.getOrCreateDeviceKey()).publicKeyId).toBe(rotated);
 });
 
-it('refuses unsupported cross-context locking without changing persistent keys', async () => {
+it('refuses unsupported cross-context locking without changing persistent key or history', async () => {
   const a = await context();
   const initial = await a.getOrCreateDeviceKey();
+  const historyBefore = structuredClone(storage.values.get(HISTORY)) as Array<{
+    publicKeyId: string;
+  }>;
+  expect(historyBefore.map((entry) => entry.publicKeyId)).toEqual([initial.publicKeyId]);
   vi.stubGlobal('navigator', {});
   await expect(a.rotateDeviceKey()).rejects.toBeInstanceOf(a.DeviceKeyLockUnavailableError);
   expect((storage.values.get(ACTIVE) as { publicKeyId: string }).publicKeyId).toBe(
     initial.publicKeyId,
   );
+  expect(storage.values.get(HISTORY)).toEqual(historyBefore);
 });
 
 it('distinguishes an absent key from an activated verification key', async () => {
