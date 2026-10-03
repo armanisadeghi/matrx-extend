@@ -1,0 +1,39 @@
+{
+  "window": "2026-10-03 America/Los_Angeles",
+  "observed_at_utc": "2026-10-03T16:09:19Z",
+  "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "publisher": "Matrx",
+  "published_version": "0.2.176",
+  "draft_version": "0.2.176",
+  "status": "Published - public",
+  "draft_status": "This draft is unpublished.",
+  "published_status": "This draft is published and available to the public.",
+  "pending_review": false,
+  "reviewer_action_observed": false,
+  "upload_available": true,
+  "changes_made": "None; read-only dashboard check in a separate tab. Existing tab owned by another browser session was left unchanged.",
+  "candidate": {
+    "main_version": "0.2.177",
+    "source_version_commit": "ef60a2c7",
+    "github_release_v177": "not found",
+    "latest_hosted_release_run": 37105966615,
+    "latest_hosted_release_conclusion": "success",
+    "eligible_new_store_artifact_established": false,
+    "remaining": "Validated Store package and exact candidate guest/non-admin acceptance; ongoing audit-key native acceptance incomplete. Manual build/release commands prohibited on this machine by workspace instructions."
+  },
+  "guest_evidence": {
+    "report": ".research/published176-guest-server-refresh.json",
+    "native_run": "published176-guest-server-refresh-20261003-01",
+    "run_time_utc": "2026-10-03T14:29Z",
+    "scope": "Exact public176 unpacked package in headless native Chromium; actual guest first and post-panel-reload follow-up answers; not Store installation/update lifecycle.",
+    "server_sha": "4ec65fdb63a8d15e7c11d4404e0516317ebfaabd",
+    "server_rechecked_utc": "2026-10-03T15:46:16Z",
+    "server_unchanged": true,
+    "new_guest_run_for_poll": false
+  },
+  "evidence": {
+    "docs/stabilization/evidence/daily-20261003/store-public.png": "2c691b8c9e1ac592d27170934d53e1399f43d1afa0729271b9c40841c94554d0",
+    "docs/stabilization/evidence/daily-20261003/store-package.png": "796b5fc9b68a1d9a67df7dfe1ebaadb4b5a0b9d4f773e8bfeda500a36d8c3e19"
+  },
+  "schedule_claim": "MCP unavailable; canonical operations/scheduled-tasks.md fallback claim7ad9576cc"
+}
