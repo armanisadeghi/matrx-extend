@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0093",
+  "role": "independent native execution lane",
+  "status": "prepared_only",
+  "execution": {
+    "native_run_started": false,
+    "artifact_imported": false,
+    "workflow_dispatched": false,
+    "reason": "The required explicit heavy-run permit transfer has not been received, and the source peer report has not accepted bounded readiness."
+  },
+  "producer": {
+    "commit": "23242714b911ed87303951738481d217acdcfc44",
+    "prepared_packet": ".research/audit-native-acceptance-prepare.json",
+    "runner": "tests/browser/audit-key-native-acceptance.mjs",
+    "source_prefix": "991385d9",
+    "ci_run_id": 37129518563,
+    "development_artifact_id": 11275878549
+  },
+  "peer": {
+    "report": ".research/audit-native-runner-peer.json",
+    "acceptance_readiness": "partial",
+    "native_runtime": "unverified",
+    "bounded_readiness_accepted": false,
+    "open_cases": {
+      "T87": "Prior product-signed receipt verification after rotation is missing.",
+      "T89": "Prior product-signed receipt verification after recovery is missing.",
+      "T90": "Product-signed receipts from both keys, post-reload verification, and tamper rejection are missing."
+    },
+    "additional_concern": "Peer notes Chrome foreground behavior and fail-closed handling of hidden or occluded controls are not established for the second-context sequence."
+  },
+  "independent_observation": {
+    "runner_scope": "Source inspection only; it targets the exact development artifact and run, validates imported tree/source identity, uses headed native Chrome, and scopes key operations to an owned disposable profile.",
+    "partial_verdict": "The runner deliberately records T87, T89, and T90 as partial and exits 2 after bounded checks; this cannot be reported as full acceptance.",
+    "first_error_policy": "No execution occurred, so no runtime stage or recovery was attempted. On an authorized run, stop at the first error stage and do not blindly retry."
+  },
+  "evidence": {
+    "owned_receipt_directory": ".research/audit-native-independent-receipts/",
+    "native_receipts": [],
+    "screenshots": [],
+    "journals": []
+  },
+  "limits": [
+    "No workflow dispatch, artifact download, browser launch, profile creation, or key mutation was performed.",
+    "No T60, T86, T87, T88, T89, T90, or T91 native result is claimed.",
+    "The peer report is a source review and does not establish native behavior."
+  ],
+  "next_gate": "Wait for explicit permit transfer from root and a peer report accepting bounded readiness before any artifact import or headed native run."
+}
