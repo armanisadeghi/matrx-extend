@@ -1,0 +1,25 @@
+{
+  "id": "EXT-D-0096",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T10", "EXT-F-2013-T11"],
+  "surface": "Chat Values and guest send",
+  "auth_mode": "guest; signed-in identity transitions require native verification",
+  "title": "Guest Chat reads owner-only context settings and reports permission errors",
+  "reproduction": [
+    "On exact release 0.2.176, send a guest Chat turn. ops.system_error records chrome-extension users.user_surface_state SELECT 42501 permission denied, including during otherwise successful native guest turns.",
+    "The shared buildChatContext path calls ensureContextRulesReady without regard to auth. Its loadContextRules then SELECTs users.user_surface_state with an anon Supabase client. Read-only live grants show authenticated SELECT, no anon SELECT; authenticated RLS includes owner reads."
+  ],
+  "expected": "Guest sends and Values opens use local session rules without an owner-table read; a signed-in person's rules load only for that identity and never bleed across account changes.",
+  "actual": "Guest sends record a 42501 owner-table read error. The store can retain prior rules across auth transitions and older reads or queued writes can settle after a new identity takes over.",
+  "severity": "S2: visible context-settings failure and possible cross-identity rule state in a shared UI session",
+  "priority": "P1: repair shared identity-aware context-rule boundary before trusting guest context controls",
+  "state": "in-fix",
+  "evidence": [
+    "Valid native release176 guest run urgent-live-guest-20261003-02 passed two grounded turns on backend b3a87d8b while ops.system_error simultaneously recorded users.user_surface_state 42501; this defect is not proven to cause the user's reported terminal Chat error.",
+    "Live database read-only role grants and pg_policies inspection: authenticated SELECT exists with owner policy; anon SELECT grant absent.",
+    "Guarded planted-break RED urgent-context-rules-red-02: removing guest read skip made owner-table SELECT assertion fail; original source restored byte-identically.",
+    "Guarded GREEN urgent-context-rules-green-03: 6 focused tests passed, including real request context_withheld and delayed cross-identity read/write cases. Compile urgent-context-rules-compile-01 passed."
+  ],
+  "current_work": "Source repair and focused guard are complete; independent peer review and final CI/native verification remain. Existing Store 0.2.176 still has the defect. The reported instant guest Chat terminal error remains an open, separately investigated symptom.",
+  "closure_requirement": "Review final source, pass current CI, and verify fresh guest and signed-in member on the exact resulting development artifact, including absence of a new guest owner-table 42501. Then distinguish source fixed from published Store status."
+}

@@ -33458,6 +33458,7 @@
           "expected": [
             "Chat remains visible and usable without login; real responses ground in current page; no private account state is carried into guest."
           ],
+          "defect_ids": ["EXT-D-0096"],
           "results": {
             "guest": {
               "status": "pass",
@@ -33521,6 +33522,7 @@
             "Count and blocks match the current turn receipt; absent/unknown data is not fabricated.",
             "Viewer opens actual stored delivered text for the exact turn; no client-generated message ID is substituted."
           ],
+          "defect_ids": ["EXT-D-0096"],
           "verification_status": "Source consumer repair guarded29/29 and compile; native unverified. Exact text viewer wire gap EXT-D-0075 remains.",
           "results": {}
         }
@@ -33532,7 +33534,8 @@
             "EXT-D-0066",
             "EXT-D-0074",
             "EXT-D-0075",
-            "EXT-D-0088"
+            "EXT-D-0088",
+            "EXT-D-0096"
           ],
           "run_ids": [
             "guest-grounding-peer-native-20261001-001",

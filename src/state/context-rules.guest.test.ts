@@ -1,5 +1,5 @@
-import { useAuthStore } from '@/state/auth';
 import { requestContextFromValues } from '@/lib/chat/context';
+import { useAuthStore } from '@/state/auth';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   ensureContextRulesReady,
@@ -81,7 +81,10 @@ describe('owner-only context rules', () => {
     let finishOldRead: (value: unknown) => void = () => {};
     select.mockImplementationOnce(() => ({
       eq: () => ({
-        is: () => new Promise((resolve) => { finishOldRead = resolve; }),
+        is: () =>
+          new Promise((resolve) => {
+            finishOldRead = resolve;
+          }),
       }),
     }));
     select.mockImplementationOnce(() => ({
@@ -93,11 +96,13 @@ describe('owner-only context rules', () => {
       }),
     }));
     useAuthStore.getState().setUser({
-      id: 'df7e9e94-657e-4d40-9ad8-351621438808', email: 'test@test.com',
+      id: 'df7e9e94-657e-4d40-9ad8-351621438808',
+      email: 'test@test.com',
     });
     const oldRead = loadContextRules();
     useAuthStore.getState().setUser({
-      id: '7cd90a64-d2e5-4f0e-9f9d-495f8dc38668', email: 'admin@admin.com',
+      id: '7cd90a64-d2e5-4f0e-9f9d-495f8dc38668',
+      email: 'admin@admin.com',
     });
     await loadContextRules();
     finishOldRead({
@@ -115,7 +120,10 @@ describe('owner-only context rules', () => {
     let finishOldRead: (value: unknown) => void = () => {};
     select.mockImplementationOnce(() => ({
       eq: () => ({
-        is: () => new Promise((resolve) => { finishOldRead = resolve; }),
+        is: () =>
+          new Promise((resolve) => {
+            finishOldRead = resolve;
+          }),
       }),
     }));
     select.mockImplementationOnce(() => ({
@@ -145,11 +153,13 @@ describe('owner-only context rules', () => {
 
   it('does not carry an old owner’s queued rule write into a new account', async () => {
     useAuthStore.getState().setUser({
-      id: 'df7e9e94-657e-4d40-9ad8-351621438808', email: 'test@test.com',
+      id: 'df7e9e94-657e-4d40-9ad8-351621438808',
+      email: 'test@test.com',
     });
     const oldWrite = saveContextRule('_default', 'page_brief', { include: false });
     useAuthStore.getState().setUser({
-      id: '7cd90a64-d2e5-4f0e-9f9d-495f8dc38668', email: 'admin@admin.com',
+      id: '7cd90a64-d2e5-4f0e-9f9d-495f8dc38668',
+      email: 'admin@admin.com',
     });
     await oldWrite;
     expect(upsert).not.toHaveBeenCalled();

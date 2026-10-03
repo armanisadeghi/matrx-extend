@@ -1,0 +1,11 @@
+{
+  "status": "reported instant terminal error not reproduced; separately observed guest Context Rules 42501 repaired in source, Store still unverified for that fix",
+  "store": "Installed primary-ID Google Store 0.2.176, signed-out ordinary Hi and public-demo Analyze reached terminal answers; restricted Chrome Store page Analyze retried protected-page reads, then gave an honest terminal answer. See .research/urgent-installed-guest-20261003.json.",
+  "native": "Exact published release176 local ZIP, fresh guest on backend b3a87d8b: grounded first and post-panel-reload answers passed; guard urgent-live-guest-20261003-02 valid; test-results/guest-chat-store-99edf464-c906-478a-ba37-428752f06c7a.json.",
+  "backend": "Earlier passing smoke was b350b372; this run b3a87d8b; installed UI crossed b3a87d8b to 0d2c8772, so individual UI turns are not tied to one server SHA.",
+  "first_proven_failure": "ops.system_error users.user_surface_state SELECT 42501 during guest sends (also present in earlier passing smoke); separate from unconfirmed terminal-chat symptom.",
+  "cause": "Guest send calls shared Context Rules loader against owner-only table; live grants allow authenticated SELECT but no anon SELECT. Prior account rule state could survive identity transition.",
+  "repair": "62e1ce4c pushed main: guest rules stay local, owner reads require signed-in identity, owner lifetime invalidates stale reads and queued writes; no DB grant change.",
+  "proof": "Guard urgent-context-rules-red-02 admitted; planted guest-read break failed exact owner-table SELECT assertion. Guard urgent-context-rules-green-03 admitted 6/6, including actual request withheld field, A→B→A stale read and queued write; guarded compile passed.",
+  "limits": "No exact user error text or triggering prompt received yet; no user-terminal root cause claimed. New source not in installed Store176; final CI artifact, native guest/member verification and peer review pending."
+}
