@@ -1,0 +1,1027 @@
+{
+  "schema_version": 1,
+  "scope": [
+    "EXT-F-1002-T01",
+    "EXT-F-1002-T02",
+    "EXT-F-1002-T03",
+    "EXT-F-1002-T04",
+    "EXT-F-1002-T05",
+    "EXT-F-1002-T06",
+    "EXT-F-1002-T07",
+    "EXT-F-1002-T08",
+    "EXT-F-1002-T09",
+    "EXT-F-1002-T10",
+    "EXT-F-1002-T11",
+    "EXT-F-1002-T12",
+    "EXT-F-1002-T13",
+    "EXT-F-1002-T14",
+    "EXT-F-1002-T15",
+    "EXT-F-1004-T01",
+    "EXT-F-1004-T02",
+    "EXT-F-1004-T03",
+    "EXT-F-1004-T04",
+    "EXT-F-1004-T05",
+    "EXT-F-1004-T06",
+    "EXT-F-1004-T07",
+    "EXT-F-1004-T08",
+    "EXT-F-1004-T09",
+    "EXT-F-1004-T10",
+    "EXT-F-1004-T11",
+    "EXT-F-1004-T12",
+    "EXT-F-1004-T13",
+    "EXT-F-1004-T14",
+    "EXT-F-1004-T15",
+    "EXT-F-1004-T16",
+    "EXT-F-1004-T17",
+    "EXT-F-1004-T18",
+    "EXT-F-1004-T19",
+    "EXT-F-1004-T20",
+    "EXT-F-1004-T21",
+    "EXT-F-1004-T22",
+    "EXT-F-1004-T23",
+    "EXT-F-1004-T24",
+    "EXT-F-1004-T25",
+    "EXT-F-1004-T26",
+    "EXT-F-1004-T27",
+    "EXT-F-1004-T28",
+    "EXT-F-1002-T19",
+    "EXT-F-1002-T20",
+    "EXT-F-1002-T16",
+    "EXT-F-1002-T17",
+    "EXT-F-1002-T18"
+  ],
+  "inventory_authority": "docs/stabilization/inventory.json (read only; case IDs and mode applicability preserved)",
+  "shared_preconditions": [
+    "Apply the inventory\u2019s existing build/runtime preconditions. Before each case, record exact loaded extension ID, version, and loaded-from path in chrome://extensions; reload the extension and reopen the tested surface before the first run, then repeat after a second extension reload when the case dimension includes reload. Do not treat that setup reload as the post-reload repetition.",
+    "Use an existing account already independently known to be guest, member, or admin as stated by the case. Record visible email and role evidence; never change account roles or include credentials. For authenticated writes, record the active device organization and do not infer it from the account.",
+    "Use synthetic disposable values for profile edits and retain a record of original values so they can be restored. Preserve existing inventory status and all global runtime preconditions.",
+    "Reachability check: inspect the loaded manifest in chrome://extensions. In local/unpacked WXT builds, the popup entrypoint supplies action.default_popup; opening its extension URL in an ordinary tab is not a toolbar-popup test. In a Chrome Web Store build, wxt.config.ts filters out the popup entrypoint and configures Chrome to open the sidepanel on action click. Options and mic-grant remain separately included extension pages; test options from the extension Details > Extension options link, and test mic-grant through Chat\u2019s microphone permission flow."
+  ],
+  "source_basis": [
+    "src/entrypoints/popup/main.tsx:16",
+    "src/entrypoints/options/main.tsx:12",
+    "src/entrypoints/mic-grant/index.ts:33",
+    "src/features/chat/ChatView.tsx:1360",
+    "src/features/profile/ProfileView.tsx:48",
+    "src/hooks/use-user-profile.ts:42",
+    "src/components/UserMenu.tsx:21",
+    "src/entrypoints/sidepanel/App.tsx:696",
+    "wxt.config.ts:10-33",
+    "wxt.config.ts:159-170",
+    "src/lib/panel/adapter.ts:72-82",
+    "src/features/chat/ChatView.tsx:1374-1395"
+  ],
+  "cases": {
+    "EXT-F-1002-T01": {
+      "preconditions": [
+        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
+        "Use the local/unpacked build while signed out.",
+        "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
+      ],
+      "steps": [
+        "Open the toolbar action and wait for the popup to finish rendering.",
+        "Inspect all visible action labels and confirm whether Open chat appears."
+      ],
+      "expected": ["Open chat and Capture page are absent; Sign in is visible."],
+      "source_anchors": ["src/entrypoints/popup/main.tsx:105-134", "wxt.config.ts:26-33"],
+      "gaps": []
+    },
+    "EXT-F-1002-T02": {
+      "preconditions": [
+        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
+        "Use a known signed-in member profile and local/unpacked build. Record active window and current sidepanel state.",
+        "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
+      ],
+      "steps": [
+        "Open the toolbar popup; confirm the visible account email and Open chat button.",
+        "Click Open chat once.",
+        "Observe which browser window gains the Matrx sidepanel, whether popup closes, and which sidepanel tab is selected."
+      ],
+      "expected": [
+        "Sidepanel opens in the initiating window and the popup closes. The action opens the panel without selecting Chat; capture selected tab as observed."
+      ],
+      "source_anchors": [
+        "src/entrypoints/popup/main.tsx:21-54",
+        "src/entrypoints/popup/main.tsx:108-120",
+        "wxt.config.ts:26-33"
+      ],
+      "gaps": [
+        "The source comment says this does not select Chat, but exact resulting tab is dependent on current persisted sidepanel selection."
+      ]
+    },
+    "EXT-F-1002-T03": {
+      "preconditions": [
+        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
+        "Use a known signed-in admin profile and local/unpacked build. Record active window and current sidepanel state.",
+        "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
+      ],
+      "steps": [
+        "Open the toolbar popup; confirm the visible account email and Open chat button.",
+        "Click Open chat once.",
+        "Observe which browser window gains the Matrx sidepanel, whether popup closes, and which sidepanel tab is selected."
+      ],
+      "expected": [
+        "Sidepanel opens in the initiating window and the popup closes. The action opens the panel without selecting Chat; capture selected tab as observed."
+      ],
+      "source_anchors": [
+        "src/entrypoints/popup/main.tsx:21-54",
+        "src/entrypoints/popup/main.tsx:108-120",
+        "wxt.config.ts:26-33"
+      ],
+      "gaps": [
+        "The source comment says this does not select Chat, but exact resulting tab is dependent on current persisted sidepanel selection."
+      ]
+    },
+    "EXT-F-1002-T04": {
+      "preconditions": [
+        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
+        "Use the local/unpacked build while signed out.",
+        "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
+      ],
+      "steps": [
+        "Open toolbar popup and inspect action labels.",
+        "Confirm whether Capture page appears."
+      ],
+      "expected": ["Capture page and Open chat are absent; Sign in is visible."],
+      "source_anchors": ["src/entrypoints/popup/main.tsx:105-134", "wxt.config.ts:26-33"],
+      "gaps": []
+    },
+    "EXT-F-1002-T05": {
+      "preconditions": [
+        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
+        "Use known signed-in member and local/unpacked build. Keep the initiating tab active and record its URL and window ID.",
+        "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
+      ],
+      "steps": [
+        "Open toolbar popup and click Capture page once.",
+        "Observe that popup closes only after the panel is opened and a matching panel context is confirmed.",
+        "In the same window, inspect the exact sidepanel instance and verify Scrape is selected; confirm the initiating browser tab and URL did not change and no tab was added.",
+        "Close and reopen the panel, then confirm the one-time launch does not select Scrape again."
+      ],
+      "expected": [
+        "Scrape selection is applied to the uniquely confirmed panel context for initiating window; active tab and tab count stay unchanged; a reopened panel does not consume/replay the prior click."
+      ],
+      "source_anchors": [
+        "src/entrypoints/popup/main.tsx:56-103",
+        "src/lib/panel/launch-intent.ts:1",
+        "wxt.config.ts:26-33"
+      ],
+      "gaps": [
+        "How to observe sidepanel context identity and induce an ambiguous/missing context are not defined by UI; those deeper assertions require a diagnostic surface or controlled browser harness."
+      ]
+    },
+    "EXT-F-1002-T06": {
+      "preconditions": [
+        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
+        "Use known signed-in admin and local/unpacked build. Keep the initiating tab active and record its URL and window ID.",
+        "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
+      ],
+      "steps": [
+        "Open toolbar popup and click Capture page once.",
+        "Observe that popup closes only after the panel is opened and a matching panel context is confirmed.",
+        "In the same window, inspect the exact sidepanel instance and verify Scrape is selected; confirm the initiating browser tab and URL did not change and no tab was added.",
+        "Close and reopen the panel, then confirm the one-time launch does not select Scrape again."
+      ],
+      "expected": [
+        "Scrape selection is applied to the uniquely confirmed panel context for initiating window; active tab and tab count stay unchanged; a reopened panel does not consume/replay the prior click."
+      ],
+      "source_anchors": [
+        "src/entrypoints/popup/main.tsx:56-103",
+        "src/lib/panel/launch-intent.ts:1",
+        "wxt.config.ts:26-33"
+      ],
+      "gaps": [
+        "How to observe sidepanel context identity and induce an ambiguous/missing context are not defined by UI; those deeper assertions require a diagnostic surface or controlled browser harness."
+      ]
+    },
+    "EXT-F-1002-T07": {
+      "preconditions": [
+        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
+        "Use the local/unpacked build while signed out, with a reachable sign-in provider.",
+        "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
+      ],
+      "steps": [
+        "Open toolbar popup and click Sign in once.",
+        "Wait for the browser auth flow; if it does not open, capture visible alert text and confirm Sign in becomes available again."
+      ],
+      "expected": ["Auth flow opens; an initiation failure is visible and retryable."],
+      "source_anchors": ["src/entrypoints/popup/main.tsx:125-134", "wxt.config.ts:26-33"],
+      "gaps": []
+    },
+    "EXT-F-1002-T08": {
+      "preconditions": [
+        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
+        "Use known signed-in member and local/unpacked build.",
+        "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
+      ],
+      "steps": ["Open toolbar popup and inspect visible actions."],
+      "expected": ["Sign in is absent; account email and Open chat/Capture page are visible."],
+      "source_anchors": ["src/entrypoints/popup/main.tsx:105-134", "wxt.config.ts:26-33"],
+      "gaps": []
+    },
+    "EXT-F-1002-T09": {
+      "preconditions": [
+        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
+        "Use known signed-in admin and local/unpacked build.",
+        "Verify this loaded local/unpacked artifact actually has popup.html as action.default_popup in its loaded manifest, then click the toolbar action. Opening popup.html as an ordinary extension URL does not exercise toolbar action wiring."
+      ],
+      "steps": ["Open toolbar popup and inspect visible actions."],
+      "expected": ["Sign in is absent; account email and Open chat/Capture page are visible."],
+      "source_anchors": ["src/entrypoints/popup/main.tsx:105-134", "wxt.config.ts:26-33"],
+      "gaps": []
+    },
+    "EXT-F-1002-T10": {
+      "preconditions": [
+        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
+        "Use guest profile as applicable, plus a disposable Chrome profile or known test machine where microphone permission can be reset. Record Chrome site-permission state and whether an input device is connected."
+      ],
+      "steps": [
+        "Open Chat and click the microphone control to open the extension mic-grant popup.",
+        "Grant path: with permission unset and a working input device, click Allow microphone and accept Chrome\u2019s prompt. Record prompt, page status, popup close timing, and Chat mic state.",
+        "Deny path: reset extension-origin microphone permission, repeat and deny the Chrome prompt; record status text and whether retry remains enabled.",
+        "No-device path: use a test environment with no available input device and permission allowed, repeat; record visible status. Do not report a scenario as exercised if the environment did not support it."
+      ],
+      "expected": [
+        "Grant reports \u201cGranted! Closing\u2026\u201d and closes after roughly 1.5 seconds; denial displays permission-denied recovery guidance and leaves Allow enabled; no device displays no-microphone guidance. Separate outcomes per scenario."
+      ],
+      "source_anchors": [
+        "src/features/chat/ChatView.tsx:1360-1445",
+        "src/entrypoints/mic-grant/index.ts:64-114"
+      ],
+      "gaps": [
+        "Inventory bundles three outcomes into one case; it does not specify whether one execution may satisfy it. Do not mark complete until each environment-supported branch has independent evidence."
+      ]
+    },
+    "EXT-F-1002-T11": {
+      "preconditions": [
+        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
+        "Use member profile as applicable, plus a disposable Chrome profile or known test machine where microphone permission can be reset. Record Chrome site-permission state and whether an input device is connected."
+      ],
+      "steps": [
+        "Open Chat and click the microphone control to open the extension mic-grant popup.",
+        "Grant path: with permission unset and a working input device, click Allow microphone and accept Chrome\u2019s prompt. Record prompt, page status, popup close timing, and Chat mic state.",
+        "Deny path: reset extension-origin microphone permission, repeat and deny the Chrome prompt; record status text and whether retry remains enabled.",
+        "No-device path: use a test environment with no available input device and permission allowed, repeat; record visible status. Do not report a scenario as exercised if the environment did not support it."
+      ],
+      "expected": [
+        "Grant reports \u201cGranted! Closing\u2026\u201d and closes after roughly 1.5 seconds; denial displays permission-denied recovery guidance and leaves Allow enabled; no device displays no-microphone guidance. Separate outcomes per scenario."
+      ],
+      "source_anchors": [
+        "src/features/chat/ChatView.tsx:1360-1445",
+        "src/entrypoints/mic-grant/index.ts:64-114"
+      ],
+      "gaps": [
+        "Inventory bundles three outcomes into one case; it does not specify whether one execution may satisfy it. Do not mark complete until each environment-supported branch has independent evidence."
+      ]
+    },
+    "EXT-F-1002-T12": {
+      "preconditions": [
+        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
+        "Use admin profile as applicable, plus a disposable Chrome profile or known test machine where microphone permission can be reset. Record Chrome site-permission state and whether an input device is connected."
+      ],
+      "steps": [
+        "Open Chat and click the microphone control to open the extension mic-grant popup.",
+        "Grant path: with permission unset and a working input device, click Allow microphone and accept Chrome\u2019s prompt. Record prompt, page status, popup close timing, and Chat mic state.",
+        "Deny path: reset extension-origin microphone permission, repeat and deny the Chrome prompt; record status text and whether retry remains enabled.",
+        "No-device path: use a test environment with no available input device and permission allowed, repeat; record visible status. Do not report a scenario as exercised if the environment did not support it."
+      ],
+      "expected": [
+        "Grant reports \u201cGranted! Closing\u2026\u201d and closes after roughly 1.5 seconds; denial displays permission-denied recovery guidance and leaves Allow enabled; no device displays no-microphone guidance. Separate outcomes per scenario."
+      ],
+      "source_anchors": [
+        "src/features/chat/ChatView.tsx:1360-1445",
+        "src/entrypoints/mic-grant/index.ts:64-114"
+      ],
+      "gaps": [
+        "Inventory bundles three outcomes into one case; it does not specify whether one execution may satisfy it. Do not mark complete until each environment-supported branch has independent evidence."
+      ]
+    },
+    "EXT-F-1002-T13": {
+      "preconditions": [
+        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
+        "Use guest auth state; options entrypoint is a local/unpacked extension page."
+      ],
+      "steps": [
+        "Open chrome://extensions in the same browser profile.",
+        "Find the exact Matrx extension confirmed in setup and click Details, then Extension options (or the options link shown by Chrome).",
+        "Wait for the options document to render; record its URL/title and visible heading."
+      ],
+      "expected": [
+        "Options document opens with \u201cMatrx Extend Settings\u201d heading and renders the shared SettingsView. Record any auth-dependent state as observed; no role-specific options behavior is asserted by source."
+      ],
+      "source_anchors": [
+        "src/entrypoints/options/main.tsx:12-35",
+        "src/features/settings/SettingsView.tsx:111"
+      ],
+      "gaps": [
+        "Source establishes shared SettingsView mount but inventory does not identify which Settings controls are in scope for this case."
+      ]
+    },
+    "EXT-F-1002-T14": {
+      "preconditions": [
+        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
+        "Use member auth state; options entrypoint is a local/unpacked extension page."
+      ],
+      "steps": [
+        "Open chrome://extensions in the same browser profile.",
+        "Find the exact Matrx extension confirmed in setup and click Details, then Extension options (or the options link shown by Chrome).",
+        "Wait for the options document to render; record its URL/title and visible heading."
+      ],
+      "expected": [
+        "Options document opens with \u201cMatrx Extend Settings\u201d heading and renders the shared SettingsView. Record any auth-dependent state as observed; no role-specific options behavior is asserted by source."
+      ],
+      "source_anchors": [
+        "src/entrypoints/options/main.tsx:12-35",
+        "src/features/settings/SettingsView.tsx:111"
+      ],
+      "gaps": [
+        "Source establishes shared SettingsView mount but inventory does not identify which Settings controls are in scope for this case."
+      ]
+    },
+    "EXT-F-1002-T15": {
+      "preconditions": [
+        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
+        "Use admin auth state; options entrypoint is a local/unpacked extension page."
+      ],
+      "steps": [
+        "Open chrome://extensions in the same browser profile.",
+        "Find the exact Matrx extension confirmed in setup and click Details, then Extension options (or the options link shown by Chrome).",
+        "Wait for the options document to render; record its URL/title and visible heading."
+      ],
+      "expected": [
+        "Options document opens with \u201cMatrx Extend Settings\u201d heading and renders the shared SettingsView. Record any auth-dependent state as observed; no role-specific options behavior is asserted by source."
+      ],
+      "source_anchors": [
+        "src/entrypoints/options/main.tsx:12-35",
+        "src/features/settings/SettingsView.tsx:111"
+      ],
+      "gaps": [
+        "Source establishes shared SettingsView mount but inventory does not identify which Settings controls are in scope for this case."
+      ]
+    },
+    "EXT-F-1004-T01": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known member; do not change role or account."
+      ],
+      "steps": [
+        "Expand Identity and change Preferred to a unique synthetic value. Confirm Unsaved changes and Discard appear.",
+        "Click Back (chevron with title Back).",
+        "Reopen Profile and inspect Preferred."
+      ],
+      "expected": [
+        "Returns to Chat. Reopened Profile shows the previously loaded value; navigation did not save the draft."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:48-225",
+        "src/hooks/use-user-profile.ts:42-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T02": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known admin; do not change role or account."
+      ],
+      "steps": [
+        "Expand Identity and change Preferred to a unique synthetic value. Confirm Unsaved changes and Discard appear.",
+        "Click Back (chevron with title Back).",
+        "Reopen Profile and inspect Preferred."
+      ],
+      "expected": [
+        "Returns to Chat. Reopened Profile shows the previously loaded value; navigation did not save the draft."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:48-225",
+        "src/hooks/use-user-profile.ts:42-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T03": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known member; do not change role or account."
+      ],
+      "steps": [
+        "Change Preferred to a unique synthetic value; confirm Save is enabled and Unsaved changes appears.",
+        "Click Discard and verify the original value returns and Save is disabled.",
+        "Change Preferred to another synthetic value and click Save; wait until busy state ends.",
+        "Navigate to Chat, reopen Profile and verify saved value. Restore original value and save."
+      ],
+      "expected": [
+        "Discard restores loaded values without writing. Save ends busy state; after reopening Profile, the saved synthetic value is present, then restoration is persisted."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:48-225",
+        "src/hooks/use-user-profile.ts:42-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T04": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known admin; do not change role or account."
+      ],
+      "steps": [
+        "Change Preferred to a unique synthetic value; confirm Save is enabled and Unsaved changes appears.",
+        "Click Discard and verify the original value returns and Save is disabled.",
+        "Change Preferred to another synthetic value and click Save; wait until busy state ends.",
+        "Navigate to Chat, reopen Profile and verify saved value. Restore original value and save."
+      ],
+      "expected": [
+        "Discard restores loaded values without writing. Save ends busy state; after reopening Profile, the saved synthetic value is present, then restoration is persisted."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:48-225",
+        "src/hooks/use-user-profile.ts:42-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T05": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known member; do not change role or account."
+      ],
+      "steps": [
+        "Expand Identity. Change First name, Middle, Last name, Preferred, Suffix, Pronouns, and Birthday to distinct synthetic values (birthday in a valid YYYY-MM-DD date).",
+        "Verify Save becomes enabled, click Save, and wait for loading to finish.",
+        "Reopen Profile and compare each field and identity card name to the saved values; restore original values and save."
+      ],
+      "expected": [
+        "Each changed identity field and the identity card display saved values after reload/reopen; restoration can be saved."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:100-148",
+        "src/hooks/use-user-profile.ts:87-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T06": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known admin; do not change role or account."
+      ],
+      "steps": [
+        "Expand Identity. Change First name, Middle, Last name, Preferred, Suffix, Pronouns, and Birthday to distinct synthetic values (birthday in a valid YYYY-MM-DD date).",
+        "Verify Save becomes enabled, click Save, and wait for loading to finish.",
+        "Reopen Profile and compare each field and identity card name to the saved values; restore original values and save."
+      ],
+      "expected": [
+        "Each changed identity field and the identity card display saved values after reload/reopen; restoration can be saved."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:100-148",
+        "src/hooks/use-user-profile.ts:87-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T07": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known member; do not change role or account."
+      ],
+      "steps": [
+        "Expand Phones; record initial list. Add two synthetic numbers, edit first label/value/country code and SMS switch; make second primary; remove first..",
+        "Confirm list contents and primary star before saving. Click Save and wait for completion.",
+        "Reopen Profile and compare each item, labels, flags and primary designation; restore original list and save."
+      ],
+      "expected": [
+        "Add/edit/remove operations and the selected primary designation in Phones persist after reopening Profile; removed item remains absent."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:150-162",
+        "src/features/profile/ProfileView.tsx:300-430",
+        "src/hooks/use-user-profile.ts:87-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T08": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known admin; do not change role or account."
+      ],
+      "steps": [
+        "Expand Phones; record initial list. Add two synthetic numbers, edit first label/value/country code and SMS switch; make second primary; remove first..",
+        "Confirm list contents and primary star before saving. Click Save and wait for completion.",
+        "Reopen Profile and compare each item, labels, flags and primary designation; restore original list and save."
+      ],
+      "expected": [
+        "Add/edit/remove operations and the selected primary designation in Phones persist after reopening Profile; removed item remains absent."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:150-162",
+        "src/features/profile/ProfileView.tsx:300-430",
+        "src/hooks/use-user-profile.ts:87-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T09": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known member; do not change role or account."
+      ],
+      "steps": [
+        "Expand Emails; record initial list. Add two synthetic addresses using reserved example.test addresses, edit a label/value, make second primary; remove first..",
+        "Confirm list contents and primary star before saving. Click Save and wait for completion.",
+        "Reopen Profile and compare each item, labels, flags and primary designation; restore original list and save."
+      ],
+      "expected": [
+        "Add/edit/remove operations and the selected primary designation in Emails persist after reopening Profile; removed item remains absent."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:150-162",
+        "src/features/profile/ProfileView.tsx:300-430",
+        "src/hooks/use-user-profile.ts:87-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T10": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known admin; do not change role or account."
+      ],
+      "steps": [
+        "Expand Emails; record initial list. Add two synthetic addresses using reserved example.test addresses, edit a label/value, make second primary; remove first..",
+        "Confirm list contents and primary star before saving. Click Save and wait for completion.",
+        "Reopen Profile and compare each item, labels, flags and primary designation; restore original list and save."
+      ],
+      "expected": [
+        "Add/edit/remove operations and the selected primary designation in Emails persist after reopening Profile; removed item remains absent."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:150-162",
+        "src/features/profile/ProfileView.tsx:300-430",
+        "src/hooks/use-user-profile.ts:87-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T11": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known member; do not change role or account."
+      ],
+      "steps": [
+        "Expand Web and set Website to https://example.org/; add a social entry with platform \u201cFixture\u201d and handle \u201c@fixture\u201d; set URL and public flag..",
+        "Click Save; wait for completion, navigate to Chat and reopen Profile.",
+        "Verify every changed field/flag, then restore original values and save."
+      ],
+      "expected": ["All changed Web field values survive reopening Profile and can be restored."],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:164-183",
+        "src/features/profile/ProfileView.tsx:450-600",
+        "src/hooks/use-user-profile.ts:87-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T12": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known admin; do not change role or account."
+      ],
+      "steps": [
+        "Expand Web and set Website to https://example.org/; add a social entry with platform \u201cFixture\u201d and handle \u201c@fixture\u201d; set URL and public flag..",
+        "Click Save; wait for completion, navigate to Chat and reopen Profile.",
+        "Verify every changed field/flag, then restore original values and save."
+      ],
+      "expected": ["All changed Web field values survive reopening Profile and can be restored."],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:164-183",
+        "src/features/profile/ProfileView.tsx:450-600",
+        "src/hooks/use-user-profile.ts:87-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T13": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known member; do not change role or account."
+      ],
+      "steps": [
+        "Expand Shipping address and fill Line 1, Line 2, City, State / region, Postal code, Country with synthetic fixture values..",
+        "Click Save; wait for completion, navigate to Chat and reopen Profile.",
+        "Verify every changed field/flag, then restore original values and save."
+      ],
+      "expected": [
+        "All changed Shipping address field values survive reopening Profile and can be restored."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:164-183",
+        "src/features/profile/ProfileView.tsx:450-600",
+        "src/hooks/use-user-profile.ts:87-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T14": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known admin; do not change role or account."
+      ],
+      "steps": [
+        "Expand Shipping address and fill Line 1, Line 2, City, State / region, Postal code, Country with synthetic fixture values..",
+        "Click Save; wait for completion, navigate to Chat and reopen Profile.",
+        "Verify every changed field/flag, then restore original values and save."
+      ],
+      "expected": [
+        "All changed Shipping address field values survive reopening Profile and can be restored."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:164-183",
+        "src/features/profile/ProfileView.tsx:450-600",
+        "src/hooks/use-user-profile.ts:87-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T15": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known member; do not change role or account."
+      ],
+      "steps": [
+        "Expand Billing address and record current switch and billing values.",
+        "Turn Same as shipping on; verify billing inputs disappear. Turn it off; verify inputs return. Set a synthetic billing Line 1 and City.",
+        "Save; reopen Profile, verify switch is off and values persist. Turn it on then off once to check values remain; restore original state and values and save."
+      ],
+      "expected": [
+        "On hides separate billing fields; off reveals them. Saved billing values and switch state persist after reopening."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:181-204",
+        "src/hooks/use-user-profile.ts:87-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T16": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known admin; do not change role or account."
+      ],
+      "steps": [
+        "Expand Billing address and record current switch and billing values.",
+        "Turn Same as shipping on; verify billing inputs disappear. Turn it off; verify inputs return. Set a synthetic billing Line 1 and City.",
+        "Save; reopen Profile, verify switch is off and values persist. Turn it on then off once to check values remain; restore original state and values and save."
+      ],
+      "expected": [
+        "On hides separate billing fields; off reveals them. Saved billing values and switch state persist after reopening."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:181-204",
+        "src/hooks/use-user-profile.ts:87-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T17": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known member; do not change role or account."
+      ],
+      "steps": [
+        "Expand Employment; set Company and Title to unique synthetic values.",
+        "Save, reopen Profile, verify both values, then restore original values and save."
+      ],
+      "expected": ["Company and Title values persist after reopening and restore successfully."],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:206-221",
+        "src/hooks/use-user-profile.ts:87-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T18": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known admin; do not change role or account."
+      ],
+      "steps": [
+        "Expand Employment; set Company and Title to unique synthetic values.",
+        "Save, reopen Profile, verify both values, then restore original values and save."
+      ],
+      "expected": ["Company and Title values persist after reopening and restore successfully."],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:206-221",
+        "src/hooks/use-user-profile.ts:87-100"
+      ],
+      "gaps": []
+    },
+    "EXT-F-1004-T19": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known member; do not change role or account."
+      ],
+      "steps": [
+        "Expand Emergency contacts and record initial list. Add two contacts with synthetic names, example.test emails and test phone numbers; edit one field; remove the first.",
+        "Save and reopen Profile. Compare remaining contact and confirm removed contact is absent. Restore original contacts and save."
+      ],
+      "expected": [
+        "Added/edited contact persists; removed contact stays absent after reopening; original list can be restored."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:223-230",
+        "src/features/profile/ProfileView.tsx:600-700",
+        "src/hooks/use-user-profile.ts:87-100"
+      ],
+      "gaps": [
+        "Confirm exact UI field labels and editor line anchors against the current remaining component body before execution; inventory source anchors currently point only at ProfileView top-level."
+      ]
+    },
+    "EXT-F-1004-T20": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known admin; do not change role or account."
+      ],
+      "steps": [
+        "Expand Emergency contacts and record initial list. Add two contacts with synthetic names, example.test emails and test phone numbers; edit one field; remove the first.",
+        "Save and reopen Profile. Compare remaining contact and confirm removed contact is absent. Restore original contacts and save."
+      ],
+      "expected": [
+        "Added/edited contact persists; removed contact stays absent after reopening; original list can be restored."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:223-230",
+        "src/features/profile/ProfileView.tsx:600-700",
+        "src/hooks/use-user-profile.ts:87-100"
+      ],
+      "gaps": [
+        "Confirm exact UI field labels and editor line anchors against the current remaining component body before execution; inventory source anchors currently point only at ProfileView top-level."
+      ]
+    },
+    "EXT-F-1004-T21": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known member; do not change role or account."
+      ],
+      "steps": [
+        "For Identity, Phones, Emails, Web, Shipping address, Billing address, Employment, and Emergency contacts: note open/closed state. Toggle each section closed then open using its label.",
+        "Change a synthetic Preferred value before toggling Identity closed/open; confirm draft value remains and Unsaved changes stays visible. Click Discard."
+      ],
+      "expected": [
+        "Each section opens/closes from its label; toggling does not lose the current draft; Discard restores loaded value."
+      ],
+      "source_anchors": ["src/features/profile/ProfileView.tsx:100-225"],
+      "gaps": []
+    },
+    "EXT-F-1004-T22": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run independently as existing known admin; do not change role or account."
+      ],
+      "steps": [
+        "For Identity, Phones, Emails, Web, Shipping address, Billing address, Employment, and Emergency contacts: note open/closed state. Toggle each section closed then open using its label.",
+        "Change a synthetic Preferred value before toggling Identity closed/open; confirm draft value remains and Unsaved changes stays visible. Click Discard."
+      ],
+      "expected": [
+        "Each section opens/closes from its label; toggling does not lose the current draft; Discard restores loaded value."
+      ],
+      "source_anchors": ["src/features/profile/ProfileView.tsx:100-225"],
+      "gaps": []
+    },
+    "EXT-F-1004-T23": {
+      "preconditions": [
+        "Use the exact build variant already specified by this case. In chrome://extensions confirm its ID/version and loaded path; reload it, open an ordinary web page, and open the toolbar popup. Record guest/member/admin identity from the already authenticated state. For member/admin, record account email and active device organization.",
+        "Use an existing guest profile and a disposable Chrome profile. Before signing out, select Profile in sidepanel, then sign out using the account menu; retain Profile as persisted selection if the app does."
+      ],
+      "steps": [
+        "Reload extension and reopen sidepanel while still guest.",
+        "Inspect avatar menu and tab strip; record whether Profile appears.",
+        "If stale selection still points to Profile, observe selected content after auth resolves and check whether any profile fields/data render."
+      ],
+      "expected": [
+        "Profile is absent from guest menu/tab navigation. A stale selected Profile resolves to an accessible destination and profile data is not rendered."
+      ],
+      "source_anchors": [
+        "src/components/UserMenu.tsx:85-95",
+        "src/entrypoints/sidepanel/App.tsx:696-701",
+        "src/config/sidepanel-visibility.ts"
+      ],
+      "gaps": [
+        "How to seed persisted tab selection for the guest profile and expected first accessible tab are not stated in source anchors; record actual selected destination."
+      ]
+    },
+    "EXT-F-1004-T24": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Run once each as known member and known admin using a disposable profile. Preserve original data and do not use real personal information.",
+        "Repeat this case independently with an existing known member and an existing known admin; record each role\u2019s result separately without changing account roles."
+      ],
+      "steps": [
+        "Expand Identity and set Birthday to an invalid date string using browser-native date control (record whether the control accepts it). Expand Emails, add an address with invalid syntax. Expand Emergency contacts, enter invalid email in a disposable contact.",
+        "Attempt Save and record whether Save is disabled, browser validation blocks submission, a request is made, and any visible profile error text.",
+        "If save succeeds, inspect saved values after reopening and restore original data."
+      ],
+      "expected": [
+        "Record native input behavior separately for date and each email field. No specific rejection is assumed: source has input types but no explicit profile validator; any backend response/error is visible evidence."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:140-145",
+        "src/features/profile/ProfileView.tsx: email TextField inputs",
+        "src/hooks/use-user-profile.ts:87-99"
+      ],
+      "gaps": [
+        "Emergency-contact email and exact native input type must be verified in its editor source before asserting browser constraint semantics."
+      ]
+    },
+    "EXT-F-1004-T25": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Use an account where a failed profile read can be induced only through an approved disposable test environment or controlled network fault; do not alter the stored profile.",
+        "Repeat this case independently with an existing known member and an existing known admin; record each role\u2019s result separately without changing account roles."
+      ],
+      "steps": [
+        "Open Profile with network capture/logging already enabled. Cause get_user_form_context RPC to fail using the available controlled fault mechanism; record method/status without secrets.",
+        "Wait for loading to stop and record exact visible error and whether saved profile fields are shown or empty.",
+        "Restore connectivity and use a visible retry if present; if none, navigate to Chat and reopen Profile."
+      ],
+      "expected": [
+        "Loading ends with \u201cCould not load your profile: \u2026\u201d visible; a failed read is not silently presented as a successful empty profile. Reopen after restoring service and record whether load recovers."
+      ],
+      "source_anchors": [
+        "src/hooks/use-user-profile.ts:42-61",
+        "src/features/profile/ProfileView.tsx:89-98"
+      ],
+      "gaps": [
+        "Source exposes refresh internally but ProfileView renders no retry button; the controlled RPC/network failure mechanism is not specified."
+      ]
+    },
+    "EXT-F-1004-T26": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Use a controlled disposable account/profile and an approved mechanism that makes only the profile upsert fail while leaving the UI usable.",
+        "Repeat this case independently with an existing known member and an existing known admin; record each role\u2019s result separately without changing account roles."
+      ],
+      "steps": [
+        "Change Preferred to a unique synthetic value. Trigger Save while the profile write is forced to fail; capture exact visible error and busy-state termination.",
+        "Restore write service and click Save again.",
+        "Reopen Profile; verify persisted value, then restore original value and save."
+      ],
+      "expected": [
+        "Failed save ends busy state, displays profile error, retains changed draft and permits retry. Successful retry persists value after reopening."
+      ],
+      "source_anchors": [
+        "src/hooks/use-user-profile.ts:87-100",
+        "src/features/profile/ProfileView.tsx:58-85",
+        "src/features/profile/ProfileView.tsx:226-240"
+      ],
+      "gaps": [
+        "The source does not define a built-in failure control; a controlled backend/network fault fixture is required."
+      ]
+    },
+    "EXT-F-1004-T27": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Use a disposable signed-in account; test data only. Backend validation outcomes are intentionally unknown.",
+        "Repeat this case independently with an existing known member and an existing known admin; record each role\u2019s result separately without changing account roles."
+      ],
+      "steps": [
+        "Enter one malformed additional email, invalid birthday candidate, and boundary-length text values in a field chosen for the boundary attempt. Click Save and capture visible result/error and whether draft remains.",
+        "For accepted inputs, reopen Profile and record exact persisted shape; for rejected inputs, retain draft and record error. Restore safe values and save."
+      ],
+      "expected": [
+        "Record actual backend result without assuming validation rules. If rejected, error is visible and draft remains editable; if accepted, exact saved values are visible after reopening."
+      ],
+      "source_anchors": [
+        "src/features/profile/ProfileView.tsx:140-145",
+        "src/hooks/use-user-profile.ts:87-100"
+      ],
+      "gaps": [
+        "Boundary values/limits are not specified by client source or inventory. Do not invent a maximum; use backend contract evidence if a deterministic boundary is required."
+      ]
+    },
+    "EXT-F-1004-T28": {
+      "preconditions": [
+        "Use the exact build/version and loaded path recorded in chrome://extensions; reload extension, open sidepanel, wait for signed-in status, and open avatar > Profile. Record known account email, member/admin role, active device organization, and the current displayed field values before editing. Use synthetic disposable profile values only; record originals for restoration.",
+        "Requires two controlled disposable profiles: one with no user_form_profile row, and one existing row filed under organization A. The principal belongs to A and B. Do not create rows on a real profile.",
+        "Repeat this case independently with an existing known member and an existing known admin; record each role\u2019s result separately without changing account roles."
+      ],
+      "steps": [
+        "On the new-row fixture, set active organization A on this device; save a changed synthetic Preferred value and inspect the resulting row organization_id through the authorized read-only database view.",
+        "On the existing-row fixture, confirm stored organization A; switch device active organization to B, edit a synthetic field and save; inspect row organization_id.",
+        "On a separate no-row fixture, clear the active device organization, attempt Save and record whether the resolver holds/presents picker and whether any write occurred."
+      ],
+      "expected": [
+        "New row explicitly uses active device organization A. Existing row remains filed under A after active device organization changes to B. With no active device organization, write does not occur until user selects an organization; no fallback is inferred."
+      ],
+      "source_anchors": [
+        "src/hooks/use-user-profile.ts:87-100",
+        "src/lib/supabase/user-profile.ts",
+        "src/lib/org/active-org.ts"
+      ],
+      "gaps": [
+        "The case requires controlled disposable database rows and membership in two organizations. Existing profile repository semantics may be server-owned; check current user-profile module/database contract before executing."
+      ]
+    },
+    "EXT-F-1002-T19": {
+      "preconditions": [
+        "Use a known signed-in member and local/unpacked build. Confirm loaded action manifest uses popup.html as default_popup. A controlled test harness/fault fixture is required for each failure branch; do not change production permissions or rely on spontaneous failures."
+      ],
+      "steps": [
+        "From a normal web tab, open toolbar popup and click Capture page once.",
+        "Exercise each controllable branch in a separate run: sidepanel open rejects; session storage write rejects; context enumeration is unavailable/rejects; no unique matching sidepanel context is returned; and claimed-intent removal rejects. Record how each condition was induced.",
+        "For each run, record exact visible error/recovery text, whether popup stays open, whether Capture page becomes enabled again, and whether Scrape was selected in any panel.",
+        "Restore the capability and click Capture page again; verify the retry path can open Scrape in the initiating window. Reopen panel and verify failed-run route does not replay."
+      ],
+      "expected": [
+        "Each failure is visible with a recovery path; in-flight state clears and retry is possible. No launch is armed/consumed before unique matching context confirmation; failed intent does not replay in later panel or active-tab session."
+      ],
+      "source_anchors": [
+        "src/entrypoints/popup/main.tsx:56-103",
+        "src/lib/panel/launch-intent.ts:1-190",
+        "src/entrypoints/sidepanel/App.tsx:364-379",
+        "wxt.config.ts:26-33"
+      ],
+      "gaps": [
+        "The inventory groups five internal failure branches. There is no user-facing control for inducing them; a controlled browser test harness and branch-specific evidence are required."
+      ]
+    },
+    "EXT-F-1002-T20": {
+      "preconditions": [
+        "Use a known signed-in admin and local/unpacked build. Confirm loaded action manifest uses popup.html as default_popup. A controlled test harness/fault fixture is required for each failure branch; do not change production permissions or rely on spontaneous failures."
+      ],
+      "steps": [
+        "From a normal web tab, open toolbar popup and click Capture page once.",
+        "Exercise each controllable branch in a separate run: sidepanel open rejects; session storage write rejects; context enumeration is unavailable/rejects; no unique matching sidepanel context is returned; and claimed-intent removal rejects. Record how each condition was induced.",
+        "For each run, record exact visible error/recovery text, whether popup stays open, whether Capture page becomes enabled again, and whether Scrape was selected in any panel.",
+        "Restore the capability and click Capture page again; verify the retry path can open Scrape in the initiating window. Reopen panel and verify failed-run route does not replay."
+      ],
+      "expected": [
+        "Each failure is visible with a recovery path; in-flight state clears and retry is possible. No launch is armed/consumed before unique matching context confirmation; failed intent does not replay in later panel or active-tab session."
+      ],
+      "source_anchors": [
+        "src/entrypoints/popup/main.tsx:56-103",
+        "src/lib/panel/launch-intent.ts:1-190",
+        "src/entrypoints/sidepanel/App.tsx:364-379",
+        "wxt.config.ts:26-33"
+      ],
+      "gaps": [
+        "The inventory groups five internal failure branches. There is no user-facing control for inducing them; a controlled browser test harness and branch-specific evidence are required."
+      ]
+    },
+    "EXT-F-1002-T16": {
+      "preconditions": [
+        "Use the Chrome Web Store build and known guest profile already required by this case. Confirm the Store ID/version in chrome://extensions and preserve separate warm and post-extension-reload evidence. The Store entrypoint filter excludes popup, while Chrome action behavior is configured to open the sidepanel."
+      ],
+      "steps": [
+        "For each inventory-defined warm and post-extension-reload execution, close any existing sidepanel and click the extension toolbar action once with an ordinary web page active.",
+        "Record whether the action opens a popup or opens the sidepanel in the initiating browser window. Do not open popup.html or another extension URL in a regular tab as a substitute for clicking the action.",
+        "Wait for the existing case\u2019s role-specific identity signal and capture first state/timing, auth alert, or timeout."
+      ],
+      "expected": [
+        "Toolbar action opens sidepanel directly in the active window and no action popup is presented. Record role identity signal separately in both existing inventory executions."
+      ],
+      "source_anchors": [
+        "wxt.config.ts:10-33",
+        "wxt.config.ts:159-170",
+        "src/lib/panel/adapter.ts:72-82",
+        "src/entrypoints/sidepanel/App.tsx:360-363"
+      ],
+      "gaps": [
+        "Generated artifact manifest should be inspected for each exact build; source configuration alone cannot prove the loaded artifact matches. Do not promote case status from this procedure."
+      ]
+    },
+    "EXT-F-1002-T17": {
+      "preconditions": [
+        "Use the Chrome Web Store build and known member profile already required by this case. Confirm the Store ID/version in chrome://extensions and preserve separate warm and post-extension-reload evidence. The Store entrypoint filter excludes popup, while Chrome action behavior is configured to open the sidepanel."
+      ],
+      "steps": [
+        "For each inventory-defined warm and post-extension-reload execution, close any existing sidepanel and click the extension toolbar action once with an ordinary web page active.",
+        "Record whether the action opens a popup or opens the sidepanel in the initiating browser window. Do not open popup.html or another extension URL in a regular tab as a substitute for clicking the action.",
+        "Wait for the existing case\u2019s role-specific identity signal and capture first state/timing, auth alert, or timeout."
+      ],
+      "expected": [
+        "Toolbar action opens sidepanel directly in the active window and no action popup is presented. Record role identity signal separately in both existing inventory executions."
+      ],
+      "source_anchors": [
+        "wxt.config.ts:10-33",
+        "wxt.config.ts:159-170",
+        "src/lib/panel/adapter.ts:72-82",
+        "src/entrypoints/sidepanel/App.tsx:360-363"
+      ],
+      "gaps": [
+        "Generated artifact manifest should be inspected for each exact build; source configuration alone cannot prove the loaded artifact matches. Do not promote case status from this procedure."
+      ]
+    },
+    "EXT-F-1002-T18": {
+      "preconditions": [
+        "Use the Chrome Web Store build and known admin profile already required by this case. Confirm the Store ID/version in chrome://extensions and preserve separate warm and post-extension-reload evidence. The Store entrypoint filter excludes popup, while Chrome action behavior is configured to open the sidepanel."
+      ],
+      "steps": [
+        "For each inventory-defined warm and post-extension-reload execution, close any existing sidepanel and click the extension toolbar action once with an ordinary web page active.",
+        "Record whether the action opens a popup or opens the sidepanel in the initiating browser window. Do not open popup.html or another extension URL in a regular tab as a substitute for clicking the action.",
+        "Wait for the existing case\u2019s role-specific identity signal and capture first state/timing, auth alert, or timeout."
+      ],
+      "expected": [
+        "Toolbar action opens sidepanel directly in the active window and no action popup is presented. Record role identity signal separately in both existing inventory executions."
+      ],
+      "source_anchors": [
+        "wxt.config.ts:10-33",
+        "wxt.config.ts:159-170",
+        "src/lib/panel/adapter.ts:72-82",
+        "src/entrypoints/sidepanel/App.tsx:360-363"
+      ],
+      "gaps": [
+        "Generated artifact manifest should be inspected for each exact build; source configuration alone cannot prove the loaded artifact matches. Do not promote case status from this procedure."
+      ]
+    }
+  },
+  "limitations": [
+    "This is a procedure proposal only; no browser session, extension build, database behavior, or test case was executed.",
+    "Where source does not expose a controlled way to cause a backend/browser failure, the procedure marks the exact missing fault-injection requirement instead of assuming an outcome."
+  ]
+}
