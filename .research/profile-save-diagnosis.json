@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0094",
+  "status": "source_repair_guarded_unit_green_native_retest_pending",
+  "supersedes": "The profile-20261003-02 empty Input.insertText hypothesis: the later guarded run observed the expected empty Preferred input before cleanup timed out; the failed boundary was the profile-context RPC.",
+  "original_reproduction": {
+    "run_id": "profile-diagnostic-20261003-04",
+    "build": "0.2.177",
+    "source_sha": "2274cc2fc929f7682c61f1a137e472a87caa2114",
+    "artifact_id": 11282375130,
+    "ci_run_id": 37145482483,
+    "resource_decision": "valid admission; child_failed; permit finalized",
+    "first_failure": "profile_save_settled_not_observed",
+    "cleanup_failure": "profile_original_restored_not_observed",
+    "observed_boundary": "Both owner-row upserts returned HTTP 200. Each following get_user_form_context RPC returned HTTP 403 with PostgreSQL code 42501. After each save, the Preferred input held the expected draft but the form remained dirty with a visible error.",
+    "initial_load_limit": "The original runner did not reject an initial Profile error banner, so its T02 blank-profile pass is not valid acceptance evidence.",
+    "raw_receipt_sha256": "fd7103824f1714fdbbb3342053d867f52d0db5ca7bcca611f1de7025a79243ca",
+    "sanitized_receipt": ".research/profile-d94-native-receipt.redacted.json",
+    "resource_journal": "docs/stabilization/resource-journals/profile-diagnostic-20261003-04.jsonl"
+  },
+  "live_database_read_only_findings": {
+    "function": "public.get_user_form_context(uuid)",
+    "function_owner": "postgres",
+    "security_definer": true,
+    "authenticated_execute": false,
+    "acl": "postgres and service_role only",
+    "authorization_reason": "The function body reads auth.users, users.profiles and users.user_form_profile for caller-supplied p_user_id without an auth.uid() equality check. The frontend D31 migration intentionally revoked authenticated EXECUTE; regranting it would expose another person's profile.",
+    "post_run_owner_row": "One admin profile row; preferred_name NULL; no synthetic Profile save value remained. This proves database cleanup, not side-panel UI restoration."
+  },
+  "repair": {
+    "read_contract": "The extension now reads users.user_form_profile through usersDb() with an owner user_id filter, as the frontend's personal form-profile reader does. Missing row, read error and malformed data remain distinct. The server-only RPC remains restricted.",
+    "runner_contract": "Opening Profile with a visible load error cannot count as ready or pass a blank-profile case.",
+    "sibling_census": "The removed fetchUserFormContext export had one caller, useUserProfile; no other extension source, test or script consumed the bundled context metadata.",
+    "red_guard": "Before repair, pnpm test src/lib/supabase/user-profile.read.test.ts failed all three initial cases because the RPC returned permission denied instead of reaching the owner-scoped table read.",
+    "green_guard": "profile-d94-regression-01: guarded single-worker Vitest, five cases passed; resource final decision valid.",
+    "forcing_mutation": "A constant Maya profile substituted through forcing-function-tests/plant.py failed the Samir case; plant.py restored identical source bytes.",
+    "typecheck": "profile-d94-compile-01: guarded pnpm compile passed; resource final decision valid.",
+    "native_retest": "Pending a fresh CI artifact containing the source fix and independent source review. The old 0.2.177 artifact cannot verify the repair."
+  },
+  "remaining_limitation": {
+    "load_failure_ui": "The existing hook surfaces a load error banner but leaves an empty editable Profile form visible. The current fix prevents the restricted-RPC failure in normal reads and makes the native runner reject an error banner; a separate failure-state UI repair or explicit tracked defect remains necessary for a denied direct row read.",
+    "scope_claim": "No full Profile acceptance pass is claimed. The old T02 pass is downgraded because it did not check the error banner."
+  }
+}

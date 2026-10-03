@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "kind": "profile_native_acceptance",
+  "run_id": "profile-diagnostic-20261003-04",
+  "status": "failed",
+  "stage": "profile",
+  "failure_code": "profile_save_settled_not_observed",
+  "cases": [
+    {
+      "id": "EXT-F-1004-T02",
+      "mode": "admin",
+      "dimension": "warm",
+      "branch": "default",
+      "status": "passed",
+      "started_at": "2026-10-03T19:27:28.288Z",
+      "observed": {
+        "draft_dirty": true,
+        "discard_visible": true,
+        "back_chat": true,
+        "reopened_original": true
+      }
+    }
+  ],
+  "restoration": null,
+  "t04_diagnostic": {
+    "stages": [
+      {
+        "stage": "discard_draft",
+        "preferred_matches_expected": false,
+        "preferred_empty": false,
+        "preferred_missing": false,
+        "dirty": true,
+        "save_enabled": true,
+        "error_present": true,
+        "loading": false,
+        "back": true
+      },
+      {
+        "stage": "discard_settled",
+        "preferred_matches_expected": true,
+        "preferred_empty": true,
+        "preferred_missing": false,
+        "dirty": false,
+        "save_enabled": false,
+        "error_present": true,
+        "loading": false,
+        "back": true
+      },
+      {
+        "stage": "save_draft",
+        "preferred_matches_expected": true,
+        "preferred_empty": false,
+        "preferred_missing": false,
+        "dirty": true,
+        "save_enabled": true,
+        "error_present": true,
+        "loading": false,
+        "back": true
+      },
+      {
+        "stage": "first_failure",
+        "preferred_matches_expected": true,
+        "preferred_empty": false,
+        "preferred_missing": false,
+        "dirty": true,
+        "save_enabled": true,
+        "error_present": true,
+        "loading": false,
+        "back": true
+      },
+      {
+        "stage": "before_cleanup",
+        "preferred_matches_expected": false,
+        "preferred_empty": false,
+        "preferred_missing": false,
+        "dirty": true,
+        "save_enabled": true,
+        "error_present": true,
+        "loading": false,
+        "back": true
+      },
+      {
+        "stage": "cleanup_draft",
+        "preferred_matches_expected": true,
+        "preferred_empty": true,
+        "preferred_missing": false,
+        "dirty": true,
+        "save_enabled": true,
+        "error_present": true,
+        "loading": false,
+        "back": true
+      },
+      {
+        "stage": "cleanup_failure",
+        "preferred_matches_expected": true,
+        "preferred_empty": true,
+        "preferred_missing": false,
+        "dirty": true,
+        "save_enabled": true,
+        "error_present": true,
+        "loading": false,
+        "back": true
+      }
+    ],
+    "requests": [
+      {
+        "route": "profile_row",
+        "method": "GET",
+        "status": 200,
+        "outcome": "finished",
+        "error_code": null
+      },
+      {
+        "route": "profile_row",
+        "method": "POST",
+        "status": 200,
+        "outcome": "finished",
+        "error_code": null
+      },
+      {
+        "route": "profile_context",
+        "method": "POST",
+        "status": 403,
+        "outcome": "finished",
+        "error_code": "42501"
+      },
+      {
+        "route": "profile_row",
+        "method": "GET",
+        "status": 200,
+        "outcome": "finished",
+        "error_code": null
+      },
+      {
+        "route": "profile_row",
+        "method": "POST",
+        "status": 200,
+        "outcome": "finished",
+        "error_code": null
+      },
+      {
+        "route": "profile_context",
+        "method": "POST",
+        "status": 403,
+        "outcome": "finished",
+        "error_code": "42501"
+      }
+    ],
+    "first_failure": "profile_save_settled_not_observed",
+    "cleanup_failure": "profile_original_restored_not_observed"
+  },
+  "artifact": {
+    "run_id": 37145482483,
+    "artifact_id": 11282375130,
+    "source_sha": "2274cc2fc929f7682c61f1a137e472a87caa2114",
+    "version": "0.2.177",
+    "tree_sha256": "a366b2b34045412b9866929cea59ab9d872d7be373ba08562705e4bcce8d3b23",
+    "extension_dir": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/2274cc2fc929f7682c61f1a137e472a87caa2114/37145482483-1/chrome-mv3"
+  },
+  "runtime": {
+    "node": "v25.6.0",
+    "platform": "darwin",
+    "arch": "arm64"
+  }
+}
