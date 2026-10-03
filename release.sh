@@ -435,7 +435,8 @@ for (const diagnostic of report.diagnostics ?? []) {
   const file = diagnostic.location?.path?.file;
   const category = diagnostic.category;
   if (typeof file !== 'string' || typeof category !== 'string') continue;
-  const relative = path.relative(root, file);
+  const absolute = path.isAbsolute(file) ? path.normalize(file) : path.resolve(root, file);
+  const relative = path.relative(root, absolute);
   if (!/^[A-Za-z0-9_./-]+$/.test(relative) || relative.startsWith('..')) continue;
   if (!/^(?:format|lint\/[A-Za-z0-9_/-]+|assist\/[A-Za-z0-9_/-]+)$/.test(category)) continue;
   safe.add(`${relative} ${category} ${category === 'format' ? 'format differs' : 'rule violation'}`);
