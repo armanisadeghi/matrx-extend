@@ -1,5 +1,13 @@
 # Matrx Extend stabilization: resume here
 
+## Active continuation — Settings signed-in verification and audit error repair
+
+Latest synchronized source `c2626265` passed full CI `37123175022`. Settings-only inventory reconciliation (`0aa6e425`, `c2626265`) added five controls and thirteen unverified cases while preserving prior evidence and global source-census provenance. It does not certify runtime behavior.
+
+- `/root/settings_auth_independent` (Luna medium): fresh source review of signed-in six-case D87 acceptance candidate `1d49da3a`; report `.research/settings-signedin-peer.json`. No heavy/native permit yet. Actual admin/member runs follow review.
+- `/root/settings_audit_error_repair` (Sol medium): connected reproduction and scoped repair of silent audit-key async failures, starting with source lead EXT-L-SETTINGS-002; report `.research/settings-audit-error-repair.json`. Sole guarded heavy permit for focused tests/compile; no native browser or manual app build/release. No real user-key rotation.
+- Prior Settings inventory and auth-readiness workers are terminal. Root owns integration, fresh reviews, artifact-bound native retests, and release eligibility. Two failed attempts or twenty active minutes triggers decomposition/escalation. Source-ready is not runtime-passed.
+
 ## Current checkpoint — October 3, 2026: 176 public; guest startup repaired; six Prepare cases pass
 
 Google 0.2.176 is public (root observed publication about 10:44 UTC). Approved baseline: `e38913fa`; frozen Store source: `3fe608d`. Canonical Store record: common-docs `systems/apps/extension/CHROME-WEB-STORE.md`. No next candidate has been submitted.
