@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "review_type": "independent source review; no browser, native, build, or heavy test run",
+  "reviewed_commit": "b54877e7",
+  "scope": "guest AI allowance refusal in HTTP and NDJSON stream Chat paths",
+  "verdict_a_runtime": "SOURCE_PATH_READY_RUNTIME_UNVERIFIED",
+  "verdict_a_basis": [
+    "The observed fourth-message HTTP 403 is mapped to the free-trial explanation only when the parsed flat response has error=guest_ai_allowance_used. Other HTTP 403 responses retain the access-denied message.",
+    "An open-stream error event with error_type or code guest_ai_allowance_used receives the same safe explanation and classified code. Other stream errors still use the server's user_message path.",
+    "The offscreen STREAM_CHUNK payload carries the classified code through the existing broadcast path. The Chat hook passes it to the presenter; done finalizes the assistant message. The presenter omits Retry for the exhausted allowance while ordinary errors retain Retry.",
+    "GuestBanner remains mounted at the top of Chat and its existing Sign up free button opens the configured frontend URL. The repair changes presentation only; the server allowance gate remains in force.",
+    "No exact installed Store or fresh candidate native run has yet proved that the fourth message renders this explanation or that the user can complete signup from it."
+  ],
+  "verdict_b_source_quality": "PASS_BOUNDED_SOURCE_REVIEW",
+  "verdict_b_basis": [
+    "The HTTP branch requires status 403 and an exact structured code; it never renders arbitrary response-body text or numeric allowance details.",
+    "The stream branch uses the server's structured error type and replaces only this recognized refusal with static user copy; existing unrelated stream errors retain their actionable messages.",
+    "The tests cover exact HTTP allowance, unrelated 403, midstream allowance, and presenter no-Retry behavior. Builder-reported targeted green and compile have valid resource decisions; this peer did not rerun them.",
+    "No quota calculation, paid-call seam, request identity, or backend gate was changed by the six-file product commit."
+  ],
+  "remaining_runtime_gate": "Native exact-artifact guest proof must send through the allowance boundary, observe the real explanation and reachable signup action, while the server still refuses further guest AI use. A source verdict is not a product pass.",
+  "source_anchors": [
+    "src/lib/api/stream.ts",
+    "src/entrypoints/offscreen/main.ts",
+    "src/hooks/use-chat-stream.ts",
+    "src/lib/chat/stream-error.ts",
+    "src/features/chat/ChatView.tsx",
+    "src/components/GuestBanner.tsx",
+    "tests/unit/api-stream.test.ts",
+    "tests/unit/chat-stream-error.test.ts",
+    "/Volumes/Samsung2TB/code/aidream/aidream/api/tests/test_guest_ai_allowance_http.py",
+    "/Volumes/Samsung2TB/code/aidream/packages/matrx-connect/tests/test_stream_caller_refusal_reaches_the_wire.py"
+  ],
+  "evidence": {
+    "targeted_green_journal": "docs/stabilization/resource-journals/urgent-guest-quota-green-01.jsonl",
+    "compile_journal": "docs/stabilization/resource-journals/urgent-guest-quota-compile-02.jsonl",
+    "native_acceptance": "not_run_by_peer"
+  }
+}
