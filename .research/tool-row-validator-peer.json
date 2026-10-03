@@ -6,5 +6,11 @@
   "red_green": "Current three tests pass. Old validator in a scratch copy fails the canonical metadata test. Scratch mutations that accept a malformed ordinary field and an unknown $ key each fail their respective negative test.",
   "minor": "The third test combines malformed $envelope and unknown $ key in one case; separate test titles would make failures easier to attribute. This does not weaken the blocking guard shown by the scratch mutation.",
   "live_limit": "A successful hosted strict tool-drift gate remains unobserved; release currently reaches a separate Records contract drift after D90.",
-  "evidence": ["git show e932a092", "pnpm exec tsx --test scripts/test-tool-db-row-validation.ts", "scratch old-validator and two mutation runs", "scripts/check-tool-db-drift.ts", "scripts/dump-tools-from-db.ts"]
+  "evidence": [
+    "git show e932a092",
+    "pnpm exec tsx --test scripts/test-tool-db-row-validation.ts",
+    "scratch old-validator and two mutation runs",
+    "scripts/check-tool-db-drift.ts",
+    "scripts/dump-tools-from-db.ts"
+  ]
 }

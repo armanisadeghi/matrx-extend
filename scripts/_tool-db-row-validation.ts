@@ -63,8 +63,7 @@ export function isDbToolRow(value: unknown): value is DbToolRow {
   const parameters = value.parameters as Record<string, unknown>;
   return Object.entries(parameters).every(([name, param]) => {
     // Registry-level JSON Schema metadata describes the tool, not a field.
-    if (name === '$envelope')
-      return typeof param === 'string' && isRecord(parameters[param]);
+    if (name === '$envelope') return typeof param === 'string' && isRecord(parameters[param]);
     if (name === '$variants' || name === '$defs') return isRecord(param);
     if (name === '$schema') return typeof param === 'string';
     if (name.startsWith('$')) return false;
@@ -89,7 +88,9 @@ export function isDbToolRow(value: unknown): value is DbToolRow {
 }
 
 /** Tool-call arguments only; registry metadata is never an argument. */
-export function toolParameterProperties(parameters: DbToolRow['parameters']): Record<string, DbToolParameter> {
+export function toolParameterProperties(
+  parameters: DbToolRow['parameters'],
+): Record<string, DbToolParameter> {
   return Object.fromEntries(
     Object.entries(parameters)
       .filter(([name]) => !name.startsWith('$'))
