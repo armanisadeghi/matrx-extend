@@ -84,7 +84,46 @@ interface LocalTool {
       { type?: string | string[]; enum?: unknown[]; [k: string]: unknown }
     >;
     required?: string[];
+    anyOf?: unknown[];
+    oneOf?: unknown[];
   };
+}
+
+type LocalProp = { type?: string | string[]; enum?: unknown[]; [k: string]: unknown };
+type LocalBranch = { properties?: Record<string, LocalProp>; required?: string[] };
+
+/**
+ * One flat object shape for a local schema. A discriminated-union handler
+ * (`record_demo`) emits a top-level `anyOf`/`oneOf` of objects with no
+ * top-level `properties`, so every DB field read as "only in DB". The DB
+ * stores the flat contract: every branch's fields, required only when every
+ * branch requires them, and a discriminator's per-branch `const`s as one enum.
+ */
+export function flattenLocalSchema(schema: LocalTool['input_schema'] | undefined): {
+  properties: Record<string, LocalProp>;
+  required: string[];
+} {
+  const branches = (schema?.anyOf ?? schema?.oneOf) as LocalBranch[] | undefined;
+  if (schema?.properties || !Array.isArray(branches)) {
+    return { properties: schema?.properties ?? {}, required: schema?.required ?? [] };
+  }
+  const properties: Record<string, LocalProp> = {};
+  for (const branch of branches) {
+    for (const [key, raw] of Object.entries(branch.properties ?? {})) {
+      const { const: constValue, ...prop } = raw as LocalProp & { const?: unknown };
+      const seen = properties[key];
+      const values = constValue === undefined ? prop.enum : [constValue];
+      if (!seen) {
+        properties[key] = values ? { ...prop, enum: [...values] } : prop;
+      } else if (values) {
+        seen.enum = [...new Set([...(seen.enum ?? []), ...values])];
+      }
+    }
+  }
+  const required = Object.keys(properties).filter((key) =>
+    branches.every((branch) => branch.required?.includes(key)),
+  );
+  return { properties, required };
 }
 
 interface Drift {
@@ -258,7 +297,8 @@ function compareTool(local: LocalTool, db: DbToolRow): string[] {
   }
 
   // Parameter shape comparison
-  const localProps = local.input_schema?.properties ?? {};
+  const localSchema = flattenLocalSchema(local.input_schema);
+  const localProps = localSchema.properties;
   // `$`-prefixed keys ($variants, …) are contract metadata, NOT tool parameters.
   const dbProps = toolParameterProperties(db.parameters);
   // Zod's JSON-schema emitter marks a `.default(null)` property as required,
@@ -267,7 +307,7 @@ function compareTool(local: LocalTool, db: DbToolRow): string[] {
   // not turn that serializer artefact into a false contract mismatch; fields
   // without a local default still use the generated `required` list verbatim.
   const localRequired = new Set(
-    (local.input_schema?.required ?? []).filter(
+    localSchema.required.filter(
       (field) => !Object.prototype.hasOwnProperty.call(localProps[field] ?? {}, 'default'),
     ),
   );
