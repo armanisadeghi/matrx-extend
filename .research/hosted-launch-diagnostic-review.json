@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "265ce55ca979c406b09e07ee79e6730b2e4867cf",
+  "reviewer": "fresh source-only reviewer",
+  "scope": "Review only the implementation commit; no browser launch or heavy tests.",
+  "verdict_A_actual_diagnostic_claim_and_runtime_limits": {
+    "verdict": "PARTIAL",
+    "findings": [],
+    "evidence": [
+      "The startup catch writes BROWSER_STARTUP_FAILURE with a fixed failureCode, monotonic elapsedMs, child exit/signal state, launchFailed, and stderr signature flags (tests/browser/native-sidepanel-qa-harness.mjs:469-479).",
+      "The classifier emits only members of a fixed allowlist and maps arbitrary/unrecognized messages to unclassified (tests/browser/native-sidepanel-qa-harness.mjs:377-395).",
+      "The source maps endpoint timeout/refusal, process-inspection failure, owner refusal, socket-construction failure, and CDP open timeout/failure to distinct fixed codes (tests/browser/vault-owned-cdp.cjs:43-95, 147-184)."
+    ],
+    "limits": [
+      "This source change cannot recover the exact failing stage for run 37112375038; that run predates the new emitted fields and its retained receipt has no acceptance cases.",
+      "No hosted/native relaunch was performed, so log collection, emitted runtime values, and any Settings acceptance remain unverified.",
+      "A future unrecognized launch error intentionally reports unclassified; the diagnostic narrows known owned-CDP stages but does not guarantee a root cause for every startup failure.",
+      "The elapsed value covers spawn through connectOwnedCdp completion/failure and is not a per-stage duration."
+    ]
+  },
+  "verdict_B_source_quality": {
+    "verdict": "PASS",
+    "findings": [],
+    "evidence": [
+      "Error messages are never copied to the startup log; only allowlisted codes or unclassified are emitted, while stderr contents are reduced to booleans/signature flags.",
+      "Process-inspection and WebSocket-constructor exceptions are normalized without exposing arbitrary exception text; open timeout remains distinguishable from open failure.",
+      "The diff leaves timeout defaults, endpoint ownership validation, child lifecycle, resource guards, receipt checks, and acceptance requirements unchanged.",
+      "Focused tests cover arbitrary-message suppression and the new failure classes; implementer report records passing syntax, Biome, diff checks, and two expected mutation REDs. These checks were reviewed as reported and not rerun."
+    ],
+    "limitations": [
+      "This verdict is based on the exact commit diff; it does not establish live behavior or product acceptance."
+    ]
+  },
+  "review_commands": [
+    "git show --stat and git show for 265ce55ca979c406b09e07ee79e6730b2e4867cf",
+    "git diff --check 265ce55c^ 265ce55c",
+    "Parsed .research/hosted-browser-launch-repair.json as JSON"
+  ],
+  "overall": "The narrow safe stage diagnostic is source-sound. Treat the original hosted failure cause and Settings behavior as unresolved until a future authorized guarded run produces and captures the new diagnostic."
+}
