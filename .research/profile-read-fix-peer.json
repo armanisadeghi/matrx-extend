@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "review_type": "independent source review; no browser, build, database write, or native acceptance run",
+  "product_commit_reviewed": "dccc196abb1945664b8ac756825526a5a9a6c7c5",
+  "verdict_a_source_acceptance": "PASS_BOUNDED_READ_PATH",
+  "verdict_a_basis": [
+    "The only production caller, useUserProfile, now reads users.user_form_profile through usersDb, filters user_id from useAuth, and uses maybeSingle. The canonical ai-matrx /api/user/form-profile GET independently uses the same owner-filtered users table path. The intentionally server-only get_user_form_context RPC is no longer called by production Profile code.",
+    "No row resolves to a new empty draft; returned query errors and malformed rows resolve to explicit failures. The hook does not replace its draft with an empty value on a failed read. The write code is unchanged: its existing-row organization is retained, a first write obtains the device-selected organization, and the upsert names organization_id.",
+    "The native runner now rejects an initial load if its Profile error banner is present. This only strengthens the oracle; it is not proof that a repaired artifact works in Chrome. EXT-D-0094 closure still requires receipt-bound native save, reopen, restoration, and independent review."
+  ],
+  "verdict_b_quality": "FAIL_IMPORTANT_FOLLOWUP",
+  "findings": [
+    {
+      "severity": "Important",
+      "scope": "existing Profile error-state weakness exposed by the D94 failure, tracked separately by EXT-F-1004-T25",
+      "finding": "After an initial read error, ProfileView still renders an editable empty form and places the error banner after all sections, commonly below the viewport. A person can enter data and click Save against an unknown baseline. If the signed-in user changes while Profile remains mounted and that new user's load fails, the old draft is retained and could be displayed. The denied-read branch does not meet T25's requirement that saved data not be presented as an empty profile.",
+      "evidence": ["src/hooks/use-user-profile.ts:39-60", "src/hooks/use-user-profile.ts:85-101", "src/features/profile/ProfileView.tsx:91-104", "src/features/profile/ProfileView.tsx:230-265", "docs/stabilization/inventory.json:11298"],
+      "recovery": "Give initial load failure its own visible, non-editable state near the top with a retry action wired to refresh; keep save unavailable until one successful owner read. Clear or isolate the previous user's draft on identity change. Add a focused UI/hook regression and verify T25 separately before claiming failure recovery."
+    },
+    {
+      "severity": "Important",
+      "scope": "new automated regression evidence",
+      "finding": "The committed test covers query selection, owner filter, null/error/malformed branches with a mocked database, but its mock rows contain only preferred_name and use untyped partial objects. It cannot establish that a full real row parses, RLS allows this authenticated read, or the failed-read UI stays safe. The test's previous-code RED is not demonstrated: it imports the newly named fetchUserFormProfile, which did not exist before the change, so an old-code run would fail at import rather than with an assertion naming the defect. No executed constant-return mutation evidence is provided.",
+      "evidence": ["src/lib/supabase/user-profile.read.test.ts:1-75", "src/lib/supabase/user-profile.ts:93-118", "docs/stabilization/resource-journals/profile-d94-regression-01.jsonl"],
+      "recovery": "Record an assertion-level RED at the original callable seam and GREEN on the repair, plus an executed constant-return mutation; use a complete generated-contract row for success and a focused UI failure-state test. Native acceptance remains the actual RLS proof."
+    }
+  ],
+  "limits": "No runtime or database access was used in this review. Builder journal records a valid focused test and compile exit 0, but does not contain assertion-level RED, mutation, or native evidence. Member behavior remains unverified."
+}
