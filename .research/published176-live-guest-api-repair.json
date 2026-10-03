@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "inconclusive_ndjson_response_not_parsed",
+  "target": "Store 0.2.176 source 3fe608d949a06aa10bfea57b43c9b05638386bc1; POST https://server.app.matrxserver.com/v2/ai/mandates/extend.browser_chat",
+  "source_contract": "src/hooks/use-chat-stream.ts plus src/lib/chat/build-browser-dom-state.ts at 3fe608d; fresh guest fingerprint, client-minted conversation ID, required is_new/store, complete browser-dom state, Store extension ID, per-send client context wire, no bearer or organization",
+  "previous_report": ".research/published176-live-guest-api.json: three HTTP 422 probes had incomplete synthetic state and did not retain error envelopes; they did not establish a product regression",
+  "attempts": [
+    {
+      "transport": "Python urllib",
+      "request": "corrected source-derived initial guest turn",
+      "http_status": 403,
+      "response": "Cloudflare text/html before application; Python urllib also received Cloudflare 403 for GET /health/version"
+    },
+    {
+      "transport": "curl",
+      "request": "same corrected source-derived initial guest turn",
+      "http_status": 200,
+      "response_bytes": 10164,
+      "sse_event_lines": 0,
+      "answer_observed": "unknown",
+      "completion_observed": "unknown",
+      "note": "The first curl script did not retain headers or body after scanning only SSE framing."
+    },
+    {
+      "transport": "curl --compressed",
+      "request": "instrumented corrected initial guest turn",
+      "http_status": 200,
+      "content_type": "application/x-ndjson",
+      "content_encoding": null,
+      "body_magic_hex": "7b226576656e7422",
+      "response_bytes": 9948,
+      "answer_observed": "unknown",
+      "completion_observed": "unknown",
+      "note": "The body was JSON text and the server selected NDJSON; the script scanned SSE framing only, then discarded its in-memory body."
+    }
+  ],
+  "verdict": "The corrected request received HTTP 200 application/x-ndjson, which is a valid response format and not a transport failure. Real answer, completion, and source-wire compatibility remain unchecked because the probe parsed only SSE framing. No published extension or server product regression is established; native published UI behavior was not tested here.",
+  "next_step": "A future controlled probe must parse NDJSON events and assert actual answer and terminal completion, or use a native published-extension capture. Do not repeat the unchanged SSE-only parser."
+}
