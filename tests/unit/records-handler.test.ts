@@ -13,6 +13,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const { store, openRecordStore, recordsClientFor, openSpanningClient } = vi.hoisted(() => ({
   store: {
     tableList: vi.fn(),
+    tableListEverywhere: vi.fn(),
     recordWrite: vi.fn(),
     organizationsOpen: vi.fn(),
     ownerOrganization: vi.fn(),
@@ -63,6 +64,10 @@ beforeEach(() => {
         agent_writable: true,
       },
     ],
+  });
+  store.tableListEverywhere.mockResolvedValue({
+    ok: true,
+    data: { tables: [{ id: 'tbl-harbor-dental-patients', store: 'records' }] },
   });
   store.recordWrite.mockResolvedValue({ ok: true, data: 'rec-harbor-dental-maya-chen' });
 });
@@ -155,6 +160,19 @@ describe('registered records schema null defaults', () => {
       ],
       count: 1,
     });
+  });
+
+  it('keeps a store-withheld app table out of the default registered list', async () => {
+    const handler = registeredRecords();
+    store.tableListEverywhere.mockResolvedValue({ ok: true, data: { tables: [] } });
+    const hidden = handler.argsSchema.parse({ action: 'table_list' });
+    await expect(handler.run(hidden, context())).resolves.toMatchObject({ tables: [], count: 0 });
+    const included = handler.argsSchema.parse({ action: 'table_list', include_app_tables: true });
+    await expect(handler.run(included, context())).resolves.toMatchObject({
+      tables: [{ id: 'tbl-harbor-dental-patients' }],
+      count: 1,
+    });
+    expect(store.tableListEverywhere).toHaveBeenCalledTimes(1);
   });
 
   it('runs a registered write with omitted DB-null defaults and its submitted values', async () => {

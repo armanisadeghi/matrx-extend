@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-02T02:08:23.247Z",
+  "generated_at": "2026-10-03T05:24:21.411Z",
   "source": "matrx-extend",
   "core_bundle": [
     "list_chrome_categories",
@@ -6201,6 +6201,10 @@
             "type": "string",
             "default": null
           },
+          "as_of": {
+            "type": "string",
+            "default": null
+          },
           "availability": {
             "type": "object",
             "additionalProperties": {},
@@ -6212,6 +6216,17 @@
           },
           "body": {
             "type": "string"
+          },
+          "bucket": {
+            "type": "string",
+            "enum": [
+              "day",
+              "week",
+              "month",
+              "quarter",
+              "year"
+            ],
+            "default": null
           },
           "checklist_id": {
             "type": "string",
@@ -6314,6 +6329,10 @@
             "type": "boolean",
             "default": false
           },
+          "include_app_tables": {
+            "type": "boolean",
+            "default": false
+          },
           "intro": {
             "type": "string",
             "default": null
@@ -6354,6 +6373,13 @@
           },
           "measure": {
             "type": "string",
+            "enum": [
+              "count",
+              "sum",
+              "avg",
+              "min",
+              "max"
+            ],
             "default": "count"
           },
           "name": {
@@ -6388,6 +6414,15 @@
             "type": "string",
             "default": null
           },
+          "order": {
+            "type": "string",
+            "enum": [
+              "count_desc",
+              "measure_desc",
+              "measure_asc"
+            ],
+            "default": "count_desc"
+          },
           "presentation": {
             "type": "object",
             "additionalProperties": {},
@@ -6416,6 +6451,13 @@
           "records": {
             "type": "array",
             "items": {},
+            "default": null
+          },
+          "related_to": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
             "default": null
           },
           "relation_target": {

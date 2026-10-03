@@ -98,6 +98,22 @@ const UNSUPPORTED_BROWSER_ACTIONS = new Set<string>([
 const nullDefault = <T extends z.ZodTypeAny>(schema: T) => schema.nullable().default(null);
 const unknownObject = () => z.record(z.unknown());
 const unknownArray = () => z.array(z.unknown());
+// The shared store's RecordFilter values: scalar equality or a half-open date window.
+const AggregateMatch = z.record(
+  z.union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+    z.null(),
+    z
+      .object({ from: z.string().nullable().optional(), to: z.string().nullable().optional() })
+      .strict()
+      .transform(({ from, to }) => ({
+        ...(from !== undefined ? { from } : {}),
+        ...(to !== undefined ? { to } : {}),
+      })),
+  ]),
+);
 const trueDefaultObject = () =>
   z
     .preprocess((value) => (value === true || value === undefined ? {} : value), unknownObject())
@@ -480,17 +496,27 @@ const records: ToolHandler<RecordsToolArgs, unknown> = {
             reason: `${args.measure} needs field_key. No aggregate was computed.`,
           };
         }
+        const match = AggregateMatch.safeParse(args.match ?? {});
+        if (!match.success) {
+          return {
+            ok: false,
+            action: 'record_aggregate',
+            reason:
+              'The match must contain scalar values or date windows. No aggregate was computed.',
+          };
+        }
         // The package runs it in the organization that owns the table; each row names it.
         const result = await spanning.recordAggregate({
           table_id: args.table_id as string,
           ...(orgArg ? { organization_id: orgArg } : {}),
-          ...(args.group_by ? { groupBy: [args.group_by] } : {}),
+          ...(args.group_by && !args.bucket ? { groupBy: [args.group_by] } : {}),
           ...(args.bucket && args.group_by
             ? { bucket: { key: args.group_by, by: args.bucket } }
             : {}),
           ...(args.measure !== 'count'
             ? { measures: [{ op: args.measure, key: args.field_key! }] }
             : {}),
+          filter: match.data,
           limit: args.limit,
         });
         if (!result.ok) return refused('record_aggregate', result.error);

@@ -1,6 +1,6 @@
 # matrx-extend client tool catalog
 
-Generated: 2026-10-02T02:08:23.247Z
+Generated: 2026-10-03T05:24:21.411Z
 
 - **Total tools:** 169
 - **Assistant bundle:** 75 tools (read-only)
@@ -3698,6 +3698,10 @@ Generated: 2026-10-02T02:08:23.247Z
       "type": "string",
       "default": null
     },
+    "as_of": {
+      "type": "string",
+      "default": null
+    },
     "availability": {
       "type": "object",
       "additionalProperties": {},
@@ -3709,6 +3713,17 @@ Generated: 2026-10-02T02:08:23.247Z
     },
     "body": {
       "type": "string"
+    },
+    "bucket": {
+      "type": "string",
+      "enum": [
+        "day",
+        "week",
+        "month",
+        "quarter",
+        "year"
+      ],
+      "default": null
     },
     "checklist_id": {
       "type": "string",
@@ -3811,6 +3826,10 @@ Generated: 2026-10-02T02:08:23.247Z
       "type": "boolean",
       "default": false
     },
+    "include_app_tables": {
+      "type": "boolean",
+      "default": false
+    },
     "intro": {
       "type": "string",
       "default": null
@@ -3851,6 +3870,13 @@ Generated: 2026-10-02T02:08:23.247Z
     },
     "measure": {
       "type": "string",
+      "enum": [
+        "count",
+        "sum",
+        "avg",
+        "min",
+        "max"
+      ],
       "default": "count"
     },
     "name": {
@@ -3885,6 +3911,15 @@ Generated: 2026-10-02T02:08:23.247Z
       "type": "string",
       "default": null
     },
+    "order": {
+      "type": "string",
+      "enum": [
+        "count_desc",
+        "measure_desc",
+        "measure_asc"
+      ],
+      "default": "count_desc"
+    },
     "presentation": {
       "type": "object",
       "additionalProperties": {},
@@ -3913,6 +3948,13 @@ Generated: 2026-10-02T02:08:23.247Z
     "records": {
       "type": "array",
       "items": {},
+      "default": null
+    },
+    "related_to": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
       "default": null
     },
     "relation_target": {

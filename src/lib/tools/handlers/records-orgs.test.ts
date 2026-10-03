@@ -180,9 +180,25 @@ describe('records tool: sees every organization, active org never narrows', () =
     });
     expect(out.ok).toBe(true);
     expect(h.aggregateCalls[0]).toMatchObject({ bucket: { key: 'date', by: 'month' } });
+    expect(h.aggregateCalls[0]).not.toHaveProperty('groupBy');
     const incomplete = await run({ action: 'record_aggregate', table_id: 't-a', bucket: 'month' });
     expect(incomplete.ok).toBe(false);
     expect(h.aggregateCalls).toHaveLength(1);
+  });
+
+  it('preserves a subset filter instead of measuring the whole table', async () => {
+    for (const match of [{ status: 'Completed' }, { paid: false, date: { from: '2026-09-01' } }]) {
+      const out = await run({ action: 'record_aggregate', table_id: 't-a', match });
+      expect(out.ok).toBe(true);
+      expect(h.aggregateCalls.at(-1)).toMatchObject({ filter: match });
+    }
+    const invalid = await run({
+      action: 'record_aggregate',
+      table_id: 't-a',
+      match: { status: ['Completed', 'Scheduled'] },
+    });
+    expect(invalid.ok).toBe(false);
+    expect(h.aggregateCalls).toHaveLength(2);
   });
 
   it('sends the shared aggregate measure shape and refuses a missing field', async () => {

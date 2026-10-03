@@ -70,7 +70,7 @@ jobs:
           repository: AI-Matrix-Engine/aidream
           # Must match the immutable AI Dream revision that produced the checked-in
           # records-guide artifact during the release candidate generation.
-          ref: 0b12e258aa5d1965ac8d2a812b09ed5b553d72ee
+          ref: 7522aed74361f88002acd090e7a0aa3e65e7419e
           path: .canonical/aidream
           ssh-key: ${{ secrets.AIDREAM_DEPLOY_KEY }}
           ssh-strict: true

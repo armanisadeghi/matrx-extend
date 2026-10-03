@@ -3573,3 +3573,10 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 - **Where to test:** Assistant and Pilot chat in the side panel; the speaker button on an assistant message.
 - **Steps:** Run an agent whose provider is out of credit; trigger a delegated tool so two resumes race (the loser receives the live-run 409); break the Cartesia session (revoke the token) and press the speaker.
 - **Expected:** The billing sentence appears verbatim; the racing resume retries and its continuation runs (no replayed duplicate text), a rejoin with no journal ends on the saved answer — never an empty bubble — and no delegated tool runs twice; the speech error shows the server's sentence, not raw provider text. Unit proof: `tests/unit/api-stream.test.ts`, `src/lib/stream/rejoin-without-journal.test.ts`.
+
+### Records filtered date aggregates (EXT-D-0091)
+
+- **What it does:** Preserves scalar and date-window match filters in the store aggregate call; date buckets group by the period once.
+- **Where to test:** Signed-in Tools, Records runner, with a table containing dates in the same month and two different statuses.
+- **Steps:** Ask for a monthly count with `group_by` naming the date key, `bucket: "month"`, and `match` naming one status. Repeat with the other status and without a bucket.
+- **Expected:** The store receives the filter each time. Monthly results combine same-month dates; unbucketed results group by the raw date. Invalid match values return a refusal before querying. D91 remains open for the full per-action contract and unsupported workflows.

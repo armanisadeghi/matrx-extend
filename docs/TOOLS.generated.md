@@ -7,7 +7,7 @@
 > common-docs/systems/agents/agent-tools/STATE.md).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-10-02T02:08:25.518Z
+Generated: 2026-10-03T05:24:52.872Z
 Total tools: 82
 
 ## ai
@@ -120,9 +120,9 @@ Index of every tool category the Matrx Chrome extension exposes (client-side too
 
 _action_
 
-Sign in to websites with the person's saved logins without ever seeing a credential value. For a direct sign-in request, THE PATH is: (1) open the requested sign-in page with cloud_browser; (2) call credential_login action='auto' with that browser session; (3) use discover then one complete attempt only if auto could not read the form; (4) use authenticator for a supported saved TOTP challenge. action='list' is diagnostic metadata only after no_matching_login; it never performs a login. FILTER the list: pass host='<the site''s host>' or query='<a name>' and you get back only the saved logins you asked about. Unfiltered it returns a short summary line per saved login (id, name, hosts, whether it has an authenticator), capped, with truncated=true when there is more — pass verbose=true only when you need an item''s full record. A filter that matches nothing returns status no_matching_login with matched=false and the total number of saved logins: stop searching rather than calling list again. FILTER the list: pass host='<the site''s host>' or query='<a name>' and you get back only the saved logins you asked about. Unfiltered it returns a short summary line per saved login (id, name, hosts, whether it has an authenticator), capped, with truncated=true when there is more — pass verbose=true only when you need an item''s full record. A filter that matches nothing returns status no_matching_login with matched=false and the total number of saved logins: stop searching rather than calling list again. Never pass a URL, username, password, token, seed, or code. End with exactly one verdict: authenticated, needs_mfa, captcha_or_takeover, credentials_rejected, or unknown. Missing credentials and inventory-only results are unknown, never credentials_rejected. CAPTCHA and unsupported MFA require user takeover. When a credential_login result ends the requested task, include a literal final line in the form Verdict: <token>. For an inventory-only or missing-credential result, that line MUST be exactly Verdict: unknown; never replace unknown with prose such as cannot sign in.
+Signs in to a website with the person's saved logins; you never see a credential value. Path: open the sign-in page with cloud_browser, then auto. If auto cannot read the form (spec_incomplete): discover, then one complete attempt. needs_mfa with a saved authenticator: authenticator. list is metadata only and never logs in: use it only after no_matching_login, filtered by host or query; a filter that matches nothing returns no_matching_login, so stop searching. Never pass a URL, username, password, token, seed or code. Each login ends in one verdict: authenticated, needs_mfa, captcha_or_takeover, credentials_rejected or unknown. Missing credentials and inventory-only results are unknown, never credentials_rejected. CAPTCHA and unsupported MFA need user takeover. When a result ends the requested task, your final line is literally `Verdict: <token>`; for inventory-only or missing-credential results exactly `Verdict: unknown`, never prose such as 'cannot sign in'.
 
-**Parameters:** `host` (string); `kind` (string) = ["secret_exposed","wrong_verdict","recipe_wrong","other"]; `notes` (string); `query` (string); `steps` (array); `where` (string); `action` (string, required) = ["list","auto","discover","attempt","authenticator","report","capture","propose_recipe"]; `expect` (object); `fields` (array); `submit` (any); `verbose` (boolean); `$variants` (any); `field_map` (array); `attempt_id` (string); `session_id` (string); `description` (string); `display_name` (string); `provider_key` (string); `code_selector` (string); `failure_signals` (array); `submit_selector` (string); `success_signals` (array); `challenge_signals` (array); `credential_item_id` (string)
+**Parameters:** `host` (string); `kind` (string) = ["secret_exposed","wrong_verdict","recipe_wrong","other"]; `notes` (string); `query` (string); `steps` (array); `where` (string); `action` (string, required) = ["list","auto","discover","attempt","authenticator","report","capture","propose_recipe"]; `expect` (object); `fields` (array); `submit` (any); `verbose` (boolean); `field_map` (array); `attempt_id` (string); `session_id` (string); `description` (string); `display_name` (string); `provider_key` (string); `code_selector` (string); `failure_signals` (array); `submit_selector` (string); `success_signals` (array); `challenge_signals` (array); `credential_item_id` (string)
 
 ## crm
 
@@ -374,7 +374,17 @@ Propose a step-by-step plan and wait for the user to approve, modify, or reject 
 
 _ask-user_
 
-Pause and interact with the user. ONE tool, six types — pick the right one. ASK types (resolve with the user's answer): 'confirm' (yes/no), 'choice' (pick exactly one from `options`), 'choice_many' (pick zero-or-more from `options`, checklist UI), 'text' (free-form input), 'secret' (sensitive input — masked in UI and storage, response tagged sensitive). NOTIFY type (does not require an answer, nudges the user to take action elsewhere): 'notify' — surface `message` with optional `actions` buttons (e.g. ['Done — I clicked it']) and an always-appended 'Other' freeform fallback. All types accept an optional `timeout_seconds` — if no response arrives in time the call resolves with `{ timed_out: true }` and the agent continues. Prefer this over guessing on destructive or sensitive actions. For full control transfer (user types directly into the page), use request_user_takeover instead — different lifecycle. NEVER add your own 'Other', 'None of these', or free-text choice to `options` — the UI ALWAYS appends a freeform 'Other' escape to every choice/choice_many/confirm, so list only the substantive options. The user can also reply outside your structure: every result may carry `additional_instructions` (an optional freeform note the user attached to their answer — always read and honor it) and `wrote_instead: true` (the user declined the structured question(s) and typed a freeform reply in `freeform`; treat that as their answer and re-ask later only if you still genuinely need it).
+Pause to ask the user, or notify them. By type:
+- confirm: yes/no -> confirmed
+- choice: pick one of options -> selected
+- choice_many: pick zero or more of options (checklist) -> selected
+- text: free-form -> answer
+- secret: sensitive input, masked in UI and storage -> answer
+- notify: no answer required; shows message with optional actions buttons to nudge the user to act elsewhere -> action
+The UI always appends a freeform 'Other' to confirm, choice, choice_many and notify; never add your own Other / None of these option. Other text returns in freeform.
+Every result may carry additional_instructions (a note the user attached; honor it) and wrote_instead=true (the user skipped the structure; their reply in freeform is the answer; re-ask only if still needed). Also cancelled, and timed_out after timeout_seconds (continue without an answer).
+Batched: questions=[1-4 single-question objects], no other top-level fields; shown in sequence -> {answers[] by position, cancelled, timed_out}.
+Prefer this to guessing on destructive or sensitive actions. For the user typing directly into the page, use request_user_takeover.
 
 **Parameters:** `type` (string) = ["confirm","choice","choice_many","text","secret","notify"]; `level` (string) = ["info","success","warning","error"]; `header` (string); `actions` (array); `context` (string); `message` (string); `options` (array); `question` (string); `questions` (array); `allow_other` (boolean); `timeout_seconds` (integer)
 
@@ -494,7 +504,13 @@ Show the user one Gmail message and let THEM send it. Pass the exact recipient, 
 
 _action_
 
-Manage and run the user's saved data-extraction patterns (the same system behind the extension's Showcase and Data tabs). Actions: 'list' — saved patterns for a domain (defaults to the current tab's host) with health badges; 'describe' — one pattern's full config and fields; 'recipes' — curated extraction recipes matching the current page (known-good configs for popular sites); 'run' — execute a saved pattern on the current tab and get rows back (DOM kinds run instantly; ai_extract re-runs the extraction agent against the page; network_capture requires admin access, Chrome debugger permission, and approval for each run; after approval it arms capture in the new document before reloading the assigned page, then waits within the configured capture window for a matching API response); 'save' — persist a new pattern (requires name + kind, mode-specific config, and fields for manual_css); 'delete' — remove a pattern. Run results are capped at rows_limit (default 100) with the true row_count reported. Prefer 'list' then 'run' over re-scraping a page the user has already built a pattern for.
+The user's saved data-extraction patterns (the extension's Showcase/Data tabs), run against the assigned tab. Prefer list → run over re-scraping a page the user already has a pattern for.
+- list: domain → patterns with health (last_status, last_run_at, last_run_count).
+- describe: pattern_id → full config and fields.
+- recipes: → curated known-good configs matching the tab's URL.
+- run: pattern_id → rows (capped by rows_limit), true row_count, truncated, outcome. The pattern must belong to the tab's host. DOM kinds run in-page; ai_extract re-runs the extraction agent; network_capture needs admin, Chrome debugger permission, and approval per run, then reloads the page and waits for a matching API response.
+- save: name, kind, config (+ fields for manual_css) → id. Saved for the tab's path.
+- delete: pattern_id.
 
 **Parameters:** `kind` (string) = ["manual_css","json_ld","og_meta","auto_table","next_data","ai_extract","list_pattern","microdata","network_capture"]; `name` (string); `action` (string, required) = ["list","describe","recipes","run","save","delete"]; `config` (object); `domain` (string); `fields` (array); `pattern_id` (string); `rows_limit` (integer)
 
@@ -656,43 +672,35 @@ Extract text and structure from a PDF — either one loaded in a browser tab, or
 
 _action_
 
-Read and write the person's custom records — tables, their fields and their rows — publish a form that people with no account can answer, and open a portal where each client signs in and sees only their own rows, and write the wording of a proposal, a quote or a letter once and render it for any record. One tool, 25 actions.
+The person's custom records: tables, fields and rows, plus forms, portals, boards, dashboards, documents and automations built on them. Send `action` and that action's arguments in `args`. Before a write or build action's FIRST use in a conversation, call {"action": "guide", "args": {"topic": "<action>"}} for every argument and a worked example (record_read and record_aggregate need no guide: their shapes are below); {"action": "guide"} alone returns the full how-to.
+Actions:
+- table_list: the tables and homes the person can see
+- metadata_search: search tables and fields by name (structure, not rows)
+- record_read: rows of a table (table_id, optional match), or one row (record_id)
+- record_aggregate: count/sum/avg/min/max, grouped; every total, count, average or top N — never add up rows you read. Name the table and fields as the person did; no table_list or guide first: {"action": "record_aggregate", "args": {"table": "Visit Log", "measure": "sum", "field_key": "Copay", "match": {"Patient.Referring physician": "Dr. Shah"}}} ("Relation.Field" reaches across a relation). Also group_by, bucket (day/week/month), order "measure_desc" + limit (top N), as_of
+- record_write: add or change rows, up to 200 in one call via `records`; an entry with `record_id` changes that row
+- record_delete: archive a row; undo=true restores it
+- record_history / record_restore_version: a row's past versions; put one back
+- field_propose: add ONE field to an existing table
+- table_propose: a new table WITH all its fields in one call (a choice field takes `options`, a link takes `relation_target`: the other table's id)
+- import_propose: a spreadsheet, CSV or rows from the chat into a table
+- form_propose: a form anyone with the link can answer
+- capture_propose: the person's own crew logging on a phone, even offline
+- booking_propose: let people book a time
+- checklist_propose: a process or SOP that runs when a record arrives
+- pipeline_propose: a board where records move between stages
+- dashboard_propose: a saved breakdown, counts or chart
+- document_propose: render a record as a proposal, quote, invoice or letter
+- portal_propose: clients sign in and see only their own rows
+- signature_request: have somebody sign a document on a record
+- subscription_propose: notify or summarize when something happens
+- enrich_propose: fill fields of rows from outside sources
+- entity_read / entity_write: platform records such as contacts
+- guide: arguments and examples for any action
+One call per intent, never one per field or row: {"action": "table_propose", "args": {"name": "Field Crews", "fields": [{"name": "region", "type": "text"}, {"name": "day rate", "type": "currency"}]}}; {"action": "record_write", "args": {"table_id": "<id>", "records": [{"region": "North", "day_rate": 1200}, {...}]}}; {"action": "record_read", "args": {"table_id": "<id>"}}.
+Reads span every organization the person belongs to. Tell the person `where.say` exactly. If an answer says `awaiting_approval`, say it did NOT happen, name the approvers, and stop.
 
-DO A WHOLE INTENT IN ONE CALL. Each action takes everything it needs at once; calling one per field or one per row is the single thing that makes this tool slow, and it is never necessary.
-
-A table and all its fields — ONE call: {"action": "table_propose", "name": "Field Crews", "fields": [{"name": "crew name", "type": "text"}, {"name": "region", "type": "text"}, {"name": "day rate", "type": "currency", "unit": "USD"}]}. It answers with table_id and every field's key and field_id. Never follow it with field_propose for a field you already named here.
-
-Every row — ONE call: {"action": "record_write", "table_id": "<id>", "records": [{"crew_name": "North Crew", "region": "North", "day_rate": 1200}, {...}, {...}]} — up to 200 rows in one call, in one transaction. Each entry IS the field map; do not wrap it in `values` and do not call record_write in a loop.
-
-Read them all back — ONE call: {"action": "record_read", "table_id": "<id>"} returns every record of that table. `record_id` instead of `table_id` reads exactly one, with its field versions.
-
-The rest of the everyday verbs: table_list (what tables and homes exist), metadata_search (search structure, not rows), record_aggregate (count/sum/avg/min/max, grouped, computed inside the query), record_delete (soft delete; undo=true restores), field_propose (add ONE field to a table that already exists).
-
-THE BIGGER JOBS — each is ONE call, never a table plus a plan to build the rest later. Before the FIRST use of one in a conversation, call {"action": "guide", "topic": "<that action>"}: it answers the worked example and every argument in full. Pick by what the person asked for:
-· checklist_propose — how a job is done: a process, SOP, onboarding, closing checklist, what-happens-when.
-· form_propose — a form, intake, sign-up sheet or application that anyone with a link answers.
-· capture_propose — their OWN crew on site logging photos, weights, readings or inspections on a phone, even offline (never form_propose).
-· import_propose — a spreadsheet or CSV they sent, OR rows already in the conversation (a table in an answer, a list, Key: value lines): save it as a table, or add these rows to one of their tables.
-· subscription_propose — tell, text or email me when something happens, or a summary on a schedule.
-· booking_propose — let people book, schedule or reserve a time (never a form with a date field).
-· dashboard_propose — how things stand: a breakdown, counts by stage, a chart, what is stuck.
-· pipeline_propose — a board, kanban or funnel where things move between stages, with rules on the moves.
-· document_propose — turn a record into a proposal, quote, invoice, contract, letter or report.
-· portal_propose — clients, customers or tenants sign in and see only their own rows.
-· signature_request — have somebody sign a document on a record.
-· enrich_propose, entity_read, entity_write, record_history, record_restore_version — ask the guide.
-
-Field names: you may write a field by its key or by its display label, in any casing — both are resolved, and a name that is no field at all is refused with the real ones listed rather than written into nowhere.
-
-WHERE THE WORK WENT — read it, never guess it. Every answer that puts something somewhere carries `where`, with the organization's name, the home's name and a ready-made sentence in `where.say`. Tell the person that sentence, with those exact names. Never say the work went to a default workspace, a sandbox, a fallback, or anywhere you were not told: new work is saved in the organization this run works in; a write into an EXISTING table or record lands in the organization that owns it; and if a name could not be read the answer says so in the same place.
-
-READS COVER EVERY ORGANIZATION THE PERSON BELONGS TO. table_list, metadata_search, record_read, record_aggregate and record_history look across all of them, every row names its own `organization_id` (and `organization`), and a table or record id opens in the organization that owns it. Their optional `organization_id` only NARROWS a read to one organization; nothing takes it to steer a write. An organization that could not answer is listed in `organizations_unavailable` with the reason — say so rather than treating it as empty.
-
-WHEN A CHANGE WAITS FOR A PERSON. An organization can ask a person before an agent changes a table that already existed — a new column, new rows, a record CHANGED, a record DELETED or put back, and on the strictest setting a whole new table. The answer then says `awaiting_approval` with `approval_id`, `approvers` and `not_done`. Say plainly that it did NOT happen, name the people who can approve it, and stop: do not retry it, do not work around it, do not call it queued unless the answer gave you an `approval_id`, and do not claim it is done. A table you made yourself in this conversation never waits. Deleting is not an exception to this — it is the change people most want to be asked about.
-
-Every call runs under your own authority: it reads and changes exactly what you could, values you are not cleared to see come back masked and named rather than dropped, and anything that could not be done is said in the answer.
-
-**Parameters:** `run` (boolean); `who` (object); `body` (string); `flow` (string); `home` (string); `name` (string); `rows` (array); `spec` (object); `tell` (array); `undo` (boolean); `unit` (string); `field` (string); `intro` (string); `label` (string); `limit` (integer); `match` (object); `query` (string); `roles` (array); `steps` (array); `table` (string); `title` (string); `topic` (string); `watch` (object); `action` (string, required) = ["table_list","metadata_search","record_read","record_aggregate","record_write","record_delete","record_history","record_restore_version","field_propose","table_propose","form_propose","booking_propose","import_propose","dashboard_propose","pipeline_propose","document_propose","checklist_propose","capture_propose","enrich_propose","portal_propose","signature_request","subscription_propose","entity_read","entity_write","guide"]; `blocks` (array); `config` (object); `enable` (boolean); `entity` (string); `fields` (array); `invite` (array); `limits` (object); `notify` (object); `tables` (array); `values` (object); `columns` (array); `mapping` (object); `measure` (string); `options` (array); `publish` (boolean); `records` (array); `trigger` (string); `version` (integer); `view_id` (string); `csv_text` (string); `group_by` (string); `id_keyed` (boolean); `on_entry` (object); `requires` (object); `table_id` (string); `unmapped` (string); `$variants` (any); `field_key` (string); `file_hash` (string); `questions` (array); `record_id` (string); `render_id` (string); `start_for` (string); `thank_you` (object); `view_name` (string); `date_order` (string); `dedupe_key` (string); `field_type` (string); `letterhead` (boolean); `description` (string); `sensitivity` (string); `signer_name` (string); `source_name` (string); `stage_field` (object); `template_id` (string); `transitions` (array); `availability` (object); `checklist_id` (string); `client_table` (string); `dashboard_id` (string); `expires_days` (integer); `on_duplicate` (string); `open_to_crew` (boolean); `presentation` (object); `preview_only` (boolean); `signer_email` (string); `submit_label` (string); `client_fields` (array); `context_policy` (string); `submission_cap` (integer); `client_table_id` (string); `organization_id` (string); `relation_target` (string); `expected_version` (integer); `options_table_id` (string)
+**Parameters:** `args` (object); `action` (string, required) = ["table_list","metadata_search","record_read","record_aggregate","record_write","record_delete","record_history","record_restore_version","field_propose","table_propose","form_propose","booking_propose","import_propose","dashboard_propose","pipeline_propose","document_propose","checklist_propose","capture_propose","enrich_propose","portal_propose","signature_request","subscription_propose","entity_read","entity_write","guide"]
 
 ## tabs
 
