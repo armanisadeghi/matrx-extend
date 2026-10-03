@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-03 19:00 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T18:46:41.991293+00:00. 205 features · 759 cases · 1331 controls · 93 linked defect records.
+Generated 2026-10-03 19:34 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T19:30:00Z. 205 features · 759 cases · 1331 controls · 94 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -21,7 +21,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 10 pass · 4 partial · 0 fail · 11 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 21 unverified · 0 deferred; 0/1 full | 14 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 26, partial 10, fail 0, unverified 55, n/a 1 | 0 |
-| [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 32, n/a 0 | 0 |
+| [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 32, n/a 0 | 1 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
 | [Scrape](#scrape) | 1 | 1 pass · 0 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 1, partial 0, fail 0, unverified 87, n/a 0 | 2 |
@@ -547,7 +547,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 28. **Controls:** 17.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0094
+
+**Linked defects:** [EXT-D-0094](defects/EXT-D-0094.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |

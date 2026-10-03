@@ -1,0 +1,50 @@
+{
+  "id": "EXT-D-0094",
+  "feature_id": "EXT-F-1004",
+  "case_ids": [
+    "EXT-F-1004-T02",
+    "EXT-F-1004-T04"
+  ],
+  "surface": "Profile",
+  "auth_mode": "admin proven; member unverified",
+  "title": "Authenticated Profile load is rejected by get_user_form_context",
+  "reproduction": [
+    "On the receipt-bound 0.2.177 development artifact (source 2274cc2fc929f7682c61f1a137e472a87caa2114), sign in as the existing admin with the approved device organization and open Profile.",
+    "Observe the users.user_form_profile upsert return HTTP 200 on the save path, then observe get_user_form_context return HTTP 403 with code 42501 on the read path.",
+    "Read-only database inspection confirms the RPC is SECURITY DEFINER and executable only by postgres/service_role; authenticated has no EXECUTE privilege. The source investigation found frontend migration 20260715050310_d31_authenticated_identity_tail.sql intentionally revoked client RPC access; the canonical frontend route /api/user/form-profile reads the owner-filtered table. Do not grant authenticated access as a workaround."
+  ],
+  "expected": "An authenticated user who can use Profile can load their own form context after save and after reopening Profile, with the RPC enforcing its intended user boundary.",
+  "actual": "The write succeeds, but the extension calls a client RPC whose authenticated EXECUTE permission was intentionally revoked. The canonical frontend route reads the owner-filtered table. Profile can appear blank after the rejected load, so the earlier T02 observation of an original blank value is invalid as acceptance evidence.",
+  "severity": "S2: core Profile data can appear blank after a failed load even when its write succeeded",
+  "priority": "P2: repair authenticated Profile read path and retest before relying on Profile acceptance",
+  "state": "in-fix",
+  "evidence": [
+    ".research/profile-native-execution.json",
+    "docs/stabilization/resource-journals/profile-diagnostic-20261003-04.jsonl",
+    "Live run profile-diagnostic-20261003-04 on source 2274cc2fc929f7682c61f1a137e472a87caa2114; write HTTP 200 and read HTTP 403/42501 reported by coordinator",
+    "Read-only Supabase inspection of users.user_form_profile and get_user_form_context EXECUTE privileges; no database writes or grants"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-03T19:27:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Root-approved live Profile run confirmed successful upsert and denied authenticated read RPC; member behavior remains unverified."
+    },
+    {
+      "at": "2026-10-03T19:27:00Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Failure is isolated to Profile context loading through get_user_form_context; database inspection shows no authenticated EXECUTE grant. Prior blank-input T02 observation cannot establish acceptance."
+    },
+    {
+      "at": "2026-10-03T19:31:00Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "The assigned native_empty_input_fix worker has begun implementation in src/hooks/use-user-profile.ts and src/lib/supabase/user-profile.ts and added src/lib/supabase/user-profile.read.test.ts. No database grant is planned."
+    }
+  ],
+  "current_work": "The native_empty_input_fix worker is implementing the owner-filtered table read path. The detailed diagnosis report has not yet been committed. No database grant has been made or approved; member-mode impact and repaired native acceptance remain unverified.",
+  "closure_requirement": "Confirm the intended authenticated access path without broadening execute privileges; independently verify authorized Profile load, save, reopen and restoration on the exact repaired artifact. Keep member coverage unverified until tested as an existing member.",
+  "acceptance_note": "The prior T02 observation in .research/profile-native-execution.json is historical and invalidated for acceptance because a failed profile load can appear blank. No inventory pass was promoted."
+}
