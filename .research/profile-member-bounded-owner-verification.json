@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "verified_at": "2026-10-03T23:14:01.024268+00:00",
+  "status": "bounded_warm_member_proof_only",
+  "source_sha": "9dfb5911cd7fef18f8c36b1cefd273096e866bbf",
+  "raw_report_sha256": "ff4d98d4ee5ed004b074be61f7e2d27d492cac338c9b7b33bf57e767704f33d7",
+  "cases": [
+    {
+      "id": "EXT-F-1004-T01",
+      "mode": "member",
+      "dimension": "warm",
+      "branch": "default",
+      "status": "passed",
+      "started_at": "2026-10-03T23:03:35.525Z",
+      "observed": {
+        "draft_dirty": true,
+        "discard_visible": true,
+        "back_chat": true,
+        "reopened_original": true
+      }
+    },
+    {
+      "id": "EXT-F-1004-T03",
+      "mode": "member",
+      "dimension": "warm",
+      "branch": "discard-draft",
+      "status": "passed",
+      "started_at": "2026-10-03T23:03:36.399Z",
+      "observed": {
+        "discard_restored": true,
+        "save_disabled": true
+      }
+    },
+    {
+      "id": "EXT-F-1004-T03",
+      "mode": "member",
+      "dimension": "warm",
+      "branch": "save-draft",
+      "status": "passed",
+      "started_at": "2026-10-03T23:03:36.399Z",
+      "observed": {
+        "saved_after_reopen": true,
+        "original_restored_after_reopen": true
+      }
+    },
+    {
+      "id": "EXT-F-1004-T25",
+      "mode": "member",
+      "dimension": "warm",
+      "branch": "denied-owner-read-retry",
+      "status": "passed",
+      "started_at": "2026-10-03T23:03:39.201Z",
+      "observed": {
+        "network_owner_reads_refused": 4,
+        "editors_during_denial": 0,
+        "header_save_disabled": true,
+        "footer_save_enabled": false,
+        "dirty_footer_during_denial": false,
+        "retry_restored_original": true,
+        "owner_read_http_200_after_retry": true
+      }
+    }
+  ],
+  "first_save": {
+    "member_ui_created_owner_row": true,
+    "device_organization_verified": true,
+    "scope": "T28 first-save branch only; organization switching and unset organization unverified"
+  },
+  "restoration": {
+    "run_id": "profile-member-row-recovery-05",
+    "finished_at": "2026-10-03T23:09:59.366Z",
+    "exact_imported_source_sha": "9dfb5911cd7fef18f8c36b1cefd273096e866bbf",
+    "first_party_member_identity_verified": true,
+    "canonical_nonadmin_verified": true,
+    "owner_organization_verified": true,
+    "marker_uuid_and_run04_creation_window_verified": true,
+    "exact_expected_version": 3,
+    "private_ownership_receipt_mode": "0600",
+    "atomic_owner_delete_matched_one_row": true,
+    "authenticated_owner_read_absent_after_delete": true,
+    "original_absence_restored": true,
+    "resource_admitted": true,
+    "resource_invalid": false,
+    "private_report_sha256": "f4f3b370f717212df9fccc8e92244b4680af6bcf5f9eee3144c68aa53ceb253e",
+    "resource_journal_sha256": "06dc65cbef1a55cbb20e851bbef999137e962a3ae5060f5483ef46cc8b115e2f"
+  },
+  "limitation": "Acceptance run failed before reload proof. Warm observations remain bounded evidence; original row absence was restored by separately guarded owner recovery, whose raw report and journal hashes were independently checked. No full case or defect closure."
+}

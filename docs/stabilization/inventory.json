@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T20:20:51Z",
+  "updated_at": "2026-10-03T23:14:01.024268+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -9428,9 +9428,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "Warm member Back discarded the draft and reopening returned the test baseline. Reload and remaining branches unverified.",
+              "evidence_refs": [
+                ".research/profile-member-bounded-owner-verification.json",
+                ".research/profile-member-reload-recovery.json"
+              ],
+              "status": "pass",
               "readiness": "ready"
             },
             {
@@ -9453,6 +9456,22 @@
             "peer_commit": "2c318798",
             "report": ".research/popup-profile-acceptance-peer.json",
             "scope": "Source-reviewed procedure only; no runtime acceptance."
+          },
+          "results": {
+            "member": {
+              "status": "partial",
+              "run_id": "profile-member-native-next-04",
+              "build_variant": "receipt-bound development 0.2.184; CI37159097093/artifact11286822448/source9dfb5911",
+              "verified_substeps": [
+                "Warm member Back discarded the draft and reopening returned the test baseline."
+              ],
+              "remaining_criteria": [
+                "True extension reload was not established.",
+                "All other unverified execution-matrix branches remain required."
+              ],
+              "evidence": ".research/profile-member-bounded-owner-verification.json",
+              "verified_at": "2026-10-03T23:14:01.024268+00:00"
+            }
           }
         },
         {
@@ -9593,9 +9612,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "Warm member Discard restored the baseline; Save persisted after reopen and the baseline was restored. Reload and remaining branches unverified.",
+              "evidence_refs": [
+                ".research/profile-member-bounded-owner-verification.json",
+                ".research/profile-member-reload-recovery.json"
+              ],
+              "status": "pass",
               "readiness": "ready"
             },
             {
@@ -9606,9 +9628,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "Warm member Discard restored the baseline; Save persisted after reopen and the baseline was restored. Reload and remaining branches unverified.",
+              "evidence_refs": [
+                ".research/profile-member-bounded-owner-verification.json",
+                ".research/profile-member-reload-recovery.json"
+              ],
+              "status": "pass",
               "readiness": "ready"
             },
             {
@@ -9644,6 +9669,22 @@
             "peer_commit": "2c318798",
             "report": ".research/popup-profile-acceptance-peer.json",
             "scope": "Source-reviewed procedure only; no runtime acceptance."
+          },
+          "results": {
+            "member": {
+              "status": "partial",
+              "run_id": "profile-member-native-next-04",
+              "build_variant": "receipt-bound development 0.2.184; CI37159097093/artifact11286822448/source9dfb5911",
+              "verified_substeps": [
+                "Warm member Discard restored the baseline; Save persisted after reopen and the baseline was restored."
+              ],
+              "remaining_criteria": [
+                "True extension reload was not established.",
+                "All other unverified execution-matrix branches remain required."
+              ],
+              "evidence": ".research/profile-member-bounded-owner-verification.json",
+              "verified_at": "2026-10-03T23:14:01.024268+00:00"
+            }
           }
         },
         {
@@ -11389,9 +11430,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "Warm member denied owner-row GETs showed zero editors and disabled Save; Retry completed owner GET 200 and restored the baseline. Reload and remaining branches unverified.",
+              "evidence_refs": [
+                ".research/profile-member-bounded-owner-verification.json",
+                ".research/profile-member-reload-recovery.json"
+              ],
+              "status": "pass",
               "readiness": "requires_fixture"
             },
             {
@@ -11402,9 +11446,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "Warm member denied owner-row GETs showed zero editors and disabled Save; Retry completed owner GET 200 and restored the baseline. Reload and remaining branches unverified.",
+              "evidence_refs": [
+                ".research/profile-member-bounded-owner-verification.json",
+                ".research/profile-member-reload-recovery.json"
+              ],
+              "status": "pass",
               "readiness": "requires_fixture"
             },
             {
@@ -11551,9 +11598,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "Warm member denied owner-row GETs showed zero editors and disabled Save; Retry completed owner GET 200 and restored the baseline. Reload and remaining branches unverified.",
+              "evidence_refs": [
+                ".research/profile-member-bounded-owner-verification.json",
+                ".research/profile-member-reload-recovery.json"
+              ],
+              "status": "pass",
               "readiness": "requires_fixture"
             },
             {
@@ -11680,6 +11730,20 @@
               ],
               "evidence": ".research/profile-independent-acceptance.json; docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl",
               "verified_at": "2026-10-03T20:16:36Z"
+            },
+            "member": {
+              "status": "partial",
+              "run_id": "profile-member-native-next-04",
+              "build_variant": "receipt-bound development 0.2.184; CI37159097093/artifact11286822448/source9dfb5911",
+              "verified_substeps": [
+                "Warm member denied owner-row GETs showed zero editors and disabled Save; Retry completed owner GET 200 and restored the baseline."
+              ],
+              "remaining_criteria": [
+                "True extension reload was not established.",
+                "All other unverified execution-matrix branches remain required."
+              ],
+              "evidence": ".research/profile-member-bounded-owner-verification.json",
+              "verified_at": "2026-10-03T23:14:01.024268+00:00"
             }
           }
         },
@@ -12025,9 +12089,12 @@
                 "organization-unset",
                 "organization-switch"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "Real member first Save created its owner row with the selected device organization. Original absence was later restored through verified guarded conditional owner cleanup. Reload and remaining branches unverified.",
+              "evidence_refs": [
+                ".research/profile-member-bounded-owner-verification.json",
+                ".research/profile-member-reload-recovery.json"
+              ],
+              "status": "pass",
               "readiness": "requires_fixture"
             },
             {
@@ -12203,7 +12270,23 @@
             "report": ".research/popup-profile-acceptance-peer.json",
             "scope": "Source-reviewed procedure only; no runtime acceptance."
           },
-          "required_fixture": "Pre-existing disposable member/admin principals and profile-row fixtures must be verified before execution. The designated non-admin test principal test@test.com has prior read-only membership evidence in docs/stabilization/reports/member-access-probe.json, but its extension OAuth access and the required absent/existing user_form_profile rows are not established here. Verify identity and fixture metadata privately without reading or recording secrets; do not create accounts, rotate credentials, change memberships, or write to live profiles. If pre-existing fixtures cannot be verified, keep every row unverified."
+          "required_fixture": "Pre-existing disposable member/admin principals and profile-row fixtures must be verified before execution. The designated non-admin test principal test@test.com has prior read-only membership evidence in docs/stabilization/reports/member-access-probe.json, but its extension OAuth access and the required absent/existing user_form_profile rows are not established here. Verify identity and fixture metadata privately without reading or recording secrets; do not create accounts, rotate credentials, change memberships, or write to live profiles. If pre-existing fixtures cannot be verified, keep every row unverified.",
+          "results": {
+            "member": {
+              "status": "partial",
+              "run_id": "profile-member-native-next-04",
+              "build_variant": "receipt-bound development 0.2.184; CI37159097093/artifact11286822448/source9dfb5911",
+              "verified_substeps": [
+                "Real member first Save created its owner row with the selected device organization. Original absence was later restored through verified guarded conditional owner cleanup."
+              ],
+              "remaining_criteria": [
+                "True extension reload was not established.",
+                "All other unverified execution-matrix branches remain required."
+              ],
+              "evidence": ".research/profile-member-bounded-owner-verification.json",
+              "verified_at": "2026-10-03T23:14:01.024268+00:00"
+            }
+          }
         }
       ],
       "cells": {
@@ -12214,12 +12297,15 @@
           "retest_status": "not-run"
         },
         "member": {
-          "test_status": "unverified",
+          "test_status": "partial",
           "defect_ids": [
             "EXT-D-0095"
           ],
-          "run_ids": [],
-          "retest_status": "not-run"
+          "run_ids": [
+            "profile-member-native-next-04",
+            "profile-member-row-recovery-05"
+          ],
+          "retest_status": "partial"
         },
         "admin": {
           "test_status": "partial",
@@ -33458,7 +33544,10 @@
           "expected": [
             "Chat remains visible and usable without login; real responses ground in current page; no private account state is carried into guest."
           ],
-          "defect_ids": ["EXT-D-0096", "EXT-D-0097"],
+          "defect_ids": [
+            "EXT-D-0096",
+            "EXT-D-0097"
+          ],
           "results": {
             "guest": {
               "status": "pass",
@@ -33543,7 +33632,9 @@
             "Count and blocks match the current turn receipt; absent/unknown data is not fabricated.",
             "Viewer opens actual stored delivered text for the exact turn; no client-generated message ID is substituted."
           ],
-          "defect_ids": ["EXT-D-0096"],
+          "defect_ids": [
+            "EXT-D-0096"
+          ],
           "verification_status": "D96 guest owner-read repair has bounded native guest verification on development artifact 0.2.178; signed-in member positive read remains unverified. This does not verify receipt-block parity or persisted delivered text; exact text viewer wire gap EXT-D-0075 remains.",
           "results": {}
         }

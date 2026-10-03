@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-03 22:36 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T20:20:51Z. 205 features · 759 cases · 1331 controls · 97 linked defect records.
+Generated 2026-10-03 23:14 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T23:14:01.024268+00:00. 205 features · 759 cases · 1331 controls · 97 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1205** — Pass: 70 · Partial: 59 · Fail: 4 · Unverified: 1071 · N/A: 1.
-Unverified splits into **121 explicitly marked unverified** and **950 with no result record**.
+Applicable case-by-role slots: **1205** — Pass: 70 · Partial: 63 · Fail: 4 · Unverified: 1067 · N/A: 1.
+Unverified splits into **121 explicitly marked unverified** and **946 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 148 cases without steps, 147 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -21,7 +21,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 10 pass · 4 partial · 0 fail · 11 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 21 unverified · 0 deferred; 0/1 full | 14 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 26, partial 10, fail 0, unverified 55, n/a 1 | 0 |
-| [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 0, partial 3, fail 0, unverified 29, n/a 0 | 1 |
+| [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 4 partial · 0 fail · 12 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 0, partial 7, fail 0, unverified 25, n/a 0 | 1 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
 | [Scrape](#scrape) | 1 | 1 pass · 0 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 1, partial 0, fail 0, unverified 87, n/a 0 | 2 |
@@ -545,7 +545,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Edit and persist personal profile (EXT-F-1004)
 
-**Role status:** guest: N/A · member: Unverified · admin: Partial. **Cases:** 28. **Controls:** 17.
+**Role status:** guest: N/A · member: Partial · admin: Partial. **Cases:** 28. **Controls:** 17.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0095
 
@@ -553,9 +553,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-1004-T01 member: Back | N/A | Unverified | N/A | EXT-F-1004-C01 |
+| EXT-F-1004-T01 member: Back | N/A | Partial | N/A | EXT-F-1004-C01 |
 | EXT-F-1004-T02 admin: Back | N/A | N/A | Partial | EXT-F-1004-C01 |
-| EXT-F-1004-T03 member: Save / Discard | N/A | Unverified | N/A | EXT-F-1004-C02 |
+| EXT-F-1004-T03 member: Save / Discard | N/A | Partial | N/A | EXT-F-1004-C02 |
 | EXT-F-1004-T04 admin: Save / Discard | N/A | N/A | Partial | EXT-F-1004-C02 |
 | EXT-F-1004-T05 member: Identity fields | N/A | Unverified | N/A | EXT-F-1004-C03 |
 | EXT-F-1004-T06 admin: Identity fields | N/A | N/A | Unverified | EXT-F-1004-C03 |
@@ -577,19 +577,27 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1004-T22 admin: Profile section expanders | N/A | N/A | Unverified | EXT-F-1004-C11 |
 | EXT-F-1004-T23 guest: verify visibility denial | N/A | N/A | N/A | EXT-F-1004-C12 |
 | EXT-F-1004-T24 Email/date native input constraints | N/A | Unverified | Unverified | EXT-F-1004-C13 |
-| EXT-F-1004-T25 Profile load failure recovery | N/A | Unverified | Partial | EXT-F-1004-C14 |
+| EXT-F-1004-T25 Profile load failure recovery | N/A | Partial | Partial | EXT-F-1004-C14 |
 | EXT-F-1004-T26 Profile save failure and retry | N/A | Unverified | Unverified | EXT-F-1004-C15 |
 | EXT-F-1004-T27 Backend profile field constraints | N/A | Unverified | Unverified | EXT-F-1004-C16 |
-| EXT-F-1004-T28 First profile save names active organization and existing profile stays filed | N/A | Unverified | Unverified | EXT-F-1004-C02, EXT-F-1004-C17 |
+| EXT-F-1004-T28 First profile save names active organization and existing profile stays filed | N/A | Partial | Unverified | EXT-F-1004-C02, EXT-F-1004-C17 |
 
 **Recorded case details and evidence:**
 
+- EXT-F-1004-T01 · member: Partial.
+  Evidence / build / date recorded: profile-member-native-next-04, receipt-bound development 0.2.184; CI37159097093/artifact11286822448/source9dfb5911, 2026-10-03T23:14:01.024268+00:00, .research/profile-member-bounded-owner-verification.json
 - EXT-F-1004-T02 · admin: Partial.
   Evidence / build / date recorded: profile-independent-20261003-01, receipt-bound development artifact; CI 37150495327 / artifact 11283802431 / source ac49ac2f, 2026-10-03T20:16:36Z, .research/profile-independent-acceptance.json; docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl
+- EXT-F-1004-T03 · member: Partial.
+  Evidence / build / date recorded: profile-member-native-next-04, receipt-bound development 0.2.184; CI37159097093/artifact11286822448/source9dfb5911, 2026-10-03T23:14:01.024268+00:00, .research/profile-member-bounded-owner-verification.json
 - EXT-F-1004-T04 · admin: Partial.
   Evidence / build / date recorded: profile-independent-20261003-01, receipt-bound development artifact; CI 37150495327 / artifact 11283802431 / source ac49ac2f, 2026-10-03T20:16:36Z, .research/profile-independent-acceptance.json; docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl
+- EXT-F-1004-T25 · member: Partial.
+  Evidence / build / date recorded: profile-member-native-next-04, receipt-bound development 0.2.184; CI37159097093/artifact11286822448/source9dfb5911, 2026-10-03T23:14:01.024268+00:00, .research/profile-member-bounded-owner-verification.json
 - EXT-F-1004-T25 · admin: Partial.
   Evidence / build / date recorded: profile-independent-20261003-01, receipt-bound development artifact; CI 37150495327 / artifact 11283802431 / source ac49ac2f, 2026-10-03T20:16:36Z, .research/profile-independent-acceptance.json; docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl
+- EXT-F-1004-T28 · member: Partial.
+  Evidence / build / date recorded: profile-member-native-next-04, receipt-bound development 0.2.184; CI37159097093/artifact11286822448/source9dfb5911, 2026-10-03T23:14:01.024268+00:00, .research/profile-member-bounded-owner-verification.json
 
 
 ## Debug log
