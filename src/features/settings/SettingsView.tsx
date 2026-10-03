@@ -100,10 +100,12 @@ export function SettingsView() {
   const desktop = useDesktopBridge();
   const settings = useSettingsStore();
   const [pairTokenInput, setPairTokenInput] = useState('');
+  const [pairTokenError, setPairTokenError] = useState<string | null>(null);
   const [enginePortInput, setEnginePortInput] = useState('');
   const [enginePortSaved, setEnginePortSaved] = useState<number | null>(null);
   const [enginePortError, setEnginePortError] = useState<string | null>(null);
   const [clearLocalDataOpen, setClearLocalDataOpen] = useState(false);
+  const [clearLocalDataError, setClearLocalDataError] = useState<string | null>(null);
   const [extensionUpdate, setExtensionUpdate] = useState<ExtensionUpdateStatus>({ kind: 'idle' });
   const [orgArchiveFilter, setOrgArchiveFilter] =
     useState<ArchiveFilterValue>(DEFAULT_ARCHIVE_FILTER);
@@ -120,10 +122,14 @@ export function SettingsView() {
   useEffect(() => {
     let cancelled = false;
     void (async () => {
-      const p = await getEnginePortOverride();
-      if (cancelled) return;
-      setEnginePortSaved(p);
-      setEnginePortInput(p === null ? '' : String(p));
+      try {
+        const p = await getEnginePortOverride();
+        if (cancelled) return;
+        setEnginePortSaved(p);
+        setEnginePortInput(p === null ? '' : String(p));
+      } catch {
+        if (!cancelled) setEnginePortError('Could not load saved port. Reopen Settings to try again.');
+      }
     })();
     return () => {
       cancelled = true;
@@ -132,32 +138,36 @@ export function SettingsView() {
 
   const handleSaveEnginePort = async () => {
     const trimmed = enginePortInput.trim();
-    if (trimmed === '') {
-      await setEnginePortOverride(null);
-      // Through the worker: it owns the discovery rate limit, the transport
-      // state and the socket. Clearing this context's copies changed nothing.
-      await send(CHANNELS.DESKTOP_REDISCOVER, {}).catch(() => undefined);
-      setEnginePortSaved(null);
-      setEnginePortError(null);
-      return;
-    }
     const n = Number(trimmed);
-    if (!Number.isInteger(n) || n < 1 || n > 65535) {
+    if (trimmed !== '' && (!Number.isInteger(n) || n < 1 || n > 65535)) {
       // Silent return left the input showing a value that was never applied.
       setEnginePortError('Port must be 1–65535.');
       return;
     }
+    const nextPort = trimmed === '' ? null : n;
+    try {
+      await setEnginePortOverride(nextPort);
+    } catch {
+      setEnginePortError('Could not save port. Try again.');
+      return;
+    }
+    setEnginePortSaved(nextPort);
     setEnginePortError(null);
-    await setEnginePortOverride(n);
+    // The worker owns discovery state and the socket. A rediscovery failure
+    // does not undo a successfully persisted port choice.
     await send(CHANNELS.DESKTOP_REDISCOVER, {}).catch(() => undefined);
-    setEnginePortSaved(n);
   };
 
   const handleClearLocalDataConfirmed = async () => {
-    setClearLocalDataOpen(false);
-    await chrome.storage.local.clear();
-    await chrome.storage.session.clear().catch(() => undefined);
-    await signOut();
+    try {
+      await chrome.storage.local.clear();
+      await chrome.storage.session.clear();
+      await signOut();
+      setClearLocalDataError(null);
+      setClearLocalDataOpen(false);
+    } catch {
+      setClearLocalDataError('Could not finish reset. Try again.');
+    }
   };
 
   const desktopColor = desktopStatusTextClass(desktop.transport, desktop.health);
@@ -514,7 +524,10 @@ export function SettingsView() {
                 <div className="flex items-center gap-2 px-3.5 py-2">
                   <Input
                     value={pairTokenInput}
-                    onChange={(e) => setPairTokenInput(e.target.value)}
+                    onChange={(e) => {
+                      setPairTokenInput(e.target.value);
+                      setPairTokenError(null);
+                    }}
                     placeholder="Pair code"
                     className="h-7 rounded-full border-0 bg-secondary focus-visible:ring-1"
                   />
@@ -524,13 +537,23 @@ export function SettingsView() {
                     disabled={!pairTokenInput.trim()}
                     onClick={async () => {
                       if (pairTokenInput.trim()) {
-                        await setPairToken(pairTokenInput.trim());
-                        setPairTokenInput('');
+                        try {
+                          await setPairToken(pairTokenInput.trim());
+                          setPairTokenInput('');
+                          setPairTokenError(null);
+                        } catch {
+                          setPairTokenError('Could not save pair code. Try again.');
+                        }
                       }
                     }}
                   >
                     Pair
                   </Button>
+                </div>
+              )}
+              {pairTokenError && (
+                <div className="px-3.5 pb-2 text-[11px] text-red-600 dark:text-red-400">
+                  {pairTokenError}
                 </div>
               )}
               {desktop.transport === 'http' && (
@@ -592,7 +615,10 @@ export function SettingsView() {
                 label="Clear local data on this device"
                 icon={<Trash2 className="size-3.5" />}
                 destructive
-                onClick={() => setClearLocalDataOpen(true)}
+                onClick={() => {
+                  setClearLocalDataError(null);
+                  setClearLocalDataOpen(true);
+                }}
               />
             </Card>
           </Collapsible>
@@ -612,6 +638,9 @@ export function SettingsView() {
                   You will be signed out. Your chats, captures and patterns saved on the server are
                   NOT affected.
                 </span>
+                {clearLocalDataError && (
+                  <span className="mt-2 block text-destructive">{clearLocalDataError}</span>
+                )}
               </>
             }
             confirmLabel="Clear & sign out"

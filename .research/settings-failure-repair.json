@@ -1,0 +1,23 @@
+{
+  "defect_id": "EXT-D-0084",
+  "scope": "Settings local storage failure feedback and retry",
+  "source_evidence": [
+    "SettingsView previously awaited getEnginePortOverride and setEnginePortOverride without catching rejected Chrome storage calls.",
+    "The pair-code Save handler awaited setPairToken without a rejection handler, leaving entered code intact but no error.",
+    "Clear local data closed its confirmation before awaiting chrome.storage.local.clear; a rejected clear left the user with no visible failure."
+  ],
+  "root_cause": "Settings click and load handlers assumed Chrome storage operations could not reject, and reset indicated completion before storage confirmed it.",
+  "sibling_census": [
+    "Port read, replacement, and removal: repaired in SettingsView.",
+    "Manual desktop pair-code write: repaired in SettingsView.",
+    "Clear local data: repaired in SettingsView; confirmation remains open until clear and sign-out succeed.",
+    "Zustand persisted preferences write asynchronously through a shared adapter; this repair does not claim to cover that different persistence path."
+  ],
+  "regression_test": "src/features/settings/SettingsView.about.test.tsx",
+  "verification": {
+    "static": "git diff --check passed",
+    "unit": "pending hosted CI; native local execution prohibited by low disk space",
+    "browser": "pending exact-build acceptance with controlled storage failure injection",
+    "red_proof": "not executed locally because the task forbids local tests/builds under the disk threshold"
+  }
+}

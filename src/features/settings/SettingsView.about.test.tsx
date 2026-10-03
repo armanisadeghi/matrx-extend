@@ -5,6 +5,10 @@ const mocks = vi.hoisted(() => ({
   requestUpdateCheck: vi.fn(),
   getEnginePortOverride: vi.fn(),
   setEnginePortOverride: vi.fn(),
+  setPairToken: vi.fn(),
+  signOut: vi.fn(),
+  clearLocal: vi.fn(),
+  clearSession: vi.fn(),
   send: vi.fn(),
   user: null as null | { id: string; email: string },
   chooseOrganization: vi.fn(),
@@ -40,7 +44,7 @@ vi.mock('@/hooks/use-active-organization', () => ({
   }),
 }));
 vi.mock('@/hooks/use-auth', () => ({
-  useAuth: () => ({ user: mocks.user, signIn: vi.fn(), signOut: vi.fn(), isAdmin: false }),
+  useAuth: () => ({ user: mocks.user, signIn: vi.fn(), signOut: mocks.signOut, isAdmin: false }),
 }));
 vi.mock('@/hooks/use-desktop', () => ({
   useDesktopBridge: () => ({ transport: 'none', health: null }),
@@ -49,7 +53,7 @@ vi.mock('@/lib/desktop/discovery', () => ({
   getEnginePortOverride: mocks.getEnginePortOverride,
   setEnginePortOverride: mocks.setEnginePortOverride,
 }));
-vi.mock('@/lib/desktop/http', () => ({ clearPairToken: vi.fn(), setPairToken: vi.fn() }));
+vi.mock('@/lib/desktop/http', () => ({ clearPairToken: vi.fn(), setPairToken: mocks.setPairToken }));
 vi.mock('@/lib/desktop/types', () => ({
   desktopStatusTextClass: () => '',
   engineHealthState: () => 'ok',
@@ -131,7 +135,23 @@ vi.mock('@ai-matrx/design-system', () => ({
   }: React.InputHTMLAttributes<HTMLInputElement> & {
     onCheckedChange?: (checked: boolean) => void;
   }) => <input {...props} readOnly />,
-  ConfirmDialog: () => null,
+  ConfirmDialog: ({
+    open,
+    title,
+    description,
+    onConfirm,
+  }: {
+    open: boolean;
+    title: string;
+    description: React.ReactNode;
+    onConfirm: () => void;
+  }) =>
+    open ? (
+      <div role="alertdialog" aria-label={title}>
+        {description}
+        <button onClick={onConfirm}>Clear & sign out</button>
+      </div>
+    ) : null,
 }));
 
 import { SettingsView } from './SettingsView';
@@ -153,8 +173,8 @@ function setChromeRuntime({
     tabs: browserLoginReady ? { get: vi.fn() } : {},
     scripting: browserLoginReady ? { executeScript: vi.fn() } : {},
     storage: {
-      local: browserLoginReady ? { get: vi.fn(), clear: vi.fn() } : {},
-      session: { clear: vi.fn() },
+      local: browserLoginReady ? { get: vi.fn(), clear: mocks.clearLocal } : {},
+      session: { clear: mocks.clearSession },
     },
   });
 }
@@ -346,5 +366,125 @@ describe('SettingsView local engine port', () => {
     fireEvent.click(section.getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(mocks.setEnginePortOverride).toHaveBeenCalledWith(65002));
     expect(section.queryByText('Port must be 1–65535.')).toBeNull();
+  });
+
+  it('keeps the saved port when storage rejects a replacement, then saves the retry', async () => {
+    mocks.setEnginePortOverride
+      .mockRejectedValueOnce(new Error('storage unavailable'))
+      .mockResolvedValueOnce(undefined);
+    render(<SettingsView />);
+    const section = within(screen.getByRole('region', { name: 'Desktop bridge' }));
+    const input = await section.findByDisplayValue('65001');
+
+    fireEvent.change(input, { target: { value: '65002' } });
+    fireEvent.click(section.getByRole('button', { name: 'Save' }));
+    expect(await section.findByText('Could not save port. Try again.')).toBeTruthy();
+    expect(section.getByText('override')).toBeTruthy();
+    expect(mocks.send).not.toHaveBeenCalled();
+
+    fireEvent.click(section.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(mocks.setEnginePortOverride).toHaveBeenNthCalledWith(2, 65002));
+    await waitFor(() => expect(mocks.send).toHaveBeenCalledTimes(1));
+    expect(section.queryByText('Could not save port. Try again.')).toBeNull();
+    expect((input as HTMLInputElement).value).toBe('65002');
+  });
+
+  it('does not show a cleared override when storage rejects removal', async () => {
+    mocks.setEnginePortOverride.mockRejectedValueOnce(new Error('storage unavailable'));
+    render(<SettingsView />);
+    const section = within(screen.getByRole('region', { name: 'Desktop bridge' }));
+    const input = await section.findByDisplayValue('65001');
+
+    fireEvent.change(input, { target: { value: '' } });
+    fireEvent.click(section.getByRole('button', { name: 'Save' }));
+    expect(await section.findByText('Could not save port. Try again.')).toBeTruthy();
+    expect(section.getByRole('button', { name: 'Save' })).toBeTruthy();
+    expect(section.getByText('override')).toBeTruthy();
+    expect(mocks.send).not.toHaveBeenCalled();
+  });
+
+  it('shows a reload error when reading the saved port fails', async () => {
+    mocks.getEnginePortOverride.mockReset().mockRejectedValue(new Error('storage unavailable'));
+    render(<SettingsView />);
+    const section = within(screen.getByRole('region', { name: 'Desktop bridge' }));
+
+    expect(await section.findByText('Could not load saved port. Reopen Settings to try again.')).toBeTruthy();
+    expect(mocks.setEnginePortOverride).not.toHaveBeenCalled();
+  });
+});
+
+describe('SettingsView desktop pair code', () => {
+  beforeEach(() => {
+    mocks.getEnginePortOverride.mockReset().mockResolvedValue(null);
+    mocks.setPairToken.mockReset();
+    setChromeRuntime({});
+  });
+
+  afterEach(cleanup);
+
+  it('keeps a rejected code available for retry and clears it only after storage succeeds', async () => {
+    mocks.setPairToken
+      .mockRejectedValueOnce(new Error('storage unavailable'))
+      .mockResolvedValueOnce(undefined);
+    render(<SettingsView />);
+    const section = within(screen.getByRole('region', { name: 'Desktop bridge' }));
+    const input = section.getByPlaceholderText('Pair code') as HTMLInputElement;
+
+    fireEvent.change(input, { target: { value: 'local-desktop-pair-code' } });
+    fireEvent.click(section.getByRole('button', { name: 'Pair' }));
+    expect(await section.findByText('Could not save pair code. Try again.')).toBeTruthy();
+    expect(input.value).toBe('local-desktop-pair-code');
+
+    fireEvent.click(section.getByRole('button', { name: 'Pair' }));
+    await waitFor(() => expect(mocks.setPairToken).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(input.value).toBe(''));
+    expect(section.queryByText('Could not save pair code. Try again.')).toBeNull();
+  });
+});
+
+describe('SettingsView local data reset', () => {
+  beforeEach(() => {
+    mocks.getEnginePortOverride.mockReset().mockResolvedValue(null);
+    mocks.clearLocal.mockReset();
+    mocks.clearSession.mockReset().mockResolvedValue(undefined);
+    mocks.signOut.mockReset().mockResolvedValue(undefined);
+    setChromeRuntime({});
+  });
+
+  afterEach(cleanup);
+
+  it('keeps confirmation open after a rejected clear and signs out only after retry succeeds', async () => {
+    mocks.clearLocal
+      .mockRejectedValueOnce(new Error('storage unavailable'))
+      .mockResolvedValueOnce(undefined);
+    render(<SettingsView />);
+    const section = within(screen.getByRole('region', { name: 'Data & reset' }));
+    fireEvent.click(section.getByRole('button', { name: 'Clear local data on this device' }));
+    const dialog = screen.getByRole('alertdialog', { name: 'Clear local data?' });
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Clear & sign out' }));
+    expect(await within(dialog).findByText('Could not finish reset. Try again.')).toBeTruthy();
+    expect(mocks.clearSession).not.toHaveBeenCalled();
+    expect(mocks.signOut).not.toHaveBeenCalled();
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Clear & sign out' }));
+    await waitFor(() => expect(mocks.signOut).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull());
+    expect(mocks.clearLocal).toHaveBeenCalledTimes(2);
+    expect(mocks.clearSession).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports a failed session clear before signing out', async () => {
+    mocks.clearLocal.mockResolvedValue(undefined);
+    mocks.clearSession.mockRejectedValue(new Error('session storage unavailable'));
+    render(<SettingsView />);
+    const section = within(screen.getByRole('region', { name: 'Data & reset' }));
+    fireEvent.click(section.getByRole('button', { name: 'Clear local data on this device' }));
+    const dialog = screen.getByRole('alertdialog', { name: 'Clear local data?' });
+
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Clear & sign out' }));
+    expect(await within(dialog).findByText('Could not finish reset. Try again.')).toBeTruthy();
+    expect(mocks.clearLocal).toHaveBeenCalledTimes(1);
+    expect(mocks.signOut).not.toHaveBeenCalled();
   });
 });

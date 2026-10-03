@@ -3452,6 +3452,14 @@ Every entry follows this shape:
 - **Expected:** the override disappears, the button says Set, and the old range error disappears. Reload Settings and confirm the input is empty. Also enter an invalid port followed by a valid port and confirm that successful save clears the error.
 - **Covered by:** `src/features/settings/SettingsView.about.test.tsx` (real Settings component with desktop storage and rediscovery boundaries stubbed); installed-browser acceptance is `tests/browser/settings-local-controls-acceptance.mjs` T46.
 
+### Settings reports local storage failures
+
+- **What it does:** failed port and pair-code writes, port reads, and local-data reset show an error at the control that failed.
+- **Where to test:** Settings → Desktop bridge and Data & reset in an isolated profile with Chrome storage calls made to reject.
+- **Steps:** save a different local engine port while storage rejects; then retry after storage recovers. Repeat when clearing the port. Enter a pair code, reject its storage write, then retry. Reload Settings while the port read rejects. Finally, confirm Clear local data while its storage clear rejects, then retry after recovery.
+- **Expected:** a failed port save leaves the previous override in place, skips rediscovery, and shows a retry error. A successful retry clears the error. A rejected pair code stays in the input until saved. A rejected read is reported. A rejected local-data clear leaves its confirmation open and does not sign out; a successful retry closes it and signs out.
+- **Covered by:** `src/features/settings/SettingsView.about.test.tsx` (Settings component with rejected storage boundaries). Installed-browser failure injection remains unverified.
+
 ### DevTools console is not a firehose
 
 - **What it does:** the Debug → Logs feed keeps every event at every level,
