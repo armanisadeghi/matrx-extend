@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "report_id": "settings-audit-error-peer-20261003",
+  "reviewed_head": "cc139884dd36015d3527502a05fb6c9585d27d21",
+  "lane": "independent source review; zero authorship; no browser or heavy tests",
+  "verdict_a_outcome_acceptance": {
+    "status": "PARTIAL — actual native Settings acceptance is pending",
+    "evidence": [
+      "Source and connected component path show an initial details read failure renders an alert and a read-only Retry audit details action.",
+      "After rotateDeviceKey resolves, rotationSucceeded is set before refresh; refresh handles read failure internally, so Key rotated remains visible and details retry does not invoke rotateDeviceKey. The connected test asserts one rotation call after retry.",
+      "Clipboard failure clears copied state, shows an alert and Retry export; copied feedback is set only after writeText resolves.",
+      "No exact-build native browser interaction was run in this lane. Verdict A remains pending for real Settings-path outcome acceptance and safe failure injection."
+    ],
+    "traceability": "EXT-D-0093 links to existing EXT-F-1003-T27 and T60. T27 documents normal admin key display; T60 includes clipboard failure interaction. Load and post-rotation failure scenarios are present in the new connected test and feature-test additions, but are not represented as explicit inventory steps in those two existing cases."
+  },
+  "verdict_b_source_and_test_quality": {
+    "status": "FAIL — late rotation failure can be misreported and retried against partially changed storage",
+    "findings": [
+      {
+        "severity": "High",
+        "finding": "The UI treats any rotateDeviceKey rejection as proof that rotation failed and tells the admin to try Re-key again, but the production operation is a multi-write sequence. It retires the previous history entry, generates a key, persists the new active key, then appends history and imports the key. If a later step rejects after the active-key write, the key has changed despite the failure alert; retrying can rotate again and can leave an active key without its history entry. The current test replaces rotateDeviceKey with a single rejecting/resolving mock and cannot expose this partial-commit state.",
+        "evidence": "src/lib/audit/device-key.ts:187-207; src/features/settings/AuditKeyCard.tsx:91-103; src/features/settings/AdvancedAgentCapabilities.audit-key.test.tsx rotation case",
+        "required_resolution": "Make rotation result recoverable/honest across partial storage failures, or reconcile persisted active key/history after rejection before offering retry. Add a forcing case at the real storage boundary where active-key persistence succeeds and a later step fails; prove retry cannot silently rotate a second time or strand the active key."
+      },
+      {
+        "severity": "Evidence gap",
+        "finding": "The defect cites T27 and T60, but T27 only describes normal key display and T60 covers export clipboard behavior. The load-failure and rotation-refresh behavior has connected test coverage and prose in feature-tests.md, while the stabilization inventory still lacks explicit scenario steps for those failure interactions.",
+        "evidence": "docs/stabilization/inventory.json EXT-F-1003-T27 and T60; docs/feature-tests.md Audit key steps; tests/unit/AdvancedAgentCapabilities.audit-key.test.tsx",
+        "required_resolution": "Add explicit load and rotate-refresh failure acceptance cases or update the relevant inventory steps/evidence so the defect closure contract is traceable."
+      }
+    ],
+    "positive_findings": [
+      "Successful rotation followed by a details read failure is visibly split into Key rotated plus Audit details unavailable; the retry handler calls refresh only.",
+      "Export does not show copied success until both key read and clipboard write resolve, and resets copied before each attempt.",
+      "Error logging records only exception name/type, avoiding raw error text that could contain sensitive material.",
+      "The connected tests exercise AdvancedAgentCapabilities mount and assert visible outcomes, including exactly one mocked rotation after details retry; they are stronger than a source-only assertion."
+    ],
+    "limits": [
+      "The referenced resource journals establish guarded command admission and exit codes, not native product behavior; I did not rerun tests or compile under the other lane's sole permit.",
+      "No independent run output was inspected beyond the committed journal entries; native exact-build identity and user-visible behavior remain unverified."
+    ]
+  },
+  "files_changed_by_reviewer": [".research/settings-audit-error-peer.json"],
+  "commit_scope": "Exact report path only"
+}
