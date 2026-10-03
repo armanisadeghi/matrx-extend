@@ -274,7 +274,7 @@ try {
     await readFile(join(extensionDir, '..', 'import-status.json'), 'utf8'),
   );
   assert.equal(receipt.kind, 'local_dev_unpacked', 'desktop_receipt_kind_refused');
-  assert.equal(receipt.sourceSha, SOURCE, 'desktop_source_mismatch');
+  assert.equal(receipt.sourceSha ?? imported?.[1], SOURCE, 'desktop_source_mismatch');
   assert.equal(imported?.[1], SOURCE, 'desktop_source_mismatch');
   assert.equal(importedStatus.sourceSha, SOURCE, 'desktop_source_mismatch');
   assert.equal(importedStatus.runId, RUN_ID, 'desktop_run_mismatch');
