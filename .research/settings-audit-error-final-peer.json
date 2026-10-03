@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "report_id": "settings-audit-error-final-peer-20261003",
+  "reviewed_head": "29435a28c70b6383b77a193afe1e8528cc89736",
+  "lane": "fresh independent source review; zero authorship; no native or heavy tests",
+  "verdict_a_runtime_outcome": {
+    "status": "PARTIAL — native Settings acceptance remains pending",
+    "evidence": [
+      "Source path through AdvancedAgentCapabilities shows initial detail-load errors and post-rotation refresh errors visibly, and retry calls refresh only; confirmed rotation is reported before refresh.",
+      "Unknown active-key write outcome clears displayed key details and disables Re-key until a successful detail refresh; a rejected write with confirmed unchanged active id remains a retryable failure.",
+      "Device-key tests described in the committed journal cover before/after active writes, unknown readback, rejected history writes, sequential rotations, and Ed25519 verification of retired keys. I did not rerun them or exercise the actual Settings surface."
+    ],
+    "native": "Exact-build native interaction and safe failure injection not verified in this lane."
+  },
+  "verdict_b_quality": {
+    "status": "FAIL — concurrent key writers can lose a receipt-verification link",
+    "prior_findings": [
+      {
+        "finding": "Late active-key write rejection could conceal a successful rotation and invite a second rotation.",
+        "status": "ADDRESSED in source: persisted writes are read back; unconfirmable outcomes raise DeviceKeyOutcomeUnknownError and the UI blocks Re-key until details refresh."
+      },
+      {
+        "finding": "Failure interactions lacked explicit stabilization inventory coverage.",
+        "status": "ADDRESSED in EXT-D-0093 / inventory updates; verify exact acceptance steps in native lane."
+      }
+    ],
+    "new_findings": [
+      {
+        "severity": "High",
+        "finding": "rotateDeviceKey and first-key creation are not serialized across extension contexts. Two callers can read K0, each prepare a pending candidate, then write KA and KB. If KA becomes active long enough to sign a receipt before KB overwrites it, the final history still marks KA pending; getPublicKeyById filters it because KB is active, so that receipt becomes unverifiable. The Settings button's local busy state does not serialize separate side-panel instances or other contexts.",
+        "evidence": "src/lib/audit/device-key.ts:168-177, 210-220, 223-253, 279-307; pending entries are only exposed while matching the current active key. No shared lock, compare-and-swap, or post-write lineage reconciliation is present.",
+        "required_resolution": "Make key creation/rotation a single-writer operation across extension contexts or reconcile every key that could have become active into durable history before hiding it. Add a forced interleaving test where two writers overlap and the first key signs before the second commit; verify both receipts after restart."
+      }
+    ],
+    "test_quality": "Focused tests assert real WebCrypto signatures against isolated storage and exercise the primitive boundary, but only sequential writer cases are covered; they do not establish cross-context serialization or concurrent lineage safety."
+  },
+  "files_changed_by_reviewer": [".research/settings-audit-error-final-peer.json"]
+}
