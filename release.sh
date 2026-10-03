@@ -404,6 +404,25 @@ run_checks() {
         rc=$?
         { echo "--- check $name (exit $rc) ---"; cat "$JOBS/check-$name.out"; } >> "$RELEASE_LOG_FILE"
         if [[ "$rc" != 0 ]]; then
+            if [[ "$name" == unit-tests && "${GITHUB_ACTIONS:-}" == true ]]; then
+                # Keep ordinary Vitest failure context in the hosted job log.
+                # Credentials are read from this process environment, never
+                # passed as arguments or copied into the uploaded artifact.
+                node - "$JOBS/check-$name.out" <<'NODE'
+const fs = require('node:fs');
+const output = fs.readFileSync(process.argv[2], 'utf8');
+const credentials = Object.entries(process.env)
+  .filter(([name, value]) => value && (/(?:TOKEN|KEY|SECRET|PASSWORD|CLIENT_ID|NATIVE_HOST)/.test(name) || /^(?:WXT_SUPABASE_URL|MATRX_SUPABASE_PROJECT_REF)$/.test(name)))
+  .flatMap(([, value]) => [value, JSON.stringify(value).slice(1, -1)])
+  .filter(Boolean)
+  .sort((a, b) => b.length - a.length);
+let redacted = output;
+for (const value of new Set(credentials)) redacted = redacted.split(value).join('[REDACTED]');
+console.log('--- unit test output (configured credential values redacted) ---');
+process.stdout.write(redacted);
+if (!redacted.endsWith('\n')) process.stdout.write('\n');
+NODE
+            fi
             {
                 printf 'gate=%s exit=%s candidate=%s\n' "$name" "$rc" "$NEW_TAG"
                 if [[ "$name" == matrx-packages ]]; then
