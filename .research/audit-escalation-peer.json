@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "status": "DONE_WITH_CONCERNS",
+  "reviewed_commits": [
+    "726c0cd7d27aaf5d67c20a22503c0c175d8a72be",
+    "6c98a2f3",
+    "66df64db",
+    "db2fd888"
+  ],
+  "scope": "Independent source review followed by one guarded native acceptance run against the exact imported artifact.",
+  "contract": [
+    "A: PARTIAL; final native acceptance remains pending.",
+    "B: PASS with one minor test-specificity concern.",
+    "Historical artifact version is bound to package.json at its recorded source SHA.",
+    "Imported receipt keeps run, attempt, artifact, digest, provenance, hashes and tree checks.",
+    "Frozen source-SHA oracle rejects an unavailable revision; prior dynamic stub gap is closed.",
+    "Page.enable precedes preload registration in the same CDP session.",
+    "Reload records boundaries and requires a new document, Settings readiness and install marker.",
+    "Cleanup runs after reload/probe/check failures and preserves the first failure.",
+    "beforeLoadRetry is scoped across the details retry and later export storage comparison.",
+    "Export diagnostics split success-count and JWK-comparison assertions without raw errors.",
+    "JWK equality now compares nested JSON values and arrays; private key fields remain refused.",
+    "A generated Ed25519 JWK exercises key_ops value equality; mutation and private-field refusals remain covered.",
+    "Recorded evidence: artifact strict guard 10/10; JWK guard RED 12/13 then GREEN 13/13, resource-valid.",
+    "Native receipts show Page marker/new-document/T86 success, then the pre-fix T60 JWK failure.",
+    "Concern: boundary tests accept any listed audit_reload code instead of the exact injected boundary code.",
+    "No finding indicates a false native pass or dropped artifact integrity/source check."
+  ],
+  "verdict_A": {
+    "status": "PARTIAL",
+    "evidence": [
+      "The final native run passed T86 details failure/read-only retry and T60 clipboard failure/retry, including structural comparison of the public JWK.",
+      "It passed the Page reload boundary: same-session Page.enable, distinct new document, Settings ready, preload marker true, and cleanup completed.",
+      "T88 passed. T87 and T89 remain partial because product-signed prior receipt verification is missing after rotation and after recovery.",
+      "The run stopped at failure_stage=lock_unavailable with failure_code=audit_native_unverified before T90 completion."
+    ],
+    "not_verified": [
+      "T87 and T89 product-signed prior receipt verification.",
+      "T90 and remaining downstream audit acceptance; the sole authorized native run stopped at lock_unavailable."
+    ]
+  },
+  "verdict_B": {
+    "status": "PASS_WITH_MINOR_CONCERN",
+    "evidence": [
+      "The immutable source lookup fails closed on unavailable git revisions; the regression oracle freezes the expected SHA and separately attempts a wrong SHA.",
+      "Inspection found no removed or weakened artifact identity, digest, provenance, receipt, manifest, or full-tree validation in the reviewed changes.",
+      "The JWK regression uses a real WebCrypto-generated Ed25519 public JWK with key_ops; its resource journal records RED 12/13 and GREEN 13/13."
+    ],
+    "concern": "The four injected reload-boundary tests assert that the failure code belongs to an allowed set rather than matching the expected code for each injected method; bounded failure remains tested, but wrong boundary attribution could pass."
+  },
+  "native_claim": "Partial native acceptance only; T86/T60/T88 passed, T87/T89 are partial, and T90 is incomplete.",
+  "artifact_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+  "run_id": 37129518563,
+  "artifact_id": 11275878549,
+  "native_run": {
+    "source_sha": "991385d9816b31a568619522e4795c001b4d3a06",
+    "version": "0.2.176",
+    "run_id": 37129518563,
+    "artifact_id": 11275878549,
+    "result": "fail",
+    "failure_stage": "lock_unavailable",
+    "failure_code": "audit_native_unverified",
+    "cases": {
+      "T86": "pass",
+      "T60": "pass",
+      "T87": "partial: missing product-signed prior receipt verification after rotation",
+      "T88": "pass",
+      "T89": "partial: missing product-signed prior receipt verification after recovery",
+      "T90": "incomplete: stopped at lock_unavailable"
+    },
+    "reload_boundaries": "Page.enable, previous-document read, preload installation, reload, new-document and Settings-ready probes, marker check, and script cleanup all completed; marker and readiness were true on the accepted new document.",
+    "receipt_path": "test-results/audit-key-native-73b7b2ba-4c6f-402f-b1df-72a5d53f174f.json",
+    "receipt_sha256": "f0e24b3613981c0839bc2041573a0a0f397f58a31e42968d00de2bb7d42270e2",
+    "resource_journal_path": "docs/stabilization/resource-journals/audit-escalation-peer-native-20261003.jsonl",
+    "resource_journal_sha256": "08c6c3314a5fc9729c8ea465f0c61f8ec379d87ff4c7195ed23a6c1d5828d494",
+    "resource_decision": "valid, admitted, child exit 1, resourceInvalid false",
+    "cleanup": "No hosted acceptance process remained; private admin credential file absent."
+  }
+}
