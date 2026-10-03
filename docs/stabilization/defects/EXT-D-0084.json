@@ -22,8 +22,8 @@
     "Repeat rejected storage boundaries for pair-code save/clear and confirmed local reset; check visible error and successful retry without credential reflection."
   ],
   "expected": "Failed persistence leaves the prior saved value intact, displays a recoverable error, and allows a later successful save and rediscovery.",
-  "actual": "Pre-fix handler awaited port persistence without a rejection handler, so failure escaped without recoverable feedback. Equivalent skipped-persistence mutation now fails its guard; native controlled rejection and successful retry passed in guest/member/admin. HTTP-only pair removal remains unverified.",
-  "reproduction_status": "Controlled unit gut/mutation RED and restored21GREEN; independent native guest/member/admin persistence and reset failure/retry pass on exact991 artifact. HTTP-only pair removal still pending.",
+  "actual": "Persistence failures now show recoverable errors, preserve prior values, and allow successful retry. Independent exact-build native guest/member/admin checks include port, pair-code save/remove, and local reset. Real desktop connectivity is not certified.",
+  "reproduction_status": "Causal failing mutation and restored21GREEN plus independent native failure/retry acceptance across guest/member/admin; HTTP Forget gap resolved by8a817f72.",
   "evidence": [
     "src/features/settings/SettingsView.tsx",
     ".research/settings-failure-repair.json",
@@ -34,11 +34,12 @@
     ".research/desktop-settings-repair-peer.json",
     ".research/desktop-settings-independent-native.json",
     ".research/desktop-settings-admin-final.json",
-    ".research/desktop-settings-guard-proof.json"
+    ".research/desktop-settings-guard-proof.json",
+    ".research/settings-forget-reset-final.json"
   ],
   "severity": "S2: connection setting silently fails to save",
   "priority": "P1: contained Settings persistence repair",
-  "state": "fixed",
+  "state": "closed",
   "transition_history": [
     {
       "at": "2026-10-03T03:10:33.412336+00:00",
@@ -63,13 +64,24 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "39ee192b + 8a6d61aa accepted by fresh c89f7ac3 source peer. HostedCI37092730162 passes16 Settings tests, full1912passed/6skipped, typecheck/lint/build. Nativeexactbuild and pre-fixruntimeRED remain unverified; no closure."
+    },
+    {
+      "at": "2026-10-03T18:09:59.735791+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent8a817f72 fills HTTP Forget cancellation/refusal/retry and Reset Cancel gap in all three roles on exact991385d9. Root matched all twelve raw hashes and checked original failure/retry, prior causal guard and peer evidence. Closure is persistence-error recovery only; actual engine connectivity and release remain separate."
+    },
+    {
+      "at": "2026-10-03T18:09:59.735791+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Independent8a817f72 fills HTTP Forget cancellation/refusal/retry and Reset Cancel gap in all three roles on exact991385d9. Root matched all twelve raw hashes and checked original failure/retry, prior causal guard and peer evidence. Closure is persistence-error recovery only; actual engine connectivity and release remain separate."
     }
   ],
   "closure_requirement": "Controlled failing-then-passing caller regression plus successful retry, independent review, and native exact-build persistence/error acceptance; no closure from source alone.",
-  "current_work": "Independent native storage failure/retry and local reset passed in all three roles; admin default-transition oracle repaired and independently rerun. Remains fixed because HTTP-only pair removal rejection/retry has not been exercised. Full mapped control criteria and actual desktop connection/rediscovery remain separate open coverage.",
+  "current_work": "Closed for Settings persistence-error recovery after independent guest/member/admin native acceptance. No full desktop-connection or Store health claim.",
   "remaining_work": [
-    "Exercise actual HTTP-transport Forget control in an owned profile: cancel, failed persistence/removal, visible error, retry and cleared pairing. Do not alter a real user pairing.",
-    "Complete remaining mapped control criteria and report actual desktop connection/rediscovery separately.",
+    "Actual desktop pairing/connection and rediscovery remain tracked coverage, separate from repaired storage error handling.",
     "Release integration and exact Store guest/non-admin acceptance remain separate."
   ]
 }
