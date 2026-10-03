@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "result": "PASS",
+  "case": "settings-persistence-admin",
+  "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+  "run_id": 37107627454,
+  "artifact_id": 11268886169,
+  "tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+  "version": "0.2.176",
+  "receipt": "docs/stabilization/reports/settings-mounted-native-20261003/admin-full6-01/admin-full6.receipt.json",
+  "raw_receipt_sha256": "db1261b3a963b3a609f50556b628b3645a878297d06c5ec27dbb96fb1f24d558",
+  "formatted_receipt_sha256": "db1261b3a963b3a609f50556b628b3645a878297d06c5ec27dbb96fb1f24d558",
+  "raw_formatted_parsed_equal": true,
+  "cases": [
+    "first changed choice saved through UI",
+    "system choice saved through UI",
+    "rejected write visible with retry",
+    "retry persisted after reload",
+    "latest rapid choice persisted",
+    "latest rapid choice survives reload"
+  ],
+  "authentication": {
+    "admin_role": true,
+    "web_and_extension_signed_in": true,
+    "rendered_email_role_profile_match_first_party": true,
+    "selected_organization_matches_stored_uuid_and_name": true,
+    "both_reload_identity_checks_passed": true
+  },
+  "guard": {
+    "run_id": "settings-mounted-admin-full6-20261003-01",
+    "exit_code": 0,
+    "resource_invalid": false,
+    "journal": "docs/stabilization/resource-journals/settings-mounted-admin-full6-20261003-01.jsonl",
+    "journal_sha256": "1902991de1945d46a07abd40ffa7ffeb77e1b681c6caf8fc04a791cc1873c0bc",
+    "admin_credential_file_removed": true,
+    "owned_browser_and_runner_processes_remaining": 0
+  },
+  "runtime": {
+    "node": "v25.6.0 darwin arm64",
+    "playwright_core": "1.56.1",
+    "chromium_revision": "1194",
+    "headed": true
+  },
+  "verification": {
+    "launcher_syntax": "pass",
+    "artifact_receipt_and_tree": "pass",
+    "headed_native_acceptance": "pass, six of six",
+    "biome_final_json": "pass"
+  }
+}
