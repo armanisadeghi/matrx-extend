@@ -66,7 +66,11 @@
       "--",
       "node",
       "tests/browser/snapshot-document-native-acceptance.mjs"
-    ]
+    ],
+    "guard_profile_dir_role": "Historical --profile-dir is only the resource guard disk-measurement path. It named the user Chrome directory; the native harness did not launch or attach to that personal profile.",
+    "actual_browser_profile": "runNativeSidepanelQa creates mkdtemp(join(tmpdir(), \"matrx-native-sidepanel-qa-\")) then uses its profile child as Chrome --user-data-dir, checks DevToolsActivePort, Browser.getBrowserCommandLine, and SingletonLock against its spawned child, and cleans it on exit. The disposable path was not recorded in this receipt.",
+    "future_guard_measurement": "For a future run, use an existing owned directory on the same volume as the disposable native profile for --profile-dir; keep the historical command above unchanged as run evidence.",
+    "inherited_process_environment": "Exact PATH and TMPDIR values from run02 were not retained. The launcher inherited process.env, overriding only the listed MATRX_* variables and the private credential-file path. Do not infer a specific historical PATH/TMPDIR."
   },
   "evidence": {
     "attempt-01-receipt.json": {
@@ -95,5 +99,11 @@
     "Snapshot only on one public demo page in exact CI development artifact; Store/public release unverified.",
     "Inventory T09 auth-transition, service-error, and broader D59 shared document-identity consumers remain open.",
     "The first peer attempt is a pre-browser environment failure, not a product defect."
-  ]
+  ],
+  "post_run_runtime_metadata": {
+    "source": "Read-only filesystem metadata checked after the run; these versions were not queried from the live browser session.",
+    "chrome_for_testing_bundle_version": "149.0.7827.55",
+    "playwright_package_version": "1.62.1"
+  },
+  "receipt_identity_note": "The builder pass receipt and independent peer pass receipt have identical bytes and SHA-256 because the runner receipt is deterministic and omits run ID/timestamps. The peer run is independently bound by its distinct resource journal, invocation, and run ID; receipt bytes alone do not distinguish the two executions."
 }
