@@ -130,14 +130,26 @@ async function preparePublishedStoreCrx(outputDir) {
   const listing = await new Promise((resolveList, reject) => {
     const child = spawn('unzip', ['-Z1', zipPath]);
     let data = '';
-    child.stdout.on('data', (chunk) => { data += chunk; });
+    child.stdout.on('data', (chunk) => {
+      data += chunk;
+    });
     child.once('error', reject);
-    child.once('exit', (code) => code === 0 ? resolveList(data) : reject(new Error('CRX ZIP listing failed')));
+    child.once('exit', (code) =>
+      code === 0 ? resolveList(data) : reject(new Error('CRX ZIP listing failed')),
+    );
   });
   const entries = listing.trimEnd().split('\n');
   assert.ok(entries.includes('manifest.json'), 'published CRX manifest missing');
-  assert.ok(entries.every((entry) => entry && !entry.startsWith('/') &&
-    !entry.split('/').includes('..') && !entry.includes('\\')), 'unsafe CRX ZIP entry');
+  assert.ok(
+    entries.every(
+      (entry) =>
+        entry &&
+        !entry.startsWith('/') &&
+        !entry.split('/').includes('..') &&
+        !entry.includes('\\'),
+    ),
+    'unsafe CRX ZIP entry',
+  );
   const extensionDir = join(outputDir, 'published-store-crx-unpacked');
   await mkdir(extensionDir, { recursive: true });
   const extracted = await ownedProcess('unzip', ['-q', zipPath, '-d', extensionDir]);
@@ -146,7 +158,8 @@ async function preparePublishedStoreCrx(outputDir) {
   assert.equal(manifest.version, STORE_130.version, 'published CRX version');
   const key = Buffer.from(manifest.key ?? '', 'base64');
   const actualId = [...sha256(key).slice(0, 32)]
-    .map((digit) => String.fromCharCode(97 + Number.parseInt(digit, 16))).join('');
+    .map((digit) => String.fromCharCode(97 + Number.parseInt(digit, 16)))
+    .join('');
   assert.equal(actualId, STORE_130.id, 'published CRX extension identity');
   const treeSha256 = hashReleaseTree(extensionDir);
   const receipt = {
@@ -156,11 +169,14 @@ async function preparePublishedStoreCrx(outputDir) {
     crxPath,
     crxSha256: STORE_130.crxSha256,
     treeSha256,
-    downloadSource: 'Google Chrome public update service; byte-identical to authenticated primary publisher Published main.crx',
+    downloadSource:
+      'Google Chrome public update service; byte-identical to authenticated primary publisher Published main.crx',
   };
   const relocatedReceipt = join(outputDir, 'published-store-crx-receipt.json');
   await writeFile(relocatedReceipt, `${JSON.stringify(receipt, null, 2)}\n`, { mode: 0o600 });
-  process.stdout.write(`PREPARED_PUBLISHED_STORE_CRX ${STORE_130.version} ${STORE_130.id} ${treeSha256}\n`);
+  process.stdout.write(
+    `PREPARED_PUBLISHED_STORE_CRX ${STORE_130.version} ${STORE_130.id} ${treeSha256}\n`,
+  );
   return { extensionDir, relocatedReceipt, kind: receipt.kind };
 }
 
@@ -216,7 +232,10 @@ const devArtifactId = process.env.MATRX_HOSTED_DEV_ARTIFACT_ID;
 const publishedStoreCrx = process.env.MATRX_HOSTED_PUBLISHED_STORE_CRX === '0.2.130';
 const releaseMode = Boolean(artifactDirArg && expectedSha && !devRunId && !devArtifactId);
 const developmentMode = Boolean(!artifactDirArg && !expectedSha && devRunId && devArtifactId);
-if (!outputDirArg || [releaseMode, developmentMode, publishedStoreCrx].filter(Boolean).length !== 1) {
+if (
+  !outputDirArg ||
+  [releaseMode, developmentMode, publishedStoreCrx].filter(Boolean).length !== 1
+) {
   throw new Error('hosted_guest_configuration_missing');
 }
 const outputDir = resolve(outputDirArg);

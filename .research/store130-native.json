@@ -1,0 +1,20 @@
+{
+  "status": "source_ready_peer_pending; native_outcome_unverified",
+  "evidence": [
+    "Primary Matrx publisher dashboard Published main.crx downloaded to /Users/armanisadeghi/Downloads/hnfolienncfklkgmdjjmhhegglimlamg.crx; SHA-256 9964183901e06c92c1a41e68294332bf27e3564ef0df1d860297d533829885b1.",
+    "Public Google update-service CRX stream has identical SHA-256; CRX v3; existing Chrome Profile 8 Secure Preferences marks primary ID version 0.2.130 from_webstore=true.",
+    "Hosted workflow source 426cb64a pinned exact CRX hash, version and key-derived ID; loads extracted published payload in fresh owned native browser, targets public demo URL, checks first answer and post-panel-reload follow-up.",
+    "node --check for three JS files and git diff --check passed; no Store 130 native run dispatched."
+  ],
+  "files": [
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "scripts/hosted-guest-acceptance.mjs",
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs"
+  ],
+  "unknowns": [
+    "Independent source peer verdict",
+    "Guarded hosted Store 130 actual first-answer and reload outcome",
+    "Actual Google-installed CRX UI outcome remains distinct from loading byte-identical CRX payload unpacked"
+  ]
+}
