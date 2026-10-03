@@ -1,0 +1,19 @@
+{
+  "status": "records published; records-ui registry verification pending",
+  "source_fix": "aidream 3edb09961c is an ancestor of npm/records/v0.63.1",
+  "nomination": "37103425601 succeeded; tagged records 0.63.1 and records-ui 0.93.153",
+  "records": "37103933538 succeeded; public metadata and SHA-1-matching tarball verified",
+  "records_ui": "37103938479 passed source and packed-consumer gates; registry verification still running",
+  "npm_latest": {
+    "records": "0.63.1",
+    "agents": "0.43.6",
+    "records_ui": "0.93.146"
+  },
+  "extension_lock_before_adoption": {
+    "records": "0.61.1",
+    "agents": "0.43.4",
+    "records_ui": null
+  },
+  "consumer_actions": "Extension has no listAppRows/useAppTable call site for records 0.63.0 return-shape change; agents 0.43.5-0.43.6 require none; records-ui is not a dependency",
+  "limits": "No local heavy tests run; records-ui publication remains independent and pending"
+}
