@@ -1,20 +1,12 @@
 {
-  "status": "source_ready_peer_pending; native_outcome_unverified",
+  "status": "harness_identity_fix_source_verified; native_outcome_unverified; fresh_peer_required_before_another_guarded_run",
   "evidence": [
-    "Primary Matrx publisher dashboard Published main.crx downloaded to /Users/armanisadeghi/Downloads/hnfolienncfklkgmdjjmhhegglimlamg.crx; SHA-256 9964183901e06c92c1a41e68294332bf27e3564ef0df1d860297d533829885b1.",
-    "Public Google update-service CRX stream has identical SHA-256; CRX v3; existing Chrome Profile 8 Secure Preferences marks primary ID version 0.2.130 from_webstore=true.",
-    "Hosted workflow source 426cb64a pinned exact CRX hash, version and key-derived ID; loads extracted published payload in fresh owned native browser, targets public demo URL, checks first answer and post-panel-reload follow-up.",
-    "node --check for three JS files and git diff --check passed; no Store 130 native run dispatched."
+    "Published primary-item CRX and public Google update CRX SHA-256 match: 9964183901e06c92c1a41e68294332bf27e3564ef0df1d860297d533829885b1; original CRX preserved.",
+    "37100737176 refused before launch: RESOURCE_PREFLIGHT_REFUSED RESOURCE_CPU_HIGH_LOAD_BUSY; admitted=false.",
+    "37100837412 admitted, then failed before browser: published CRX manifest is unkeyed; prior harness hashed empty key and got odlameecjipmbmbejkplpemijjgpljce.",
+    "Fixed helper selects the matching primary-ID RSA public key from CRX3 proofs and adds it only to temporary unpacked manifest; local exact CRX key matched Chrome Profile 8 installed 294-byte key; node --check, Biome, git diff --check passed.",
+    "Production /health/version sampled before dispatch and after both jobs: d74d7e58a6356525a2ea7bf11ce50af6f94471d7 both times; no continuous interval proof; no native first answer or panel reload observed."
   ],
-  "files": [
-    ".github/workflows/hosted-guest-acceptance.yml",
-    "scripts/hosted-guest-acceptance.mjs",
-    "tests/browser/guest-chat-store-acceptance.mjs",
-    "tests/browser/native-sidepanel-qa-harness.mjs"
-  ],
-  "unknowns": [
-    "Independent source peer verdict",
-    "Guarded hosted Store 130 actual first-answer and reload outcome",
-    "Actual Google-installed CRX UI outcome remains distinct from loading byte-identical CRX payload unpacked"
-  ]
+  "files": ["scripts/crx3-identity.mjs", "scripts/hosted-guest-acceptance.mjs", "tests/browser/guest-chat-store-acceptance.mjs", "tests/browser/native-sidepanel-qa-harness.mjs", ".github/workflows/hosted-guest-acceptance.yml"],
+  "unknowns": ["Fresh peer verdict on CRX3 identity fix", "Actual guarded published payload first answer and post-reload follow-up", "Google-installed lifecycle remains untested"]
 }

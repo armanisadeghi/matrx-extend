@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { matchingCrx3RsaKey } from './crx3-identity.mjs';
 import { verifyImportedNativeEvidence } from './current-test-artifact.mjs';
 import { hashReleaseTree } from './sync-unpacked-release.mjs';
 
@@ -156,11 +157,12 @@ async function preparePublishedStoreCrx(outputDir) {
   assert.equal(extracted.code, 0, 'published CRX extraction failed');
   const manifest = JSON.parse(await readFile(join(extensionDir, 'manifest.json'), 'utf8'));
   assert.equal(manifest.version, STORE_130.version, 'published CRX version');
-  const key = Buffer.from(manifest.key ?? '', 'base64');
-  const actualId = [...sha256(key).slice(0, 32)]
-    .map((digit) => String.fromCharCode(97 + Number.parseInt(digit, 16)))
-    .join('');
-  assert.equal(actualId, STORE_130.id, 'published CRX extension identity');
+  assert.equal(manifest.key, undefined, 'published CRX payload manifest must be unkeyed');
+  const signingKey = matchingCrx3RsaKey(crx, STORE_130.id);
+  // Chrome adds this same Store signing key during installation. The temporary
+  // unpacked copy needs it to keep the primary item ID under --load-extension.
+  manifest.key = signingKey.toString('base64');
+  await writeFile(join(extensionDir, 'manifest.json'), `${JSON.stringify(manifest)}\n`);
   const treeSha256 = hashReleaseTree(extensionDir);
   const receipt = {
     kind: 'published_store_crx_unpacked',
@@ -171,6 +173,8 @@ async function preparePublishedStoreCrx(outputDir) {
     treeSha256,
     downloadSource:
       'Google Chrome public update service; byte-identical to authenticated primary publisher Published main.crx',
+    unpackedAdaptation:
+      'Temporary manifest.key copied from CRX3 RSA signing proof for unpacked Chromium loading; original CRX unchanged',
   };
   const relocatedReceipt = join(outputDir, 'published-store-crx-receipt.json');
   await writeFile(relocatedReceipt, `${JSON.stringify(receipt, null, 2)}\n`, { mode: 0o600 });
