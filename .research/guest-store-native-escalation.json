@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "PASS_GUEST_AND_EXISTING_NONADMIN_STORE_CANDIDATE",
+  "status": "PASS_ALL_NATIVE_STORE_CANDIDATE_CHECKS",
   "test_source_commit": "099f5c37",
   "product_code_changed": false,
   "artifact": {
@@ -191,8 +191,8 @@
     }
   },
   "validation": {
-    "node_check": "pass both edited scripts",
-    "biome_check": "pass both edited scripts"
+    "node_check": "pass three edited scripts",
+    "biome_check": "pass three edited scripts and report"
   },
   "resource_journals": [
     {
@@ -214,6 +214,14 @@
     {
       "path": "docs/stabilization/resource-journals/member-store181-escalation-01.jsonl",
       "sha256": "9b3c51d714c4d108738818bbf2e21716d995571d08d3a5a76005fec2de8d4d12"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/guest-grounding-store181-escalation-01.jsonl",
+      "sha256": "a3abd3d3077ac53ff3ec50a42b89cde8d358414094ef28b85882918fea3888f0"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/guest-demo-store181-escalation-01.jsonl",
+      "sha256": "963c2d6084e46d706f4db542eb181609efa005b9fba509d8a573948ad88af1c1"
     }
   ],
   "runtime_paths": {
@@ -520,5 +528,345 @@
     "failure_code": null
   },
   "member_acceptance_path": "test-results/reviewer-chat-store-f617c86a-61d7-4fe9-bff0-470386d9982b.json",
-  "private_link_removed": true
+  "private_link_removed": true,
+  "guest_grounding_reload_acceptance": {
+    "schema_version": 1,
+    "scope": "fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat answer and post-reload guest follow-up",
+    "context_rule_read_observation_scope": "CDP observer attaches after panel load and runs through Values chip open, both guest sends, and panel reload; it cannot establish requests before attachment",
+    "status": "pass",
+    "build": {
+      "version": "0.2.181",
+      "tree_sha256": "c4326432d01842271b6722d35b61e6d456ee95dee7f9e8afed7a7e110f489e8b",
+      "receipt_kind": "native_store_zip_candidate_key_adapted",
+      "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "artifact_unchanged": true
+    },
+    "guest": {
+      "fresh": true,
+      "chat_visible": true,
+      "after_reload": true,
+      "fixture_reinstalled_before_first_send": false,
+      "session_absent_after_reload": true,
+      "fixture_reinstalled_after_reload": false
+    },
+    "chat": {
+      "opening_question_fingerprint": "8b0041e45eb47431",
+      "fixture_fragment_fingerprint": "4040e10af7be0828",
+      "opening_code_fingerprint": "dbaeba68e3bf01d6",
+      "completed_reply_count": 1,
+      "answer_contains_unpredictable_page_code": true,
+      "answer_names_page_stages": true,
+      "answer_stages_in_order": true,
+      "no_login_paywall_or_error": true,
+      "followup_completed_after_reload": true,
+      "followup_question_fingerprint": "be2d5336e111bd21",
+      "followup_code_fingerprint": "9cd5ea30a537b0f8",
+      "followup_reply_count": 1,
+      "followup_contains_unpredictable_page_code": true,
+      "followup_names_fixture_heading": true
+    },
+    "screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-KElYmZ/guest-chat-real-answer.png",
+    "followup_screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-KElYmZ/guest-chat-real-followup-answer.png",
+    "failure_stage": null,
+    "failure_code": null,
+    "failure_reason": null,
+    "stage_progress": [
+      "owned_profile",
+      "fresh_guest",
+      "owned_article_page",
+      "page_specific_fixture",
+      "guest_chat_open",
+      "guest_values_chip_open",
+      "guest_question",
+      "real_guest_answer",
+      "real_panel_reload",
+      "guest_followup_composer",
+      "guest_followup_question",
+      "real_guest_followup_answer",
+      "artifact_unchanged"
+    ],
+    "guest_ai_requests": [],
+    "context_rule_reads": [],
+    "grounding_diagnostics": {
+      "before_first_send": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": null
+      },
+      "opening": {
+        "toolEvents": [
+          {
+            "name": "context",
+            "phase": "tool_started",
+            "target": "server_event_target_unobserved",
+            "resultUrlMatchesFixture": null,
+            "resultContainsOpeningCode": null,
+            "resultContainsFollowupCode": null,
+            "resultContainsFixtureHeading": null
+          },
+          {
+            "name": "context",
+            "phase": "tool_completed",
+            "target": "server_event_target_unobserved",
+            "resultUrlMatchesFixture": null,
+            "resultContainsOpeningCode": true,
+            "resultContainsFollowupCode": true,
+            "resultContainsFixtureHeading": true
+          }
+        ],
+        "toolBoundaryChecks": [
+          {
+            "eventIndex": 1,
+            "toolName": "context",
+            "phase": "tool_started",
+            "readableMarkerPresent": true,
+            "pageUrlMatches": true,
+            "activeTabMatchesFixture": true,
+            "activeUrlMatchesFixture": true,
+            "assignedTabMatchesFixture": null
+          },
+          {
+            "eventIndex": 2,
+            "toolName": "context",
+            "phase": "tool_completed",
+            "readableMarkerPresent": true,
+            "pageUrlMatches": true,
+            "activeTabMatchesFixture": true,
+            "activeUrlMatchesFixture": true,
+            "assignedTabMatchesFixture": null
+          }
+        ],
+        "terminal": {
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": true
+        }
+      },
+      "before_followup_send": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": null
+      },
+      "followup": {
+        "toolEvents": [
+          {
+            "name": "context",
+            "phase": "tool_started",
+            "target": "server_event_target_unobserved",
+            "resultUrlMatchesFixture": null,
+            "resultContainsOpeningCode": null,
+            "resultContainsFollowupCode": null,
+            "resultContainsFixtureHeading": null
+          },
+          {
+            "name": "context",
+            "phase": "tool_completed",
+            "target": "server_event_target_unobserved",
+            "resultUrlMatchesFixture": null,
+            "resultContainsOpeningCode": true,
+            "resultContainsFollowupCode": true,
+            "resultContainsFixtureHeading": true
+          }
+        ],
+        "toolBoundaryChecks": [
+          {
+            "eventIndex": 1,
+            "toolName": "context",
+            "phase": "tool_started",
+            "readableMarkerPresent": true,
+            "pageUrlMatches": true,
+            "activeTabMatchesFixture": true,
+            "activeUrlMatchesFixture": true,
+            "assignedTabMatchesFixture": null
+          },
+          {
+            "eventIndex": 2,
+            "toolName": "context",
+            "phase": "tool_completed",
+            "readableMarkerPresent": true,
+            "pageUrlMatches": true,
+            "activeTabMatchesFixture": true,
+            "activeUrlMatchesFixture": true,
+            "assignedTabMatchesFixture": null
+          }
+        ],
+        "terminal": {
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": true
+        }
+      }
+    },
+    "opening_turn_verdict": "terminal_answer",
+    "opening_turn_timeline": [
+      {
+        "verdict": "in_progress",
+        "runCount": 0,
+        "replyCount": 0,
+        "streaming": true
+      },
+      {
+        "verdict": "in_progress",
+        "runCount": 1,
+        "replyCount": 0,
+        "streaming": true
+      },
+      {
+        "verdict": "terminal_answer",
+        "runCount": 1,
+        "replyCount": 1,
+        "streaming": false
+      }
+    ],
+    "failure_observation": {
+      "guestAccount": true,
+      "accessTokenAbsent": true,
+      "profileAbsent": true,
+      "organizationAbsent": true,
+      "chatVisible": true,
+      "chatSelected": true,
+      "paneVisible": true,
+      "composerVisible": true,
+      "composerLength": 0,
+      "sendEnabled": false,
+      "streaming": false,
+      "replyCount": 1,
+      "answerContainsNonce": true,
+      "answerContainsFixtureHeading": true,
+      "answerMatchesPublicStages": false,
+      "answerStagesInOrder": false,
+      "answerIsRefusal": false,
+      "terminalAnswerError": false,
+      "interruptionNotice": false,
+      "errorNotice": false,
+      "latestAssistantReply": "Reasoning\nThe follow-up check code is:\n\n[follow-up-code]\n\nThe heading directly above the check codes is:\n\n\"[fixture-heading]\"",
+      "visibleAlerts": [],
+      "streamTrace": {
+        "runs": [
+          {
+            "ordinal": 1,
+            "done": true,
+            "delegated": false,
+            "error": false,
+            "errorCode": null,
+            "errorStatus": null,
+            "endReason": "complete",
+            "userRequestOutcome": "success",
+            "textChunks": 15,
+            "startReplyCount": 0,
+            "doneAt": 1791065938810
+          }
+        ],
+        "continuations": 0,
+        "events": [
+          {
+            "kind": "opened",
+            "run": 1
+          },
+          {
+            "kind": "tool_started",
+            "run": 1
+          },
+          {
+            "kind": "tool_completed",
+            "run": 1
+          },
+          {
+            "kind": "user_request_success",
+            "run": 1
+          },
+          {
+            "kind": "user_request_success",
+            "run": 1
+          },
+          {
+            "kind": "end",
+            "run": 1,
+            "reason": "complete"
+          },
+          {
+            "kind": "done",
+            "run": 1
+          }
+        ],
+        "toolEvents": [
+          {
+            "name": "context",
+            "phase": "tool_started",
+            "target": "server_event_target_unobserved",
+            "resultUrlMatchesFixture": null,
+            "resultContainsOpeningCode": null,
+            "resultContainsFollowupCode": null,
+            "resultContainsFixtureHeading": null
+          },
+          {
+            "name": "context",
+            "phase": "tool_completed",
+            "target": "server_event_target_unobserved",
+            "resultUrlMatchesFixture": null,
+            "resultContainsOpeningCode": true,
+            "resultContainsFollowupCode": true,
+            "resultContainsFixtureHeading": true
+          }
+        ]
+      }
+    },
+    "followup_turn_verdict": "terminal_answer",
+    "followup_turn_timeline": [
+      {
+        "verdict": "in_progress",
+        "runCount": 0,
+        "replyCount": 0,
+        "streaming": true
+      },
+      {
+        "verdict": "in_progress",
+        "runCount": 1,
+        "replyCount": 0,
+        "streaming": true
+      },
+      {
+        "verdict": "terminal_answer",
+        "runCount": 1,
+        "replyCount": 1,
+        "streaming": false
+      }
+    ]
+  },
+  "guest_grounding_reload_acceptance_path": "test-results/guest-chat-store-e3031149-f499-4907-9e21-59ebf26ab676.json",
+  "guest_grounding_scope": "Owned localhost article with unpredictable codes and workflow fixture; not the unmodified public demo. Existing runner selects public demo only for published_store_crx_unpacked receipts.",
+  "guest_public_demo_acceptance": {
+    "schema_version": 1,
+    "scope": "normal public demo page; real signed-out Chat answer; panel-only Store candidate",
+    "status": "pass",
+    "build": {
+      "version": "0.2.181",
+      "tree_sha256": "c4326432d01842271b6722d35b61e6d456ee95dee7f9e8afed7a7e110f489e8b",
+      "receipt_kind": "native_store_zip_candidate_key_adapted",
+      "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+    },
+    "guest": {
+      "fresh": true,
+      "no_session": true
+    },
+    "chat": {
+      "completed_real_answer": true,
+      "answer_names_stages_in_order": true,
+      "no_account_or_payment_gate": true,
+      "demo_route": "https://www.aimatrx.com/matrx-extend-demo"
+    },
+    "screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-Hg8bgT/guest-chat-store-640x400.png",
+    "failure_stage": null
+  },
+  "guest_public_demo_acceptance_path": "test-results/guest-chat-store-screenshot-8456d694-d07c-443c-89f2-d150b1840c4a.json",
+  "test_source_commits": ["099f5c37", "091804ea"],
+  "native_permit": "released; all owned Chrome children cleaned by harness; no active guarded run"
 }
