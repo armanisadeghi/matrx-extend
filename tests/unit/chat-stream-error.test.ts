@@ -38,4 +38,17 @@ describe('presentChatStreamError', () => {
       }),
     );
   });
+
+  it('does not offer Retry after the guest allowance is exhausted', () => {
+    presentChatStreamError({
+      messageId: 'assistant-harbor-dental',
+      runId: 'run-harbor-dental',
+      message: "You've used your free AI tries. Sign up free to keep chatting.",
+      lastInput: 'What is two plus two?',
+      code: 'guest_ai_allowance_used',
+    });
+    const state = useChatStore.getState();
+    expect(state.messages[0]?.content).toContain('Sign up free to keep chatting.');
+    expect(state.streamInterruption).toBeNull();
+  });
 });

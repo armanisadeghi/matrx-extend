@@ -32,7 +32,11 @@ import { type MatrxStreamEnvelope, readMatrxNdjsonStream } from '@ai-matrx/agent
  * live run); `live_stream_unavailable` = a rejoin with no journal — the caller
  * follows the run to its end and reloads the saved turn.
  */
-export type StreamErrorCode = 'resume_conflict' | 'run_in_progress' | 'live_stream_unavailable';
+export type StreamErrorCode =
+  | 'resume_conflict'
+  | 'run_in_progress'
+  | 'live_stream_unavailable'
+  | 'guest_ai_allowance_used';
 
 /** A live run to rejoin, as read from the refusal body by `readLiveRunRejoin`. */
 export interface StreamRejoinTarget {
@@ -57,7 +61,7 @@ export type StreamEvent =
       /** Safe to show in a chat surface. Never contains the response body. */
       message: string;
       status?: number;
-      /** Protocol-only classification; never render this as user text. */
+      /** Known refusal classification; never render this as user text. */
       code?: StreamErrorCode;
       /** The live run to rejoin — only with `code: 'run_in_progress'`. */
       rejoin?: StreamRejoinTarget;
@@ -148,20 +152,23 @@ export async function streamFetch(opts: StreamFetchOptions): Promise<void> {
     const refusal = { status: res.status, serverDetail: parseJsonBody(errText) };
     const rejoin = readLiveRunRejoin(refusal);
     const unavailable = readLiveStreamUnavailable(refusal);
-    const code: StreamErrorCode | undefined = rejoin
-      ? 'run_in_progress'
-      : unavailable
-        ? 'live_stream_unavailable'
-        : isResumeConflict(refusal)
-          ? 'resume_conflict'
-          : undefined;
+    const guestAllowanceUsed = isGuestAllowanceUsed(res.status, refusal.serverDetail);
+    const code: StreamErrorCode | undefined = guestAllowanceUsed
+      ? 'guest_ai_allowance_used'
+      : rejoin
+        ? 'run_in_progress'
+        : unavailable
+          ? 'live_stream_unavailable'
+          : isResumeConflict(refusal)
+            ? 'resume_conflict'
+            : undefined;
     log.error('stream', `✗ ${diagnosticUrl} ${res.status}`, {
       code: code ?? 'http_error',
       status: res.status,
     });
     opts.onEvent({
       type: 'error',
-      message: streamErrorMessage(res.status),
+      message: guestAllowanceUsed ? GUEST_ALLOWANCE_MESSAGE : streamErrorMessage(res.status),
       status: res.status,
       ...(code !== undefined && { code }),
       ...(rejoin && {
@@ -248,13 +255,17 @@ function dispatch(event: MatrxStreamEnvelope, onEvent: (e: StreamEvent) => void)
   }
   if (event.event === 'error') {
     log.error('stream', 'server emitted an error event');
+    const guestAllowanceUsed = isGuestAllowanceUsedEvent(data);
     // A stream `error` event is the server's sentence FOR the person
     // (`user_message`, e.g. "OpenAI refused this request: the platform's
     // OpenAI account is out of credit."). Replacing it with generic copy hid
     // every actionable failure. HTTP error BODIES stay unshown (above).
     onEvent({
       type: 'error',
-      message: streamErrorText(event) ?? streamErrorMessage(),
+      message: guestAllowanceUsed
+        ? GUEST_ALLOWANCE_MESSAGE
+        : (streamErrorText(event) ?? streamErrorMessage()),
+      ...(guestAllowanceUsed && { code: 'guest_ai_allowance_used' }),
     });
     return;
   }
@@ -305,4 +316,21 @@ function parseJsonBody(text: string): unknown {
   } catch {
     return undefined;
   }
+}
+
+const GUEST_ALLOWANCE_MESSAGE = "You've used your free AI tries. Sign up free to keep chatting.";
+
+function isGuestAllowanceUsed(status: number, detail: unknown): boolean {
+  return (
+    status === 403 &&
+    detail !== null &&
+    typeof detail === 'object' &&
+    !Array.isArray(detail) &&
+    'error' in detail &&
+    detail.error === 'guest_ai_allowance_used'
+  );
+}
+
+function isGuestAllowanceUsedEvent(data: Record<string, unknown>): boolean {
+  return data.error_type === 'guest_ai_allowance_used' || data.code === 'guest_ai_allowance_used';
 }

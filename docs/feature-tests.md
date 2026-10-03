@@ -301,13 +301,16 @@ Every entry follows this shape:
   3. Send a follow-up in that conversation, then open Scrape, Data, SEO, and Settings.
   4. Reload the side panel while still signed out.
   5. Open the Values chip, turn a value off, send another turn, and confirm the choice stays local to this guest session.
-  6. Sign in, leave an account draft and selected Agent, sign out, then reopen Chat.
+  6. After using all guest AI actions allowed by the current platform setting, send one more message.
+  7. Sign in, leave an account draft and selected Agent, sign out, then reopen Chat.
 - **Expected:** The guest can send and receive both turns without signing in or
   choosing an organization. Chat remains in navigation after reload. Account-only
   agent selection and saved history stay behind sign-in; the old account draft,
   variables, attachments, and running turn disappear on sign-out. The next
   guest send uses the platform chat Mandate. Guest sends and Values opens do not
-  attempt to read the signed-in person's owner-only context settings table.
+  attempt to read the signed-in person's owner-only context settings table. Once
+  the guest allowance is used, Chat says to sign up free and offers no futile Retry;
+  the existing guest banner provides the sign-up action.
 - **Covered by:** `tests/unit/sidepanel-visibility.test.ts`,
   `tests/unit/chat-guest-boundary.test.ts`,
   `src/state/context-rules.guest.test.ts`; browser send and

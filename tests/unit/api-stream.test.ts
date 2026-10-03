@@ -107,6 +107,62 @@ describe('streamFetch public NDJSON kernel integration', () => {
     ]);
   });
 
+  it('shows an exhausted guest the known allowance remedy without exposing other response fields', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            error: 'guest_ai_allowance_used',
+            message: 'server text must not be trusted',
+            allowance: 3,
+            used: 3,
+            detail: 'private diagnostic must not reach chat',
+          }),
+          { status: 403 },
+        ),
+      ),
+    );
+    const events: StreamEvent[] = [];
+    await streamFetch({
+      url: 'https://example.test/stream',
+      headers: {},
+      onEvent: (event) => events.push(event),
+    });
+    expect(events).toEqual([
+      {
+        type: 'error',
+        message: "You've used your free AI tries. Sign up free to keep chatting.",
+        status: 403,
+        code: 'guest_ai_allowance_used',
+      },
+      { type: 'done' },
+    ]);
+    expect(JSON.stringify(events)).not.toContain('private diagnostic');
+    expect(JSON.stringify(events)).not.toContain('server text');
+  });
+
+  it('keeps unrelated HTTP 403 refusals generic', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(new Response('{"error":"guest_blocked"}', { status: 403 })),
+    );
+    const events: StreamEvent[] = [];
+    await streamFetch({
+      url: 'https://example.test/stream',
+      headers: {},
+      onEvent: (event) => events.push(event),
+    });
+    expect(events).toEqual([
+      {
+        type: 'error',
+        message: "You don't have access to this chat. Sign in and try again.",
+        status: 403,
+      },
+      { type: 'done' },
+    ]);
+  });
+
   it('classifies a resume conflict without forwarding its response body', async () => {
     vi.stubGlobal(
       'fetch',
@@ -189,6 +245,42 @@ describe('streamFetch public NDJSON kernel integration', () => {
 });
 
 describe('streamFetch server error events and live runs', () => {
+  it('keeps an exhausted guest refusal terminal even when it arrives inside an open stream', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        fragmentedResponse([
+          new TextEncoder().encode(
+            `${JSON.stringify({
+              event: 'error',
+              data: {
+                error_type: 'guest_ai_allowance_used',
+                code: 'guest_ai_allowance_used',
+                details: { allowance: 3, used: 3 },
+                user_message:
+                  "You've used your free AI tries. Create a free account to keep going.",
+              },
+            })}\n`,
+          ),
+        ]),
+      ),
+    );
+    const events: StreamEvent[] = [];
+    await streamFetch({
+      url: 'https://example.test/stream',
+      headers: {},
+      onEvent: (event) => events.push(event),
+    });
+    expect(events).toEqual([
+      {
+        type: 'error',
+        message: "You've used your free AI tries. Sign up free to keep chatting.",
+        code: 'guest_ai_allowance_used',
+      },
+      { type: 'done' },
+    ]);
+  });
+
   it("shows the server's user_message from a stream error event, not generic copy", async () => {
     const billing = "OpenAI refused this request: the platform's OpenAI account is out of credit.";
     vi.stubGlobal(

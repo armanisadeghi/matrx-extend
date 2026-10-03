@@ -816,6 +816,7 @@ function ensureStreamListeners(): void {
           messageId: target,
           runId: chunk.runId,
           message,
+          ...(chunk.payload.code !== undefined && { code: chunk.payload.code }),
           lastInput: lastSendRef.current?.input ?? '',
         });
       }
