@@ -374,6 +374,23 @@ function browserDiagnosticFlags(value) {
   };
 }
 
+const SAFE_STARTUP_FAILURES = new Set([
+  'owned_cdp_configuration_refused',
+  'owned_cdp_endpoint_refused',
+  'owned_cdp_endpoint_timeout',
+  'owned_cdp_owner_refused',
+  'owned_cdp_process_inspection_failed',
+  'owned_cdp_socket_construction_failed',
+  'owned_cdp_open_timeout',
+  'owned_cdp_open_failed',
+  'owned_cdp_transport_failed',
+]);
+
+function safeStartupFailureCode(error) {
+  const code = error instanceof Error ? error.message : '';
+  return SAFE_STARTUP_FAILURES.has(code) ? code : 'unclassified';
+}
+
 export async function runNativeSidepanelQa({
   headed = false,
   extensionDir,
@@ -419,7 +436,9 @@ export async function runNativeSidepanelQa({
   let serverPort;
   let verified = false;
   let launchError;
+  let startupStartedAt;
   try {
+    startupStartedAt = performance.now();
     child = spawn(
       chromeExecutable,
       [
@@ -448,6 +467,8 @@ export async function runNativeSidepanelQa({
       if (launchError) throw launchError;
     } catch (error) {
       const startupDiagnostic = {
+        failureCode: safeStartupFailureCode(error),
+        elapsedMs: Math.max(0, Math.round(performance.now() - startupStartedAt)),
         exitCode: child.exitCode,
         signalCode: child.signalCode,
         launchFailed: Boolean(launchError),
@@ -572,4 +593,5 @@ export {
   requireSpawnedProfileOwner,
   resolveExpectedRelease,
   verifyReleasedArtifact,
+  safeStartupFailureCode,
 };

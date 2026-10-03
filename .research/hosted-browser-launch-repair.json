@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "status": "CAUSE_UNCONFIRMED_SAFE_STAGE_DIAGNOSTICS_ADDED",
+  "scope": "Diagnose hosted native Chrome startup failure and improve its safe stage reporting; no Chrome launch or acceptance rerun.",
+  "failure": {
+    "workflow_run_id": 37112375038,
+    "workflow_head_sha": "b2047f0cdfd1d11f51e628cad7c366bc64be2f4f",
+    "development_artifact_id": 11268886169,
+    "development_artifact_source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+    "browser_prepared_at": "2026-10-03T09:20:38.8337200Z",
+    "startup_failure_at": "2026-10-03T09:20:44.7566120Z",
+    "observed": "BROWSER_STARTUP_FAILURE reported exitCode=null, signalCode=null, launchFailed=false, no stderr and no diagnostic signature flags; the result receipt has no acceptance cases.",
+    "subsequent_resource_event": "At 09:20:47.328Z the acceptance watcher recorded CPU busy=1.0 and load=0.78. The completed journal records resourceInvalid=false, child exit 1, decision child_failed. The watcher event follows the startup error and cannot establish its cause.",
+    "product_verdict": "NONE; the native Settings acceptance failed before recording cases."
+  },
+  "launcher_lifecycle": {
+    "shared_source_comparison": "The native harness and owned-CDP helper are identical between successful workflow head d62e634a10144c92d0b703e45f730735b1495f2f and failing head b2047f0cdfd1d11f51e628cad7c366bc64be2f4f.",
+    "successful_sibling": "Run 37106907229 passed guest Chat on the same reported macOS hosted image family and downloaded Playwright Chromium 141.0.7390.37 build 1194. The failed run also reported Chromium 141.0.7390.37 build 1194. Their extension artifact tree hashes differ, and no executable hash was retained, so this establishes that the launch path can succeed with that build number, not binary identity or a cause for this failure.",
+    "timeouts": "tests/browser/vault-owned-cdp.cjs defines DEADLINE_MS=5000. This is a hardcoded default for DevToolsActivePort polling, process-inspection subprocesses and CDP open/close waits. connectOwnedCdp accepts an internal timeoutMs override, but the native harness does not pass one; it is not a user/configuration knob. The stages have separate bounds, not one aggregate five-second startup deadline. No repository documentation describing a five-second launcher policy was found.",
+    "timing_interpretation": "The 5.92-second interval from PREPARED_DEVELOPMENT to BROWSER_STARTUP_FAILURE is consistent with endpoint polling timeout, but also permits later process-inspection or CDP-open stages plus cleanup. Since the prior log omitted the thrown stage, the run cannot distinguish them. No timeout increase or retry is justified by this evidence."
+  },
+  "hypotheses": [
+    {
+      "cause": "DevToolsActivePort did not appear before the existing endpoint deadline",
+      "prediction": "A future failure should report owned_cdp_endpoint_timeout",
+      "result": "Consistent with the observed interval, unconfirmed because the prior diagnostic omitted the error class."
+    },
+    {
+      "cause": "Owned process inspection failed or stalled after endpoint creation",
+      "prediction": "A future failure should report owned_cdp_process_inspection_failed or owned_cdp_owner_refused",
+      "result": "Not excluded by the prior timestamp; no endpoint or process-inspection result was retained."
+    },
+    {
+      "cause": "CDP WebSocket construction or open failed after ownership verification",
+      "prediction": "A future failure should report owned_cdp_socket_construction_failed, owned_cdp_open_timeout or owned_cdp_open_failed",
+      "result": "Not excluded by the prior timestamp; no CDP stage result was retained."
+    },
+    {
+      "cause": "The later unsafe CPU watcher caused startup failure",
+      "prediction": "The watcher event should precede the startup failure or invalidate the guarded child",
+      "result": "Not supported: its recorded timestamp is 2.57 seconds after BROWSER_STARTUP_FAILURE, and the journal says resourceInvalid=false. This chronology does not identify what caused CPU use."
+    }
+  ],
+  "source_change": {
+    "files": [
+      "tests/browser/native-sidepanel-qa-harness.mjs",
+      "tests/browser/vault-owned-cdp.cjs",
+      "tests/browser/native-sidepanel-qa-harness.test.mjs",
+      "tests/browser/vault-owned-cdp.test.cjs"
+    ],
+    "behavior": "Startup diagnostics now include monotonic elapsed milliseconds and a failureCode selected only from fixed owned-CDP codes. Process-inspection and WebSocket-construction exceptions are normalized without their arbitrary message text; CDP-open timeout remains distinguishable from open failure. Existing child status and stderr signature flags remain. Launcher deadlines, profile/CDP ownership, resource guards, receipt checks and readiness assertions are unchanged.",
+    "purpose": "Make one future authorized run distinguish endpoint wait, process inspection, owner validation, socket construction and CDP open outcomes without logging arbitrary Chromium or OS error strings."
+  },
+  "verification": {
+    "node_tests": "PASS: node tests/browser/vault-owned-cdp.test.cjs; node tests/browser/native-sidepanel-qa-harness.test.mjs.",
+    "syntax": "PASS: node --check on vault-owned-cdp.cjs and native-sidepanel-qa-harness.mjs.",
+    "biome": "PASS: formatter-enabled Biome check on all four touched source/test files.",
+    "mutation": "PASS: plant.py mutation of the process-inspection wrapper produced the expected RED; mutation of the safe classifier to return arbitrary error text produced the expected RED; both source files were restored byte-identically.",
+    "diff_check": "PASS: git diff --check on touched source/test files.",
+    "heavy_work": "No build, browser launch, or resource-guard bypass was run."
+  },
+  "limits": [
+    "The original failure's exact connectOwnedCdp stage is permanently unavailable from the retained receipt/log; new code only improves a future run.",
+    "The five-second timeout default has no documented launcher policy and remains hardcoded by instruction; its adequacy was not tested or changed.",
+    "A successful run with Chromium build 1194 is a sibling success, not proof the failed run used the exact same binary or runner state.",
+    "No Settings acceptance or product behavior verdict follows from this work."
+  ],
+  "next_action": "After fresh independent review, root may authorize one guarded acceptance run. Preserve the current resource thresholds and record its fixed failureCode/elapsedMs before interpreting any later resource-watch event."
+}
