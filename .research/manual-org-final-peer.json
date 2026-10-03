@@ -1,0 +1,24 @@
+{
+  "role": "fresh_zero_authorship_manual_records_final_peer",
+  "reviewed_commit": "3731a0d80bb2efa5493eb23cf5b80e97dc39a84d",
+  "verdict_A_behavior": "PARTIAL",
+  "verdict_B_source_quality": "PARTIAL",
+  "evidence": [
+    "When no active organization exists, runManualServerTool awaits requireRequestOrganizationId(), which delegates to requireActiveOrganizationId()/holdForActiveOrganizationId(); that opens the canonical picker and resolves with the person's selection. Execution does not begin while that promise is pending.",
+    "The submitted tool name and args are kept intact in the POST body. Missing bearer is refused before building headers, so this path does not intentionally downgrade to guest fingerprint authentication.",
+    "The code snapshots a real session bearer, binds it with the selected organization through buildHeaders, and retries once if the bearer or selected organization changes during preparation. The test asserts the held call resumes with the same submitted arguments and selected organization.",
+    "Blocking: buildHeaders catches an invalid organization id while applying the canonical organization header, logs, and returns the remaining authenticated headers. runManualServerTool does not verify the candidate contains X-Organization-Id before dispatch. Since requireActiveOrganizationId returns an already-stored id without validating it, a malformed selected id can still reach streamFetch as an authenticated request without its organization. This violates the required no-header/no-dispatch invariant. Relevant source: src/lib/tools/manual-server.ts:31-50 and src/lib/api/client.ts:221-284.",
+    "Quality gap: the new unit test mocks requireRequestOrganizationId and buildHeaders, so it proves orchestration and exact arguments but not that the real canonical picker is raised/resumed or that the real header builder refuses a malformed organization. A focused test should exercise the missing/malformed organization boundary and assert streamFetch is never called when the resulting header lacks the canonical org header."
+  ],
+  "remote_ci": {
+    "run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37101616207",
+    "head_sha": "3731a0d80bb2efa5493eb23cf5b80e97dc39a84d",
+    "status": "in_progress",
+    "conclusion": null
+  },
+  "limits": [
+    "Read-only source review; no product source edits.",
+    "No local tests, typecheck, browser, or installation run, per disk-floor constraint.",
+    "The strict local Records flat-schema drift remains open; this organization fix does not establish D91 closure."
+  ]
+}
