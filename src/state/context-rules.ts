@@ -80,9 +80,41 @@ export const useContextRulesStore = create<ContextRulesState>(() => ({
 // ── Load ────────────────────────────────────────────────────────────────────
 
 let loadInFlight: Promise<void> | null = null;
+let loadedForUserId: string | null = null;
+let identityGeneration = 0;
+
+/** A person's rules must never survive a switch to a different identity. */
+function syncRulesIdentity(): string | null {
+  const userId = useAuthStore.getState().user?.id ?? null;
+  if (loadedForUserId !== userId) {
+    identityGeneration += 1;
+    loadedForUserId = userId;
+    loadInFlight = null;
+    rowChains.clear();
+    useContextRulesStore.setState({
+      rows: {},
+      loaded: false,
+      loadFailed: false,
+      previewSourcesByComposer: {},
+      expectedByRun: {},
+      receiptByConversation: {},
+      lastSentRowsByComposer: {},
+    });
+  }
+  return userId;
+}
+
+export function contextRuleRowsForCurrentIdentity(): SavedContextRuleRows {
+  syncRulesIdentity();
+  return useContextRulesStore.getState().rows;
+}
 
 /** Read the person's rows (RLS is owner-only; no user filter needed). */
 export function loadContextRules(force = false): Promise<void> {
+  const userId = syncRulesIdentity();
+  const generation = identityGeneration;
+  // Fingerprint guests have no Supabase bearer for the owner-only table.
+  if (!userId) return Promise.resolve();
   if (!force && useContextRulesStore.getState().loaded) return Promise.resolve();
   if (loadInFlight) return loadInFlight;
   loadInFlight = (async () => {
@@ -110,12 +142,16 @@ export function loadContextRules(force = false): Promise<void> {
       for (const r of (data ?? []) as Array<{ surface_key: string; state: unknown }>) {
         rows[r.surface_key] = (r.state as Record<string, SavedContextRule>) ?? {};
       }
-      useContextRulesStore.setState({ rows, loaded: true, loadFailed: false });
+      if (identityGeneration === generation) {
+        useContextRulesStore.setState({ rows, loaded: true, loadFailed: false });
+      }
     } catch (err) {
-      log.error('supabase', 'context rules read failed', err);
-      useContextRulesStore.setState({ loadFailed: true });
+      if (identityGeneration === generation) {
+        log.error('supabase', 'context rules read failed', err);
+        useContextRulesStore.setState({ loadFailed: true });
+      }
     } finally {
-      loadInFlight = null;
+      if (identityGeneration === generation) loadInFlight = null;
     }
   })();
   return loadInFlight;
@@ -126,17 +162,19 @@ export function loadContextRules(force = false): Promise<void> {
 /** Per-row write chain: surfaceKey → the promise of its latest queued write. */
 const rowChains = new Map<string, Promise<void>>();
 
-function currentUserId(): string {
-  const id = useAuthStore.getState().user?.id;
-  if (!id) throw new Error('Not signed in');
-  return id;
-}
+useAuthStore.subscribe((state, previous) => {
+  if (state.user?.id !== previous.user?.id) syncRulesIdentity();
+});
 
 function queueRowWrite(surfaceKey: string): Promise<void> {
+  const ownerUserId = useAuthStore.getState().user?.id;
+  const generation = identityGeneration;
+  if (!ownerUserId) return Promise.resolve(); // guest rules are local to this session
   const previous = rowChains.get(surfaceKey) ?? Promise.resolve();
   const next = previous
     .catch(() => undefined)
     .then(async () => {
+      if (identityGeneration !== generation) return;
       // The row's state AT WRITE TIME — coalesces every change queued behind
       // an in-flight write, so the database always ends on the last change.
       const latest = useContextRulesStore.getState().rows[surfaceKey] ?? {};
@@ -150,9 +188,10 @@ function queueRowWrite(surfaceKey: string): Promise<void> {
           }
           throw err;
         }
+        if (identityGeneration !== generation) return;
         const { error } = await usersDb().from('user_surface_state').upsert(
           {
-            user_id: currentUserId(),
+            user_id: ownerUserId,
             organization_id: organizationId,
             feature: CONTEXT_RULES_FEATURE,
             surface_key: surfaceKey,
@@ -177,6 +216,7 @@ function queueRowWrite(surfaceKey: string): Promise<void> {
           throw new Error(error.message);
         }
       } catch (err) {
+        if (identityGeneration !== generation) return;
         log.error('supabase', 'context rule save failed — reloading the saved rules', err);
         pushNotice({
           tone: 'error',
@@ -196,6 +236,7 @@ function queueRowWrite(surfaceKey: string): Promise<void> {
 
 /** Every send awaits this: the rules are loaded and no write is on its way. */
 export async function ensureContextRulesReady(): Promise<void> {
+  if (!syncRulesIdentity()) return;
   await Promise.all([...rowChains.values()]);
   await loadContextRules();
 }
@@ -209,6 +250,7 @@ export function saveContextRule(
   key: string,
   rule: SavedContextRule | null,
 ): Promise<void> {
+  syncRulesIdentity();
   const rows = useContextRulesStore.getState().rows;
   const row: Record<string, SavedContextRule> = { ...(rows[surfaceKey] ?? {}) };
   if (rule === null || Object.keys(rule).length === 0) delete row[key];
@@ -219,6 +261,7 @@ export function saveContextRule(
 
 /** Reset every rule on one surface row (the chip's "reset all"). */
 export function resetContextRules(surfaceKey: string): Promise<void> {
+  syncRulesIdentity();
   const rows = useContextRulesStore.getState().rows;
   useContextRulesStore.setState({ rows: { ...rows, [surfaceKey]: {} } });
   return queueRowWrite(surfaceKey);

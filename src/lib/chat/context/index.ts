@@ -11,7 +11,11 @@
  */
 
 import { log } from '@/lib/debug/log';
-import { ensureContextRulesReady, useContextRulesStore } from '@/state/context-rules';
+import {
+  contextRuleRowsForCurrentIdentity,
+  ensureContextRulesReady,
+  useContextRulesStore,
+} from '@/state/context-rules';
 import { DEFAULT_INLINE_CAP, type ResolvedContextRow } from '@ai-matrx/agents/context';
 import {
   type RequestContext,
@@ -85,7 +89,7 @@ export async function buildChatContext(inputs: ContextBuildInputs): Promise<Chat
 export function requestContextFromValues(
   values: Readonly<Record<string, unknown>>,
 ): RequestContext {
-  return buildRequestContext(values, useContextRulesStore.getState().rows);
+  return buildRequestContext(values, contextRuleRowsForCurrentIdentity());
 }
 
 /** Spread helper: the `context` + `context_withheld` fields of one built context. */
