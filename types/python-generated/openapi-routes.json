@@ -1,0 +1,8704 @@
+{
+ "/123formbuilder/public/status": {
+  "get": []
+ },
+ "/360learning/public/status": {
+  "get": []
+ },
+ "/37signals/public/status": {
+  "get": []
+ },
+ "/_test/spawn-detached": {
+  "post": []
+ },
+ "/ably/public/status": {
+  "get": []
+ },
+ "/accelo/public/status": {
+  "get": []
+ },
+ "/acquia/public/status": {
+  "get": []
+ },
+ "/action-requests/complete": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/action-requests/open": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/action-requests/pending": {
+  "get": []
+ },
+ "/action-requests/remint": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/action-requests/{request_id}/complete": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/actions": {
+  "get": []
+ },
+ "/activecampaign/public/status": {
+  "get": []
+ },
+ "/acuity-scheduling/public/status": {
+  "get": []
+ },
+ "/admin/agent-context/organizations": {
+  "get": []
+ },
+ "/admin/agent-context/render": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/ai-catalog/provider-models/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/ai-catalog/reload": {
+  "post": []
+ },
+ "/admin/ai-catalog/settings-probe": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/app-logs/files": {
+  "get": []
+ },
+ "/admin/app-logs/files/{filename}": {
+  "get": []
+ },
+ "/admin/app-logs/norm-exceptions": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/app-logs/norm-exceptions/{exc_id}": {
+  "delete": []
+ },
+ "/admin/app-logs/query": {
+  "get": []
+ },
+ "/admin/app-logs/stats": {
+  "get": []
+ },
+ "/admin/app-logs/suppressions": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/app-logs/suppressions/{muted_id}": {
+  "delete": []
+ },
+ "/admin/app-logs/top-patterns": {
+  "get": []
+ },
+ "/admin/app-logs/unclassified": {
+  "get": []
+ },
+ "/admin/checks/accept": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/checks/accept-adapters": {
+  "get": []
+ },
+ "/admin/client-directives/refresh-required": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/cx-explorer/attribution-registry": {
+  "get": []
+ },
+ "/admin/cx-explorer/facets": {
+  "get": []
+ },
+ "/admin/debug-traces/by-call/{call_id}": {
+  "get": []
+ },
+ "/admin/debug-traces/by-conv/{conversation_id}": {
+  "get": []
+ },
+ "/admin/debug-traces/failures-since/{iso_ts}": {
+  "get": []
+ },
+ "/admin/debug-traces/files": {
+  "get": []
+ },
+ "/admin/debug-traces/files/{filename}": {
+  "get": []
+ },
+ "/admin/debug-traces/recent": {
+  "get": []
+ },
+ "/admin/hindsight/enrollments": {
+  "get": []
+ },
+ "/admin/hindsight/enrollments/{enrollment_id}": {
+  "get": []
+ },
+ "/admin/hindsight/reviews/{review_id}": {
+  "get": []
+ },
+ "/admin/judges/agreement": {
+  "get": []
+ },
+ "/admin/judges/mandate-outcome/calibration": {
+  "get": []
+ },
+ "/admin/judges/mandate-outcome/goal-clauses/{row_id}/ratify": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/judges/mandate-outcome/pending": {
+  "get": []
+ },
+ "/admin/judges/mandate-outcome/{verdict_id}/authority": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/judges/sweep-feedback": {
+  "post": []
+ },
+ "/admin/judges/{judge_key}/calibration": {
+  "get": []
+ },
+ "/admin/kind-incidents": {
+  "get": []
+ },
+ "/admin/kind-incidents/metrics": {
+  "get": []
+ },
+ "/admin/kind-incidents/resolve": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/kind-incidents/{incident_id}": {
+  "get": []
+ },
+ "/admin/ops/events/recent": {
+  "get": []
+ },
+ "/admin/ops/issue-classes": {
+  "get": []
+ },
+ "/admin/ops/issue-classes/batch": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/ops/issue-classes/{class_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/admin/ops/issue-classes/{class_id}/events": {
+  "get": []
+ },
+ "/admin/ops/issue-classes/{class_id}/stats": {
+  "get": []
+ },
+ "/admin/ops/providers": {
+  "get": []
+ },
+ "/admin/ops/summary": {
+  "get": []
+ },
+ "/admin/persistence/errors": {
+  "get": []
+ },
+ "/admin/persistence/errors/resolve-batch": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/persistence/errors/{error_id}": {
+  "get": []
+ },
+ "/admin/persistence/errors/{error_id}/resolve": {
+  "post": []
+ },
+ "/admin/persistence/failures": {
+  "get": []
+ },
+ "/admin/persistence/failures/dismiss-batch": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/persistence/failures/replay-batch": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/persistence/failures/{failure_id}": {
+  "get": []
+ },
+ "/admin/persistence/failures/{failure_id}/dismiss": {
+  "post": []
+ },
+ "/admin/persistence/failures/{failure_id}/replay": {
+  "post": []
+ },
+ "/admin/persistence/summary": {
+  "get": []
+ },
+ "/admin/persistence/watchdog": {
+  "get": []
+ },
+ "/admin/persistence/watchdog/sweep": {
+  "post": []
+ },
+ "/admin/persistence/watchdog/{table}": {
+  "get": []
+ },
+ "/admin/producer-yield": {
+  "get": []
+ },
+ "/admin/producer-yield/check": {
+  "post": []
+ },
+ "/admin/rag/search-lab/diagnose": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/rag/search-lab/diagnose/stream": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/rag/search-lab/inventory": {
+  "get": []
+ },
+ "/admin/review/descend": {
+  "get": []
+ },
+ "/admin/runs/{run_id}": {
+  "get": []
+ },
+ "/admin/runtime/conversations/{conversation_id}": {
+  "get": []
+ },
+ "/admin/runtime/executions/{execution_id}/cancel": {
+  "post": []
+ },
+ "/admin/runtime/executions/{execution_id}/events": {
+  "get": []
+ },
+ "/admin/runtime/executions/{execution_id}/mark-false-reap": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/admin/runtime/executions/{execution_id}/take-over": {
+  "post": []
+ },
+ "/admin/runtime/executions/{execution_id}/tree": {
+  "get": []
+ },
+ "/admin/runtime/false-reaps": {
+  "get": []
+ },
+ "/admin/runtime/lock-storm": {
+  "get": []
+ },
+ "/admin/runtime/overview": {
+  "get": []
+ },
+ "/admin/runtime/reap-expired": {
+  "post": []
+ },
+ "/admin/runtime/recent": {
+  "get": []
+ },
+ "/admin/runtime/signals": {
+  "get": []
+ },
+ "/admin/runtime/system-costs": {
+  "get": []
+ },
+ "/admin/runtime/worker-health": {
+  "get": []
+ },
+ "/admin/runtime/workflows/{run_id}": {
+  "get": []
+ },
+ "/admin/snapshot-retention/capture-health": {
+  "get": []
+ },
+ "/admin/snapshot-retention/prune": {
+  "post": []
+ },
+ "/admin/snapshot-retention/rollup": {
+  "get": []
+ },
+ "/admin/snapshot-retention/run": {
+  "post": []
+ },
+ "/admin/stats": {
+  "get": []
+ },
+ "/admin/system-errors/open-outages": {
+  "get": []
+ },
+ "/admin/system-errors/recent": {
+  "get": []
+ },
+ "/admin/system-errors/{error_id}": {
+  "get": []
+ },
+ "/admin/tool-routing/cache-bust": {
+  "post": []
+ },
+ "/admin/tools": {
+  "get": []
+ },
+ "/admin/tools/failures": {
+  "get": []
+ },
+ "/admin/tools/validate": {
+  "post": []
+ },
+ "/admin/tools/{name}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/admin/workflow-plans/{plan_id}": {
+  "get": []
+ },
+ "/admin/workflows/{definition_id}": {
+  "get": []
+ },
+ "/admin/workflows/{definition_id}/plans": {
+  "get": []
+ },
+ "/admin/workflows/{definition_id}/runs": {
+  "get": []
+ },
+ "/advice-slip/random-advice": {
+  "get": []
+ },
+ "/affinity/public/status": {
+  "get": []
+ },
+ "/agent-iteration/commit-choice": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-iteration/feedback": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-iteration/run-initial": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-service/agents": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-service/agents/structured": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-service/agents/{agent_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/agent-service/agents/{agent_id}/versions": {
+  "get": []
+ },
+ "/agent-service/models": {
+  "get": []
+ },
+ "/agent-service/skills": {
+  "get": []
+ },
+ "/agent-service/tools": {
+  "get": []
+ },
+ "/agent-service/validate-schema": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-service/versions/{version_id}": {
+  "get": []
+ },
+ "/agent-testing/agents/{agent_id}/tests": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-usage/registry": {
+  "get": []
+ },
+ "/agent-usage/report": {
+  "get": []
+ },
+ "/agent-usage/scan": {
+  "post": []
+ },
+ "/agent-usage/sync": {
+  "post": []
+ },
+ "/agents/variable-bindings/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agents/versions/{version_id}/execution-definition": {
+  "get": []
+ },
+ "/agents/{agent_id}/execution-definition": {
+  "get": []
+ },
+ "/agility-cms/public/status": {
+  "get": []
+ },
+ "/agorapulse/public/status": {
+  "get": []
+ },
+ "/aha/public/status": {
+  "get": []
+ },
+ "/ai-models": {
+  "get": []
+ },
+ "/ai-tools": {
+  "get": []
+ },
+ "/ai-tools/app/{executor_name}/all": {
+  "get": []
+ },
+ "/ai-tools/mcp-discovered/all": {
+  "get": []
+ },
+ "/ai-tools/native/all": {
+  "get": []
+ },
+ "/ai-tools/source-kind/{source_kind}": {
+  "get": []
+ },
+ "/ai-tools/{tool_id}": {
+  "get": []
+ },
+ "/ai-visibility/panels": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai-visibility/panels/design": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai-visibility/panels/{panel_id}/active": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai-visibility/panels/{panel_id}/design": {
+  "get": []
+ },
+ "/ai-visibility/panels/{panel_id}/design/artifacts/{name}": {
+  "get": []
+ },
+ "/ai-visibility/panels/{panel_id}/design/gates/{gate}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai-visibility/panels/{panel_id}/metrics": {
+  "get": []
+ },
+ "/ai-visibility/panels/{panel_id}/preview": {
+  "get": []
+ },
+ "/ai-visibility/panels/{panel_id}/run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai-visibility/panels/{panel_id}/trend": {
+  "get": []
+ },
+ "/ai/agent-assignments": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/agent-assignments/sessions/{session_id}": {
+  "get": []
+ },
+ "/ai/agent-assignments/sessions/{session_id}/cancel": {
+  "post": []
+ },
+ "/ai/agent/{agent_id}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/agents-blocks/{agent_id}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/agents-blocks/{agent_id}/warm": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/agents/versions/{version_id}/portable": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/agents/{agent_id}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/agents/{agent_id}/invalidate-cache": {
+  "post": []
+ },
+ "/ai/agents/{agent_id}/portable": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/agents/{agent_id}/portable/summary": {
+  "get": []
+ },
+ "/ai/agents/{agent_id}/realtime-tools": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/agents/{agent_id}/warm": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/cancel/{request_id}": {
+  "post": []
+ },
+ "/ai/chat": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/chat/direct-chat": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/chat/prompt-execution": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/context/delivered": {
+  "get": []
+ },
+ "/ai/context/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/context/preview/answer-both": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/conversation/{conversation_id}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/conversation/{conversation_id}/fork-and-run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/conversation/{conversation_id}/inbox": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/ai/conversation/{conversation_id}/inbox/{injection_id}": {
+  "delete": [],
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/ai/conversation/{conversation_id}/memory_cost": {
+  "get": []
+ },
+ "/ai/conversation/{conversation_id}/pending_calls": {
+  "get": []
+ },
+ "/ai/conversation/{conversation_id}/resume": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/conversation/{conversation_id}/sandbox": {
+  "put": [
+   "application/json"
+  ],
+  "get": [],
+  "delete": []
+ },
+ "/ai/conversation/{conversation_id}/tool_results": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/conversation/{conversation_id}/warm": {
+  "post": []
+ },
+ "/ai/conversations/{conversation_id}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/conversations/{conversation_id}/fork-and-run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/conversations/{conversation_id}/inbox": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/ai/conversations/{conversation_id}/inbox/{injection_id}": {
+  "delete": [],
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/ai/conversations/{conversation_id}/memory_cost": {
+  "get": []
+ },
+ "/ai/conversations/{conversation_id}/pending_calls": {
+  "get": []
+ },
+ "/ai/conversations/{conversation_id}/resume": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/conversations/{conversation_id}/sandbox": {
+  "put": [
+   "application/json"
+  ],
+  "get": [],
+  "delete": []
+ },
+ "/ai/conversations/{conversation_id}/tool_results": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/conversations/{conversation_id}/warm": {
+  "post": []
+ },
+ "/ai/decisions": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/decisions/{execution_id}": {
+  "get": []
+ },
+ "/ai/google/embeddings": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/mandates/{mandate_key}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/manual": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/mock-stream/scenarios": {
+  "get": []
+ },
+ "/ai/mock-stream/{scenario}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/prompts": {
+  "get": []
+ },
+ "/ai/prompts/all": {
+  "get": []
+ },
+ "/ai/prompts/builtins": {
+  "get": []
+ },
+ "/ai/prompts/{prompt_id}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/prompts/{prompt_id}/warm": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/retry-now/{request_id}": {
+  "post": []
+ },
+ "/ai/tools/execute": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ai/user/pending_calls": {
+  "get": []
+ },
+ "/air-inc/public/status": {
+  "get": []
+ },
+ "/airbrake/public/status": {
+  "get": []
+ },
+ "/aircall/public/status": {
+  "get": []
+ },
+ "/airfocus/public/status": {
+  "get": []
+ },
+ "/airmeet/public/status": {
+  "get": []
+ },
+ "/airtable/public/status": {
+  "get": []
+ },
+ "/airtame/public/status": {
+  "get": []
+ },
+ "/akamai/public/status": {
+  "get": []
+ },
+ "/alpha-serve/public/status": {
+  "get": []
+ },
+ "/alpine-linux-wiki/public/page": {
+  "get": []
+ },
+ "/anilist/public/anime": {
+  "get": []
+ },
+ "/annotations/label-catalog": {
+  "get": []
+ },
+ "/anydesk/public/status": {
+  "get": []
+ },
+ "/anytype/public/release": {
+  "get": []
+ },
+ "/api-video/public/status": {
+  "get": []
+ },
+ "/app-config/{app}": {
+  "get": []
+ },
+ "/appcues/public/status": {
+  "get": []
+ },
+ "/appflowy/public/release": {
+  "get": []
+ },
+ "/arch-linux/public/package": {
+  "get": []
+ },
+ "/archbee/public/status": {
+  "get": []
+ },
+ "/arena/public/channel": {
+  "get": []
+ },
+ "/artic/public/artwork": {
+  "get": []
+ },
+ "/artifact-hub/public/helm-package": {
+  "get": []
+ },
+ "/arxiv/public/publication": {
+  "get": []
+ },
+ "/asana/public/status": {
+  "get": []
+ },
+ "/ashby/public/status": {
+  "get": []
+ },
+ "/assets": {
+  "post": [
+   "multipart/form-data"
+  ]
+ },
+ "/assets/pdf-compress": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/assets/pdf-compress/multipart": {
+  "post": [
+   "multipart/form-data"
+  ]
+ },
+ "/assets/presets": {
+  "get": []
+ },
+ "/assets/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/assets/preview/multipart": {
+  "post": [
+   "multipart/form-data"
+  ]
+ },
+ "/assets/{file_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/assets/{file_id}/variants": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/attentive/public/status": {
+  "get": []
+ },
+ "/attio/public/status": {
+  "get": []
+ },
+ "/audienceful/public/status": {
+  "get": []
+ },
+ "/audio/recording-journal": {
+  "get": []
+ },
+ "/audio/recording-journal/chunks": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/audio/recording-journal/{recording_id}": {
+  "get": [],
+  "delete": []
+ },
+ "/audio/recording-journal/{recording_id}/complete": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/audio/text-to-speech": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/audio/transcribe": {
+  "post": [
+   "multipart/form-data"
+  ]
+ },
+ "/audio/transcribe-file": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/audio/transcribe-url": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/audio/voice-preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/audioboom/public/status": {
+  "get": []
+ },
+ "/audius/public/track": {
+  "get": []
+ },
+ "/auth/aimatrx": {
+  "get": []
+ },
+ "/auth/callback": {
+  "get": []
+ },
+ "/auth/on-sign-in": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/auth/organizations": {
+  "get": []
+ },
+ "/auth/organizations/default": {
+  "put": [
+   "application/json"
+  ]
+ },
+ "/auth/session/exchange": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/auth/session/oauth-incident": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/auth/whoami": {
+  "get": []
+ },
+ "/authenticator": {
+  "get": []
+ },
+ "/authenticator/enroll": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/authenticator/enroll/qr": {
+  "post": [
+   "multipart/form-data"
+  ]
+ },
+ "/authenticator/{credential_item_id}": {
+  "get": [],
+  "delete": []
+ },
+ "/authenticator/{credential_item_id}/code": {
+  "get": []
+ },
+ "/authenticator/{credential_item_id}/enabled": {
+  "put": [
+   "application/json"
+  ]
+ },
+ "/aweber/public/status": {
+  "get": []
+ },
+ "/awork/public/status": {
+  "get": []
+ },
+ "/aws-pricing-integrations/public/services": {
+  "get": []
+ },
+ "/axiom/public/status": {
+  "get": []
+ },
+ "/ballpark/public/status": {
+  "get": []
+ },
+ "/bandwidth-status/public/status": {
+  "get": []
+ },
+ "/baremetrics/public/status": {
+  "get": []
+ },
+ "/beautiful-ai/public/status": {
+  "get": []
+ },
+ "/beehiiv/public/status": {
+  "get": []
+ },
+ "/bettermode/public/status": {
+  "get": []
+ },
+ "/bing-integrations/api-key": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/bing-integrations/authorize-url": {
+  "get": []
+ },
+ "/bing-integrations/bind-site": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/bing-integrations/disconnect": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/bing-integrations/exchange": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/bird-status/public/status": {
+  "get": []
+ },
+ "/bitbucket-integrations/public/repositories/{workspace}/{repo_slug}": {
+  "get": []
+ },
+ "/bitbucket-integrations/public/repositories/{workspace}/{repo_slug}/pipelines": {
+  "get": []
+ },
+ "/bitrise/public/status": {
+  "get": []
+ },
+ "/bizzabo/public/status": {
+  "get": []
+ },
+ "/blocks/handoffs": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/blocks/retry": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/bloomreach/public/status": {
+  "get": []
+ },
+ "/bls-public-data/public/latest": {
+  "get": []
+ },
+ "/bluesky/public/author-feed": {
+  "get": []
+ },
+ "/boldsign/public/status": {
+  "get": []
+ },
+ "/bombbomb/public/status": {
+  "get": []
+ },
+ "/bookwyrm/public/instance": {
+  "get": []
+ },
+ "/bored-api/random-activity": {
+  "get": []
+ },
+ "/brand-voice/extract": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/brand-voice/fix": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/brand-voice/{fingerprint_id}/confirm": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/brandwatch/public/status": {
+  "get": []
+ },
+ "/breathehr/public/status": {
+  "get": []
+ },
+ "/brevo/public/status": {
+  "get": []
+ },
+ "/broker/gateway/anthropic/v1/messages": {
+  "post": []
+ },
+ "/broker/gateway/anthropic/v1/messages/count_tokens": {
+  "post": []
+ },
+ "/broker/gateway/openai_codex/v1/responses": {
+  "post": []
+ },
+ "/broker/provider-failures": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/broker/tokens": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/browser-manager/internal/sandbox/runs": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/browser-manager/internal/sandbox/runs/{run_id}/capture": {
+  "post": []
+ },
+ "/browser-manager/internal/sandbox/runs/{run_id}/command": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/browser-manager/internal/sandbox/runs/{run_id}/stop": {
+  "post": []
+ },
+ "/browser-manager/local/ack": {
+  "post": []
+ },
+ "/browser-manager/local/approval": {
+  "post": []
+ },
+ "/browser-manager/local/commands/claim": {
+  "post": []
+ },
+ "/browser-manager/local/commands/complete": {
+  "post": []
+ },
+ "/browser-manager/local/transport/verify": {
+  "post": []
+ },
+ "/browser-manager/local/verify": {
+  "post": []
+ },
+ "/browser-manager/ops/snapshot": {
+  "get": []
+ },
+ "/browser-manager/profiles": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/browser-manager/runs": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/browser-manager/runs/{run_id}/authenticator": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/browser-manager/runs/{run_id}/capture-result": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/browser-manager/runs/{run_id}/control-requests": {
+  "post": []
+ },
+ "/browser-manager/runs/{run_id}/dismiss-handoff": {
+  "post": []
+ },
+ "/browser-manager/runs/{run_id}/human-login": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/browser-manager/runs/{run_id}/release-control": {
+  "post": []
+ },
+ "/browser-manager/runs/{run_id}/retry-through-home-computer": {
+  "post": []
+ },
+ "/browser-manager/runs/{run_id}/saved-login": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/browser-manager/runs/{run_id}/screenshot": {
+  "post": []
+ },
+ "/browser-manager/runs/{run_id}/stop": {
+  "post": []
+ },
+ "/browser-manager/runs/{run_id}/stream-ticket": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/browser-manager/runs/{run_id}/takeover": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/bubble-status/public/status": {
+  "get": []
+ },
+ "/buffer/public/status": {
+  "get": []
+ },
+ "/builder-io/public/status": {
+  "get": []
+ },
+ "/buildkite/public/status": {
+  "get": []
+ },
+ "/bullhorn/public/status": {
+  "get": []
+ },
+ "/bunny-net/public/status": {
+  "get": []
+ },
+ "/buttercms/public/status": {
+  "get": []
+ },
+ "/buttondown/public/status": {
+  "get": []
+ },
+ "/bynder/public/status": {
+  "get": []
+ },
+ "/calendly-status/public/status": {
+  "get": []
+ },
+ "/canvas-integrations/read-proof": {
+  "get": []
+ },
+ "/capsule-crm/public/status": {
+  "get": []
+ },
+ "/captivate/public/status": {
+  "get": []
+ },
+ "/capture/handoffs": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/capture/handoffs/{handoff_id}/claim": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/capture/handoffs/{handoff_id}/dismiss": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/capture/handoffs/{handoff_id}/needs-drive": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/capture/handoffs/{handoff_id}/result": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/cataas/cat": {
+  "get": []
+ },
+ "/catalog-resolver/resolve": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/catalogs/{app}": {
+  "get": []
+ },
+ "/catalogs/{app}/{kind}": {
+  "get": []
+ },
+ "/cb-{stream_session_id}/claim": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/cb-{stream_session_id}/renew": {
+  "post": []
+ },
+ "/ceph-docs/public/index": {
+  "get": []
+ },
+ "/certain/public/status": {
+  "get": []
+ },
+ "/chameleon/public/status": {
+  "get": []
+ },
+ "/chargebee/public/status": {
+  "get": []
+ },
+ "/chatwoot/public/status": {
+  "get": []
+ },
+ "/chili-piper/public/status": {
+  "get": []
+ },
+ "/circle/public/status": {
+  "get": []
+ },
+ "/circleci/public/status": {
+  "get": []
+ },
+ "/cleveland-museum/public/artwork": {
+  "get": []
+ },
+ "/clicksend/public/status": {
+  "get": []
+ },
+ "/clojars/public/artifact": {
+  "get": []
+ },
+ "/close-crm/public/status": {
+  "get": []
+ },
+ "/cloud-files/changes": {
+  "get": []
+ },
+ "/cloud-files/delete": {
+  "delete": []
+ },
+ "/cloud-files/get": {
+  "get": []
+ },
+ "/cloud-files/integrations.aidream": {
+  "get": []
+ },
+ "/cloud-files/list": {
+  "get": []
+ },
+ "/cloud-files/put": {
+  "put": [
+   "multipart/form-data"
+  ]
+ },
+ "/cloud-files/quota": {
+  "get": []
+ },
+ "/cloudcannon/public/status": {
+  "get": []
+ },
+ "/cloudinary/public/status": {
+  "get": []
+ },
+ "/cloudsigma/public/status": {
+  "get": []
+ },
+ "/cloudtalk/public/status": {
+  "get": []
+ },
+ "/cloudways/public/status": {
+  "get": []
+ },
+ "/clueso/public/status": {
+  "get": []
+ },
+ "/cms/exceptions/{exception_id}/approve": {
+  "post": []
+ },
+ "/cms/exceptions/{exception_id}/reject": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/cms/validate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/coda/public/status": {
+  "get": []
+ },
+ "/codeberg/public/repository": {
+  "get": []
+ },
+ "/codeclimate/public/status": {
+  "get": []
+ },
+ "/codecov/public/status": {
+  "get": []
+ },
+ "/codefresh/public/status": {
+  "get": []
+ },
+ "/coderpad/public/status": {
+  "get": []
+ },
+ "/codesignal/public/status": {
+  "get": []
+ },
+ "/coding-sessions/bridge": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/coding-sessions/claude/capabilities": {
+  "get": []
+ },
+ "/coding-sessions/claude/runtimes/{runtime_id}/cancel": {
+  "post": []
+ },
+ "/coding-sessions/claude/stream": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/coding-sessions/codex/capabilities": {
+  "get": []
+ },
+ "/coding-sessions/codex/runtimes/{runtime_id}/cancel": {
+  "post": []
+ },
+ "/coding-sessions/codex/stream": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/coding-sessions/connection/organization": {
+  "get": [],
+  "put": [
+   "application/json"
+  ]
+ },
+ "/coding-sessions/conversations/{conversation_id}/responder": {
+  "get": []
+ },
+ "/coding-sessions/hosted/runtime": {
+  "get": []
+ },
+ "/coding-sessions/raw-transcripts": {
+  "get": []
+ },
+ "/coding-sessions/raw-transcripts/backup": {
+  "post": []
+ },
+ "/coding-sessions/raw-transcripts/backup-policy": {
+  "get": []
+ },
+ "/coding-sessions/sessions": {
+  "get": []
+ },
+ "/coffeeapi/random-image": {
+  "get": []
+ },
+ "/cognito-forms/public/status": {
+  "get": []
+ },
+ "/communications/internal/test-handset-inbox": {
+  "get": []
+ },
+ "/communications/sms/inbound-fallback": {
+  "post": []
+ },
+ "/communications/voice/conversation-relay/readiness": {
+  "get": []
+ },
+ "/communications/voice/conversation-relay/session-reference": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/compute-targets/": {
+  "get": []
+ },
+ "/compute-targets/resolve": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/conceptboard/public/status": {
+  "get": []
+ },
+ "/connected-sources/adapters": {
+  "get": []
+ },
+ "/connected-sources/adapters/catalog": {
+  "get": []
+ },
+ "/connected-sources/browse": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/connected-sources/google/comments": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/connected-sources/google/presentation": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/connected-sources/google/revisions": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/connected-sources/microsoft/scope-gaps": {
+  "get": []
+ },
+ "/connections/attachable": {
+  "get": []
+ },
+ "/connections/resources": {
+  "get": []
+ },
+ "/constant-contact/public/status": {
+  "get": []
+ },
+ "/content-blocks": {
+  "get": []
+ },
+ "/content-blocks/category/{category_id}": {
+  "get": []
+ },
+ "/content-blocks/{block_id}": {
+  "get": []
+ },
+ "/content-label": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/cms-sites/{cms_site_id}/starter-kit": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/nodes/{node_id}/accept-brief-draft": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/nodes/{node_id}/brief-runs": {
+  "get": []
+ },
+ "/content-plan/nodes/{node_id}/brief-runs/restore": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/nodes/{node_id}/deepen": {
+  "post": []
+ },
+ "/content-plan/nodes/{node_id}/draft": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/nodes/{node_id}/draft-brief": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/nodes/{node_id}/steps/{step}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/sites/{site_id}/ai-runs": {
+  "get": []
+ },
+ "/content-plan/sites/{site_id}/ai-runs/{run_id}": {
+  "get": []
+ },
+ "/content-plan/sites/{site_id}/cms-align": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/sites/{site_id}/cms-fill": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/sites/{site_id}/cms-fill/cancel": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/sites/{site_id}/cms-fill/estimate": {
+  "get": []
+ },
+ "/content-plan/sites/{site_id}/cms-fill/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/sites/{site_id}/cms-fill/status": {
+  "get": []
+ },
+ "/content-plan/sites/{site_id}/cms-pages": {
+  "get": []
+ },
+ "/content-plan/sites/{site_id}/cms-publish": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/sites/{site_id}/cms-reconcile": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/sites/{site_id}/cms-redirects": {
+  "get": []
+ },
+ "/content-plan/sites/{site_id}/cms-starter-kit": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/sites/{site_id}/dispositions": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/sites/{site_id}/entity-attachments": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/sites/{site_id}/find-logo": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/sites/{site_id}/generate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/sites/{site_id}/keyword-strategy": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/sites/{site_id}/keyword-strategy/estimate": {
+  "get": []
+ },
+ "/content-plan/sites/{site_id}/pipeline": {
+  "get": []
+ },
+ "/content-plan/sites/{site_id}/plan-index": {
+  "get": []
+ },
+ "/content-plan/sites/{site_id}/planned-pages": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/sites/{site_id}/reconcile": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/sites/{site_id}/review": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/sites/{site_id}/shell-check": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/content-plan/sites/{site_id}/templates": {
+  "get": []
+ },
+ "/content-processing/{cld_file_id}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/contentful/public/status": {
+  "get": []
+ },
+ "/contentsquare/public/status": {
+  "get": []
+ },
+ "/contentstack/public/status": {
+  "get": []
+ },
+ "/contentstudio/public/status": {
+  "get": []
+ },
+ "/conversations/{conversation_id}/attachments": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/conversations/{conversation_id}/attachments/{association_id}": {
+  "delete": []
+ },
+ "/copper-crm/public/status": {
+  "get": []
+ },
+ "/courier/public/status": {
+  "get": []
+ },
+ "/coursera/public/course": {
+  "get": []
+ },
+ "/coverage/feed": {
+  "get": []
+ },
+ "/coverage/trackers": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/coverage/trackers/{tracker_id}/active": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/coverage/trackers/{tracker_id}/delivery": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/coverage/trackers/{tracker_id}/run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/coverage/trackers/{tracker_id}/schedule": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/craft/public/status": {
+  "get": []
+ },
+ "/crates-io/public/crate": {
+  "get": []
+ },
+ "/crm/enrichment/bulk/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/enrichment/bulk/run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/import/connectors": {
+  "get": []
+ },
+ "/crm/import/connectors/{provider_key}/cursor": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/import/connectors/{provider_key}/fetch": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/outreach-lists/{list_id}/media-refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/outreach-lists/{list_id}/media-refresh-policy": {
+  "put": [
+   "application/json"
+  ]
+ },
+ "/crm/outreach-lists/{list_id}/media-research/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/outreach-lists/{list_id}/media-research/run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/outreach-lists/{list_id}/media-search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/parties/kind-resolution/batch": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/parties/resolve": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/parties/resolve-batch": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/parties/{outlet_party_id}/contact-candidates": {
+  "get": []
+ },
+ "/crm/parties/{outlet_party_id}/contact-candidates/confirm": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/parties/{party_id}/contacts": {
+  "get": []
+ },
+ "/crm/parties/{party_id}/contacts/find": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/parties/{party_id}/contacts/verify": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/parties/{party_id}/contacts/{candidate_id}/confirm": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/parties/{party_id}/contacts/{candidate_id}/reject": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/parties/{party_id}/journalist-activity": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/parties/{party_id}/journalist-beat": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/pitch-advisories": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/crm/pitch-advisories/one-per-outlet": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/cronofy/public/status": {
+  "get": []
+ },
+ "/crossref/public/work": {
+  "get": []
+ },
+ "/crowdcast/public/status": {
+  "get": []
+ },
+ "/cutover/final-switch/capabilities": {
+  "get": []
+ },
+ "/cutover/final-switch/copy-again": {
+  "post": []
+ },
+ "/cutover/final-switch/press": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/cutover/final-switch/undo": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/cutover/organizations/{organization_id}/copy-again": {
+  "post": []
+ },
+ "/cutover/tables/{table_id}/copy-again": {
+  "post": []
+ },
+ "/cx/conversations": {
+  "get": []
+ },
+ "/cx/conversations/{conversation_id}": {
+  "get": []
+ },
+ "/cx/conversations/{conversation_id}/context-state": {
+  "get": []
+ },
+ "/cx/conversations/{conversation_id}/fork": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/cx/conversations/{conversation_id}/invalidate-cache": {
+  "post": []
+ },
+ "/cx/conversations/{conversation_id}/messages": {
+  "delete": []
+ },
+ "/cx/conversations/{conversation_id}/messages/delete": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/cx/conversations/{conversation_id}/messages/hide": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/cx/conversations/{conversation_id}/messages/replace": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/cx/conversations/{conversation_id}/messages/restore": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/cx/conversations/{conversation_id}/messages/{message_id}": {
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/cx/conversations/{conversation_id}/requests": {
+  "get": []
+ },
+ "/cx/conversations/{conversation_id}/turns/compact": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/daily/public/status": {
+  "get": []
+ },
+ "/dailymotion/public/demo-video": {
+  "get": []
+ },
+ "/data-gov-uk/public/dataset": {
+  "get": []
+ },
+ "/databox/public/status": {
+  "get": []
+ },
+ "/datacite/public/doi": {
+  "get": []
+ },
+ "/datamuse/public/synonyms": {
+  "get": []
+ },
+ "/dblp/public/publication": {
+  "get": []
+ },
+ "/debian-sources/public/package": {
+  "get": []
+ },
+ "/debian-wiki/public/page": {
+  "get": []
+ },
+ "/decision-review/agents/{agent_id}/calibration": {
+  "get": []
+ },
+ "/dedup/files/{file_id}/set-canonical-extract": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/dedup/processed-documents/extract": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/dedup/processed-documents/{processed_document_id}/archive": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/dedup/processed-documents/{processed_document_id}/clean": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/dedup/processed-documents/{processed_document_id}/derivative": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/dedup/processed-documents/{processed_document_id}/set-canonical-clean": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/degreed/public/status": {
+  "get": []
+ },
+ "/demio/public/status": {
+  "get": []
+ },
+ "/demodesk/public/status": {
+  "get": []
+ },
+ "/deputy/public/status": {
+  "get": []
+ },
+ "/descript/public/status": {
+  "get": []
+ },
+ "/deskpro/public/status": {
+  "get": []
+ },
+ "/desktop-instances": {
+  "get": []
+ },
+ "/desktop-instances/": {
+  "get": []
+ },
+ "/dev-community/public/articles/latest": {
+  "get": []
+ },
+ "/devto/public/status": {
+  "get": []
+ },
+ "/dialpad/public/status": {
+  "get": []
+ },
+ "/diaspora-social/public/nodeinfo": {
+  "get": []
+ },
+ "/dicebear/initials": {
+  "get": []
+ },
+ "/dictionary/publications": {
+  "get": []
+ },
+ "/dictionary/publish": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/digitalnz/public/record": {
+  "get": []
+ },
+ "/digitalocean/public/status": {
+  "get": []
+ },
+ "/directives/apply_state": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/directives/catalog": {
+  "get": []
+ },
+ "/directives/confirm": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/directives/execute": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/directus/public/status": {
+  "get": []
+ },
+ "/disco/public/status": {
+  "get": []
+ },
+ "/discourse/public/site": {
+  "get": []
+ },
+ "/disqus/public/status": {
+  "get": []
+ },
+ "/django-docs/public/overview": {
+  "get": []
+ },
+ "/dochub/public/status": {
+  "get": []
+ },
+ "/dock/public/status": {
+  "get": []
+ },
+ "/document/by-cld-file/{cld_file_id}": {
+  "get": []
+ },
+ "/document/{doc_id}": {
+  "get": []
+ },
+ "/document/{doc_id}/chunks": {
+  "get": []
+ },
+ "/document/{doc_id}/lineage": {
+  "get": []
+ },
+ "/document/{doc_id}/page/{page_index}": {
+  "get": []
+ },
+ "/document/{doc_id}/page/{page_index}/image": {
+  "get": []
+ },
+ "/document/{doc_id}/pages": {
+  "get": []
+ },
+ "/dogceo/random-image": {
+  "get": []
+ },
+ "/dolphin-emu-wiki/public/page": {
+  "get": []
+ },
+ "/doodle/public/status": {
+  "get": []
+ },
+ "/dorik/public/status": {
+  "get": []
+ },
+ "/drip/public/status": {
+  "get": []
+ },
+ "/dryad/public/dataset": {
+  "get": []
+ },
+ "/dub/public/status": {
+  "get": []
+ },
+ "/duda/public/status": {
+  "get": []
+ },
+ "/dummyimage/placeholder": {
+  "get": []
+ },
+ "/easy-agile/public/status": {
+  "get": []
+ },
+ "/ebay-integrations/sandbox/taxonomy/default-category-tree": {
+  "get": []
+ },
+ "/ebay/account-deletion": {
+  "get": [],
+  "post": []
+ },
+ "/ebay/oauth/callback": {
+  "get": []
+ },
+ "/ebay/oauth/connect": {
+  "get": []
+ },
+ "/ecamm/public/status": {
+  "get": []
+ },
+ "/ecwid/public/status": {
+  "get": []
+ },
+ "/education/images/generate-card": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/education/images/source-card": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/education/images/source-set": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/egnyte/public/status": {
+  "get": []
+ },
+ "/egress/devices": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/egress/devices/{device_id}": {
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/egress/pairings": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/egress/pairings/by-code/{user_code}": {
+  "get": []
+ },
+ "/egress/pairings/by-code/{user_code}/approve": {
+  "post": []
+ },
+ "/egress/pairings/by-code/{user_code}/deny": {
+  "post": []
+ },
+ "/egress/pairings/{pairing_id}": {
+  "get": []
+ },
+ "/egress/status": {
+  "get": []
+ },
+ "/egress/tickets": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/element/public/status": {
+  "get": []
+ },
+ "/elevio/public/status": {
+  "get": []
+ },
+ "/elinux-wiki/public/page": {
+  "get": []
+ },
+ "/eloomi/public/status": {
+  "get": []
+ },
+ "/emailoctopus/public/status": {
+  "get": []
+ },
+ "/emplifi/public/status": {
+  "get": []
+ },
+ "/employment-hero/public/status": {
+  "get": []
+ },
+ "/endoflife-date/public/release": {
+  "get": []
+ },
+ "/ensembl/public/gene": {
+  "get": []
+ },
+ "/environment-agency-flood/public/station": {
+  "get": []
+ },
+ "/envoy/public/status": {
+  "get": []
+ },
+ "/eptura-visitor/public/status": {
+  "get": []
+ },
+ "/europe-pmc/public/publication": {
+  "get": []
+ },
+ "/event-temple/public/status": {
+  "get": []
+ },
+ "/excalidraw/public/release": {
+  "get": []
+ },
+ "/external-databases/inspect": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/external-databases/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/external-databases/tables": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/factorial/public/status": {
+  "get": []
+ },
+ "/fandom/public/page": {
+  "get": []
+ },
+ "/fathom-video/public/status": {
+  "get": []
+ },
+ "/feathery/public/status": {
+  "get": []
+ },
+ "/feature-fm/public/status": {
+  "get": []
+ },
+ "/featurebase/public/status": {
+  "get": []
+ },
+ "/federal-register/public/document": {
+  "get": []
+ },
+ "/fedora-packages/public/rpm": {
+  "get": []
+ },
+ "/fellow/public/status": {
+  "get": []
+ },
+ "/ffmpeg-wiki/public/page": {
+  "get": []
+ },
+ "/fibery/public/status": {
+  "get": []
+ },
+ "/figma/public/status": {
+  "get": []
+ },
+ "/figshare/public/item": {
+  "get": []
+ },
+ "/files": {
+  "get": []
+ },
+ "/files-com/public/status": {
+  "get": []
+ },
+ "/files/analysis/preferences": {
+  "get": [],
+  "put": [
+   "application/json"
+  ]
+ },
+ "/files/bulk": {
+  "delete": [
+   "application/json"
+  ],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/bulk/move": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/by-path/{file_path}": {
+  "get": []
+ },
+ "/files/finalize-upload": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/folders": {
+  "get": []
+ },
+ "/files/groups": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/groups/{group_id}/members": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/groups/{group_id}/members/{member_user_id}": {
+  "delete": []
+ },
+ "/files/search": {
+  "get": []
+ },
+ "/files/session": {
+  "post": []
+ },
+ "/files/share-links/{token}": {
+  "delete": []
+ },
+ "/files/trash": {
+  "get": []
+ },
+ "/files/tree": {
+  "get": []
+ },
+ "/files/upload": {
+  "post": [
+   "multipart/form-data"
+  ]
+ },
+ "/files/upload/presigned": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/upload/tus": {
+  "post": []
+ },
+ "/files/upload/tus/{upload_id}": {
+  "patch": [],
+  "delete": []
+ },
+ "/files/usage": {
+  "get": []
+ },
+ "/files/{file_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/files/{file_id}/active-pages": {
+  "get": []
+ },
+ "/files/{file_id}/analysis": {
+  "get": []
+ },
+ "/files/{file_id}/analysis/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/annotations": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/annotations/bulk-from-candidates": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/annotations/extract-at-bbox": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/annotations/manifest": {
+  "get": []
+ },
+ "/files/{file_id}/annotations/snap-bbox": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/annotations/{annotation_id}": {
+  "put": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/files/{file_id}/annotations/{annotation_id}/promote-to-entity": {
+  "post": []
+ },
+ "/files/{file_id}/asset": {
+  "get": []
+ },
+ "/files/{file_id}/copy": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/document": {
+  "get": []
+ },
+ "/files/{file_id}/download": {
+  "get": []
+ },
+ "/files/{file_id}/entities": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/entities/find-similar": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/entities/{entity_id}": {
+  "put": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/files/{file_id}/extract-audio": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/extracted-text": {
+  "get": []
+ },
+ "/files/{file_id}/ingest": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/ingest/stream": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/key-findings": {
+  "get": []
+ },
+ "/files/{file_id}/lineage-summary": {
+  "get": []
+ },
+ "/files/{file_id}/overrides": {
+  "get": []
+ },
+ "/files/{file_id}/pages": {
+  "get": []
+ },
+ "/files/{file_id}/pages/{page_id}": {
+  "get": []
+ },
+ "/files/{file_id}/pages/{page_id}/exclude": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/pages/{page_id}/include": {
+  "post": []
+ },
+ "/files/{file_id}/pages/{page_id}/override-text": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/pages/{page_id}/rotate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/pdf-pages": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/permissions": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/permissions/{grantee_id}": {
+  "delete": []
+ },
+ "/files/{file_id}/rag-status": {
+  "get": []
+ },
+ "/files/{file_id}/redact/mask": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/regions/extract": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/rename": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/render-page-with-overlay": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/restore": {
+  "post": []
+ },
+ "/files/{file_id}/search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/share-links": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/files/{file_id}/versions": {
+  "get": []
+ },
+ "/files/{file_id}/versions/{version_number}": {
+  "get": []
+ },
+ "/files/{file_id}/versions/{version_number}/download": {
+  "get": []
+ },
+ "/files/{file_id}/versions/{version_number}/restore": {
+  "post": []
+ },
+ "/filestack/public/status": {
+  "get": []
+ },
+ "/firstup/public/status": {
+  "get": []
+ },
+ "/flask-docs/public/quickstart": {
+  "get": []
+ },
+ "/flathub/public/app": {
+  "get": []
+ },
+ "/float/public/status": {
+  "get": []
+ },
+ "/flock/public/status": {
+  "get": []
+ },
+ "/folders": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/folders/bulk/move": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/folders/{folder_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/folders/{folder_id}/permissions": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/folders/{folder_id}/permissions/{grantee_id}": {
+  "delete": []
+ },
+ "/folders/{folder_id}/share-links": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/foodish/random-image": {
+  "get": []
+ },
+ "/formassembly/public/status": {
+  "get": []
+ },
+ "/fountain/public/status": {
+  "get": []
+ },
+ "/frame-io/public/status": {
+  "get": []
+ },
+ "/framer/public/status": {
+  "get": []
+ },
+ "/freeagent/public/status": {
+  "get": []
+ },
+ "/freebsd-wiki/public/page": {
+  "get": []
+ },
+ "/freecad-wiki/public/page": {
+  "get": []
+ },
+ "/freshbooks/public/status": {
+  "get": []
+ },
+ "/front/public/status": {
+  "get": []
+ },
+ "/frontify/public/status": {
+  "get": []
+ },
+ "/fullstory/public/status": {
+  "get": []
+ },
+ "/gather/public/status": {
+  "get": []
+ },
+ "/gbif/public/occurrence": {
+  "get": []
+ },
+ "/geckoboard/public/status": {
+  "get": []
+ },
+ "/geekbot/public/status": {
+  "get": []
+ },
+ "/gem/public/status": {
+  "get": []
+ },
+ "/genesys-cloud/public/status": {
+  "get": []
+ },
+ "/genially/public/status": {
+  "get": []
+ },
+ "/gentoo-packages/public/package": {
+  "get": []
+ },
+ "/getresponse/public/status": {
+  "get": []
+ },
+ "/getty-vocabularies/public/aat/concept": {
+  "get": []
+ },
+ "/ghost/public/status": {
+  "get": []
+ },
+ "/gitea/public/compatibility": {
+  "get": []
+ },
+ "/github-integrations/authorize": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/github-integrations/complete": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/github-integrations/connection": {
+  "delete": []
+ },
+ "/github-integrations/internal/access-token": {
+  "get": []
+ },
+ "/github-integrations/sync": {
+  "post": []
+ },
+ "/github-integrations/webhook": {
+  "post": []
+ },
+ "/go1/public/status": {
+  "get": []
+ },
+ "/gong/public/status": {
+  "get": []
+ },
+ "/google-import/contacts/fields": {
+  "get": []
+ },
+ "/google-import/contacts/import": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-import/contacts/search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-import/tasks/import": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-import/tasks/list": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/ads/customers": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/ads/report": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/calendar/agenda": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/calendar/cancel/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/calendar/create/confirm/{intent_id}": {
+  "post": []
+ },
+ "/google-integrations/calendar/create/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/calendar/reschedule/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/calendar/rsvp/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/capabilities": {
+  "get": []
+ },
+ "/google-integrations/contacts/write/admission": {
+  "get": []
+ },
+ "/google-integrations/contacts/write/apply": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/contacts/write/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/disconnect": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/exchange": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/gmail/labels": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/gmail/message": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/gmail/modify": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/gmail/search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/internal/credential": {
+  "get": []
+ },
+ "/google-integrations/other-contacts/admission": {
+  "get": []
+ },
+ "/google-integrations/other-contacts/import": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/other-contacts/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/other-contacts/review": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/tag-manager/inventory": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/tasks/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/youtube/analytics": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/youtube/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-sync/calendar/discover": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-sync/calendar/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-sync/calendar/selected-events": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-sync/calendar/selected-reconcile": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-sync/documents/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-sync/drive/browse": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-sync/drive/file": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-sync/records/{table}/{record_id}/archive": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-sync/records/{table}/{record_id}/detach": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-sync/sheets/import": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-sync/tag-manager/snapshot": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-sync/youtube/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/approvals/{approval_id}/apply": {
+  "post": []
+ },
+ "/google-workspace/approvals/{approval_id}/reject": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/documents/append": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/documents/create": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/documents/read": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/files/register": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/gmail/send-reviewed": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/sheets/create": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/sheets/read": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/sheets/write": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/gorgias/public/status": {
+  "get": []
+ },
+ "/goto/public/status": {
+  "get": []
+ },
+ "/grain/public/status": {
+  "get": []
+ },
+ "/grammarly/public/status": {
+  "get": []
+ },
+ "/great-question/public/status": {
+  "get": []
+ },
+ "/greenhouse/public/status": {
+  "get": []
+ },
+ "/groove/public/status": {
+  "get": []
+ },
+ "/growth-loop/runs": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/growth-loop/runs/{loop_run_id}": {
+  "get": []
+ },
+ "/growth-loop/runs/{loop_run_id}/control": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/growth-loop/runs/{loop_run_id}/history": {
+  "get": []
+ },
+ "/growth-loop/runs/{loop_run_id}/reconcile": {
+  "post": []
+ },
+ "/growth-loop/runs/{loop_run_id}/stages": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/growth-loop/sites/{site_id}/runs": {
+  "get": []
+ },
+ "/growth-loop/stages/block": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/growth-loop/stages/complete": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/growth-loop/stages/fail": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/growth-loop/stages/{stage_run_id}/ref": {
+  "put": [
+   "application/json"
+  ]
+ },
+ "/growth-loop/stages/{stage_run_id}/skip": {
+  "post": []
+ },
+ "/growth-loop/stages/{stage_run_id}/unblock": {
+  "post": []
+ },
+ "/guru/public/status": {
+  "get": []
+ },
+ "/gusto/public/status": {
+  "get": []
+ },
+ "/hackage/public/preferred-versions": {
+  "get": []
+ },
+ "/hacker-news/public/story": {
+  "get": []
+ },
+ "/hal-open-science/public/record": {
+  "get": []
+ },
+ "/happeo/public/status": {
+  "get": []
+ },
+ "/harness/public/status": {
+  "get": []
+ },
+ "/harvard-dataverse/public/dataset": {
+  "get": []
+ },
+ "/harvest/public/status": {
+  "get": []
+ },
+ "/hashnode/public/status": {
+  "get": []
+ },
+ "/health": {
+  "get": []
+ },
+ "/health/database-identity": {
+  "get": []
+ },
+ "/health/detailed": {
+  "get": []
+ },
+ "/health/live": {
+  "get": []
+ },
+ "/health/ready": {
+  "get": []
+ },
+ "/health/serving": {
+  "get": []
+ },
+ "/health/version": {
+  "get": []
+ },
+ "/heap/public/status": {
+  "get": []
+ },
+ "/heartbeat/public/status": {
+  "get": []
+ },
+ "/help-scout/public/status": {
+  "get": []
+ },
+ "/helpjuice/public/status": {
+  "get": []
+ },
+ "/helpshift/public/status": {
+  "get": []
+ },
+ "/helpwise/public/status": {
+  "get": []
+ },
+ "/hepdata/public/record": {
+  "get": []
+ },
+ "/hex-pm/public/package": {
+  "get": []
+ },
+ "/higher-logic/public/status": {
+  "get": []
+ },
+ "/highspot/public/status": {
+  "get": []
+ },
+ "/hindsight/change-history": {
+  "get": []
+ },
+ "/hindsight/costs": {
+  "get": []
+ },
+ "/hindsight/crystallization/run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hindsight/crystallization/subjects": {
+  "get": []
+ },
+ "/hindsight/crystallization/sweep": {
+  "post": []
+ },
+ "/hindsight/drain": {
+  "post": []
+ },
+ "/hindsight/enrollments": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hindsight/enrollments/{enrollment_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/hindsight/enrollments/{enrollment_id}/pending-examples": {
+  "get": []
+ },
+ "/hindsight/enrollments/{enrollment_id}/replay": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hindsight/enrollments/{enrollment_id}/review": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hindsight/finding-effectiveness": {
+  "get": []
+ },
+ "/hindsight/findings/{finding_id}/apply": {
+  "post": []
+ },
+ "/hindsight/findings/{finding_id}/discuss": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hindsight/findings/{finding_id}/prove": {
+  "post": []
+ },
+ "/hindsight/findings/{finding_id}/reject": {
+  "post": []
+ },
+ "/hindsight/findings/{finding_id}/revert": {
+  "post": []
+ },
+ "/hindsight/regression-cases": {
+  "get": []
+ },
+ "/hindsight/regression-cases/{case_id}": {
+  "get": []
+ },
+ "/hindsight/regression-cases/{case_id}/run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hindsight/regression-cases/{case_id}/status": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hindsight/replays/{replay_id}": {
+  "get": []
+ },
+ "/hindsight/reviews/{review_id}": {
+  "get": []
+ },
+ "/hindsight/reviews/{review_id}/discuss": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hindsight/reviews/{review_id}/thread": {
+  "get": []
+ },
+ "/hindsight/shadow-recompilation": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hindsight/snapshots/{snapshot_id}/regression-case": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hindsight/snapshots/{snapshot_id}/wire-replay": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hindsight/snapshots/{snapshot_id}/wire-replays": {
+  "get": []
+ },
+ "/hindsight/subjects/tools": {
+  "get": []
+ },
+ "/hindsight/wire-replays/{replay_group_id}": {
+  "get": []
+ },
+ "/hireez/public/status": {
+  "get": []
+ },
+ "/hirevue/public/status": {
+  "get": []
+ },
+ "/hive/public/status": {
+  "get": []
+ },
+ "/hivebrite/public/status": {
+  "get": []
+ },
+ "/hiver/public/status": {
+  "get": []
+ },
+ "/homebase/public/status": {
+  "get": []
+ },
+ "/homebrew/public/formula": {
+  "get": []
+ },
+ "/homerun/public/status": {
+  "get": []
+ },
+ "/honeybadger/public/status": {
+  "get": []
+ },
+ "/honeycomb/public/status": {
+  "get": []
+ },
+ "/hooks/providers/{seam}/{provider_key}": {
+  "post": []
+ },
+ "/hootsuite/public/status": {
+  "get": []
+ },
+ "/hotjar/public/status": {
+  "get": []
+ },
+ "/hr/accruals/carryover/run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/accruals/run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/calc/break-premium": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/calc/carryover": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/calc/leave-accrual": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/calc/overtime": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/exports/formats": {
+  "get": []
+ },
+ "/hr/exports/payroll": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/exports/payroll/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/exports/timesheet": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/exports/{export_id}": {
+  "get": []
+ },
+ "/hr/exports/{export_id}/acknowledge": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/exports/{export_id}/artifact": {
+  "get": []
+ },
+ "/hr/exports/{export_id}/fail": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/exports/{export_id}/supersede": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/identity/ssn/fingerprint": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/identity/{identity_id}/ssn": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/identity/{identity_id}/ssn/reveal": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/providers/{seam}/bindings": {
+  "get": []
+ },
+ "/hr/providers/{seam}/dispatch": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/providers/{seam}/results": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/providers/{seam}/sync": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/time/exceptions/scan": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/time/overtime/evaluate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/time/overtime/scan": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/time/recompute": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hr/verification-letters/{letter_id}/generate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/hubstaff/public/status": {
+  "get": []
+ },
+ "/hugging-face/public/model": {
+  "get": []
+ },
+ "/hundredms/public/status": {
+  "get": []
+ },
+ "/hygraph/public/status": {
+  "get": []
+ },
+ "/iconify/public/search": {
+  "get": []
+ },
+ "/ietf-datatracker/public/document": {
+  "get": []
+ },
+ "/imagekit/public/status": {
+  "get": []
+ },
+ "/images/bg-remove": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/images/detect-document": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/images/edit": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/images/generate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/images/inpaint": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/images/ops": {
+  "get": []
+ },
+ "/images/studio/commit": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/images/studio/discard": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/images/studio/presets": {
+  "get": []
+ },
+ "/images/studio/process": {
+  "post": [
+   "multipart/form-data"
+  ]
+ },
+ "/imgix/public/status": {
+  "get": []
+ },
+ "/inaturalist/public/observation": {
+  "get": []
+ },
+ "/incident-io/public/status": {
+  "get": []
+ },
+ "/infobip/public/status": {
+  "get": []
+ },
+ "/inkscape-wiki/public/page": {
+  "get": []
+ },
+ "/inngest/public/status": {
+  "get": []
+ },
+ "/insightly/public/status": {
+  "get": []
+ },
+ "/instapage/public/status": {
+  "get": []
+ },
+ "/internet-archive/public/item": {
+  "get": []
+ },
+ "/iterable/public/status": {
+  "get": []
+ },
+ "/itsdangerous-docs/public/getting-started": {
+  "get": []
+ },
+ "/jahia/public/status": {
+  "get": []
+ },
+ "/jazzhr/public/status": {
+  "get": []
+ },
+ "/jinja-docs/public/getting-started": {
+  "get": []
+ },
+ "/jobvite/public/status": {
+  "get": []
+ },
+ "/jokeapi/safe-joke": {
+  "get": []
+ },
+ "/joplin-cloud/public/health": {
+  "get": []
+ },
+ "/jotform/public/status": {
+  "get": []
+ },
+ "/jottacloud/public/status": {
+  "get": []
+ },
+ "/jsdelivr/public/npm-package": {
+  "get": []
+ },
+ "/jsr/public/package": {
+  "get": []
+ },
+ "/justcall/public/status": {
+  "get": []
+ },
+ "/justworks/public/status": {
+  "get": []
+ },
+ "/jwx/public/status": {
+  "get": []
+ },
+ "/kajabi/public/status": {
+  "get": []
+ },
+ "/kaltura/public/status": {
+  "get": []
+ },
+ "/kantata-ox/public/status": {
+  "get": []
+ },
+ "/kayako/public/status": {
+  "get": []
+ },
+ "/kde-community-wiki/public/page": {
+  "get": []
+ },
+ "/kg-inspector/edges/top": {
+  "get": []
+ },
+ "/kg-inspector/entities": {
+  "get": []
+ },
+ "/kg-inspector/entities/{entity_id}/mentions": {
+  "get": []
+ },
+ "/kg/graph": {
+  "get": []
+ },
+ "/kg/graph/entity/{entity_id}/mentions": {
+  "get": []
+ },
+ "/khoros/public/status": {
+  "get": []
+ },
+ "/kinsta/public/status": {
+  "get": []
+ },
+ "/kit/public/status": {
+  "get": []
+ },
+ "/kitsu/public/anime": {
+  "get": []
+ },
+ "/kixie/public/status": {
+  "get": []
+ },
+ "/knock/public/status": {
+  "get": []
+ },
+ "/knowledge/search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/knowledge/view": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/kodi-wiki/public/page": {
+  "get": []
+ },
+ "/kontent-ai/public/status": {
+  "get": []
+ },
+ "/kumospace/public/status": {
+  "get": []
+ },
+ "/kustomer/public/status": {
+  "get": []
+ },
+ "/landingi/public/status": {
+  "get": []
+ },
+ "/landr/public/status": {
+  "get": []
+ },
+ "/laserfiche/public/status": {
+  "get": []
+ },
+ "/later/public/status": {
+  "get": []
+ },
+ "/lattice/public/status": {
+  "get": []
+ },
+ "/launchdarkly/public/status": {
+  "get": []
+ },
+ "/launchpad/public/ubuntu-source": {
+  "get": []
+ },
+ "/learn-amp/public/status": {
+  "get": []
+ },
+ "/learnworlds/public/status": {
+  "get": []
+ },
+ "/legal/admin/bulk/load": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/legal/admin/bulk/manifest": {
+  "get": []
+ },
+ "/legal/admin/clusters/local": {
+  "get": []
+ },
+ "/legal/admin/clusters/{cluster_id}": {
+  "get": []
+ },
+ "/legal/admin/courts": {
+  "get": []
+ },
+ "/legal/admin/diagnose": {
+  "get": []
+ },
+ "/legal/admin/ingest-runs": {
+  "get": []
+ },
+ "/legal/admin/opinions/{opinion_id}/text": {
+  "get": []
+ },
+ "/legal/admin/overview": {
+  "get": []
+ },
+ "/legal/admin/presets": {
+  "get": []
+ },
+ "/legal/admin/stats": {
+  "get": []
+ },
+ "/legal/admin/sync/clusters": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/legal/admin/sync/courts": {
+  "post": []
+ },
+ "/legal/admin/sync/opinions": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/legal/admin/version": {
+  "get": []
+ },
+ "/legal/citations/lookup": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/legal/dockets/{docket_id}": {
+  "get": []
+ },
+ "/legal/opinions/{opinion_id}": {
+  "get": []
+ },
+ "/legal/search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/legal/wc/ratings/calculate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/legal/wc/ratings/claims": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/legal/wc/ratings/claims/{claim_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/legal/wc/ratings/claims/{claim_id}/report": {
+  "get": [],
+  "post": []
+ },
+ "/legal/wc/ratings/defaults": {
+  "get": []
+ },
+ "/legal/wc/ratings/impairments": {
+  "get": []
+ },
+ "/legal/wc/ratings/impairments/search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/legal/wc/ratings/injuries/{injury_id}": {
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/legal/wc/ratings/occupational-codes": {
+  "get": []
+ },
+ "/legal/wc/ratings/reports/{report_id}": {
+  "get": []
+ },
+ "/legal/wc/ratings/reports/{report_id}/calculate": {
+  "post": []
+ },
+ "/legal/wc/ratings/reports/{report_id}/injuries": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/legal/webhooks/courtlistener": {
+  "post": []
+ },
+ "/lemmy/public/instance": {
+  "get": []
+ },
+ "/lever/public/status": {
+  "get": []
+ },
+ "/library-of-congress/public/item": {
+  "get": []
+ },
+ "/libreoffice-wiki/public/page": {
+  "get": []
+ },
+ "/liferay/public/status": {
+  "get": []
+ },
+ "/lightdash/public/status": {
+  "get": []
+ },
+ "/linkfire/public/status": {
+  "get": []
+ },
+ "/linode/public/status": {
+  "get": []
+ },
+ "/linuxtv-wiki/public/page": {
+  "get": []
+ },
+ "/listenbrainz/public/sitewide/listening-activity": {
+  "get": []
+ },
+ "/livechat-status/public/status": {
+  "get": []
+ },
+ "/livestorm/public/status": {
+  "get": []
+ },
+ "/local-proxy/{app_instance_id}/{path}": {
+  "get": [],
+  "post": [],
+  "put": [],
+  "delete": [],
+  "patch": []
+ },
+ "/logrocket/public/status": {
+  "get": []
+ },
+ "/logseq/public/release": {
+  "get": []
+ },
+ "/loom/public/video": {
+  "get": []
+ },
+ "/loops/public/status": {
+  "get": []
+ },
+ "/lorem-picsum/catalog": {
+  "get": []
+ },
+ "/lucid/public/status": {
+  "get": []
+ },
+ "/lucidlink/public/status": {
+  "get": []
+ },
+ "/lucky-orange/public/status": {
+  "get": []
+ },
+ "/lulu/catalog": {
+  "get": []
+ },
+ "/lulu/cover-dimensions": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/lulu/orders": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/lulu/orders/{order_id}": {
+  "get": []
+ },
+ "/lulu/orders/{order_id}/cancel": {
+  "post": []
+ },
+ "/lulu/payment-mode": {
+  "get": []
+ },
+ "/lulu/price": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/lulu/print-jobs": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/lulu/print-jobs/{print_job_id}": {
+  "get": [],
+  "delete": []
+ },
+ "/lulu/shipping-options": {
+  "get": []
+ },
+ "/lulu/webhooks/incoming": {
+  "post": []
+ },
+ "/lulu/webhooks/stripe": {
+  "post": []
+ },
+ "/lulu/webhooks/subscription": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/lumen5/public/status": {
+  "get": []
+ },
+ "/lyssna/public/status": {
+  "get": []
+ },
+ "/mailerlite/public/status": {
+  "get": []
+ },
+ "/mailersend/public/status": {
+  "get": []
+ },
+ "/mailgun/public/status": {
+  "get": []
+ },
+ "/mailjet/public/status": {
+  "get": []
+ },
+ "/make-status/public/status": {
+  "get": []
+ },
+ "/mame-wiki/public/page": {
+  "get": []
+ },
+ "/manatal/public/status": {
+  "get": []
+ },
+ "/mandate-candidate-runs/{run_id}": {
+  "get": []
+ },
+ "/mandate-candidate-runs/{run_id}/agreement": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandate-candidates/{candidate_id}": {
+  "get": []
+ },
+ "/mandate-candidates/{candidate_id}/discard": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandate-candidates/{candidate_id}/promote": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandate-candidates/{candidate_id}/put-back": {
+  "post": []
+ },
+ "/mandates": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandates/code-truth": {
+  "get": []
+ },
+ "/mandates/coverage": {
+  "get": []
+ },
+ "/mandates/coverage/states": {
+  "get": []
+ },
+ "/mandates/impact": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandates/impact/advance": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandates/impact/advance/mine": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandates/impact/mine": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandates/impact/revert": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandates/impact/revert/mine": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandates/impact/workflows": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandates/references/board": {
+  "get": []
+ },
+ "/mandates/soft": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandates/{mandate_key}/binding": {
+  "put": [
+   "application/json"
+  ],
+  "delete": [
+   "application/json"
+  ]
+ },
+ "/mandates/{mandate_key}/candidates": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/mandates/{mandate_key}/default-holder": {
+  "put": [
+   "application/json"
+  ]
+ },
+ "/mandates/{mandate_key}/definition": {
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/mandates/{mandate_key}/definition-rights": {
+  "get": []
+ },
+ "/mandates/{mandate_key}/draft-inputs": {
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/mandates/{mandate_key}/exemplars/{exemplar_id}/promote": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandates/{mandate_key}/goal": {
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/mandates/{mandate_key}/input-surface": {
+  "get": []
+ },
+ "/mandates/{mandate_key}/provenance": {
+  "get": []
+ },
+ "/mandates/{mandate_key}/references": {
+  "get": []
+ },
+ "/mandates/{mandate_key}/resolution": {
+  "get": []
+ },
+ "/mandates/{mandate_key}/test": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandates/{mandate_key}/tests": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandates/{mandate_key}/try": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandates/{mandate_key}/variable-verdicts": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mandates/{mandate_key}/workflow-starter": {
+  "post": []
+ },
+ "/manjaro-wiki/public/page": {
+  "get": []
+ },
+ "/marvel-app/public/status": {
+  "get": []
+ },
+ "/masterworks/audition": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/audition-outcome": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/audition-pairwise": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/build": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/capture-plan/reminders": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/chat-import/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/chat-import/shortlist": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/checkup": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/clean-corpus": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/drip/send-now": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/inbox/connection": {
+  "get": []
+ },
+ "/masterworks/inbox/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/ingest": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/ingest-chat": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/ingest-conversations": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/ingest-corpus": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/ingest-drip": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/ingest-dump": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/ingest-file": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/ingest-inbox": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/ingest-markup": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/ingest-meeting": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/ingest-predictions": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/ingest-sort": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/ingest-timeline": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/ingest-triad": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/ingest-unfolding": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/meeting/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/probe": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/rulebook/restore-write": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/runs/{run_id}/cancel": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/runs/{run_id}/rejoin": {
+  "post": []
+ },
+ "/masterworks/sealed-cases": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/sort/boundary": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/sort/cases": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/teach-back": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/triads": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/triage": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/understudy/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/{masterwork_id}/run-estimate": {
+  "get": []
+ },
+ "/masterworks/{rulebook_id}/bench": {
+  "get": []
+ },
+ "/masterworks/{rulebook_id}/bench/runs": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/masterworks/{rulebook_id}/corpus": {
+  "get": []
+ },
+ "/masterworks/{rulebook_id}/predictions": {
+  "get": []
+ },
+ "/masterworks/{rulebook_id}/sealed-cases": {
+  "get": []
+ },
+ "/mastodon/public/instance": {
+  "get": []
+ },
+ "/matplotlib-docs/public/quickstart": {
+  "get": []
+ },
+ "/matrix-org/public/versions": {
+  "get": []
+ },
+ "/matrix/public/status": {
+  "get": []
+ },
+ "/mattermost/public/instance": {
+  "get": []
+ },
+ "/mattermost/public/status": {
+  "get": []
+ },
+ "/maven-central/public/artifact": {
+  "get": []
+ },
+ "/maze-status/public/status": {
+  "get": []
+ },
+ "/mcp-connections/availability": {
+  "get": []
+ },
+ "/mcp-connections/availability/{server_slug}": {
+  "get": []
+ },
+ "/mcp-connections/{server_id}": {
+  "delete": []
+ },
+ "/mcp-connections/{server_id}/catalog-refresh": {
+  "post": []
+ },
+ "/mcp-connections/{server_id}/cloudflare/account-metadata": {
+  "post": []
+ },
+ "/mcp-connections/{server_id}/credentials": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mcp-connections/{server_id}/grafana/dashboard-search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mcp-connections/{server_id}/invoke": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mcp-connections/{server_id}/new-relic/account-status": {
+  "post": []
+ },
+ "/mcp-connections/{server_id}/oauth-tokens": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mcp-connections/{server_id}/refresh": {
+  "post": []
+ },
+ "/mcp-connections/{server_id}/selected-file-metadata": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mcp-connections/{server_id}/tools": {
+  "get": []
+ },
+ "/mcp-connections/{server_id}/woocommerce/products-query": {
+  "post": []
+ },
+ "/mcp/debug-traces": {
+  "post": []
+ },
+ "/me/analysis-preferences": {
+  "get": [],
+  "put": [
+   "application/json"
+  ]
+ },
+ "/media-heal/drain": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/media/actions": {
+  "get": []
+ },
+ "/media/export-adapters": {
+  "get": []
+ },
+ "/media/exports": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/media/exports/{library_id}": {
+  "get": []
+ },
+ "/media/jobs/{job_id}": {
+  "get": []
+ },
+ "/media/jobs/{job_id}/cancel": {
+  "post": []
+ },
+ "/media/jobs/{job_id}/resume": {
+  "post": []
+ },
+ "/media/jobs/{job_id}/retry-failed": {
+  "post": []
+ },
+ "/media/libraries": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/media/libraries/{library_id}": {
+  "get": []
+ },
+ "/media/libraries/{library_id}/estimate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/media/libraries/{library_id}/export": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/media/libraries/{library_id}/index": {
+  "post": []
+ },
+ "/media/libraries/{library_id}/item-facets": {
+  "get": []
+ },
+ "/media/libraries/{library_id}/items": {
+  "get": []
+ },
+ "/media/libraries/{library_id}/jobs": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/media/libraries/{library_id}/metrics": {
+  "get": []
+ },
+ "/media/libraries/{library_id}/presets": {
+  "get": []
+ },
+ "/media/libraries/{library_id}/send-to-rulebook": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/media/libraries/{library_id}/sync": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/media/libraries/{library_id}/videos": {
+  "get": []
+ },
+ "/media/podcast/upload-image": {
+  "post": [
+   "multipart/form-data"
+  ]
+ },
+ "/media/podcast/upload-video": {
+  "post": [
+   "multipart/form-data"
+  ]
+ },
+ "/media/resolve": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/media/settings": {
+  "get": [],
+  "put": [
+   "application/json"
+  ]
+ },
+ "/media/upload": {
+  "post": [
+   "multipart/form-data"
+  ]
+ },
+ "/media/youtube/transcript": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/media/{file_id}/v/{vision_class}": {
+  "get": []
+ },
+ "/mediawiki/public/page": {
+  "get": []
+ },
+ "/mem/public/status": {
+  "get": []
+ },
+ "/memberful/public/status": {
+  "get": []
+ },
+ "/memberspace/public/status": {
+  "get": []
+ },
+ "/memberstack/public/status": {
+  "get": []
+ },
+ "/mention/public/status": {
+  "get": []
+ },
+ "/mergify/public/status": {
+  "get": []
+ },
+ "/met-museum/public/object": {
+  "get": []
+ },
+ "/meta-wiki/public/page": {
+  "get": []
+ },
+ "/metacpan/public/module": {
+  "get": []
+ },
+ "/mgnify/public/study": {
+  "get": []
+ },
+ "/microsoft-integrations/authorize": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/microsoft-integrations/callback": {
+  "get": []
+ },
+ "/microsoft-integrations/disconnect": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/microsoft-integrations/onedrive/selected-file/content": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/microsoft-integrations/onedrive/selected-file/metadata": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/microsoft-integrations/outlook/calendar/basic-window": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/microsoft-integrations/outlook/recent-basic-messages": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/microsoft-integrations/preflight": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/microsoft-integrations/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/microsoft-integrations/sharepoint/selected-file/content": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/microsoft-integrations/sharepoint/selected-file/metadata": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/microsoft-integrations/teams/joined": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/microsoft-integrations/teams/selected-chat/recent-messages": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/mighty-networks/public/status": {
+  "get": []
+ },
+ "/milanote/public/status": {
+  "get": []
+ },
+ "/minds/public/status": {
+  "get": []
+ },
+ "/mindtickle/public/status": {
+  "get": []
+ },
+ "/mintlify-status/public/status": {
+  "get": []
+ },
+ "/miro/public/status": {
+  "get": []
+ },
+ "/misskeyio/public/instance": {
+  "get": []
+ },
+ "/mixcloud/public/cloudcast": {
+  "get": []
+ },
+ "/modrinth/public/project": {
+  "get": []
+ },
+ "/moengage/public/status": {
+  "get": []
+ },
+ "/molin/public/status": {
+  "get": []
+ },
+ "/monday/public/status": {
+  "get": []
+ },
+ "/moodle-integrations/official-demos/{site_key}/public-config": {
+  "get": []
+ },
+ "/morgen/public/status": {
+  "get": []
+ },
+ "/motion/public/status": {
+  "get": []
+ },
+ "/moxo/public/status": {
+  "get": []
+ },
+ "/mozilla-wiki/public/page": {
+  "get": []
+ },
+ "/mural/public/status": {
+  "get": []
+ },
+ "/musicbrainz/public/artist": {
+  "get": []
+ },
+ "/mux/public/status": {
+  "get": []
+ },
+ "/nager-holidays/public/holidays": {
+  "get": []
+ },
+ "/namely/public/status": {
+  "get": []
+ },
+ "/nasa-images/public/asset": {
+  "get": []
+ },
+ "/navattic/public/status": {
+  "get": []
+ },
+ "/netlify/public/status": {
+  "get": []
+ },
+ "/news/cost/resume": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/news/setup/facts": {
+  "get": []
+ },
+ "/news/setup/propose": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/nexcess/public/status": {
+  "get": []
+ },
+ "/nextiva/public/status": {
+  "get": []
+ },
+ "/nifty/public/status": {
+  "get": []
+ },
+ "/nixos-wiki/public/page": {
+  "get": []
+ },
+ "/nobel-prize/latest-award": {
+  "get": []
+ },
+ "/nodebb/public/compatibility": {
+  "get": []
+ },
+ "/northpass/public/status": {
+  "get": []
+ },
+ "/notesnook/public/release": {
+  "get": []
+ },
+ "/notifications/self": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/ntfy/public/health": {
+  "get": []
+ },
+ "/nutshell-crm/public/status": {
+  "get": []
+ },
+ "/nws/public/station": {
+  "get": []
+ },
+ "/obis/public/taxon": {
+  "get": []
+ },
+ "/obsidian/public/release": {
+  "get": []
+ },
+ "/office/generate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/office/{file_id}/convert": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/office/{file_id}/markdown": {
+  "get": []
+ },
+ "/officernd/public/status": {
+  "get": []
+ },
+ "/olark/public/status": {
+  "get": []
+ },
+ "/omnisend/public/status": {
+  "get": []
+ },
+ "/onesignal/public/status": {
+  "get": []
+ },
+ "/open-food-facts/public/product": {
+  "get": []
+ },
+ "/open-library/public/work": {
+  "get": []
+ },
+ "/open-trivia-db/random-question": {
+  "get": []
+ },
+ "/open-vsx/public/extension": {
+  "get": []
+ },
+ "/openaire/public/work": {
+  "get": []
+ },
+ "/openalex/public/work": {
+  "get": []
+ },
+ "/openbsd-faq/public/chapter": {
+  "get": []
+ },
+ "/opencitations/public/work": {
+  "get": []
+ },
+ "/openedx-integrations/official-sandbox/demo-course": {
+  "get": []
+ },
+ "/openfda/public/drug-label-identity": {
+  "get": []
+ },
+ "/openml/public/dataset": {
+  "get": []
+ },
+ "/openoffice-wiki/public/page": {
+  "get": []
+ },
+ "/openproject/public/api-root": {
+  "get": []
+ },
+ "/openrouter/public/auto-router": {
+  "get": []
+ },
+ "/openssf-scorecard/public/repository": {
+  "get": []
+ },
+ "/openssl-wiki/public/page": {
+  "get": []
+ },
+ "/openstack-wiki/public/page": {
+  "get": []
+ },
+ "/openstreetmap-wiki/public/page": {
+  "get": []
+ },
+ "/opensuse-wiki/public/page": {
+  "get": []
+ },
+ "/opentext/public/status": {
+  "get": []
+ },
+ "/openverse/public/image-attribution": {
+  "get": []
+ },
+ "/openwrt-wiki/public/page": {
+  "get": []
+ },
+ "/optimizely/public/status": {
+  "get": []
+ },
+ "/oracle-health-integrations/open-sandbox/capability": {
+  "get": []
+ },
+ "/oracle-health-integrations/open-sandbox/patient-canary": {
+  "get": []
+ },
+ "/organization-secrets/{organization_id}": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/organization-secrets/{organization_id}/contribute": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/organization-secrets/{organization_id}/{secret_id}": {
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/organization-secrets/{organization_id}/{secret_id}/permissions": {
+  "put": [
+   "application/json"
+  ]
+ },
+ "/organization-secrets/{organization_id}/{secret_id}/sync": {
+  "post": []
+ },
+ "/osf/public/project": {
+  "get": []
+ },
+ "/osgeo-wiki/public/page": {
+  "get": []
+ },
+ "/otter-ai/public/status": {
+  "get": []
+ },
+ "/outline/public/release": {
+  "get": []
+ },
+ "/outreach/inbound/gmail": {
+  "post": []
+ },
+ "/outreach/personalization/lists/{outreach_list_id}/batch": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/outreach/personalization/lists/{outreach_list_id}/drafts": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/outreach/personalization/lists/{outreach_list_id}/run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/outreach/pitch-templates": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/outreach/pitch-templates/merge-fields": {
+  "get": []
+ },
+ "/outreach/pitch-templates/validate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/outreach/replies/lists/{outreach_list_id}/drafts": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/outreach/replies/lists/{outreach_list_id}/members/{member_id}/thread": {
+  "get": []
+ },
+ "/outreach/replies/lists/{outreach_list_id}/run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/outreach/single/drafts": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/outreach/single/drafts/approve": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/outreach/single/drafts/{draft_id}/approve": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/outreach/single/drafts/{draft_id}/personalization": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/outreach/single/drafts/{draft_id}/reject": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/outreach/single/drafts/{draft_id}/send": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/owncast/public/instance": {
+  "get": []
+ },
+ "/oyster/public/status": {
+  "get": []
+ },
+ "/packagist/public/latest-release": {
+  "get": []
+ },
+ "/page-extraction/page-runs/{page_run_id}/retry": {
+  "post": []
+ },
+ "/page-extraction/runs/stream": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/page-extraction/runs/{run_id}/cancel": {
+  "post": []
+ },
+ "/page-extraction/runs/{run_id}/index": {
+  "post": []
+ },
+ "/pandadoc/public/status": {
+  "get": []
+ },
+ "/pandas-docs/public/tutorial": {
+  "get": []
+ },
+ "/pantheon/public/status": {
+  "get": []
+ },
+ "/paperlesspost/public/status": {
+  "get": []
+ },
+ "/papershift/public/status": {
+  "get": []
+ },
+ "/parabola-status/public/status": {
+  "get": []
+ },
+ "/paradox/public/status": {
+  "get": []
+ },
+ "/patreon/public/status": {
+  "get": []
+ },
+ "/peertube/public/video": {
+  "get": []
+ },
+ "/penpot/public/release": {
+  "get": []
+ },
+ "/personal-staff/open": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/personio/public/status": {
+  "get": []
+ },
+ "/phenom/public/status": {
+  "get": []
+ },
+ "/pillow-docs/public/getting-started": {
+  "get": []
+ },
+ "/pinpoint/public/status": {
+  "get": []
+ },
+ "/pipedream/public/status": {
+  "get": []
+ },
+ "/pipeline-crm/public/status": {
+  "get": []
+ },
+ "/pixelcut/public/status": {
+  "get": []
+ },
+ "/pixelfed/public/instance": {
+  "get": []
+ },
+ "/pixieset/public/status": {
+  "get": []
+ },
+ "/placecats/cat": {
+  "get": []
+ },
+ "/placeholdco/placeholder": {
+  "get": []
+ },
+ "/plain/public/status": {
+  "get": []
+ },
+ "/planable/public/status": {
+  "get": []
+ },
+ "/planday/public/status": {
+  "get": []
+ },
+ "/plane/public/status": {
+  "get": []
+ },
+ "/plans/{plan_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/plans/{plan_id}/assist": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/plans/{plan_id}/dissolve": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/plans/{plan_id}/emit": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/plans/{plan_id}/internal": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/plans/{plan_id}/merge": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/plans/{plan_id}/promote": {
+  "post": []
+ },
+ "/plans/{plan_id}/resolve": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/plans/{plan_id}/sample": {
+  "put": [
+   "application/json"
+  ]
+ },
+ "/plans/{plan_id}/settle": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/plans/{plan_id}/shape": {
+  "put": [
+   "application/json"
+  ]
+ },
+ "/plans/{plan_id}/split": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/plans/{plan_id}/sync": {
+  "post": []
+ },
+ "/plausible/public/status": {
+  "get": []
+ },
+ "/plivo/public/status": {
+  "get": []
+ },
+ "/plos/public/article": {
+  "get": []
+ },
+ "/pluvo/public/status": {
+  "get": []
+ },
+ "/podcast/cast-preview": {
+  "get": []
+ },
+ "/podcast/generate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/podcast/races": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/podcast/races/{race_id}/arms/{arm}/rerun": {
+  "post": []
+ },
+ "/podcast/resume/{run_id}": {
+  "post": []
+ },
+ "/podcast/runs/{run_id}/assets/add": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/podcast/runs/{run_id}/assets/regenerate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/podcast/runs/{run_id}/reconcile": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/podio/public/status": {
+  "get": []
+ },
+ "/poetrydb/random-metadata": {
+  "get": []
+ },
+ "/pokeapi/public/species": {
+  "get": []
+ },
+ "/polly/public/status": {
+  "get": []
+ },
+ "/postgresql-wiki/public/page": {
+  "get": []
+ },
+ "/postmark-integrations/sandbox/validate": {
+  "post": []
+ },
+ "/pr-calendar/brands/{brand_id}/run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/prefect-status/public/status": {
+  "get": []
+ },
+ "/pressidium/public/status": {
+  "get": []
+ },
+ "/prezi/public/status": {
+  "get": []
+ },
+ "/prismic/public/status": {
+  "get": []
+ },
+ "/productboard/public/status": {
+  "get": []
+ },
+ "/productlane/public/status": {
+  "get": []
+ },
+ "/productplan/public/status": {
+  "get": []
+ },
+ "/project-gutenberg/latest-ebook": {
+  "get": []
+ },
+ "/proof-runs/checks": {
+  "get": []
+ },
+ "/proof-runs/checks/{slug}": {
+  "get": []
+ },
+ "/proof-runs/checks/{slug}/run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/proof-runs/mandate-catalog": {
+  "get": []
+ },
+ "/proof-runs/runs": {
+  "get": []
+ },
+ "/proof-runs/runs/{run_id}": {
+  "get": []
+ },
+ "/proof-runs/scenarios": {
+  "get": []
+ },
+ "/proof-runs/scenarios/{slug}": {
+  "put": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/proposify/public/status": {
+  "get": []
+ },
+ "/pubchem/public/compound": {
+  "get": []
+ },
+ "/public/workflows/{definition_id}": {
+  "get": []
+ },
+ "/pubmed/public/summary": {
+  "get": []
+ },
+ "/pubnub/public/status": {
+  "get": []
+ },
+ "/pusher/public/status": {
+  "get": []
+ },
+ "/pytest-docs/public/getting-started": {
+  "get": []
+ },
+ "/python-docs/public/tutorial-introduction": {
+  "get": []
+ },
+ "/qemu-wiki/public/page": {
+  "get": []
+ },
+ "/qodo/public/status": {
+  "get": []
+ },
+ "/qt-wiki/public/page": {
+  "get": []
+ },
+ "/qualtrics/public/status": {
+  "get": []
+ },
+ "/quip/public/status": {
+  "get": []
+ },
+ "/qwilr/public/status": {
+  "get": []
+ },
+ "/radio-browser/public/statistics": {
+  "get": []
+ },
+ "/rag-kinds/search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/admin/audit": {
+  "get": []
+ },
+ "/rag/admin/data-stores": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/admin/data-stores/{store_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/rag/admin/data-stores/{store_id}/members": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/admin/data-stores/{store_id}/members/batch-remove": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/admin/data-stores/{store_id}/members/{source_kind}/{source_id}": {
+  "delete": []
+ },
+ "/rag/admin/library": {
+  "get": []
+ },
+ "/rag/admin/overview": {
+  "get": []
+ },
+ "/rag/admin/search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/admin/source/{source_kind}/{source_id}": {
+  "delete": []
+ },
+ "/rag/admin/source/{source_kind}/{source_id}/chunks": {
+  "get": []
+ },
+ "/rag/admin/sources": {
+  "get": []
+ },
+ "/rag/conversations/{conversation_id}/ingest": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/data-stores": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/data-stores/{store_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/rag/data-stores/{store_id}/grants": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/data-stores/{store_id}/grants/{grant_id}": {
+  "delete": []
+ },
+ "/rag/data-stores/{store_id}/members": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/data-stores/{store_id}/members-rich": {
+  "get": []
+ },
+ "/rag/data-stores/{store_id}/members/{source_kind}/{source_id}": {
+  "delete": []
+ },
+ "/rag/health": {
+  "get": []
+ },
+ "/rag/ingest": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/ingest/stream": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/library": {
+  "get": []
+ },
+ "/rag/library-catalog": {
+  "get": []
+ },
+ "/rag/library-catalog/{store_id}/subscribe": {
+  "post": [],
+  "delete": []
+ },
+ "/rag/library/bulk-delete": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/library/derive-runs/{run_id}/cancel": {
+  "post": []
+ },
+ "/rag/library/stores/{store_id}/ingest": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/library/summary/totals": {
+  "get": []
+ },
+ "/rag/library/{processed_document_id}": {
+  "get": [],
+  "delete": [],
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/rag/library/{processed_document_id}/chunk": {
+  "post": []
+ },
+ "/rag/library/{processed_document_id}/chunks": {
+  "get": []
+ },
+ "/rag/library/{processed_document_id}/clean": {
+  "post": []
+ },
+ "/rag/library/{processed_document_id}/derivations": {
+  "get": []
+ },
+ "/rag/library/{processed_document_id}/derive/{kind}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/library/{processed_document_id}/derive/{kind}/rebuild-preview": {
+  "post": []
+ },
+ "/rag/library/{processed_document_id}/embed": {
+  "post": []
+ },
+ "/rag/library/{processed_document_id}/estimate": {
+  "get": []
+ },
+ "/rag/library/{processed_document_id}/extract": {
+  "post": []
+ },
+ "/rag/library/{processed_document_id}/full": {
+  "delete": []
+ },
+ "/rag/library/{processed_document_id}/page/{page_index}": {
+  "get": []
+ },
+ "/rag/library/{processed_document_id}/reprocess": {
+  "post": []
+ },
+ "/rag/library/{processed_document_id}/run-all": {
+  "post": []
+ },
+ "/rag/library/{processed_document_id}/stages": {
+  "get": []
+ },
+ "/rag/library/{processed_document_id}/test-search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/repositories": {
+  "get": []
+ },
+ "/rag/repositories/{repository_id}/index": {
+  "post": []
+ },
+ "/rag/search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/search-lab/diagnose": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/search-lab/diagnose/stream": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/search-lab/expand": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/search-lab/inventory": {
+  "get": []
+ },
+ "/rag/search-lab/tool/get-chunk": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/search-lab/tool/search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/search/stream": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/sweeps": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rag/verify": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rainfocus/public/status": {
+  "get": []
+ },
+ "/randomdog/random-image": {
+  "get": []
+ },
+ "/randomfox/random-image": {
+  "get": []
+ },
+ "/rank-kinds/landscape": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/raycast/public/status": {
+  "get": []
+ },
+ "/rcsb-pdb/public/entry": {
+  "get": []
+ },
+ "/reactos-wiki/public/page": {
+  "get": []
+ },
+ "/read-ai/public/status": {
+  "get": []
+ },
+ "/read-the-docs/public/project-version": {
+  "get": []
+ },
+ "/readme/public/status": {
+  "get": []
+ },
+ "/rebrandly/public/status": {
+  "get": []
+ },
+ "/reclaim/public/status": {
+  "get": []
+ },
+ "/recovery/audit/{audit_id}/applied": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/recovery/handle": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/recovery/workflows/{definition_id}/apply-patch": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/recurly/public/status": {
+  "get": []
+ },
+ "/redact/escrow/recover": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/redact/escrow/wrapping-key": {
+  "get": []
+ },
+ "/redact/restore": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/redact/sessions/{session_id}/revoke": {
+  "post": []
+ },
+ "/render-status/public/status": {
+  "get": []
+ },
+ "/replicon/public/status": {
+  "get": []
+ },
+ "/requests-docs/public/quickstart": {
+  "get": []
+ },
+ "/rescuetime/public/status": {
+  "get": []
+ },
+ "/research/extension/scrape-queue": {
+  "get": []
+ },
+ "/research/extension/sources/verdict_bulk": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/projects/{project_id}/topics": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/research/sources/by-url": {
+  "get": []
+ },
+ "/research/suggest": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/templates": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/templates/list": {
+  "get": []
+ },
+ "/research/templates/{template_id}": {
+  "get": []
+ },
+ "/research/topics": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/analyses/{analysis_id}/retry": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/analyze-all": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/apply-tag-suggestions": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/auto-consolidate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/auto-tag": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/content/{content_id}": {
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/costs": {
+  "get": []
+ },
+ "/research/topics/{topic_id}/document": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/research/topics/{topic_id}/document/export": {
+  "get": []
+ },
+ "/research/topics/{topic_id}/document/versions": {
+  "get": []
+ },
+ "/research/topics/{topic_id}/experts": {
+  "get": []
+ },
+ "/research/topics/{topic_id}/experts/promote": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/generate-tag-suggestions": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/intent": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/keywords": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/research/topics/{topic_id}/keywords/reorder": {
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/keywords/{keyword_id}": {
+  "delete": []
+ },
+ "/research/topics/{topic_id}/keywords/{keyword_id}/find-videos": {
+  "post": []
+ },
+ "/research/topics/{topic_id}/links": {
+  "get": []
+ },
+ "/research/topics/{topic_id}/links/add-to-scope": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/media": {
+  "get": []
+ },
+ "/research/topics/{topic_id}/media/{media_id}": {
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/refresh": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/research/topics/{topic_id}/refresh-schedule": {
+  "put": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/retry-failed": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/score-sources": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/scrape": {
+  "post": []
+ },
+ "/research/topics/{topic_id}/search": {
+  "post": []
+ },
+ "/research/topics/{topic_id}/sources": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/sources/bulk": {
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/sources/rank-authority": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/sources/upload": {
+  "post": [
+   "multipart/form-data"
+  ]
+ },
+ "/research/topics/{topic_id}/sources/{source_id}": {
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/sources/{source_id}/analyze": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/sources/{source_id}/content": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/sources/{source_id}/extension-content": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/sources/{source_id}/mark-complete": {
+  "post": []
+ },
+ "/research/topics/{topic_id}/sources/{source_id}/rescrape": {
+  "post": []
+ },
+ "/research/topics/{topic_id}/sources/{source_id}/suggest-tags": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/sources/{source_id}/tags": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/sources/{source_id}/transcribe": {
+  "post": []
+ },
+ "/research/topics/{topic_id}/sources/{source_id}/verdict": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/synthesis": {
+  "get": []
+ },
+ "/research/topics/{topic_id}/synthesize": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/tag-input-export": {
+  "get": []
+ },
+ "/research/topics/{topic_id}/tags": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/tags/{tag_id}": {
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/research/topics/{topic_id}/tags/{tag_id}/consolidate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/youtube": {
+  "get": []
+ },
+ "/research/topics/{topic_id}/youtube/add": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/youtube/process": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/topics/{topic_id}/youtube/search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/youtube/library/{video_id}": {
+  "get": []
+ },
+ "/research/youtube/search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/youtube/videos/{video_id}": {
+  "get": []
+ },
+ "/research/youtube/videos/{video_id}/comments": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/youtube/videos/{video_id}/process": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/research/youtube/videos/{video_id}/process/stream": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/retool-status/public/status": {
+  "get": []
+ },
+ "/review/descend": {
+  "get": []
+ },
+ "/review/findings/from-walk": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/rick-and-morty/character": {
+  "get": []
+ },
+ "/rippling/public/status": {
+  "get": []
+ },
+ "/riverside/public/status": {
+  "get": []
+ },
+ "/roadmunk/public/status": {
+  "get": []
+ },
+ "/robin/public/status": {
+  "get": []
+ },
+ "/robohash/avatar/{seed}": {
+  "get": []
+ },
+ "/rollbar/public/status": {
+  "get": []
+ },
+ "/ror/public/organization": {
+  "get": []
+ },
+ "/rotageek/public/status": {
+  "get": []
+ },
+ "/rubygems/public/gem": {
+  "get": []
+ },
+ "/rudderstack/public/status": {
+  "get": []
+ },
+ "/runs": {
+  "get": []
+ },
+ "/runs/bulk-cancel": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/runs/bulk-retry-errored": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/runs/stream": {
+  "get": []
+ },
+ "/runs/waiting": {
+  "get": []
+ },
+ "/runs/{run_id}": {
+  "get": []
+ },
+ "/runs/{run_id}/cancel": {
+  "post": []
+ },
+ "/runs/{run_id}/checkpoints": {
+  "get": []
+ },
+ "/runs/{run_id}/checkpoints/{checkpoint_id}/preview": {
+  "get": []
+ },
+ "/runs/{run_id}/cost": {
+  "get": []
+ },
+ "/runs/{run_id}/events": {
+  "get": []
+ },
+ "/runs/{run_id}/events/stream": {
+  "get": []
+ },
+ "/runs/{run_id}/force-fail": {
+  "post": []
+ },
+ "/runs/{run_id}/inject": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/runs/{run_id}/kind-reference": {
+  "get": []
+ },
+ "/runs/{run_id}/nodes/{node_id}/execute": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/runs/{run_id}/nodes/{node_id}/fork-from": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/runs/{run_id}/nodes/{node_id}/input-status": {
+  "get": []
+ },
+ "/runs/{run_id}/nodes/{node_id}/manual-result": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/runs/{run_id}/nodes/{node_id}/rerun-from": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/runs/{run_id}/nodes/{node_id}/retry": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/runs/{run_id}/nodes/{node_id}/skip": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/runs/{run_id}/pause": {
+  "post": []
+ },
+ "/runs/{run_id}/resume": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/runs/{run_id}/resume-errored": {
+  "post": []
+ },
+ "/runs/{run_id}/resume-paused": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/runs/{run_id}/stream/debug": {
+  "get": []
+ },
+ "/runs/{run_id}/suggestions": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/runtime/executions/{execution_id}/events": {
+  "get": []
+ },
+ "/runtime/executions/{execution_id}/events/stream": {
+  "get": []
+ },
+ "/runtime/operations/by-link/{link_kind}/{link_id}": {
+  "get": []
+ },
+ "/runtime/operations/{request_id}": {
+  "get": []
+ },
+ "/runtime/operations/{request_id}/rejoin": {
+  "post": []
+ },
+ "/ryver/public/status": {
+  "get": []
+ },
+ "/salesloft/public/status": {
+  "get": []
+ },
+ "/samba-wiki/public/page": {
+  "get": []
+ },
+ "/samepage/public/status": {
+  "get": []
+ },
+ "/sandboxes/internal/default-browser-profile": {
+  "get": []
+ },
+ "/sanity/public/status": {
+  "get": []
+ },
+ "/scaleway/public/status": {
+  "get": []
+ },
+ "/scheduler/compute-next-due-at": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scheduler/cron/preview-fires": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scheduler/cron/validate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scheduler/runs": {
+  "get": []
+ },
+ "/scheduler/runs/{run_id}": {
+  "get": []
+ },
+ "/scheduler/status": {
+  "get": []
+ },
+ "/scheduler/tasks": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/scheduler/tasks/duplicates": {
+  "get": []
+ },
+ "/scheduler/tasks/{task_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/scheduler/tasks/{task_id}/run-now": {
+  "post": []
+ },
+ "/scheduler/triggers": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scheduler/triggers/{trigger_id}": {
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/scheduling/admin/db-jobs": {
+  "get": []
+ },
+ "/scheduling/admin/db-jobs/{jobid}": {
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/scheduling/admin/force-disable/{task_id}": {
+  "post": []
+ },
+ "/scheduling/admin/run-now/{task_id}": {
+  "post": []
+ },
+ "/scheduling/admin/system-tasks": {
+  "get": []
+ },
+ "/scheduling/admin/system-tasks/{task_id}": {
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/scheduling/compute-next-due-at": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scheduling/run-now/{task_id}": {
+  "post": []
+ },
+ "/scheduling/scanner-status": {
+  "get": []
+ },
+ "/scheduling/validate-cron": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/schema/all": {
+  "get": []
+ },
+ "/schema/bundle/{name}": {
+  "get": []
+ },
+ "/schema/manifest": {
+  "get": []
+ },
+ "/schema/openapi": {
+  "get": []
+ },
+ "/schoox/public/status": {
+  "get": []
+ },
+ "/scikit-learn-docs/public/getting-started": {
+  "get": []
+ },
+ "/scout-apm/public/status": {
+  "get": []
+ },
+ "/scraper-kinds/scrape": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scraper-kinds/scrape-many": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scraper/batch": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scraper/browser-fetch": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scraper/browser-inspect": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scraper/config/domains": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scraper/content/save": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scraper/page-capture": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scraper/queue/claim": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scraper/queue/fail": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scraper/queue/pending": {
+  "get": []
+ },
+ "/scraper/queue/stats": {
+  "get": []
+ },
+ "/scraper/queue/submit": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scraper/quick-scrape": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scraper/search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scraper/search-and-scrape": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scraper/search-and-scrape-limited": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/scratch/public/team-project": {
+  "get": []
+ },
+ "/scryfall/public/card": {
+  "get": []
+ },
+ "/scummvm-wiki/public/page": {
+  "get": []
+ },
+ "/search-kinds/search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/secure-delivery": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/secure-delivery/code": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/secure-delivery/open": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/secure-delivery/options": {
+  "get": []
+ },
+ "/secure-delivery/view": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/secure-delivery/{delivery_id}/revoke": {
+  "post": []
+ },
+ "/seismic/public/status": {
+  "get": []
+ },
+ "/semantic-scholar/public/paper": {
+  "get": []
+ },
+ "/semaphore-ci/public/status": {
+  "get": []
+ },
+ "/sending-identities": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/sending-identities/bring-up-readiness": {
+  "get": []
+ },
+ "/sending-identities/connectable": {
+  "get": []
+ },
+ "/sending-identities/policy": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/sending-identities/{identity_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/sending-identities/{identity_id}/check-authentication": {
+  "post": []
+ },
+ "/sending-identities/{identity_id}/check-domain": {
+  "post": []
+ },
+ "/sending-identities/{identity_id}/events": {
+  "get": []
+ },
+ "/sending-identities/{identity_id}/pause": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/sending-identities/{identity_id}/readiness": {
+  "get": []
+ },
+ "/sending-identities/{identity_id}/refresh-health": {
+  "post": []
+ },
+ "/sending-identities/{identity_id}/resume": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/sending-identities/{identity_id}/start-warmup": {
+  "post": []
+ },
+ "/seo/brands/{brand_id}/map/author": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/brands/{brand_id}/strategy": {
+  "get": []
+ },
+ "/seo/brands/{brand_id}/strategy/generate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/brands/{brand_id}/strategy/history": {
+  "get": []
+ },
+ "/seo/brands/{brand_id}/strategy/ruling": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/collections": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/seo/collections/{run_id}": {
+  "get": []
+ },
+ "/seo/collections/{run_id}/evidence": {
+  "get": []
+ },
+ "/seo/collections/{run_id}/rejoin": {
+  "post": []
+ },
+ "/seo/collections/{run_id}/resume": {
+  "post": []
+ },
+ "/seo/endpoint-families/apply": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/endpoint-families/{rule_id}/undo": {
+  "post": []
+ },
+ "/seo/evidence-workbench": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/findings/draft-fix": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/keywords/assign-topics": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/keywords/classification/backfill": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/keywords/classify": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/keywords/discovery/status": {
+  "get": []
+ },
+ "/seo/keywords/discovery/step": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/keywords/research": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/keywords/topics/backfill": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/keywords/volume-refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/keywords/{keyword_id}/serp-intent-analysis": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/local/locations/{location_id}/google-listing": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/pages/analyze": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/pages/analyze-batch": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/pages/map-keywords": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/pages/{page_id}/pagespeed/sync": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/pages/{page_id}/performance": {
+  "get": []
+ },
+ "/seo/press/angles/{angle_id}/ruling": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/press/source-requests/ingest": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/press/source-requests/{request_id}/evaluate": {
+  "post": []
+ },
+ "/seo/prospect-capture": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/prospect-capture/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/providers/dataforseo/operations": {
+  "get": []
+ },
+ "/seo/public/ai-visibility": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/public/page-audit": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/public/robots-check": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/public/runs/{run_id}/rejoin": {
+  "post": []
+ },
+ "/seo/public/structured-data/validate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/rank-targets/{target_id}": {
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/seo/rank-targets/{target_id}/check": {
+  "post": []
+ },
+ "/seo/rank-targets/{target_id}/history": {
+  "get": []
+ },
+ "/seo/rank-targets/{target_id}/landscape": {
+  "get": []
+ },
+ "/seo/site-evidence/values": {
+  "get": []
+ },
+ "/seo/sites/strategy-interview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/ai-visibility/analyze": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/analytics/sync": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/authority/route": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/backlinks/enrich": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/backlinks/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/bing/intelligence/sync": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/bing/search-performance/sync": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/broken-link-prospecting": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/broken-link-prospecting/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/competitor-autopsy": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/competitors/classify": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/competitors/discover": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/competitors/discover-local": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/competitors/lookup": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/crm/fold-settings": {
+  "get": [],
+  "put": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/crm/link-gap-domains": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/crm/referring-domains": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/crm/reputation-outlets": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/crm/serp-prospects": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/gsc/search-performance/sync": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/intake/apply": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/intake/run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/link-gap": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/link-gap/seed": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/map/intents": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/map/pages": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/map/regions": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/pages/{page_id}/link-gap": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/performance": {
+  "get": []
+ },
+ "/seo/sites/{site_id}/press/angles/generate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/press/clips": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/press/headlines": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/press/newsroom/sync": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/prospect-import": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/prospect-import/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/rank-targets": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/reputation/analyze": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/reputation/crisis-holding": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/schedule-status": {
+  "get": []
+ },
+ "/seo/sites/{site_id}/serp-prospecting": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/serp-prospecting/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/site-evidence": {
+  "get": []
+ },
+ "/seo/sites/{site_id}/strategy": {
+  "get": []
+ },
+ "/seo/sites/{site_id}/strategy/generate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/strategy/history": {
+  "get": []
+ },
+ "/seo/sites/{site_id}/strategy/ruling": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/sites/{site_id}/verify-urls": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/seo/spend/summary": {
+  "get": []
+ },
+ "/servebolt/public/status": {
+  "get": []
+ },
+ "/seven-shifts/public/status": {
+  "get": []
+ },
+ "/share/{token}": {
+  "get": []
+ },
+ "/share/{token}/files/{file_id}": {
+  "get": []
+ },
+ "/sharefile/public/status": {
+  "get": []
+ },
+ "/shortcut/public/status": {
+  "get": []
+ },
+ "/signable/public/status": {
+  "get": []
+ },
+ "/signnow/public/status": {
+  "get": []
+ },
+ "/signwell/public/status": {
+  "get": []
+ },
+ "/simplecast/public/status": {
+  "get": []
+ },
+ "/simplenote/public/release": {
+  "get": []
+ },
+ "/simpplr/public/status": {
+  "get": []
+ },
+ "/sinch/public/status": {
+  "get": []
+ },
+ "/sitefinity/public/status": {
+  "get": []
+ },
+ "/siyuan/public/release": {
+  "get": []
+ },
+ "/skedda/public/status": {
+  "get": []
+ },
+ "/skedulo/public/status": {
+  "get": []
+ },
+ "/skilljar/public/status": {
+  "get": []
+ },
+ "/skills": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/skills/categories": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/skills/categories/{category_id}": {
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/skills/ingest": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/skills/{skill_id}": {
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/skills/{skill_ref}": {
+  "get": []
+ },
+ "/slab/public/status": {
+  "get": []
+ },
+ "/sleekplan/public/status": {
+  "get": []
+ },
+ "/slido/public/status": {
+  "get": []
+ },
+ "/slite/public/status": {
+  "get": []
+ },
+ "/smartrecruiters/public/status": {
+  "get": []
+ },
+ "/smartsheet/public/status": {
+  "get": []
+ },
+ "/smk/public/artwork": {
+  "get": []
+ },
+ "/smtp2go/public/status": {
+  "get": []
+ },
+ "/smugmug/public/status": {
+  "get": []
+ },
+ "/socio/public/status": {
+  "get": []
+ },
+ "/soundcloud/public/track": {
+  "get": []
+ },
+ "/sourceforge/public/project": {
+  "get": []
+ },
+ "/sources/internal/land": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/sources/land": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/sources/manifest": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/sources/parts/search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/sources/resolve": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/sources/{processed_document_id}/edit": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/sources/{processed_document_id}/keep": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/sources/{processed_document_id}/restore": {
+  "post": []
+ },
+ "/spacebring/public/status": {
+  "get": []
+ },
+ "/spaceflight-news/latest-article": {
+  "get": []
+ },
+ "/spark-hire/public/status": {
+  "get": []
+ },
+ "/sparkpost/public/status": {
+  "get": []
+ },
+ "/spatialchat/public/status": {
+  "get": []
+ },
+ "/sphinx-docs/public/quickstart": {
+  "get": []
+ },
+ "/spline/public/status": {
+  "get": []
+ },
+ "/spotify/public-metadata": {
+  "get": []
+ },
+ "/spotme/public/status": {
+  "get": []
+ },
+ "/sprig/public/status": {
+  "get": []
+ },
+ "/sprout-social/public/status": {
+  "get": []
+ },
+ "/stack-exchange/public/question": {
+  "get": []
+ },
+ "/staffbase/public/status": {
+  "get": []
+ },
+ "/stan/public/status": {
+  "get": []
+ },
+ "/standard-notes/public/release": {
+  "get": []
+ },
+ "/statusbrew/public/status": {
+  "get": []
+ },
+ "/statuscake/public/status": {
+  "get": []
+ },
+ "/stonly/public/status": {
+  "get": []
+ },
+ "/storage-oauth/{provider}/authorize": {
+  "post": []
+ },
+ "/storage-oauth/{provider}/disconnect": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/storage-oauth/{provider}/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/storage-sources/browse": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/storage-sources/import": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/storj/public/status": {
+  "get": []
+ },
+ "/stormboard/public/status": {
+  "get": []
+ },
+ "/storylane/public/status": {
+  "get": []
+ },
+ "/storyxpress/public/status": {
+  "get": []
+ },
+ "/stova/public/status": {
+  "get": []
+ },
+ "/strapi/public/status": {
+  "get": []
+ },
+ "/stream-status/public/status": {
+  "get": []
+ },
+ "/streamyard/public/status": {
+  "get": []
+ },
+ "/structure-cloud/public/status": {
+  "get": []
+ },
+ "/substack/public/status": {
+  "get": []
+ },
+ "/supademo/public/status": {
+  "get": []
+ },
+ "/superhuman/public/status": {
+  "get": []
+ },
+ "/surfaces/{client_name}/{surface_name}/manifest": {
+  "get": []
+ },
+ "/surfaces/{name}/manifest": {
+  "get": []
+ },
+ "/surveymonkey/public/status": {
+  "get": []
+ },
+ "/survicate/public/status": {
+  "get": []
+ },
+ "/svix/public/status": {
+  "get": []
+ },
+ "/switcherstudio/public/status": {
+  "get": []
+ },
+ "/swoogo/public/status": {
+  "get": []
+ },
+ "/sympy-docs/public/getting-started": {
+  "get": []
+ },
+ "/synccom/public/status": {
+  "get": []
+ },
+ "/syncplicity/public/status": {
+  "get": []
+ },
+ "/table-kinds/read": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/talkdesk/public/status": {
+  "get": []
+ },
+ "/talkspirit/public/status": {
+  "get": []
+ },
+ "/tally/public/status": {
+  "get": []
+ },
+ "/tango/public/status": {
+  "get": []
+ },
+ "/tawkto/public/status": {
+  "get": []
+ },
+ "/tcgdex/public/card": {
+  "get": []
+ },
+ "/tcp-software/public/status": {
+  "get": []
+ },
+ "/teachable/public/status": {
+  "get": []
+ },
+ "/teamleader/public/status": {
+  "get": []
+ },
+ "/teamtailor/public/status": {
+  "get": []
+ },
+ "/teamwork/public/status": {
+  "get": []
+ },
+ "/teem/public/status": {
+  "get": []
+ },
+ "/tellent/public/status": {
+  "get": []
+ },
+ "/templates": {
+  "get": []
+ },
+ "/templates/{template_id}/clone": {
+  "post": []
+ },
+ "/tempo/public/status": {
+  "get": []
+ },
+ "/temporal-status/public/status": {
+  "get": []
+ },
+ "/term-lists": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/term-lists/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/term-lists/{term_list_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/terraform-registry/public/module-version": {
+  "get": []
+ },
+ "/tests/examples": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/tests/examples/search": {
+  "get": []
+ },
+ "/tests/examples/{item_id}": {
+  "get": [],
+  "put": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/tests/stream/text": {
+  "get": []
+ },
+ "/tettra/public/status": {
+  "get": []
+ },
+ "/thecatapi/random-image": {
+  "get": []
+ },
+ "/thinkific/public/status": {
+  "get": []
+ },
+ "/thought-industries/public/status": {
+  "get": []
+ },
+ "/tidio/public/status": {
+  "get": []
+ },
+ "/tiktok-integrations/public-video-metadata": {
+  "get": []
+ },
+ "/timeapi/public/current-time": {
+  "get": []
+ },
+ "/timely/public/status": {
+  "get": []
+ },
+ "/tinybird/public/status": {
+  "get": []
+ },
+ "/toggl/public/status": {
+  "get": []
+ },
+ "/tools/test/execute": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/tools/test/list": {
+  "get": []
+ },
+ "/tools/test/session": {
+  "post": []
+ },
+ "/tools/test/{tool_name}": {
+  "get": []
+ },
+ "/trainual/public/status": {
+  "get": []
+ },
+ "/transistor/public/status": {
+  "get": []
+ },
+ "/translatewiki/public/page": {
+  "get": []
+ },
+ "/travis-ci/public/status": {
+  "get": []
+ },
+ "/trello-integrations/public/boards/{board_id}": {
+  "get": []
+ },
+ "/tresorit/public/status": {
+  "get": []
+ },
+ "/triggers": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/triggers/{trigger_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/triggers/{trigger_id}/events": {
+  "get": []
+ },
+ "/triggers/{trigger_id}/fire": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/triggers/{trigger_id}/fires": {
+  "get": []
+ },
+ "/trilium-notes/public/release": {
+  "get": []
+ },
+ "/tuple/public/status": {
+  "get": []
+ },
+ "/tvmaze/public/show": {
+  "get": []
+ },
+ "/twist/public/status": {
+  "get": []
+ },
+ "/twitch/streams": {
+  "get": []
+ },
+ "/typeform/public/status": {
+  "get": []
+ },
+ "/ucraft/public/status": {
+  "get": []
+ },
+ "/uiavatars/avatar": {
+  "get": []
+ },
+ "/umbraco/public/status": {
+  "get": []
+ },
+ "/unbounce/public/status": {
+  "get": []
+ },
+ "/uniprot/public/protein": {
+  "get": []
+ },
+ "/unpaywall/public/oa-status": {
+  "get": []
+ },
+ "/upcloud/public/status": {
+  "get": []
+ },
+ "/uscreen/public/status": {
+  "get": []
+ },
+ "/useless-facts/random-fact": {
+  "get": []
+ },
+ "/user-secrets": {
+  "get": []
+ },
+ "/user-secrets/": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/user-secrets/bulk-env": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/user-secrets/internal/sandbox-env-for-user": {
+  "get": []
+ },
+ "/user-secrets/sandbox-env": {
+  "get": []
+ },
+ "/user-secrets/{key}": {
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/userflow/public/status": {
+  "get": []
+ },
+ "/userlane/public/status": {
+  "get": []
+ },
+ "/usertesting/public/status": {
+  "get": []
+ },
+ "/uservoice/public/status": {
+  "get": []
+ },
+ "/userzoom/public/status": {
+  "get": []
+ },
+ "/usgs-earthquake/public/event": {
+  "get": []
+ },
+ "/utilities/block-processing/process": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/block-processing/process/stream": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/block-processing/simulate/provider-retry": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/batch-extract": {
+  "post": [
+   "multipart/form-data"
+  ]
+ },
+ "/utilities/pdf/classify-pages": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/clean-content/{doc_id}": {
+  "post": []
+ },
+ "/utilities/pdf/compress": {
+  "post": [
+   "multipart/form-data"
+  ]
+ },
+ "/utilities/pdf/crop-pages": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/delete-pages": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/detect-repeated-regions": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/documents": {
+  "get": []
+ },
+ "/utilities/pdf/documents/{doc_id}": {
+  "get": []
+ },
+ "/utilities/pdf/duplicate-pages": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/extract-pages": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/extract-reading-order": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/extract-tables": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/extract-text": {
+  "post": [
+   "multipart/form-data"
+  ]
+ },
+ "/utilities/pdf/extract-text-remote": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/flatten-annotations": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/from-images": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/full-pipeline": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/insert-pages": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/merge": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/process-with-ai": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/redact-pattern": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/redact-regions": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/redact-repeated-regions": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/redact/patterns": {
+  "get": []
+ },
+ "/utilities/pdf/render-all": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/render-page": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/render-thumbnail": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/reorder-pages": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/rotate-pages": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/scrub": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/split": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/strip-metadata": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/strip-repeated-regions": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/utilities/pdf/studio/presets": {
+  "get": []
+ },
+ "/utilities/pdf/studio/render": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/uxcam/public/status": {
+  "get": []
+ },
+ "/v1/meet/agenda-draft": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/meet/agent/start": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/meet/agent/stop": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/meet/captions/translate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/meet/chat": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/v1/meet/claim": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/meet/collab": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/v1/meet/end": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/meet/intelligence/ask": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/meet/meetings/{meeting_id}/announce": {
+  "post": []
+ },
+ "/v1/meet/meetings/{meeting_id}/brief": {
+  "post": []
+ },
+ "/v1/meet/meetings/{meeting_id}/follow-up": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/meet/meetings/{meeting_id}/google-calendar": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/meet/meetings/{meeting_id}/rsvp": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/meet/moderate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/meet/record": {
+  "get": []
+ },
+ "/v1/meet/record/access": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/meet/recording/start": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/meet/recording/stop": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/meet/rsvp": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/meet/token": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/meet/webhooks/livekit": {
+  "post": []
+ },
+ "/v1/tables": {
+  "get": []
+ },
+ "/v1/tables/{table}/aggregate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/tables/{table}/columns": {
+  "get": []
+ },
+ "/v1/tables/{table}/rows": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/tables/{table}/rows/query": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/tables/{table}/rows/upsert": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/tables/{table}/rows/{row_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/v1/tables/{table}/rows/{row_id}/restore": {
+  "post": []
+ },
+ "/v2/ai/agent/{agent_id}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v2/ai/agents/{agent_id}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v2/ai/chat": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v2/ai/conversation/{conversation_id}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v2/ai/conversations/{conversation_id}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v2/ai/mandates/{mandate_key}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v2/ai/manual": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v2/ai/prompts/{prompt_id}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v2/runtime/heartbeat": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v2/runtime/open": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v2/runtime/settle": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vam-collections/public/object": {
+  "get": []
+ },
+ "/vanilla-forums/public/status": {
+  "get": []
+ },
+ "/vault/backups/download": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/backups/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/backups/restore": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/backups/restore/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/browser-login/capture": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/browser-login/capture-context": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/browser-login/inventory": {
+  "get": []
+ },
+ "/vault/browser-login/matches": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/browser-login/recipe-proposal": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/browser-login/report": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/browser-login/{item_id}/authenticator-materialize": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/browser-login/{item_id}/materialize": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/browser-login/{item_id}/result": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/destination/check": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/effective-env": {
+  "get": []
+ },
+ "/vault/exports/login-csv": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/exports/login-csv/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/fill-devices": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/vault/fill-devices/approvals": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/fill-devices/step-up-methods": {
+  "get": []
+ },
+ "/vault/fill-devices/{device_id}/revoke": {
+  "post": []
+ },
+ "/vault/items": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/items/assign": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/items/import-env": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/items/{item_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/vault/items/{item_id}/attachments": {
+  "post": [
+   "multipart/form-data"
+  ]
+ },
+ "/vault/items/{item_id}/attachments/{attachment_id}": {
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/vault/items/{item_id}/attachments/{attachment_id}/download": {
+  "get": []
+ },
+ "/vault/items/{item_id}/attachments/{attachment_id}/file": {
+  "put": [
+   "multipart/form-data"
+  ]
+ },
+ "/vault/items/{item_id}/audit": {
+  "get": []
+ },
+ "/vault/items/{item_id}/fields": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/items/{item_id}/fields/{field_id}": {
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/vault/items/{item_id}/fields/{field_id}/value": {
+  "put": [
+   "application/json"
+  ]
+ },
+ "/vault/items/{item_id}/fork": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/items/{item_id}/grants": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/items/{item_id}/grants/{grant_id}": {
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/vault/items/{item_id}/native-passkey/enable": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/items/{item_id}/organization-grants": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/items/{item_id}/password-history": {
+  "get": []
+ },
+ "/vault/items/{item_id}/password-history/restore": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/items/{item_id}/password-history/reveal": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/items/{item_id}/restore": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/items/{item_id}/reveal": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/items/{item_id}/rotate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/items/{item_id}/share": {
+  "put": [
+   "application/json"
+  ]
+ },
+ "/vault/items/{item_id}/transfer": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/native/identities": {
+  "post": []
+ },
+ "/vault/native/passkeys": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/native/passkeys/capabilities": {
+  "get": []
+ },
+ "/vault/native/passkeys/import": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/native/passkeys/import/capabilities": {
+  "get": []
+ },
+ "/vault/native/passkeys/import/receipts/{mutation_id}": {
+  "get": []
+ },
+ "/vault/native/passkeys/matches": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/native/passkeys/receipts/{mutation_id}": {
+  "get": []
+ },
+ "/vault/native/passkeys/{item_id}/export": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/native/passkeys/{item_id}/export/preflight": {
+  "post": []
+ },
+ "/vault/native/passkeys/{item_id}/materialize": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/native/passwords/matches": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/native/passwords/{item_id}/materialize": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/organizations/{organization_id}/member-access": {
+  "get": []
+ },
+ "/vault/organizations/{organization_id}/members/{member_user_id}/access": {
+  "put": [
+   "application/json"
+  ]
+ },
+ "/vault/resolve": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vault/shared-with-me": {
+  "get": []
+ },
+ "/veed/public/status": {
+  "get": []
+ },
+ "/vfairs/public/status": {
+  "get": []
+ },
+ "/videolan-wiki/public/page": {
+  "get": []
+ },
+ "/vikunja/public/instance": {
+  "get": []
+ },
+ "/vimeo-integrations/public/videos/{video_id}": {
+  "get": []
+ },
+ "/virtual": {
+  "get": []
+ },
+ "/virtual/resolve": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/virtual/{adapter_id}/create": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/virtual/{adapter_id}/list": {
+  "get": []
+ },
+ "/virtual/{adapter_id}/{vid}": {
+  "delete": []
+ },
+ "/virtual/{adapter_id}/{vid}/content": {
+  "get": []
+ },
+ "/virtual/{adapter_id}/{vid}/move": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/virtual/{adapter_id}/{vid}/rename": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/virtual/{adapter_id}/{vid}/save": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/virtual/{adapter_id}/{vid}/versions": {
+  "get": []
+ },
+ "/virtual/{adapter_id}/{vid}/versions/{n}/restore": {
+  "post": []
+ },
+ "/vision-interview/sessions": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vision-interview/sessions/{session_id}/finish": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vision-interview/sessions/{session_id}/observe": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/vision-interview/sessions/{session_id}/roles": {
+  "post": []
+ },
+ "/vision-interview/sessions/{session_id}/start": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/visme/public/status": {
+  "get": []
+ },
+ "/vista-social/public/status": {
+  "get": []
+ },
+ "/volusion/public/status": {
+  "get": []
+ },
+ "/walnut/public/status": {
+  "get": []
+ },
+ "/wasabi/public/status": {
+  "get": []
+ },
+ "/web-credentials": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/web-credentials/gsc/oauth/complete": {
+  "post": []
+ },
+ "/web-credentials/gsc/oauth/start": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/web-credentials/oauth-defaults": {
+  "get": []
+ },
+ "/web-credentials/sites/{site_id}/credential": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/web-credentials/{credential_id}": {
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
+ "/web-credentials/{credential_id}/test": {
+  "post": []
+ },
+ "/web-url-changes/{site_id}/{token}": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/webinarjam/public/status": {
+  "get": []
+ },
+ "/wellcome-collection/public/work": {
+  "get": []
+ },
+ "/werkzeug-docs/public/getting-started": {
+  "get": []
+ },
+ "/wetransfer/public/status": {
+  "get": []
+ },
+ "/when-i-work/public/status": {
+  "get": []
+ },
+ "/whimsical/public/status": {
+  "get": []
+ },
+ "/wikibooks/public/page": {
+  "get": []
+ },
+ "/wikidata/public/entity": {
+  "get": []
+ },
+ "/wikifunctions/public/object": {
+  "get": []
+ },
+ "/wikimania/public/page": {
+  "get": []
+ },
+ "/wikimedia-commons/public/file": {
+  "get": []
+ },
+ "/wikimedia-foundation/public/page": {
+  "get": []
+ },
+ "/wikimedia-incubator/public/page": {
+  "get": []
+ },
+ "/wikimedia-outreach/public/page": {
+  "get": []
+ },
+ "/wikimedia-strategy/public/page": {
+  "get": []
+ },
+ "/wikinews/public/page": {
+  "get": []
+ },
+ "/wikiquote/public/page": {
+  "get": []
+ },
+ "/wikisource/public/page": {
+  "get": []
+ },
+ "/wikispecies/public/page": {
+  "get": []
+ },
+ "/wikitech/public/page": {
+  "get": []
+ },
+ "/wikiversity/public/page": {
+  "get": []
+ },
+ "/wikivoyage/public/page": {
+  "get": []
+ },
+ "/wiktionary/public/entry": {
+  "get": []
+ },
+ "/winehq-wiki/public/page": {
+  "get": []
+ },
+ "/wire-cloud/public/status": {
+  "get": []
+ },
+ "/wistia/public/media": {
+  "get": []
+ },
+ "/woodpecker/public/status": {
+  "get": []
+ },
+ "/woopra/public/status": {
+  "get": []
+ },
+ "/wordpress-org/public/plugin": {
+  "get": []
+ },
+ "/wordtune/public/status": {
+  "get": []
+ },
+ "/workcast/public/status": {
+  "get": []
+ },
+ "/workflow-builder/records/{record_id}/runs": {
+  "get": []
+ },
+ "/workflow-builder/tables/{table_id}/workflows": {
+  "get": []
+ },
+ "/workflow-builder/workflows": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/workflow-builder/workflows/{workflow_id}": {
+  "get": [],
+  "put": [
+   "application/json"
+  ]
+ },
+ "/workflow-builder/workflows/{workflow_id}/off": {
+  "post": []
+ },
+ "/workflow-builder/workflows/{workflow_id}/on": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/workflow-builder/workflows/{workflow_id}/publish": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/workflow-builder/workflows/{workflow_id}/runs": {
+  "get": []
+ },
+ "/workflow-builder/workflows/{workflow_id}/test": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/workflow/contracts/audit": {
+  "get": []
+ },
+ "/workflow/kinds": {
+  "get": []
+ },
+ "/workflow/kinds/conformance": {
+  "get": []
+ },
+ "/workflow/kinds/generic-floor": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/workflow/kinds/generic-floor/open": {
+  "get": []
+ },
+ "/workflow/kinds/{slug}": {
+  "get": []
+ },
+ "/workflow/node-types": {
+  "get": []
+ },
+ "/workflow/node-types/refresh": {
+  "post": []
+ },
+ "/workflow/platform-tables": {
+  "get": []
+ },
+ "/workflows": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/workflows/bulk-archive": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/workflows/comparisons": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/workflows/comparisons/{comparison_id}/arms/{arm_index}/rerun": {
+  "post": []
+ },
+ "/workflows/validate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/workflows/{definition_id}": {
+  "get": [],
+  "delete": []
+ },
+ "/workflows/{definition_id}/conductor-context": {
+  "get": []
+ },
+ "/workflows/{definition_id}/cost-rollup": {
+  "get": []
+ },
+ "/workflows/{definition_id}/draft": {
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/workflows/{definition_id}/dry-run": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/workflows/{definition_id}/engram": {
+  "get": []
+ },
+ "/workflows/{definition_id}/engram/demote": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/workflows/{definition_id}/engram/promote": {
+  "post": []
+ },
+ "/workflows/{definition_id}/extract": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/workflows/{definition_id}/extract-proposal": {
+  "get": []
+ },
+ "/workflows/{definition_id}/history": {
+  "get": []
+ },
+ "/workflows/{definition_id}/history/{revision}": {
+  "get": []
+ },
+ "/workflows/{definition_id}/kind-availability": {
+  "get": []
+ },
+ "/workflows/{definition_id}/nodes/{node_id}/agent-context": {
+  "get": []
+ },
+ "/workflows/{definition_id}/nodes/{node_id}/input-form": {
+  "get": []
+ },
+ "/workflows/{definition_id}/nodes/{node_id}/input-status": {
+  "get": []
+ },
+ "/workflows/{definition_id}/nodes/{node_id}/slots": {
+  "get": []
+ },
+ "/workflows/{definition_id}/nodes/{node_id}/slots/declared_sample": {
+  "put": [
+   "application/json"
+  ]
+ },
+ "/workflows/{definition_id}/nodes/{node_id}/slots/{slot}": {
+  "delete": []
+ },
+ "/workflows/{definition_id}/nodes/{node_id}/test": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/workflows/{definition_id}/plan-blockers": {
+  "get": []
+ },
+ "/workflows/{definition_id}/plans": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/workflows/{definition_id}/publish": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/workflows/{definition_id}/result-schema": {
+  "get": []
+ },
+ "/workflows/{definition_id}/run-form": {
+  "get": []
+ },
+ "/workflows/{definition_id}/runs": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
+ },
+ "/workflows/{definition_id}/save-as-template": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/workflows/{definition_id}/shown_to": {
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/workflows/{definition_id}/slots": {
+  "get": []
+ },
+ "/workflows/{definition_id}/step-runs": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/workflows/{definition_id}/unarchive": {
+  "post": []
+ },
+ "/workflows/{definition_id}/versions": {
+  "get": []
+ },
+ "/workflows/{definition_id}/visibility": {
+  "patch": [
+   "application/json"
+  ]
+ },
+ "/workflowy/public/status": {
+  "get": []
+ },
+ "/workleap/public/status": {
+  "get": []
+ },
+ "/workvivo/public/status": {
+  "get": []
+ },
+ "/workyard/public/status": {
+  "get": []
+ },
+ "/world-bank-documents/public/document": {
+  "get": []
+ },
+ "/worms/public/taxon": {
+  "get": []
+ },
+ "/wrike/public/status": {
+  "get": []
+ },
+ "/wufoo/public/status": {
+  "get": []
+ },
+ "/xen-project-wiki/public/page": {
+  "get": []
+ },
+ "/xkcd/latest-comic": {
+  "get": []
+ },
+ "/yocto-project-wiki/public/page": {
+  "get": []
+ },
+ "/zendesk/public/help-article": {
+  "get": []
+ },
+ "/zenhub/public/status": {
+  "get": []
+ },
+ "/zenodo/public/record": {
+  "get": []
+ },
+ "/zettlr/public/release": {
+  "get": []
+ },
+ "/zight/public/status": {
+  "get": []
+ },
+ "/zoomshift/public/status": {
+  "get": []
+ },
+ "/zotero/public-libraries/{library_type}/{library_id}/items": {
+  "get": []
+ },
+ "/zulip-cloud/public/status": {
+  "get": []
+ },
+ "/zulip/public/server": {
+  "get": []
+ },
+ "/zype/public/status": {
+  "get": []
+ },
+ "/{provider}/oauth/callback": {
+  "get": []
+ }
+}

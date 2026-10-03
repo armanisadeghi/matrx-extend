@@ -16,7 +16,7 @@
  */
 
 import { execSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -70,6 +70,26 @@ try {
     console.error('    Use --local to sync from your local backend instead.');
   }
   process.exit(1);
+}
+
+// ── Step 1b: Write the committed route index ──────────────────────────────
+// openapi.json (~9 MB) is gitignored, so a fresh checkout — and the release's
+// exact-commit candidate — never has it. Route-contract tests read this compact,
+// committed index instead: path → method → request body content types.
+
+{
+  const spec = JSON.parse(readFileSync(resolve(outDir, 'openapi.json'), 'utf8'));
+  const routes = {};
+  for (const p of Object.keys(spec.paths).sort()) {
+    const ops = {};
+    for (const [method, op] of Object.entries(spec.paths[p])) {
+      if (!['get', 'post', 'put', 'patch', 'delete'].includes(method)) continue;
+      ops[method] = Object.keys(op?.requestBody?.content ?? {}).sort();
+    }
+    routes[p] = ops;
+  }
+  writeFileSync(resolve(outDir, 'openapi-routes.json'), `${JSON.stringify(routes, null, 1)}\n`);
+  console.log(`  ✓ openapi-routes.json (${Object.keys(routes).length} routes, committed)\n`);
 }
 
 // ── Step 2: Type-check the codebase ────────────────────────────────────────

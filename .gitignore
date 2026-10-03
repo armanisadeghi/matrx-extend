@@ -20,6 +20,7 @@ build/
 types/python-generated/*
 !types/python-generated/.gitkeep
 !types/python-generated/stream-events.ts
+!types/python-generated/openapi-routes.json
 
 # IDE
 .vscode/

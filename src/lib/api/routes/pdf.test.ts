@@ -7,11 +7,13 @@ vi.mock('@/lib/api/client', () => ({ apiPost: client.apiPost, STATUS_INVALID_BOD
 
 import { extractPdfText } from './pdf';
 
-const openapi = JSON.parse(
-  readFileSync(path.resolve(__dirname, '../../../../types/python-generated/openapi.json'), 'utf8'),
-) as {
-  paths: Record<string, Record<string, { requestBody?: { content?: Record<string, unknown> } }>>;
-};
+/** Committed route index: path → method → request body content types. */
+const routes = JSON.parse(
+  readFileSync(
+    path.resolve(__dirname, '../../../../types/python-generated/openapi-routes.json'),
+    'utf8',
+  ),
+) as Record<string, Record<string, string[]>>;
 
 /** What aidream's text-extraction door really answers: an NDJSON event stream. */
 function ndjson(...events: unknown[]): string {
@@ -45,10 +47,10 @@ describe('read_pdf → aidream text extraction contract', () => {
     await extractPdfText({ fileId: 'f-1', pageStart: 3, pageEnd: 4 });
 
     const [calledPath] = client.apiPost.mock.calls[0] as [string, unknown];
-    const op = openapi.paths[calledPath]?.post;
+    const op = routes[calledPath]?.post;
     expect(op, `${calledPath} is not a POST route in the aidream OpenAPI snapshot`).toBeDefined();
     // The tool sends JSON (a MediaRef), so the door must take a JSON body, not an upload.
-    expect(Object.keys(op?.requestBody?.content ?? {})).toContain('application/json');
+    expect(op ?? []).toContain('application/json');
   });
 
   it('sends the file as a MediaRef and forwards the page range', async () => {

@@ -5,7 +5,8 @@
  * read_pdf POSTed to `/pdf/extract-text` for months: the router is mounted at
  * `/utilities`, so every call 404'd and nothing caught it. This scans every
  * literal path handed to apiGet/apiPost/apiPatch/apiPut/apiDelete and checks it
- * against the committed OpenAPI snapshot (`pnpm update-api-types` refreshes it).
+ * against the committed route index `openapi-routes.json` (`pnpm update-api-types`
+ * refreshes it; the full openapi.json is gitignored and absent from release candidates).
  * A leading `/api` is stripped first — aidream's ApiPrefixCompatMiddleware and
  * the reverse proxy remove it before route matching.
  *
@@ -17,9 +18,9 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 const ROOT = path.resolve(__dirname, '../../../..');
-const openapi = JSON.parse(
-  readFileSync(path.join(ROOT, 'types/python-generated/openapi.json'), 'utf8'),
-) as { paths: Record<string, Record<string, unknown>> };
+const routes = JSON.parse(
+  readFileSync(path.join(ROOT, 'types/python-generated/openapi-routes.json'), 'utf8'),
+) as Record<string, Record<string, string[]>>;
 
 const CALL = /\bapi(Get|Post|Patch|Put|Delete)\b(?:<[^()]*?>)?\(\s*(['"`])(\/[^'"`]*)\2/g;
 
@@ -52,7 +53,7 @@ function toTemplate(raw: string): RegExp {
 
 function resolves(method: string, raw: string): boolean {
   const re = toTemplate(raw);
-  return Object.entries(openapi.paths).some(
+  return Object.entries(routes).some(
     ([p, ops]) => method in ops && re.test(p.replace(/\{[^}]+\}/g, 'x')),
   );
 }

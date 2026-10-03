@@ -1860,6 +1860,9 @@ export interface PdfExtractCompleteData {
   type?: "pdf_extract_complete";
   filename?: string | null;
   page_count: number;
+  total_pages?: number | null;
+  page_start?: number | null;
+  page_end?: number | null;
   ocr_pages: number;
   total_chars: number;
   text_content: string;
