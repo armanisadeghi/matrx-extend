@@ -15,5 +15,13 @@
     "records_ui": null
   },
   "consumer_actions": "Extension has no listAppRows/useAppTable call site for records 0.63.0 return-shape change; agents 0.43.5-0.43.6 require none; records-ui is not a dependency",
-  "limits": "No local heavy tests run; records-ui publication remains independent and pending"
+  "limits": "No local heavy tests run; records-ui publication remains independent and pending",
+  "owner_registry_followup": {
+    "package": "@ai-matrx/records-ui",
+    "version": "0.93.153",
+    "publisher_run": 37103938479,
+    "publisher_conclusion": "success",
+    "registry_version_endpoint": "HTTP200",
+    "limitation": "Extension does not consume records-ui; this does not establish extension adoption or native behavior."
+  }
 }
