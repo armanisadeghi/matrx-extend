@@ -267,7 +267,23 @@ verify_installed_dependency_inputs() {
     # race may change dependency inputs after pnpm installed them on the runner.
     # Stop before generation/check/build instead of validating mismatched bytes.
     if ! git diff --quiet "$LOCAL_HEAD^{tree}" "$BASE_TREE" -- \
-        package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc .pnpmfile.cjs patches; then
+        pnpm-lock.yaml pnpm-workspace.yaml .npmrc .pnpmfile.cjs patches; then
+        hard_stop "merged candidate changes dependency inputs since installation; refresh packages on the updated main and retry — nothing was pushed"
+    fi
+    # A prior push can bump only the package version, then fail during local ZIP
+    # promotion. That version does not alter the installed graph. Compare every
+    # other manifest field so a retry can still restore an interrupted release.
+    if ! node - "$LOCAL_HEAD:package.json" "$BASE_TREE:package.json" <<'NODE'
+const { execFileSync } = require('node:child_process');
+const { isDeepStrictEqual } = require('node:util');
+function manifest(ref) {
+  const value = JSON.parse(execFileSync('git', ['cat-file', '-p', ref], { encoding: 'utf8' }));
+  delete value.version;
+  return value;
+}
+process.exit(isDeepStrictEqual(manifest(process.argv[2]), manifest(process.argv[3])) ? 0 : 1);
+NODE
+    then
         hard_stop "merged candidate changes dependency inputs since installation; refresh packages on the updated main and retry — nothing was pushed"
     fi
 }
@@ -403,9 +419,34 @@ for (const line of input.split('\n')) {
   console.log(`${match[1]} ${match[2]}${match[3] ? ` installed=${match[3]}` : ''}${latest ? ` latest=${latest}` : ''}`);
 }
 NODE
+                elif [[ "$name" == lint ]]; then
+                    ( cd "$CHECK_SNAP" && node_modules/.bin/biome check --reporter=json . ) \
+                        > "$JOBS/check-lint.json" 2>/dev/null || true
+                    node - "$JOBS/check-lint.json" "$CHECK_SNAP" <<'NODE'
+const fs = require('node:fs');
+const path = require('node:path');
+let report;
+try { report = JSON.parse(fs.readFileSync(process.argv[2], 'utf8')); }
+catch { console.log('lint diagnostic parsing unavailable'); process.exit(0); }
+const root = path.resolve(process.argv[3]);
+const safe = new Set();
+for (const diagnostic of report.diagnostics ?? []) {
+  if (diagnostic.severity !== 'error') continue;
+  const file = diagnostic.location?.path?.file;
+  const category = diagnostic.category;
+  if (typeof file !== 'string' || typeof category !== 'string') continue;
+  const relative = path.relative(root, file);
+  if (!/^[A-Za-z0-9_./-]+$/.test(relative) || relative.startsWith('..')) continue;
+  if (!/^(?:format|lint\/[A-Za-z0-9_/-]+|assist\/[A-Za-z0-9_/-]+)$/.test(category)) continue;
+  safe.add(`${relative} ${category} ${category === 'format' ? 'format differs' : 'rule violation'}`);
+}
+for (const line of [...safe].slice(0, 50)) console.log(line);
+if (safe.size > 50) console.log(`additional diagnostics omitted=${safe.size - 50}`);
+if (safe.size === 0) console.log('lint failed without a recognized safe diagnostic');
+NODE
                 fi
-            } > "$RELEASE_LOG_DIR/diagnostics.txt"
-            cat "$RELEASE_LOG_DIR/diagnostics.txt"
+            } > "$RELEASE_LOG_DIR/diagnostics.log"
+            cat "$RELEASE_LOG_DIR/diagnostics.log"
             finding "ERROR" "Checks" "$name failed (exit $rc); candidate $NEW_TAG was not published" "$cmd"
             return 1
         fi

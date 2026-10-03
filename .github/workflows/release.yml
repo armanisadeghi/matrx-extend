@@ -197,7 +197,7 @@ jobs:
         with:
           name: matrx-extend-failure-${{ github.run_id }}-${{ github.run_attempt }}
           if-no-files-found: ignore
-          path: matrx-extend/tmp/release-logs/diagnostics.txt
+          path: matrx-extend/tmp/release-logs/diagnostics.log
 
       - name: Publish candidate identity
         shell: bash
