@@ -1,0 +1,57 @@
+{
+  "status": "source_candidate_pending_independent_review_and_native_run",
+  "trigger": "Guarded member Profile run found no users.user_form_profile row and refused to mutate before testing first save.",
+  "source_evidence": {
+    "member_run": ".research/profile-member-native-next.json",
+    "member_authenticity_verified": true,
+    "original_profile_row_absent": true,
+    "prior_run_performed_profile_writes": false,
+    "first_save_inventory_case": "EXT-F-1004-T28"
+  },
+  "database_contract": {
+    "project": "brsgrqvjdzwihsvnfqkf",
+    "schema_table": "users.user_form_profile",
+    "authenticated_delete_grant_present": true,
+    "delete_rls_requires_owner_or_platform_admin": true,
+    "owner_delete_route_available": true,
+    "primary_key": "user_id",
+    "organization_id_required_without_default": true,
+    "initial_version": 1,
+    "update_trigger_increments_version": true,
+    "source": "Supabase MCP read-only grant, RLS, table, and trigger inspection on 2026-10-03"
+  },
+  "candidate": {
+    "first_save_uses_real_member_ui": true,
+    "owner_authenticated_rest_delete": true,
+    "owner_token_stays_inside_extension_panel": true,
+    "pre_delete_guard_checks": [
+      "verified owner",
+      "device organization",
+      "unique owned marker",
+      "original creation timestamp",
+      "expected version"
+    ],
+    "delete_filters_are_atomic_with_all_guard_fields": true,
+    "expected_versions": {
+      "after_initial_insert": 1,
+      "after_warm_save_and_restore": 3,
+      "after_reload_save_and_restore": 5
+    },
+    "requires_one_deleted_row_and_final_owner_read_absent": true,
+    "refuses_preexisting_or_concurrently_changed_row": true,
+    "failure_path": "Attempts guarded cleanup. If ownership, timestamp, marker, organization, or exact expected version cannot be proven, it refuses DELETE and reports owned_row_may_remain with restoration unverified.",
+    "report_contains_raw_ids_or_marker": false,
+    "scope": "Bounded first-save branch of T28 only; no global Profile or organization acceptance claim"
+  },
+  "verification": {
+    "biome_targeted": "passed",
+    "node_syntax": "passed",
+    "guard_tests": "2 passed; mismatch cases cover owner, organization, marker, timestamp, and version",
+    "native_execution": "not_run_pending_independent_source_review"
+  },
+  "remaining_unknowns": [
+    "Independent reviewer must inspect runner failure and cleanup paths before native execution.",
+    "Native first-save, reload, and exact original-absence restoration remain unverified.",
+    "A test failure after a legitimate but untracked write can leave the owned row; the runner must report cleanup unverified and never delete it on an unexpected version."
+  ]
+}

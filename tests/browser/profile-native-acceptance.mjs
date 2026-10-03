@@ -9,6 +9,7 @@ import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifac
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { signInAdminSettings } from './admin-settings-signin.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { assertFirstSaveOwnedRow, ownedDeleteUrl } from './profile-empty-row-restoration.mjs';
 import { panelIdentity } from './settings-native-auth-driver.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
@@ -56,6 +57,62 @@ async function credentials() {
   assert.equal(email, 'admin@admin.com', 'admin_identity_required');
   assert.ok(password, 'admin_password_required');
   return { email, password };
+}
+async function profileApiConfig() {
+  const source = await readFile(join(REPO, '.env.production'), 'utf8');
+  const url = readEnvValue(source, 'WXT_SUPABASE_URL');
+  const key = readEnvValue(source, 'WXT_SUPABASE_PUBLISHABLE_KEY');
+  assert.equal(new URL(url).protocol, 'https:', 'profile_api_url_invalid');
+  assert.ok(key, 'profile_api_key_missing');
+  return { url, key };
+}
+async function profileOwnerRequest(panel, { key, organizationId }, requestUrl, method = 'GET') {
+  const result = await evaluate(
+    panel,
+    `(async () => {
+      const stored = await chrome.storage.local.get('matrx.auth.accessToken');
+      const token = stored['matrx.auth.accessToken'];
+      if (typeof token !== 'string' || !token) return { ok: false, status: 0, rows: [] };
+      const response = await fetch(${JSON.stringify(requestUrl)}, {
+        method: ${JSON.stringify(method)},
+        headers: {
+          apikey: ${JSON.stringify(key)},
+          Authorization: 'Bearer ' + token,
+          'X-Organization-Id': ${JSON.stringify(organizationId)},
+          'Accept-Profile': 'users',
+          'Content-Profile': 'users',
+          ...( ${JSON.stringify(method)} === 'DELETE' ? { Prefer: 'return=representation' } : {} ),
+        },
+      });
+      if (!response.ok) return { ok: false, status: response.status, rows: [] };
+      const rows = await response.json();
+      return { ok: Array.isArray(rows), status: response.status, rows: Array.isArray(rows) ? rows : [] };
+    })()`,
+  );
+  assert.equal(result?.ok, true, `profile_owner_${method.toLowerCase()}_failed`);
+  assert.equal(result.status, 200, `profile_owner_${method.toLowerCase()}_status`);
+  return result.rows;
+}
+async function readProfileOwnerRow(panel, config, userId) {
+  const url = new URL('/rest/v1/user_form_profile', config.url);
+  url.searchParams.set('select', 'user_id,organization_id,preferred_name,created_at,version');
+  url.searchParams.set('user_id', `eq.${userId}`);
+  const rows = await profileOwnerRequest(panel, config, url.href);
+  assert.ok(rows.length <= 1, 'profile_owner_row_not_unique');
+  return rows[0] ?? null;
+}
+async function deleteOwnedProfileRow(panel, config, owned, expectedVersion) {
+  const row = await readProfileOwnerRow(panel, config, owned.userId);
+  assert.ok(row, 'owned_profile_cleanup_row_missing');
+  const url = ownedDeleteUrl(config.url, owned, row, expectedVersion);
+  const deleted = await profileOwnerRequest(panel, config, url, 'DELETE');
+  assert.equal(deleted.length, 1, 'owned_profile_conditional_delete_missed');
+  assert.equal(deleted[0]?.user_id, owned.userId, 'owned_profile_deleted_wrong_owner');
+  assert.equal(
+    await readProfileOwnerRow(panel, config, owned.userId),
+    null,
+    'owned_profile_absence_not_restored',
+  );
 }
 async function selectApprovedOrganization(panel) {
   const configPath = join(REPO, 'test-results/notes-private-config.json');
@@ -421,7 +478,7 @@ async function caseSaveDiscard(panel, original, email, mode, dimension) {
         );
         await observe('cleanup_after_reopen', original);
       }
-      report.restoration = { verified: true, at: new Date().toISOString() };
+      diagnostic.original_value_restored = true;
     } catch (error) {
       cleanupError = error;
       diagnostic.cleanup_failure = String(error?.message ?? 'unknown')
@@ -650,7 +707,7 @@ try {
       const initialRead = observeProfileRequests(panel);
       await initialRead.start();
       await openProfile(panel, identity.email);
-      const original = (await state(panel)).preferred ?? '';
+      let original = (await state(panel)).preferred ?? '';
       const initialRequests = await waitFor(
         'profile_initial_server_read_finished',
         () => initialRead.snapshot(),
@@ -674,21 +731,69 @@ try {
       );
       report.profile_row_existed_before = initialRow.row_present;
       report.original_preferred_present = Boolean(original);
-      // Save creates an owner row when none exists. The UI has no exact inverse for
-      // that write, so refuse the mutating cases before creating persistent data.
-      if (!initialRow.row_present) throw new Error('profile_original_row_absent_mutation_refused');
-      await caseBack(panel, original, identity.email, AUTH_MODE, 'warm');
-      await caseSaveDiscard(panel, original, identity.email, AUTH_MODE, 'warm');
-      await caseT25(panel, original, identity.email, AUTH_MODE, 'warm');
-      report.stage = 'extension_reload';
-      const reloaded = await reloadExtension();
-      report.extension_reload = {
-        management_reload_clicked: reloaded.management_reload_clicked,
-        old_targets_retired: reloaded.old_targets_retired,
-        worker_replaced: reloaded.worker_replaced,
-        panel_replaced: reloaded.panel_replaced,
-      };
+      let owned = null;
+      let ownedVersion = 0;
+      let ownerConfig = null;
+      let pendingMarker = null;
+      let cleanupPanel = panel;
+      let reloadedPanel = null;
+      let executionError = null;
       try {
+        if (!initialRow.row_present) {
+          assert.equal(AUTH_MODE, 'member', 'first_save_requires_designated_member');
+          ownerConfig = { ...(await profileApiConfig()), organizationId: stored.organizationId };
+          assert.equal(
+            await readProfileOwnerRow(panel, ownerConfig, identity.userId),
+            null,
+            'first_save_row_appeared_before_write',
+          );
+          const marker = `Profile first save ${randomUUID()}`;
+          pendingMarker = marker;
+          await fillPreferred(panel, marker);
+          await clickProfileHeader(panel, 'Save');
+          await waitFor(
+            'first_profile_save_settled',
+            () => state(panel),
+            (s) => s.preferred === marker && !s.dirty && !s.error,
+            30000,
+          );
+          const row = await readProfileOwnerRow(panel, ownerConfig, identity.userId);
+          owned = assertFirstSaveOwnedRow(row, {
+            userId: identity.userId,
+            organizationId: stored.organizationId,
+            marker,
+          });
+          ownedVersion = 1;
+          original = marker;
+          report.first_save = {
+            case_id: 'EXT-F-1004-T28',
+            branch: 'new-row-with-device-organization',
+            status: 'provisional_until_original_absence_restored',
+            row_created_by_ui: true,
+            organization_matches_device: true,
+            owner_matches_verified_member: true,
+            original_absence_restoration_pending: true,
+            scope: 'bounded branch only; not full T28 acceptance',
+          };
+        }
+        await caseBack(panel, original, identity.email, AUTH_MODE, 'warm');
+        await caseSaveDiscard(panel, original, identity.email, AUTH_MODE, 'warm');
+        if (owned) {
+          const row = await readProfileOwnerRow(panel, ownerConfig, identity.userId);
+          ownedDeleteUrl(ownerConfig.url, owned, row, 3);
+          ownedVersion = 3;
+        }
+        await caseT25(panel, original, identity.email, AUTH_MODE, 'warm');
+        report.stage = 'extension_reload';
+        const reloaded = await reloadExtension();
+        reloadedPanel = reloaded.panel;
+        cleanupPanel = reloaded.panel;
+        report.extension_reload = {
+          management_reload_clicked: reloaded.management_reload_clicked,
+          old_targets_retired: reloaded.old_targets_retired,
+          worker_replaced: reloaded.worker_replaced,
+          panel_replaced: reloaded.panel_replaced,
+        };
         const after = await panelIdentity(reloaded.panel);
         assert.equal(after.profileId, identity.userId, 'reload_profile_identity_changed');
         assert.equal(after.isAdmin, AUTH_MODE === 'admin', 'reload_profile_role_changed');
@@ -696,10 +801,57 @@ try {
         await openProfile(reloaded.panel, identity.email);
         await caseBack(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
         await caseSaveDiscard(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
+        if (owned) {
+          const row = await readProfileOwnerRow(reloaded.panel, ownerConfig, identity.userId);
+          ownedDeleteUrl(ownerConfig.url, owned, row, 5);
+          ownedVersion = 5;
+        }
         await caseT25(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
-      } finally {
-        await reloaded.panel.detach();
+      } catch (error) {
+        executionError = error;
       }
+      let cleanupError = null;
+      try {
+        if (!owned && pendingMarker) {
+          const row = await readProfileOwnerRow(cleanupPanel, ownerConfig, identity.userId);
+          if (row) {
+            owned = assertFirstSaveOwnedRow(row, {
+              userId: identity.userId,
+              organizationId: stored.organizationId,
+              marker: pendingMarker,
+            });
+            ownedVersion = 1;
+          } else {
+            report.restoration = { verified: true, original_absence_restored: true };
+          }
+        }
+        if (owned) {
+          report.stage = 'restore_original_absence';
+          await deleteOwnedProfileRow(cleanupPanel, ownerConfig, owned, ownedVersion);
+          report.restoration = { verified: true, original_absence_restored: true };
+          if (report.first_save) {
+            report.first_save.original_absence_restoration_pending = false;
+            report.first_save.status = 'bounded_pass';
+          }
+        } else if (!pendingMarker) {
+          report.restoration = { verified: true, original_row_preserved: true };
+        }
+      } catch (error) {
+        report.restoration = {
+          verified: false,
+          original_absence_restored: false,
+          owned_row_may_remain: Boolean(owned || pendingMarker),
+          failure_code: String(error?.message ?? 'unknown')
+            .split(':', 1)[0]
+            .slice(0, 100),
+        };
+        if (report.first_save) report.first_save.status = 'cleanup_unverified';
+        cleanupError = error;
+      } finally {
+        if (reloadedPanel) await reloadedPanel.detach();
+      }
+      if (cleanupError) throw cleanupError;
+      if (executionError) throw executionError;
     },
   });
   report.native = {
