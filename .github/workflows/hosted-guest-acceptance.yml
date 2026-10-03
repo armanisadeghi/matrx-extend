@@ -42,8 +42,6 @@ jobs:
       cancel-in-progress: false
     env:
       GH_TOKEN: ${{ github.token }}
-      MATRX_HOSTED_BROWSER_RUNTIME_DIR: ${{ runner.temp }}/browser-runtime
-      PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
     steps:
       - uses: actions/checkout@v4
         with:
@@ -110,6 +108,8 @@ jobs:
       - name: Prepare pinned browser driver under an owned permit
         env:
           MATRX_HOSTED_PHASE: package
+          MATRX_HOSTED_BROWSER_RUNTIME_DIR: ${{ runner.temp }}/browser-runtime
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
         run: |
           mkdir -p "$RUNNER_TEMP/guest-resource-profile"
           node scripts/stabilization-resource.mjs run --run-id "hosted-package-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
@@ -117,6 +117,8 @@ jobs:
       - name: Prepare full Chromium under a fresh owned permit
         env:
           MATRX_HOSTED_PHASE: browser
+          MATRX_HOSTED_BROWSER_RUNTIME_DIR: ${{ runner.temp }}/browser-runtime
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
         run: |
           node scripts/stabilization-resource.mjs run --run-id "hosted-browser-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
 
