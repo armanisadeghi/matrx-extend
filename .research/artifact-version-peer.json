@@ -6,7 +6,7 @@
   "verdict_B_quality": "IMPORTANT_TEST_GAP: the new fake git `show` branch returns version 0.0.123 for every argument. The test passes even if production requests package.json at the wrong valid SHA, so it does not force the new immutable-source lookup. A strict stub that recognizes only `${sourceSha}:package.json`, plus a wrong or unavailable source refusal case, is needed for the regression guard. Production code itself fails closed if git show fails and ordinary local development still compares against the checkout package.json.",
   "evidence": {
     "historical_source": "git show 991385d9:package.json reports 0.2.176; 991385d9 is an ancestor of origin/main; checkout package.json reports 0.2.177",
-    "unit": "pnpm exec vitest run tests/unit/current-test-artifact-receipt.test.ts --maxWorkers=1: 10 passed",
+    "unit": "Reviewer ran pnpm exec vitest run tests/unit/current-test-artifact-receipt.test.ts --maxWorkers=1 directly, without the resource permit: 10 passed. This is diagnostic-only and is not counted as guarded acceptance evidence.",
     "format": "pnpm exec biome check scripts/current-test-artifact.mjs scripts/record-local-dev-build.mjs scripts/record-local-dev-build.d.mts tests/unit/current-test-artifact-receipt.test.ts: passed",
     "red_green": "Builder committed resource journal exit 1 before fix and exit 0 after fix; journal records process outcomes only and does not itself prove the assertion that went red. A strict wrong-SHA mutation was not run in this review."
   },
