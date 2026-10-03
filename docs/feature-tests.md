@@ -3464,8 +3464,8 @@ Every entry follows this shape:
 
 - **What it does:** port and pair-code writes for each control finish in the order submitted, even when Chrome storage responds slowly.
 - **Where to test:** Settings → Desktop bridge in an isolated profile with a delayed first storage write.
-- **Steps:** save port `65002`, then `65003` before the first write completes. Repeat with two different pair codes, editing and submitting the second while the first is pending.
-- **Expected:** the second storage write starts after the first settles; the final stored port is `65003` and the input still shows `65003`. The first pair-code completion leaves the newer input alone; the final stored code is the second submission.
+- **Steps:** while the initial saved-port read is pending, enter `65003` and let the read settle; repeat while also pressing Set before it settles. Save port `65002`, then `65003` before the first write completes. Repeat with two different pair codes, editing and submitting the second while the first is pending.
+- **Expected:** the initial read never replaces a newer typed port, and a submitted port waits behind that read. The second storage write starts after the first settles; the final stored port is `65003` and the input still shows `65003`. The first pair-code completion leaves the newer input alone; the final stored code is the second submission.
 - **Covered by:** `src/features/settings/SettingsView.about.test.tsx` controlled overlapping writes. Native exact-build acceptance remains unverified.
 
 ### DevTools console is not a firehose

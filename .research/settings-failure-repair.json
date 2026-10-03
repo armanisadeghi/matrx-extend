@@ -24,7 +24,7 @@
   "follow_up_race": {
     "defect_id": "EXT-D-0086",
     "source_evidence": "Overlapping Settings port and pair-code writes previously called Chrome storage concurrently; pair save also cleared the input after awaiting an older write.",
-    "repair": "Serialize writes per storage key and clear a submitted pair input only when no later input edit or submission occurred.",
-    "regression": "Controlled deferred Chrome-storage boundaries assert the second operation waits for the first and the latest value persists. Runtime verdict remains pending hosted CI."
+    "repair": "Serialize writes per storage key, wait for the initial port read before writing, preserve port input edited during that read, and clear a submitted pair input only when no later input edit or submission occurred.",
+    "regression": "Controlled deferred Chrome-storage boundaries assert initial-read input preservation, read-before-write ordering, second-write ordering, and latest-value persistence. Runtime verdict remains pending hosted CI."
   }
 }

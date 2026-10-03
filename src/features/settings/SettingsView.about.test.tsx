@@ -428,6 +428,42 @@ describe('SettingsView local engine port', () => {
     expect(mocks.setEnginePortOverride).not.toHaveBeenCalled();
   });
 
+  it('preserves a port typed while the initial saved-port read is pending', async () => {
+    const initialRead = deferred();
+    mocks.getEnginePortOverride.mockReset().mockImplementation(async () => {
+      await initialRead.promise;
+      return 65001;
+    });
+    render(<SettingsView />);
+    const section = within(screen.getByRole('region', { name: 'Desktop bridge' }));
+    const input = section.getByPlaceholderText('auto') as HTMLInputElement;
+
+    fireEvent.change(input, { target: { value: '65003' } });
+    initialRead.resolve();
+    await waitFor(() => expect(section.getByText('override')).toBeTruthy());
+    expect(input.value).toBe('65003');
+    expect(mocks.setEnginePortOverride).not.toHaveBeenCalled();
+  });
+
+  it('waits for a pending initial read before saving the newer entered port', async () => {
+    const initialRead = deferred();
+    mocks.getEnginePortOverride.mockReset().mockImplementation(async () => {
+      await initialRead.promise;
+      return 65001;
+    });
+    render(<SettingsView />);
+    const section = within(screen.getByRole('region', { name: 'Desktop bridge' }));
+    const input = section.getByPlaceholderText('auto') as HTMLInputElement;
+
+    fireEvent.change(input, { target: { value: '65003' } });
+    fireEvent.click(section.getByRole('button', { name: 'Set' }));
+    expect(mocks.setEnginePortOverride).not.toHaveBeenCalled();
+    initialRead.resolve();
+    await waitFor(() => expect(mocks.setEnginePortOverride).toHaveBeenCalledWith(65003));
+    await waitFor(() => expect(section.getByRole('button', { name: 'Save' })).toBeTruthy());
+    expect(input.value).toBe('65003');
+  });
+
   it('persists overlapping port choices in submission order', async () => {
     const first = deferred();
     const second = deferred();

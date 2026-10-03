@@ -11,15 +11,16 @@
   ],
   "surface": "Settings desktop port and pair code",
   "auth_mode": "guest/member/admin",
-  "title": "Overlapping desktop settings writes can persist an older choice",
+  "title": "Overlapping desktop settings operations can replace a newer choice",
   "reproduction": [
+    "Hold the initial local engine port read pending, enter or submit a newer port, then let the read settle and inspect the input and saved value.",
     "In one mounted Settings panel, hold the first local engine port storage write pending after Save, choose another valid port, and click Save again.",
     "Release the two writes in reverse completion order and inspect the final Chrome storage value and displayed input.",
     "Repeat with two pair codes: submit the first, enter and submit the second while the first write is pending, then settle both writes and inspect the input and final saved code."
   ],
-  "expected": "Writes to each desktop setting complete in submission order; an older pair-code completion cannot erase newer input. The latest successful submission is the final persisted value.",
-  "actual": "Pre-fix source invoked Chrome storage for each Save without ordering; an older operation could settle after a newer one, and pair save always cleared the current input on completion. This is source-confirmed; controlled runtime RED and native reproduction have not been executed.",
-  "reproduction_status": "source-confirmed overlap; controlled component and native runtime reproduction pending",
+  "expected": "A delayed initial read preserves newer port input and settles before a submitted write; writes to each desktop setting complete in submission order. An older pair-code completion cannot erase newer input. The latest successful submission is the final persisted value.",
+  "actual": "Pre-fix source applied the initial port read to the input even after user edits, invoked Chrome storage for each Save without ordering, and cleared pair input after an older write. This is source-confirmed; controlled runtime RED and native reproduction have not been executed.",
+  "reproduction_status": "source-confirmed read/write overlap; controlled component and native runtime reproduction pending",
   "evidence": [
     "src/features/settings/SettingsView.tsx",
     "src/features/settings/SettingsView.about.test.tsx",
@@ -45,7 +46,7 @@
       "at": "2026-10-03T03:34:17Z",
       "from": "triaged",
       "to": "in-fix",
-      "reason": "cf0877f1 serializes same-panel writes per key and guards pair input by revision; hosted CI and independent repair review remain pending."
+      "reason": "cf0877f1 serializes same-panel writes per key and guards pair input by revision; a follow-up repairs delayed initial port reads. Hosted CI and independent repair review remain pending."
     }
   ],
   "closure_requirement": "Hosted controlled caller regression, independent repair review, and exact-build native save/reload acceptance; no closure from source inspection or an unexecuted test."

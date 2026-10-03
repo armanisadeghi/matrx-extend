@@ -119,6 +119,7 @@ export function SettingsView() {
   const [enginePortSaved, setEnginePortSaved] = useState<number | null>(null);
   const [enginePortError, setEnginePortError] = useState<string | null>(null);
   const enginePortWritePending = useRef(Promise.resolve());
+  const enginePortInputRevision = useRef(0);
   const [clearLocalDataOpen, setClearLocalDataOpen] = useState(false);
   const [clearLocalDataError, setClearLocalDataError] = useState<string | null>(null);
   const [extensionUpdate, setExtensionUpdate] = useState<ExtensionUpdateStatus>({ kind: 'idle' });
@@ -136,12 +137,19 @@ export function SettingsView() {
 
   useEffect(() => {
     let cancelled = false;
+    const inputRevision = enginePortInputRevision.current;
+    const initialRead = getEnginePortOverride();
+    enginePortWritePending.current = initialRead.then(
+      () => undefined,
+      () => undefined,
+    );
     void (async () => {
       try {
-        const p = await getEnginePortOverride();
+        const p = await initialRead;
         if (cancelled) return;
         setEnginePortSaved(p);
-        setEnginePortInput(p === null ? '' : String(p));
+        if (enginePortInputRevision.current === inputRevision)
+          setEnginePortInput(p === null ? '' : String(p));
       } catch {
         if (!cancelled)
           setEnginePortError('Could not load saved port. Reopen Settings to try again.');
@@ -606,7 +614,10 @@ export function SettingsView() {
                   inputMode="numeric"
                   pattern="[0-9]*"
                   value={enginePortInput}
-                  onChange={(e) => setEnginePortInput(e.target.value.replace(/[^0-9]/g, ''))}
+                  onChange={(e) => {
+                    enginePortInputRevision.current += 1;
+                    setEnginePortInput(e.target.value.replace(/[^0-9]/g, ''));
+                  }}
                   placeholder="auto"
                   className="h-7 w-20 rounded-full border-0 bg-secondary text-right focus-visible:ring-1"
                 />
