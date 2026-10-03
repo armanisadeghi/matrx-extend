@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "review_type": "fresh independent source-only review; no native browser or heavy tests",
+  "reviewer_commit_base": "73793bb7a5ad87bb3d0f57218cc76eb98681af1b",
+  "reviewed_commits": [
+    "fc15a60ecd44a8cfc246783d63b07474d3d9a123",
+    "1aa16b6c",
+    "73793bb7a5ad87bb3d0f57218cc76eb98681af1b"
+  ],
+  "verdict_a_acceptance_launch_readiness": "PARTIAL_UNVERIFIED",
+  "verdict_a_evidence": [
+    "Source path uses first-party member sign-in, checks the canonical admin assignment query for zero rows, confirms member identity and organization, and exercises the actual Profile editor through dirty draft, Discard, Save, Back/reopen, and post-save reload/reopen flows.",
+    "When the initial owner Profile row is absent, the runner now throws before caseBack, Save, or T25 and serializes that exact refusal as status unverified. Initial Profile and request inspection are reads; the reviewed path performs no persistent Profile mutation before this refusal.",
+    "Reload now observes exact targetDestroyed for the original worker and targetCreated for a distinct replacement worker, confirms both original targets are absent, opens a replacement panel, and requires a SIDE_PANEL runtime context. This is source evidence only; the Chrome lifecycle has not been exercised.",
+    "No native report demonstrates ordinary member acceptance, exact state restoration, or extension reload. Acceptance therefore remains unverified pending guarded native evidence."
+  ],
+  "verdict_a_missing_extra_misunderstood": {
+    "missing": [
+      "A guarded native run and inspection of its report proving member save/discard/reopen, restoration, and true extension reload."
+    ],
+    "extra": [],
+    "misunderstood": []
+  },
+  "verdict_b_doctrine_test_quality": "PARTIAL",
+  "verdict_b_findings": [
+    {
+      "severity": "bounded_evidence_gap",
+      "file": "tests/browser/profile-native-acceptance.mjs",
+      "finding": "This source review did not establish the forcing-function RED proof or run the lightweight checks recorded by the builder. The runner's observable UI and network assertions are behavior-based, but source inspection does not substitute for executing the guard against a named break."
+    },
+    {
+      "severity": "privacy_observation",
+      "file": "tests/browser/profile-native-acceptance.mjs",
+      "finding": "The raw user ID/email are no longer copied into the report. Member reports still include a stable 16-hex account_fingerprint derived from email; it is pseudonymous but linkable and should be treated as sensitive metadata. No direct identity disclosure is evident in the changed path."
+    }
+  ],
+  "prior_findings": {
+    "private_user_id_in_report": "ADDRESSED: the owned_test_row_user_id_private report field was removed.",
+    "missing_row_mutation_without_inverse": "ADDRESSED: missing original row now refuses before the mutating cases and produces unverified status.",
+    "worker_retirement_bound_to_exact_targets": "ADDRESSED_IN_SOURCE: exact old worker destruction and distinct replacement creation are required; native event behavior remains unverified."
+  },
+  "checks": {
+    "native_acceptance": "not_run_by_reviewer",
+    "source_review": "completed",
+    "independent_browser_evidence": "not_available"
+  }
+}
