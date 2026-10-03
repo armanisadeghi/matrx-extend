@@ -1,0 +1,352 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-case-procedure-patch",
+  "task_id": "tool-procedures-batch-next",
+  "patch_id": "tool-procedures-next-batch-20261003",
+  "source": {
+    "source_inventory": "docs/stabilization/inventory.json",
+    "scope": "Ten existing non-mutating registered-tool cases with empty steps/expected. Procedure design only; no cases executed and no test status is changed.",
+    "source_files_reviewed": [
+      "docs/stabilization/INVENTORY-CONTRACT.md",
+      "docs/stabilization/PLAN.md",
+      "src/features/tools/ToolsView.tsx",
+      "src/lib/tools/handlers/page-refs.ts",
+      "src/lib/tools/handlers/read.ts",
+      "src/lib/tools/handlers/inspect.ts",
+      "src/lib/tools/handlers/tabs.ts",
+      "src/lib/tools/handlers/browser-data.ts",
+      "types/tool-catalog.json"
+    ]
+  },
+  "selectedFeatureIDs": [
+    "EXT-F-4022",
+    "EXT-F-4023",
+    "EXT-F-4027",
+    "EXT-F-4035",
+    "EXT-F-4036",
+    "EXT-F-4037",
+    "EXT-F-4038",
+    "EXT-F-4039",
+    "EXT-F-4040",
+    "EXT-F-4041"
+  ],
+  "shared_setup": {
+    "build_profile_reload": [
+      "Follow the full resource/build/reload preflight in docs/stabilization/PLAN.md. Use a current imported development artifact selected from its receipt set, not a directory name. Confirm ci-receipt.json, provenance.json, import-status.json, local-dev-receipt.json agree on source SHA, run/attempt, artifact ID/digest, extension version/ID and tree hash; compare the loaded chrome-mv3 tree to local-dev-receipt.json. Stop if identity or hash differs.",
+      "Before assertions, record chrome://version profile path and chrome://extensions extension ID/version/Loaded from path. Load the exact receipt-bound chrome-mv3 folder if needed, reload the extension, close/reopen the side panel, then reload the selected target tab. Keep each case unverified until actually run against that artifact."
+    ],
+    "manual_surface": [
+      "Use an existing signed-in member profile and repeat in an existing signed-in admin profile; do not change account roles. In Tools, find the named tool, expand its argument form, enter the case JSON, select Run, and inspect the inline result. This is a one-tool, user-initiated local run.",
+      "ToolsView.tsx says the manual Run skips the permission gate. Therefore these procedures verify manual handler behavior only; they do not verify dispatcher Ask/Act authorization or prove that a withheld Chrome permission is enforced. Do not remove permissions to manufacture a denial. Any permission refusal observed in normal operation is reportable, but is not a required negative test here.",
+      "Use a dedicated disposable Chrome profile containing only public targets and synthetic bookmarks/history for the browser-data cases. Never inspect or report the user's ordinary bookmarks or browsing history. Public page reads are read-only; do not submit forms or copy arbitrary page content into reports."
+    ],
+    "fixture": "For page tools, use the public https://example.org/ page (title and visible heading provide stable public text) as the basic read-only target. For find/get_element_details, first run read_page and use one of its returned ref values. For reproducible browser-data results, prepare an isolated test profile with a small known set of bookmarks to public example.org URLs and visits to those same URLs; record only these public URLs and the isolated profile identifier. Do not seed or inspect the everyday profile."
+  },
+  "case_updates": {
+    "EXT-F-4022-T01": {
+      "feature_id": "EXT-F-4022",
+      "title": "Read visible controls and text from a public page",
+      "control_ids": ["EXT-F-4022-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-ready-unverified",
+      "preconditions": [
+        "Complete shared receipt-bound build/profile/reload setup.",
+        "Open public https://example.org/ in the active tab and confirm it is fully loaded; use no logged-in or personal page."
+      ],
+      "steps": [
+        "In Tools, open read_page and run with {\"filter\":\"all\",\"include_text\":true,\"include_bounds\":false,\"max_nodes\":200}.",
+        "Inspect the inline result for the active page title/URL and returned element roles, names/text, and refs. Confirm the visible heading text appears; do not enable lazy-load or hidden-element collection for this baseline.",
+        "Run again with {\"filter\":\"interactive\",\"include_text\":true,\"max_nodes\":200} and compare the returned elements."
+      ],
+      "expected": [
+        "The all-elements result contains visible page content and element metadata, including the public heading; the interactive result is limited to interactive elements. No page content is edited and no navigation occurs.",
+        "If the tab is unsupported or scripting access is unavailable, the tool returns a visible refusal/error; do not count an empty/error result as a successful content read."
+      ],
+      "dimensions": ["valid-input", "filter", "reload"],
+      "auth_notes": "Inventory says guest is not applicable because Tools requires sign-in. Member/admin are applicable. Manual Run bypasses dispatcher authorization; this case does not cover Ask/Act.",
+      "source_evidence": [
+        "src/lib/tools/handlers/page-refs.ts:185",
+        "src/lib/tools/handlers/page-refs.ts:190",
+        "src/lib/tools/handlers/page-refs.ts:193",
+        "src/features/tools/ToolsView.tsx:1"
+      ],
+      "limits": [
+        "Exact node count and refs can vary with page/browser rendering; assert visible heading and role/filter behavior, not a fixed whole-page scrape."
+      ]
+    },
+    "EXT-F-4023-T01": {
+      "feature_id": "EXT-F-4023",
+      "title": "Find a known heading on the active public page",
+      "control_ids": ["EXT-F-4023-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-ready-unverified",
+      "preconditions": [
+        "Complete shared setup; active tab is loaded https://example.org/.",
+        "Confirm the visible page heading before using its text as the search query."
+      ],
+      "steps": [
+        "In Tools, open find and run {\"query\":\"Example Domain\",\"include_content\":true,\"limit\":5}.",
+        "Inspect matches and note whether used_cache is true or false; do not treat cache choice as a correctness requirement.",
+        "Run {\"query\":\"zz-no-such-visible-heading-zz\",\"include_content\":true,\"limit\":5} as a no-match control."
+      ],
+      "expected": [
+        "The first result returns a match associated with the visible heading or its text. The no-match control returns an empty matches list; neither run changes page state.",
+        "A tool refusal/error is visible and is not a pass. Match ordering or score details may vary; assert the known heading match and no-match shape only."
+      ],
+      "dimensions": ["known-match", "no-match", "cache", "reload"],
+      "auth_notes": "Member/admin applicable; guest not applicable at Tools surface. Manual execution does not exercise the dispatcher gate.",
+      "source_evidence": [
+        "src/lib/tools/handlers/page-refs.ts:521",
+        "src/lib/tools/handlers/page-refs.ts:530",
+        "src/lib/tools/handlers/page-refs.ts:547",
+        "src/features/tools/ToolsView.tsx:1"
+      ],
+      "limits": [
+        "The cache may be warm after read_page/find or expire; either path is valid if the same query result is correct."
+      ]
+    },
+    "EXT-F-4027-T01": {
+      "feature_id": "EXT-F-4027",
+      "title": "Read a concise summary of the assigned active page",
+      "control_ids": ["EXT-F-4027-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-ready-unverified",
+      "preconditions": [
+        "Complete shared setup; with the Tools panel open, leave https://example.org/ as the active browser tab. Confirm its title and URL."
+      ],
+      "steps": [
+        "In Tools, open read_active_page and run with {} (deep defaults to false).",
+        "Inspect the inline result for the page title, URL, and concise visible text/metadata.",
+        "Run {\"deep\":true} and inspect whether the result includes the deeper page representation."
+      ],
+      "expected": [
+        "Both successful results refer to the same active public target; deep=true requests the deeper read. Neither execution changes the page.",
+        "A missing assigned/active tab or unsupported Chrome page yields an explicit {ok:false, reason} style refusal; record it as blocked/setup mismatch, not a positive read."
+      ],
+      "dimensions": ["shallow", "deep", "unsupported-target", "reload"],
+      "auth_notes": "Inventory applicability is member/admin only. Tools manual run targets the focused tab and skips dispatcher permission checks; this is not proof of per-turn assigned-tab behavior.",
+      "source_evidence": [
+        "src/lib/tools/handlers/read.ts:85",
+        "src/lib/tools/handlers/read.ts:90",
+        "src/features/tools/ToolsView.tsx:1"
+      ],
+      "limits": [
+        "Do not assert exact generated summary wording or byte count; assert target identity and the shallow/deep response distinction."
+      ]
+    },
+    "EXT-F-4035-T01": {
+      "feature_id": "EXT-F-4035",
+      "title": "Inspect a page element using a fresh read_page reference",
+      "control_ids": ["EXT-F-4035-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-ready-unverified",
+      "preconditions": [
+        "Complete shared setup; active target is https://example.org/ and contains no private or credential fields."
+      ],
+      "steps": [
+        "Run read_page with {\"filter\":\"all\",\"include_text\":true,\"max_nodes\":200}.",
+        "Choose the returned ref attached to the visible Example Domain heading and copy that exact ref into get_element_details; do not invent a selector or reuse a ref after navigation.",
+        "Run get_element_details with {\"ref\":\"<returned-ref>\",\"include_html\":false,\"include_styles\":false} and inspect the result."
+      ],
+      "expected": [
+        "The result identifies the element tag and text, attributes, bounding rectangle, visibility, and child count. It reports visible=true for the on-screen heading. No HTML/styles are requested and no page state changes.",
+        "If the ref is absent/stale, an explicit no-element result is a failed setup for this positive case; reload the public target and create a fresh ref before retrying."
+      ],
+      "dimensions": ["fresh-ref", "visible-element", "reload"],
+      "auth_notes": "Member/admin applicable, guest not applicable at Tools. Catalog permission list is empty for this handler; manual run still does not establish any dispatcher permission behavior.",
+      "source_evidence": [
+        "src/lib/tools/handlers/inspect.ts:418",
+        "src/lib/tools/handlers/inspect.ts:426",
+        "src/lib/tools/handlers/inspect.ts:451"
+      ],
+      "limits": [
+        "Ref identifiers and coordinates vary per page load/window size. The input schema's tab_id representation should be checked against the current live catalog/handler before execution; this procedure omits it and relies on the active tab."
+      ]
+    },
+    "EXT-F-4036-T01": {
+      "feature_id": "EXT-F-4036",
+      "title": "List loaded tabs and filter to a public target",
+      "control_ids": ["EXT-F-4036-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-ready-unverified",
+      "preconditions": [
+        "Complete shared setup in the disposable profile. Open https://example.org/ and one other public tab; no personal tabs should be present."
+      ],
+      "steps": [
+        "Run list_open_tabs with {\"all_windows\":true,\"loaded_only\":true}.",
+        "Verify the result contains the two known public tabs and note count, titles, URLs, status, and active flag.",
+        "Run {\"all_windows\":true,\"url\":\"https://example.org/*\",\"loaded_only\":true} and inspect the filtered result."
+      ],
+      "expected": [
+        "The first result includes loaded tabs in the profile and count equals the returned tabs array length. The URL-filtered call includes the matching example.org tab and excludes the other target. The tool does not open, close, or modify tabs.",
+        "If Chrome URL matching semantics or a wildcard differs, record actual filter behavior as a catalog/handler mismatch rather than asserting a guessed match."
+      ],
+      "dimensions": ["all-tabs", "url-filter", "loaded-only", "reload"],
+      "auth_notes": "Inventory lists tabs permission; member/admin applicable. Manual Run bypasses permission gate, so no permission-denial result can be required here.",
+      "source_evidence": [
+        "src/lib/tools/handlers/tabs.ts:38",
+        "src/lib/tools/handlers/tabs.ts:43",
+        "src/lib/tools/handlers/tabs.ts:48",
+        "src/lib/tools/handlers/tabs.ts:51"
+      ],
+      "limits": [
+        "Tab IDs/order/status may vary; only assert known targets, count consistency, and documented filters."
+      ]
+    },
+    "EXT-F-4037-T01": {
+      "feature_id": "EXT-F-4037",
+      "title": "Read the tab-group list, including the empty state",
+      "control_ids": ["EXT-F-4037-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-ready-unverified",
+      "preconditions": [
+        "Complete shared setup in a disposable Chrome profile. If a group already exists, record its displayed title/color and one member tab; do not change group state."
+      ],
+      "steps": [
+        "Run get_tab_groups with {}.",
+        "Inspect count and groups. If the isolated profile already has a group, compare its id/title/color/collapsed/window_id/tab_ids with Chrome's visible group and tabs. If there are no groups, record the empty state."
+      ],
+      "expected": [
+        "On supported Chrome, result contains count equal to groups array length; each reported tab_ids entry belongs to that group. Zero groups is a valid observed empty state.",
+        "If chrome.tabGroups is unavailable, handler returns {ok:false,reason:'tabGroups API unavailable'}; report browser capability mismatch, not a successful empty result."
+      ],
+      "dimensions": ["populated-or-empty", "browser-api-availability", "reload"],
+      "auth_notes": "Inventory lists tabs and tabGroups permissions; handler advertises Chrome support only. Member/admin applicable. Manual run does not exercise authorization gate.",
+      "source_evidence": [
+        "src/lib/tools/handlers/tabs.ts:73",
+        "src/lib/tools/handlers/tabs.ts:79",
+        "src/lib/tools/handlers/tabs.ts:81",
+        "src/lib/tools/handlers/tabs.ts:92"
+      ],
+      "limits": [
+        "No group is created or edited by this procedure. Current catalog permission declarations should be reconciled with Chrome's effective capability before claiming a gate result."
+      ]
+    },
+    "EXT-F-4038-T01": {
+      "feature_id": "EXT-F-4038",
+      "title": "Look up details for a known open public tab",
+      "control_ids": ["EXT-F-4038-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-ready-unverified",
+      "preconditions": [
+        "Complete shared setup in the disposable profile. Use list_open_tabs to obtain the numeric id for the open https://example.org/ tab."
+      ],
+      "steps": [
+        "Run get_tab_info with {\"tab_id\":<numeric ID returned by list_open_tabs>}.",
+        "Compare returned id, URL, title, active/pinned state, status, and window_id against list_open_tabs and Chrome's tab strip.",
+        "Do not use an ID from a previous profile or earlier browser session."
+      ],
+      "expected": [
+        "The returned record describes the same open target and its current state. No tab is changed.",
+        "A stale/unknown ID returns {ok:false,reason:<Chrome error>} and should be recorded as a stale-fixture input, not a successful lookup."
+      ],
+      "dimensions": ["valid-tab-id", "stale-id-negative", "reload"],
+      "auth_notes": "Inventory lists tabs permission; member/admin applicable. Manual run skips dispatcher permission gate.",
+      "source_evidence": [
+        "src/lib/tools/handlers/tabs.ts:106",
+        "src/lib/tools/handlers/tabs.ts:109",
+        "src/lib/tools/handlers/tabs.ts:115",
+        "src/lib/tools/handlers/tabs.ts:131"
+      ],
+      "limits": ["Use only IDs discovered in the current run; tab identifiers are ephemeral."]
+    },
+    "EXT-F-4039-T01": {
+      "feature_id": "EXT-F-4039",
+      "title": "Search only synthetic public bookmarks in an isolated profile",
+      "control_ids": ["EXT-F-4039-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-ready-unverified",
+      "preconditions": [
+        "Complete shared setup. Prepare an isolated test profile with a small known set of bookmarks to public example.org URLs, including one titled 'Matrx public fixture alpha'; do not use the everyday profile."
+      ],
+      "steps": [
+        "Run search_bookmarks with {\"query\":\"Matrx public fixture alpha\",\"limit\":10}.",
+        "Compare returned count, total_match, title and URL with the single synthetic bookmark you created for this isolated test profile.",
+        "Run {\"query\":\"zz-no-such-test-bookmark-zz\",\"limit\":10} to inspect the no-match response."
+      ],
+      "expected": [
+        "The first result includes the synthetic bookmark and total_match reflects the full match count; count is capped at limit. The second returns zero matches. This tool only reads bookmarks.",
+        "An API-unavailable or permission error is visible and is not equivalent to an empty successful result. Do not expose bookmark data from other profiles in evidence."
+      ],
+      "dimensions": ["known-match", "no-match", "limit", "reload"],
+      "auth_notes": "Inventory lists bookmarks permission; member/admin applicable. Manual Run skips dispatcher permission checks; this is a read of profile-local personal data, restricted to the isolated fixture profile.",
+      "source_evidence": [
+        "src/lib/tools/handlers/browser-data.ts:26",
+        "src/lib/tools/handlers/browser-data.ts:31",
+        "src/lib/tools/handlers/browser-data.ts:32",
+        "src/lib/tools/handlers/browser-data.ts:34"
+      ],
+      "limits": [
+        "Bookmark setup is a prerequisite performed only in a disposable profile; this proposed tool case itself is read-only. No real user bookmark should be surfaced or recorded."
+      ]
+    },
+    "EXT-F-4040-T01": {
+      "feature_id": "EXT-F-4040",
+      "title": "Read the shallow tree of synthetic public bookmarks",
+      "control_ids": ["EXT-F-4040-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-ready-unverified",
+      "preconditions": [
+        "Complete shared setup. In the isolated profile, identify a test bookmark folder containing only public example.org URLs and record its folder ID; do not point at a personal profile's tree."
+      ],
+      "steps": [
+        "Run list_bookmark_tree with {\"folder_id\":\"<isolated-test-folder-id>\",\"max_depth\":2}.",
+        "Inspect the returned tree for the known folder and fixture bookmark titles/URLs. Confirm traversal stops at the requested depth.",
+        "If testing default-root behavior, run {} only in this isolated profile and compare it to the small known fixture tree."
+      ],
+      "expected": [
+        "The result contains tree nodes with id/title/date_added and public URL values for bookmark nodes; child traversal is bounded by max_depth. The handler does not modify bookmarks.",
+        "A missing folder ID returns an explicit API error; do not substitute a guessed ID or treat an unrelated root as success."
+      ],
+      "dimensions": ["folder-scope", "depth-limit", "reload"],
+      "auth_notes": "Inventory lists bookmarks permission; member/admin applicable. Manual run bypasses dispatcher gate. Restrict use to the isolated synthetic profile because a full tree can reveal personal data.",
+      "source_evidence": [
+        "src/lib/tools/handlers/browser-data.ts:48",
+        "src/lib/tools/handlers/browser-data.ts:58",
+        "src/lib/tools/handlers/browser-data.ts:63",
+        "src/lib/tools/handlers/browser-data.ts:68",
+        "src/lib/tools/handlers/browser-data.ts:80"
+      ],
+      "limits": [
+        "Tree shape depends on the browser's standard folders. Avoid asserting full root shape; use the isolated folder and exact synthetic entries."
+      ]
+    },
+    "EXT-F-4041-T01": {
+      "feature_id": "EXT-F-4041",
+      "title": "Search known public visits in an isolated profile",
+      "control_ids": ["EXT-F-4041-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-ready-unverified",
+      "preconditions": [
+        "Complete shared setup in a disposable profile. Visit https://example.org/ and a second public example.org URL in that profile so both entries are known; do not use the everyday profile. Record a run start time in UTC/milliseconds."
+      ],
+      "steps": [
+        "Run search_history with {\"query\":\"example.org\",\"start_time_ms\":<visit-window-start-ms>,\"end_time_ms\":<run-start-ms>,\"max_results\":100}.",
+        "Inspect count and items; confirm the known public URLs appear with title/last_visit_ms metadata and visit times within the requested window.",
+        "Run {\"query\":\"zz-no-such-test-history-zz\",\"start_time_ms\":<visit-window-start-ms>,\"end_time_ms\":<run-start-ms>,\"max_results\":100} as a no-match control."
+      ],
+      "expected": [
+        "The first result contains matching synthetic-profile visits in the requested window and count equals returned items length; the no-match control returns an empty items array. The tool does not navigate or alter browser history.",
+        "A missing history capability/error is explicit. Do not interpret an empty result as success until the isolated profile's known visits and time bounds are confirmed."
+      ],
+      "dimensions": ["known-visit", "time-window", "no-match", "reload"],
+      "auth_notes": "Inventory lists history permission; member/admin applicable. Manual Run bypasses dispatcher gating. History is personal data, so run only in the disposable profile seeded with public targets; never inspect ordinary browsing history.",
+      "source_evidence": [
+        "src/lib/tools/handlers/browser-data.ts:84",
+        "src/lib/tools/handlers/browser-data.ts:96",
+        "src/lib/tools/handlers/browser-data.ts:101",
+        "src/lib/tools/handlers/browser-data.ts:104",
+        "src/lib/tools/handlers/browser-data.ts:110"
+      ],
+      "limits": [
+        "Chrome visit timing and result order vary. Verify URL membership and time-window inclusion rather than exact counts; seeded targets must have been visited after the lower bound."
+      ]
+    }
+  },
+  "ambiguities_and_limits": [
+    "The inventory contract requests feature applicability/case updates while this deliverable preserves stable IDs and proposes case fields only; root must merge these fields into the authoritative inventory.",
+    "The Tools manual runner explicitly skips the permission gate. These cases cannot establish dispatcher permission behavior; a separate authorized dispatch case is needed if that contract is under test.",
+    "Catalog permissions and handler source may differ as catalog changes. Reconcile the live catalog/registry before execution, especially get_element_details and tabGroups API support; do not infer denial behavior from the manual runner.",
+    "All ten procedures are design-only and remain unexecuted/unverified. No tests, browser, build, network, database, or application runs were performed."
+  ]
+}
