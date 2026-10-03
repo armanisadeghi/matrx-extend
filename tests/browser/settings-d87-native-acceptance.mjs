@@ -338,6 +338,9 @@ try {
   };
   stage = 'native_panel';
   const run = await runNativeSidepanelQa({
+    onStage: (value) => {
+      stage = `native_panel:${value}`;
+    },
     extensionDir,
     expectedRelease: receipt,
     releaseReceiptPath: receiptPath,

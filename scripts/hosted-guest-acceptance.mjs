@@ -252,6 +252,8 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
   }
   const childEnv = {
     ...process.env,
+    // Acceptance must consume the same runtime this wrapper just verified.
+    MATRX_PLAYWRIGHT_MODULE: join(packageDir, 'index.mjs'),
     MATRX_GUEST_CHAT_EXTENSION_DIR: extensionDir,
     MATRX_REVIEWER_EXTENSION_DIR: extensionDir,
     MATRX_REVIEWER_RELEASE_RECEIPT: relocatedReceipt,
