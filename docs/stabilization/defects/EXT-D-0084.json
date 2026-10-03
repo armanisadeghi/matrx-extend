@@ -23,12 +23,15 @@
   ],
   "expected": "Failed persistence leaves the prior saved value intact, displays a recoverable error, and allows a later successful save and rediscovery.",
   "actual": "Pre-fix handler awaited setEnginePortOverride without a rejection handler; source shows failed persistence escapes without setting enginePortError. Controlled runtime reproduction is pending hosted CI; native failure is not yet exercised.",
-  "reproduction_status": "source-confirmed boundary; controlled runtime regression pending",
+  "reproduction_status": "Original source repair has hosted regression evidence; controlled guest native failure/retry paths now exercised. Signed-in, HTTP pair removal and independent runtime acceptance remain pending.",
   "evidence": [
     "src/features/settings/SettingsView.tsx",
     ".research/settings-failure-repair.json",
     ".research/settings-storage-final-peer.json",
-    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37092730162"
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37092730162",
+    ".research/desktop-settings-native-prepare.json",
+    ".research/desktop-settings-source-peer.json",
+    ".research/desktop-settings-repair-peer.json"
   ],
   "severity": "S2: connection setting silently fails to save",
   "priority": "P1: contained Settings persistence repair",
@@ -59,5 +62,6 @@
       "reason": "39ee192b + 8a6d61aa accepted by fresh c89f7ac3 source peer. HostedCI37092730162 passes16 Settings tests, full1912passed/6skipped, typecheck/lint/build. Nativeexactbuild and pre-fixruntimeRED remain unverified; no closure."
     }
   ],
-  "closure_requirement": "Controlled failing-then-passing caller regression plus successful retry, independent review, and native exact-build persistence/error acceptance; no closure from source alone."
+  "closure_requirement": "Controlled failing-then-passing caller regression plus successful retry, independent review, and native exact-build persistence/error acceptance; no closure from source alone.",
+  "current_work": "Bounded actual guest native port/pair persistence refusal, retry and ordered-write cases passed on source991385d9 CI37129518563/artifact11275878549. Stronger reset-only retry passed with a trusted-UI nondefault draft cleared and exact fresh guest defaults. Fresh independent guest/member/admin lane is active. HTTP-only pair removal, actual desktop connection/rediscovery and broader mapped control criteria remain unverified; no defect closure or Store acceptance."
 }
