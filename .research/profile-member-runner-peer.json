@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "review_type": "fresh source-only peer review; no native browser, build, or heavy test run",
+  "builder_commit": "fc15a60ecd44a8cfc246783d63b07474d3d9a123",
+  "scope": "member Profile and genuine Chrome extension reload adaptation of tests/browser/profile-native-acceptance.mjs",
+  "verdict_a_launch_readiness": "BLOCKED",
+  "verdict_a_basis": [
+    "The member path reuses existing first-party magic-link authentication, binds the extension profile to the first-party user, verifies the canonical admins read returned zero rows, and checks rendered nonadmin identity and selected organization.",
+    "The reload path clicks Chrome's extension-management Reload control, requires retirement of both original targets, a replacement worker and panel, and an actual SIDE_PANEL runtime context. Warm and reload rows are recorded separately; panel reopen alone is not counted as extension reload.",
+    "The runner verifies the imported CI receipt, source SHA, run ID, artifact ID, manifest, and tree before browser launch. The currently recorded imported artifact is source 2274cc2fc929f7682c61f1a137e472a87caa2114, which predates this runner commit. A fresh exact-source CI artifact and dependency refresh must be recorded and verified before a launch claim.",
+    "If the owner's Profile row is absent before the run, save/discard creates a row and restoring an empty Preferred value does not restore the original absence. A passing result could leave a persistent record that did not exist before the test."
+  ],
+  "verdict_b_quality": "FAIL_NEEDS_CORRECTION",
+  "verdict_b_findings": [
+    {
+      "severity": "blocker",
+      "file": "tests/browser/profile-native-acceptance.mjs",
+      "finding": "The report writes identity.userId as owned_test_row_user_id_private when the initial owner row is absent. A private user identifier must not enter the report, regardless of its key name."
+    },
+    {
+      "severity": "blocker",
+      "file": "tests/browser/profile-native-acceptance.mjs",
+      "finding": "The original-row-absent branch has no cleanup that deletes the test-created row or refuses the mutation. Restoring only Preferred can leave a new owner row and fails the original-state preservation requirement."
+    },
+    {
+      "severity": "bounded_limit",
+      "file": "tests/browser/profile-native-acceptance.mjs",
+      "finding": "The source review does not establish any native acceptance pass. The currently imported CI artifact predates the runner change; report rows remain unverified until a guarded run on exact verified source is examined independently."
+    }
+  ],
+  "positive_controls": [
+    "No product Profile handler or identity stub was introduced.",
+    "T25 uses CDP Fetch.failRequest only against the real owner profile GET and checks recovery through a subsequent successful owner read.",
+    "The save/discard path records only redacted state booleans and checks real profile GET and POST responses before case rows are marked passed."
+  ],
+  "source_anchors": [
+    "tests/browser/profile-native-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/settings-native-auth-driver.mjs",
+    "tests/browser/member-native-auth-proof.mjs",
+    "tests/browser/vault-extension-lifecycle-acceptance.cjs",
+    "scripts/current-test-artifact.mjs",
+    ".research/popup-profile-procedures.json",
+    ".research/current-development-artifact-refresh.json"
+  ],
+  "checks": {
+    "node_check_profile_runner": "passed",
+    "node_check_native_harness": "passed",
+    "native_acceptance": "not_run"
+  }
+}
