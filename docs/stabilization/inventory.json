@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T06:15:36.310721+00:00",
+  "updated_at": "2026-10-03T06:25:20.561874+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -1657,25 +1657,34 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "detail": "Source fixed25845342; current37102258819 active with37102380063 pending. Completion/queued progression still unverified.",
+              "status": "pass",
+              "run_id": "main-ci-continuity-20261003",
+              "source_sha": "25845342da89df4da2827eba0235e7cb06736058",
               "evidence": [
-                "docs/stabilization/defects/EXT-D-0092.json"
-              ]
+                "docs/stabilization/defects/EXT-D-0092.json",
+                ".research/guarded-phases-peer.json"
+              ],
+              "detail": "Shared auth-independent CI infrastructure: active main37102258819 and subsequent37102380063 finished successfully despite intervening pushes. Does not certify product or release gate health."
             },
             "member": {
-              "status": "unverified",
-              "detail": "Source fixed25845342; current37102258819 active with37102380063 pending. Completion/queued progression still unverified.",
+              "status": "pass",
+              "run_id": "main-ci-continuity-20261003",
+              "source_sha": "25845342da89df4da2827eba0235e7cb06736058",
               "evidence": [
-                "docs/stabilization/defects/EXT-D-0092.json"
-              ]
+                "docs/stabilization/defects/EXT-D-0092.json",
+                ".research/guarded-phases-peer.json"
+              ],
+              "detail": "Shared auth-independent CI infrastructure: active main37102258819 and subsequent37102380063 finished successfully despite intervening pushes. Does not certify product or release gate health."
             },
             "admin": {
-              "status": "unverified",
-              "detail": "Source fixed25845342; current37102258819 active with37102380063 pending. Completion/queued progression still unverified.",
+              "status": "pass",
+              "run_id": "main-ci-continuity-20261003",
+              "source_sha": "25845342da89df4da2827eba0235e7cb06736058",
               "evidence": [
-                "docs/stabilization/defects/EXT-D-0092.json"
-              ]
+                "docs/stabilization/defects/EXT-D-0092.json",
+                ".research/guarded-phases-peer.json"
+              ],
+              "detail": "Shared auth-independent CI infrastructure: active main37102258819 and subsequent37102380063 finished successfully despite intervening pushes. Does not certify product or release gate health."
             }
           }
         }

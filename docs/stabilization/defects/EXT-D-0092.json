@@ -14,8 +14,15 @@
   "actual": "Multiple main CI runs were cancelled by later evidence pushes, including37099813858,37099983831,37101068256 and37101482506.",
   "severity": "S2: integration evidence repeatedly unavailable and compute wasted",
   "priority": "P1: release verification throughput",
-  "state": "fixed",
-  "evidence": [".github/workflows/ci.yml", "25845342", ".research/guest-runtime-escalation.json"],
+  "state": "closed",
+  "evidence": [
+    ".github/workflows/ci.yml",
+    "25845342",
+    ".research/guest-runtime-escalation.json",
+    ".research/guarded-phases-peer.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37102258819",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37102380063"
+  ],
   "transition_history": [
     {
       "at": "2026-10-03T06:15:36.310721+00:00",
@@ -40,6 +47,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "25845342 preserves active main checks and only cancels superseded PR runs; independent source and live overlap retest pending."
+    },
+    {
+      "at": "2026-10-03T06:25:20.561874+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent sourcepeer1763ed18 accepted concurrency. Active main37102258819 completed success despite later pushes; subsequent37102380063 completed success. Superseded pending runs may still be cancelled by GitHub and do not represent interrupted active verification."
+    },
+    {
+      "at": "2026-10-03T06:25:20.561874+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original repeated active-run cancellation no longer reproduces across observed pushes; succeeding queued main checks completed."
     }
   ],
   "closure_requirement": "Fresh peer verifies concurrency semantics; following main push leaves current run active/completed rather than cancelled and latest pending run proceeds."
