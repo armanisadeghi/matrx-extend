@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "status": "NATIVE_EXECUTION_RESTORED_RETRY_RELEASE_BOUNDARY_UNVERIFIED",
-  "completed_at": "2026-10-03T11:44:41.938083+00:00",
+  "status": "PASS_BOUNDED_ORIGINAL_PREPARE_ACCEPTANCE",
+  "completed_at": "2026-10-03T11:56:34.898101+00:00",
   "defects": ["EXT-D-0058", "EXT-D-0059"],
-  "attempts": 2,
+  "attempts": 4,
   "artifact": {
     "run_id": 37107627454,
     "artifact_id": 11268886169,
@@ -14,17 +14,19 @@
     "Both guarded original acceptance runs opened native panel and completed real web and extension admin sign-in.",
     "Both completed initial Prepare success and reached the first failed-retry case.",
     "Second run proved fault held, pending Preparing state true, and previous success absent; failure was releaseFault before rejection observation.",
-    "Earlier generic native_panel failure did not reproduce; no causal fix claimed."
+    "Earlier generic native_panel failure did not reproduce; no causal fix claimed.",
+    "Decisive -06 probe proved release completed but double animation-frame wait in hidden native panel timed out.",
+    "Peer-reviewed settlement repair completes all four unchanged original acceptance cases on -07; tree hash unchanged after run."
   ],
   "narrowed_boundary": {
-    "operation": "releaseFault",
-    "operations_inside": [
-      "Synchronous Runtime.evaluate releases controlled promise, restores original API, deletes fault handle.",
-      "Runtime.evaluate awaits double requestAnimationFrame with unchanged owned-CDP timeout."
-    ],
-    "hypothesis": "Native sidepanel animation frames pause, stranding frame-dependent settlement; shared settings-panel-driver already documents this observed failure class.",
-    "limitation": "The two releaseFault evaluate calls are not individually classified in retained -05 evidence. Exact failing inner call and CDP failure class remain unproven; no speculative fix or weakened settlement assertion applied.",
-    "next_discriminating_evidence": "Classify the two releaseFault operations separately and capture only fixed CDP failureClass plus fixed visible/hidden enum; if animation frame wait is confirmed, replace it with a semantic completion handshake that still proves late results settled before asserting absence."
+    "confirmed_operation": "Double requestAnimationFrame wait in releaseFault; synchronous controlled release succeeded.",
+    "actual_evidence": "release_stage=animation_frames, release_visibility=hidden, transport_failure_class=command_timeout",
+    "repair_commit": "6b574159",
+    "repair": "Intercepted API promise publishes settled acknowledgement in finally. Node waits for that acknowledgement then polls UI for two consecutive matching observations, preserving existing positive/negative case predicates. No frame clock required.",
+    "self_red": "Actual old injected helper in node:vm with unserviced rAF fails paused_frame_command_timeout.",
+    "self_green": "Actual new injected helper passes held success and rejection, verifies response outcome before UI stability observations, and restores original API.",
+    "mutations": "plant.py return-true and bypass-stability mutants both RED at named assertion, both restored byte-identical.",
+    "acceptance": "-07 passes all four original cases after peer review; resource valid exit0."
   },
   "code_change": {
     "commit": "23ed2dd6",
@@ -33,7 +35,10 @@
     "checks": [
       "node tests/browser/native-sidepanel-qa-harness.test.mjs passed",
       "pnpm compile passed",
-      "focused Biome and git diff --check passed"
+      "focused Biome and git diff --check passed",
+      "Actual paused-frame red/green test and two restored mutation guards passed",
+      "Post-repair pnpm compile passed",
+      "Final focused Biome and git diff --check passed"
     ]
   },
   "runs": [
@@ -180,9 +185,147 @@
           "sha256": "d812e6a91464d55f62c59371f38815fb4eededfcc45dd1cb46bfe4c450a27479"
         }
       ]
+    },
+    {
+      "run_id": "prepare-local-native-20261003-06",
+      "runner_commit": "f09f7405",
+      "resource_valid": true,
+      "exit_code": 1,
+      "stage": "failed_retry_release",
+      "native_stage": "exercise_panel",
+      "release_stage": "animation_frames",
+      "release_visibility": "hidden",
+      "transport_failure_class": "command_timeout",
+      "cases": [],
+      "evidence": [
+        {
+          "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-pipeline-release-boundary.log",
+          "sha256": "2f207ce1f223bf08f6d81d4259e6873a4657e6a5489897f78b65b547a04bbdea"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-pipeline-release-boundary-resource-journal.jsonl",
+          "sha256": "17537e873c15be4ede4526864949270926503488ad5d1dc38fbc5b7b39e03606"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/prepare-stale-result-native-c76b27da-b37a-4671-ab12-62abc45606b4.json",
+          "sha256": "74d015cc2d6c1ed3462e5b083539188a21365aadab5470166dc8d9c9173586f0"
+        }
+      ]
+    },
+    {
+      "run_id": "prepare-local-native-20261003-07",
+      "runner_commit": "6b574159 (with peer-report-only HEAD 9777bd5c)",
+      "resource_valid": true,
+      "exit_code": 0,
+      "status": "pass_bounded",
+      "stage": "complete",
+      "native_stage": "exercise_panel",
+      "release_stage": "complete",
+      "cases": [
+        {
+          "case": "failed_retry_after_success",
+          "status": "pass"
+        },
+        {
+          "case": "old_document_late_success",
+          "status": "pass"
+        },
+        {
+          "case": "old_document_late_rejection",
+          "status": "pass"
+        },
+        {
+          "case": "fresh_document_prepare",
+          "status": "pass"
+        }
+      ],
+      "signin_observations": {
+        "web_dashboard_reached": true,
+        "extension_after_account_open": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": false,
+          "admin_role": false,
+          "sign_in_count": 1,
+          "sign_in_enabled": true,
+          "sign_out_present": false,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        },
+        "extension_guest_ready": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": false,
+          "admin_role": false,
+          "sign_in_count": 1,
+          "sign_in_enabled": true,
+          "sign_out_present": false,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        },
+        "extension_last": {
+          "settings_panel_active": true,
+          "account_present": true,
+          "account_expanded": true,
+          "email_row_present": true,
+          "expected_admin_email": true,
+          "admin_role": true,
+          "sign_in_count": 0,
+          "sign_in_enabled": false,
+          "sign_out_present": true,
+          "auth_error_present": false,
+          "auth_retry_present": false,
+          "auth_retry_disabled": false,
+          "loading_present": false
+        }
+      },
+      "post_run_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+      "evidence": [
+        {
+          "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-pipeline-settlement-fix.log",
+          "sha256": "a101cbac18d18a71404896aa90399996d96f91f1cf0612df9772ebefefe39914"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/acceptance-pipeline-settlement-fix-resource-journal.jsonl",
+          "sha256": "03e137d0f84ec9a98d237257b2c1efa82d5b99aa8dd82aa530a3cd14696045af"
+        },
+        {
+          "path": "/Volumes/Samsung2TB/code/matrx-extend/test-results/prepare-stale-result-native-2197a6f2-c38a-4c5e-ba81-157525a9e68c.json",
+          "sha256": "74e8645c630989050098d964dc42b68c2536afec8021b1ff4d2e636998483937"
+        }
+      ]
     }
   ],
-  "product_verdict": "NONE: zero completed cases. D58/59 remain open. Positive partial observations do not establish full acceptance.",
+  "product_verdict": "PASS_BOUNDED for EXT-D-0058/0059 original native Prepare acceptance on authenticated CI development artifact 3092444e. This does not establish Store/public-release acceptance or broader extension stabilization.",
   "credentials_file_removed": true,
-  "scope": "No app build, release, migration, signature, keychain or security changes. Two authorized bounded original runs; no further browser launch."
+  "scope": "No app build, release, migration, signature, keychain or security changes. Two initial bounded diagnostics; root explicitly authorized one decisive inner-boundary probe and one peer-reviewed repair acceptance run.",
+  "repair_evidence": [
+    {
+      "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/settlement-constant-mutant.log",
+      "sha256": "9dc4fe275e5cbe777e42e29944180d003012627433715d36d37a58754c36e393"
+    },
+    {
+      "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/settlement-green.log",
+      "sha256": "a700a9e6b04c2f11430973dc5ccbef528eb1d00f1d134e4c9455854e78ac8233"
+    },
+    {
+      "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/settlement-red.log",
+      "sha256": "e675feb0d368224973325cd649474a9981fb55cb9cad044a7e349ba991d3ccf1"
+    },
+    {
+      "path": "/Volumes/Samsung2TB/.codex-guest-runtime/prepare-local-20261003/settlement-stability-mutant.log",
+      "sha256": "06edb0dbc9aec1573870419c3b44351f520cd00205d154689c9935dd7ec33322"
+    }
+  ],
+  "repair_peer_commits": ["54fc4663", "9777bd5c"],
+  "elapsed_minutes_approx": 19,
+  "owned_browser_cleanup": "No Chromium executable processes remained after wrapper exit."
 }
