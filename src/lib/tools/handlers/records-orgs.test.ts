@@ -172,7 +172,12 @@ describe('records tool: sees every organization, active org never narrows', () =
   });
 
   it('forwards a date bucket to the shared aggregate client and refuses an incomplete one', async () => {
-    const out = await run({ action: 'record_aggregate', table_id: 't-a', group_by: 'date', bucket: 'month' });
+    const out = await run({
+      action: 'record_aggregate',
+      table_id: 't-a',
+      group_by: 'date',
+      bucket: 'month',
+    });
     expect(out.ok).toBe(true);
     expect(h.aggregateCalls[0]).toMatchObject({ bucket: { key: 'date', by: 'month' } });
     const incomplete = await run({ action: 'record_aggregate', table_id: 't-a', bucket: 'month' });
@@ -181,7 +186,12 @@ describe('records tool: sees every organization, active org never narrows', () =
   });
 
   it('sends the shared aggregate measure shape and refuses a missing field', async () => {
-    const out = await run({ action: 'record_aggregate', table_id: 't-a', measure: 'sum', field_key: 'total' });
+    const out = await run({
+      action: 'record_aggregate',
+      table_id: 't-a',
+      measure: 'sum',
+      field_key: 'total',
+    });
     expect(out.ok).toBe(true);
     expect(h.aggregateCalls[0]).toMatchObject({ measures: [{ op: 'sum', key: 'total' }] });
     const missing = await run({ action: 'record_aggregate', table_id: 't-a', measure: 'sum' });
@@ -190,7 +200,11 @@ describe('records tool: sees every organization, active org never narrows', () =
   });
 
   it('refuses aggregate options that the shared client cannot answer yet', async () => {
-    const out = await run({ action: 'record_aggregate', table_id: 't-a', as_of: '2026-09-01T00:00:00Z' });
+    const out = await run({
+      action: 'record_aggregate',
+      table_id: 't-a',
+      as_of: '2026-09-01T00:00:00Z',
+    });
     expect(out).toMatchObject({ ok: false, action: 'record_aggregate' });
     expect(String(out.reason)).toContain('No aggregate was computed');
     expect(h.aggregateCalls).toHaveLength(0);
