@@ -1,0 +1,43 @@
+{
+  "id": "EXT-D-0090",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T07"],
+  "surface": "Hosted release / strict tool registry validation",
+  "auth_mode": "guest/member/admin: shared release gate",
+  "title": "Tool row validator rejects valid registry envelope metadata",
+  "reproduction": [
+    "Run hosted release from main as run37097488341, which stops at catalog:tools:drift:strict with exit3.",
+    "Pass a canonical tool.definition records row containing parameters.$envelope=\"args\" to isDbToolRow. The validator treats every parameters value as an object and rejects the metadata string."
+  ],
+  "expected": "Canonical metadata and actual parameter schemas are validated according to their distinct contracts; real schema drift still blocks release.",
+  "actual": "Management API returned82 extension-bound rows; only records failed isDbToolRow. Valid $envelope string triggers false invalid-row rejection and strict gate reports database unverifiable.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37097488341",
+    "scripts/_tool-db-row-validation.ts",
+    "scripts/check-tool-db-drift.ts"
+  ],
+  "severity": "S1: verified fixes cannot be packaged while canonical registry is falsely rejected",
+  "priority": "P0: unblock urgent guest regression release without weakening gates",
+  "state": "in-fix",
+  "transition_history": [
+    {
+      "at": "2026-10-03T04:54:28.674747+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Hosted strict gate failed exit3."
+    },
+    {
+      "at": "2026-10-03T04:54:28.674747+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Server lane privately inspected82 live rows and isolated records envelope metadata rejection."
+    },
+    {
+      "at": "2026-10-03T04:54:28.674747+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Server incident implementation lane owns narrow validator sibling repair; native acceptance remains separate."
+    }
+  ],
+  "closure_requirement": "Metadata fixture RED/GREEN, malformed actual parameter guard retained, independent review, and successful hosted strict live tool-drift gate."
+}

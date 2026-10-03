@@ -1,12 +1,12 @@
 # Extension stabilization status
 
-Generated 2026-10-03 04:36 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T04:33:36.264624+00:00. 205 features · 738 cases · 1322 controls · 89 linked defect records.
+Generated 2026-10-03 04:54 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T04:54:28.674747+00:00. 205 features · 739 cases · 1323 controls · 90 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1180** — Pass: 58 · Partial: 47 · Fail: 2 · Unverified: 1072 · N/A: 1.
+Applicable case-by-role slots: **1183** — Pass: 58 · Partial: 47 · Fail: 5 · Unverified: 1072 · N/A: 1.
 Unverified splits into **122 explicitly marked unverified** and **950 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 158 cases without steps, 157 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
@@ -15,7 +15,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 
 | Tab or surface | Features | Guest cases | Member cases | Admin cases | All-role case slots | Active defects |
 | --- | ---: | --- | --- | --- | --- | ---: |
-| [Development installation](#development-installation) | 1 | 1 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 2, partial 1, fail 0, unverified 15, n/a 0 | 1 |
+| [Development installation](#development-installation) | 1 | 1 pass · 0 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 1 fail · 6 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 1 fail · 4 unverified · 0 deferred; 0/1 full | pass 2, partial 1, fail 3, unverified 15, n/a 0 | 2 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 7, partial 1, fail 1, unverified 14, n/a 0 | 3 |
 | [Release infrastructure](#release-infrastructure) | 1 | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 8 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 24, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
@@ -66,11 +66,11 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Development build, reload and runtime identity (EXT-F-0001)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Partial. **Cases:** 6. **Controls:** 6.
+**Role status:** guest: Fail · member: Fail · admin: Fail. **Cases:** 7. **Controls:** 7.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0077
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0077, EXT-D-0090
 
-**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed), [EXT-D-0080](defects/EXT-D-0080.json) (closed)
+**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed), [EXT-D-0080](defects/EXT-D-0080.json) (closed), [EXT-D-0090](defects/EXT-D-0090.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -80,6 +80,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-0001-T04 Service-worker and offscreen restart | Unverified | Unverified | Unverified | EXT-F-0001-C04 |
 | EXT-F-0001-T05 Development identity auth redirect | Unverified | Unverified | Unverified | EXT-F-0001-C05 |
 | EXT-F-0001-T06 Automatic CI development artifact is trustworthy and usable without local build | Unverified | Unverified | Partial | EXT-F-0001-C06 |
+| EXT-F-0001-T07 Strict release gate accepts valid registry metadata and rejects actual drift | Fail | Fail | Fail | EXT-F-0001-C07 |
 
 **Recorded case details and evidence:**
 
@@ -95,6 +96,12 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: ['docs/stabilization/reports/current-test-artifact-20261002.json', 'docs/stabilization/reports/current-test-artifact-contract-peer-20261002.json']
 - EXT-F-0001-T06 · admin: Partial. D80 actual profile/loaded-path/version check validated with fresh admin repeat; complete CI import collision/error matrix and all artifact coverage remain unverified.
   Evidence / build / date recorded: docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json
+- EXT-F-0001-T07 · guest: Fail. Shared release gate exit3. Management API returned82 bound rows; records row rejected valid $envelope string. Auth-independent gate evidence only.
+  Evidence / build / date recorded: 37097488341, docs/stabilization/defects/EXT-D-0090.json
+- EXT-F-0001-T07 · member: Fail. Shared release gate exit3. Management API returned82 bound rows; records row rejected valid $envelope string. Auth-independent gate evidence only.
+  Evidence / build / date recorded: 37097488341, docs/stabilization/defects/EXT-D-0090.json
+- EXT-F-0001-T07 · admin: Fail. Shared release gate exit3. Management API returned82 bound rows; records row rejected valid $envelope string. Auth-independent gate evidence only.
+  Evidence / build / date recorded: 37097488341, docs/stabilization/defects/EXT-D-0090.json
 
 **Other remaining work:** Concrete procedure and evidence required before executing each control.
 

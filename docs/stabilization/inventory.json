@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T04:33:36.264624+00:00",
+  "updated_at": "2026-10-03T04:54:28.674747+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -57,6 +57,11 @@
           "id": "EXT-F-0001-C06",
           "label": "Import exact automatic CI development test artifact",
           "action": "Verify successful main-push GitHub provenance and archive/tree hashes, import to a unique owned path, bind native runner receipt."
+        },
+        {
+          "id": "EXT-F-0001-C07",
+          "label": "Strict live tool registry release gate",
+          "action": "Validate canonical registry contract and compare real extension tool schemas before packaging."
         }
       ],
       "source_anchors": [
@@ -344,6 +349,51 @@
           "defect_ids": [
             "EXT-D-0080"
           ]
+        },
+        {
+          "id": "EXT-F-0001-T07",
+          "title": "Strict release gate accepts valid registry metadata and rejects actual drift",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0001-C07"
+          ],
+          "preconditions": [
+            "Use synchronized main and existing authorized hosted release workflow; credentials stay private."
+          ],
+          "steps": [
+            "Run the strict catalog drift gate against live registry through the authorized hosted workflow.",
+            "Verify registry contract metadata is validated separately from parameter definitions and real handler drift still fails."
+          ],
+          "expected": [
+            "Valid canonical metadata does not make registry rows unreadable; malformed parameters or genuine schema mismatch prevent publication."
+          ],
+          "defect_ids": [
+            "EXT-D-0090"
+          ],
+          "results": {
+            "guest": {
+              "status": "fail",
+              "run_id": "37097488341",
+              "detail": "Shared release gate exit3. Management API returned82 bound rows; records row rejected valid $envelope string. Auth-independent gate evidence only.",
+              "evidence": "docs/stabilization/defects/EXT-D-0090.json"
+            },
+            "member": {
+              "status": "fail",
+              "run_id": "37097488341",
+              "detail": "Shared release gate exit3. Management API returned82 bound rows; records row rejected valid $envelope string. Auth-independent gate evidence only.",
+              "evidence": "docs/stabilization/defects/EXT-D-0090.json"
+            },
+            "admin": {
+              "status": "fail",
+              "run_id": "37097488341",
+              "detail": "Shared release gate exit3. Management API returned82 bound rows; records row rejected valid $envelope string. Auth-independent gate evidence only.",
+              "evidence": "docs/stabilization/defects/EXT-D-0090.json"
+            }
+          }
         }
       ],
       "cells": {
@@ -351,7 +401,8 @@
           "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0014",
-            "EXT-D-0077"
+            "EXT-D-0077",
+            "EXT-D-0090"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -369,7 +420,8 @@
           "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0007",
-            "EXT-D-0077"
+            "EXT-D-0077",
+            "EXT-D-0090"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -389,7 +441,8 @@
             "EXT-D-0007",
             "EXT-D-0014",
             "EXT-D-0077",
-            "EXT-D-0080"
+            "EXT-D-0080",
+            "EXT-D-0090"
           ],
           "run_ids": [
             "baseline-build-001",
