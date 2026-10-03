@@ -3,7 +3,7 @@
   "feature_id": "EXT-F-1004",
   "case_ids": ["EXT-F-1004-T02", "EXT-F-1004-T04", "EXT-F-1004-T25"],
   "surface": "Profile",
-  "auth_mode": "admin proven; member unverified",
+  "auth_mode": "admin independently retested; member unverified",
   "title": "Authenticated Profile load is rejected by get_user_form_context",
   "reproduction": [
     "On the receipt-bound 0.2.177 development artifact (source 2274cc2fc929f7682c61f1a137e472a87caa2114), sign in as the existing admin with the approved device organization and open Profile.",
@@ -14,13 +14,16 @@
   "actual": "The write succeeds, but the extension calls a client RPC whose authenticated EXECUTE permission was intentionally revoked. The canonical frontend route reads the owner-filtered table. Profile can appear blank after the rejected load, so the earlier T02 observation of an original blank value is invalid as acceptance evidence.",
   "severity": "S2: core Profile data can appear blank after a failed load even when its write succeeded",
   "priority": "P2: repair authenticated Profile read path and retest before relying on Profile acceptance",
-  "state": "in-fix",
+  "state": "closed",
   "evidence": [
     ".research/profile-native-execution.json",
     "docs/stabilization/resource-journals/profile-diagnostic-20261003-04.jsonl",
     "Live run profile-diagnostic-20261003-04 on source 2274cc2fc929f7682c61f1a137e472a87caa2114; write HTTP 200 and read HTTP 403/42501 reported by coordinator",
     "Read-only Supabase inspection of users.user_form_profile and get_user_form_context EXECUTE privileges; no database writes or grants",
-    "Product repair: dccc196a (owner-filtered users.user_form_profile read); independent source review: .research/profile-read-fix-peer.json, evidence commit 7d53b131."
+    "Product repair: dccc196a (owner-filtered users.user_form_profile read); independent source review: .research/profile-read-fix-peer.json, evidence commit 7d53b131.",
+    ".research/profile-independent-acceptance.json (run profile-independent-20261003-01; source ac49ac2f8fb9f9c3d538aef81149a1c4a6eb2418; CI 37150495327; artifact 11283802431; imported tree 9cc1d6a7) Sanitized receipt `.research/profile-independent-native-receipt.sanitized.json` SHA-256 `5296aba7355d270ac873e982df7fd3130102d092c86e9438cd941dad27d89d99`.",
+    "docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl (valid resource decision, exit 0)",
+    "Admin T02 warm Back/reopen, T04 warm save/discard/reopen/restoration, and T25 owner-row denial/Retry/recovery independently passed; root rechecked receipt and journal hashes and inspected restoration at 2026-10-03T20:16:36Z."
   ],
   "transition_history": [
     {
@@ -40,9 +43,27 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "The assigned native_empty_input_fix worker began the owner-filtered read repair with focused regression coverage; source repair is committed at dccc196a and independently accepted in .research/profile-read-fix-peer.json (evidence commit 7d53b131). No database grant is planned. Native save/reopen/restoration acceptance remains pending."
+    },
+    {
+      "at": "2026-10-03T20:16:36Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Owner-filtered read repair is present on exact development source ac49ac2f; independent source review and successful CI 37150495327 support the repair."
+    },
+    {
+      "at": "2026-10-03T20:16:36Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent receipt-bound native run profile-independent-20261003-01 passed the original admin Profile save/reopen/restoration reproduction on CI artifact 11283802431, with original Preferred empty restored and read back."
+    },
+    {
+      "at": "2026-10-03T20:16:36Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Root independently verified the imported ac49 artifact/tree, raw receipt hash, resource journal hash, all four observations and restoration. Closure is limited to the original admin reproduction; member coverage is unverified and the repair is not deployed in Store 0.2.176."
     }
   ],
-  "current_work": "The owner-filtered users.user_form_profile read repair is committed at dccc196a and independently accepted at source level in .research/profile-read-fix-peer.json (peer evidence commit 7d53b131). Native save, reopen and restoration acceptance remains pending; member behavior is unverified.",
-  "closure_requirement": "Confirm the intended authenticated access path without broadening execute privileges; independently verify authorized Profile load, save, reopen and restoration on the exact repaired artifact. Keep member coverage unverified until tested as an existing member.",
-  "acceptance_note": "The prior T02 observation in .research/profile-native-execution.json is invalidated for acceptance because the then-current failed read could render a blank profile. The source repair is independently accepted, but native acceptance on the repaired artifact remains pending. No inventory pass was promoted."
+  "current_work": "The original admin authenticated Profile read/save/reopen/restoration failure is independently repaired and closed on development artifact ac49ac2f. Member coverage remains unverified. This source is not deployed in published Store 0.2.176.",
+  "closure_requirement": "Closed for the original admin reproduction on the exact repaired development artifact only. Member behavior, extension reload, and broader Profile acceptance remain unverified; no Store deployment is implied.",
+  "acceptance_note": "Bounded admin native acceptance is recorded for T02 warm Back, T04 warm Save/Discard and restoration, and T25 warm owner-row denial/Retry. T02/T04 full cases remain partial because extension reload was not exercised; member behavior remains unverified."
 }

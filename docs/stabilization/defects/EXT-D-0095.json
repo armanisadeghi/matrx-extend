@@ -3,22 +3,25 @@
   "feature_id": "EXT-F-1004",
   "case_ids": ["EXT-F-1004-T25"],
   "surface": "Profile",
-  "auth_mode": "admin source-observed; member unverified",
+  "auth_mode": "admin source and bounded native warm read-failure/retry verified; member and cross-identity behavior unverified",
   "title": "Profile read failure leaves an editable blank form and can retain a prior user draft",
   "reproduction": [
-    "With a signed-in user whose Profile read fails on initial load, open Profile. The current source renders the empty editable form and places the error below the Profile sections, where it can fall below the viewport.",
-    "While Profile remains mounted, change the signed-in user and make the new user's Profile read fail. The current source can retain and display the previous user's draft.",
-    "These are source-confirmed behaviors reviewed against dccc196a; no cross-identity runtime run was performed. See .research/profile-read-fix-peer.json and evidence commit 7d53b131."
+    "With a signed-in user whose users.user_form_profile owner-row read fails on initial load, open Profile. The repaired source renders a prominent non-editable load-error state and disables Save.",
+    "While Profile remains mounted, change the signed-in user and make the new owner-row read fail. Source isolation prevents retaining or displaying the previous user draft; cross-identity runtime verification remains pending.",
+    "Independent source review accepted the repair; bounded admin native T25 tested denied owner-row reads and Retry, but did not exercise a real cross-identity transition."
   ],
   "expected": "A failed initial read shows a prominent load-error state and does not permit editing or saving against an unknown baseline. On identity change, the prior user's draft is cleared or isolated before the next user's read; a failed transition never displays the prior user's data.",
   "actual": "A failed initial read may appear as a blank editable form with an error below the sections. If a new user's read fails while Profile remains mounted, the previous user's draft can remain visible.",
   "severity": "S2: Profile failure presents an unsafe empty/editable state and may expose prior-user draft data after an identity transition.",
   "priority": "P1: repair in the active Profile lane before relying on Profile failure recovery or identity-transition behavior.",
-  "state": "in-fix",
+  "state": "fixed",
   "evidence": [
     ".research/profile-read-fix-peer.json",
     "Source review at dccc196a; review evidence commit 7d53b131.",
-    "No cross-identity runtime behavior is claimed."
+    "No cross-identity runtime behavior is claimed.",
+    "Product repair: ac49ac2f8fb9f9c3d538aef81149a1c4a6eb2418; CI run 37150495327 passed.",
+    ".research/profile-independent-acceptance.json and docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl: exact imported development artifact 11283802431; admin warm T25 owner-row read denial rendered a non-editable error state, then Retry succeeded and restored the original value. Sanitized receipt `.research/profile-independent-native-receipt.sanitized.json` SHA-256 `5296aba7355d270ac873e982df7fd3130102d092c86e9438cd941dad27d89d99`.",
+    "Cross-identity runtime behavior and member identity remain unverified; root rechecked receipt and journal hashes at 2026-10-03T20:16:36Z."
   ],
   "transition_history": [
     {
@@ -38,14 +41,21 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "The assigned native_empty_input_fix builder owns the source and focused regression repair; no cross-identity runtime claim is made."
+    },
+    {
+      "at": "2026-10-03T20:08:55Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Repair landed on source ac49ac2f; independent review accepts owner-lifetime isolation, failed-read non-editable state, and save refusal until successful owner read. CI 37150495327 passed."
     }
   ],
-  "current_work": "The assigned native_empty_input_fix builder owns the failure-state and identity-isolation repair. Required outcomes: initial failure is prominent and non-editable with save unavailable; failed identity transition cannot expose the prior user draft. Native verification remains pending.",
-  "closure_requirement": "Add a focused regression for failed initial load showing a non-editable error state with saving unavailable, and a failed user transition that cannot display the prior user draft. Independently verify T25 and the identity-negative path on the exact repaired artifact before closure.",
+  "current_work": "Source repair is fixed and admin warm T25 owner-row read denial/Retry passed on exact development artifact ac49ac2f. Remaining retest: existing member identity, failed cross-identity transition while Profile remains mounted, error branches not exercised, and extension reload. The T25 case remains partial; no full Profile or Store acceptance is claimed.",
+  "closure_requirement": "Keep fixed pending remaining retest. Independently verify member behavior, a failed identity transition with a second existing authorized test identity, required error branches, and reload dimensions on the exact artifact before closure.",
   "independent_source_review": {
     "commit": "b4e9dd44",
     "report": ".research/profile-read-fix-peer.json",
     "quality_verdict": "source_confirmed_followup",
     "runtime_verdict": "unverified_no_cross_identity_run"
-  }
+  },
+  "required_fixture": "For remaining cross-identity acceptance, use two existing authorized test identities and force only the second user owner-row GET to fail; no role changes or real profile writes. Also run required member and reload dimensions."
 }
