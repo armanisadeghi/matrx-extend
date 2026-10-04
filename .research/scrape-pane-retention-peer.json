@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "task": "scrape-pane-retention-peer",
+  "defect": "EXT-D-0123",
+  "reviewed_commit": "c2186f64f594ebf5b7973c4b4889ffeae7fb35f1",
+  "verdict_a": "source_acceptance_supported_native_pending",
+  "verdict_b": "quality_accepted_no_actionable_defect_found",
+  "findings": [
+    "The real ScrapeView keeps pane selection outside the active-page-gated Tabs subtree and binds it to originalCapture object identity. Returning to the same capture restores Video; a new setCurrent capture changes originalCapture and selects Article.",
+    "The existing pageKey equality gate still hides captured results while another page or an unresolved tab is active.",
+    "The guard uses the real ScrapeView, scrape store, and design-system Tabs. It checks Video after null and different page identities, second-video Copy, stale-page hiding, and Article after a new capture. It does not exercise browser tab activation or native pointer behavior.",
+    "The old native receipt for run 37215748629 has a trusted Open click at 8695 ms, disconnected result tabs at 8743 ms, and Article selected before the failed second-video Copy at 9094 ms. This supports the diagnosed boundary but predates the fix."
+  ],
+  "verification": {
+    "command": "pnpm exec vitest run src/features/scrape/ScrapeView.media-controls.test.tsx --maxWorkers=1",
+    "result": "5 passed",
+    "source_checks": [
+      "src/features/scrape/ScrapeView.tsx",
+      "src/state/scrape.ts",
+      "src/features/scrape/ScrapeView.media-controls.test.tsx",
+      "docs/stabilization/evidence/scrape215/run37215748629/receipt.json.txt"
+    ]
+  },
+  "native_limit": "No rebuilt side-panel Open, close, return, Copy run against c2186f64 was available. Native acceptance remains unverified; old receipt lacks active-tab identity and opened.close timestamps.",
+  "product_source_edits": []
+}
