@@ -21,7 +21,9 @@
     "docs/stabilization/resource-journals/profile-admin-fields-189-02.jsonl",
     ".research/profile-admin-first-save-fix.json",
     ".research/admin-first-save-peer.json",
-    ".research/profile-admin-final-native.json"
+    ".research/profile-admin-final-native.json",
+    ".research/admin-firstsave-escalation.json",
+    ".research/admin-diagnostic-fresh-review.json"
   ],
   "transition_history": [
     {
@@ -62,5 +64,5 @@
     }
   ],
   "closure_requirement": "Actual first-save guard red/green with mismatched identity/role/org rejection, independent source review, and designated-admin native original scenario plus surrounding fields/reload/exact restoration pass.",
-  "next_action": "Diagnose the actual pre-marker caller boundary from source and existing evidence; safe fixed-code capture if original exception unrecoverable; fresh independent source review before any native retry. No mutation occurred in admin03; no separate final absence readback."
+  "next_action": "One guarded causal admin04 run under fresh independent native agent. Diagnostic correction adeae263 reviewed0d91330c separates firstsave operations and fixed owner-request failure phases; original historical cause not reconstructable. D108 remains in-fix until actual cause and verified repair."
 }
