@@ -1,0 +1,29 @@
+{
+  "scope": "Guest Scrape native acceptance procedure for EXT-F-1007-T10/T11/T12 and populated panes after full extension reload",
+  "status": "implemented; native acceptance pending fresh peer review and guarded execution",
+  "artifact_binding": "The procedure retains the exact artifact receipt and frozen development build checks. No build or native run occurred in this lane.",
+  "procedure": {
+    "owned_media": "Three served SVGs with 640x480, 96x96 and 32x32 dimensions plus two served MP4 URLs; an additional SVG and MP4 URL are used by Add forms.",
+    "warm": "Captures the owned intake page, asserts six populated panes, then selects Images and Video. Each removal requires exact surviving URL identities and visible count; image size group labels are checked. Blank Add preserves the form, valid Add creates a row, and Cancel clears a draft. Video open requires a new tab at the exact URL and copy requires actual clipboard contents when readable.",
+    "reload": "Retains existing full extension reload lifecycle oracle, opens the replacement panel, performs a new capture from the owned intake page, asserts Article/Links/SEO/Schema content and loaded Images/Video, then repeats media controls in that panel.",
+    "link_limits": "If the native environment cannot expose the new tab or clipboard contents, the receipt records the bounded cause and leaves T12 partial. A click alone cannot pass T12."
+  },
+  "verification": {
+    "compile": "pnpm compile passed",
+    "focused": "node --test tests/browser/scrape-media-assertions.test.mjs tests/browser/owned-fixture-server.test.mjs: 6 passed",
+    "mutation": "Scratch-copy removal of assertMediaPane's media-identity comparison made the focused suite fail on swapped/missing identities; repository source remained untouched.",
+    "format": "Biome check --write passed for changed JavaScript files"
+  },
+  "not_verified": [
+    "No native Chrome run was performed, so no T10/T11/T12 warm or reload cell is claimed passed.",
+    "Post-reload populated capture and pane checks are coded but have no native observation yet.",
+    "Native clipboard and new-tab observability remain unknown until guarded execution."
+  ],
+  "files": [
+    "tests/browser/scrape-guest-native-acceptance.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/browser/scrape-media-assertions.test.mjs",
+    "tests/browser/scrape-media-assertions.mjs",
+    "tests/browser/fixtures/clinic-walkthrough.mp4"
+  ]
+}

@@ -157,6 +157,26 @@ export async function click(panel, kind, label) {
       candidates = [...(pane?.querySelectorAll('[role="tablist"] [role="tab"]') ?? [])]
         .filter((el) => el.firstChild?.textContent?.trim() === label);
     }
+    else if (kind.startsWith('scrape-media-')) {
+      const pane = ${activeTabPanelExpression('Scrape')};
+      const tab = pane?.querySelector('[role="tablist"] [role="tab"][aria-selected="true"]');
+      const content = tab ? document.getElementById(tab.getAttribute('aria-controls') ?? '') : null;
+      if (kind === 'scrape-media-remove') candidates = [...(content?.querySelectorAll('a') ?? [])]
+        .filter((a) => a.href === label)
+        .flatMap((a) => [...(a.parentElement?.querySelectorAll('button[title^="Remove "]') ?? [])]);
+      else if (kind === 'scrape-media-copy') candidates = [...(content?.querySelectorAll('a') ?? [])]
+        .filter((a) => a.href === label)
+        .flatMap((a) => [...(a.parentElement?.querySelectorAll('button[title^="Copy "]') ?? [])]);
+      else if (kind === 'scrape-media-open') candidates = [...(content?.querySelectorAll('a') ?? [])]
+        .filter((a) => a.href === label);
+      else if (kind === 'scrape-media-add-row') candidates = [...(content?.querySelectorAll('button') ?? [])]
+        .filter((el) => el.textContent.trim() === label);
+      else if (kind === 'scrape-media-form-action') candidates = [...(content?.querySelectorAll('button') ?? [])]
+        .filter((el) => el.textContent.trim() === label);
+      else if (kind === 'scrape-media-form-field') candidates = [...(content?.querySelectorAll('input') ?? [])]
+        .filter((el) => el.placeholder === (label === 'src' ? 'https://…' : 'alt text (optional)'));
+      else candidates = [];
+    }
     else if (kind === 'scrape-dismiss') {
       const pane = ${activeTabPanelExpression('Scrape')};
       candidates = [...(pane?.querySelectorAll('button[aria-label="Dismiss"]') ?? [])]

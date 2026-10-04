@@ -13,7 +13,8 @@ export function assertMediaPane(state, { label, items }) {
     `scrape_${label}_tab_count_mismatch`,
   );
   assert.ok(
-    state.resultText?.includes(`Add ${label === 'Images' ? 'image' : 'video'} URL`),
+    state.resultText?.includes(`Add ${label === 'Images' ? 'image' : 'video'} URL`) ||
+      media.formOpen === true,
     `scrape_${label}_pane_controls_missing`,
   );
   const actual = label === 'Images' ? media.imageItems : media.videoItems;

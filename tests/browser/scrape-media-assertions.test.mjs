@@ -63,6 +63,51 @@ test('wrong pane, absent media, and swapped media fail the native assertion', ()
   );
 });
 
+test('selective image removal requires the exact remaining large, medium, and icon identities', () => {
+  const medium = {
+    ...image,
+    href: 'http://127.0.0.1:3150/appointment-card.svg',
+    src: 'http://127.0.0.1:3150/appointment-card.svg',
+    alt: 'Appointment card',
+    naturalWidth: 96,
+    naturalHeight: 96,
+  };
+  const icon = {
+    ...image,
+    href: 'http://127.0.0.1:3150/clinic-icon.svg',
+    src: 'http://127.0.0.1:3150/clinic-icon.svg',
+    alt: 'Clinic icon',
+    naturalWidth: 32,
+    naturalHeight: 32,
+  };
+  const expected = [image, medium, icon].map(({ href, src, alt }) => ({ href, src, alt }));
+  assert.deepEqual(
+    assertMediaPane(pane('Images', [image, medium, icon]), { label: 'Images', items: expected })
+      .paths,
+    ['/intake.svg', '/appointment-card.svg', '/clinic-icon.svg'],
+  );
+  assert.deepEqual(
+    assertMediaPane(pane('Images', [image, icon]), {
+      label: 'Images',
+      items: [expected[0], expected[2]],
+    }).paths,
+    ['/intake.svg', '/clinic-icon.svg'],
+  );
+  assert.throws(
+    () =>
+      assertMediaPane(pane('Images', []), { label: 'Images', items: [expected[0], expected[2]] }),
+    /tab_count_mismatch/,
+  );
+  assert.throws(
+    () =>
+      assertMediaPane(pane('Images', [image, medium]), {
+        label: 'Images',
+        items: [expected[0], expected[2]],
+      }),
+    /rendered_media_mismatch/,
+  );
+});
+
 test('failed or incomplete image load cannot pass matching Images pane', () => {
   for (const failed of [
     { ...image, complete: false },
@@ -89,5 +134,17 @@ test('honest empty panes pass and nonempty content cannot masquerade as empty', 
   assert.throws(
     () => assertMediaPane(falseEmpty, { label: 'Images', items: [] }),
     /rendered_media_mismatch/,
+  );
+});
+
+test('an open Add form still exposes the selected media pane', () => {
+  const open = pane('Images', [image]);
+  open.resultText = 'Add Cancel';
+  open.media.formOpen = true;
+  assert.equal(assertMediaPane(open, { label: 'Images', items: [expectedImage] }).count, 1);
+  open.media.formOpen = false;
+  assert.throws(
+    () => assertMediaPane(open, { label: 'Images', items: [expectedImage] }),
+    /pane_controls_missing/,
   );
 });

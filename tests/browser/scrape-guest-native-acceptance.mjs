@@ -24,13 +24,23 @@ const DIAGNOSTIC_RATE = diagnosticCpuRate(process.env.MATRX_SCRAPE_DIAGNOSTIC_CP
 const OUTPUT = join(REPO, 'test-results', `scrape-guest-native-${randomUUID()}.json`);
 const article = 'Harbor Dental intake guide';
 const lazy = 'After the patient scrolls, the appointment preparation checklist appears.';
+const walkthroughVideo = await readFile(
+  join(REPO, 'tests/browser/fixtures/clinic-walkthrough.mp4'),
+);
+const mediumImage =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96"><rect width="96" height="96" fill="#88bdb0"/></svg>';
+const iconImage =
+  '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><circle cx="16" cy="16" r="14" fill="#47707a"/></svg>';
 const firstPage = `<!doctype html><html><head><title>${article}</title>
 <meta name="description" content="Harbor Dental new patient appointments">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Dentist","name":"Harbor Dental"}</script></head>
 <body><main><article><h1>${article}</h1>
 <p>New patients can review appointment timing, forms, and arrival instructions before visiting our clinic.</p>
 <img src="/intake.svg" alt="New patient intake desk" width="640" height="480">
+<img src="/appointment-card.svg" alt="Appointment card" width="96" height="96">
+<img src="/clinic-icon.svg" alt="Clinic icon" width="32" height="32">
 <video src="/intake-walkthrough.mp4" preload="none"></video>
+<video src="/referral-walkthrough.mp4" preload="none"></video>
 <a href="/forms">Patient forms</a><a href="/appointments">Appointments</a>
 <div style="height:1000px"></div><section id="late"></section><div style="height:800px"></div>
 </article></main><script>
@@ -143,6 +153,7 @@ async function scrapeState(panel) {
       resultText:visible?content.innerText:null,
       media: visible ? {
         tabCount: selected[0]?.querySelector('span')?.textContent?.trim() ?? null,
+        formOpen: content.querySelector('input[placeholder="https://…"]') !== null,
         imageItems: [...content.querySelectorAll('a')].filter(a=>a.querySelector('img'))
           .map(a=>({href:a.href,src:a.querySelector('img')?.src??null,
             alt:a.querySelector('img')?.getAttribute('alt')??null,
@@ -159,6 +170,195 @@ async function scrapeState(panel) {
       saved:buttons.some(n=>n.textContent.trim()==='Saved')};
   })()`,
   );
+}
+
+async function enterMediaField(panel, field, value) {
+  await click(panel, 'scrape-media-form-field', field);
+  await panel.send('Input.insertText', { text: value });
+}
+
+async function selectedMedia(panel, label, items, name) {
+  if (label === 'Images') {
+    await evaluate(
+      panel,
+      `(() => {
+      const outer=document.querySelector('button[role="tab"][title="Scrape"][data-state="active"]');
+      const pane=outer&&document.getElementById(outer.getAttribute('aria-controls'));
+      const tab=pane?.querySelector('[role="tablist"] [role="tab"][aria-selected="true"]');
+      const content=tab&&document.getElementById(tab.getAttribute('aria-controls'));
+      for(const image of content?.querySelectorAll('img')??[]) image.scrollIntoView({block:'center',behavior:'instant'});
+    })()`,
+    );
+  }
+  const state = await waitFor(
+    name,
+    () => scrapeState(panel),
+    (s) => {
+      const actual = label === 'Images' ? s?.media?.imageItems : s?.media?.videoItems;
+      return (
+        s?.selected === label &&
+        s.visible &&
+        actual?.length === items.length &&
+        (label !== 'Images' || actual.every((item) => item.complete && item.naturalWidth > 0))
+      );
+    },
+  );
+  return assertMediaPane(state, { label, items });
+}
+
+async function mediaForm(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+    const outer=document.querySelector('button[role="tab"][title="Scrape"][data-state="active"]');
+    const pane=outer&&document.getElementById(outer.getAttribute('aria-controls'));
+    const tab=pane?.querySelector('[role="tablist"] [role="tab"][aria-selected="true"]');
+    const content=tab&&document.getElementById(tab.getAttribute('aria-controls'));
+    return { inputs:[...(content?.querySelectorAll('input')??[])].map(n=>({placeholder:n.placeholder,value:n.value})),
+      addButtons:[...(content?.querySelectorAll('button')??[])].filter(n=>n.textContent.trim()==='Add').length };
+  })()`,
+  );
+}
+
+async function exerciseMediaControls({
+  panel,
+  page,
+  origin,
+  phase,
+  resourceAction,
+  requireResourceHealth,
+}) {
+  const image = (path, alt) => ({ href: `${origin}${path}`, src: `${origin}${path}`, alt });
+  const images = [
+    image('/intake.svg', 'New patient intake desk'),
+    image('/appointment-card.svg', 'Appointment card'),
+    image('/clinic-icon.svg', 'Clinic icon'),
+  ];
+  const video = (path) => ({ href: `${origin}${path}`, text: `${origin}${path}` });
+  const videos = [video('/intake-walkthrough.mp4'), video('/referral-walkthrough.mp4')];
+  await resourceAction(() => click(panel, 'scrape-result-tab', 'Images'));
+  const beforeImages = await selectedMedia(panel, 'Images', images, `${phase}_three_images`);
+  assert.ok(
+    (await scrapeState(panel)).resultText.includes('1 image · 1 small · 1 icon'),
+    `${phase}_image_size_groups_missing`,
+  );
+  const removals = [];
+  for (const [removed, survivors] of [
+    [images[1], [images[0], images[2]]],
+    [images[2], [images[0]]],
+    [images[0], []],
+  ]) {
+    await requireResourceHealth();
+    await resourceAction(() => click(panel, 'scrape-media-remove', removed.href));
+    removals.push(
+      await selectedMedia(
+        panel,
+        'Images',
+        survivors,
+        `${phase}_remove_${new URL(removed.href).pathname}`,
+      ),
+    );
+    const text = (await scrapeState(panel)).resultText;
+    if (removed === images[1])
+      assert.ok(text.includes('1 image · 1 icon'), `${phase}_medium_count_not_updated`);
+    if (removed === images[2])
+      assert.ok(text.includes('1 image'), `${phase}_icon_count_not_updated`);
+    if (removed === images[0])
+      assert.ok(!text.includes('1 image'), `${phase}_large_count_not_updated`);
+  }
+  await resourceAction(() => click(panel, 'scrape-media-add-row', 'Add image URL'));
+  await resourceAction(() => click(panel, 'scrape-media-form-action', 'Add'));
+  assert.deepEqual(
+    (await mediaForm(panel)).inputs.map((i) => i.value),
+    ['', ''],
+    'blank_image_form_not_retained',
+  );
+  await selectedMedia(panel, 'Images', [], `${phase}_blank_image_rejected`);
+  await enterMediaField(panel, 'src', `${origin}/followup-card.svg`);
+  await enterMediaField(panel, 'alt', 'Follow-up card');
+  await resourceAction(() => click(panel, 'scrape-media-form-action', 'Add'));
+  const addedImage = await selectedMedia(
+    panel,
+    'Images',
+    [image('/followup-card.svg', 'Follow-up card')],
+    `${phase}_image_added`,
+  );
+  await enterMediaField(panel, 'src', `${origin}/appointment-card.svg`);
+  await resourceAction(() => click(panel, 'scrape-media-form-action', 'Cancel'));
+  await resourceAction(() => click(panel, 'scrape-media-add-row', 'Add image URL'));
+  assert.deepEqual(
+    (await mediaForm(panel)).inputs.map((i) => i.value),
+    ['', ''],
+    'image_cancel_draft_retained',
+  );
+  await selectedMedia(
+    panel,
+    'Images',
+    [image('/followup-card.svg', 'Follow-up card')],
+    `${phase}_image_cancelled`,
+  );
+  await resourceAction(() => click(panel, 'scrape-result-tab', 'Video'));
+  const beforeVideos = await selectedMedia(panel, 'Video', videos, `${phase}_two_videos`);
+  const linkEvidence = { opened_url: null, clipboard_url: null, limitations: [] };
+  try {
+    const newTab = page
+      .context()
+      .waitForEvent('page', { timeout: 5000 })
+      .catch((error) => error);
+    await resourceAction(() => click(panel, 'scrape-media-open', videos[0].href));
+    const opened = await newTab;
+    if (opened instanceof Error) throw opened;
+    await opened.waitForURL(videos[0].href, { timeout: 5000 });
+    linkEvidence.opened_url = opened.url();
+    await opened.close();
+  } catch (error) {
+    linkEvidence.limitations.push(`open:${String(error?.message ?? error).slice(0, 120)}`);
+  }
+  try {
+    await resourceAction(() => click(panel, 'scrape-media-copy', videos[1].href));
+    const copied = await evaluate(panel, 'navigator.clipboard.readText()');
+    assert.equal(copied, videos[1].href, 'video_clipboard_url_mismatch');
+    linkEvidence.clipboard_url = copied;
+  } catch (error) {
+    linkEvidence.limitations.push(`copy:${String(error?.message ?? error).slice(0, 120)}`);
+  }
+  await resourceAction(() => click(panel, 'scrape-media-remove', videos[0].href));
+  const removedVideo = await selectedMedia(panel, 'Video', [videos[1]], `${phase}_video_removed`);
+  await resourceAction(() => click(panel, 'scrape-media-add-row', 'Add video URL'));
+  await resourceAction(() => click(panel, 'scrape-media-form-action', 'Add'));
+  assert.deepEqual(
+    (await mediaForm(panel)).inputs.map((i) => i.value),
+    [''],
+    'blank_video_form_not_retained',
+  );
+  await selectedMedia(panel, 'Video', [videos[1]], `${phase}_blank_video_rejected`);
+  await enterMediaField(panel, 'src', `${origin}/consultation.mp4`);
+  await resourceAction(() => click(panel, 'scrape-media-form-action', 'Add'));
+  const addedVideo = await selectedMedia(
+    panel,
+    'Video',
+    [videos[1], video('/consultation.mp4')],
+    `${phase}_video_added`,
+  );
+  await enterMediaField(panel, 'src', `${origin}/intake-walkthrough.mp4`);
+  await resourceAction(() => click(panel, 'scrape-media-form-action', 'Cancel'));
+  await resourceAction(() => click(panel, 'scrape-media-add-row', 'Add video URL'));
+  assert.deepEqual(
+    (await mediaForm(panel)).inputs.map((i) => i.value),
+    [''],
+    'video_cancel_draft_retained',
+  );
+  await selectedMedia(
+    panel,
+    'Video',
+    [videos[1], video('/consultation.mp4')],
+    `${phase}_video_cancelled`,
+  );
+  return {
+    phase,
+    images: { before: beforeImages, removals, added: addedImage },
+    videos: { before: beforeVideos, removed: removedVideo, added: addedVideo, links: linkEvidence },
+  };
 }
 
 try {
@@ -208,6 +408,12 @@ try {
     },
     ownedAssets: {
       '/intake.svg': { contentType: 'image/svg+xml', body: intakeImage },
+      '/appointment-card.svg': { contentType: 'image/svg+xml', body: mediumImage },
+      '/clinic-icon.svg': { contentType: 'image/svg+xml', body: iconImage },
+      '/followup-card.svg': { contentType: 'image/svg+xml', body: mediumImage },
+      '/intake-walkthrough.mp4': { contentType: 'video/mp4', body: walkthroughVideo },
+      '/referral-walkthrough.mp4': { contentType: 'video/mp4', body: walkthroughVideo },
+      '/consultation.mp4': { contentType: 'video/mp4', body: walkthroughVideo },
     },
     onStage: (value) => {
       report.native_stage = value;
@@ -394,35 +600,39 @@ try {
         await requireResourceHealth();
         viewed[label] = state.resultText.slice(0, 300);
         if (label === 'Images' || label === 'Video') {
-          const mediaState =
-            label === 'Images'
-              ? await waitFor(
-                  'scrape_image_load_completed',
-                  () => scrapeState(panel),
-                  (s) =>
-                    s?.selected === 'Images' &&
-                    s.visible &&
-                    s.media?.imageItems?.[0]?.complete === true,
-                )
-              : state;
-          mediaEvidence[label.toLowerCase()] = assertMediaPane(mediaState, {
+          mediaEvidence[label.toLowerCase()] = await selectedMedia(
+            panel,
             label,
-            items:
-              label === 'Images'
-                ? [
-                    {
-                      href: `${origin}/intake.svg`,
-                      src: `${origin}/intake.svg`,
-                      alt: 'New patient intake desk',
-                    },
-                  ]
-                : [
-                    {
-                      href: `${origin}/intake-walkthrough.mp4`,
-                      text: `${origin}/intake-walkthrough.mp4`,
-                    },
-                  ],
-          });
+            label === 'Images'
+              ? [
+                  {
+                    href: `${origin}/intake.svg`,
+                    src: `${origin}/intake.svg`,
+                    alt: 'New patient intake desk',
+                  },
+                  {
+                    href: `${origin}/appointment-card.svg`,
+                    src: `${origin}/appointment-card.svg`,
+                    alt: 'Appointment card',
+                  },
+                  {
+                    href: `${origin}/clinic-icon.svg`,
+                    src: `${origin}/clinic-icon.svg`,
+                    alt: 'Clinic icon',
+                  },
+                ]
+              : [
+                  {
+                    href: `${origin}/intake-walkthrough.mp4`,
+                    text: `${origin}/intake-walkthrough.mp4`,
+                  },
+                  {
+                    href: `${origin}/referral-walkthrough.mp4`,
+                    text: `${origin}/referral-walkthrough.mp4`,
+                  },
+                ],
+            `scrape_${label}_loaded`,
+          );
         }
         await assertScrapeLayout(panel, `after_${label}_tab`);
       }
@@ -446,6 +656,35 @@ try {
         },
         ['Image and video empty states and reload lifecycle need full observation.'],
       );
+
+      report.stage = 'warm_media_controls';
+      const warmControls = await exerciseMediaControls({
+        panel,
+        page,
+        origin,
+        phase: 'warm',
+        resourceAction,
+        requireResourceHealth,
+      });
+      report.media_controls = { warm: warmControls };
+      mark('EXT-F-1007-T10', 'partial', { warm: warmControls.images }, [
+        'Repeat controls after full extension reload.',
+      ]);
+      mark(
+        'EXT-F-1007-T11',
+        'partial',
+        {
+          warm: {
+            blank_rejected: true,
+            valid_added: warmControls.images.added,
+            cancel_cleared: true,
+          },
+        },
+        ['Repeat controls after full extension reload.'],
+      );
+      mark('EXT-F-1007-T12', 'partial', { warm: warmControls.videos }, [
+        'Repeat controls after full extension reload; verify native link and clipboard outcomes.',
+      ]);
 
       report.stage = 'deep_capture';
       await requireResourceHealth();
@@ -640,6 +879,85 @@ try {
         report.cases.find((c) => c.id === 'EXT-F-1007-T20').status = 'passed';
         report.cases.find((c) => c.id === 'EXT-F-1007-T20').remaining = [];
         recordReloadMilestone(report, 'replacement_scrape_observed');
+        report.stage = 'post_reload_capture';
+        await resourceAction(() => page.goto(`${origin}/intake`));
+        await waitFor(
+          'scrape_post_reload_intake_empty',
+          () => scrapeState(replacement.panel),
+          (s) => s?.ready && s.empty && s.title === article,
+        );
+        await resourceAction(() =>
+          click(replacement.panel, 'title', 'Capture the page exactly as it is right now'),
+        );
+        const recaptured = await waitFor(
+          'scrape_post_reload_intake_captured',
+          () => scrapeState(replacement.panel),
+          (s) =>
+            s?.title === article &&
+            s.selected === 'Article' &&
+            s.visible &&
+            s.resultText?.includes(article) &&
+            s.fast.length === 1 &&
+            !s.fast[0].disabled,
+          30000,
+        );
+        assert.deepEqual(
+          recaptured.tabs.map((t) => t.label),
+          expectedTabs,
+        );
+        const postReloadPanes = { article: recaptured.resultText.includes(article) };
+        for (const [label, pattern] of [
+          ['Links', /Patient forms/],
+          ['SEO', /SEO|Title|Description/i],
+          ['Schema', /Dentist/],
+        ]) {
+          await resourceAction(() => click(replacement.panel, 'scrape-result-tab', label));
+          const state = await waitFor(
+            `scrape_post_reload_${label}`,
+            () => scrapeState(replacement.panel),
+            (s) => s?.selected === label && s.visible && pattern.test(s.resultText ?? ''),
+          );
+          postReloadPanes[label.toLowerCase()] = pattern.test(state.resultText);
+        }
+        report.stage = 'post_reload_media_controls';
+        const reloadControls = await exerciseMediaControls({
+          panel: replacement.panel,
+          page,
+          origin,
+          phase: 'reload',
+          resourceAction,
+          requireResourceHealth,
+        });
+        report.media_controls.reload = reloadControls;
+        postReloadPanes.images = reloadControls.images.before;
+        postReloadPanes.video = reloadControls.videos.before;
+        report.post_reload_populated_panes = postReloadPanes;
+        const t08 = report.cases.find((c) => c.id === 'EXT-F-1007-T08');
+        t08.evidence.post_reload_populated_panes = postReloadPanes;
+        t08.remaining = ['Member/admin modes and normal-width verification remain unverified.'];
+        for (const [id, evidence] of [
+          ['EXT-F-1007-T10', reloadControls.images],
+          [
+            'EXT-F-1007-T11',
+            {
+              blank_rejected: true,
+              valid_added: reloadControls.images.added,
+              cancel_cleared: true,
+            },
+          ],
+          ['EXT-F-1007-T12', reloadControls.videos],
+        ]) {
+          const item = report.cases.find((c) => c.id === id);
+          item.evidence.reload = evidence;
+          item.remaining =
+            id === 'EXT-F-1007-T12'
+              ? [
+                  ...warmControls.videos.links.limitations,
+                  ...reloadControls.videos.links.limitations,
+                ]
+              : [];
+          item.status = item.remaining.length ? 'partial' : 'passed';
+        }
       } finally {
         await replacement.panel.detach();
       }
