@@ -1,0 +1,1556 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "mode": "guest",
+  "status": "unverified",
+  "artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.215",
+    "source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+    "tree_sha256": "ab62d0755d03e8a7f2ca0cb99e0b5037f39e75d756b14a3e2d3ad6d8cc096d08",
+    "run_id": 37193761291,
+    "artifact_id": 11299613935
+  },
+  "guest_account_observed": true,
+  "cases": [
+    {
+      "id": "EXT-F-1007-T20",
+      "status": "partial",
+      "evidence": {
+        "initial_empty": true,
+        "initial_url": "http://localhost:49197/intake",
+        "navigation_url": "http://localhost:49197/referrals",
+        "previous_content_cleared": true,
+        "reload_origin_url": "http://localhost:49197/",
+        "previous_content_cleared_before_reload": true
+      },
+      "remaining": [
+        "Full extension reload lifecycle remains unverified."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T01",
+      "status": "partial",
+      "evidence": {
+        "url": "http://localhost:49197/intake",
+        "busy_disabled": true,
+        "article_title": "Harbor Dental intake guide",
+        "lazy_content_absent": true,
+        "result_tabs": [
+          "Article",
+          "Images",
+          "Video",
+          "Links",
+          "SEO",
+          "Schema"
+        ]
+      },
+      "remaining": [
+        "Warm/full reload lifecycle not yet exercised."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T08",
+      "status": "partial",
+      "evidence": {
+        "tabs_selected": [
+          "Article",
+          "Images",
+          "Video",
+          "Links",
+          "SEO",
+          "Schema"
+        ],
+        "matching_content": {
+          "article": true,
+          "links": true,
+          "seo": true,
+          "schema": true
+        }
+      },
+      "remaining": [
+        "Image and video matching content or empty state and reload lifecycle need full observation."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T02",
+      "status": "partial",
+      "evidence": {
+        "url": "http://localhost:49197/intake",
+        "progress_text": "Scrolling…",
+        "lazy_content_in_browser": true,
+        "lazy_content_in_capture": true
+      },
+      "remaining": [
+        "Deep failure retry mode and reload lifecycle remain unverified."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T14",
+      "status": "partial",
+      "evidence": {
+        "restricted_url": "chrome://settings/",
+        "no_recovery_actions": true,
+        "dismissed": true
+      },
+      "remaining": [
+        "Recoverable Reload page and Try again, including deep retry mode, need a natural browser failure."
+      ]
+    }
+  ],
+  "stage": "extension_reload",
+  "native_stage": "exercise_panel",
+  "failure": {
+    "stage": "extension_reload",
+    "code": "native_extension_worker_retirement_unverified"
+  },
+  "original_busy_failure": null,
+  "cpu_diagnostic": null,
+  "horizontal_geometry": [
+    {
+      "boundary": "after_fast_capture",
+      "at": "2026-10-04T11:01:10.214Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 12,
+          "right": 69.921875,
+          "width": 57.921875,
+          "scrollLeft": 0,
+          "scrollWidth": 58,
+          "clientWidth": 58
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 205.34375,
+              "width": 53.09375,
+              "scrollLeft": 0,
+              "scrollWidth": 53,
+              "clientWidth": 53
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 209.34375,
+              "right": 272.09375,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 276.09375,
+              "right": 320.46875,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Article_tab",
+      "at": "2026-10-04T11:01:10.399Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 12,
+          "right": 69.921875,
+          "width": 57.921875,
+          "scrollLeft": 0,
+          "scrollWidth": 58,
+          "clientWidth": 58
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 205.34375,
+              "width": 53.09375,
+              "scrollLeft": 0,
+              "scrollWidth": 53,
+              "clientWidth": 53
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 209.34375,
+              "right": 272.09375,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 276.09375,
+              "right": 320.46875,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Images_tab",
+      "at": "2026-10-04T11:01:10.590Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 73.921875,
+          "right": 148.25,
+          "width": 74.328125,
+          "scrollLeft": 0,
+          "scrollWidth": 74,
+          "clientWidth": 74
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 205.34375,
+              "width": 53.09375,
+              "scrollLeft": 0,
+              "scrollWidth": 53,
+              "clientWidth": 53
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 209.34375,
+              "right": 272.09375,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 276.09375,
+              "right": 320.46875,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Video_tab",
+      "at": "2026-10-04T11:01:10.779Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 152.25,
+          "right": 205.34375,
+          "width": 53.09375,
+          "scrollLeft": 0,
+          "scrollWidth": 53,
+          "clientWidth": 53
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 205.34375,
+              "width": 53.09375,
+              "scrollLeft": 0,
+              "scrollWidth": 53,
+              "clientWidth": 53
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 209.34375,
+              "right": 272.09375,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 276.09375,
+              "right": 320.46875,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Links_tab",
+      "at": "2026-10-04T11:01:10.975Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 209.34375,
+          "right": 272.09375,
+          "width": 62.75,
+          "scrollLeft": 0,
+          "scrollWidth": 63,
+          "clientWidth": 63
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 205.34375,
+              "width": 53.09375,
+              "scrollLeft": 0,
+              "scrollWidth": 53,
+              "clientWidth": 53
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 209.34375,
+              "right": 272.09375,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 276.09375,
+              "right": 320.46875,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_SEO_tab",
+      "at": "2026-10-04T11:01:11.248Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 276.09375,
+          "right": 320.46875,
+          "width": 44.375,
+          "scrollLeft": 0,
+          "scrollWidth": 44,
+          "clientWidth": 44
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 205.34375,
+              "width": 53.09375,
+              "scrollLeft": 0,
+              "scrollWidth": 53,
+              "clientWidth": 53
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 209.34375,
+              "right": 272.09375,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 276.09375,
+              "right": 320.46875,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Schema_tab",
+      "at": "2026-10-04T11:01:11.442Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 12,
+          "right": 78.296875,
+          "width": 66.296875,
+          "scrollLeft": 0,
+          "scrollWidth": 66,
+          "clientWidth": 66
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 205.34375,
+              "width": 53.09375,
+              "scrollLeft": 0,
+              "scrollWidth": 53,
+              "clientWidth": 53
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 209.34375,
+              "right": 272.09375,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 276.09375,
+              "right": 320.46875,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_return_to_Article",
+      "at": "2026-10-04T11:01:11.634Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 12,
+          "right": 69.921875,
+          "width": 57.921875,
+          "scrollLeft": 0,
+          "scrollWidth": 58,
+          "clientWidth": 58
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 205.34375,
+              "width": 53.09375,
+              "scrollLeft": 0,
+              "scrollWidth": 53,
+              "clientWidth": 53
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 209.34375,
+              "right": 272.09375,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 276.09375,
+              "right": 320.46875,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_deep_capture",
+      "at": "2026-10-04T11:01:14.466Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 12,
+          "right": 69.921875,
+          "width": 57.921875,
+          "scrollLeft": 0,
+          "scrollWidth": 58,
+          "clientWidth": 58
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 205.34375,
+              "width": 53.09375,
+              "scrollLeft": 0,
+              "scrollWidth": 53,
+              "clientWidth": 53
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 209.34375,
+              "right": 272.09375,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 276.09375,
+              "right": 320.46875,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "reload_milestones": [
+    {
+      "name": "reload_extension",
+      "at": "2026-10-04T11:01:15.786Z"
+    }
+  ],
+  "reload_lifecycle": null,
+  "driver_failure": null,
+  "guest_auth_storage": {
+    "hasAccessToken": false,
+    "hasUserProfile": false
+  },
+  "fast_busy_observation": {
+    "observed": true,
+    "text": "Capturing…",
+    "samples": 5,
+    "matchingButtons": 1,
+    "buttonReplacements": 0,
+    "disabledSamples": 1,
+    "disabledMutationRecords": 2,
+    "observedAtMs": 4052.3000000000466,
+    "observationBasis": "current_owned_visible_dom"
+  },
+  "fast_screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-0kO4zE/scrape-fast-article.png",
+  "deep_busy_observation": {
+    "observed": true,
+    "text": "Scrolling…",
+    "samples": 11,
+    "matchingButtons": 1,
+    "buttonReplacements": 0,
+    "disabledSamples": 7,
+    "disabledMutationRecords": 2,
+    "observedAtMs": 8291.5,
+    "observationBasis": "current_owned_visible_dom"
+  },
+  "deep_screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-0kO4zE/scrape-deep-article.png",
+  "error_screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-0kO4zE/scrape-restricted-error.png",
+  "reload_lifecycle_failure": {
+    "old_worker_destroyed_event": false,
+    "old_worker_absent": true,
+    "old_panel_absent": true,
+    "replacement_worker_present": true,
+    "replacement_worker_created_event": true,
+    "observed_worker_count": 1,
+    "management": {
+      "state": "ENABLED",
+      "developer_mode": true,
+      "unsupported_developer_extension": false,
+      "runtime_error_count": 0,
+      "manifest_error_count": 0
+    },
+    "timeline": {
+      "old_worker_id": "8B54786E869A6F106408F480F9C4887D",
+      "old_panel_id": "AE4567ADD669FBFAA6562C9829E50864",
+      "replacement_worker_id": "092F1407D3409481E7EB35BF90B4D5F3",
+      "pre_click_old_worker_present": true,
+      "entries": [
+        {
+          "at": "2026-10-04T11:01:16.459Z",
+          "phase": "discovery_enabled"
+        },
+        {
+          "at": "2026-10-04T11:01:16.461Z",
+          "phase": "initial_snapshot",
+          "targets": [
+            {
+              "target_id": "8B54786E869A6F106408F480F9C4887D",
+              "type": "service_worker",
+              "kind": "worker"
+            },
+            {
+              "target_id": "AE4567ADD669FBFAA6562C9829E50864",
+              "type": "page",
+              "kind": "panel"
+            }
+          ]
+        },
+        {
+          "at": "2026-10-04T11:01:16.461Z",
+          "phase": "listeners_registered"
+        },
+        {
+          "at": "2026-10-04T11:01:16.462Z",
+          "phase": "pre_click_snapshot",
+          "targets": [
+            {
+              "target_id": "8B54786E869A6F106408F480F9C4887D",
+              "type": "service_worker",
+              "kind": "worker"
+            },
+            {
+              "target_id": "AE4567ADD669FBFAA6562C9829E50864",
+              "type": "page",
+              "kind": "panel"
+            }
+          ]
+        },
+        {
+          "at": "2026-10-04T11:01:16.462Z",
+          "phase": "click_started"
+        },
+        {
+          "at": "2026-10-04T11:01:16.865Z",
+          "phase": "target_info_changed",
+          "target": {
+            "target_id": "AE4567ADD669FBFAA6562C9829E50864",
+            "type": "page",
+            "kind": "panel"
+          }
+        },
+        {
+          "at": "2026-10-04T11:01:16.866Z",
+          "phase": "target_destroyed",
+          "target": {
+            "target_id": "AE4567ADD669FBFAA6562C9829E50864",
+            "type": "page",
+            "kind": "panel"
+          }
+        },
+        {
+          "at": "2026-10-04T11:01:16.925Z",
+          "phase": "target_created",
+          "target": {
+            "target_id": "092F1407D3409481E7EB35BF90B4D5F3",
+            "type": "service_worker",
+            "kind": "worker"
+          }
+        },
+        {
+          "at": "2026-10-04T11:01:16.928Z",
+          "phase": "click_resolved"
+        },
+        {
+          "at": "2026-10-04T11:01:16.930Z",
+          "phase": "target_info_changed",
+          "target": {
+            "target_id": "092F1407D3409481E7EB35BF90B4D5F3",
+            "type": "service_worker",
+            "kind": "worker"
+          }
+        },
+        {
+          "at": "2026-10-04T11:01:16.935Z",
+          "phase": "poll_transition",
+          "targets": [
+            {
+              "target_id": "8B54786E869A6F106408F480F9C4887D",
+              "type": "service_worker",
+              "kind": "worker"
+            }
+          ]
+        },
+        {
+          "at": "2026-10-04T11:01:16.942Z",
+          "phase": "target_info_changed",
+          "target": {
+            "target_id": "8B54786E869A6F106408F480F9C4887D",
+            "type": "service_worker",
+            "kind": "worker"
+          }
+        },
+        {
+          "at": "2026-10-04T11:01:17.037Z",
+          "phase": "poll_transition",
+          "targets": [
+            {
+              "target_id": "092F1407D3409481E7EB35BF90B4D5F3",
+              "type": "service_worker",
+              "kind": "worker"
+            }
+          ]
+        }
+      ],
+      "dropped_entries": 0,
+      "final_snapshot": [
+        {
+          "target_id": "092F1407D3409481E7EB35BF90B4D5F3",
+          "type": "service_worker",
+          "kind": "worker"
+        }
+      ],
+      "final_predicate": false
+    }
+  }
+}

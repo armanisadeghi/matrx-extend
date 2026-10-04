@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "purpose": "Single hosted guest Scrape acceptance for EXT-D-0120 readiness repair against frozen development artifact 0.2.215.",
+  "workflow": {
+    "run_id": 37196901889,
+    "job_id": 111420567776,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37196901889",
+    "event": "workflow_dispatch",
+    "head_sha": "0d644e2d2073c019291222d2bc778094553b7bb5",
+    "head_includes": [
+      "78ac468db29c959e75134b19150ff21e3b84b1ce",
+      "5d448307e455d0511602c9ad7b1c1dd332c7e8db"
+    ],
+    "acceptance_case": "guest-scrape-development",
+    "conclusion": "failure",
+    "duration": "7m6s",
+    "artifact_id": 11301680295,
+    "artifact_name": "hosted-guest-37196901889-1"
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.215",
+    "source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+    "tree_sha256": "ab62d0755d03e8a7f2ca0cb99e0b5037f39e75d756b14a3e2d3ad6d8cc096d08",
+    "development_run_id": 37193761291,
+    "development_artifact_id": 11299613935,
+    "release_run_id": null,
+    "cpu_diagnostic": null
+  },
+  "receipt": {
+    "path": "docs/stabilization/evidence/scrape215/run37196901889/receipt.json.txt",
+    "sha256": "12bd32847c901e1f9e7ab34d71efb6ce4c1b6c24008e248c700bb6960f48118a",
+    "mode": "guest",
+    "guest_account_observed": true,
+    "guest_auth_storage": { "hasAccessToken": false, "hasUserProfile": false },
+    "source_receipt_status": "unverified"
+  },
+  "verdict_a_native_behavior": {
+    "status": "FAILURE_BEFORE_REPLACEMENT_SCRAPE_BOUNDARY",
+    "failure": {
+      "stage": "extension_reload",
+      "native_stage": "exercise_panel",
+      "code": "native_extension_worker_retirement_unverified"
+    },
+    "retirement": {
+      "pre_click_old_worker_present": true,
+      "old_worker_destroyed_event": false,
+      "old_worker_absent": true,
+      "old_panel_absent": true,
+      "replacement_worker_created_event": true,
+      "replacement_worker_present": true,
+      "observed_worker_count": 1,
+      "final_snapshot_contains_only_replacement_worker": true,
+      "final_predicate": false,
+      "dropped_entries": 0
+    },
+    "timeline": [
+      "reload_extension milestone recorded at 2026-10-04T11:01:15.786Z",
+      "CDP discovery enabled and initial/pre-click snapshots found the old worker and panel",
+      "reload click started; old panel target was destroyed; replacement worker target was created",
+      "poll snapshots observed the old worker then replacement worker; no old-worker destroyed event was received",
+      "retirement predicate stayed false, so the acceptance stopped before attaching to a replacement panel"
+    ],
+    "scrape_readiness_boundary": "NOT_REACHED; receipt has no scrape_tab_boundary sample",
+    "trusted_click": "NOT_ATTEMPTED",
+    "post_reload_t20": "NOT_VERIFIED"
+  },
+  "verdict_b_evidence_quality": {
+    "status": "PASS_FOR_CAPTURED_PRE_RELOAD_EVIDENCE",
+    "fast_capture": {
+      "busy_state": "Capturing…",
+      "observed": true,
+      "disabled_samples": 1,
+      "article_title": "Harbor Dental intake guide",
+      "lazy_content_absent": true
+    },
+    "deep_capture": {
+      "busy_state": "Scrolling…",
+      "observed": true,
+      "disabled_samples": 7,
+      "lazy_content_in_browser": true,
+      "lazy_content_in_capture": true
+    },
+    "layout": {
+      "viewport_width_px": 360,
+      "boundaries": 9,
+      "all_document_scroll_width_px": 360,
+      "all_document_scroll_left_px": 0,
+      "result_tabs_width_px": 336,
+      "result_tabs_scroll_width_px": 336,
+      "all_six_result_tabs_selected": true,
+      "matching_content_confirmed_for": ["article", "links", "seo", "schema"],
+      "image_video_matching_content_or_empty_state": "NOT_ESTABLISHED"
+    },
+    "resource_journals": {
+      "package": {
+        "path": "docs/stabilization/evidence/scrape215/run37196901889/package-resource.jsonl",
+        "sha256": "c73111d24bf0f9b1bcf945cf191d2e2be734c300875e56fd0bb63b6c02a9d9e7",
+        "decision": "valid",
+        "resourceInvalid": false,
+        "exitCode": 0
+      },
+      "browser": {
+        "path": "docs/stabilization/evidence/scrape215/run37196901889/browser-resource.jsonl",
+        "sha256": "9fe3b7052a8d0a030ce05327ab733304722eb5c17420062acce1edad47123588",
+        "decision": "valid",
+        "resourceInvalid": false,
+        "healthy_samples": 1,
+        "exitCode": 0
+      },
+      "guest": {
+        "path": "docs/stabilization/evidence/scrape215/run37196901889/guest-resource.jsonl",
+        "sha256": "ed3efb88006ef0900699ae2c99fc2ee292112c9e1efab63ce1d548011732c338",
+        "decision": "child_failed",
+        "resourceInvalid": false,
+        "healthy_samples": 2,
+        "exitCode": 1
+      }
+    },
+    "credential_check": "Receipt is guest-only; guest auth storage reports no access token or user profile; no credential values or authorization material were found in the preserved receipt."
+  },
+  "limitations": [
+    "The target replacement Scrape readiness repair remains natively unverified because the unchanged worker-retirement guard stopped the run first.",
+    "No trusted click, post-reload empty state/T20, Image/Video matching content, or normal-width observation was established.",
+    "No retry, build, release, version change, or CPU diagnostic was run."
+  ]
+}
