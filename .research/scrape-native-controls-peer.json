@@ -1,0 +1,45 @@
+{
+  "reviewed_commit": "2a0b2e4121cc2f01bae438c4b650e49a4f28d613",
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_a_scope_observable_acceptance": {
+    "decision": "PASS for the nominated guest procedure; native outcomes remain unverified",
+    "T08": "Warm six-pane selection is retained. After a full extension reload, the replacement panel navigates to the owned intake page, performs a fresh capture, and checks populated Article, Links, SEO, Schema, Images and Video panes. Member/admin and normal-width observations remain outside this guest run.",
+    "T10": "Three served 640x480, 96x96 and 32x32 SVGs produce large, small and icon groups. Selective removal checks exact surviving URL identities, rendered counts and toolbar text through empty state in warm and reload phases.",
+    "T11": "Blank image Add must keep two empty fields and no item; valid URL plus alt must render a loaded image; Cancel must close and clear a new draft. The same sequence is repeated after reload.",
+    "T12": "Two served MP4 rows are observed; open requires a newly created page with the exact URL, copy compares actual clipboard text, remove checks the remaining URL, blank Add is rejected, valid Add creates a row, and Cancel clears a draft in warm and reload phases. Failed or unavailable open/copy observations leave T12 partial, never passed by a click alone. The current broad catch does not distinguish a product mismatch from an observation limitation in its label.",
+    "native_evidence": "No native browser run in this independent review; none of these cases is claimed observed on the actual extension."
+  },
+  "verdict_b_quality_forcing_function": {
+    "decision": "FAIL: resource boundary bypass and swallowed refusal block a guarded native run",
+    "findings": [
+      {
+        "severity": "blocking",
+        "location": "tests/browser/scrape-guest-native-acceptance.mjs:173-176",
+        "detail": "enterMediaField sends trusted click and Input.insertText directly, without resourceAction or requireResourceHealth. It is used for both image and video forms in both warm and reload phases, so repeated native input occurs outside the resource boundary."
+      },
+      {
+        "severity": "blocking",
+        "location": "tests/browser/scrape-guest-native-acceptance.mjs:302-323",
+        "detail": "The broad open/copy catches also capture resourceAction failures, including NATIVE_RESOURCE_BOUNDARY_REFUSED, and record them as link limitations. A resource refusal must abort the native procedure and preserve its diagnostic, rather than be classified as ordinary T12 partial evidence."
+      },
+      {
+        "severity": "nonblocking",
+        "location": "tests/browser/scrape-guest-native-acceptance.mjs:302-323",
+        "detail": "An exact-URL or clipboard-content mismatch is recorded under limitations, so the receipt is partial but its classification obscures an observed product failure. Keep distinct failure and observability codes with bounded diagnostics."
+      },
+      {
+        "severity": "nonblocking",
+        "location": "tests/browser/scrape-media-assertions.test.mjs",
+        "detail": "Focused tests and the reported identity-removal mutation exercise the pure assertion helper. They do not execute the native driver's action wiring, so native evidence remains necessary after the guard repair."
+      }
+    ],
+    "strengths": "Fixture assets are served from the owned test server; the driver does not inject production capture state. Exact media identities, loaded image bytes, pane visibility, counts and empty states are asserted. Artifact tree binding and the existing full reload lifecycle remain in place."
+  },
+  "guarded_native_run_justified": false,
+  "verification": {
+    "focused": "node --test tests/browser/scrape-media-assertions.test.mjs tests/browser/owned-fixture-server.test.mjs: 7 passed, 0 failed",
+    "compile": "pnpm compile: passed",
+    "native_or_heavy_run": "not run, per brief"
+  },
+  "shared_checkout": "Production files untouched; unrelated concurrent edits left untouched."
+}
