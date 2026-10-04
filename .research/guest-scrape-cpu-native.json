@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "status": "unverified",
+  "changed": [],
+  "run": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_name": "Hosted guest side-panel acceptance",
+    "run_id": "37190128778",
+    "conclusion": "failure",
+    "actual_workflow_head_sha": "b1a6dddf6d0c943d3bb743b657b6f574414c8fcd",
+    "diagnostic_source_commit": "3a4ce4bdf5a807260e998d8cf665b28f6bb7ce81",
+    "cleanup_repair_commit": "df42d2f1a93aa143fd0d7a6262a94e8dbdcc3e7a",
+    "source_peer_commit": "b1a6dddf6d0c943d3bb743b657b6f574414c8fcd",
+    "release_run_id": "37180303468",
+    "release_artifact_id": "11294843385",
+    "acceptance_artifact_id": "11297584970",
+    "acceptance_artifact_name": "hosted-guest-37190128778-1"
+  },
+  "artifact_provenance": {
+    "kind": "native_store_zip_candidate_key_adapted",
+    "version": "0.2.205",
+    "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "adapted_runtime_tree_sha256": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+    "expected_store_zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "store_zip_hash_source": ".research/hosted-store-artifact-peer.json; receipt retains candidate kind and runtime tree, not the Store ZIP hash field"
+  },
+  "resource_verdicts": {
+    "hosted-package-37190128778-1": {
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "sha256": "5cb1570886ffc8b23fed1d00a37561082dbef6a2f329a1cc2cca040bb19653c0"
+    },
+    "hosted-browser-37190128778-1": {
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "sha256": "901f032c3a8f0b12dae976533b4196c7da8f202e7131a30ecedbb1dce95fef2a"
+    },
+    "hosted-guest-37190128778-1": {
+      "decision": "child_failed",
+      "exit_code": 1,
+      "resource_invalid": false,
+      "sha256": "f2b4f452295e39a5cb3f35166af1ae4f2b7e7016cae34aa710d1260bee7e4238"
+    }
+  },
+  "original_unthrottled_case": {
+    "overall_status": "unverified",
+    "guest_account_observed": true,
+    "guest_auth_storage": { "has_access_token": false, "has_user_profile": false },
+    "EXT-F-1007-T20": {
+      "status": "partial",
+      "observed": "Fresh Scrape empty state true at http://localhost:49200/intake.",
+      "remaining": "Navigation and reload lifecycle were not exercised."
+    },
+    "EXT-F-1007-T01": {
+      "status": "unverified",
+      "failure": "scrape_fast_busy_not_observed",
+      "fast_result_wait_completed": true,
+      "fast_result_observed": {
+        "article_title": "Harbor Dental intake guide",
+        "lazy_content_absent": true,
+        "result_tabs": ["Article", "Images", "Video", "Links", "SEO", "Schema"]
+      },
+      "no_scroll": { "lazy_element_count": 0 },
+      "busy_observation": {
+        "observed": false,
+        "text": null,
+        "samples": 4,
+        "matching_buttons": 1,
+        "button_replacements": 0,
+        "disabled_samples": 0,
+        "disabled_mutation_records": 0,
+        "observed_at_ms": null,
+        "basis": "current_owned_visible_dom"
+      },
+      "limits": "Fast article result and no-scroll predicate were observed, but the busy assertion failed. T01 is not a pass."
+    },
+    "EXT-F-1007-T08": {
+      "status": "partial",
+      "observed": "All six tabs were selected. Article, Links, SEO, and Schema matching-content checks were true.",
+      "remaining": "Image and video matching content or empty state and reload lifecycle remain unverified."
+    },
+    "EXT-F-1007-T02": {
+      "status": "partial_observation_only",
+      "observed": "Deep-result predicate matched lazy content, then browser lazy text was present before the busy assertion failed. The retained deep screenshot displays 28 words versus 17 in fast view.",
+      "limits": "The T02 completion mark and result fields were not reached; this is not a T02 pass. Deep busy-observer values and sample counts were not retained, so none are inferred."
+    },
+    "EXT-F-1007-T14": { "status": "unverified", "observed": "Not reached." }
+  },
+  "supplemental_cpu_diagnostic": {
+    "status": "unverified",
+    "rate": 4,
+    "original_busy_failure_remains": "scrape_fast_busy_not_observed",
+    "original_case_promoted": false,
+    "target": {
+      "id": "19EAF7CA5778383D5A59397848099E1B",
+      "type": "page",
+      "url": "http://localhost:49200/intake"
+    },
+    "busy_observation": {
+      "observed": false,
+      "text": null,
+      "samples": 4,
+      "matching_buttons": 1,
+      "button_replacements": 0,
+      "disabled_samples": 0,
+      "disabled_mutation_records": 0,
+      "observed_at_ms": null,
+      "basis": "current_owned_visible_dom"
+    },
+    "full_result_snapshot": {
+      "ready": true,
+      "title": "Harbor Dental intake guide",
+      "selected": "Article",
+      "visible": true,
+      "text_summary": "Harbor Dental intake guide; 17 words; Re-capture and Scroll & capture enabled"
+    },
+    "freshness_limit": "The supplemental predicate uses the same article/title/content predicate as the original capture. No capture ID or freshness timestamp was retained; the displayed matching article does not prove a new throttled result.",
+    "no_scroll": { "lazy_element_count": 0, "scroll_y": 0 },
+    "cleanup": { "rate_restored": true, "session_detached": true },
+    "failure": "scrape_diagnostic_busy_unobserved"
+  },
+  "diagnostic_classification": {
+    "resource_refusal": false,
+    "receipt_present": true,
+    "browser_startup_failure": "Not emitted; startup proceeded to guest Scrape interaction.",
+    "panel_context_failure": "Not emitted; the harness reached the guest panel and case UI.",
+    "original_and_supplemental_outcomes_are_separate": true
+  },
+  "evidence": {
+    "receipt": {
+      "file": "test-results/hosted-scrape-37190128778/test-results/scrape-guest-native-0ca27676-5d93-4af3-ba6b-75b1e338545f.json",
+      "sha256": "ba014e3dbda1cd10bcdf7e063e3df94789a7705ddec1fee1d5f32e0f392919c5"
+    },
+    "screenshots": [
+      {
+        "file": "test-results/hosted-scrape-37190128778/test-results/native-sidepanel-qa-oAEHrX/native-side-panel.png",
+        "sha256": "2cfda86f86cad54e4a73aa3480585a0e0ab5d74b20da4921a35999d22e3c462f"
+      },
+      {
+        "file": "test-results/hosted-scrape-37190128778/test-results/native-sidepanel-qa-oAEHrX/normal-target-after-open.png",
+        "sha256": "60d95c01c8bf5fa8f0807e1aed08d2adb43b4a5532190ae0eadd54c5e3aef79c"
+      },
+      {
+        "file": "test-results/hosted-scrape-37190128778/test-results/native-sidepanel-qa-oAEHrX/scrape-fast-article.png",
+        "sha256": "580dbb942e6ce402a9e4f1b0552c3c923a79b0c545366c572347eb6ce1472d5e"
+      },
+      {
+        "file": "test-results/hosted-scrape-37190128778/test-results/native-sidepanel-qa-oAEHrX/scrape-diagnostic-cpu-fast-article.png",
+        "sha256": "c7542f259846885ec2c8f160af8394cdaec93af4a5635bd8e27f367f87b78c83"
+      },
+      {
+        "file": "test-results/hosted-scrape-37190128778/test-results/native-sidepanel-qa-oAEHrX/scrape-deep-article.png",
+        "sha256": "2b60db057add4a11145f7a84e449eda6dd95de9e3ad5f468dc2f6998ee7075e1"
+      }
+    ],
+    "artifact_note": "Exact artifact 11297584970 downloaded; only current run-ID resource journals used."
+  },
+  "open_questions": [
+    "Why did both original fast and rate-4 supplemental observations record four current-DOM samples and no disabled sample?",
+    "Did the rate-4 supplemental click create a new capture or leave the prior 17-word article displayed? Retained evidence cannot distinguish these.",
+    "T01 remains unverified, T02/T08 partial, T14 unverified, and T20 reload lifecycle unverified; no complete guest Scrape pass is claimed."
+  ]
+}
