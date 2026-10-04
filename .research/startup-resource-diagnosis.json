@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "case": "EXT-D-0120 hosted native startup resource refusal diagnosis",
+  "status": "ACTIONABLE_DIAGNOSIS_NO_SOURCE_REPAIR",
+  "finding": "Two guarded hosted acceptances admitted a healthy guest child and then recorded a genuinely unsafe CPU watch sample before the first Scrape exercise action. Current evidence cannot attribute the burst to Chromium, the harness, or another runner process. The native resource boundary correctly refused after the first unsafe event; changing its verdict would weaken the conservative acceptance contract.",
+  "comparison": {
+    "refused_runs": [
+      {
+        "run_id": 37198730857,
+        "admission_cpu_busy_fraction": 0.03,
+        "watch_cpu_busy_fraction": 0.86,
+        "watch_one_minute_load": 12.44,
+        "logical_cpus": 4,
+        "watch_reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+        "seconds_from_admission_to_watch": 16.445,
+        "product_assertions_reached": false
+      },
+      {
+        "run_id": 37203147962,
+        "admission_cpu_busy_fraction": 0.02285714285714286,
+        "watch_cpu_busy_fraction": 1,
+        "watch_one_minute_load": 2.97,
+        "logical_cpus": 4,
+        "watch_reasons": ["RESOURCE_CPU_BUSY"],
+        "seconds_from_admission_to_watch": 16.148,
+        "product_assertions_reached": false
+      }
+    ],
+    "successful_comparator": {
+      "run_id": 37199709918,
+      "same_development_run_id": 37193761291,
+      "same_development_artifact_id": 11299613935,
+      "admission_cpu_busy_fraction": 0.06285714285714286,
+      "watch_cpu_busy_fraction": 0.1,
+      "watch_one_minute_load": 3.36,
+      "resource_decision": "valid",
+      "strict_reload_predicate": "passed for this one attempt"
+    }
+  },
+  "boundary_trace": {
+    "sampler": "scripts/stabilization-resource-safety.mjs calls macOS iostat for two rows and takes the second, one-second interval CPU idle reading; busy is (100 - idle)/100.",
+    "guard": "scripts/stabilization-resource.mjs emits RESOURCE_WATCH_UNSAFE at the first unsafe watch sample. Its two-consecutive-sample rule controls process stop; it does not certify the first sample as safe.",
+    "native_action": "tests/browser/native-resource-boundary.mjs refuses any RESOURCE_WATCH_UNSAFE in the own-run journal before the next UI action. This matches the conservative native acceptance contract.",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml serializes guest acceptance with the hosted-guest-side-panel concurrency group and performs readiness immediately before the guarded child; both refusals occurred after those checks.",
+    "diagnostic_gap": "The guard journal contains aggregate host CPU and load but no process attribution. scripts/hosted-resource-diagnostic.mjs records process CPU in a separate workflow; it cannot identify what consumed CPU during either refused acceptance."
+  },
+  "ruled_out": [
+    "A stale or wrong-run native health journal: each refusal followed a fresh own-run admission and a watch event about 16 seconds later.",
+    "A universal startup failure for the frozen development artifact: the same artifact reached and passed the strict reload predicate in run 37199709918.",
+    "A resource-policy threshold change as a supported repair: both watch values crossed the existing CPU limit and no evidence shows a false reading."
+  ],
+  "next_safe_action": "Before another native acceptance, add bounded, credential-free process attribution to the existing guard's unsafe watch event in the same hosted run. Capture only numeric pid/parent/cpu and executable basename, retain the existing CPU sampler, thresholds, unsafe-history refusal, watchdog, and concurrency group. Prove with a focused real-wrapper test that an unsafe watch still causes the native boundary to refuse while attribution is recorded. Have an independent peer review that change, then run one authorized hosted acceptance against the exact frozen artifact after the host disk floor is satisfied. The process evidence can distinguish owned startup load from competing runner load; a clean resource journal and actual product receipt are still required for acceptance.",
+  "verification": {
+    "source_reads": [
+      "Three completed guest resource journals and two refusal reports compared with the successful native report",
+      "Resource sampler, guard watch loop, native boundary, workflow readiness and concurrency inspected"
+    ],
+    "native_run": "not attempted",
+    "reason": "No causally supported setup or measurement repair exists yet; local system disk was reported below the 20 GiB floor, and a speculative rerun would not identify the CPU source."
+  },
+  "limits": [
+    "The captured CPU values establish real host pressure as measured by the guard, not which process caused it.",
+    "The successful comparator proves only that one attempt could finish under healthy resources; it does not explain the two later bursts or close D120 intermittency.",
+    "No thresholds, watchdog behavior, native assertion, build, version, release, or deployment changed."
+  ]
+}
