@@ -1,0 +1,33 @@
+{
+  "finding": "EXT-D-0120 TargetDestroyed acceptance bypass",
+  "reviewed_commits": [
+    "9f09009abc12fd9f642cb0c67491d5d757ccdc4e",
+    "5b20f513"
+  ],
+  "finding_status": "ADDRESSED",
+  "verdict_a_behavior": {
+    "result": "PASS",
+    "evidence": [
+      "tests/browser/native-sidepanel-qa-harness.mjs now accepts only when lifetime.executionRetired(oldWorkerId, replacementWorkerId) is true, exactly one owned worker remains, old worker and panel targets are absent, and the replacement target was created.",
+      "TargetDestroyed remains recorded as evidence but is no longer part of the acceptance predicate.",
+      "The harness test rejects destroyed-target cases with restartable old execution, no replacement version, unavailable ServiceWorker domain, and ambiguous old identity; the retained-host valid case still requires lifecycle retirement evidence."
+    ],
+    "limits": [
+      "Native Chrome behavior was not run or verified in this review.",
+      "No overall product acceptance is claimed."
+    ]
+  },
+  "verdict_b_quality": {
+    "result": "PASS",
+    "evidence": [
+      "The red-green regression is at the real reloadOwnedExtension acceptance caller with controlled CDP dependencies: the added cases assert rejection and final_predicate=false, so restoring the TargetDestroyed bypass makes them fail.",
+      "node --test tests/browser/reload-execution-retirement.test.mjs tests/browser/reload-lifetime-diagnostic.test.mjs tests/browser/profile-reload-capture.test.mjs: 23 passed.",
+      "node tests/browser/native-sidepanel-qa-harness.test.mjs: exited 0; includes the new refusal fixtures and valid retained-host path."
+    ],
+    "limits": [
+      "No test mutation was run in this review.",
+      "Native Chrome, build, and release checks were not run."
+    ]
+  },
+  "ownership": "Only this report file is owned by this verifier."
+}
