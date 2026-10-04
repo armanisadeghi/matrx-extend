@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "review_id": "scrape-layout-and-reload-retention-independent-review",
+  "reviewer_lane": "fresh_independent_zero_authorship",
+  "generated_at": "2026-10-04T10:14:50.846763+00:00",
+  "reviewed_head": "dd3f35f464cecdef3ba4ca284265fbc7c32ae5cb",
+  "reviewed_commits": {
+    "layout_guard": "bc6694f8801bd72749880df19bdd0faabed0d4dc",
+    "reload_instrumentation": "0eedda9260acd5cb6d95b88cdac4aad7c56e9aba",
+    "retention_repair": "ca1fa506412df8807745800c70fe127d92960cb4"
+  },
+  "verdict_a_product_acceptance": {
+    "status": "PARTIAL",
+    "native_status": "UNKNOWN",
+    "finding": "The acceptance guard uses geometry measured from the live sidepanel DOM. It catches the recorded document overflow (391/360), displacement (31/-31), result-list viewport overflow, and missing/clipped result tabs; its test also accepts six contained tab controls. This proves the guard path from source, not that the product fix passes in the loaded Chrome artifact.",
+    "guarded_run_readiness": "One guarded native run is ready against the supplied CI candidate (run 37193761291, artifact 11299613935), after the native owner records the exact imported extension path/version/tree-hash receipt required by docs/DEVELOPMENT.md. This reviewer did not launch Chrome or claim a native pass.",
+    "remaining_limit": "The geometry sample includes title and capture-row rectangles, but the current guard predicates do not assert those rectangles; native screenshots/click evidence remain separate. This was already a minor source limitation in the prior review."
+  },
+  "verdict_b_reload_retention_quality": {
+    "status": "PASS_SOURCE_AND_FOCUSED_TESTS",
+    "finding": "The repair preserves the existing bounded timeline in the outer catch for thrown Error objects, reusing current old/replacement target IDs, pre-click presence, latest owned snapshot, drop count and retirement predicate. It does not change the worker-retirement acceptance predicate.",
+    "actual_receipt_wiring": "reloadOwnedExtension rethrows the same error after attaching lifecycleEvidence; runNativeResourceAction awaits and propagates it without wrapping; the Scrape acceptance catch calls captureLifecycleEvidence(error.lifecycleEvidence) and stores reload_lifecycle_failure before writing the JSON receipt. The sanitizer accepts only fixed fields, capped timestamps/IDs/types/kinds, at most 80 entries and 16 targets; it drops arbitrary URL/title/content data.",
+    "failure_path_review": "The shared catch covers click rejection, later CDP target polling, replacement-panel polling/lookup, context observation and post-reload management errors. A failure during reload.click retains observed target events even when no post-click target poll was reached. Existing management diagnosis is spread into the resulting evidence before the new timeline is attached.",
+    "test_quality": "The focused click-failure test runs the actual reload helper with external CDP/UI dependencies controlled by the fixture, emits target lifecycle callbacks, then throws from the trusted-click stand-in. It asserts the rethrown code, old target identity, event phases/order and sanitized absence of extension URLs. A plant.py mutation disabling the catch made this test fail with the expected click failure; plant.py restored the harness byte-identically (SHA-256 a6fe920da985867fa46db0912700f4d174b9c52296d62abf823fc4569608e1cc).",
+    "limitations": "Only the click-failure case is injected as a throwing failure; CDP poll/panel attach and management failure coverage follows from the common catch and source trace, not separate test injections. No native run was performed."
+  },
+  "verification": {
+    "commands": [
+      {
+        "command": "node tests/browser/native-sidepanel-qa-harness.test.mjs",
+        "result": "passed, including reload success, pre-click retirement refusal and click-failure evidence retention"
+      },
+      {
+        "command": "node --test tests/browser/scrape-layout-guard.test.mjs tests/browser/profile-reload-capture.test.mjs",
+        "result": "6 passed, 0 failed"
+      },
+      {
+        "command": "pnpm exec biome check tests/browser/native-sidepanel-qa-harness.mjs tests/browser/native-sidepanel-qa-harness.test.mjs",
+        "result": "passed; 2 files checked"
+      },
+      {
+        "command": "plant.py: disable the reloadOwnedExtension lifecycle catch, then run native-sidepanel-qa-harness.test.mjs",
+        "result": "expected RED; plant.py restored file byte-identically"
+      }
+    ],
+    "native_browser": "not_run",
+    "build_or_release": "not_run"
+  },
+  "source_anchors": [
+    {
+      "path": "tests/browser/scrape-layout-guard.mjs",
+      "lines": [1, 24],
+      "fact": "Guard checks measured document overflow/displacement and viewport bounds for the result-tab list and all six controls."
+    },
+    {
+      "path": "tests/browser/scrape-guest-native-acceptance.mjs",
+      "lines": [83, 117],
+      "fact": "Geometry is read from live sidepanel DOM via panel.evaluate; measured data is passed to guard and recorded."
+    },
+    {
+      "path": "tests/browser/native-sidepanel-qa-harness.mjs",
+      "lines": [333, 571],
+      "fact": "Reload listeners, bounded timeline, target polling, unchanged retirement predicate, outer error retention and cleanup."
+    },
+    {
+      "path": "tests/browser/native-sidepanel-qa-harness.test.mjs",
+      "lines": [302, 430],
+      "fact": "Fixture emits target events and throws after the reload click; assertions require attached evidence."
+    },
+    {
+      "path": "tests/browser/native-resource-boundary.mjs",
+      "lines": [124, 126],
+      "fact": "Resource action awaits then propagates the original thrown error."
+    },
+    {
+      "path": "tests/browser/scrape-guest-native-acceptance.mjs",
+      "lines": [577, 586],
+      "fact": "Outer Scrape catch sanitizes attached lifecycle evidence into the receipt before writing it."
+    },
+    {
+      "path": "tests/browser/profile-reload-capture.mjs",
+      "lines": [68, 129],
+      "fact": "Fixed-field sanitizer caps the evidence and excludes raw target metadata."
+    }
+  ],
+  "execution_authority": "Independent source/test review only. No application code edited; no native browser launched."
+}
