@@ -26,6 +26,7 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { markBrowserAgentTraffic } from './agent-traffic.mjs';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
 import { awaitNativeResourceHealth, runNativeResourceAction } from './native-resource-boundary.mjs';
+import { startReloadLifetimeDiagnostic } from './reload-lifetime-diagnostic.mjs';
 
 const require = createRequire(import.meta.url);
 const { prepareOwnedProfile, connectOwnedCdp } = require('./vault-owned-cdp.cjs');
@@ -327,8 +328,9 @@ function requireReloadEnabled(state) {
   }
 }
 
-async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelId }) {
+async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, oldPanelId }) {
   let details;
+  let lifetime;
   const destroyedTargets = new Set();
   const createdWorkers = new Set();
   const workerUrlPrefix = `chrome-extension://${extensionId}/`;
@@ -354,7 +356,12 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
         : target.url === `${workerUrlPrefix}sidepanel.html`
           ? 'panel'
           : 'extension_other';
-    const identity = { target_id: target.targetId, type: target.type, kind };
+    const identity = {
+      target_id: target.targetId,
+      type: target.type,
+      kind,
+      attached: typeof target.attached === 'boolean' ? target.attached : null,
+    };
     knownTargets.set(target.targetId, identity);
     return identity;
   };
@@ -395,6 +402,7 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
     const reload = details.locator('extensions-detail-view #dev-reload-button');
     if ((await reload.count()) !== 1 || !(await reload.isVisible()))
       throw new Error('native_extension_management_reload_unavailable');
+    lifetime = await startReloadLifetimeDiagnostic({ browser, context, page, extensionId });
     await cdp.send('Target.setDiscoverTargets', { discover: true });
     record('discovery_enabled');
     const before = (await cdp.send('Target.getTargets')).targetInfos;
@@ -432,6 +440,7 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
       };
       throw error;
     }
+    lifetime.correlateOld(oldWorkerId);
     record('click_started');
     await reload.click(); // Chrome's own extension-management UI, using trusted input.
     record('click_resolved');
@@ -489,10 +498,12 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
       await wait(WAIT_MS);
     }
     if (!replacementWorker) {
+      await lifetime.probe(oldWorkerId, replacementWorkerId);
       const error = new Error('native_extension_worker_retirement_unverified');
       error.lifecycleEvidence = {
         ...retirementEvidence,
         management: await reloadManagementState(details, extensionId),
+        reload_lifetime: lifetime.evidence,
       };
       throw error;
     }
@@ -531,6 +542,7 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
     requireReloadEnabled(managementAfter);
     retirementEvidence.timeline.final_snapshot = lastOwned;
     retirementEvidence.timeline.dropped_entries = timelineDropped;
+    retirementEvidence.reload_lifetime = lifetime.evidence;
     return {
       management_before: managementBefore,
       management_after: managementAfter,
@@ -547,6 +559,7 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
       error.lifecycleEvidence = {
         ...retirementEvidence,
         ...error.lifecycleEvidence,
+        ...(lifetime && { reload_lifetime: lifetime.evidence }),
         timeline: {
           old_worker_id: oldWorkerId,
           old_panel_id: oldPanelId,
@@ -561,6 +574,7 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
     }
     throw error;
   } finally {
+    await lifetime?.close();
     cdp.off('Target.targetDestroyed', onDestroyed);
     cdp.off('Target.targetCreated', onCreated);
     cdp.off('Target.targetInfoChanged', onChanged);
@@ -1052,6 +1066,7 @@ export async function runNativeSidepanelQa({
             reloadExtension: () =>
               reloadOwnedExtension({
                 cdp,
+                browser: playwrightBrowser,
                 context,
                 page,
                 extensionId: expectedExtensionId,

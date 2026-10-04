@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import assert from 'node:assert/strict';
+import { EventEmitter } from 'node:events';
 import { readFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -304,6 +305,7 @@ async function reloadCase({
   contextResults,
   retireBeforeClick = false,
   clickFailure = false,
+  skipDestroyed = false,
 }) {
   let developerMode = initiallyEnabled;
   let reloaded = false;
@@ -312,14 +314,48 @@ async function reloadCase({
   let contextReads = 0;
   let targetReads = 0;
   const events = new Map();
+  const independent = new EventEmitter();
+  independent.send = async (method, args) => {
+    if (method === 'Browser.getVersion')
+      return { protocolVersion: '1.3', product: 'Chrome/141.0.7390.37', revision: '@12345' };
+    if (method === 'Target.getTargets') return { targetInfos: [oldWorker, oldPanel] };
+    if (method === 'Target.getTargetInfo') {
+      if (args.targetId === 'old-worker') {
+        if (skipDestroyed) throw new Error('No target with given id found');
+        return { targetInfo: oldWorker };
+      }
+      if (args.targetId === 'new-worker') return { targetInfo: worker };
+    }
+    return {};
+  };
+  independent.detach = async () => {};
+  const pageSession = new EventEmitter();
+  pageSession.send = async (method) => {
+    if (method === 'ServiceWorker.enable')
+      pageSession.emit('ServiceWorker.workerVersionUpdated', {
+        versions: [
+          {
+            versionId: 'version-old',
+            registrationId: 'registration-1',
+            scriptURL: `chrome-extension://${extensionId}/background.js`,
+            targetId: 'old-worker',
+            runningStatus: 'running',
+            status: 'activated',
+          },
+        ],
+      });
+    return {};
+  };
+  pageSession.detach = async () => {};
   const panelUrl = `chrome-extension://${extensionId}/sidepanel.html`;
   const oldWorker = {
     type: 'service_worker',
     targetId: 'old-worker',
     url: `chrome-extension://${extensionId}/background.js`,
+    attached: true,
   };
-  const worker = { ...oldWorker, targetId: 'new-worker' };
-  const oldPanel = { type: 'page', targetId: 'old-panel', url: panelUrl };
+  const worker = { ...oldWorker, targetId: 'new-worker', attached: false };
+  const oldPanel = { type: 'page', targetId: 'old-panel', url: panelUrl, attached: false };
   const panel = { ...oldPanel, targetId: 'new-panel' };
   const details = {
     goto: async () => {},
@@ -349,7 +385,20 @@ async function reloadCase({
           );
           reloaded = true;
           events.get('Target.targetInfoChanged')({ targetInfo: oldWorker });
-          events.get('Target.targetDestroyed')({ targetId: oldWorker.targetId });
+          if (!skipDestroyed)
+            events.get('Target.targetDestroyed')({ targetId: oldWorker.targetId });
+          independent.emit('Target.targetDestroyed', { targetId: oldWorker.targetId });
+          pageSession.emit('ServiceWorker.workerVersionUpdated', {
+            versions: [
+              {
+                versionId: 'version-old',
+                registrationId: 'registration-1',
+                scriptURL: `chrome-extension://${extensionId}/background.js`,
+                runningStatus: 'stopped',
+                status: 'activated',
+              },
+            ],
+          });
           events.get('Target.targetCreated')({ targetInfo: worker });
           if (clickFailure) throw new Error('native_reload_click_interrupted');
         },
@@ -381,7 +430,8 @@ async function reloadCase({
   };
   const result = await reloadOwnedExtension({
     cdp,
-    context: { newPage: async () => details },
+    browser: { newBrowserCDPSession: async () => independent },
+    context: { newPage: async () => details, newCDPSession: async () => pageSession },
     page: {
       bringToFront: async () => {},
       locator: () => ({
@@ -394,6 +444,7 @@ async function reloadCase({
     oldPanelId: oldPanel.targetId,
   });
   assert.equal(result.management_reload_clicked, true);
+  assert.equal(result.retirement_evidence.reload_lifetime.old_version_mapping, 'correlated');
   assert.equal(result.old_targets_retired, true);
   assert.equal(result.worker_replaced, true);
   assert.equal(result.panel_replaced, true);
@@ -403,8 +454,8 @@ async function reloadCase({
   assert.equal(timeline.pre_click_old_worker_present, true);
   assert.equal(timeline.final_predicate, true);
   assert.deepEqual(timeline.final_snapshot, [
-    { target_id: worker.targetId, type: 'service_worker', kind: 'worker' },
-    { target_id: panel.targetId, type: 'page', kind: 'panel' },
+    { target_id: worker.targetId, type: 'service_worker', kind: 'worker', attached: false },
+    { target_id: panel.targetId, type: 'page', kind: 'panel', attached: false },
   ]);
   const phases = timeline.entries.map((entry) => entry.phase);
   assert.ok(phases.indexOf('discovery_enabled') < phases.indexOf('listeners_registered'));
@@ -427,6 +478,20 @@ async function reloadCase({
 }
 await reloadCase({ initiallyEnabled: false });
 await reloadCase({ initiallyEnabled: true });
+await assert.rejects(reloadCase({ initiallyEnabled: true, skipDestroyed: true }), (error) => {
+  const captured = captureLifecycleEvidence(error.lifecycleEvidence);
+  return (
+    error.message === 'native_extension_worker_retirement_unverified' &&
+    captured.old_worker_destroyed_event === false &&
+    captured.old_worker_absent === true &&
+    captured.replacement_worker_present === true &&
+    captured.timeline.final_predicate === false &&
+    captured.reload_lifetime.old_version_mapping === 'correlated' &&
+    captured.reload_lifetime.versions.at(-1).running_status === 'stopped' &&
+    captured.reload_lifetime.old_host_probe.outcome === 'target_absent' &&
+    captured.reload_lifetime.independent_targets.some((entry) => entry.phase === 'destroyed')
+  );
+});
 await assert.rejects(reloadCase({ initiallyEnabled: true, clickFailure: true }), (error) => {
   const captured = captureLifecycleEvidence(error.lifecycleEvidence);
   return (

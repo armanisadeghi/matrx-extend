@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "case": "EXT-D-0120 reload retirement lifetime measurement",
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "Instrumentation and focused tests only; no native browser, build, release, version bump, runtime ownership experiment, or acceptance change.",
+  "change": {
+    "independent_observer": "Public Playwright browser CDP session on the already owned browser records Browser.getVersion, sanitized initial and live Target events, and independent old/replacement getTargetInfo probes after strict retirement timeout.",
+    "version_observer": "Public CDP session for the owned fixture page records extension-scoped ServiceWorker versions and registrations; old versionId correlation requires a targetId match before click, otherwise remains unmeasured.",
+    "capture": "Existing target snapshots/events now preserve boolean attached. Lifetime evidence is bounded and sanitized through the existing success/failure capture path.",
+    "cleanup": "Only listeners and diagnostic sessions created by this unit are removed; ServiceWorker is disabled on its diagnostic page session when live."
+  },
+  "verification": {
+    "focused": "node --test tests/browser/native-sidepanel-qa-harness.test.mjs tests/browser/reload-lifetime-diagnostic.test.mjs tests/browser/profile-reload-capture.test.mjs — passed",
+    "negative_checks": [
+      "Simulated missing old Target.targetDestroyed keeps the original strict retirement failure despite old snapshot absence and replacement presence; independent destruction, stopped correlated version and target-absent probe survive failure capture.",
+      "Present, target-absent, and disconnected host probes yield different fixed classifications; unknown old version remains unmeasured.",
+      "Existing context and management failure cases still fail; diagnostic listeners and sessions are removed after probe failure."
+    ],
+    "format": "Biome format and git diff --check passed on owned files."
+  },
+  "limits": [
+    "No native Chromium lifecycle observed by this unit; the owner will run one guarded native measurement after independent review.",
+    "A fixture page storage partition may not expose extension ServiceWorker versions; this is reported as unavailable/unmeasured and never inferred from URL alone.",
+    "No causal repair or relaxation of the retirement predicate is justified."
+  ]
+}

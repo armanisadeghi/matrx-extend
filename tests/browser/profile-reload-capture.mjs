@@ -78,7 +78,12 @@ export function captureLifecycleEvidence(value) {
       const target_id = safeId(target.target_id);
       if (!target_id || typeof target.type !== 'string' || !/^[a-z_]{1,40}$/.test(target.type))
         return null;
-      return { target_id, type: target.type, kind: target.kind };
+      return {
+        target_id,
+        type: target.type,
+        kind: target.kind,
+        attached: typeof target.attached === 'boolean' ? target.attached : null,
+      };
     };
     const safeTime = (at) =>
       typeof at === 'string' && /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(at) ? at : null;
@@ -126,7 +131,113 @@ export function captureLifecycleEvidence(value) {
       final_predicate: timeline.final_predicate === true,
     };
   }
+  if (value.reload_lifetime !== undefined)
+    evidence.reload_lifetime = captureReloadLifetime(value.reload_lifetime);
   return evidence;
+}
+
+export function captureReloadLifetime(value) {
+  if (!value || typeof value !== 'object') return null;
+  const id = (item) =>
+    typeof item === 'string' && /^[A-Za-z0-9-]{1,128}$/.test(item) ? item : null;
+  const at = (item) =>
+    typeof item === 'string' && /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(item) ? item : null;
+  const target = (item) =>
+    item && ['worker', 'panel', 'extension_other'].includes(item.kind) && id(item.target_id)
+      ? {
+          target_id: id(item.target_id),
+          type: ['service_worker', 'page', 'other'].includes(item.type) ? item.type : 'other',
+          kind: item.kind,
+          attached: typeof item.attached === 'boolean' ? item.attached : null,
+        }
+      : null;
+  const probe = (item) => {
+    if (!item || !['present', 'target_absent', 'probe_failed', 'unmeasured'].includes(item.outcome))
+      return null;
+    return {
+      outcome: item.outcome,
+      ...(item.outcome === 'present' && target(item.target) ? { target: target(item.target) } : {}),
+    };
+  };
+  const version = (item) =>
+    item && id(item.version_id) && id(item.registration_id) && at(item.at)
+      ? {
+          at: at(item.at),
+          version_id: id(item.version_id),
+          registration_id: id(item.registration_id),
+          target_id: id(item.target_id),
+          running_status: ['stopped', 'starting', 'running', 'stopping'].includes(
+            item.running_status,
+          )
+            ? item.running_status
+            : null,
+          status: [
+            'new',
+            'installing',
+            'installed',
+            'activating',
+            'activated',
+            'redundant',
+          ].includes(item.status)
+            ? item.status
+            : null,
+        }
+      : null;
+  return {
+    availability: value.availability === 'ready' ? 'ready' : 'unavailable',
+    browser_version:
+      value.browser_version && typeof value.browser_version === 'object'
+        ? {
+            protocol_version: /^[0-9.]{1,40}$/.test(value.browser_version.protocol_version ?? '')
+              ? value.browser_version.protocol_version
+              : null,
+            product: /^Chrome\/[0-9.]+$/.test(value.browser_version.product ?? '')
+              ? value.browser_version.product
+              : null,
+            revision: /^[A-Za-z0-9.@_-]{1,100}$/.test(value.browser_version.revision ?? '')
+              ? value.browser_version.revision
+              : null,
+          }
+        : null,
+    independent_targets: Array.isArray(value.independent_targets)
+      ? value.independent_targets
+          .slice(0, 80)
+          .map((item) =>
+            item &&
+            at(item.at) &&
+            ['initial', 'created', 'changed', 'destroyed'].includes(item.phase) &&
+            target(item.target)
+              ? { at: at(item.at), phase: item.phase, target: target(item.target) }
+              : null,
+          )
+          .filter(Boolean)
+      : [],
+    versions: Array.isArray(value.versions)
+      ? value.versions.slice(0, 80).map(version).filter(Boolean)
+      : [],
+    registrations: Array.isArray(value.registrations)
+      ? value.registrations
+          .slice(0, 80)
+          .map((item) =>
+            item && at(item.at) && id(item.registration_id)
+              ? {
+                  at: at(item.at),
+                  registration_id: id(item.registration_id),
+                  is_deleted: item.is_deleted === true,
+                }
+              : null,
+          )
+          .filter(Boolean)
+      : [],
+    old_version_id: id(value.old_version_id),
+    old_version_mapping:
+      value.old_version_mapping === 'correlated' && id(value.old_version_id)
+        ? 'correlated'
+        : 'unmeasured',
+    version_observation: value.version_observation === 'visible' ? 'visible' : 'unavailable',
+    old_host_probe: probe(value.old_host_probe),
+    replacement_host_probe: probe(value.replacement_host_probe),
+  };
 }
 
 export function captureFailure(error, readTransportClass) {
