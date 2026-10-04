@@ -1,0 +1,31 @@
+{
+  "finding": "ADDRESSED",
+  "finding_basis": "The only repair under review replaces .example fixture URLs with the reserved .test domain; the focused test and metadata contain no .example fixture hosts afterward.",
+  "reviewed_commit": "0f1665b08c8056484bc3a4453be3ab820167a105",
+  "commands": {
+    "focused_test": "PASS, 4 tests",
+    "biome": "PASS, 2 files"
+  },
+  "verdict_a": {
+    "status": "PARTIAL",
+    "evidence": [
+      "Commit changes only .research/scrape-links-controls-test.json and src/features/scrape/ScrapeView.link-controls.test.tsx.",
+      "The source diff changes fixture URL hosts and their expected values from fieldnotes.example to fieldnotes.test; no product behavior or other semantic test assertions changed.",
+      "An unrelated pre-existing edit remains in docs/stabilization/reports/workspace-sync-guest-incident-20261003.json and was not touched."
+    ],
+    "status_reason": "Repair scope is clean, but the underlying acceptance evidence remains partial for the previously documented native browser, clipboard, role, and reload dimensions."
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "evidence": [
+      "The prior quality objection was specifically the banned .example host under forcing-function-tests \u00a75a. The replacement .test hostname is a reserved, inert domain, and these URLs are opaque fixture inputs in a component unit test, not user or customer data.",
+      "Garden-journal context remains plausible and coherent: seed-starting guide, planting-calendar PDF, hardening-off seedlings, and watering link.",
+      "Focused verification passed: pnpm exec vitest run src/features/scrape/ScrapeView.link-controls.test.tsx --maxWorkers=1 --reporter=dot (4 tests).",
+      "Biome passed on both changed files: pnpm exec biome check src/features/scrape/ScrapeView.link-controls.test.tsx .research/scrape-links-controls-test.json.",
+      "The earlier independent review already established mutation sensitivity for removal and add behaviors; this repair does not alter those assertions or the SUT."
+    ],
+    "limitations": [
+      "A remains PARTIAL against EXT-F-1007-T13 / EXT-F-1007-C13: no role matrix, warm/reload dimensions, native tab-open observation, or real OS clipboard verification."
+    ]
+  }
+}
