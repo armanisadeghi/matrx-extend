@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "kind": "profile_owned_row_recovery",
+  "source_run": "profile-fields-clean-save-189-07",
+  "status": "original_absence_restored",
+  "source_original_row_absent": true,
+  "source_first_save_inserted_by_member_ui": true,
+  "source_primary_failure": "extension_reload/reload_extension",
+  "source_cleanup_failure": "pointer_target_not_unique",
+  "private_receipt_mode": "0600",
+  "private_receipt_sha256": "c5e40c19b8ae57e775d2744ce1df754d242883c3e575a142a54fb71da472cdaf",
+  "receipt_verified_write_state": true,
+  "receipt_pending_write": false,
+  "expected_version": 7,
+  "owner_row_count_before": 1,
+  "exact_owner_organization_creation_revision_and_field_state": true,
+  "conditional_delete_matched_rows": 1,
+  "owner_row_count_after": 0,
+  "original_absence_restored": true,
+  "unrelated_rows_changed": false,
+  "extension_reload_verified": false
+}
