@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "status": "reporter_first_send_unclassified; returning_guest_402_confirmed; candidate_205_retest_pass_pending_store_publication",
+  "evidence": [
+    "Canonical Store record at common-docs/systems/apps/extension/CHROME-WEB-STORE.md reports 0.2.176 Published and 0.2.205 Pending review. Candidate Store ZIP SHA-256 is 6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26.",
+    "The actual Store-installed 0.2.176 returning guest received HTTP 402 on POST /v2/ai/mandates/extend.browser_chat at 2026-10-04T05:29:10Z after panel reopen and New chat; the UI showed a generic retryable error. The same identity had exceeded its guest allowance. The exact response bytes were not retained. Sources: .research/urgent-live-guest-20261004.json and .research/urgent-guest-server-20261004.json.",
+    "The exact 0.2.205 candidate ZIP, loaded as an unpacked copy with a public manifest-key adaptation, displayed the free-account remedy without Retry for two distinct live HTTP 402 guest_ai_allowance_used responses, including after panel reload and New chat. Source: .research/guest-returning-final-acceptance.json.",
+    "Hosted run 37206303244 of that candidate completed a fresh signed-out guest answer and a grounded answer after panel reload. Its browser observer recorded zero matching AI POSTs, so the receipt alone does not establish transport status or code. Source: .research/guest205-current-live-check.json.",
+    "Read-only ops.api_request_log query at 2026-10-04T22:00Z found two fingerprint browser_chat HTTP 200 requests at 13:44:31Z and 13:44:38Z, within hosted run 37206303244's acceptance window. Identity linkage was not available, so attribution to that run is temporal only. Its latest fingerprint browser_chat POST was 13:44:38Z; four earlier fingerprint HTTP 402s ended at 05:53:12Z. No later guest Chat request in this log establishes the reported current failure.",
+    "Live GET https://server.app.matrxserver.com/health/version returned git_sha 60081efa8181e700443cbfe53bcf3b984e2a2af0, built_at 2026-10-04T21:00:58Z. The prior hosted candidate run and captured 402s predate this build."
+  ],
+  "changed_files": [".research/guest-incident-oct4-live-audit.json"],
+  "unverified": [
+    "The reporter's exact first failed request, installed Store version, guest identity state, HTTP status, structured error code, and browser UI capture were not supplied or correlated; an immediate first-send error cannot be assigned to allowance from timing alone.",
+    "The 0.2.205 candidate is not published or tested as an actual Chrome Web Store installation. The current 21:00Z backend has no captured guest first-send acceptance in this audit.",
+    "No overall-health or bug-free conclusion follows from the candidate UI answers or server health endpoint."
+  ],
+  "next_action": "One bounded owner-controlled reproduction: in the existing signed-out Chrome profile, verify the installed Store version and preserve the returning guest identity; attach offscreen Network and side-panel capture before one first Chat send after reopening/New chat. Record only POST status, request ID/time, structured error code and terminal UI outcome, then correlate that request with the live server log and SHA. A 402 guest_ai_allowance_used on Store 0.2.176 maps to the candidate repair; any other code or stream failure starts a separate diagnosis. After Google publishes 0.2.205, its Store-installed update still needs the same returning-identity check before D112 can close."
+}
