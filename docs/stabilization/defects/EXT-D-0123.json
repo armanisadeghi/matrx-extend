@@ -28,7 +28,8 @@
     "docs/stabilization/evidence/scrape215/run37215748629/receipt.json.txt",
     ".research/scrape-open-transition-cause.json",
     ".research/scrape-pane-retention-fix.json",
-    ".research/scrape-pane-retention-peer.json"
+    ".research/scrape-pane-retention-peer.json",
+    ".research/scrape-pane-retention-native.json"
   ],
   "transition_history": [
     {
@@ -56,7 +57,7 @@
       "reason": "c2186f64 controls pane selection outside identity-gated Tabs, scoped to original capture; real guard RED\u2192GREEN5/5, compile and fresh peer0da1d574 pass. Native rebuilt-product retest outstanding."
     }
   ],
-  "next_action": "Obtain successful automatic CI development artifact containing c2186f64 and type repair723433a7; one guarded native Open/return/Copy plus full media/link/reload retest. Preserve pending Store205. Do not close from component checks.",
+  "next_action": "Rebuilt231 native37217349220 refused at inputs (unsafe CPU0.91); no case/action/reload ran. Keep fixed, not closed. Resolve capacity conditions before one guarded native original Open/return/Copy and surrounding cases; no blind retry or threshold change.",
   "diagnostic_correction": {
     "at": "2026-10-04T15:57:43.076775+00:00",
     "reason": "Run37214124282 native trace refutes earlier third-removal inference. All3removals succeed; count1 can reflect a subsequently added image. Raw receipts unchanged."
