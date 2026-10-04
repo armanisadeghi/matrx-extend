@@ -11,15 +11,18 @@
     "This reproduces a harness blind spot; whether replacement caused the hosted failure remains unverified until native diagnostics run."
   ],
   "expected": "Observe the active Scrape capture control through DOM replacement and tooltip title movement, while refusing success when no disabled busy state rendered.",
-  "actual": "Original observer reported false; native cause unresolved. Initial guest empty state observed, later cases not verified.",
+  "actual": "Stale-node observer blind spot is source-fixed and independently reviewed. Native busy-state retest remains pending; original hosted failure used the local development ZIP, and the next acceptance targets exact205 Store payload.",
   "severity": "S3: false-negative acceptance risk; no product busy-state failure established",
   "priority": "P1: restore reliable native acceptance before promoting capture cases",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "guest_scrape_native",
   "evidence": [
     ".research/guest-scrape-hosted-native.json",
     ".research/guest-scrape-busy-repair.json",
-    "tests/browser/scrape-guest-native-acceptance.mjs"
+    "tests/browser/scrape-guest-native-acceptance.mjs",
+    "tests/browser/scrape-busy-observer.mjs",
+    "tests/browser/scrape-busy-observer.test.mjs",
+    ".research/guest-scrape-busy-peer.json"
   ],
   "transition_history": [
     {
@@ -39,6 +42,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Scoped active-pane observer repair and causal guard delegated; repeat native required."
+    },
+    {
+      "at": "2026-10-04T07:32:26.758857+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "76e68d98 causal DOM repair; independent5e316438 positive/negative review. No native closure."
     }
   ],
   "closure_requirement": "Independent source review, causal RED/GREEN guard, and exact205 hosted native busy-state evidence without oracle weakening. Record any different runtime blocker separately; no full Scrape health claim."
