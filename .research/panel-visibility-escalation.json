@@ -67,12 +67,20 @@
   "verification": {
     "syntax": "node --check passed for changed harness and Scrape driver",
     "format": "pnpm exec biome format --write changed files passed",
-    "existing_regression": "node --test tests/browser/native-sidepanel-qa-harness.test.mjs passed: 1 suite, 0 failures, 137 seconds; trusted reopen/setup, D117 and reload guards retained. Setup double only supplies observation callback; its visibility answer is unchanged."
+    "existing_regression": "node --test tests/browser/native-sidepanel-qa-harness.test.mjs passed: 1 suite, 0 failures, 137 seconds; trusted reopen/setup, D117 and reload guards retained. Setup double only supplies observation callback; its visibility answer is unchanged.",
+    "diagnostic_contract": "node --test tests/browser/panel-visibility-diagnostic.test.mjs: 3 passing focused tests. Executes actual helper + Runtime.evaluate expression and actual initial-capture/authenticated-setup source seams. Checks nine ordered checkpoints, trusted-open refusal truncation, exact allowlisted fields over three different DOM states, exception/protocol-missing measured=false, and no private values.",
+    "diagnostic_mutations": "All mutations are in-memory. Each of nine independently omitted checkpoints is caught; manufactured measured=true on failure, added private URL field and constant captured hidden-state helper each cause assertion failure. No shared source mutation.",
+    "ci_integration": "Existing CI-invoked native-sidepanel-qa-harness.test.mjs imports focused diagnostic suite. Full 137-second unrelated reload suite not repeated for this guard-only addition."
   },
   "limits": [
     "No browser/native workflow, build, release, product, inventory or defect edits.",
     "No independent peer or changed-condition native run in this lane; root owns them.",
     "Snapshots localize observable transitions; if every phase remains hidden, they do not prove physical UI hidden or a Chrome bug.",
     "D117 context failure diagnostic remains unchanged."
-  ]
+  ],
+  "peer_followup": {
+    "review": ".research/visibility-timeline-peer.json",
+    "finding": "Missing committed timeline/shape/failure guards",
+    "resolution": "Focused actual-helper/actual-path checks and executable in-memory mutations added; no runtime instrumentation or native acceptance behavior changed."
+  }
 }
