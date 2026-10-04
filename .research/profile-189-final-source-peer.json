@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "task": "profile-189-final-source-peer",
+  "reviewed_commits": ["b7f63d0c", "85a95c40", "c77982ec", "8aa86b8a", "1fab60d5"],
+  "A_acceptance": "Source gate passes for one fresh guarded member native run. Prior reload -04 report says warm T01/T03/T25/T26 and reload T01/T03/T25 passed with exact row absence restored; no fresh native run in this lane. T26 dual-failure behavior has source and boundary evidence only, so final native acceptance remains pending.",
+  "A_findings": "Reload samples exact signed-in account title, guest count, saved user/org IDs and token presence before/after existing 30-second bound; unresolved state fails. Real T26 case preserves primary Error and attaches secondary restoration Error nonenumerably; cleanup-only and valid receipt paths remain distinct.",
+  "B_quality": "FAIL: arbitrary primary Error.message prefix is copied to report.execution_failure_code and JSON output, so the claim that no raw errors or private values serialize is false. The new dual-failure test hides its private text after a colon and misses this path.",
+  "B_reproduction": "Direct runProfileExecutionBoundary with Error('private@example.com') yields execution_failure_code='private@example.com' and serializedContainsPrivate=true; native runner also derives top-level failure_code from the same raw message prefix.",
+  "checks": "10 focused Node tests passed; targeted Biome check passed on six touched source/test files; read-only boundary reproduction confirmed leak. No source, browser, database, build or release mutation in this lane.",
+  "limits": "Native reload evidence is inherited from .research/profile-reload-hydration.json and was not independently reproduced here. The primary Error remains available in memory; source does not prove live CDP fault behavior.",
+  "next": "Replace raw-message-derived report codes with a fixed allowlist, guard a private message without a colon, then request one fresh independent guarded member native run."
+}
