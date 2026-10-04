@@ -1,9 +1,6 @@
 {
   "finding": "EXT-D-0120 TargetDestroyed acceptance bypass",
-  "reviewed_commits": [
-    "9f09009abc12fd9f642cb0c67491d5d757ccdc4e",
-    "5b20f513"
-  ],
+  "reviewed_commits": ["9f09009abc12fd9f642cb0c67491d5d757ccdc4e", "5b20f513"],
   "finding_status": "ADDRESSED",
   "verdict_a_behavior": {
     "result": "PASS",
