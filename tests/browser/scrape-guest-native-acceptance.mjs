@@ -502,8 +502,10 @@ try {
       assert.equal(beforeReload.title, 'Research brief: product discovery');
       t20.evidence.reload_origin_url = page.url();
       t20.evidence.previous_content_cleared_before_reload = true;
-      recordReloadMilestone(report, 'reload_extension');
-      const replacement = await resourceAction(() => reloadExtension());
+      const replacement = await resourceAction(() => {
+        recordReloadMilestone(report, 'reload_extension');
+        return reloadExtension();
+      });
       report.reload_lifecycle = {
         observed_at: new Date().toISOString(),
         management_reload_clicked: replacement.management_reload_clicked,

@@ -65,7 +65,21 @@ export async function requireNativeResourceHealth({
   } catch {
     refuse('journal_invalid');
   }
-  if (!events.length || events.some((event) => event.runId !== runId || event.schema !== 1))
+  const admissionIndex = events.findIndex((event) => event.code === 'RESOURCE_ADMITTED');
+  if (
+    !events.length ||
+    events.some(
+      (event, index) =>
+        event.schema !== 1 ||
+        (event.runId !== runId &&
+          !(
+            event.runId === undefined &&
+            event.code === 'RESOURCE_RECOVERY_SAMPLES_READY' &&
+            typeof event.previousRunId === 'string' &&
+            index < admissionIndex
+          )),
+    )
+  )
     refuse('wrong_run');
   if (events.some((event) => event.code === 'RESOURCE_WATCH_UNSAFE')) refuse('unsafe_sample');
   if (

@@ -63,6 +63,18 @@ test('native Scrape resource boundary permits fresh own-run health and refuses u
     at: healthy.at,
     ageMs: 2000,
   });
+  await writeEvents([
+    {
+      schema: 1,
+      code: 'RESOURCE_RECOVERY_SAMPLES_READY',
+      at: '2026-10-04T09:14:05.000Z',
+      previousRunId: 'prior-run',
+    },
+    admitted,
+    healthy,
+  ]);
+  assert.equal((await check()).event, 'RESOURCE_WATCH_HEALTHY');
+  await writeEvents([admitted, healthy]);
   let actions = 0;
   assert.equal(
     await runNativeResourceAction(
@@ -85,6 +97,17 @@ test('native Scrape resource boundary permits fresh own-run health and refuses u
     /unsafe_sample/,
   );
   assert.equal(actions, 1, 'unsafe evidence must refuse the next native UI action');
+  let reloadStarted = false;
+  await assert.rejects(
+    runNativeResourceAction(
+      () => check(),
+      () => {
+        reloadStarted = true;
+      },
+    ),
+    /unsafe_sample/,
+  );
+  assert.equal(reloadStarted, false, 'refused reload must not record a start');
   await writeEvents([admitted, healthy]);
   await assert.rejects(check(Date.parse('2026-10-04T09:14:36.000Z')), /stale_health/);
   await writeFile(
@@ -95,7 +118,14 @@ test('native Scrape resource boundary permits fresh own-run health and refuses u
   await writeFile(join(ownerDir, 'owner.json'), JSON.stringify({ runId, nonce, kind: 'run' }));
   await writeEvents([admitted, { ...healthy, runId: 'other-run' }]);
   await assert.rejects(check(), /wrong_run/);
+  await writeEvents([{ ...admitted, runId: undefined }, healthy]);
+  await assert.rejects(check(), /wrong_run/);
+  await writeEvents([admitted, { ...healthy, runId: undefined }]);
+  await assert.rejects(check(), /wrong_run/);
   await writeEvents([admitted, healthy]);
   await writeFile(stopFile, '{}');
   await assert.rejects(check(), /stop_requested/);
+  await rm(stopFile);
+  await rm(journalPath);
+  await assert.rejects(check(), /evidence_missing/);
 });

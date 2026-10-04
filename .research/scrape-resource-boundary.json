@@ -5,7 +5,7 @@
   "source_change": "The shared native harness exposes a guard-owned resource health check and action wrapper. Scrape checks at batch starts and after long waits before accepting observations. The reader requires the current run and owner token, an admitted pending journal, a healthy or admitted sample no older than the policy watch interval, and no unsafe or stop evidence.",
   "policy_unchanged": "The existing resource-policy.json floors, watch interval, and sustained watchdog stop behavior were not edited.",
   "lightweight_evidence": {
-    "file_backed_test": "node --test tests/browser/native-resource-boundary.test.mjs: 1 passed; fresh healthy action permitted, unsafe/stale/wrong-run/stop refused",
+    "file_backed_test": "node --test tests/browser/native-resource-boundary.test.mjs: 1 passed; fresh healthy and guard recovery metadata permitted, unsafe/stale/wrong-run/stop/missing-journal refused; refused reload action cannot record a start",
     "constant_health_mutant": "Scratch-copy replacement of requireNativeResourceHealth with a constant healthy return made the test fail (exit 1); working source was not mutated.",
     "syntax": "node --check passed for the native harness and Scrape driver"
   },
