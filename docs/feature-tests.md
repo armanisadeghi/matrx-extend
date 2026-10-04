@@ -912,6 +912,7 @@ Every entry follows this shape:
 - **Where to test:** Hosted guest side-panel acceptance → `guest-scrape`, selecting the exact published release artifact.
 - **Steps:** Run the case on the hosted runner; inspect `scrape-guest-native-*.json` and native-panel screenshots. While either capture is pending, its button must show Capturing or Scrolling and both capture buttons must be disabled; after completion they must be enabled again. The intake fixture adds its checklist only after browser scrolling, so fast must omit it and deep must include it. Inspect each case's `status` and `remaining` fields before updating the stabilization inventory.
 - **Expected:** Trusted UI clicks and an owned Chrome profile produce a receipt-bound report; any missed busy state, tab data, recovery action, or lifecycle dimension remains explicitly unverified. A script or setup pass alone never verifies the inventory rows.
+- **Narrow panel layout:** At a 360 px side-panel width, capture a page and select Article, Images, Video, Links, SEO, and Schema. The result tabs may wrap to another row, but every tab remains visible and selectable; selecting a later tab must not scroll the document horizontally or clip the page title and capture buttons. Check `document.documentElement.scrollWidth <= document.documentElement.clientWidth` after each selection.
 
 ### Scrape — Save lands a Source (never lost) and Saved captures reads Sources
 

@@ -1,0 +1,22 @@
+{
+  "defect": "EXT-D-0118",
+  "status": "source_fix_self_checked_native_verification_pending",
+  "baseline": {
+    "report": ".research/scrape-guarded-development-native.json",
+    "receipt": "/tmp/scrape-guarded-37192733619/test-results/scrape-guest-native-cee18b6c-a7bf-4e05-950f-f6860a5a13b4.json",
+    "source_sha": "494cdf6c66ee80a2daab97f8ef138aaa9cc01335",
+    "viewport_width_px": 360,
+    "document_scroll_width_px": 391,
+    "result_tabs_right_px": 390.765625,
+    "document_horizontal_scroll_after_later_tabs_px": 31
+  },
+  "cause": "Scrape's six-result TabsList used self-start, preserving its 378.765625 px intrinsic width inside a 360 px panel with 12 px margins. The result row extended beyond the viewport and focus on later tabs scrolled the document horizontally.",
+  "change": "The result TabsList stretches to the available panel width and wraps its children, with automatic height and left alignment so every tab stays visible.",
+  "self_checks": {
+    "pnpm_compile": "pass",
+    "biome_changed_source": "pass",
+    "git_diff_check": "pass",
+    "native_panel_geometry": "pending_independent_hosted_run"
+  },
+  "expected_native_verification": "At a 360 px side panel, capture a page and select every result tab. Each remains visible, document scrollWidth does not exceed clientWidth, and selecting Links, SEO, or Schema does not move the document horizontally or clip the title or capture buttons."
+}

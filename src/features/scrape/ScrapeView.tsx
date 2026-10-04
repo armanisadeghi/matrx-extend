@@ -417,7 +417,7 @@ export function ScrapeView() {
       <div className="flex flex-1 flex-col min-h-0">
         {current ? (
           <Tabs defaultValue="article" className="flex flex-1 flex-col min-h-0">
-            <TabsList className="mx-3 mt-1 self-start gap-1 bg-transparent p-0">
+            <TabsList className="mx-3 mt-1 h-auto min-w-0 self-stretch flex-wrap justify-start gap-1 bg-transparent p-0">
               <ScrapeTab value="article">Article</ScrapeTab>
               <ScrapeTab value="images" count={current.images.length}>
                 Images
