@@ -6,6 +6,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { armBusyExpression, readBusyExpression } from './scrape-busy-observer.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
@@ -51,30 +52,14 @@ async function screenshot(panel, artifacts, name) {
   return path;
 }
 async function armBusyObserver(panel, mode) {
-  await evaluate(
-    panel,
-    `(() => {
-    const title = ${JSON.stringify(mode === 'fast' ? 'Capture the page exactly as it is right now' : 'Scroll the page top→bottom to load lazy content (images, infinite-scroll items), then capture. Better for dynamic pages.')};
-    const button = [...document.querySelectorAll('button')].find(n => n.title === title);
-    if (!button) throw new Error('scrape_busy_button_missing');
-    globalThis.__scrapeBusy = { observed:false, text:null };
-    globalThis.__scrapeBusyObserver?.disconnect();
-    const sample = () => { if (button.disabled) {
-      globalThis.__scrapeBusy.observed = true;
-      globalThis.__scrapeBusy.text = button.textContent.trim();
-    }};
-    globalThis.__scrapeBusyObserver = new MutationObserver(sample);
-    globalThis.__scrapeBusyObserver.observe(button, {attributes:true, childList:true, subtree:true});
-    sample();
-  })()`,
-  );
+  const title =
+    mode === 'fast'
+      ? 'Capture the page exactly as it is right now'
+      : 'Scroll the page top→bottom to load lazy content (images, infinite-scroll items), then capture. Better for dynamic pages.';
+  await evaluate(panel, armBusyExpression(title));
 }
 async function busyObservation(panel) {
-  return evaluate(
-    panel,
-    `(() => {globalThis.__scrapeBusyObserver?.disconnect();
-    return globalThis.__scrapeBusy ?? {observed:false,text:null};})()`,
-  );
+  return evaluate(panel, readBusyExpression);
 }
 
 async function scrapeState(panel) {
@@ -91,9 +76,9 @@ async function scrapeState(panel) {
     const visible=content?.getAttribute('data-state')==='active' && content.getBoundingClientRect().height>0;
     return {ready:true, title:pane.querySelector('.truncate.text-sm.font-medium')?.textContent?.trim()??null,
       empty:pane.textContent.includes('Capture this page to extract content.'),
-      fast:buttons.filter(n=>n.title==='Capture the page exactly as it is right now')
+      fast:buttons.filter(n=>(n.getAttribute('title')??n.getAttribute('data-matrx-title'))==='Capture the page exactly as it is right now')
         .map(n=>({disabled:n.disabled,text:n.textContent.trim()})),
-      deep:buttons.filter(n=>(n.title??'').startsWith('Scroll the page top'))
+      deep:buttons.filter(n=>(n.getAttribute('title')??n.getAttribute('data-matrx-title')??'').startsWith('Scroll the page top'))
         .map(n=>({disabled:n.disabled,text:n.textContent.trim()})),
       tabs:tabs.map(n=>({label:n.firstChild?.textContent?.trim(),selected:n.getAttribute('aria-selected')==='true'})),
       selected: selected[0]?.firstChild?.textContent?.trim()??null, visible,
@@ -182,13 +167,16 @@ try {
           s.visible &&
           s.resultText?.includes(article) &&
           !s.resultText.includes(lazy) &&
-          !s.fast[0]?.disabled,
+          s.fast.length === 1 &&
+          !s.fast[0].disabled,
         30000,
       );
       assert.equal(await page.locator('#late p').count(), 0, 'fast_capture_scrolled_fixture');
       const fastBusy = await busyObservation(panel);
-      assert.equal(fastBusy.observed, true, 'scrape_fast_busy_not_observed');
+      report.fast_busy_observation = fastBusy;
       report.fast_screenshot = await screenshot(panel, artifacts, 'scrape-fast-article.png');
+      assert.equal(fastBusy.observed, true, 'scrape_fast_busy_not_observed');
+      assert.match(fastBusy.text ?? '', /Capturing/, 'scrape_fast_busy_label_not_observed');
       mark(
         'EXT-F-1007-T01',
         'partial',
@@ -251,14 +239,19 @@ try {
       const deep = await waitFor(
         'scrape_deep_result',
         () => scrapeState(panel),
-        (s) => s?.selected === 'Article' && s.resultText?.includes(lazy) && !s.deep[0]?.disabled,
+        (s) =>
+          s?.selected === 'Article' &&
+          s.resultText?.includes(lazy) &&
+          s.deep.length === 1 &&
+          !s.deep[0].disabled,
         45000,
       );
       assert.equal(await page.locator('#late p').textContent(), lazy);
       const deepBusy = await busyObservation(panel);
+      report.deep_busy_observation = deepBusy;
+      report.deep_screenshot = await screenshot(panel, artifacts, 'scrape-deep-article.png');
       assert.equal(deepBusy.observed, true, 'scrape_deep_busy_not_observed');
       assert.match(deepBusy.text, /Scrolling/, 'scrape_deep_progress_not_observed');
-      report.deep_screenshot = await screenshot(panel, artifacts, 'scrape-deep-article.png');
       mark(
         'EXT-F-1007-T02',
         'partial',
