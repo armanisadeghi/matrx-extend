@@ -1,6 +1,21 @@
 import assert from 'node:assert/strict';
-import { readFile, writeFile } from 'node:fs/promises';
+import { copyFile, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+
+/** Copy the guard's local module graph so scratch imports stay in sync. */
+export async function copyResourceGuardModules(sourceScripts, scripts) {
+  const pending = ['stabilization-resource.mjs'];
+  const copied = new Set();
+  while (pending.length) {
+    const name = pending.pop();
+    if (copied.has(name)) continue;
+    const source = await readFile(join(sourceScripts, name), 'utf8');
+    for (const [, dependency] of source.matchAll(/\bfrom\s+['"]\.\/([^'"]+\.mjs)['"]/g))
+      pending.push(dependency);
+    await copyFile(join(sourceScripts, name), join(scripts, name));
+    copied.add(name);
+  }
+}
 
 /** Replace only host telemetry in a scratch guard; policy and decisions stay real. */
 export async function setHealthyHostMeasurements(scripts) {

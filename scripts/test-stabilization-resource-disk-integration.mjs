@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawn, spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { copyFile, mkdir, mkdtemp, readFile, rm, stat, statfs, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, stat, statfs, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { test } from 'node:test';
@@ -9,7 +9,10 @@ import {
   requireNativeResourceHealth,
   runNativeResourceAction,
 } from '../tests/browser/native-resource-boundary.mjs';
-import { setHealthyHostMeasurements } from './stabilization-resource-test-measurements.mjs';
+import {
+  copyResourceGuardModules,
+  setHealthyHostMeasurements,
+} from './stabilization-resource-test-measurements.mjs';
 
 const source = resolve(import.meta.dirname, '..');
 const highBlocks = 1600 * 1024 * 1024;
@@ -34,15 +37,7 @@ async function fixture() {
   const phasePath = join(scratch, 'disk-phase');
   await mkdir(scripts);
   await mkdir(docs, { recursive: true });
-  for (const name of [
-    'stabilization-resource.mjs',
-    'stabilization-resource-safety.mjs',
-    'stabilization-resource-journal.mjs',
-    'stabilization-resource-lease.mjs',
-    'stabilization-resource-process.mjs',
-    'stabilization-resource-verdict.mjs',
-  ])
-    await copyFile(join(source, 'scripts', name), join(scripts, name));
+  await copyResourceGuardModules(join(source, 'scripts'), scripts);
   await setHealthyHostMeasurements(scripts);
 
   const leasePath = join(scripts, 'stabilization-resource-lease.mjs');

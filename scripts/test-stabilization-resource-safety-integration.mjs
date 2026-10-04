@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import {
   chmod,
@@ -15,9 +15,40 @@ import {
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { test } from 'node:test';
-import { setHealthyHostMeasurements } from './stabilization-resource-test-measurements.mjs';
+import {
+  copyResourceGuardModules,
+  setHealthyHostMeasurements,
+} from './stabilization-resource-test-measurements.mjs';
 
 const source = resolve(import.meta.dirname, '..');
+
+test('scratch guard loads its complete local module graph before resource admission', async () => {
+  const scratch = await mkdtemp(join(tmpdir(), 'resource-guard-bootstrap-'));
+  const scripts = join(scratch, 'scripts');
+  const docs = join(scratch, 'docs/stabilization');
+  try {
+    await mkdir(scripts);
+    await mkdir(docs, { recursive: true });
+    await copyResourceGuardModules(join(source, 'scripts'), scripts);
+    await copyFile(
+      join(source, 'docs/stabilization/resource-policy.json'),
+      join(docs, 'resource-policy.json'),
+    );
+    const guardPath = join(scripts, 'stabilization-resource.mjs');
+    const run = () =>
+      spawnSync(process.execPath, [guardPath, 'invalid-mode'], { encoding: 'utf8' });
+    const loaded = run();
+    assert.equal(loaded.status, 2, loaded.stderr);
+    assert.match(loaded.stdout, /"code":"RESOURCE_ARGUMENT_INVALID"/);
+
+    await rm(join(scripts, 'startup-interval-attribution.mjs'));
+    const missing = run();
+    assert.equal(missing.status, 1, missing.stderr);
+    assert.match(missing.stderr, /ERR_MODULE_NOT_FOUND/);
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
 
 test(
   'a marker write failure in a running guard invalidates the run and retains its lease',
@@ -47,15 +78,7 @@ test(
     try {
       await mkdir(scripts);
       await mkdir(docs, { recursive: true });
-      for (const name of [
-        'stabilization-resource.mjs',
-        'stabilization-resource-safety.mjs',
-        'stabilization-resource-journal.mjs',
-        'stabilization-resource-lease.mjs',
-        'stabilization-resource-process.mjs',
-        'stabilization-resource-verdict.mjs',
-      ])
-        await copyFile(join(source, 'scripts', name), join(scripts, name));
+      await copyResourceGuardModules(join(source, 'scripts'), scripts);
       await setHealthyHostMeasurements(scripts);
 
       // Isolate the real ownership protocol from other runs on the host. The
@@ -139,7 +162,7 @@ test(
         guard.once('close', (code, signal) => resolveExit({ code, signal }));
       });
 
-      assert.equal(markerReady, true, stdout);
+      assert.equal(markerReady, true, stdout + stderr);
       assert.equal(markerWriteError, undefined);
       assert.deepEqual(exit, { code: 3, signal: null }, stderr);
       const journal = (await readFile(join(docs, 'resource-journals', `${runId}.jsonl`), 'utf8'))

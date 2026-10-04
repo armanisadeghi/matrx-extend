@@ -2,8 +2,14 @@
   "schema_version": 1,
   "defect_id": "EXT-D-0130",
   "ci_run_id": 37231230338,
-  "status": "scoped-repair-verified-locally-hosted-integration-pending",
+  "status": "fixture-bootstrap-repaired-hosted-marker-integration-pending",
   "failures": [
+    {
+      "job": "resource-guard-integration rerun 37231587582",
+      "symptom": "The guard exited before WORKLOAD_ALIVE; markerReady was false at the first integration assertion.",
+      "cause": "The fixture copied a fixed list of guard modules but omitted startup-interval-attribution.mjs, imported by the guard since commit 44c20ae4. Node exited with ERR_MODULE_NOT_FOUND before policy or marker logic.",
+      "repair": "Both resource integration fixtures now copy the guard's recursive local import graph. A disk-independent bootstrap test requires the copied guard to reach RESOURCE_ARGUMENT_INVALID, and confirms that removing the startup attribution module reproduces ERR_MODULE_NOT_FOUND."
+    },
     {
       "job": "resource-guard-integration",
       "symptom": "missing unique host measurement: cpuBusyFraction(output),",
@@ -26,7 +32,9 @@
     "scratch_fixture": "Current guard CPU slot substituted exactly once in a disposable scratch copy; the old expression is absent after replacement.",
     "focused_safety_tests": "Five passed, three integration tests skipped because this Mac's system volume has 7.62 GiB free, below the unchanged 20 GiB guard policy.",
     "scoped_biome": "scripts/stabilization-resource-test-measurements.mjs passed Biome check.",
-    "full_biome": "Original three formatter errors removed by f2da3bfc; a new peer-owned .research/form-control-procedures.json formatter error appeared in commit 1ce5942f."
+    "full_biome": "Original three formatter errors removed by f2da3bfc; a subsequent peer-owned .research/form-control-procedures.json formatter error appeared in commit 1ce5942f.",
+    "fixture_bootstrap": "Actual scratch guard without startup-interval-attribution.mjs exited 1 with ERR_MODULE_NOT_FOUND. After import-closure repair, the disk-independent bootstrap test passed and its missing-module mutation failed as expected.",
+    "focused_rerun": "Six passed, three disk-dependent integration tests skipped on this Mac; scoped Biome passed for all three changed scripts."
   },
-  "remaining": "Hosted macOS integration must execute above the real disk threshold to confirm the marker-failure path and full lint must include the peer-owned formatting correction."
+  "remaining": "Hosted macOS integration must execute above the real disk threshold to confirm marker failure, retained lease, and final invalid verdict."
 }
