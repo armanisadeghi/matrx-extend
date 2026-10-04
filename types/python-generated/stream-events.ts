@@ -375,6 +375,37 @@ export interface DataPayload {
   type: string;
 }
 
+export interface AgentStudioFromChatProgressData {
+  type?: "agent_studio_from_chat_progress";
+  step: "reading" | "briefing" | "building" | "proving";
+  says: string;
+}
+
+export interface AgentStudioBriefVariable {
+  name: string;
+  description?: string;
+  test_value?: string;
+}
+
+export interface AgentStudioFromChatResultData {
+  type?: "agent_studio_from_chat_result";
+  conversation_id: string;
+  agent_id: string;
+  version_id: string;
+  agent_name: string;
+  summary?: string;
+  deliverable?: string;
+  goals?: string[];
+  variables?: AgentStudioBriefVariable[];
+  fit?: string;
+  fit_reason?: string;
+  accepted_turns?: number[];
+  accepted_result?: string | null;
+  proof_output?: string | null;
+  proof_error?: string | null;
+  says: string;
+}
+
 export interface AssignmentProgressData {
   type?: "assignment_progress";
   session_id: string;
@@ -2405,6 +2436,8 @@ export interface YouTubeTranscriptSourceData {
 }
 
 export type TypedDataPayload =
+  | AgentStudioFromChatProgressData
+  | AgentStudioFromChatResultData
   | AssignmentProgressData
   | AudioOutputData
   | AudioStreamChunkData
