@@ -33,9 +33,9 @@
     {
       "id": "EXT-F-1007-T01",
       "status": "unverified",
-      "observed": "Native panel opened against the owned intake page. Fast capture failed because the pre-armed observer did not observe the busy button (scrape_fast_busy_not_observed; false !== true).",
+      "observed": "Native panel opened against the owned intake page. The fast-result wait completed, then the pre-armed observer did not observe the busy button (scrape_fast_busy_not_observed; false !== true).",
       "limits": [
-        "Receipt stops at fast_capture; no fast-result assertion or later case ran.",
+        "The fast-result predicate completed before failure, but the receipt did not retain its fields or screenshot. Later case assertions did not run.",
         "Product behavior versus observer/timing cause is unresolved."
       ]
     },
