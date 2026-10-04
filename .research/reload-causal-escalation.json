@@ -106,7 +106,7 @@
     "tests/browser/fixtures/reload-stopped-redundant.json",
     ".research/reload-causal-escalation.json"
   ],
-  "own_commits": ["babf71b7"],
+  "own_commits": ["babf71b7", "2d9b53fa"],
   "limits_open_questions": [
     "Exact debugger-host retaining owner remains unknown; attached=false never attributed to Playwright.",
     "Focused tests prove acceptance orchestration and refusal behavior, not native Chromium execution. Root owns fresh independent peer and guarded native exact-artifact run.",
