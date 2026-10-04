@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "task_id": "recognition-current-contract-test",
+  "case_id": "EXT-F-1007-T26",
+  "defect_id": "EXT-D-0022",
+  "verdict": "STALE_EXPECTATION_IN_D22_RECORD; CURRENT_QUERY_MATCHES_ACTIVE_ORGANIZATION_READ_LAW",
+  "scope": "Focused source/test reconciliation of Source recognition reads and separation from selected-organization Save writes; no browser, database mutation, or product edit.",
+  "current_read_contract": "For authenticated users, lookupCapturedByUrl queries docproc.processed_documents by canonical identity and Source eligibility, relying on Supabase RLS to return all rows the person may access. It does not resolve or filter by the device's selected organization. A guest returns none without a query. Database/read failures return unknown, which the UI renders as could not check rather than unsaved.",
+  "current_write_contract": "The selected device organization still determines where a new Source is landed. landSource passes body.organization_id as expectedActor.organizationId, and the server landing contract receives the organization in the write body. Save's local confirmation remains tied to the organization on that landing and is hidden if selection changes. Cross-organization read visibility does not authorize or redirect a write.",
+  "reproducible_criteria_mismatch": {
+    "source": "docs/stabilization/defects/EXT-D-0022.json expected/reproduction and docs/stabilization/reports/source-recognition-org-fix.json change summary",
+    "old_expected": "Authenticated recognition reads only the selected organization; without a selected/readable organization it returns unknown and sends no docproc query.",
+    "actual": "Given an authenticated user whose RLS-visible Source for the canonical URL exists in an organization other than the selected one (or who has no selected organization), lookupCapturedByUrl returns found for that Source.",
+    "reproduction_steps": [
+      "Read the old EXT-D-0022 expected field and the current src/lib/supabase/queries.recognition.test.ts fixture.",
+      "Run pnpm exec vitest run src/lib/supabase/queries.recognition.test.ts.",
+      "Observe the test fixture's unfiltered query result representing a Source in another RLS-visible organization; tests assert recognition succeeds both with selected organization A, selected organization B, and no selected organization, and assert no organization_id filter.",
+      "Compare the old expected result: it would treat the same valid cross-organization recognition as a failure."
+    ],
+    "classification": "The mismatch is in the stale D22 criteria, not evidence of a current product defect."
+  },
+  "necessary_case_criteria_correction": "EXT-F-1007-T26 should retain its lookup-failure honesty and recovery assertion, while its cross-organization recognition oracle should say: a signed-in person recognizes a matching Source in any RLS-visible organization regardless of selected organization; inaccessible rows remain invisible by RLS. Add coverage for selected organization A with the Source only in visible B, no selection with a visible Source, and genuinely unknown/service failure never shown as unsaved. Keep selected-organization scoping on Save/land and local Saved/Open confirmation as a separate write/UI-state assertion.",
+  "source_evidence": [
+    "src/lib/supabase/queries.ts:634-672: guest short-circuit, canonical identity query, no organization predicate, found/none/unknown handling.",
+    "src/lib/supabase/queries.recognition.test.ts:77-128: focused RLS-boundary test asserts cross-org-visible recognition for A, B, and no selection; membership resolution failure does not block the read.",
+    "src/hooks/use-page-recognition.ts:31-101: organization change clears and rechecks recognition; stale lookup results are discarded; organization-free broadcast is only a recheck trigger.",
+    "src/lib/api/routes/sources.ts:224-228: landSource binds expected actor organization to body.organization_id.",
+    "docs/stabilization/defects/EXT-D-0022.json: historical expected field requires selected-org-only reads; current status remains fixed awaiting UI retest, not proof the obsolete expectation is valid.",
+    "docs/stabilization/inventory.json:17889-17920: T26's general failure-honesty/recovery expectation does not itself require selected-org-only filtering."
+  ],
+  "verification": {
+    "command": "pnpm exec vitest run src/lib/supabase/queries.recognition.test.ts",
+    "result": "PASS: 1 test file, 4 tests.",
+    "limits": "Focused mocked query test only. Does not establish real Supabase RLS policy behavior or native browser UI acceptance."
+  },
+  "canonical_source_limit": "The linked common-docs systems/clients/extension and access-ladder files named by repo instructions were not present at their configured /Users/armanisadeghi/code/common-docs paths in this checkout. Applied the explicit Sept. 30 user law supplied in the task instructions; no contrary canonical text was available locally."
+}
