@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "case": "EXT-D-0122 repaired Scrape image-group native retest",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 37210977886,
+    "job_id": 111461946659,
+    "head_sha": "df46cd2300eac6919973daa8bad6dd10b7003570",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37210977886",
+    "dispatch_inputs": {
+      "development_run_id": 37193761291,
+      "development_artifact_id": 11299613935,
+      "acceptance_case": "guest-scrape-development"
+    },
+    "conclusion": "failure",
+    "uploaded_artifact_id": 11306986372,
+    "uploaded_artifact_name": "hosted-guest-37210977886-1",
+    "uploaded_artifact_sha256": "8f2e02de5a32754aa03c51b4eb2dd3bf24b0af26aa9441a1322cf6be7b620b9b"
+  },
+  "frozen_product": {
+    "version": "0.2.215",
+    "source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+    "tree_sha256": "ab62d0755d03e8a7f2ca0cb99e0b5037f39e75d756b14a3e2d3ad6d8cc096d08",
+    "development_run_id": 37193761291,
+    "development_artifact_id": 11299613935,
+    "development_artifact_sha256": "9197f3df76ec1163b15069bd8d24846791855c07e5c58a02b680e552bc5ae3ce",
+    "artifact_import_verified": true
+  },
+  "resource_outcome": {
+    "hosted_preflight": "passed",
+    "readiness_gates": "package, browser, and acceptance readiness all passed",
+    "resource_policy_changed": false,
+    "unsafe_watch_event": true,
+    "unsafe_reason": "RESOURCE_CPU_BUSY",
+    "watch_cpu_busy_fraction": 0.77,
+    "process_attribution": "Chromium and Chromium Helper processes appeared in the diagnostic sample; exact owned-group causality is not established.",
+    "journals": {
+      "package": {
+        "path": "docs/stabilization/evidence/scrape215/run37210977886/hosted-package-37210977886-1.jsonl",
+        "sha256": "5388d242efd88d6761fcaa1e4bb2a00f092acd14caf471a5138b8df4b314b798",
+        "decision": "valid",
+        "exit_code": 0
+      },
+      "browser": {
+        "path": "docs/stabilization/evidence/scrape215/run37210977886/hosted-browser-37210977886-1.jsonl",
+        "sha256": "6e3e42a63d257e21aef4c53ee82ec4c03c671c099ba6cafbbb386dfee0d292bd",
+        "decision": "valid",
+        "exit_code": 0
+      },
+      "guest": {
+        "path": "docs/stabilization/evidence/scrape215/run37210977886/hosted-guest-37210977886-1.jsonl",
+        "sha256": "1809cc3943175835f5111d18a3418e8f51929ce2c6ccddc547a904523a4ce7f3",
+        "decision": "child_failed",
+        "exit_code": 1
+      }
+    }
+  },
+  "native_outcome": {
+    "overall_status": "unverified",
+    "mode": "guest",
+    "native_stage": "exercise_panel",
+    "result_stage": "inputs",
+    "receipt": "docs/stabilization/evidence/scrape215/run37210977886/receipt.json.txt",
+    "receipt_sha256": "c250c24bc937c23ab1c776cf772c6e078f7b4d0ca815b285cf92bfddcc5a23c3",
+    "failure_code": "NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample",
+    "cases": {
+      "EXT-F-1007-T08-warm": "not reached",
+      "EXT-F-1007-T08-reload": "not reached",
+      "EXT-F-1007-T10-warm": "not reached",
+      "EXT-F-1007-T10-reload": "not reached",
+      "EXT-F-1007-T11-warm": "not reached",
+      "EXT-F-1007-T11-reload": "not reached",
+      "EXT-F-1007-T12-warm": "not reached",
+      "EXT-F-1007-T12-reload": "not reached"
+    },
+    "screenshots": {
+      "captured": [],
+      "reason": "The guarded resource boundary refused inputs before browser assertions or failure-pane capture; the uploaded artifact contains no screenshots."
+    }
+  },
+  "scope_and_limits": [
+    "Exactly one guarded hosted guest-scrape-development workflow was dispatched and followed to terminal failure; no retry was made.",
+    "The run does not pass or fail the image-group product assertions: cases is empty and all requested Scrape observations remain unverified because the resource watchdog refused the native run before assertions.",
+    "The resource event is recorded without changing the policy or thresholds. Chromium activity was present in the diagnostic sample, but process causality is not proven.",
+    "The raw receipt and all three current-run resource journals are preserved. No T08/T10/T11/T12 warm or reload screenshots exist for this attempt."
+  ]
+}
