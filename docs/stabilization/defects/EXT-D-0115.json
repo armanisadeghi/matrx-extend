@@ -27,7 +27,9 @@
     ".research/scrape-fast-busy-causal.json",
     ".research/scrape-busy-mutation-peer.json",
     ".research/scrape-busy-ownership-repair.json",
-    ".research/scrape-busy-context-final-peer.json"
+    ".research/scrape-busy-context-final-peer.json",
+    ".research/scrape-busy-escalation.json",
+    ".research/scrape-busy-observation-only-peer.json"
   ],
   "transition_history": [
     {
@@ -68,5 +70,5 @@
     }
   ],
   "closure_requirement": "Independent source review, causal RED/GREEN guard, and exact205 hosted native busy-state evidence without oracle weakening. Record any different runtime blocker separately; no full Scrape health claim.",
-  "next_action": "Two peer-rejected observer candidates triggered bounded fresh Astra escalation. Remove or replace unsound historical visible-state inference; original native product busy state remains unproven. Fresh independent review required before native run."
+  "next_action": "Source escalation122504b8 removed unsound history reconstruction; independentpeerd4a3df47 passed13focused guards and deep-mode probe. Current owned visible DOM alone counts. D115 stays in-fix: original native busy cause remains unknown. Prepare separately labeled bounded real-capture timing diagnostic, source-review it, then run under one hosted guard; preserve original unthrottled acceptance and keep supplemental evidence separate."
 }
