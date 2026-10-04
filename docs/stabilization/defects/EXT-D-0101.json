@@ -22,7 +22,8 @@
     ".research/profile-diagnostics-peer.json",
     ".research/profile-runner-final-peer.json",
     ".research/profile-member-retest189-next.json",
-    ".research/profile-189-final-source-peer.json"
+    ".research/profile-189-final-source-peer.json",
+    ".research/profile-receipt-final-privacy-peer.json"
   ],
   "transition_history": [
     {
@@ -57,6 +58,6 @@
     }
   ],
   "closure_requirement": "Meaningfulfailurecaptureguard and independentreview, then actualguardedfailure or equivalentverifiednativeobservation preservingoriginaloperation/stage withoutprivatecontent. UnderlyingProfile targetfailure handledseparately.",
-  "fix_commits": ["aa7df0d2", "c77982ec"],
-  "known_remaining": "Fresh peer 20f5286b reproduced arbitrary no-colon error text reaching execution_failure_code and final failure_code. Native launch is held while the original implementation lane replaces message-derived public codes with a fixed allowlist and adds actual-boundary/final-report privacy guards. Dual-error preservation source 85a95c40 is also awaiting final independent acceptance. No actual credential leak was established by the synthetic reproduction."
+  "fix_commits": ["aa7df0d2", "c77982ec", "85a95c40", "5f417356"],
+  "known_remaining": "Peer600e09fb confirmed raw-message boundary fix but proved arbitrary synthetic backend response code survives into request diagnostics. Panel detach masking remains a source-level risk. Astra escalation owns one bounded class-level correction and real boundary guards, then fresh independent review; native gate held. No actual credential exposure established."
 }
