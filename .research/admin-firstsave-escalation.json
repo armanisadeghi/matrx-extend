@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0108 admin first-save diagnostic escalation",
+  "status": "diagnostic_capture_source_verified_native_cause_unknown",
+  "evidence": {
+    "native_report_sha256": "2590b2b53d248f10cfdec2b297aaf9133170aa26d6710d20884c66f324326a5c",
+    "last_known_boundary": "Initial UI owner read succeeded with absent row; execution failed before pending marker, ownership receipt or UI Save.",
+    "lost_evidence": "Original exception was discarded; warm_profile covered identity gate, local config and direct browser owner read. No exact historical causal claim is possible.",
+    "current_config_check": "Existing .env.production predates run; required keys nonempty; URL parses as HTTPS. Values were not printed."
+  },
+  "hypotheses": [
+    {
+      "cause": "identity mismatch",
+      "prediction": "Real gate rejects with its fixed first_save code before configuration read",
+      "test": "Actual runner gate with real identity helper rejects mismatched token; known identity codes already allowlisted. Historical supplied objects unavailable."
+    },
+    {
+      "cause": "configuration missing or malformed",
+      "prediction": "Failure occurs at config phase before owner read",
+      "test": "Current private file metadata/boolean shape check succeeds; injected file-missing exception is captured at actual config call boundary. Historical file content not retained."
+    },
+    {
+      "cause": "browser storage, fetch, JSON or HTTP failure",
+      "prediction": "Actual owner-request expression emits corresponding fixed phase and bounded status, without reaching row assertion",
+      "test": "Actual injected expression executes in VM through real evaluate adapter; each dependency failure produces distinct capture. Original runtime exception unavailable."
+    },
+    {
+      "cause": "row appeared before write",
+      "prediction": "Owner read returns row, assertion rejects before marker",
+      "test": "Actual caller rejects row with first_save_row_appeared_before_write; original owner response unavailable."
+    }
+  ],
+  "changes": [
+    "Connected owner-request returns fixed storage/token/fetch/http_status/response_json/row_shape diagnostics; transport or uncaught evaluation failure remains separately classified.",
+    "First-save operation labels distinguish gate/config/read/receipt/fill/save/settle/ownership boundaries.",
+    "No-write absent-row branch explicitly reports mutation_not_attempted and final_readback_performed=false, verified=false. Existing conditional deletion, journal and ownership rules unchanged."
+  ],
+  "verification": {
+    "red": "New actual caller diagnostic guard: 5 assertion failures and 1 pass before repair (after correcting test extraction syntax).",
+    "green": "node --test tests/browser/profile-*.test.mjs: 71 pass, 0 fail",
+    "gut_check": "Executed plant.py replacing runProfileExecutionBoundary with return null; correctly RED.",
+    "mutations": [
+      "owner runtime annotation removed: RED",
+      "pre-write read operation collapsed to warm_profile: RED",
+      "browser JSON phase relabeled fetch: RED"
+    ],
+    "limits": "Controlled external I/O guards prove diagnostics only, not native authentication, persistence or original cause."
+  },
+  "limitations": [
+    "Native first-save is not closed; next allowed native run must observe the new phases.",
+    "No browser, build, release, auth or database mutation performed.",
+    "Independent review requested from parent; not claimed complete."
+  ],
+  "changed_files": [
+    "tests/browser/profile-native-acceptance.mjs",
+    "tests/browser/profile-native-failure.mjs",
+    "tests/browser/profile-first-save-diagnostic.test.mjs",
+    ".research/admin-firstsave-escalation.json"
+  ]
+}

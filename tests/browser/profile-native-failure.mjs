@@ -74,6 +74,8 @@ const PROFILE_FAILURE_CODES = new Set([
   'profile_original_row_absent_mutation_refused',
   'profile_initial_load_failed',
   'profile_owner_get_failed',
+  'profile_owner_runtime_evaluation_failed',
+  'profile_owner_request_failed',
   'profile_owner_get_status',
   'profile_owner_delete_failed',
   'profile_owner_delete_status',
@@ -91,6 +93,10 @@ const PROFILE_FAILURE_CODES = new Set([
   'owned_delete_version_invalid',
   'owned_write_unverified',
   'first_save_row_missing',
+  'first_save_row_appeared_before_write',
+  'profile_api_url_invalid',
+  'profile_api_key_missing',
+  'admin_credential_unavailable',
   'first_save_was_not_an_insert',
   'first_save_mode_unverified',
   'first_save_first_party_identity_unverified',
@@ -143,7 +149,40 @@ export async function captureProfileExecutionFailure(report, error, { operation,
   const failure = {
     stage: report.stage,
     operation: operation ?? 'unknown',
+    ...(operation?.startsWith('first_save_') && {
+      cause_kind:
+        error?.code === 'ENOENT'
+          ? 'file_missing'
+          : error?.code === 'EACCES'
+            ? 'file_access_denied'
+            : error?.code === 'ERR_ASSERTION'
+              ? 'assertion'
+              : error instanceof TypeError
+                ? 'type_error'
+                : error instanceof SyntaxError
+                  ? 'syntax_error'
+                  : 'unclassified',
+    }),
   };
+  if (error?.profileOwnerFailure) {
+    failure.owner_request = [
+      'runtime_evaluation_failed',
+      'storage',
+      'token_missing',
+      'fetch',
+      'http_status',
+      'response_json',
+      'row_shape',
+    ].includes(error.profileOwnerFailure)
+      ? error.profileOwnerFailure
+      : 'unknown';
+    failure.owner_status =
+      Number.isInteger(error.profileOwnerStatus) &&
+      error.profileOwnerStatus >= 100 &&
+      error.profileOwnerStatus <= 599
+        ? error.profileOwnerStatus
+        : null;
+  }
   const driver = error?.driverFailure;
   const restoration = error?.profileRestorationFailure;
   const field = error?.profileFieldFailure;

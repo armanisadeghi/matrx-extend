@@ -114,12 +114,17 @@ async function persistPrivateOwnership(record, create = false) {
   );
 }
 async function profileOwnerRequest(panel, { key, organizationId }, requestUrl, method = 'GET') {
-  const result = await evaluate(
-    panel,
-    `(async () => {
+  let result;
+  try {
+    result = await evaluate(
+      panel,
+      `(async () => {
+      let phase = 'storage';
+      try {
       const stored = await chrome.storage.local.get('matrx.auth.accessToken');
       const token = stored['matrx.auth.accessToken'];
-      if (typeof token !== 'string' || !token) return { ok: false, status: 0, rows: [] };
+      if (typeof token !== 'string' || !token) return { ok: false, status: 0, rows: [], failure_phase: 'token_missing' };
+      phase = 'fetch';
       const response = await fetch(${JSON.stringify(requestUrl)}, {
         method: ${JSON.stringify(method)},
         headers: {
@@ -131,11 +136,26 @@ async function profileOwnerRequest(panel, { key, organizationId }, requestUrl, m
           ...( ${JSON.stringify(method)} === 'DELETE' ? { Prefer: 'return=representation' } : {} ),
         },
       });
-      if (!response.ok) return { ok: false, status: response.status, rows: [] };
+      if (!response.ok) return { ok: false, status: response.status, rows: [], failure_phase: 'http_status' };
+      phase = 'response_json';
       const rows = await response.json();
-      return { ok: Array.isArray(rows), status: response.status, rows: Array.isArray(rows) ? rows : [] };
+      return { ok: Array.isArray(rows), status: response.status, rows: Array.isArray(rows) ? rows : [], ...(Array.isArray(rows) ? {} : { failure_phase: 'row_shape' }) };
+      } catch {
+        return { ok: false, status: 0, rows: [], failure_phase: phase };
+      }
     })()`,
-  );
+    );
+  } catch (error) {
+    const failure = new Error('profile_owner_runtime_evaluation_failed', { cause: error });
+    failure.profileOwnerFailure = 'runtime_evaluation_failed';
+    throw failure;
+  }
+  if (result?.failure_phase) {
+    const failure = new Error('profile_owner_request_failed');
+    failure.profileOwnerFailure = result.failure_phase;
+    failure.profileOwnerStatus = result.status;
+    throw failure;
+  }
   assert.equal(result?.ok, true, `profile_owner_${method.toLowerCase()}_failed`);
   assert.equal(result.status, 200, `profile_owner_${method.toLowerCase()}_status`);
   return result.rows;
@@ -899,6 +919,7 @@ try {
         report,
         async () => {
           if (!initialRow.row_present) {
+            executionOperation = 'first_save_identity';
             assertFirstSaveIdentity({
               mode: AUTH_MODE,
               identity,
@@ -906,7 +927,9 @@ try {
               selectedOrg,
               memberAuthentication: report.member_authentication,
             });
+            executionOperation = 'first_save_api_config';
             ownerConfig = { ...(await profileApiConfig()), organizationId: stored.organizationId };
+            executionOperation = 'first_save_owner_read_before_write';
             assert.equal(
               await readProfileOwnerRow(panel, ownerConfig, identity.userId),
               null,
@@ -914,6 +937,7 @@ try {
             );
             const marker = `Profile first save ${randomUUID()}`;
             pendingMarker = marker;
+            executionOperation = 'first_save_private_receipt';
             await persistPrivateOwnership(
               {
                 run_id: RUN_ID,
@@ -927,15 +951,20 @@ try {
               },
               true,
             );
+            executionOperation = 'first_save_fill';
             await fillPreferred(panel, marker);
+            executionOperation = 'first_save_ui_save';
             await clickProfileHeader(panel, 'Save');
+            executionOperation = 'first_save_settle';
             await waitFor(
               'first_profile_save_settled',
               () => state(panel),
               (s) => s.preferred === marker && !s.dirty && !s.error,
               30000,
             );
+            executionOperation = 'first_save_owner_read_after_write';
             const row = await readProfileOwnerRow(panel, ownerConfig, identity.userId);
+            executionOperation = 'first_save_ownership_verify';
             owned = assertFirstSaveOwnedRow(row, {
               userId: identity.userId,
               organizationId: stored.organizationId,
@@ -975,6 +1004,7 @@ try {
               scope: 'bounded branch only; not full T28 acceptance',
             };
           }
+          executionOperation = 'warm_profile';
           await caseBack(panel, original, identity.email, AUTH_MODE, 'warm');
           await caseSaveDiscard(panel, original, identity.email, AUTH_MODE, 'warm', ownedJournal);
           await caseT25(panel, original, identity.email, AUTH_MODE, 'warm');
@@ -1118,8 +1148,12 @@ try {
             saveFailureReceipt.original_absence_verified = true;
             saveFailureReceipt.status = 'passed';
           }
-        } else if (!pendingMarker) {
-          report.restoration = { verified: true, original_row_preserved: true };
+        } else if (!pendingMarker && !initialRow.row_present) {
+          report.restoration = {
+            verified: false,
+            mutation_not_attempted: true,
+            final_readback_performed: false,
+          };
         }
       } catch (error) {
         report.restoration = {
