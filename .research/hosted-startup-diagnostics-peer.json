@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "commit": "cd5d0d9de93b67470e27c6f9cbbd0a16ffbe147e",
+  "scope": "Independent source review of EXT-D-0107 startup diagnostics; no source edits, hosted run, or native browser run in this lane.",
+  "A_source_readiness": {
+    "status": "READY_FOR_CONTROLLED_HOSTED_RETEST",
+    "findings": [
+      "The timeout remains owned_cdp_endpoint_timeout after the existing 5000 ms default deadline; polling interval and timeout policy are unchanged.",
+      "Diagnostics add actual ENOENT poll attempts, monotonic total wait and longest read duration, then the harness sanitizes them to nonnegative safe integers. Spawn observation is a boolean.",
+      "Profile ownership verification, resource admission, child shutdown, and existing endpoint validation are unchanged in the reviewed diff.",
+      "No path, port, arguments, stderr text, or credential is included in the new diagnostic fields. Existing stderr remains reduced to booleans and fixed flags."
+    ],
+    "native_pending": "No native or hosted rerun was performed; the underlying Chrome startup failure and UI behavior are not established."
+  },
+  "B_quality": {
+    "status": "PASS_WITH_LIMITS",
+    "tests": [
+      "node tests/browser/vault-owned-cdp.test.cjs emitted PASS: owned flat CDP validates profile and correlates responses, including the new timeout diagnostic assertion.",
+      "node tests/browser/native-sidepanel-qa-harness.test.mjs emitted PASS lines for safe startup code, endpoint diagnostic sanitization, and bounded numeric timeout diagnostics."
+    ],
+    "checks": [
+      "node --check passed for both changed runtime files.",
+      "git diff cd5d0d9d^ cd5d0d9d --check passed."
+    ],
+    "test_limits": "The assertions verify diagnostic shape and sanitization, not real Chrome scheduling or whether the measurements identify the eventual root cause. The two test processes emitted their PASS output; their completion status was not independently captured in the combined run."
+  },
+  "interpretation": "The added fields can distinguish an unobserved spawn event, a sparse/delayed polling loop, and ordinary polling that still found no endpoint by the existing deadline. These are clues, not proof of why Chrome failed to publish DevToolsActivePort.",
+  "coordinator_review": {
+    "status": "ONE_WORDING_OVERSTATES_EVIDENCE",
+    "finding": "The new coordinator paragraph says Chrome 'stayed alive' during the five-second wait. The receipt records exitCode and signalCode as null, launchFailed false, and DevToolsListening false; this does not prove the process stayed alive for the whole interval. Safer wording: 'the child had no observed exit code or signal at timeout, and no owned endpoint was available.' The rest of the hosted/native bounds, pending case states, and cited passkey/Store facts match the cited receipts.",
+    "sources": [
+      ".research/hosted-chrome-startup-repair.json",
+      ".research/guest-scrape-store-native.json",
+      ".research/guest-scrape-hosted-native.json",
+      ".research/guest-scrape-busy-peer.json",
+      ".research/hosted-store-artifact-peer.json",
+      ".research/guest-402-release-preparation.json"
+    ]
+  },
+  "recommendation": "Proceed with the already planned resource-admitted hosted retest; preserve BROWSER_STARTUP_FAILURE and classify from spawnObserved, polls, elapsedMs, and longestReadMs. Do not claim startup fixed until native UI and cases are exercised."
+}

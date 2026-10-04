@@ -21,7 +21,10 @@
     "docs/stabilization/resource-journals/profile-admin-fields-189-01.jsonl",
     ".research/owned-endpoint-diagnosis.json",
     ".research/endpoint-diagnostic-peer.json",
-    ".research/profile-admin-fields-second-native.json"
+    ".research/profile-admin-fields-second-native.json",
+    ".research/guest-scrape-store-native.json",
+    ".research/hosted-chrome-startup-repair.json",
+    ".research/hosted-startup-diagnostics-peer.json"
   ],
   "transition_history": [
     {
@@ -38,5 +41,5 @@
     }
   ],
   "closure_requirement": "Prove and repair demonstrated startup class with actual helper red/green and independent review; native admin original scenario and surrounding ownership rejection must pass.",
-  "next_action": "Startup did not reproduce in admin02. Keep precise diagnostics active; original failure cause remains unknown, not fixed by a passing retry. Continue independent D108 admin fixture repair."
+  "next_action": "A separate hosted exact Store205 guest Scrape attempt 37186201850 timed out before UI. No observed child exit or signal and no owned endpoint do not establish the cause or equivalence to the original refusal. Instrumentation cd5d0d9d adds sanitized spawn/poll timing, independently reviewed, without changing deadline, ownership or resource rules. One controlled hosted run will collect these diagnostics; preserve original admin closure requirement and triaged state."
 }
