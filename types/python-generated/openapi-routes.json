@@ -2354,6 +2354,24 @@
  "/eptura-visitor/public/status": {
   "get": []
  },
+ "/esign/envelopes": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/esign/envelopes/{envelope_id}/remind": {
+  "post": []
+ },
+ "/esign/envelopes/{envelope_id}/signers/{signer_id}/resend": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/esign/envelopes/{envelope_id}/void": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/esign/signing/envelope/{envelope_id}/act": {
   "post": [
    "application/json"
