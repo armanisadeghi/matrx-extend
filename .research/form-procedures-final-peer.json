@@ -1,0 +1,51 @@
+{
+  "review_type": "bounded_source_only_reverification",
+  "reviewed_commit": "66416dc6",
+  "scope": "EXT-F-4061..EXT-F-4069",
+  "A_executable_procedure_correctness": {
+    "verdict": "three_peer_corrections_addressed_design_only",
+    "findings": [
+      {
+        "ids": "EXT-F-4061..EXT-F-4068",
+        "result": "addressed",
+        "evidence": "Each case now directs the operator to set Surface to Internal delegates or All handlers before exact-name search; ToolsView defaults to canonical Agent surface and filters internal delegates out."
+      },
+      {
+        "ids": "EXT-F-4068",
+        "result": "addressed",
+        "evidence": "The negative input is {\"selector\":\"#radio-a\",\"value\":\"missing\"}; expected says B remains selected and change count unchanged. forms.ts returns No matching radio before target.click()."
+      },
+      {
+        "ids": "EXT-F-4069",
+        "result": "addressed",
+        "evidence": "The no-form negative specifies {\"selector\":\"#missing-form\"} and expects No form found with unchanged submit count; forms.ts returns before submission when no form resolves."
+      }
+    ],
+    "execution_limit": "No named/provisioned owned HTTP fixture, exact markup, recorded URL/hash, hosted build receipt, or browser run was established in this review. These remain design procedures; runtime behavior and role access are unverified.",
+    "source_proof": [
+      "docs/stabilization/inventory.json: EXT-F-4061..4069 case steps, expected, and preconditions",
+      "src/features/tools/ToolsView.tsx:125-143,198-210",
+      "src/lib/tools/handlers/forms.ts:324-383"
+    ]
+  },
+  "B_artifact_quality_and_baseline_preservation": {
+    "verdict": "baseline_preserved_summary_regression",
+    "findings": [
+      {
+        "severity": "summary_mismatch",
+        "result": "needs_correction",
+        "evidence": "The correction adds a distinct Surface-selection step to each of EXT-F-4061..4068, so each inventory case now has seven steps, but .research/form-control-procedures.json still reports six steps for those eight procedures. EXT-F-4069 correctly remains six."
+      },
+      {
+        "result": "baseline_preserved",
+        "evidence": "Compared with 66416dc6^, all nine inventory_status values, all 27 guest/member/admin cells, and all nine live_binding objects are unchanged. No test cell was promoted. The report's corrected_inventory_sha256 matches the current inventory bytes."
+      }
+    ],
+    "source_proof": [
+      "git show 66416dc6^:docs/stabilization/inventory.json",
+      "docs/stabilization/inventory.json",
+      ".research/form-control-procedures.json"
+    ]
+  },
+  "review_limits": "Source-only review; no tests, build, browser, native input, or DB call. Prior exact-name binding census is metadata evidence only and was not refreshed."
+}
