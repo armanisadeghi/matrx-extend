@@ -1,0 +1,49 @@
+{
+  "reviewed_commit": "bb8fdc8b204dd47cd14ed5704256a4fd7e9ff6e7",
+  "scope": "Fresh source-only peer review of Scrape role and width selection for one guarded hosted native run. No browser, database, release, build, or native execution.",
+  "verdict_a": {
+    "result": "PARTIAL",
+    "bounded_run_readiness": "Member with normal emulated panel width is source-ready for one guarded native run; the admin cell is not ready under the selected-organization requirement. No native health is established by this review.",
+    "passed_source_checks": [
+      "Workflow invokes mode, width, and credential preflight before browser setup; malformed member/admin credentials and invalid width selections are refused.",
+      "Member path uses first-party magic-link identity, canonical non-admin check, extension profile match, rendered role, and selected organization UUID/name before Scrape, then rechecks identity and organization in the replacement panel.",
+      "Normal mode applies CDP viewport emulation to the owned SIDE_PANEL target on warm and replacement panels and requires measured innerWidth to meet the requested minimum. The receipt names emulation, not a Chrome divider resize.",
+      "Exact artifact provenance and hash verification, resource guard, hosted Profile durable-recovery refusal, private credential staging and cleanup, and guest storage checks remain on their existing paths."
+    ],
+    "open_targets": [
+      {
+        "severity": "important_for_admin_cell",
+        "location": "tests/browser/settings-native-auth-driver.mjs:211-232; tests/browser/settings-native-auth-driver.mjs:99-112",
+        "finding": "Admin sign-in records stored.organizationId without requiring a selected UUID/name. currentSettingsIdentityMatches expressly accepts a null organization when none is rendered. A direct negative check returned NULL_ADMIN_ORG_ACCEPTED=true. Thus an admin warm/reload receipt can claim identity verification with no selected organization; the member path does select and verify one."
+      },
+      {
+        "severity": "interpretation_limit",
+        "location": "tests/browser/scrape-guest-native-acceptance.mjs:1544-1572; scripts/hosted-guest-acceptance.mjs:452-466",
+        "finding": "The Scrape receipt remains partial when other roles or cases are open, and partial exits zero. This behavior predates the reviewed commit. A green workflow means the selected run completed, not that the Scrape feature or all role-width cells passed. The exact case results and remaining list must be read from the receipt."
+      }
+    ],
+    "cannot_verify": [
+      "Actual member/admin authentication, normal emulated width, warm/reload Scrape controls, resource health, and secret cleanup on a hosted runner require a guarded native run.",
+      "CDP emulation cannot establish Chrome's native divider resize behavior."
+    ]
+  },
+  "verdict_b": {
+    "result": "PARTIAL",
+    "quality_evidence": [
+      "New selection logic is a small shared helper used by both hosted wrapper and native driver; existing authentication and resource primitives are reused.",
+      "Receipt removes raw profile ID, email, and organization ID from the authentication summary; private files are staged mode 0600 and removed after child completion.",
+      "Focused tests cover malformed selections, credentials, provenance routes, width observation, and Settings identity conditions."
+    ],
+    "limits": [
+      "The new viewport test's fake panel assigns observed width from the requested CDP argument, so green does not prove Chrome changes innerWidth; the native run is the forcing evidence.",
+      "No focused test asserts that an admin identity must have a selected organization, matching the source gap in Verdict A.",
+      "No new consumer promotes partial receipt to full feature health was found in the reviewed diff; the pre-existing zero exit on partial requires receipt-aware interpretation."
+    ]
+  },
+  "executed_checks": {
+    "focused_node": "node --test scripts/hosted-scrape-route.test.mjs tests/browser/scrape-native-selection.test.mjs tests/browser/settings-native-auth-driver.test.mjs: 10 passed, 0 failed",
+    "syntax": "node --check on hosted wrapper, native Scrape driver, and Settings auth driver: passed",
+    "negative_admin_org": "Direct call to currentSettingsIdentityMatches with valid admin identity fields and organizationId=null, organizationSelected=false returned true",
+    "native": "not run"
+  }
+}
