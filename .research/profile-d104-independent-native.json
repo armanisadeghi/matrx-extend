@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "task": "profile-d104-independent-native",
+  "source_review_commit": "7e3f0f4198d2bc374424ba9db2feda12c6086702",
+  "native_run": {
+    "run_id": "profile-fields-member-189-04",
+    "status": "failed",
+    "artifact": {
+      "version": "0.2.189",
+      "source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+      "ci_run_id": 37164174445,
+      "artifact_id": 11288542496,
+      "artifact_sha256": "494646f6dd65399e0e7eee65fd1d9bd00ef97d173c5ceb9674de276ca12dc23a"
+    },
+    "runner": {
+      "path": "tests/browser/profile-native-acceptance.mjs",
+      "sha256": "e427b00309ada3ba9d2e4b87047d572016f65e0237fa7ef16eaded53eec7633b"
+    },
+    "resource": {
+      "decision": "child_failed",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "healthy_watch_samples": 3,
+      "journal": "docs/stabilization/resource-journals/profile-fields-member-189-04.jsonl",
+      "journal_sha256": "70d9c8559bf725370f946c1fc9a793bfad8eeab4b23725784562e8361bd13525"
+    },
+    "identity": {
+      "first_party_nonadmin_verified": true,
+      "canonical_nonadmin_http_status": 200,
+      "canonical_nonadmin_rows": 0,
+      "device_organization_selected": true,
+      "original_profile_row_present": false
+    },
+    "baseline_cases": [
+      { "id": "EXT-F-1004-T01", "dimension": "warm", "status": "passed" },
+      {
+        "id": "EXT-F-1004-T03",
+        "dimension": "warm",
+        "branch": "discard-draft",
+        "status": "passed"
+      },
+      { "id": "EXT-F-1004-T03", "dimension": "warm", "branch": "save-draft", "status": "passed" },
+      { "id": "EXT-F-1004-T25", "dimension": "warm", "status": "passed" },
+      { "id": "EXT-F-1004-T26", "dimension": "warm", "status": "passed" }
+    ],
+    "failure": {
+      "operation": "EXT-F-1004-T21:warm:run",
+      "failure_code": "profile_unclassified_failure",
+      "case_receipt_emitted": false,
+      "safe_internal_phase": "not recorded; the case covers section toggles followed by draft-retention assertions",
+      "underlying_error_detail": "not persisted by the runner and unavailable after child exit",
+      "safe_stderr_detail": "none beyond the sanitized final report and resource-wrapper exit record",
+      "extension_reload_attempted": false
+    },
+    "exact_extended_census": {
+      "expected_count": 6,
+      "complete": false,
+      "cells": [
+        { "id": "EXT-F-1004-T05", "dimension": "warm", "status": "missing" },
+        { "id": "EXT-F-1004-T05", "dimension": "extension_reload", "status": "missing" },
+        { "id": "EXT-F-1004-T17", "dimension": "warm", "status": "missing" },
+        { "id": "EXT-F-1004-T17", "dimension": "extension_reload", "status": "missing" },
+        { "id": "EXT-F-1004-T21", "dimension": "warm", "status": "missing" },
+        { "id": "EXT-F-1004-T21", "dimension": "extension_reload", "status": "missing" }
+      ]
+    },
+    "restoration": {
+      "first_save_case": "EXT-F-1004-T28",
+      "owned_write_created_by_ui": true,
+      "original_absence_restored": true,
+      "private_ownership_receipt_mode": "0600",
+      "private_ownership_receipt_retained": true,
+      "single_use_magic_link_removed": true
+    },
+    "raw_report": {
+      "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-fields-member-189-04/evidence/profile-native-profile-fields-member-189-04.json",
+      "sha256": "43bcd283a69036e7641a495728f37e2303759bdf23387ad075ca5ef8f677e306"
+    },
+    "acceptance_conclusion": "The native run verified the member identity and baseline smoke cases, then failed during the eight-expander warm operation before its case receipt. Identity and Employment saved values, Birthday segmented-date input, all extended reload cases, and reload hydration remain unverified. This run does not establish a product defect or a pass."
+  },
+  "preflight_refusal": {
+    "run_id": "profile-fields-member-189-03",
+    "status": "refused_before_admission",
+    "cause": "scratch root was mode 0755; evidence and permit directories were 0700",
+    "resource_admitted": false,
+    "browser_child_launched": false,
+    "single_use_magic_link_removed": true,
+    "journal": "docs/stabilization/resource-journals/profile-fields-member-189-03.jsonl",
+    "journal_sha256": "324810cd21a1e21ea2384b7ab231f784911dbd0a9060380b543aa55fcda992d3"
+  }
+}

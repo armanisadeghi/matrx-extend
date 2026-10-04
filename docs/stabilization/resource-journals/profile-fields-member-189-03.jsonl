@@ -1,0 +1,4 @@
+{"schema":1,"at":"2026-10-04T02:26:01.847Z","runId":"profile-fields-member-189-03","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-04T02:26:37.870Z","runId":"profile-fields-member-189-03","signal":"SIGINT","code":"RESOURCE_STOP_REQUESTED"}
+{"schema":1,"at":"2026-10-04T02:27:09.058Z","runId":"profile-fields-member-189-03","code":"RESOURCE_STOP_REQUESTED"}
+{"schema":1,"at":"2026-10-04T02:27:09.067Z","runId":"profile-fields-member-189-03","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}
