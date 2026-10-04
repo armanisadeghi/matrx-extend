@@ -12,11 +12,13 @@
   "actual": "Scrape driver has no per-batch health check or stop-marker read. Wrapper retains sustained-stop policy, but receipt cannot prove UI observation chronology relative to unsafe sample.",
   "severity": "S2: acceptance reliability; no proven product failure",
   "priority": "P1: prerequisite for trusted native acceptance",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "/root/scrape_resource_boundary",
   "evidence": [
     ".research/scrape-loading-fixed-native.json",
-    ".research/scrape-reload-diagnosis.json"
+    ".research/scrape-reload-diagnosis.json",
+    ".research/scrape-resource-boundary.json",
+    ".research/scrape-boundary-final-peer.json"
   ],
   "transition_history": [
     {
@@ -36,7 +38,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Bounded shared native resource-boundary repair delegated; existing floors and sustained-stop policy unchanged."
+    },
+    {
+      "at": "2026-10-04T09:36:35.343455+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "12f43b3e+a060c9fe+8e9522f3 reuse real guard evidence and fresh clock at action boundary; independent6ff6adea pass source, native unknown."
     }
   ],
-  "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations."
+  "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
+  "next_action": "One guarded development native diagnostic delegated to /root/scrape_guarded_native. Refusal is unverified product acceptance; preserve exact resource chronology."
 }
