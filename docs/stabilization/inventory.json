@@ -224,7 +224,7 @@
         "defect_ids": [
           "EXT-D-0099",
           "EXT-D-0106"
-        ]
+        , "EXT-D-0120"]
       },
         {
           "id": "EXT-F-0001-T03",
@@ -439,7 +439,7 @@
             "EXT-D-0077",
             "EXT-D-0090",
             "EXT-D-0099"
-          ],
+          , "EXT-D-0120"],
           "run_ids": [
             "baseline-build-001",
             "render-retest-001",
@@ -806,7 +806,7 @@
           },
           "defect_ids": [
             "EXT-D-0083"
-          ]
+          , "EXT-D-0119"]
         },
         {
           "id": "EXT-F-0002-T04",
@@ -1175,7 +1175,7 @@
             "EXT-D-0025",
             "EXT-D-0051",
             "EXT-D-0056"
-          ],
+          , "EXT-D-0119"],
           "run_ids": [],
           "retest_status": "partial: EXT-D-0025 and EXT-D-0051 passed; remaining infrastructure cases unverified"
         },

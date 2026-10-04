@@ -1,0 +1,30 @@
+{
+  "id": "EXT-D-0120",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T02"],
+  "surface": "Native extension reload acceptance",
+  "auth_mode": "guest",
+  "title": "Scrape reload acceptance loses unique visible target and omits diagnostic metadata",
+  "reproduction": [
+    "Run guest-scrape-development with CI37190768893 artifact11298687631 as acceptance37191118595. After capture and navigation checks, extension_reload fails with unique visible pointer target. Inspect terminal receipt."
+  ],
+  "expected": "Reload acceptance either reaches the intended visible control or preserves safe count/visibility and exact operation metadata sufficient to diagnose why it could not.",
+  "actual": "Receipt contains only extension_reload and generic target error; no returned reload result or target counts. Product cause remains unknown; same run also contains unsafe CPU evidence.",
+  "severity": "S2: acceptance reliability; no proven product failure",
+  "priority": "P1: prerequisite for trusted native acceptance",
+  "state": "open",
+  "owner": "root",
+  "evidence": [
+    ".research/scrape-loading-fixed-native.json",
+    ".research/scrape-reload-diagnosis.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T09:21:46.156868+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Exact native receipt and source inspection."
+    }
+  ],
+  "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations."
+}

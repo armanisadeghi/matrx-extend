@@ -1,0 +1,42 @@
+{
+  "id": "EXT-D-0119",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T03"],
+  "surface": "Native acceptance resource boundary",
+  "auth_mode": "guest",
+  "title": "Native Scrape actions lack a fresh resource-health boundary check",
+  "reproduction": [
+    "Inspect run37191118595 guest resource journal: admitted09:14:06.168UTC, unsafeCPU09:14:22.237, childexit09:14:32.478; no intervening healthy sample. Compare the Scrape driver UI action path with the required fresh-health-before-UI-batch contract."
+  ],
+  "expected": "Each UI batch requires recent healthy admission/watchdog evidence; unsafe or stale evidence refuses the next batch without changing configured resource thresholds.",
+  "actual": "Scrape driver has no per-batch health check or stop-marker read. Wrapper retains sustained-stop policy, but receipt cannot prove UI observation chronology relative to unsafe sample.",
+  "severity": "S2: acceptance reliability; no proven product failure",
+  "priority": "P1: prerequisite for trusted native acceptance",
+  "state": "in-fix",
+  "owner": "/root/scrape_resource_boundary",
+  "evidence": [
+    ".research/scrape-loading-fixed-native.json",
+    ".research/scrape-reload-diagnosis.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T09:21:46.156868+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Exact native receipt and source inspection."
+    },
+    {
+      "at": "2026-10-04T09:21:46.156868+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Wrapper and driver inspection confirm missing per-UI-batch gate; no threshold changes authorized."
+    },
+    {
+      "at": "2026-10-04T09:23:25.002791+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded shared native resource-boundary repair delegated; existing floors and sustained-stop policy unchanged."
+    }
+  ],
+  "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations."
+}
