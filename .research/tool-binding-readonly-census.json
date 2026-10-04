@@ -1,0 +1,4205 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-10-04T18:25:16Z",
+  "source_shas": {
+    "matrx_extend_head": "6256d7b43366e7eb337d39d892c388d5348279d6",
+    "inventory_declared_source": "dc64e8a1c6c0ac28ac8102dd31857bf645d72df2",
+    "ai_matrx_admin_query_checkout_head": "11790a30c33bc8d62d669afb4e7d116cb39f669e"
+  },
+  "inventory": {
+    "path": "docs/stabilization/reports/inventory-tools.json",
+    "declared_source_sha": "dc64e8a1c6c0ac28ac8102dd31857bf645d72df2",
+    "feature_count": 169,
+    "unique_names": 168
+  },
+  "local_generated_catalog": {
+    "path": "types/tool-catalog.json",
+    "generated_at": "2026-10-04T18:07:24.729Z",
+    "source": "matrx-extend",
+    "tool_count": 168
+  },
+  "live_source": {
+    "kind": "self-hosted Supabase database, explicitly not the cloud Supabase MCP project",
+    "canonical_host_asserted_by_existing_operator": "db.matrxserver.com",
+    "access_path": "sibling ai-matrx pnpm admin-query --file /tmp/tool-binding-census.sql using existing auth",
+    "schema": ["tool.definition", "tool.binding", "tool.surface_defaults"],
+    "selected_columns": {
+      "tool.definition": ["id", "name", "tier", "category", "admin_only", "is_active"],
+      "tool.binding": ["tool_id", "executor_name", "is_active"],
+      "tool.surface_defaults": [
+        "surface_name",
+        "always_include_tools",
+        "always_include_bundles",
+        "never_include_tools"
+      ]
+    },
+    "exact_query": "WITH relevant_definitions AS (\n  SELECT id, name, tier, category, admin_only, is_active\n  FROM tool.definition\n  WHERE name IN ('list_chrome_categories','list_core_tools','list_reading_tools','list_interaction_tools','list_tabs_tools','list_capture_tools','list_chrome_tools','list_human_tools','list_memory_tools','list_ai_tools','list_demos_tools','list_guidance_tools','list_devtools_tools','list_webmcp_tools','list_desktop_tools','list_credentials_tools','list_crm_tools','list_education_tools','list_productivity_tools','list_records_tools','chrome_batch','read_page','find','get_page_text','get_active_tab','get_page_selection','read_active_page','take_screenshot','query_elements','find_text_on_page','get_page_links','get_computed_style','get_element_at_point','inspect_element','get_element_details','list_open_tabs','get_tab_groups','get_tab_info','search_bookmarks','list_bookmark_tree','search_history','list_recent_history','list_downloads','get_form_fields','ai_check_availability','ai_summarize','ai_classify','ai_extract_json','ai_translate','ai_detect_language','ai_proofread','ai_describe_image','ai_check_prompt_injection','navigate_active_tab','click_element','type_into_element','scroll_page','wait_for','set_clipboard','sleep','press_keys','hover_element','focus_element','blur_element','right_click_element','select_dropdown_option','set_checkbox','set_radio','submit_form','file_upload','open_new_tab','close_tab','switch_to_tab','duplicate_tab','pin_tab','mute_tab','reload_tab','go_back','go_forward','set_tab_zoom','move_tab','resize_window','create_tab_group','add_tabs_to_group','remove_tabs_from_group','update_tab_group','download_url','cancel_download','credential_login','capture_prospect','capture_study_set','google_email_send','remember_for_domain','list_recently_closed','restore_recently_closed','chrome_save_page_as_mhtml','get_cookies','set_cookie','delete_cookie','cdp_attach','cdp_detach','cdp_attached_tabs','cdp_full_page_screenshot','cdp_a11y_tree','cdp_input_click_xy','cdp_input_type','cdp_network_capture_start','cdp_network_capture_drain','cdp_network_capture_stop','cdp_network_get_body','cdp_print_pdf','cdp_perf_metrics','cdp_emulate_device','cdp_clear_emulation','read_console_messages','read_network_requests','get_request_body','webmcp_check_availability','webmcp_list_page_tools','webmcp_call_page_tool','user','request_user_takeover','update_plan','user_todos','inject_stylesheet','remove_stylesheet','desktop_run_command','parallel_for_each_tab','chrome_record_gif','records','chrome_record_tab_video','record_demo','list_demos','describe_demo','replay_demo','delete_demo','save_guidance_note','list_guidance','get_guidance_item','delete_guidance_item','list_highlights','extract_table','screenshot_region','get_clipboard','chrome_tab_audio_inspect','mutation_watch','extract_microdata','data_patterns','fetch_url_as_markdown','computer','form_input','navigate','tabs','downloads','clipboard','upload_file','drop_file','read_pdf','ai','chrome_cookies','chrome_webmcp','tab_groups','chrome_bookmarks','chrome_history','chrome_recently_closed','stylesheet','cdp_session','cdp_emulate')\n     OR id IN (SELECT tool_id FROM tool.binding WHERE executor_name = 'chrome-extension')\n),\nbindings AS (\n  SELECT tool_id, executor_name, is_active\n  FROM tool.binding\n  WHERE executor_name = 'chrome-extension'\n),\nsurfaces AS (\n  SELECT surface_name, always_include_tools, always_include_bundles, never_include_tools\n  FROM tool.surface_defaults\n  WHERE surface_name IN ('chrome-extension/assistant', 'chrome-extension/pilot')\n)\nSELECT jsonb_build_object(\n  'definitions', (SELECT jsonb_agg(to_jsonb(d) ORDER BY d.name, d.id) FROM relevant_definitions d),\n  'bindings', (SELECT jsonb_agg(to_jsonb(b) ORDER BY b.executor_name, b.tool_id) FROM bindings b),\n  'surfaces', (SELECT jsonb_agg(to_jsonb(s) ORDER BY s.surface_name) FROM surfaces s)\n) AS census;",
+    "query_sha256": "9dabbf865b3fba5f149f4a68da2b4ce78e967f62e312766a2e7e687764e53b1a",
+    "counts": {
+      "definitions_selected": 84,
+      "chrome_extension_binding_rows": 84,
+      "active_bindings": 82,
+      "inactive_bindings": 2,
+      "active_definition_and_binding_names": 82,
+      "surface_rows": 2
+    }
+  },
+  "comparison": {
+    "inventory_feature_ids_mapped": 169,
+    "inventory_feature_rows_with_active_definition_and_binding": 83,
+    "unique_inventory_names_with_active_definition_and_binding": 82,
+    "missing_or_unresolved_features": [
+      {
+        "feature_id": "EXT-F-4002",
+        "name": "list_core_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4003",
+        "name": "list_reading_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4004",
+        "name": "list_interaction_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4005",
+        "name": "list_tabs_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4006",
+        "name": "list_capture_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4007",
+        "name": "list_chrome_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4008",
+        "name": "list_human_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4009",
+        "name": "list_memory_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4010",
+        "name": "list_ai_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4011",
+        "name": "list_demos_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4012",
+        "name": "list_guidance_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4013",
+        "name": "list_devtools_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4014",
+        "name": "list_webmcp_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4015",
+        "name": "list_desktop_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4016",
+        "name": "list_credentials_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4017",
+        "name": "list_crm_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4018",
+        "name": "list_education_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4019",
+        "name": "list_productivity_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4020",
+        "name": "list_records_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4025",
+        "name": "get_active_tab",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4028",
+        "name": "take_screenshot",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4036",
+        "name": "list_open_tabs",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4037",
+        "name": "get_tab_groups",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4038",
+        "name": "get_tab_info",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4039",
+        "name": "search_bookmarks",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4040",
+        "name": "list_bookmark_tree",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4041",
+        "name": "search_history",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4042",
+        "name": "list_recent_history",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4043",
+        "name": "list_downloads",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4045",
+        "name": "ai_check_availability",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4046",
+        "name": "ai_summarize",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4047",
+        "name": "ai_classify",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4048",
+        "name": "ai_extract_json",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4049",
+        "name": "ai_translate",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4050",
+        "name": "ai_detect_language",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4051",
+        "name": "ai_proofread",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4052",
+        "name": "ai_describe_image",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4053",
+        "name": "ai_check_prompt_injection",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4054",
+        "name": "navigate_active_tab",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4055",
+        "name": "click_element",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4056",
+        "name": "type_into_element",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4057",
+        "name": "scroll_page",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4059",
+        "name": "set_clipboard",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4061",
+        "name": "press_keys",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4062",
+        "name": "hover_element",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4063",
+        "name": "focus_element",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4064",
+        "name": "blur_element",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4065",
+        "name": "right_click_element",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4066",
+        "name": "select_dropdown_option",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4067",
+        "name": "set_checkbox",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4068",
+        "name": "set_radio",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4070",
+        "name": "file_upload",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4071",
+        "name": "open_new_tab",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4072",
+        "name": "close_tab",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4073",
+        "name": "switch_to_tab",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4074",
+        "name": "duplicate_tab",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4075",
+        "name": "pin_tab",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4076",
+        "name": "mute_tab",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4077",
+        "name": "reload_tab",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4078",
+        "name": "go_back",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4079",
+        "name": "go_forward",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4080",
+        "name": "set_tab_zoom",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4081",
+        "name": "move_tab",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4083",
+        "name": "create_tab_group",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4084",
+        "name": "add_tabs_to_group",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4085",
+        "name": "remove_tabs_from_group",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4086",
+        "name": "update_tab_group",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4087",
+        "name": "download_url",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4088",
+        "name": "cancel_download",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4094",
+        "name": "list_recently_closed",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4095",
+        "name": "restore_recently_closed",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4097",
+        "name": "get_cookies",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4098",
+        "name": "set_cookie",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4099",
+        "name": "delete_cookie",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4100",
+        "name": "cdp_attach",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4101",
+        "name": "cdp_detach",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4102",
+        "name": "cdp_attached_tabs",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4113",
+        "name": "cdp_emulate_device",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4114",
+        "name": "cdp_clear_emulation",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4118",
+        "name": "webmcp_check_availability",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4119",
+        "name": "webmcp_list_page_tools",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4120",
+        "name": "webmcp_call_page_tool",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4125",
+        "name": "inject_stylesheet",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4126",
+        "name": "remove_stylesheet",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4128",
+        "name": "parallel_for_each_tab",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      },
+      {
+        "feature_id": "EXT-F-4144",
+        "name": "get_clipboard",
+        "missing_definition": true,
+        "missing_active_definition": true,
+        "missing_active_binding": true
+      }
+    ],
+    "extra_active_executor_tool_names": [],
+    "duplicate_inventory_names": [
+      {
+        "name": "wait_for",
+        "count": 2,
+        "feature_ids": ["EXT-F-4058", "EXT-F-4156"]
+      }
+    ],
+    "duplicate_definition_names": [],
+    "duplicate_active_bindings": [],
+    "unresolved_classification": "No live active definition+binding is recorded as unresolved_manual_only_or_registry_drift. This metadata-only census does not adjudicate intent; every inventory feature remains present, including manual-only candidates."
+  },
+  "every_inventory_feature": [
+    {
+      "feature_id": "EXT-F-4001",
+      "inventory_name": "list_chrome_categories",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "1c5a06e7-ab2d-4c97-b804-a66393aac2ba",
+          "is_active": true,
+          "tier": "read",
+          "category": "core",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "1c5a06e7-ab2d-4c97-b804-a66393aac2ba",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4002",
+      "inventory_name": "list_core_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4003",
+      "inventory_name": "list_reading_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4004",
+      "inventory_name": "list_interaction_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4005",
+      "inventory_name": "list_tabs_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4006",
+      "inventory_name": "list_capture_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4007",
+      "inventory_name": "list_chrome_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4008",
+      "inventory_name": "list_human_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4009",
+      "inventory_name": "list_memory_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4010",
+      "inventory_name": "list_ai_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4011",
+      "inventory_name": "list_demos_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4012",
+      "inventory_name": "list_guidance_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4013",
+      "inventory_name": "list_devtools_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4014",
+      "inventory_name": "list_webmcp_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4015",
+      "inventory_name": "list_desktop_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4016",
+      "inventory_name": "list_credentials_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4017",
+      "inventory_name": "list_crm_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4018",
+      "inventory_name": "list_education_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4019",
+      "inventory_name": "list_productivity_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4020",
+      "inventory_name": "list_records_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4021",
+      "inventory_name": "chrome_batch",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "f327e6f4-a7a4-4e8b-9913-a20e6ca3100b",
+          "is_active": true,
+          "tier": "read",
+          "category": "core",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "f327e6f4-a7a4-4e8b-9913-a20e6ca3100b",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4022",
+      "inventory_name": "read_page",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "f4edcbdf-f85a-4170-8852-f91f28438c94",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "f4edcbdf-f85a-4170-8852-f91f28438c94",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4023",
+      "inventory_name": "find",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "6eeb1534-62f6-4785-a1e2-97a2aaa1d6b0",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "6eeb1534-62f6-4785-a1e2-97a2aaa1d6b0",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4024",
+      "inventory_name": "get_page_text",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "1ad3f006-22e5-4ef1-ba58-de88106809e4",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "1ad3f006-22e5-4ef1-ba58-de88106809e4",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4025",
+      "inventory_name": "get_active_tab",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4026",
+      "inventory_name": "get_page_selection",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "bb54630f-203a-44dd-acf7-2e0052d2df95",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "bb54630f-203a-44dd-acf7-2e0052d2df95",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4027",
+      "inventory_name": "read_active_page",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "3a2ef19b-3b71-4a34-9d80-80aec3460f22",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "3a2ef19b-3b71-4a34-9d80-80aec3460f22",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4028",
+      "inventory_name": "take_screenshot",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4029",
+      "inventory_name": "query_elements",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "7e9b9fac-17a3-4dba-a758-854bd0adcc7e",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "7e9b9fac-17a3-4dba-a758-854bd0adcc7e",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4030",
+      "inventory_name": "find_text_on_page",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "1f2ad5bc-5549-48d3-b20c-1bcbbe4d3bb3",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "1f2ad5bc-5549-48d3-b20c-1bcbbe4d3bb3",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4031",
+      "inventory_name": "get_page_links",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "dcad250d-45e3-40c7-96a0-f235e8b248a7",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "dcad250d-45e3-40c7-96a0-f235e8b248a7",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4032",
+      "inventory_name": "get_computed_style",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "1ed5224c-0d01-4958-baff-b381ba73cade",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "1ed5224c-0d01-4958-baff-b381ba73cade",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4033",
+      "inventory_name": "get_element_at_point",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "00171572-ef21-4864-b812-0c9f3a81fc84",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "00171572-ef21-4864-b812-0c9f3a81fc84",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4034",
+      "inventory_name": "inspect_element",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "7b08dea7-9973-4f8a-8725-fbb4028452ba",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "7b08dea7-9973-4f8a-8725-fbb4028452ba",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4035",
+      "inventory_name": "get_element_details",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "6565b9a9-31e7-446f-90f7-6b725ed5406f",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "6565b9a9-31e7-446f-90f7-6b725ed5406f",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4036",
+      "inventory_name": "list_open_tabs",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4037",
+      "inventory_name": "get_tab_groups",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4038",
+      "inventory_name": "get_tab_info",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4039",
+      "inventory_name": "search_bookmarks",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4040",
+      "inventory_name": "list_bookmark_tree",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4041",
+      "inventory_name": "search_history",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4042",
+      "inventory_name": "list_recent_history",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4043",
+      "inventory_name": "list_downloads",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4044",
+      "inventory_name": "get_form_fields",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "aba94c34-8633-48d0-8118-2a2212b76714",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "aba94c34-8633-48d0-8118-2a2212b76714",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4045",
+      "inventory_name": "ai_check_availability",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4046",
+      "inventory_name": "ai_summarize",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4047",
+      "inventory_name": "ai_classify",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4048",
+      "inventory_name": "ai_extract_json",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4049",
+      "inventory_name": "ai_translate",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4050",
+      "inventory_name": "ai_detect_language",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4051",
+      "inventory_name": "ai_proofread",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4052",
+      "inventory_name": "ai_describe_image",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4053",
+      "inventory_name": "ai_check_prompt_injection",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4054",
+      "inventory_name": "navigate_active_tab",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4055",
+      "inventory_name": "click_element",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4056",
+      "inventory_name": "type_into_element",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4057",
+      "inventory_name": "scroll_page",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4058",
+      "inventory_name": "wait_for",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "e261dc7d-2cc9-460f-be84-f98828042ac7",
+          "is_active": true,
+          "tier": "read",
+          "category": "interaction",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "e261dc7d-2cc9-460f-be84-f98828042ac7",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": true,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4059",
+      "inventory_name": "set_clipboard",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4060",
+      "inventory_name": "sleep",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "47893e94-3ceb-4c62-b012-b8a101fbd865",
+          "is_active": true,
+          "tier": "action",
+          "category": "interaction",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "47893e94-3ceb-4c62-b012-b8a101fbd865",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4061",
+      "inventory_name": "press_keys",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4062",
+      "inventory_name": "hover_element",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4063",
+      "inventory_name": "focus_element",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4064",
+      "inventory_name": "blur_element",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4065",
+      "inventory_name": "right_click_element",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4066",
+      "inventory_name": "select_dropdown_option",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4067",
+      "inventory_name": "set_checkbox",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4068",
+      "inventory_name": "set_radio",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4069",
+      "inventory_name": "submit_form",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "89f166f8-fe7e-4812-b9e0-a048c6a4c8a0",
+          "is_active": true,
+          "tier": "action",
+          "category": "interaction",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "89f166f8-fe7e-4812-b9e0-a048c6a4c8a0",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4070",
+      "inventory_name": "file_upload",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4071",
+      "inventory_name": "open_new_tab",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4072",
+      "inventory_name": "close_tab",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4073",
+      "inventory_name": "switch_to_tab",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4074",
+      "inventory_name": "duplicate_tab",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4075",
+      "inventory_name": "pin_tab",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4076",
+      "inventory_name": "mute_tab",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4077",
+      "inventory_name": "reload_tab",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4078",
+      "inventory_name": "go_back",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4079",
+      "inventory_name": "go_forward",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4080",
+      "inventory_name": "set_tab_zoom",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4081",
+      "inventory_name": "move_tab",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4082",
+      "inventory_name": "resize_window",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "3738e8e7-0710-44fe-9128-bc4a48a13e50",
+          "is_active": true,
+          "tier": "action",
+          "category": "tabs",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "3738e8e7-0710-44fe-9128-bc4a48a13e50",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4083",
+      "inventory_name": "create_tab_group",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4084",
+      "inventory_name": "add_tabs_to_group",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4085",
+      "inventory_name": "remove_tabs_from_group",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4086",
+      "inventory_name": "update_tab_group",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4087",
+      "inventory_name": "download_url",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4088",
+      "inventory_name": "cancel_download",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4089",
+      "inventory_name": "credential_login",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "4226b9d1-1ddc-4115-9ab2-81d4313c2e18",
+          "is_active": true,
+          "tier": "action",
+          "category": "credentials",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "4226b9d1-1ddc-4115-9ab2-81d4313c2e18",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4090",
+      "inventory_name": "capture_prospect",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "f2bc0ea3-e414-4718-b3bb-630d582a87de",
+          "is_active": true,
+          "tier": "action",
+          "category": "crm",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "f2bc0ea3-e414-4718-b3bb-630d582a87de",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4091",
+      "inventory_name": "capture_study_set",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "51a71551-85eb-4b09-bbbf-915aec41cc5b",
+          "is_active": true,
+          "tier": "action",
+          "category": "education",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "51a71551-85eb-4b09-bbbf-915aec41cc5b",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4092",
+      "inventory_name": "google_email_send",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "d08196de-2077-49cd-bc98-7db9e47166c2",
+          "is_active": true,
+          "tier": "ask-user",
+          "category": "productivity",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "d08196de-2077-49cd-bc98-7db9e47166c2",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4093",
+      "inventory_name": "remember_for_domain",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "0f992997-1ef7-435b-9475-a9b9c31dbe95",
+          "is_active": true,
+          "tier": "action",
+          "category": "memory",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "0f992997-1ef7-435b-9475-a9b9c31dbe95",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4094",
+      "inventory_name": "list_recently_closed",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4095",
+      "inventory_name": "restore_recently_closed",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4096",
+      "inventory_name": "chrome_save_page_as_mhtml",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "5549cdd7-9687-48ac-a844-1056efffb76f",
+          "is_active": true,
+          "tier": "action",
+          "category": "capture",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "5549cdd7-9687-48ac-a844-1056efffb76f",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4097",
+      "inventory_name": "get_cookies",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4098",
+      "inventory_name": "set_cookie",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4099",
+      "inventory_name": "delete_cookie",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4100",
+      "inventory_name": "cdp_attach",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4101",
+      "inventory_name": "cdp_detach",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4102",
+      "inventory_name": "cdp_attached_tabs",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4103",
+      "inventory_name": "cdp_full_page_screenshot",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "04784482-2e61-44fa-b695-af15ae876721",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "devtools",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "04784482-2e61-44fa-b695-af15ae876721",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4104",
+      "inventory_name": "cdp_a11y_tree",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "2c01c7fa-3259-4e04-b35d-10ccf14d1386",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "devtools",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "2c01c7fa-3259-4e04-b35d-10ccf14d1386",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4105",
+      "inventory_name": "cdp_input_click_xy",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "e923f323-ba92-4bb2-930a-fef2f3336222",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "devtools",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "e923f323-ba92-4bb2-930a-fef2f3336222",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4106",
+      "inventory_name": "cdp_input_type",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "7014fb07-6214-4d41-968e-7b7dfdddd304",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "devtools",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "7014fb07-6214-4d41-968e-7b7dfdddd304",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4107",
+      "inventory_name": "cdp_network_capture_start",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "6cfeaae2-9910-40dc-baf3-45e0e52164e1",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "devtools",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "6cfeaae2-9910-40dc-baf3-45e0e52164e1",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4108",
+      "inventory_name": "cdp_network_capture_drain",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "eee5ced3-2f5a-41e2-a911-80f48160bf88",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "devtools",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "eee5ced3-2f5a-41e2-a911-80f48160bf88",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4109",
+      "inventory_name": "cdp_network_capture_stop",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "c88124da-3061-4405-b5f1-5a83c99d0304",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "devtools",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "c88124da-3061-4405-b5f1-5a83c99d0304",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4110",
+      "inventory_name": "cdp_network_get_body",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "c80a0e80-d103-4c1d-b1e4-ce46ac62a0aa",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "devtools",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "c80a0e80-d103-4c1d-b1e4-ce46ac62a0aa",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4111",
+      "inventory_name": "cdp_print_pdf",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "d3dc40a8-3d7c-4ad0-93ca-9efe554e4f2d",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "devtools",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "d3dc40a8-3d7c-4ad0-93ca-9efe554e4f2d",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4112",
+      "inventory_name": "cdp_perf_metrics",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "98c5f44d-d70e-4a82-860e-e40221a818d2",
+          "is_active": true,
+          "tier": "read",
+          "category": "devtools",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "98c5f44d-d70e-4a82-860e-e40221a818d2",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4113",
+      "inventory_name": "cdp_emulate_device",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4114",
+      "inventory_name": "cdp_clear_emulation",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4115",
+      "inventory_name": "read_console_messages",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "f50e4a0d-4b92-4194-825f-be7847546593",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "devtools",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "f50e4a0d-4b92-4194-825f-be7847546593",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4116",
+      "inventory_name": "read_network_requests",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "8bcee18a-89e1-4ff3-a368-39d3c86e5bfb",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "devtools",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "8bcee18a-89e1-4ff3-a368-39d3c86e5bfb",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4117",
+      "inventory_name": "get_request_body",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "420580d3-5395-477f-a981-c9d509b56c59",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "devtools",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "420580d3-5395-477f-a981-c9d509b56c59",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4118",
+      "inventory_name": "webmcp_check_availability",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4119",
+      "inventory_name": "webmcp_list_page_tools",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4120",
+      "inventory_name": "webmcp_call_page_tool",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4121",
+      "inventory_name": "user",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "863107b0-3e7c-407a-a00d-6d0b7350d844",
+          "is_active": true,
+          "tier": "ask-user",
+          "category": "human",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "863107b0-3e7c-407a-a00d-6d0b7350d844",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4122",
+      "inventory_name": "request_user_takeover",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "d5304ae4-05c5-4578-8fdd-17c287b85a4c",
+          "is_active": true,
+          "tier": "ask-user",
+          "category": "human",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "d5304ae4-05c5-4578-8fdd-17c287b85a4c",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4123",
+      "inventory_name": "update_plan",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "6eefa682-b0e6-4335-8f54-91960e86f8ae",
+          "is_active": true,
+          "tier": "ask-user",
+          "category": "human",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "6eefa682-b0e6-4335-8f54-91960e86f8ae",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4124",
+      "inventory_name": "user_todos",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "7347c005-6142-475c-982a-10aae5271e98",
+          "is_active": true,
+          "tier": "action",
+          "category": "human",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "7347c005-6142-475c-982a-10aae5271e98",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4125",
+      "inventory_name": "inject_stylesheet",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4126",
+      "inventory_name": "remove_stylesheet",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4127",
+      "inventory_name": "desktop_run_command",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "3667a6f0-9dad-4e4e-b83c-7b0deeed1008",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "desktop",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "3667a6f0-9dad-4e4e-b83c-7b0deeed1008",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4128",
+      "inventory_name": "parallel_for_each_tab",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4129",
+      "inventory_name": "chrome_record_gif",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "5c350bca-ed0b-4b31-a697-797bb3901f6f",
+          "is_active": true,
+          "tier": "action",
+          "category": "capture",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "5c350bca-ed0b-4b31-a697-797bb3901f6f",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4130",
+      "inventory_name": "records",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "30cf4ddd-d9e6-4f43-af3a-595f467bd661",
+          "is_active": true,
+          "tier": "action",
+          "category": "records",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "30cf4ddd-d9e6-4f43-af3a-595f467bd661",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4131",
+      "inventory_name": "chrome_record_tab_video",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "c94f7907-9650-477f-8dd6-fbbae4eac83e",
+          "is_active": true,
+          "tier": "action",
+          "category": "capture",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "c94f7907-9650-477f-8dd6-fbbae4eac83e",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4132",
+      "inventory_name": "record_demo",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "02c34de4-2513-48d4-a5d3-0aa8f9356c2e",
+          "is_active": true,
+          "tier": "action",
+          "category": "demos",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "02c34de4-2513-48d4-a5d3-0aa8f9356c2e",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4133",
+      "inventory_name": "list_demos",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "b5ff58c3-77dd-43d9-83a6-46ec9c7bb323",
+          "is_active": true,
+          "tier": "read",
+          "category": "demos",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "b5ff58c3-77dd-43d9-83a6-46ec9c7bb323",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4134",
+      "inventory_name": "describe_demo",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "6fe5f77b-c49a-487a-bffb-86d96183d874",
+          "is_active": true,
+          "tier": "read",
+          "category": "demos",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "6fe5f77b-c49a-487a-bffb-86d96183d874",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4135",
+      "inventory_name": "replay_demo",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "d3383285-82d1-434c-a3fb-9bcc92f45a42",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "demos",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "d3383285-82d1-434c-a3fb-9bcc92f45a42",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4136",
+      "inventory_name": "delete_demo",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "fea4569a-51d7-44cb-8efc-017f3815a847",
+          "is_active": true,
+          "tier": "action",
+          "category": "demos",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "fea4569a-51d7-44cb-8efc-017f3815a847",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4137",
+      "inventory_name": "save_guidance_note",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "dd447414-88cb-4cb5-b739-e3b9119a6341",
+          "is_active": true,
+          "tier": "action",
+          "category": "guidance",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "dd447414-88cb-4cb5-b739-e3b9119a6341",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4138",
+      "inventory_name": "list_guidance",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "d1a34e41-3a57-4646-a84c-bf5bf930af28",
+          "is_active": true,
+          "tier": "read",
+          "category": "guidance",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "d1a34e41-3a57-4646-a84c-bf5bf930af28",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4139",
+      "inventory_name": "get_guidance_item",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "6b5d84a7-f2a7-4766-8da4-a6d1f26e8c78",
+          "is_active": true,
+          "tier": "read",
+          "category": "guidance",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "6b5d84a7-f2a7-4766-8da4-a6d1f26e8c78",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4140",
+      "inventory_name": "delete_guidance_item",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "585a9b5d-ad64-47ef-b142-b42cce930a9d",
+          "is_active": true,
+          "tier": "action",
+          "category": "guidance",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "585a9b5d-ad64-47ef-b142-b42cce930a9d",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4141",
+      "inventory_name": "list_highlights",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "6f4853ff-190b-4df6-8c77-5261e0c1c28f",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "6f4853ff-190b-4df6-8c77-5261e0c1c28f",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4142",
+      "inventory_name": "extract_table",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "1c2e654e-bcb0-45ed-8e8d-1eb3cbf353aa",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "1c2e654e-bcb0-45ed-8e8d-1eb3cbf353aa",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4143",
+      "inventory_name": "screenshot_region",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "7c6ecc0e-b193-4a68-b201-d1e5c352fec4",
+          "is_active": true,
+          "tier": "read",
+          "category": "capture",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "7c6ecc0e-b193-4a68-b201-d1e5c352fec4",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4144",
+      "inventory_name": "get_clipboard",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [],
+      "chrome_extension_bindings": [],
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "has_active_definition_and_binding": false,
+      "direct_surface_default_inclusions": [],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4145",
+      "inventory_name": "chrome_tab_audio_inspect",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "707c383f-be07-497f-8a1e-16616c4f7e9f",
+          "is_active": true,
+          "tier": "read",
+          "category": "tabs",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "707c383f-be07-497f-8a1e-16616c4f7e9f",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4146",
+      "inventory_name": "mutation_watch",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "3421160d-9c7d-4c5d-a316-6392b5caae7d",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "3421160d-9c7d-4c5d-a316-6392b5caae7d",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4147",
+      "inventory_name": "extract_microdata",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "d1aef4bd-e5ef-4bef-8fc8-2a0a5b458b87",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "d1aef4bd-e5ef-4bef-8fc8-2a0a5b458b87",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4148",
+      "inventory_name": "data_patterns",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "c1c6d788-cf8a-47b0-8380-d5e9458b4205",
+          "is_active": true,
+          "tier": "action",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "c1c6d788-cf8a-47b0-8380-d5e9458b4205",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4149",
+      "inventory_name": "fetch_url_as_markdown",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "5654f4ef-ef37-4150-85fb-cb36f3a5389e",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "5654f4ef-ef37-4150-85fb-cb36f3a5389e",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4150",
+      "inventory_name": "computer",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "0b640927-e778-443a-a846-cc421743b201",
+          "is_active": true,
+          "tier": "action",
+          "category": "interaction",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "0b640927-e778-443a-a846-cc421743b201",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4151",
+      "inventory_name": "form_input",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "9ac5f0a7-98f1-4724-abe0-51b68d964e1f",
+          "is_active": true,
+          "tier": "action",
+          "category": "interaction",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "9ac5f0a7-98f1-4724-abe0-51b68d964e1f",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4152",
+      "inventory_name": "navigate",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "dbfdac6d-ffdd-49ce-95bb-7878d1690e75",
+          "is_active": true,
+          "tier": "action",
+          "category": "interaction",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "dbfdac6d-ffdd-49ce-95bb-7878d1690e75",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4153",
+      "inventory_name": "tabs",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "11f74f23-1ec5-4eb1-b7c9-a543420d474a",
+          "is_active": true,
+          "tier": "action",
+          "category": "tabs",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "11f74f23-1ec5-4eb1-b7c9-a543420d474a",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4154",
+      "inventory_name": "downloads",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "a85d7453-b89d-4287-8fa3-403103cbf88f",
+          "is_active": true,
+          "tier": "action",
+          "category": "capture",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "a85d7453-b89d-4287-8fa3-403103cbf88f",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4155",
+      "inventory_name": "clipboard",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "163b5e55-9d14-4db4-a0c7-07053147a17f",
+          "is_active": true,
+          "tier": "action",
+          "category": "interaction",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "163b5e55-9d14-4db4-a0c7-07053147a17f",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4156",
+      "inventory_name": "wait_for",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "e261dc7d-2cc9-460f-be84-f98828042ac7",
+          "is_active": true,
+          "tier": "read",
+          "category": "interaction",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "e261dc7d-2cc9-460f-be84-f98828042ac7",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": true,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4157",
+      "inventory_name": "upload_file",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "1ed44e94-1ac6-477f-87d2-c91262223c12",
+          "is_active": true,
+          "tier": "action",
+          "category": "interaction",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "1ed44e94-1ac6-477f-87d2-c91262223c12",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4158",
+      "inventory_name": "drop_file",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "af0cf047-edbe-409b-b550-b0be0f4ba6a1",
+          "is_active": true,
+          "tier": "action",
+          "category": "interaction",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "af0cf047-edbe-409b-b550-b0be0f4ba6a1",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4159",
+      "inventory_name": "read_pdf",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "85b45a83-6a9b-40d3-8783-a3324c3ad583",
+          "is_active": true,
+          "tier": "read",
+          "category": "reading",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "85b45a83-6a9b-40d3-8783-a3324c3ad583",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4160",
+      "inventory_name": "ai",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "87546016-6386-49dc-85b9-ec7566f9fe81",
+          "is_active": true,
+          "tier": "read",
+          "category": "ai",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "87546016-6386-49dc-85b9-ec7566f9fe81",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4161",
+      "inventory_name": "chrome_cookies",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "b8d350c6-8ef3-4c05-86a7-767ecf0eee70",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "chrome",
+          "admin_only": true
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "b8d350c6-8ef3-4c05-86a7-767ecf0eee70",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4162",
+      "inventory_name": "chrome_webmcp",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "4186d293-a330-4e85-b74d-af4c5b7fc24c",
+          "is_active": true,
+          "tier": "action",
+          "category": "webmcp",
+          "admin_only": true
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "4186d293-a330-4e85-b74d-af4c5b7fc24c",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4163",
+      "inventory_name": "tab_groups",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "05e9e45e-70d0-44f0-84f5-248f1e4cfc77",
+          "is_active": true,
+          "tier": "action",
+          "category": "tabs",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "05e9e45e-70d0-44f0-84f5-248f1e4cfc77",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4164",
+      "inventory_name": "chrome_bookmarks",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "e379dfe1-b04a-49bd-865e-f6c4324286b5",
+          "is_active": true,
+          "tier": "read",
+          "category": "chrome",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "e379dfe1-b04a-49bd-865e-f6c4324286b5",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4165",
+      "inventory_name": "chrome_history",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "18c688c0-152e-4ff6-b872-3f3073c239f3",
+          "is_active": true,
+          "tier": "read",
+          "category": "chrome",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "18c688c0-152e-4ff6-b872-3f3073c239f3",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4166",
+      "inventory_name": "chrome_recently_closed",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "96259e12-393f-4941-84cc-d87fe520888d",
+          "is_active": true,
+          "tier": "action",
+          "category": "chrome",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "96259e12-393f-4941-84cc-d87fe520888d",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4167",
+      "inventory_name": "stylesheet",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "03bf63a8-da97-4dc4-823a-412401997b6d",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "interaction",
+          "admin_only": false
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "03bf63a8-da97-4dc4-823a-412401997b6d",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4168",
+      "inventory_name": "cdp_session",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "aa45954b-92a1-47b9-a35f-ef7eb2a17c32",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "devtools",
+          "admin_only": true
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "aa45954b-92a1-47b9-a35f-ef7eb2a17c32",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    },
+    {
+      "feature_id": "EXT-F-4169",
+      "inventory_name": "cdp_emulate",
+      "inventory_surface": "Tools / registered executor",
+      "definitions": [
+        {
+          "id": "9b3d29b1-031d-4564-8f35-bb0d7d7cc42c",
+          "is_active": true,
+          "tier": "privileged",
+          "category": "devtools",
+          "admin_only": true
+        }
+      ],
+      "chrome_extension_bindings": [
+        {
+          "tool_id": "9b3d29b1-031d-4564-8f35-bb0d7d7cc42c",
+          "is_active": true,
+          "definition_is_active": true
+        }
+      ],
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "has_active_definition_and_binding": true,
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "duplicate_inventory_name": false,
+      "duplicate_definition_name": false,
+      "mapping_status": "active_definition_and_executor_binding"
+    }
+  ],
+  "role_limits": [
+    "Binding existence alone does not establish role availability.",
+    "admin_only and tier are definition metadata; this query does not inspect role claims, permission gates, organization access, RLS, or request-time user overrides.",
+    "Surface defaults describe defaults only; they do not prove a tool was present in a particular request. Direct inclusion is distinguished from always_include_bundles.",
+    "No manual-only inventory entry is removed or deemed defective.",
+    "This is metadata reconciliation, not product-test evidence or a runtime verdict."
+  ],
+  "evidence_path": "docs/stabilization/reports/tool-binding-census-20261004.json"
+}

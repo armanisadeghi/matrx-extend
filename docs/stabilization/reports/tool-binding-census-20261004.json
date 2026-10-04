@@ -1,0 +1,1313 @@
+{
+  "checked_at": "2026-10-04T18:25:16Z",
+  "source_shas": {
+    "matrx_extend_head": "6256d7b43366e7eb337d39d892c388d5348279d6",
+    "inventory_declared_source": "dc64e8a1c6c0ac28ac8102dd31857bf645d72df2",
+    "ai_matrx_admin_query_checkout_head": "11790a30c33bc8d62d669afb4e7d116cb39f669e"
+  },
+  "source": {
+    "kind": "self-hosted Supabase database",
+    "canonical_host_asserted_by_existing_operator": "db.matrxserver.com",
+    "access_path": "sibling ai-matrx pnpm admin-query --file using existing auth; public.execute_admin_query",
+    "cloud_supabase_mcp_used": false,
+    "query_sha256": "9dabbf865b3fba5f149f4a68da2b4ce78e967f62e312766a2e7e687764e53b1a",
+    "exact_query": "WITH relevant_definitions AS (\n  SELECT id, name, tier, category, admin_only, is_active\n  FROM tool.definition\n  WHERE name IN ('list_chrome_categories','list_core_tools','list_reading_tools','list_interaction_tools','list_tabs_tools','list_capture_tools','list_chrome_tools','list_human_tools','list_memory_tools','list_ai_tools','list_demos_tools','list_guidance_tools','list_devtools_tools','list_webmcp_tools','list_desktop_tools','list_credentials_tools','list_crm_tools','list_education_tools','list_productivity_tools','list_records_tools','chrome_batch','read_page','find','get_page_text','get_active_tab','get_page_selection','read_active_page','take_screenshot','query_elements','find_text_on_page','get_page_links','get_computed_style','get_element_at_point','inspect_element','get_element_details','list_open_tabs','get_tab_groups','get_tab_info','search_bookmarks','list_bookmark_tree','search_history','list_recent_history','list_downloads','get_form_fields','ai_check_availability','ai_summarize','ai_classify','ai_extract_json','ai_translate','ai_detect_language','ai_proofread','ai_describe_image','ai_check_prompt_injection','navigate_active_tab','click_element','type_into_element','scroll_page','wait_for','set_clipboard','sleep','press_keys','hover_element','focus_element','blur_element','right_click_element','select_dropdown_option','set_checkbox','set_radio','submit_form','file_upload','open_new_tab','close_tab','switch_to_tab','duplicate_tab','pin_tab','mute_tab','reload_tab','go_back','go_forward','set_tab_zoom','move_tab','resize_window','create_tab_group','add_tabs_to_group','remove_tabs_from_group','update_tab_group','download_url','cancel_download','credential_login','capture_prospect','capture_study_set','google_email_send','remember_for_domain','list_recently_closed','restore_recently_closed','chrome_save_page_as_mhtml','get_cookies','set_cookie','delete_cookie','cdp_attach','cdp_detach','cdp_attached_tabs','cdp_full_page_screenshot','cdp_a11y_tree','cdp_input_click_xy','cdp_input_type','cdp_network_capture_start','cdp_network_capture_drain','cdp_network_capture_stop','cdp_network_get_body','cdp_print_pdf','cdp_perf_metrics','cdp_emulate_device','cdp_clear_emulation','read_console_messages','read_network_requests','get_request_body','webmcp_check_availability','webmcp_list_page_tools','webmcp_call_page_tool','user','request_user_takeover','update_plan','user_todos','inject_stylesheet','remove_stylesheet','desktop_run_command','parallel_for_each_tab','chrome_record_gif','records','chrome_record_tab_video','record_demo','list_demos','describe_demo','replay_demo','delete_demo','save_guidance_note','list_guidance','get_guidance_item','delete_guidance_item','list_highlights','extract_table','screenshot_region','get_clipboard','chrome_tab_audio_inspect','mutation_watch','extract_microdata','data_patterns','fetch_url_as_markdown','computer','form_input','navigate','tabs','downloads','clipboard','upload_file','drop_file','read_pdf','ai','chrome_cookies','chrome_webmcp','tab_groups','chrome_bookmarks','chrome_history','chrome_recently_closed','stylesheet','cdp_session','cdp_emulate')\n     OR id IN (SELECT tool_id FROM tool.binding WHERE executor_name = 'chrome-extension')\n),\nbindings AS (\n  SELECT tool_id, executor_name, is_active\n  FROM tool.binding\n  WHERE executor_name = 'chrome-extension'\n),\nsurfaces AS (\n  SELECT surface_name, always_include_tools, always_include_bundles, never_include_tools\n  FROM tool.surface_defaults\n  WHERE surface_name IN ('chrome-extension/assistant', 'chrome-extension/pilot')\n)\nSELECT jsonb_build_object(\n  'definitions', (SELECT jsonb_agg(to_jsonb(d) ORDER BY d.name, d.id) FROM relevant_definitions d),\n  'bindings', (SELECT jsonb_agg(to_jsonb(b) ORDER BY b.executor_name, b.tool_id) FROM bindings b),\n  'surfaces', (SELECT jsonb_agg(to_jsonb(s) ORDER BY s.surface_name) FROM surfaces s)\n) AS census;"
+  },
+  "schema_evidence": {
+    "tool_definition": "id, name, tier, category, admin_only, is_active",
+    "tool_binding": "tool_id, executor_name, is_active; executor_name = chrome-extension",
+    "tool_surface_defaults": "surface_name, always_include_tools, always_include_bundles, never_include_tools; assistant and pilot rows only"
+  },
+  "counts": {
+    "definitions_selected": 84,
+    "chrome_extension_binding_rows": 84,
+    "active_bindings": 82,
+    "inactive_bindings": 2,
+    "active_definition_and_binding_names": 82,
+    "surface_rows": 2
+  },
+  "metadata": {
+    "bindings": [
+      {
+        "tool_id": "00171572-ef21-4864-b812-0c9f3a81fc84",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "02c34de4-2513-48d4-a5d3-0aa8f9356c2e",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "03bf63a8-da97-4dc4-823a-412401997b6d",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "04784482-2e61-44fa-b695-af15ae876721",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "05e9e45e-70d0-44f0-84f5-248f1e4cfc77",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "0b640927-e778-443a-a846-cc421743b201",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "0f992997-1ef7-435b-9475-a9b9c31dbe95",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "11f74f23-1ec5-4eb1-b7c9-a543420d474a",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "163b5e55-9d14-4db4-a0c7-07053147a17f",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "18c688c0-152e-4ff6-b872-3f3073c239f3",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "1ad3f006-22e5-4ef1-ba58-de88106809e4",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "1c2e654e-bcb0-45ed-8e8d-1eb3cbf353aa",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "1c5a06e7-ab2d-4c97-b804-a66393aac2ba",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "1ed44e94-1ac6-477f-87d2-c91262223c12",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "1ed5224c-0d01-4958-baff-b381ba73cade",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "1f2ad5bc-5549-48d3-b20c-1bcbbe4d3bb3",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "2c01c7fa-3259-4e04-b35d-10ccf14d1386",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "30cf4ddd-d9e6-4f43-af3a-595f467bd661",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "3421160d-9c7d-4c5d-a316-6392b5caae7d",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "3667a6f0-9dad-4e4e-b83c-7b0deeed1008",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "3738e8e7-0710-44fe-9128-bc4a48a13e50",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "3a2ef19b-3b71-4a34-9d80-80aec3460f22",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "4186d293-a330-4e85-b74d-af4c5b7fc24c",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "420580d3-5395-477f-a981-c9d509b56c59",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "4226b9d1-1ddc-4115-9ab2-81d4313c2e18",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "47893e94-3ceb-4c62-b012-b8a101fbd865",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "51a71551-85eb-4b09-bbbf-915aec41cc5b",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "5549cdd7-9687-48ac-a844-1056efffb76f",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "5654f4ef-ef37-4150-85fb-cb36f3a5389e",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "585a9b5d-ad64-47ef-b142-b42cce930a9d",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "5c350bca-ed0b-4b31-a697-797bb3901f6f",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "61a964d0-0935-4081-82a1-e5a4f9483c8f",
+        "is_active": false,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "6565b9a9-31e7-446f-90f7-6b725ed5406f",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "6b5d84a7-f2a7-4766-8da4-a6d1f26e8c78",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "6cfeaae2-9910-40dc-baf3-45e0e52164e1",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "6eeb1534-62f6-4785-a1e2-97a2aaa1d6b0",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "6eefa682-b0e6-4335-8f54-91960e86f8ae",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "6f4853ff-190b-4df6-8c77-5261e0c1c28f",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "6fe5f77b-c49a-487a-bffb-86d96183d874",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "7014fb07-6214-4d41-968e-7b7dfdddd304",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "707c383f-be07-497f-8a1e-16616c4f7e9f",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "7347c005-6142-475c-982a-10aae5271e98",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "7b08dea7-9973-4f8a-8725-fbb4028452ba",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "7c6ecc0e-b193-4a68-b201-d1e5c352fec4",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "7e9b9fac-17a3-4dba-a758-854bd0adcc7e",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "85b45a83-6a9b-40d3-8783-a3324c3ad583",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "863107b0-3e7c-407a-a00d-6d0b7350d844",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "87546016-6386-49dc-85b9-ec7566f9fe81",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "89f166f8-fe7e-4812-b9e0-a048c6a4c8a0",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "8bcee18a-89e1-4ff3-a368-39d3c86e5bfb",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "96259e12-393f-4941-84cc-d87fe520888d",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "98c5f44d-d70e-4a82-860e-e40221a818d2",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "9ac5f0a7-98f1-4724-abe0-51b68d964e1f",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "9b3d29b1-031d-4564-8f35-bb0d7d7cc42c",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "a85d7453-b89d-4287-8fa3-403103cbf88f",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "aa45954b-92a1-47b9-a35f-ef7eb2a17c32",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "aba94c34-8633-48d0-8118-2a2212b76714",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "af0cf047-edbe-409b-b550-b0be0f4ba6a1",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "b5ff58c3-77dd-43d9-83a6-46ec9c7bb323",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "b8d350c6-8ef3-4c05-86a7-767ecf0eee70",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "bb54630f-203a-44dd-acf7-2e0052d2df95",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "c1c6d788-cf8a-47b0-8380-d5e9458b4205",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "c80a0e80-d103-4c1d-b1e4-ce46ac62a0aa",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "c88124da-3061-4405-b5f1-5a83c99d0304",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "c94f7907-9650-477f-8dd6-fbbae4eac83e",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "d08196de-2077-49cd-bc98-7db9e47166c2",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "d1a34e41-3a57-4646-a84c-bf5bf930af28",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "d1aef4bd-e5ef-4bef-8fc8-2a0a5b458b87",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "d3383285-82d1-434c-a3fb-9bcc92f45a42",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "d3dc40a8-3d7c-4ad0-93ca-9efe554e4f2d",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "d5304ae4-05c5-4578-8fdd-17c287b85a4c",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "dbfdac6d-ffdd-49ce-95bb-7878d1690e75",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "dcad250d-45e3-40c7-96a0-f235e8b248a7",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "dd447414-88cb-4cb5-b739-e3b9119a6341",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "e261dc7d-2cc9-460f-be84-f98828042ac7",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "e379dfe1-b04a-49bd-865e-f6c4324286b5",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "e923f323-ba92-4bb2-930a-fef2f3336222",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "ee4190a3-8667-40b0-a402-c897b3423f1c",
+        "is_active": false,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "eee5ced3-2f5a-41e2-a911-80f48160bf88",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "f2bc0ea3-e414-4718-b3bb-630d582a87de",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "f327e6f4-a7a4-4e8b-9913-a20e6ca3100b",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "f4edcbdf-f85a-4170-8852-f91f28438c94",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "f50e4a0d-4b92-4194-825f-be7847546593",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      },
+      {
+        "tool_id": "fea4569a-51d7-44cb-8efc-017f3815a847",
+        "is_active": true,
+        "executor_name": "chrome-extension"
+      }
+    ],
+    "surfaces": [
+      {
+        "surface_name": "chrome-extension/assistant",
+        "never_include_tools": [],
+        "always_include_tools": [
+          "ai",
+          "chrome_batch",
+          "capture_prospect",
+          "cdp_a11y_tree",
+          "cdp_emulate",
+          "cdp_full_page_screenshot",
+          "cdp_input_click_xy",
+          "cdp_input_type",
+          "cdp_network_capture_drain",
+          "cdp_network_capture_start",
+          "cdp_network_capture_stop",
+          "cdp_network_get_body",
+          "cdp_perf_metrics",
+          "cdp_print_pdf",
+          "cdp_session",
+          "chrome_bookmarks",
+          "chrome_cookies",
+          "chrome_history",
+          "chrome_recently_closed",
+          "chrome_record_gif",
+          "chrome_record_tab_video",
+          "chrome_save_page_as_mhtml",
+          "chrome_tab_audio_inspect",
+          "chrome_webmcp",
+          "clipboard",
+          "computer",
+          "credential_login",
+          "data_patterns",
+          "delete_demo",
+          "delete_guidance_item",
+          "describe_demo",
+          "desktop_run_command",
+          "downloads",
+          "drop_file",
+          "extract_microdata",
+          "extract_table",
+          "fetch_url_as_markdown",
+          "find",
+          "find_text_on_page",
+          "form_input",
+          "get_computed_style",
+          "get_element_at_point",
+          "get_element_details",
+          "get_form_fields",
+          "get_guidance_item",
+          "get_page_links",
+          "get_page_selection",
+          "get_page_text",
+          "get_request_body",
+          "inspect_element",
+          "list_chrome_categories",
+          "list_demos",
+          "list_guidance",
+          "list_highlights",
+          "memory",
+          "mutation_watch",
+          "navigate",
+          "query_elements",
+          "read_active_page",
+          "read_console_messages",
+          "read_network_requests",
+          "read_page",
+          "read_pdf",
+          "record_demo",
+          "remember_for_domain",
+          "replay_demo",
+          "request_user_takeover",
+          "resize_window",
+          "save_guidance_note",
+          "screenshot_region",
+          "sleep",
+          "stylesheet",
+          "submit_form",
+          "tab_groups",
+          "tabs",
+          "tasks",
+          "update_plan",
+          "upload_file",
+          "user",
+          "user_todos",
+          "wait_for",
+          "capture_study_set",
+          "records"
+        ],
+        "always_include_bundles": [
+          "google"
+        ]
+      },
+      {
+        "surface_name": "chrome-extension/pilot",
+        "never_include_tools": [],
+        "always_include_tools": [
+          "ai",
+          "chrome_batch",
+          "capture_prospect",
+          "cdp_a11y_tree",
+          "cdp_emulate",
+          "cdp_full_page_screenshot",
+          "cdp_input_click_xy",
+          "cdp_input_type",
+          "cdp_network_capture_drain",
+          "cdp_network_capture_start",
+          "cdp_network_capture_stop",
+          "cdp_network_get_body",
+          "cdp_perf_metrics",
+          "cdp_print_pdf",
+          "cdp_session",
+          "chrome_bookmarks",
+          "chrome_cookies",
+          "chrome_history",
+          "chrome_recently_closed",
+          "chrome_record_gif",
+          "chrome_record_tab_video",
+          "chrome_save_page_as_mhtml",
+          "chrome_tab_audio_inspect",
+          "chrome_webmcp",
+          "clipboard",
+          "computer",
+          "credential_login",
+          "data_patterns",
+          "delete_demo",
+          "delete_guidance_item",
+          "describe_demo",
+          "desktop_run_command",
+          "downloads",
+          "drop_file",
+          "extract_microdata",
+          "extract_table",
+          "fetch_url_as_markdown",
+          "find",
+          "find_text_on_page",
+          "form_input",
+          "get_computed_style",
+          "get_element_at_point",
+          "get_element_details",
+          "get_form_fields",
+          "get_guidance_item",
+          "get_page_links",
+          "get_page_selection",
+          "get_page_text",
+          "get_request_body",
+          "inspect_element",
+          "list_chrome_categories",
+          "list_demos",
+          "list_guidance",
+          "list_highlights",
+          "memory",
+          "mutation_watch",
+          "navigate",
+          "query_elements",
+          "read_active_page",
+          "read_console_messages",
+          "read_network_requests",
+          "read_page",
+          "read_pdf",
+          "record_demo",
+          "remember_for_domain",
+          "replay_demo",
+          "request_user_takeover",
+          "resize_window",
+          "save_guidance_note",
+          "screenshot_region",
+          "sleep",
+          "stylesheet",
+          "submit_form",
+          "tab_groups",
+          "tabs",
+          "tasks",
+          "update_plan",
+          "upload_file",
+          "user",
+          "user_todos",
+          "wait_for",
+          "capture_study_set",
+          "records"
+        ],
+        "always_include_bundles": [
+          "google"
+        ]
+      }
+    ],
+    "definitions": [
+      {
+        "id": "87546016-6386-49dc-85b9-ec7566f9fe81",
+        "name": "ai",
+        "tier": "read",
+        "category": "ai",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "ee4190a3-8667-40b0-a402-c897b3423f1c",
+        "name": "capture_credential",
+        "tier": "action",
+        "category": "credentials",
+        "is_active": false,
+        "admin_only": false
+      },
+      {
+        "id": "f2bc0ea3-e414-4718-b3bb-630d582a87de",
+        "name": "capture_prospect",
+        "tier": "action",
+        "category": "crm",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "51a71551-85eb-4b09-bbbf-915aec41cc5b",
+        "name": "capture_study_set",
+        "tier": "action",
+        "category": "education",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "2c01c7fa-3259-4e04-b35d-10ccf14d1386",
+        "name": "cdp_a11y_tree",
+        "tier": "privileged",
+        "category": "devtools",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "9b3d29b1-031d-4564-8f35-bb0d7d7cc42c",
+        "name": "cdp_emulate",
+        "tier": "privileged",
+        "category": "devtools",
+        "is_active": true,
+        "admin_only": true
+      },
+      {
+        "id": "04784482-2e61-44fa-b695-af15ae876721",
+        "name": "cdp_full_page_screenshot",
+        "tier": "privileged",
+        "category": "devtools",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "e923f323-ba92-4bb2-930a-fef2f3336222",
+        "name": "cdp_input_click_xy",
+        "tier": "privileged",
+        "category": "devtools",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "7014fb07-6214-4d41-968e-7b7dfdddd304",
+        "name": "cdp_input_type",
+        "tier": "privileged",
+        "category": "devtools",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "eee5ced3-2f5a-41e2-a911-80f48160bf88",
+        "name": "cdp_network_capture_drain",
+        "tier": "privileged",
+        "category": "devtools",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "6cfeaae2-9910-40dc-baf3-45e0e52164e1",
+        "name": "cdp_network_capture_start",
+        "tier": "privileged",
+        "category": "devtools",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "c88124da-3061-4405-b5f1-5a83c99d0304",
+        "name": "cdp_network_capture_stop",
+        "tier": "privileged",
+        "category": "devtools",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "c80a0e80-d103-4c1d-b1e4-ce46ac62a0aa",
+        "name": "cdp_network_get_body",
+        "tier": "privileged",
+        "category": "devtools",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "98c5f44d-d70e-4a82-860e-e40221a818d2",
+        "name": "cdp_perf_metrics",
+        "tier": "read",
+        "category": "devtools",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "d3dc40a8-3d7c-4ad0-93ca-9efe554e4f2d",
+        "name": "cdp_print_pdf",
+        "tier": "privileged",
+        "category": "devtools",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "aa45954b-92a1-47b9-a35f-ef7eb2a17c32",
+        "name": "cdp_session",
+        "tier": "privileged",
+        "category": "devtools",
+        "is_active": true,
+        "admin_only": true
+      },
+      {
+        "id": "f327e6f4-a7a4-4e8b-9913-a20e6ca3100b",
+        "name": "chrome_batch",
+        "tier": "read",
+        "category": "core",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "e379dfe1-b04a-49bd-865e-f6c4324286b5",
+        "name": "chrome_bookmarks",
+        "tier": "read",
+        "category": "chrome",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "b8d350c6-8ef3-4c05-86a7-767ecf0eee70",
+        "name": "chrome_cookies",
+        "tier": "privileged",
+        "category": "chrome",
+        "is_active": true,
+        "admin_only": true
+      },
+      {
+        "id": "18c688c0-152e-4ff6-b872-3f3073c239f3",
+        "name": "chrome_history",
+        "tier": "read",
+        "category": "chrome",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "96259e12-393f-4941-84cc-d87fe520888d",
+        "name": "chrome_recently_closed",
+        "tier": "action",
+        "category": "chrome",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "5c350bca-ed0b-4b31-a697-797bb3901f6f",
+        "name": "chrome_record_gif",
+        "tier": "action",
+        "category": "capture",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "c94f7907-9650-477f-8dd6-fbbae4eac83e",
+        "name": "chrome_record_tab_video",
+        "tier": "action",
+        "category": "capture",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "5549cdd7-9687-48ac-a844-1056efffb76f",
+        "name": "chrome_save_page_as_mhtml",
+        "tier": "action",
+        "category": "capture",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "707c383f-be07-497f-8a1e-16616c4f7e9f",
+        "name": "chrome_tab_audio_inspect",
+        "tier": "read",
+        "category": "tabs",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "4186d293-a330-4e85-b74d-af4c5b7fc24c",
+        "name": "chrome_webmcp",
+        "tier": "action",
+        "category": "webmcp",
+        "is_active": true,
+        "admin_only": true
+      },
+      {
+        "id": "163b5e55-9d14-4db4-a0c7-07053147a17f",
+        "name": "clipboard",
+        "tier": "action",
+        "category": "interaction",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "0b640927-e778-443a-a846-cc421743b201",
+        "name": "computer",
+        "tier": "action",
+        "category": "interaction",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "4226b9d1-1ddc-4115-9ab2-81d4313c2e18",
+        "name": "credential_login",
+        "tier": "action",
+        "category": "credentials",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "c1c6d788-cf8a-47b0-8380-d5e9458b4205",
+        "name": "data_patterns",
+        "tier": "action",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "fea4569a-51d7-44cb-8efc-017f3815a847",
+        "name": "delete_demo",
+        "tier": "action",
+        "category": "demos",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "585a9b5d-ad64-47ef-b142-b42cce930a9d",
+        "name": "delete_guidance_item",
+        "tier": "action",
+        "category": "guidance",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "6fe5f77b-c49a-487a-bffb-86d96183d874",
+        "name": "describe_demo",
+        "tier": "read",
+        "category": "demos",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "3667a6f0-9dad-4e4e-b83c-7b0deeed1008",
+        "name": "desktop_run_command",
+        "tier": "privileged",
+        "category": "desktop",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "a85d7453-b89d-4287-8fa3-403103cbf88f",
+        "name": "downloads",
+        "tier": "action",
+        "category": "capture",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "af0cf047-edbe-409b-b550-b0be0f4ba6a1",
+        "name": "drop_file",
+        "tier": "action",
+        "category": "interaction",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "61a964d0-0935-4081-82a1-e5a4f9483c8f",
+        "name": "evaluate_javascript",
+        "tier": "privileged",
+        "category": "interaction",
+        "is_active": false,
+        "admin_only": false
+      },
+      {
+        "id": "d1aef4bd-e5ef-4bef-8fc8-2a0a5b458b87",
+        "name": "extract_microdata",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "1c2e654e-bcb0-45ed-8e8d-1eb3cbf353aa",
+        "name": "extract_table",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "5654f4ef-ef37-4150-85fb-cb36f3a5389e",
+        "name": "fetch_url_as_markdown",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "6eeb1534-62f6-4785-a1e2-97a2aaa1d6b0",
+        "name": "find",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "1f2ad5bc-5549-48d3-b20c-1bcbbe4d3bb3",
+        "name": "find_text_on_page",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "9ac5f0a7-98f1-4724-abe0-51b68d964e1f",
+        "name": "form_input",
+        "tier": "action",
+        "category": "interaction",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "1ed5224c-0d01-4958-baff-b381ba73cade",
+        "name": "get_computed_style",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "00171572-ef21-4864-b812-0c9f3a81fc84",
+        "name": "get_element_at_point",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "6565b9a9-31e7-446f-90f7-6b725ed5406f",
+        "name": "get_element_details",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "aba94c34-8633-48d0-8118-2a2212b76714",
+        "name": "get_form_fields",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "6b5d84a7-f2a7-4766-8da4-a6d1f26e8c78",
+        "name": "get_guidance_item",
+        "tier": "read",
+        "category": "guidance",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "dcad250d-45e3-40c7-96a0-f235e8b248a7",
+        "name": "get_page_links",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "bb54630f-203a-44dd-acf7-2e0052d2df95",
+        "name": "get_page_selection",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "1ad3f006-22e5-4ef1-ba58-de88106809e4",
+        "name": "get_page_text",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "420580d3-5395-477f-a981-c9d509b56c59",
+        "name": "get_request_body",
+        "tier": "privileged",
+        "category": "devtools",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "d08196de-2077-49cd-bc98-7db9e47166c2",
+        "name": "google_email_send",
+        "tier": "ask-user",
+        "category": "productivity",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "7b08dea7-9973-4f8a-8725-fbb4028452ba",
+        "name": "inspect_element",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "1c5a06e7-ab2d-4c97-b804-a66393aac2ba",
+        "name": "list_chrome_categories",
+        "tier": "read",
+        "category": "core",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "b5ff58c3-77dd-43d9-83a6-46ec9c7bb323",
+        "name": "list_demos",
+        "tier": "read",
+        "category": "demos",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "d1a34e41-3a57-4646-a84c-bf5bf930af28",
+        "name": "list_guidance",
+        "tier": "read",
+        "category": "guidance",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "6f4853ff-190b-4df6-8c77-5261e0c1c28f",
+        "name": "list_highlights",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "3421160d-9c7d-4c5d-a316-6392b5caae7d",
+        "name": "mutation_watch",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "dbfdac6d-ffdd-49ce-95bb-7878d1690e75",
+        "name": "navigate",
+        "tier": "action",
+        "category": "interaction",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "7e9b9fac-17a3-4dba-a758-854bd0adcc7e",
+        "name": "query_elements",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "3a2ef19b-3b71-4a34-9d80-80aec3460f22",
+        "name": "read_active_page",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "f50e4a0d-4b92-4194-825f-be7847546593",
+        "name": "read_console_messages",
+        "tier": "privileged",
+        "category": "devtools",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "8bcee18a-89e1-4ff3-a368-39d3c86e5bfb",
+        "name": "read_network_requests",
+        "tier": "privileged",
+        "category": "devtools",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "f4edcbdf-f85a-4170-8852-f91f28438c94",
+        "name": "read_page",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "85b45a83-6a9b-40d3-8783-a3324c3ad583",
+        "name": "read_pdf",
+        "tier": "read",
+        "category": "reading",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "02c34de4-2513-48d4-a5d3-0aa8f9356c2e",
+        "name": "record_demo",
+        "tier": "action",
+        "category": "demos",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "30cf4ddd-d9e6-4f43-af3a-595f467bd661",
+        "name": "records",
+        "tier": "action",
+        "category": "records",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "0f992997-1ef7-435b-9475-a9b9c31dbe95",
+        "name": "remember_for_domain",
+        "tier": "action",
+        "category": "memory",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "d3383285-82d1-434c-a3fb-9bcc92f45a42",
+        "name": "replay_demo",
+        "tier": "privileged",
+        "category": "demos",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "d5304ae4-05c5-4578-8fdd-17c287b85a4c",
+        "name": "request_user_takeover",
+        "tier": "ask-user",
+        "category": "human",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "3738e8e7-0710-44fe-9128-bc4a48a13e50",
+        "name": "resize_window",
+        "tier": "action",
+        "category": "tabs",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "dd447414-88cb-4cb5-b739-e3b9119a6341",
+        "name": "save_guidance_note",
+        "tier": "action",
+        "category": "guidance",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "7c6ecc0e-b193-4a68-b201-d1e5c352fec4",
+        "name": "screenshot_region",
+        "tier": "read",
+        "category": "capture",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "47893e94-3ceb-4c62-b012-b8a101fbd865",
+        "name": "sleep",
+        "tier": "action",
+        "category": "interaction",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "03bf63a8-da97-4dc4-823a-412401997b6d",
+        "name": "stylesheet",
+        "tier": "privileged",
+        "category": "interaction",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "89f166f8-fe7e-4812-b9e0-a048c6a4c8a0",
+        "name": "submit_form",
+        "tier": "action",
+        "category": "interaction",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "05e9e45e-70d0-44f0-84f5-248f1e4cfc77",
+        "name": "tab_groups",
+        "tier": "action",
+        "category": "tabs",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "11f74f23-1ec5-4eb1-b7c9-a543420d474a",
+        "name": "tabs",
+        "tier": "action",
+        "category": "tabs",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "6eefa682-b0e6-4335-8f54-91960e86f8ae",
+        "name": "update_plan",
+        "tier": "ask-user",
+        "category": "human",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "1ed44e94-1ac6-477f-87d2-c91262223c12",
+        "name": "upload_file",
+        "tier": "action",
+        "category": "interaction",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "863107b0-3e7c-407a-a00d-6d0b7350d844",
+        "name": "user",
+        "tier": "ask-user",
+        "category": "human",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "7347c005-6142-475c-982a-10aae5271e98",
+        "name": "user_todos",
+        "tier": "action",
+        "category": "human",
+        "is_active": true,
+        "admin_only": false
+      },
+      {
+        "id": "e261dc7d-2cc9-460f-be84-f98828042ac7",
+        "name": "wait_for",
+        "tier": "read",
+        "category": "interaction",
+        "is_active": true,
+        "admin_only": false
+      }
+    ]
+  }
+}
