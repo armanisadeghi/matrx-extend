@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-chrome-local-procedure-final-peer-review",
+  "task_id": "chrome-local-procedure-completion",
+  "reviewed_proposal_commit": "8376094f",
+  "reviewed_proposal": ".research/chrome-local-procedure-completion.json",
+  "prior_review": ".research/chrome-local-procedure-peer.json",
+  "review_scope": "Source and proposal only. No build, browser, workflow, UI, account, permission, role, fixture execution, or product/inventory changes.",
+  "verdict_a_procedure_adequacy": {
+    "overall": "PARTIAL: prior role-isolation and downloaded-file cleanup findings are addressed; history and recently-closed fixture setup remains too vague for reproducible owned-fixture assertions.",
+    "runtime_unverified": true,
+    "prior_findings": {
+      "separate_role_profiles_and_fixtures": "ADDRESSED — each case calls for a role-specific dedicated disposable profile, and shared_role_lifecycle prohibits cross-role reuse of profile, fixture, session ID, or download record.",
+      "downloaded_file_cleanup_outside_profile": "ADDRESSED — exact owned path is recorded, only that file is removed and checked absent, and uncertainty is reported if path/absence cannot be confirmed; profile retirement is explicitly insufficient evidence."
+    },
+    "cases": {
+      "EXT-F-4042-T01": "PARTIAL — handler/schema and assertions align, but 'prepare shared history fixture' does not specify the owned URLs/titles to visit or the exact visit steps; cannot reproduce the two expected rows from this procedure alone.",
+      "EXT-F-4043-T01": "ADEQUATE AS SOURCE-DERIVED PROCEDURE — names the committed synthetic fixture, link, filename, completion precondition, query/filter and malformed state. Browser completion remains unverified.",
+      "EXT-F-4094-T01": "PARTIAL — schema and sessions preflight align, but setup does not name the exact disposable page/title to open and close to create the expected session row.",
+      "EXT-F-4165-T01": "PARTIAL — canonical action/schema paths align, but it inherits the underspecified history fixtures from EXT-F-4042; distinctive hostname and URLs are not concretely provisioned.",
+      "EXT-F-4166-T01": "PARTIAL — list/restore flow safely uses only the ID returned for the controlled fixture and avoids omitted-ID restore; the exact fixture page/title/tab creation and closure steps remain unspecified."
+    },
+    "remaining_procedure_findings": [
+      "No checked-in history/session fixture is identified by this proposal. Define concrete owned URLs and expected titles, exact page-opening steps per role, and which single test tab to close; keep fixture values distinct or otherwise isolated across roles.",
+      "Per-case cleanup sentences can read as deleting each role's profile after each case, while shared_role_lifecycle says run all cases for a role and then clean up. Clarify that cleanup occurs once after that role's full case set, preserving its profile between applicable cases."
+    ]
+  },
+  "verdict_b_safety_quality_false_coverage": {
+    "overall": "PASS WITH PROCEDURE CLARITY GAPS: no new false runtime or authorization claim found; schema negatives, reachability boundary, and cleanup language are materially improved.",
+    "findings": [
+      "ToolsView.tsx manual Run parses and safe-parses handler arguments, then invokes handler.run directly with permissionMode='act'; procedures correctly state this does not exercise dispatcher Ask/Act authorization or prove live tool binding.",
+      "Malformed cases match Zod schemas and are rejected before handler execution: minutes=0 (list_recent_history), state='paused' (list_downloads), max_results=0 (list_recently_closed), action='other' (chrome_history and chrome_recently_closed). These are argument-validation negatives only.",
+      "Chrome sessions is required in the Chrome manifest permissions and is absent from optional_permissions; sessions handler metadata requests it as an optional permission, but the proposal correctly treats loaded-artifact preflight as required and does not propose toggling/removing it or call absence an authorization denial.",
+      "The source fixture is synthetic and self-contained. Proposal accurately leaves completed download, loaded artifact, session retention/restore, both role runs, and cleanup outcomes unverified.",
+      "Role-specific Catalog runs are correctly bounded as direct local-handler observations; they do not prove member/admin access controls, Ask/Act denial, or agent advertisement/binding."
+    ],
+    "source_checks": [
+      "src/features/tools/ToolsView.tsx:390-477",
+      "src/lib/tools/handlers/browser-data.ts:88-204",
+      "src/lib/tools/handlers/canonical-mergers.ts:394-453",
+      "src/lib/tools/handlers/optional-perms.ts:156-216",
+      "src/lib/tools/categories.ts:461-560",
+      "wxt.config.ts:66-129",
+      "tests/browser/fixtures/chrome-local-download.html",
+      "tests/browser/fixtures/chrome-local-download.txt"
+    ],
+    "runtime_unverified": true
+  }
+}
