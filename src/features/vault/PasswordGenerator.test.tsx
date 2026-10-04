@@ -244,7 +244,8 @@ describe('PasswordGenerator', () => {
   it('excludes ambiguous digits when the same controlled entropy sample is selected', async () => {
     vi.stubGlobal('crypto', {
       getRandomValues: <T extends ArrayBufferView>(array: T) => {
-        (array as Uint32Array)[0] = 1;
+        if (!(array instanceof Uint32Array)) throw new Error('Expected Uint32Array entropy input');
+        array[0] = 1;
         return array;
       },
     });
