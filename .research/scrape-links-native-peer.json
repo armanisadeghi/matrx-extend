@@ -1,0 +1,41 @@
+{
+  "reviewed_source_sha": "9515804d7b30c96fc7d9f81e437c881a059c6e49",
+  "inventory_case": "EXT-F-1007-T13 / EXT-F-1007-C13",
+  "reviewer_role": "fresh independent verifier; zero source or test authorship",
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_a_acceptance_scope_readiness": {
+    "status": "PARTIAL; guest native procedure ready for one guarded run, acceptance not yet verified",
+    "evidence": [
+      "Inventory requires guest, member and admin, each warm and reload. This driver explicitly checks guest auth storage only; member and admin remain unverified.",
+      "The fixture owns /intake with exactly /forms Patient forms and /appointments Appointments. selectedLinks reads only the visible selected Links pane and assertLinkPane compares rendered href/text identities, tab count and toolbar count against independent fixture literals before removal, after selective removal, after blank Add, after valid href+text Add and after Cancel.",
+      "exerciseLinkControls uses the trusted DOM pointer driver for Open, Copy URL, Remove link, Add link, Add, inputs and Cancel. The same sequence runs warm and after the full extension reload, replacement panel and populated /intake recapture.",
+      "Open is observed through the browser's new-page event and URL; Copy URL is observed through navigator.clipboard.readText. Known nonmatching observed values create failures. Observation unavailable creates a partial result, never a pass. All mutations use resourceAction, so a resource refusal propagates out of the case.",
+      "No reviewed native execution or real browser/OS outcome for this new T13 procedure exists. Prior source/component checks and this review cannot promote a role cell. The already active native run 37210977886 was not touched."
+    ],
+    "missing_or_unverified": [
+      "Guest warm/reload native link outcomes and resource journal from this revised driver",
+      "Member and admin warm/reload role cells"
+    ],
+    "extra_or_misunderstood": []
+  },
+  "verdict_b_doctrine_quality": {
+    "status": "PASS for the bounded source change",
+    "evidence": [
+      "The change uses existing ScrapeView, the shared native pointer driver and resource boundary; no product implementation, injected DOM state, compatibility shim or second parser was added.",
+      "The shared observeVideoLinks path was factored into observeOpenedAndCopiedLinks without changing its open/copy/refusal behavior. The existing media assertion and pointer-field paths remain intact; only href/text field resolution was added.",
+      "Fresh node --test tests/browser/scrape-native-media-actions.test.mjs tests/browser/scrape-media-assertions.test.mjs: 18/18 pass. Fresh pnpm compile, node --check native driver and Biome check on all six touched files pass.",
+      "The source report records a planted self-comparison link-identity mutation failing and restoring cleanly. Review of the assertions confirms that wrong identities, wrong counts, wrong opened URL, wrong clipboard URL and resource refusal cannot yield a passing T13 verdict."
+    ],
+    "limits": [
+      "The focused tests stub browser page and clipboard boundaries; native observation remains required for acceptance.",
+      "The source report's planted mutation was inspected as recorded evidence, not repeated by this no-source-edits reviewer."
+    ]
+  },
+  "guarded_run_nomination": "After active run 37210977886 has finished, nominate exactly one hosted guest-scrape-development run using frozen 0.2.215 source 3536b5cb0bea2fb33383f2b239b8602fafb79351, CI 37193761291, artifact 11299613935 and reviewed native driver 9515804d. Inspect receipt/tree hash, T13 warm and reload actual identities/counts, opened and clipboard URLs, and resource journal. This is a run nomination, not a native pass.",
+  "files": [".research/scrape-links-native-peer.json"],
+  "own_shas": [],
+  "open_questions": [
+    "Will the guarded guest native run observe correct open and OS clipboard values at both lifecycle phases?",
+    "When will separate member and admin native warm/reload cells be run?"
+  ]
+}
