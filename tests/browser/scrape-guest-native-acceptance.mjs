@@ -9,10 +9,11 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { captureLifecycleEvidence } from './profile-reload-capture.mjs';
 import { armBusyExpression, readBusyExpression } from './scrape-busy-observer.mjs';
 import { scrapeLayoutFailure } from './scrape-layout-guard.mjs';
-import { assertImageGroups, assertMediaPane } from './scrape-media-assertions.mjs';
+import { assertImageGroups, assertLinkPane, assertMediaPane } from './scrape-media-assertions.mjs';
 import { intakeImage } from './scrape-media-fixture.mjs';
 import {
   enterMediaField,
+  observeScrapeLinks,
   observeVideoLinks,
   videoLinksVerdict,
 } from './scrape-native-media-actions.mjs';
@@ -197,6 +198,10 @@ async function scrapeState(panel) {
         videoItems: [...content.querySelectorAll('a')]
           .filter(a=>a.parentElement?.querySelector('button[title="Remove video"]'))
           .map(a=>({href:a.href,text:a.textContent?.trim()??''})),
+        linkItems: [...content.querySelectorAll('a')]
+          .filter(a=>a.parentElement?.querySelector('button[title="Remove link"]'))
+          .map(a=>({href:a.href,text:a.firstElementChild?.textContent?.trim()??''})),
+        linkToolbar: content.querySelector('span.uppercase')?.textContent?.trim()??null,
       } : null,
       error:buttons.some(n=>n.getAttribute('aria-label')==='Dismiss'),
       reload:buttons.some(n=>n.textContent.trim()==='Reload page'),
@@ -247,6 +252,68 @@ async function mediaForm(panel) {
       addButtons:[...(content?.querySelectorAll('button')??[])].filter(n=>n.textContent.trim()==='Add').length };
   })()`,
   );
+}
+
+async function selectedLinks(panel, items, name) {
+  const state = await waitFor(
+    name,
+    () => scrapeState(panel),
+    (s) => s?.selected === 'Links' && s.visible && s.media?.linkItems?.length === items.length,
+  );
+  return assertLinkPane(state, items, name);
+}
+
+async function exerciseLinkControls({ panel, page, origin, phase, resourceAction }) {
+  const link = (path, text) => ({ href: `${origin}${path}`, text });
+  const initial = [link('/forms', 'Patient forms'), link('/appointments', 'Appointments')];
+  await resourceAction(() => click(panel, 'scrape-result-tab', 'Links'));
+  const before = await selectedLinks(panel, initial, `${phase}_two_links`);
+  const actions = await observeScrapeLinks({
+    page,
+    panel,
+    urls: initial.map((item) => item.href),
+    resourceAction,
+    click,
+    evaluate,
+  });
+  await resourceAction(() => click(panel, 'scrape-media-remove', initial[0].href));
+  const removed = await selectedLinks(panel, [initial[1]], `${phase}_link_removed`);
+  await resourceAction(() => click(panel, 'scrape-media-add-row', 'Add link'));
+  await resourceAction(() => click(panel, 'scrape-media-form-action', 'Add'));
+  assert.deepEqual(
+    (await mediaForm(panel)).inputs.map((input) => input.value),
+    ['', ''],
+    `${phase}_blank_link_form_not_retained`,
+  );
+  const blankRejected = await selectedLinks(panel, [initial[1]], `${phase}_blank_link_rejected`);
+  await enterMediaField({
+    panel,
+    field: 'href',
+    value: `${origin}/referrals`,
+    resourceAction,
+    click,
+  });
+  await enterMediaField({ panel, field: 'text', value: 'Referral hours', resourceAction, click });
+  await resourceAction(() => click(panel, 'scrape-media-form-action', 'Add'));
+  const survivors = [initial[1], link('/referrals', 'Referral hours')];
+  const added = await selectedLinks(panel, survivors, `${phase}_link_added`);
+  await enterMediaField({ panel, field: 'href', value: `${origin}/forms`, resourceAction, click });
+  await enterMediaField({
+    panel,
+    field: 'text',
+    value: 'Discard this draft',
+    resourceAction,
+    click,
+  });
+  await resourceAction(() => click(panel, 'scrape-media-form-action', 'Cancel'));
+  await resourceAction(() => click(panel, 'scrape-media-add-row', 'Add link'));
+  assert.deepEqual(
+    (await mediaForm(panel)).inputs.map((input) => input.value),
+    ['', ''],
+    `${phase}_cancelled_link_draft_retained`,
+  );
+  const cancelled = await selectedLinks(panel, survivors, `${phase}_link_cancelled`);
+  return { phase, before, actions, removed, blankRejected, added, cancelled };
 }
 
 async function exerciseMediaControls({
@@ -741,6 +808,23 @@ try {
       );
       if (warmLinks.failures.length) report.cases.at(-1).failure = warmLinks.failures;
 
+      report.stage = 'warm_link_controls';
+      const warmLinkControls = await captureMediaFailure(panel, artifacts, 'warm-links', () =>
+        exerciseLinkControls({ panel, page, origin, phase: 'warm', resourceAction }),
+      );
+      report.link_controls = { warm: warmLinkControls };
+      const warmLinkVerdict = videoLinksVerdict(warmLinkControls.actions);
+      mark(
+        'EXT-F-1007-T13',
+        warmLinkVerdict.status === 'failed' ? 'failed' : 'partial',
+        { warm: warmLinkControls },
+        [
+          'Repeat controls after full extension reload; member/admin modes remain unverified.',
+          ...warmLinkVerdict.remaining,
+        ],
+      );
+      if (warmLinkVerdict.failures.length) report.cases.at(-1).failure = warmLinkVerdict.failures;
+
       report.stage = 'deep_capture';
       await requireResourceHealth();
       await resourceAction(() => click(panel, 'scrape-result-tab', 'Article'));
@@ -990,6 +1074,21 @@ try {
             }),
         );
         report.media_controls.reload = reloadControls;
+        report.stage = 'post_reload_link_controls';
+        const reloadLinkControls = await captureMediaFailure(
+          replacement.panel,
+          artifacts,
+          'reload-links',
+          () =>
+            exerciseLinkControls({
+              panel: replacement.panel,
+              page,
+              origin,
+              phase: 'reload',
+              resourceAction,
+            }),
+        );
+        report.link_controls.reload = reloadLinkControls;
         postReloadPanes.images = reloadControls.images.before;
         postReloadPanes.video = reloadControls.videos.before;
         report.post_reload_populated_panes = postReloadPanes;
@@ -1018,6 +1117,12 @@ try {
           if (verdict.failures.length) item.failure = verdict.failures;
           item.status = verdict.status;
         }
+        const t13 = report.cases.find((c) => c.id === 'EXT-F-1007-T13');
+        t13.evidence.reload = reloadLinkControls;
+        const linkVerdict = videoLinksVerdict(warmLinkControls.actions, reloadLinkControls.actions);
+        t13.status = linkVerdict.status === 'passed' ? 'partial' : linkVerdict.status;
+        t13.remaining = ['Member/admin modes remain unverified.', ...linkVerdict.remaining];
+        if (linkVerdict.failures.length) t13.failure = linkVerdict.failures;
       } finally {
         await replacement.panel.detach();
       }

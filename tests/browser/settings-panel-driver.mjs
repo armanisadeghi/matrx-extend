@@ -174,7 +174,9 @@ export async function click(panel, kind, label) {
       else if (kind === 'scrape-media-form-action') candidates = [...(content?.querySelectorAll('button') ?? [])]
         .filter((el) => el.textContent.trim() === label);
       else if (kind === 'scrape-media-form-field') candidates = [...(content?.querySelectorAll('input') ?? [])]
-        .filter((el) => el.placeholder === (label === 'src' ? 'https://…' : 'alt text (optional)'));
+        .filter((el) => el.placeholder ===
+          (label === 'src' || label === 'href' ? 'https://…' :
+            label === 'text' ? 'anchor text (optional)' : 'alt text (optional)'));
       else candidates = [];
     }
     else if (kind === 'scrape-dismiss') {

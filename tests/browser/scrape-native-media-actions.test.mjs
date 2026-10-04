@@ -3,6 +3,7 @@ import test from 'node:test';
 import { runNativeResourceAction } from './native-resource-boundary.mjs';
 import {
   enterMediaField,
+  observeScrapeLinks,
   observeVideoLinks,
   videoLinksVerdict,
 } from './scrape-native-media-actions.mjs';
@@ -158,4 +159,30 @@ test('unavailable opened URL stays partial when document loading times out', asy
       'open_unavailable:video_open_url_unavailable',
     ]);
   }
+});
+
+test('native Scrape link open and clipboard copy preserve the exact destination', async () => {
+  const deps = controls({ openedUrl: openUrl, copiedUrl: copyUrl });
+  const observed = await observeScrapeLinks({ ...deps, urls: [openUrl, copyUrl] });
+  assert.deepEqual(observed, {
+    opened_url: openUrl,
+    clipboard_url: copyUrl,
+    limitations: [],
+    failures: [],
+  });
+  const wrong = controls({ openedUrl: copyUrl, copiedUrl: openUrl });
+  const mismatch = await observeScrapeLinks({ ...wrong, urls: [openUrl, copyUrl] });
+  assert.deepEqual(mismatch.failures, [
+    `link_open_url_mismatch:${copyUrl}`,
+    `link_clipboard_url_mismatch:${openUrl}`,
+  ]);
+  const refused = controls({ failGateAt: 2 });
+  await assert.rejects(
+    observeScrapeLinks({ ...refused, urls: [openUrl, copyUrl] }),
+    /NATIVE_RESOURCE_BOUNDARY_REFUSED:stale_health/,
+  );
+  assert.deepEqual(
+    refused.actions.filter(([kind]) => kind === 'click'),
+    [['click', 'scrape-media-open', openUrl]],
+  );
 });

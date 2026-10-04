@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { assertImageGroups, assertMediaPane } from './scrape-media-assertions.mjs';
+import { assertImageGroups, assertLinkPane, assertMediaPane } from './scrape-media-assertions.mjs';
 
 const image = {
   href: 'http://127.0.0.1:3150/intake.svg',
@@ -207,4 +207,42 @@ test('an open Add form still exposes the selected media pane', () => {
     () => assertMediaPane(open, { label: 'Images', items: [expectedImage] }),
     /pane_controls_missing/,
   );
+});
+
+test('link assertion keeps exact survivors through removal, add, and cancellation', () => {
+  const forms = { href: 'http://127.0.0.1:3150/forms', text: 'Patient forms' };
+  const appointments = { href: 'http://127.0.0.1:3150/appointments', text: 'Appointments' };
+  const referrals = { href: 'http://127.0.0.1:3150/referrals', text: 'Referral hours' };
+  const links = (items) => ({
+    selected: 'Links',
+    visible: true,
+    resultText: 'Add link',
+    media: {
+      linkItems: items,
+      tabCount: String(items.length),
+      linkToolbar: `${items.length} link${items.length === 1 ? '' : 's'}`,
+    },
+  });
+  assert.deepEqual(
+    assertLinkPane(links([forms, appointments]), [forms, appointments], 'before').paths,
+    ['/forms', '/appointments'],
+  );
+  assert.deepEqual(assertLinkPane(links([appointments]), [appointments], 'removed').texts, [
+    'Appointments',
+  ]);
+  assert.deepEqual(
+    assertLinkPane(links([appointments, referrals]), [appointments, referrals], 'added').texts,
+    ['Appointments', 'Referral hours'],
+  );
+  assert.throws(
+    () => assertLinkPane(links([forms, appointments]), [appointments, referrals], 'cancelled'),
+    /link_identities/,
+  );
+  assert.throws(
+    () => assertLinkPane(links([appointments, referrals]), [appointments], 'removed'),
+    /link_identities/,
+  );
+  const wrongCount = links([appointments]);
+  wrongCount.media.linkToolbar = '2 links';
+  assert.throws(() => assertLinkPane(wrongCount, [appointments], 'count'), /toolbar_count/);
 });

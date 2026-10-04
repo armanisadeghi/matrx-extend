@@ -65,3 +65,28 @@ export function assertMediaPane(state, { label, items }) {
       : {}),
   };
 }
+
+export function assertLinkPane(state, items, boundary) {
+  assert.equal(state?.selected, 'Links', `${boundary}_wrong_pane`);
+  assert.equal(state?.visible, true, `${boundary}_pane_hidden`);
+  assert.deepEqual(state?.media?.linkItems, items, `${boundary}_link_identities`);
+  assert.equal(
+    state.media.tabCount,
+    items.length ? String(items.length) : null,
+    `${boundary}_tab_count`,
+  );
+  assert.equal(
+    state.media.linkToolbar,
+    items.length ? `${items.length} link${items.length === 1 ? '' : 's'}` : null,
+    `${boundary}_toolbar_count`,
+  );
+  assert.ok(
+    state.resultText?.includes('Add link') || state.media.formOpen,
+    `${boundary}_controls_missing`,
+  );
+  return {
+    count: items.length,
+    paths: items.map((item) => new URL(item.href).pathname),
+    texts: items.map((item) => item.text),
+  };
+}
