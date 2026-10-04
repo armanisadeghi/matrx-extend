@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "status": "unverified",
+  "changed": [],
+  "case": "guest-scrape",
+  "run": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_name": "Hosted guest side-panel acceptance",
+    "run_id": "37186201850",
+    "conclusion": "failure",
+    "workflow_head_sha": "0be37bef30bf483e2888718980c685db4b956151",
+    "release_run_id": "37180303468",
+    "release_artifact_id": "11294843385",
+    "release_artifact_name": "matrx-extend-v0.2.205",
+    "acceptance_artifact_id": "11296264970",
+    "acceptance_artifact_name": "hosted-guest-37186201850-1"
+  },
+  "source_context": {
+    "approved_store_selection_peer": "a4f7cf442dd0076913795d3d54073a5aeac58085",
+    "store_selection_implementation": "edaf85c3fc7cfc07620ed6e033bb1898cb0fb08a",
+    "approved_busy_observer_peer": "5e316438ae88e4dba592b7baef38008bd5f6c7f6",
+    "busy_observer_implementation": "76e68d983852761708b4507b3d4eb93815970957",
+    "release_source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "selected_receipt": {
+      "kind": "native_store_zip_candidate_key_adapted",
+      "version": "0.2.205",
+      "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+      "runtime_tree_sha256": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+      "expected_store_zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+      "store_zip_hash_evidence": ".research/hosted-store-artifact-peer.json; receipt retained runtime tree and candidate kind, but did not retain the Store ZIP hash field"
+    }
+  },
+  "case_observations": {
+    "EXT-F-1007-T01": {
+      "status": "unverified",
+      "observed": "Native harness did not connect to the owned Chrome CDP endpoint; Scrape UI and capture were not reached."
+    },
+    "EXT-F-1007-T02": { "status": "unverified", "observed": "Not reached." },
+    "EXT-F-1007-T08": { "status": "unverified", "observed": "Not reached." },
+    "EXT-F-1007-T14": { "status": "unverified", "observed": "Not reached." },
+    "EXT-F-1007-T20": {
+      "status": "unverified",
+      "observed": "Not reached; guest account was not observed."
+    }
+  },
+  "failure": {
+    "stage": "inputs / cdp_connect",
+    "code": "owned_cdp_endpoint_timeout",
+    "log": "BROWSER_STARTUP_FAILURE after 5037 ms; exitCode and signalCode null; launchFailed false; no stderr, code-signature, dynamic-loader, permission, sandbox, crash, or DevTools-listening flags.",
+    "interpretation": "Failure occurred before any case interaction. Root cause is unresolved; this run provides no product Scrape behavior evidence."
+  },
+  "resource_journals": {
+    "hosted-package-37186201850-1": {
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "sha256": "475d471880f8a62070dcc6ff409e039f46fa9ae8efb3d29dd9710111cbcdfc90"
+    },
+    "hosted-browser-37186201850-1": {
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "sha256": "01c3e70fc09ddf2588a2439d7cea9215601de6ee189c10289d6d47b3b360b3fd"
+    },
+    "hosted-guest-37186201850-1": {
+      "decision": "child_failed",
+      "exit_code": 1,
+      "resource_invalid": false,
+      "sha256": "9fbe2bc2f0a6e62cc45b6a12c9f45410a36c8965589da041bb46b323445b6576"
+    }
+  },
+  "evidence": {
+    "receipt": {
+      "file": "test-results/hosted-scrape-37186201850/test-results/scrape-guest-native-a4639327-5de9-41c7-97b3-340795ea9c87.json",
+      "sha256": "12d6fe1db3110f13a1a797d25340a254b48ad9023c491d59142db8a4ca8b20de"
+    },
+    "screenshots": [],
+    "screenshot_note": "No panel screenshot was produced because CDP attachment timed out before browser interaction.",
+    "artifact_note": "Artifact contained older journals as well; only the three current run-ID journals listed above were used. The 0.2.205 local-development tree hash from the earlier run is not used as Store evidence."
+  },
+  "open_questions": [
+    "Why did the owned Chrome CDP endpoint fail to become available despite successful browser preparation and readiness stages?",
+    "The expected Store ZIP SHA-256 is independently recorded in the Store artifact peer report; the hosted receipt retained candidate kind and adapted runtime tree hash but no Store ZIP hash. Can a future receipt preserve that field directly?",
+    "All five native case observations remain unverified; no full guest Scrape pass is claimed."
+  ]
+}
