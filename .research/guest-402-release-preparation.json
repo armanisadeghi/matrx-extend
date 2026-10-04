@@ -52,5 +52,13 @@
     "pending_version": "0.2.205",
     "status": "Pending review",
     "action": "Preserve pending submission; continue contained acceptance."
+  },
+  "publisher_access": {
+    "observed_at_utc": "2026-10-04T07:45:50.989269+00:00",
+    "state": "saved_password_accepted_passkey_unlock_pending",
+    "evidence": "Native Chrome Google second-factor passkey flow reached macOS saved-passkey Unlock prompt. Existing Google password filled by Chrome; no credential value read or logged.",
+    "required_action": "Owner unlocks saved passkey in the macOS prompt. Do not request a password in chat or change credentials.",
+    "last_verified_dashboard": "2026-10-04T06:58:36Z:205 pending review,176 published",
+    "limits": "No newer dashboard status verified; existing submission unchanged."
   }
 }
