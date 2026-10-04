@@ -1,0 +1,45 @@
+{
+  "id": "EXT-D-0127",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T16"],
+  "surface": "Scrape Diagnose picker launch",
+  "auth_mode": "guest/member/admin; source boundary reproduced, native role outcomes pending",
+  "title": "Picker injection failure resets control without visible error",
+  "reproduction": [
+    "Run real useScrape hook with a current document identity and click Pick on page.",
+    "Have the Chrome scripting injection reject (focused source reproduction in src/features/scrape/DiagnoseControls.test.tsx).",
+    "Observe picking returns false, console warning occurs, and store.error remains null; no launch-error UI is supplied."
+  ],
+  "expected": "Show an actionable picker-launch failure without losing the current capture; permit retry. A late failure from a previous document/session must not clear or error a newer picker.",
+  "actual": "use-scrape launchDiagnose catch resets session/picking and only console.warns; real-hook test confirms no visible error state. Native Chrome reproduction is not yet established.",
+  "severity": "S2: failed user action silently does nothing",
+  "priority": "P1: contained diagnostic controls",
+  "state": "in-fix",
+  "owner": "root/diagnose_launch127_fix",
+  "evidence": [
+    ".research/scrape-diagnose-controls-test.json",
+    "src/hooks/use-scrape.ts:160",
+    "src/features/scrape/DiagnoseControls.test.tsx"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T19:01:16.131277+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Structured tester reproduced silent injection rejection through real owning hook; external Chrome rejection mocked."
+    },
+    {
+      "at": "2026-10-04T19:01:16.131277+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Root confirmed catch only warns/reset; native Cancel false lead excluded due Happy DOM retargeting mismatch."
+    },
+    {
+      "at": "2026-10-04T19:03:08.932775+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Confirmed source boundary; delegated visibleerror/retry and stale-session safety correction with causal tests."
+    }
+  ],
+  "next_action": "Implement visible bounded launch failure/retry and session-safe cleanup; causal RED/GREEN, fresh independent review, then native acceptance."
+}

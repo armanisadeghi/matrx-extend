@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0127",
+  "reviewed_commit": "df7feccc73ea7203f0dbc61e659d5e38b3bb84de",
+  "review_scope": "Independent source and component check; native browser observation belongs to a separate lane.",
+  "verdict_a": {
+    "result": "PARTIAL_SOURCE_COMPONENT_NATIVE_UNVERIFIED",
+    "evidence": [
+      "ScrapeView passes launchDiagnose to the visible DiagnoseLauncher when a capture belongs to the current page. An executeScript rejection clears picking, stores a page-bound launch error, and DiagnoseLauncher renders an alert with Retry picker and Dismiss.",
+      "The retry action calls the picker launcher and does not call captureActiveTab; the store leaves the current capture intact. A successful subsequent launch removes the alert.",
+      "The hook accepts picker result and exit messages only for the current session; old launch completion and failure are checked against both session ID and page identity before changing state. A successful result or cancel clears the launch error.",
+      "The focused component/hook suite passed all 13 tests, including failed injection and retry, older failed launch, stale document completion, cancel, and dismiss."
+    ],
+    "finding": {
+      "severity": "IMPORTANT",
+      "status": "CONFIRMED_SOURCE_ROUTING_GAP",
+      "description": "The sibling page-identity refusal inside launchDiagnose still calls setError(buildCaptureError(...)) rather than the picker launch error. ScrapeView renders that through CaptureErrorCard, whose Try again callback calls captureActiveTab, so this Pick refusal offers the wrong retry and can replace the existing capture.",
+      "reachability": "The DiagnoseLauncher is only rendered while the captured page identity is current. Normal rerender hides it when identity becomes unavailable; the mismatch matters if identity changes between the visible control and its click handler. That narrow timing was not reproduced in a native browser.",
+      "evidence": [
+        "src/hooks/use-scrape.ts:130-141",
+        "src/features/scrape/ScrapeView.tsx:402-413",
+        "src/features/scrape/ScrapeView.error-controls.test.tsx:131-136"
+      ]
+    },
+    "limitations": [
+      "Chrome scripting and message delivery were mocked. This verdict does not establish native Chrome launch refusal, visual layout, or loaded-browser recovery.",
+      "The test's capture-preservation assertion uses a partial in-memory capture and checks store identity; it does not render the full ScrapeView article pane."
+    ]
+  },
+  "verdict_b": {
+    "result": "PARTIAL_UNCOVERED_SIBLING_BRANCH",
+    "evidence": [
+      "The change adds one page-bound launch-error state to the existing scrape store and reuses the current launcher and tab identity primitives; no parallel picker implementation or silent fallback was introduced.",
+      "The injection-rejection message fits the error-state text slot and names a recovery action. That branch preserves the capture while the identity-refusal branch still routes through the capture retry card.",
+      "The builder's record documents a causal red test and a no-op mutation that removed the alert. Independent review reran the 13 focused tests and scoped Biome check successfully."
+    ],
+    "limitations": [
+      "The focused picker tests cover executeScript rejection but never page-identity refusal, leaving an older generic-capture error route in the same launch function.",
+      "I did not independently replay the builder's mutation or run a native browser test.",
+      "The interface-text checker referenced by the repo skill is absent at both nearby workspace paths; scoped Biome passed."
+    ]
+  },
+  "checks": [
+    "pnpm exec vitest run src/features/scrape/DiagnoseControls.test.tsx: 13 passed, 0 failed",
+    "pnpm exec vitest run src/features/scrape/ScrapeView.error-controls.test.tsx: 6 passed, 0 failed; the existing retry test confirms CaptureErrorCard calls captureActiveTab",
+    "pnpm exec biome check .research/diagnose-launch127-fix.json src/features/scrape/DiagnoseCard.tsx src/features/scrape/DiagnoseControls.test.tsx src/hooks/use-scrape.ts src/state/scrape.ts: passed",
+    "Reviewed exact commit diff, defect record, hook, store, launcher, ScrapeView wiring, and picker event behavior."
+  ],
+  "overall": "The injection-rejection repair works at source/component level, but the identity-refusal sibling still routes Pick failure to capture retry. Keep EXT-D-0127 and T16 partial; repair that branch and independently re-verify before native acceptance."
+}

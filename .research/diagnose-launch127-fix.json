@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0127",
+  "scope": "Diagnose picker launch rejection in the Scrape side panel",
+  "cause": "The real useScrape launch catch reset picking and only logged a warning; the capture error card had a retry wired to capture rather than picker launch.",
+  "red": {
+    "command": "pnpm exec vitest run src/features/scrape/DiagnoseControls.test.tsx",
+    "result": "The new real-hook and DiagnoseLauncher test failed because no alert was rendered after chrome.scripting.executeScript rejected."
+  },
+  "repair": "Store a page-bound diagnose launch error separately from capture errors and render Retry picker and Dismiss beside the picker controls. Guard asynchronous completion by picker session and page identity.",
+  "green": {
+    "command": "pnpm exec vitest run src/features/scrape/DiagnoseControls.test.tsx",
+    "result": "13 tests passed, including launch rejection and retry, late old-session failure, stale-document completion, cancel, and dismissal."
+  },
+  "mutation": "forcing-function-tests plant.py replaced the hook's launch-error store write with a no-op; the focused test failed on the missing visible alert, then plant.py restored the hook byte-identically.",
+  "limits": [
+    "Chrome scripting and message delivery were mocked; native Chrome acceptance belongs to the parent lane.",
+    "The controlled test page is a dental intake fixture, not a live page."
+  ]
+}
