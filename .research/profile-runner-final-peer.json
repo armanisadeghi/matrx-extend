@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "task": "profile-runner-final-peer",
+  "reviewed_source": ["c77982ec", "8aa86b8a"],
+  "A_source_acceptance": "PASS for one guarded native member run; native UI, fault interception, backend writes, and reload remain unverified.",
+  "A_findings": "The real Profile sequence is inside runProfileExecutionBoundary. A thrown reload pointer records the original stage, named call, driver code, safe candidate counts, and content-free UI counts before cleanup changes stage. T26 runs only for a newly inserted member row with an owned journal; preexisting member rows are explicitly skipped. Its receipt stays provisional until exact conditional DELETE and authenticated absence read succeed.",
+  "B_quality": "PASS with limit: focused guards cover the failure boundary, ownership, and journal, but native interception and retry still require the authorized live run.",
+  "B_checks": "17 focused Node tests passed; runner and T26 module syntax passed. Scratch-copy mutation removed the actual execution-boundary capture: syntax stayed valid and the boundary test failed on the missing diagnostic assertion, without import error. Shared source was not mutated.",
+  "limit": "The accepted T26 module is unchanged by this review; if its restoration also fails after a primary case error, it throws the restoration error and the outer boundary records that later error. The runner still preserves the owned journal for cleanup. This does not block the guarded native run but a dual-failure observation needs separate reporting.",
+  "next": "Authorize one guarded native member run with exact owned-row restoration verification; do not promote reload or T26 acceptance until its evidence exists."
+}
