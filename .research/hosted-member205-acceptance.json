@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0113 exact submitted 0.2.205 member native organization acceptance",
+  "status": "cancelled_before_acceptance_prerequisite_unavailable",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 37182686580,
+    "event": "workflow_dispatch",
+    "acceptance_case": "member-chat",
+    "release_run_id": 37180303468,
+    "terminal_status": "cancelled",
+    "terminal_conclusion": "cancelled",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37182686580",
+    "cancellation": "Requested after safe secret-metadata inspection showed the configured repository secret was not listed; the workflow was still in browser-driver preparation. Cancellation was confirmed terminal."
+  },
+  "source": {
+    "release_source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "diagnostic_fix_commit": "bef9a4de183882216a80a3d7f8b6b0c5c0fc9041",
+    "independent_review": "216c24c0"
+  },
+  "artifact": {
+    "version": "0.2.205",
+    "release_run_id": 37180303468,
+    "github_artifact_id": 11294843385,
+    "store_zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "publisher_receipt_sha256": "c90752544003303f5ce0d240c1806ccd27a84cbba0a93b5a477c0d9d661518bb",
+    "submitted_artifact_preserved": true
+  },
+  "verdict": {
+    "product": null,
+    "native_member_chat": null,
+    "device_organization_persistence": null,
+    "identity_role_selected_organization": null,
+    "classification": "setup/prerequisite outcome; no product verdict"
+  },
+  "prerequisite": {
+    "required_existing_destination": "MATRX_REVIEWER_MAGIC_LINK_JSON",
+    "safe_metadata_result": "not listed among repository Actions secrets; organization secret listing was unavailable (HTTP 404)",
+    "updated_at": null,
+    "point_of_use_refresh_performed": false,
+    "secret_value_or_link_read": false,
+    "secret_changed": false,
+    "source_requirement": ".research/member-release-readiness.json: generate a fresh first-party single-use link at point of use, set only the existing GitHub secret destination, and remove the secret after terminal execution"
+  },
+  "execution_limits": {
+    "hosted_dispatches": 1,
+    "local_browser_or_build": false,
+    "acceptance_child_started": false,
+    "artifact_downloaded": false,
+    "no_retry": true,
+    "store_0_2_205_pending": true
+  }
+}
