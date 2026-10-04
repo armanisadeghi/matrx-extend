@@ -228,6 +228,9 @@ async function connectOwnedCdp({
   };
   return {
     ownerVerified: true,
+    get timeoutMs() {
+      return timeoutMs;
+    },
     get fatal() {
       return fatal;
     },

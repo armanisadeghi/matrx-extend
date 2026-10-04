@@ -108,14 +108,11 @@ async function authenticatedPanelForegroundDiagnostic({
   browserSession,
   panelTarget,
   inspectPanelContext,
-  timeoutMs = 5_000,
 }) {
   // Keep the failed boundary observable without serializing any URLs, page text,
   // credentials, or target IDs from the authenticated browser.
   const observation = {
     owned_root_page: false,
-    open_control_count: null,
-    normal_page_visibility: null,
     panel_visibility: null,
     panel_has_focus: null,
     original_panel_target_present: null,
@@ -123,18 +120,19 @@ async function authenticatedPanelForegroundDiagnostic({
     original_is_only_exact_panel_target: null,
     side_panel_context: null,
     diagnostic_timed_out: false,
+    outstanding_probes_after_deadline: false,
   };
   let expired = false;
+  // Reuse the owned CDP transport's configured command deadline. Its sends
+  // settle or fail on that deadline; the harness closes the owned connection
+  // and child after this acceptance throws.
+  const timeoutMs = browserSession.timeoutMs;
   const probes = [
     (async () => {
       try {
         const url = new URL(page.url());
         observation.owned_root_page =
           ['localhost', '127.0.0.1'].includes(url.hostname) && url.pathname === '/';
-        if (observation.owned_root_page) {
-          observation.open_control_count = await page.locator('#open-panel').count();
-          observation.normal_page_visibility = await page.evaluate(() => document.visibilityState);
-        }
       } catch {
         // A closed page is itself distinguishable from a live owned fixture.
       }
@@ -177,9 +175,15 @@ async function authenticatedPanelForegroundDiagnostic({
       }
     })(),
   ];
+  let settledProbes = 0;
+  const trackedProbes = probes.map((probe) =>
+    probe.finally(() => {
+      settledProbes += 1;
+    }),
+  );
   let timer;
   await Promise.race([
-    Promise.allSettled(probes),
+    Promise.allSettled(trackedProbes),
     new Promise((resolveTimeout) => {
       timer = setTimeout(() => {
         expired = true;
@@ -187,7 +191,11 @@ async function authenticatedPanelForegroundDiagnostic({
       }, timeoutMs);
     }),
   ]).finally(() => clearTimeout(timer));
-  return { ...observation, diagnostic_timed_out: expired };
+  return {
+    ...observation,
+    diagnostic_timed_out: expired,
+    outstanding_probes_after_deadline: expired && settledProbes < probes.length,
+  };
 }
 async function captureMediaFailure(panel, artifacts, phase, work) {
   try {
