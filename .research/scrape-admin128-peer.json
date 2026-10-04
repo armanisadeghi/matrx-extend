@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0128",
+  "reviewed_commit": "593ff3b7",
+  "scope": "Fresh independent source-only reverify of the Scrape admin selected-organization correction. No browser, native, database, build, or release execution.",
+  "addressed": [
+    {
+      "original_finding": "Admin warm and reload acceptance could verify identity with no selected organization.",
+      "result": "ADDRESSED",
+      "evidence": "The Scrape warm path calls selectRequiredSettingsOrganization before opening Scrape and builds expectedIdentity from its verified UUID/name. That helper opens the Organization section, uses the shared visible exact-option UI selector when the approved label is not already selected, and requires UUID, stored name, rendered label, profile, and role. Reload calls verifyCurrentSettingsIdentity with requireSelectedOrganization=true and the same warm UUID plus approved name, then checks stored UUID/name equality. Null, mismatched label, and changed UUID are rejected by the focused predicate test."
+    }
+  ],
+  "verdict_a": {
+    "result": "PASS_SOURCE_READY_NATIVE_UNVERIFIED",
+    "admin_cell": "Source is ready for one guarded native admin run. The exact approved organization is selected through the Settings UI when absent or different, then verified against storage and rendered identity. Warm and reload checks refuse null or mismatched organization.",
+    "member_guest_regressions": "The required selection helper also applies to member; guest remains outside authenticated selection. Settings' default null-organization matcher remains accepted when strict selection is not requested.",
+    "cannot_verify": "No native admin run has established that the approved option is actually available to admin or survives real extension reload. Prior member native run 37227042493 stopped at resource refusal before authentication; it gives no admin evidence."
+  },
+  "verdict_b": {
+    "result": "PASS_WITH_NATIVE_LIMIT",
+    "evidence": [
+      "The fix uses the existing Settings picker and identity primitives; it adds no first-membership, account-default, or invented-organization fallback.",
+      "The receipt exposes selection and verification booleans without storing the UUID or email.",
+      "Focused tests force different outputs for null, wrong name, wrong UUID, approved admin/member, and the Settings null-org case. The predicate test alone cannot prove a real UI click or reload; the native run is the required observation."
+    ],
+    "minor_observation": "The member sign-in retains its earlier approved-organization selection before the shared Scrape helper repeats verification; this does not weaken the admin gate."
+  },
+  "executed_checks": {
+    "focused_node": "node --test tests/browser/settings-native-auth-driver.test.mjs tests/browser/scrape-native-selection.test.mjs scripts/hosted-scrape-route.test.mjs: 11 passed, 0 failed",
+    "syntax": "node --check on Settings auth driver and Scrape native acceptance: passed",
+    "diff_integrity": "git show --format= --check 593ff3b7: passed",
+    "native": "not run"
+  }
+}
