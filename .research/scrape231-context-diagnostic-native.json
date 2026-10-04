@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "task": "scrape231-context-diagnostic-native",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 37221586281,
+    "job_id": 111492847903,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37221586281",
+    "head_sha": "ee6a023e7cbb7a7b4890baa1eb2095c95aabd8cf",
+    "head_branch": "main",
+    "conclusion": "failure",
+    "runner": {
+      "label": "macos-15",
+      "runner_arch": "ARM64",
+      "machine": "arm64"
+    },
+    "inputs": {
+      "acceptance_case": "guest-scrape-development",
+      "development_run_id": 37217066948,
+      "development_artifact_id": 11308203507
+    },
+    "readiness": {
+      "preflight": "passed",
+      "package": "passed/admitted/exit 0",
+      "browser": "passed/admitted/exit 0",
+      "acceptance": "passed; three healthy readiness samples",
+      "guest": "admitted; resourceInvalid false; child exit 1; decision child_failed"
+    }
+  },
+  "frozen_product": {
+    "version": "0.2.231",
+    "source_sha": "723433a7628b32fb610d3a7f36ca6b8dd5fd2b72",
+    "tree_sha256": "ae9bfe3d831a7278f0b347c1c08b8d6cec6780790c1f14813369bcf015786833",
+    "development_run_id": 37217066948,
+    "development_artifact_id": 11308203507,
+    "artifact_import_verified": true
+  },
+  "native_outcome": {
+    "status": "context_gate_passed; acceptance_failed_later",
+    "guest_account_observed": true,
+    "context_diagnostic": {
+      "original_exact_context_gate": "passed; the run proceeded into the guest Scrape UI and acceptance actions",
+      "failure_line": null,
+      "diagnostic_failure_line": null,
+      "interpretation": "No BROWSER_PANEL_CONTEXT_FAILURE was emitted because the original exact-context check did not fail. This run does not expose the documentUrl shape or follow-up result from the prior failing run, so EXT-D-0117 root cause remains unconfirmed."
+    },
+    "first_acceptance_failure": {
+      "stage": "deep_capture",
+      "native_stage": "exercise_panel",
+      "line": "scrape_deep_result_not_observed:{\"ready\":true,\"title\":\"Harbor Dental intake guide\",\"empty\":false,\"fast\":[{\"disabled\":false,\"text\":\"Re-capture\"}],\"deep\":[{\"disabled\":false,\"text\":\"Scroll & capture\"}],\"tabs\":[{\"label\":\"Article\",\"selected\":true},{\"label\":\"Images\",\"selected\":false},{\"label\":\"Video\",\"sel",
+      "interpretation": "The first failed action was observing the result of Scroll & capture after fast capture. This is a separate later acceptance failure; it is not evidence of the prior panel-context failure."
+    },
+    "completed_before_failure": {
+      "fast_capture": "completed; fast busy state observed (Capturing\u2026, 5 samples, button disabled observed)",
+      "warm_images": "all three removals reached empty; Add/Cancel path completed; follow-up image added",
+      "warm_video": "remove and add completed; Open reached http://localhost:49196/intake-walkthrough.mp4; Copy URL unavailable due panel_runtime_exception",
+      "warm_links": "Open, Copy URL, Remove, Add, and Cancel actions exercised; Copy URL unavailable due panel_runtime_exception",
+      "trace": {
+        "warm_media_events": 73,
+        "warm_links_events": 42,
+        "events_dropped": 0,
+        "truncated": false,
+        "pane_connected_at_end": true
+      },
+      "reload_lifecycle": null,
+      "reload_milestones": []
+    },
+    "screenshots": [
+      "native-side-panel.png",
+      "normal-target-after-open.png",
+      "scrape-fast-article.png"
+    ],
+    "product_verdict": "No verdict on EXT-D-0117 cause. The bounded Scrape acceptance did not pass: it failed after context setup at deep_capture. Do not promote this to a whole-feature verdict.",
+    "no_retry": true
+  },
+  "evidence_directory": "docs/stabilization/evidence/scrape231/run37221586281",
+  "files_sha256": {
+    "browser-resource.jsonl": "a5a257fae02bebeb923490c5187be69ef53db85f424eb98b8335c470ba1d2f76",
+    "guest-resource.jsonl": "1393c38a8d415b00e522a969bbcee42acee214b28152d8947f528361b5049bd2",
+    "native-side-panel.png": "62f1c4cef29e09659bb6f8c7c49b4d9db732fb9382a224e1e30e08256237edde",
+    "normal-target-after-open.png": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+    "package-resource.jsonl": "4b9a48160d7f8e73c065ed80f355191b3f43c335f87ab71a13e7058e659685f3",
+    "receipt.json.txt": "2b0652d563bf4dad7d18f58cc21b894fb25db82141ddb2468d5a6a13795f2a26",
+    "scrape-fast-article.png": "28e5e45a9f3a6b6ff0083dda36c71f79dcba4820275ca18a6359cdac4335461c"
+  },
+  "artifact_inventory": {
+    "retained": [
+      "receipt.json.txt",
+      "package-resource.jsonl",
+      "browser-resource.jsonl",
+      "guest-resource.jsonl",
+      "native-side-panel.png",
+      "normal-target-after-open.png",
+      "scrape-fast-article.png"
+    ],
+    "excluded": [
+      "Three stale nested journals for hosted run 37105304739",
+      "No additional files from the artifact were included"
+    ]
+  }
+}
