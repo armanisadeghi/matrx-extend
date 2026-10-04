@@ -1,0 +1,20 @@
+[
+  {
+    "contextCount": 1,
+    "sidePanelCount": 1,
+    "expectedExtensionCount": 0,
+    "exactUrlCount": 0,
+    "globalTabCount": 1,
+    "exactContextCount": 0,
+    "missingDocumentUrlCount": 0,
+    "emptyDocumentUrlCount": 1,
+    "otherExtensionUrlCount": 0,
+    "nonExtensionUrlCount": 0,
+    "followUp": {
+      "side_panel_count": 1,
+      "exact_expected_count": 0,
+      "elapsed_ms": 107
+    },
+    "followUpQueryFailed": false
+  }
+]

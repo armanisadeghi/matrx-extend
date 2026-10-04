@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "task": "member-reopen-native-retest",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 37243043772,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37243043772",
+    "head_sha": "da271ee22a2349256f94d24a68cad29e9e75b42e",
+    "terminal_status": "completed",
+    "conclusion": "failure",
+    "runner_label": "macos-15",
+    "case": "guest-scrape-development",
+    "auth_mode": "member",
+    "width_mode": "normal",
+    "requested_min_panel_width_px": 600,
+    "one_launch_no_retry": true,
+    "artifact_id": 11318150981,
+    "artifact_name": "hosted-guest-37243043772-1",
+    "artifact_digest": "sha256:8ce74b32bf4096db0d05bfe43d85971180a27322ce064feaf5864a69235242bb",
+    "downloaded_zip_sha256": "8ce74b32bf4096db0d05bfe43d85971180a27322ce064feaf5864a69235242bb",
+    "steps": {
+      "Set up job": "success",
+      "Run actions/checkout@v4": "success",
+      "Run actions/setup-node@v4": "success",
+      "Require a successful published release artifact": "skipped",
+      "Require exactly one artifact provenance mode": "success",
+      "Require selected authentication before browser setup": "success",
+      "Disable indexing on the disposable hosted VM": "success",
+      "Wait for measured package readiness": "success",
+      "Prepare pinned browser driver under an owned permit": "success",
+      "Wait for measured browser readiness": "success",
+      "Prepare full Chromium under a fresh owned permit": "success",
+      "Wait for measured acceptance readiness": "success",
+      "Exercise the selected Chrome side-panel case": "failure",
+      "Measure owned Chromium startup during the existing guard interval": "skipped",
+      "Upload browser result and native-panel screenshots": "success",
+      "Post Run actions/setup-node@v4": "skipped",
+      "Post Run actions/checkout@v4": "success",
+      "Complete job": "success"
+    }
+  },
+  "frozen_product": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
+    "run_id": 37233480033,
+    "artifact_id": 11315305224
+  },
+  "driver": {
+    "repair_commit": "44005fb4b65dde448ccb6b86acc67e70130db703",
+    "peer_commit": "da271ee22a2349256f94d24a68cad29e9e75b42e",
+    "repair_and_peer_on_main_before_launch": true
+  },
+  "native_outcome": {
+    "status": "unverified",
+    "stage": "inputs",
+    "native_stage": "panel_context",
+    "failure": {
+      "stage": "inputs",
+      "code": "native_sidepanel_runtime_context_missing"
+    },
+    "authentication": null,
+    "panel_reopen_boundary_reached": false,
+    "focus_validity": "not_reached",
+    "viewport_validity": "not_reached",
+    "cases": [],
+    "panel_viewports": [],
+    "panel_context_diagnostic": {
+      "contextCount": 1,
+      "sidePanelCount": 1,
+      "expectedExtensionCount": 0,
+      "exactUrlCount": 0,
+      "globalTabCount": 1,
+      "exactContextCount": 0,
+      "missingDocumentUrlCount": 0,
+      "emptyDocumentUrlCount": 1,
+      "otherExtensionUrlCount": 0,
+      "nonExtensionUrlCount": 0,
+      "followUp": {
+        "side_panel_count": 1,
+        "exact_expected_count": 0,
+        "elapsed_ms": 107
+      },
+      "followUpQueryFailed": false
+    },
+    "classification": "native_setup_exact_context_failure_before_member_auth_and_D133_reopen_boundary",
+    "D133_verdict": "unverified_not_exercised"
+  },
+  "resources": {
+    "current_original_journals": [
+      {
+        "phase": "package",
+        "journal": "docs/stabilization/evidence/member-reopen/run37243043772/resource-journals/hosted-package-37243043772-1.jsonl",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-04T23:16:40.478Z",
+          "runId": "hosted-package-37243043772-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "watch_sample_count": 0,
+        "unsafe_events": 0,
+        "child_duration_seconds": 1.419
+      },
+      {
+        "phase": "browser",
+        "journal": "docs/stabilization/evidence/member-reopen/run37243043772/resource-journals/hosted-browser-37243043772-1.jsonl",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-04T23:18:43.753Z",
+          "runId": "hosted-browser-37243043772-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "watch_sample_count": 0,
+        "unsafe_events": 0,
+        "child_duration_seconds": 8.693
+      },
+      {
+        "phase": "guest",
+        "journal": "docs/stabilization/evidence/member-reopen/run37243043772/resource-journals/hosted-guest-37243043772-1.jsonl",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-04T23:20:45.773Z",
+          "runId": "hosted-guest-37243043772-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 1,
+          "decision": "child_failed",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "watch_sample_count": 0,
+        "unsafe_events": 0,
+        "child_duration_seconds": 14.237
+      }
+    ],
+    "pending_current_journals": [],
+    "unsafe_current_events": 0,
+    "guard_final_decisions": "package_valid_browser_valid_guest_child_failed_all_resourceInvalid_false",
+    "watch_evidence_limit": "No periodic watch sample appears in any current journal; all child durations are under the 15-second watch interval. Admission samples and finalized guard decisions are preserved; do not infer full watched-run resource validity from child output.",
+    "artifact_historical_journals_excluded": [
+      "hosted-package-37105304739-1.jsonl",
+      "hosted-browser-37105304739-1.jsonl",
+      "hosted-guest-37105304739-1.jsonl"
+    ]
+  },
+  "evidence": {
+    "raw_receipt": "docs/stabilization/evidence/member-reopen/run37243043772/raw/scrape-guest-native-ddc2aeae-9268-431b-9c12-3d64cc9f50e5.json",
+    "bounded_diagnostic": "docs/stabilization/evidence/member-reopen/run37243043772/raw/panel-context-diagnostic.json",
+    "screenshots": [],
+    "screenshots_status": "none_uploaded_failure_before_screenshot_boundary",
+    "hashes": [
+      {
+        "path": "docs/stabilization/evidence/member-reopen/run37243043772/raw/panel-context-diagnostic.json",
+        "sha256": "6e42d68f1c4144b12d0551eabae3ef4ea5f598201b2f4dd642d0a242e37ecd19"
+      },
+      {
+        "path": "docs/stabilization/evidence/member-reopen/run37243043772/raw/scrape-guest-native-ddc2aeae-9268-431b-9c12-3d64cc9f50e5.json",
+        "sha256": "24ddb7c8e6526df3b89b60edb416a4734bb77200d2b7521782dcacc90fc1cbf9"
+      },
+      {
+        "path": "docs/stabilization/evidence/member-reopen/run37243043772/resource-journals/hosted-browser-37243043772-1.jsonl",
+        "sha256": "2e9f6e2a1cdd00c7a7a89c572d3d2d86d10f6f5087b27203dab26e53d84971e9"
+      },
+      {
+        "path": "docs/stabilization/evidence/member-reopen/run37243043772/resource-journals/hosted-guest-37243043772-1.jsonl",
+        "sha256": "3edff4fbef8243836119f96704672c1e790c16e348f3aed55eb04b2b0b343e51"
+      },
+      {
+        "path": "docs/stabilization/evidence/member-reopen/run37243043772/resource-journals/hosted-package-37243043772-1.jsonl",
+        "sha256": "e2864630c8f5a6f9eed87f9ffcd437ddea3c77f0f1f3dcacc446efed134ee4d7"
+      }
+    ]
+  },
+  "credential_cleanup": {
+    "temporary_consumed_repository_secret": "MATRX_REVIEWER_MAGIC_LINK_JSON",
+    "temporary_github_secret_deleted": true,
+    "secret_list_confirmed_absent": true,
+    "local_link_file_deleted": true,
+    "local_link_file_absence_verified": true,
+    "identity_file_unchanged": true,
+    "no_credentials_auth_urls_identity_values_or_raw_logs_recorded": true
+  },
+  "limits": [
+    "No retry, local browser, build, release, manual version change or child agent.",
+    "No inventory or defect edits; root owns classification.",
+    "Product manifest244 and frozen product identity match prior run; changed driver only.",
+    "This run does not establish member auth, D133 repair, Scrape cases, normal viewport or Store205 publication health."
+  ]
+}
