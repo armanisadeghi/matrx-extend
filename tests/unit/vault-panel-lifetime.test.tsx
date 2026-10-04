@@ -21,6 +21,15 @@ vi.mock('@/lib/auth/flow', () => ({
   getAccessToken: async () => null,
   getCurrentUser: async () => deps.user,
 }));
+// This suite exercises the Vault panel lifetime, not browser fill-device setup.
+// Keep the setup card in its already-enabled state so its background API probe
+// cannot outlive a test and report an unrelated unhandled rejection.
+vi.mock('@/lib/vault/fill-device', () => ({
+  fillDeviceStatus: async () => 'on',
+  fillStepUpMethods: async () => null,
+  passkeyApprovalLink: async () => ({ url: null, code: null }),
+  turnOnFillingHere: async () => ({ ok: true }),
+}));
 vi.mock('@/lib/org/active-org', () => ({ getActiveOrganizationId: async () => deps.org.id }));
 vi.mock('@/hooks/use-active-tab', () => ({ useActiveTab: () => deps.tab }));
 vi.mock('@/hooks/use-auth', () => ({ useAuth: () => ({ user: deps.user }) }));
