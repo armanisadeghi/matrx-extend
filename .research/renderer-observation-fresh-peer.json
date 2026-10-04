@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "task": "renderer-observation-fresh-peer",
+  "reviewed_source_sha": "5e067a165b264b46b80d4a4edab52c2d5c64f8f7",
+  "reviewed_at_utc": "2026-10-04T20:39:49.000Z",
+  "verdict_a_actual_measurement_path": "PARTIAL_NOT_LAUNCH_READY",
+  "verdict_b_quality_safety": "FAIL",
+  "findings": [
+    {
+      "severity": "IMPORTANT",
+      "finding": "The diagnostic SystemInfo.getInfo request uses the same owned CDP transport as the required native startup commands. If that optional request reaches the five-second command deadline, send() marks the entire transport fatal. Later required CDP commands fail, so optional observation can change diagnostic progress instead of recording UNKNOWN and letting startup continue.",
+      "sources": [
+        "tests/browser/native-sidepanel-qa-harness.mjs:1011",
+        "tests/browser/vault-owned-cdp.cjs:248",
+        "tests/browser/vault-owned-cdp.cjs:255"
+      ]
+    },
+    {
+      "severity": "LIMITATION",
+      "finding": "The native harness detaches the shared CDP connection before awaiting its GPU observation. detach() rejects all pending commands. If teardown precedes a response, the observation becomes UNKNOWN and a late result cannot be retained. UNKNOWN at teardown is an honest lifecycle limit; this finding does not call for a new startup barrier. It does limit the current source's ability to promise backend resolution.",
+      "sources": [
+        "tests/browser/native-sidepanel-qa-harness.mjs:1143",
+        "tests/browser/native-sidepanel-qa-harness.mjs:1144",
+        "tests/browser/vault-owned-cdp.cjs:275"
+      ]
+    },
+    {
+      "severity": "MINOR",
+      "finding": "Native stage callbacks only mutate memory; the report is persisted at GPU callbacks, the panel-ready boundary, or completion/failure. Abrupt termination before those writes may leave the last measured stage absent, so source supports stage timestamps in normal completion, not durable stage-by-stage capture.",
+      "sources": [
+        "scripts/hosted-startup-interval-diagnostic.mjs:58",
+        "scripts/hosted-startup-interval-diagnostic.mjs:62"
+      ]
+    }
+  ],
+  "passing_checks": [
+    "Positive named otherHost deltas, including MTLCompilerService, survive processTimeBracket and the strict journal serializer while owned categories and guard sampling stay unchanged.",
+    "The production writer round-trip test publishes a real JSONL journal containing timestamps, unmatched PID lists, and sanitized named CPU deltas.",
+    "The GPU query begins after command-line, worker, and profile-owner checks, before local_server, and is opt-in only for startup diagnostic. It allowlists returned backend fields and omits commandLine.",
+    "The diagnostic report writer test persists stage timestamps and a resolved backend through its real file writer, though it injects a nativeRunner stub."
+  ],
+  "verification": {
+    "focused_node_tests": "18 pass, 0 fail (four specified test files)",
+    "causal_transport_probe": "A local fake WebSocket allowed every CDP method except SystemInfo.getInfo to respond. With the owned CDP command timeout set to 30 ms, the optional query rejected, cdp.fatal became true with failureClass command_timeout, and the next required Target.getTargets rejected. This directly reproduced the source-level interference without a browser.",
+    "limits": "Source and focused local checks only; no browser, hosted workflow, build, release, or runtime backend proof. Actual renderer remains UNKNOWN. Existing native acceptance remains UNVERIFIED."
+  }
+}
