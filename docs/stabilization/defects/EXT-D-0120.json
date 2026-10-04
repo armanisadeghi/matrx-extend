@@ -27,7 +27,9 @@
     ".research/scrape-replacement-ready-peer.json",
     ".research/scrape-replacement-fixed-native.json",
     ".research/reload-retirement-escalation.json",
-    ".research/reload-lifetime-measurement.json"
+    ".research/reload-lifetime-measurement.json",
+    ".research/reload-lifetime-peer.json",
+    ".research/reload-lifetime-native.json"
   ],
   "transition_history": [
     {
@@ -68,5 +70,5 @@
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
-  "next_action": "Instrumentation9149625b is committed/pushed; fresh independent source review is active. If source-ready, run exactly one guarded native comparison on frozen215 artifact11299613935. Preserve strict predicate; correlate actual browser version, attached state, independent events, host probes and pre-click worker version identity. No blind retry or passing-retry closure."
+  "next_action": "Instrumentation9149625b independently source-reviewed c540f36a. Native37198730857 was refused at first Scrape resource boundary (CPU0.86/load12.44); no lifecycle predicate evaluated, no D120 verdict. Root matched exact receipt+3journals. All jobs terminal. One separately scoped fresh hosted comparison is already user-authorized after fresh resource/concurrency/provenance preflight; keep same frozen215 and unchanged thresholds. If a second consecutive environment failure occurs, stop repeated launches and route environment diagnosis per PLAN. Never close intermittency on a passing retry."
 }
