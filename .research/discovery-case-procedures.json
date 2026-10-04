@@ -97,9 +97,9 @@
               ],
               "expected": [
                 "Result is an object with total_categories === categories.length; each category has name, label, description, list_tool, numeric tool_count and tool_names array. Categories marked admin_only are absent because ctxIsAdmin currently returns false.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, total_categories !== categories.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, total_categories !== categories.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -157,9 +157,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -188,9 +188,9 @@
               ],
               "expected": [
                 "Result is an object with total_categories === categories.length; each category has name, label, description, list_tool, numeric tool_count and tool_names array. Categories marked admin_only are absent because ctxIsAdmin currently returns false.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, total_categories !== categories.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, total_categories !== categories.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -248,9 +248,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -317,9 +317,9 @@
               ],
               "expected": [
                 "Result.category === 'core', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -380,9 +380,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -411,9 +411,9 @@
               ],
               "expected": [
                 "Result.category === 'core', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -474,9 +474,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -543,9 +543,9 @@
               ],
               "expected": [
                 "Result.category === 'reading', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -606,9 +606,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -637,9 +637,9 @@
               ],
               "expected": [
                 "Result.category === 'reading', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -700,9 +700,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -769,9 +769,9 @@
               ],
               "expected": [
                 "Result.category === 'interaction', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -832,9 +832,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -863,9 +863,9 @@
               ],
               "expected": [
                 "Result.category === 'interaction', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -926,9 +926,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -995,9 +995,9 @@
               ],
               "expected": [
                 "Result.category === 'tabs', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -1058,9 +1058,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -1089,9 +1089,9 @@
               ],
               "expected": [
                 "Result.category === 'tabs', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -1152,9 +1152,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -1221,9 +1221,9 @@
               ],
               "expected": [
                 "Result.category === 'capture', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -1284,9 +1284,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -1315,9 +1315,9 @@
               ],
               "expected": [
                 "Result.category === 'capture', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -1378,9 +1378,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -1447,9 +1447,9 @@
               ],
               "expected": [
                 "Result.category === 'chrome', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -1510,9 +1510,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -1579,9 +1579,9 @@
               ],
               "expected": [
                 "Result.category === 'human', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -1642,9 +1642,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -1673,9 +1673,9 @@
               ],
               "expected": [
                 "Result.category === 'human', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -1736,9 +1736,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -1805,9 +1805,9 @@
               ],
               "expected": [
                 "Result.category === 'memory', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -1868,9 +1868,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -1899,9 +1899,9 @@
               ],
               "expected": [
                 "Result.category === 'memory', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -1962,9 +1962,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -2031,9 +2031,9 @@
               ],
               "expected": [
                 "Result.category === 'ai', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -2094,9 +2094,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -2125,9 +2125,9 @@
               ],
               "expected": [
                 "Result.category === 'ai', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -2188,9 +2188,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -2257,9 +2257,9 @@
               ],
               "expected": [
                 "Result.category === 'demos', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -2320,9 +2320,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -2351,9 +2351,9 @@
               ],
               "expected": [
                 "Result.category === 'demos', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -2414,9 +2414,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -2483,9 +2483,9 @@
               ],
               "expected": [
                 "Result.category === 'guidance', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -2546,9 +2546,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -2577,9 +2577,9 @@
               ],
               "expected": [
                 "Result.category === 'guidance', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -2640,9 +2640,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -2709,9 +2709,9 @@
               ],
               "expected": [
                 "Result.category === 'devtools', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -2772,9 +2772,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -2841,9 +2841,9 @@
               ],
               "expected": [
                 "Result.category === 'webmcp', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -2904,9 +2904,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -2973,9 +2973,9 @@
               ],
               "expected": [
                 "Result.category === 'desktop', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3036,9 +3036,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3067,9 +3067,9 @@
               ],
               "expected": [
                 "Result.category === 'desktop', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3130,9 +3130,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3199,9 +3199,9 @@
               ],
               "expected": [
                 "Result.category === 'credentials', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3262,9 +3262,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3293,9 +3293,9 @@
               ],
               "expected": [
                 "Result.category === 'credentials', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3356,9 +3356,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3425,9 +3425,9 @@
               ],
               "expected": [
                 "Result.category === 'crm', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3488,9 +3488,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3519,9 +3519,9 @@
               ],
               "expected": [
                 "Result.category === 'crm', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3582,9 +3582,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3651,9 +3651,9 @@
               ],
               "expected": [
                 "Result.category === 'education', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3714,9 +3714,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3745,9 +3745,9 @@
               ],
               "expected": [
                 "Result.category === 'education', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3808,9 +3808,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3877,9 +3877,9 @@
               ],
               "expected": [
                 "Result.category === 'productivity', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3940,9 +3940,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -3971,9 +3971,9 @@
               ],
               "expected": [
                 "Result.category === 'productivity', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -4034,9 +4034,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -4103,9 +4103,9 @@
               ],
               "expected": [
                 "Result.category === 'records', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -4166,9 +4166,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -4197,9 +4197,9 @@
               ],
               "expected": [
                 "Result.category === 'records', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-                "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass."
+                "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass."
               ],
-              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. The post-reload result/error predicate changes or the tool row is unavailable.",
+              "failure_predicate": "No inline output object, wrong category/result shape, count differs from tools.length, or required local schemas absent. A surfaced error, absent or malformed structural result before or after reload, or unavailable tool row fails the positive probe. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -4260,9 +4260,9 @@
                 "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools \u2192 Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
               ],
               "expected": [
-                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above (or a visible error). Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+                "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
               ],
-              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or valid structural result regresses without a surfaced error.",
+              "failure_predicate": "Reload changes extension identity unexpectedly, row disappears, runner cannot be used, or a surfaced error occurs, or the valid structural result is absent or malformed before or after reload. An environment refusal preventing invocation is unverified, never pass.",
               "preconditions": [
                 "Resource permit admitted and recorded for this procedure.",
                 "Record and hold constant the exact unpacked artifact identity (extension ID, version, source/lock or archive hash and install path) and member/admin profile identity.",
@@ -4282,5 +4282,6 @@
     "The manual runner bypasses normal dispatcher gates. Its no-prompt observation cannot prove chat invocation permissions or admin denial.",
     "Unsupported-browser/runtime conditions and live server/tool metadata remain unknown.",
     "No procedure claims exact category result contents beyond source predicates because tool registry and server catalog can evolve."
-  ]
+  ],
+  "positive_probe_rule": "For valid-input and reload dimensions, PASS requires the source-backed structural result both before and after reload. A surfaced handler or runner error after invocation is FAIL; an environment refusal that prevents invocation is UNVERIFIED and never PASS."
 }
