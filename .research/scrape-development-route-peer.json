@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "reviewed_sha": "61bb57f5",
+  "review_scope": "Independent source review of hosted guest Scrape development route; no browser, native panel, release, or product execution.",
+  "verdict": {
+    "source_route": "ready",
+    "native_product_quality": "unverified"
+  },
+  "findings": [],
+  "evidence": [
+    "The workflow exposes only the explicit guest-scrape-development case for CI development inputs and rejects release/CRX or incomplete development selectors. Existing guest-scrape and member-chat continue to require release inputs.",
+    "The development path calls the existing authenticated selectOrImportNativeTarget importer and verifyImportedNativeEvidence. Those checks bind a successful main-push CI run, exact artifact, source SHA, development receipt, non-Store eligibility, and unpacked tree digest before the driver starts.",
+    "Both Scrape routes dispatch tests/browser/scrape-guest-native-acceptance.mjs. The new route carries an explicit development or store channel; the report records ci_development_test for development and published_store_zip_adapted for Store, including separate source/run/artifact metadata.",
+    "The driver uses localDevReceiptPath for development and releaseReceiptPath for Store. It checks receipt kind, tree digest, and manifest version before native panel work. The Profile refusal and hosted resource permit code were unchanged.",
+    "The focused route tests passed (3/3), and git diff --check passed. The reviewed route contains no native execution evidence."
+  ],
+  "selection_requirement": "The selected CI artifact must come from a successful main-push commit containing product fix 12300b97; the route authenticates provenance but does not itself assert that particular ancestor. Confirm the selected source SHA before dispatch and retain the native receipt before assigning any product verdict.",
+  "limits": "Source readiness does not establish guest Scrape behavior, a Store result, or a native pass. No heavy, browser, native, or release checks were run."
+}
