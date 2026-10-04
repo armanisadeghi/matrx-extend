@@ -1,0 +1,16 @@
+{
+  "scope": "Independent source-only final peer of Profile existing-row journal through b02eac6f; prior reviews .research/profile-existing-journal-peer.json and .research/profile-journal-diagnostic-fix.json",
+  "verdict_a_source_contract": {
+    "status": "ADDRESSED_SOURCE_ONLY",
+    "evidence": "The native existing-row path reads the owner row, persists a private full-row baseline before UI mutation, then shares the journal across warm and reload cases. Each save persists intent before its action and reconciles identity, version, tested fields, and structurally equal untouched fields. Cleanup restores only the nine tested fields through a conditional PATCH guarded by owner, organization, created_at, version, and current tested values; it requires one successor and final readback. Existing-row cleanup has no delete authority.",
+    "limit": "Live native UI and database row preservation remain unverified while resource capacity is unavailable."
+  },
+  "verdict_b_diagnostic_and_guard_quality": {
+    "status": "ADDRESSED_WITH_BOUNDARY_LIMIT",
+    "evidence": "b02eac6f maps profile_existing_version_invalid directly and strips profile_restore_<field>_mismatch to profile_restore_tested_field_mismatch. The new invalid-version test invokes the journal and public report boundary; the restore-mismatch test injects an AssertionError because normal reconcile preempts that final assertion. Both codes are fixed and disclose no field value or raw error. Focused node --test run passed 22/22.",
+    "guard_limit": "The restore-mismatch test proves the diagnostic boundary, not a reachable restoration mismatch in the native path. Source tests cannot replace the native run."
+  },
+  "prior_peer_findings": "Both previously missing diagnostic categories are addressed; no new source blocker found.",
+  "source_edits": "None",
+  "reviewed_sha": "b02eac6fb4349325444e948f5e8909b96ff0f347"
+}
