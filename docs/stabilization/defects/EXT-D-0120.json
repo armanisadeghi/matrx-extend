@@ -12,7 +12,7 @@
   "actual": "Receipt contains only extension_reload and generic target error; no returned reload result or target counts. Product cause remains unknown; same run also contains unsafe CPU evidence. Latest healthy development native37192733619 stopped earlier at native_extension_worker_retirement_unverified: old worker/panel absent and replacement present/created, but no old-worker destroyed event. It did not reach replacement-panel pointer lookup, so original pointer counts remain unknown. Healthy native37195986118 confirms complete strict retirement/replacement lifecycle with zero timeline drops, then pointer_target_not_unique at open_scrape_in_replacement_panel: matched0/visible0; target rendering/selection cause not yet known.",
   "severity": "S2: acceptance reliability; no proven product failure",
   "priority": "P1: prerequisite for trusted native acceptance",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "/root",
   "evidence": [
     ".research/scrape-loading-fixed-native.json",
@@ -33,7 +33,9 @@
     ".research/reload-lifetime-fresh-native.json",
     ".research/scrape-media-native.json",
     ".research/reload-causal-escalation.json",
-    ".research/reload-execution-peer.json"
+    ".research/reload-execution-peer.json",
+    ".research/reload-execution-fix.json",
+    ".research/reload-execution-final-peer.json"
   ],
   "transition_history": [
     {
@@ -71,10 +73,16 @@
       "from": "retest-fail",
       "to": "in-fix",
       "reason": "Second recurrence of the same unexplained regression meets PLAN escalation threshold; fresh Astra medium bounded diagnosis owns full retained failure/success timelines."
+    },
+    {
+      "at": "2026-10-04T12:43:38.773760+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Execution-retirement oracle repaired in babf71b7 +9f09009a; false-green TargetDestroyed bypass reproduced RED and removed. Fresh independent b69c34e4 passed both source verdicts with23 focused checks and actual harness. Guarded native retest pending."
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
-  "next_action": "Fresh bounded Astra medium escalation is justified by repeated D120 failures after lower-tier instrumentation and now-discriminating native evidence. Compare failing37200570100 with healthy37199709918 and prior escalation9a4150ee sources. Identify exact retained-host ownership or the authoritative execution-retirement contract; propose/implement one narrowly owned causal diagnostic or repair with forcing checks and freshpeer before anothernative run. Do not infer session ownership from attached=false, clear foreignsessions, Browser.close, stopWorker/unregister, or relax an unexplained predicate to obtain green. No blind retries.",
+  "next_action": "Collect one guarded native guest Scrape run with reviewed execution-retirement driver and frozen development215. Require exact old stopped/redundant plus distinct running/activated replacement, actual replacement panel rendering, valid resource journals and downstream assertions. No whole-product or Store claim.",
   "current_native_evidence": {
     "run_id": "37200570100",
     "status": "retest-fail_after_media_checks",
@@ -93,10 +101,10 @@
   },
   "causal_ruling": {
     "source_fix": "babf71b7",
-    "review": "7623d86c",
-    "verdict": "in-fix; independent quality failure must be repaired before native run",
+    "review": "7623d86c finding addressed by9f09009a; fresh peerb69c34e4",
+    "verdict": "fixed; independent source review passed, native pending",
     "finding": "Chrome execution retirement is distinct from debugger host destruction. Correlated stopped/redundant old version and running/activated replacement provide the new proof, but legacy TargetDestroyed OR branch bypasses it. Peer demonstrated acceptance of restartable stopped/activated old version with missing replacement version proof.",
-    "owner": "/root/reload_execution_fix",
+    "owner": "/root/reload_execution_native",
     "required": "Remove false-green bypass and independently retest actual harness refusals before native acceptance."
   }
 }
