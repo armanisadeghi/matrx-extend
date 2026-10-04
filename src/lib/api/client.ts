@@ -656,34 +656,42 @@ export async function privatePost<T>(opts: PrivatePostOptions<T>): Promise<Priva
   } catch {
     return privateFailure(timeout.aborted ? 'deadline_exceeded' : 'network_error');
   }
+  // Every exit before the body is read cancels it: a deadline or identity
+  // change between headers and body must not leave the stream open.
+  let bodyHandled = false;
   try {
-    if (!(await bounded(privateIdentityMatches(opts.expectedActor, token))))
-      return privateFailure('identity_changed');
-  } catch {
-    return privateFailure(timeout.aborted ? 'deadline_exceeded' : 'identity_changed');
+    try {
+      if (!(await bounded(privateIdentityMatches(opts.expectedActor, token))))
+        return privateFailure('identity_changed');
+    } catch {
+      return privateFailure(timeout.aborted ? 'deadline_exceeded' : 'identity_changed');
+    }
+    if (!hasPrivateNoStore(response.headers.get('cache-control')))
+      return privateFailure('invalid_response');
+    if (!response.ok) return privateFailure('http_error');
+    if (!current()) return privateFailure('identity_changed');
+    const capBytes =
+      opts.path === '/browser-manager/local/commands/claim'
+        ? PRIVATE_CLAIM_RESPONSE_CAP_BYTES
+        : PRIVATE_RESPONSE_CAP_BYTES;
+    bodyHandled = true;
+    const read = await readPrivateResponse(response, timeout, capBytes);
+    if (!read) return privateFailure(timeout.aborted ? 'deadline_exceeded' : 'invalid_response');
+    if ('tooLarge' in read) return privateFailure('response_too_large');
+    try {
+      if (!(await bounded(privateIdentityMatches(opts.expectedActor, token))))
+        return privateFailure('identity_changed');
+    } catch {
+      return privateFailure(timeout.aborted ? 'deadline_exceeded' : 'identity_changed');
+    }
+    if (timeout.aborted || Date.now() >= deadline) return privateFailure('deadline_exceeded');
+    if (!current()) return privateFailure('identity_changed');
+    const parsed = parseStrictPrivateJson(read.value);
+    const checked = parsed === null ? null : opts.schema.safeParse(parsed);
+    return checked?.success ? { ok: true, data: checked.data } : privateFailure('invalid_response');
+  } finally {
+    if (!bodyHandled) void response.body?.cancel().catch(() => {});
   }
-  if (!hasPrivateNoStore(response.headers.get('cache-control')))
-    return privateFailure('invalid_response');
-  if (!response.ok) return privateFailure('http_error');
-  if (!current()) return privateFailure('identity_changed');
-  const capBytes =
-    opts.path === '/browser-manager/local/commands/claim'
-      ? PRIVATE_CLAIM_RESPONSE_CAP_BYTES
-      : PRIVATE_RESPONSE_CAP_BYTES;
-  const read = await readPrivateResponse(response, timeout, capBytes);
-  if (!read) return privateFailure(timeout.aborted ? 'deadline_exceeded' : 'invalid_response');
-  if ('tooLarge' in read) return privateFailure('response_too_large');
-  try {
-    if (!(await bounded(privateIdentityMatches(opts.expectedActor, token))))
-      return privateFailure('identity_changed');
-  } catch {
-    return privateFailure(timeout.aborted ? 'deadline_exceeded' : 'identity_changed');
-  }
-  if (timeout.aborted || Date.now() >= deadline) return privateFailure('deadline_exceeded');
-  if (!current()) return privateFailure('identity_changed');
-  const parsed = parseStrictPrivateJson(read.value);
-  const checked = parsed === null ? null : opts.schema.safeParse(parsed);
-  return checked?.success ? { ok: true, data: checked.data } : privateFailure('invalid_response');
 }
 
 function hasPrivateNoStore(value: string | null): boolean {
