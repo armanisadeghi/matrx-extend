@@ -1,0 +1,47 @@
+{
+  "status": "FAIL_NATIVE_READINESS",
+  "defect": "EXT-D-0126",
+  "reviewed_commits": ["4acfe298", "3c8c0ba6"],
+  "verdict_a_source_readiness_for_native": {
+    "status": "FAIL",
+    "scope": "Source readiness for a guarded native discriminator only; no product-health or clipboard-write verdict is claimed.",
+    "working": [
+      "The exact active Scrape row's Copy feedback is sampled immediately after the trusted click, and red X is classified as a product write failure without a read grant.",
+      "A successful feedback state gates readback; the read expression returns fixture equality or an allowlisted error code plus focus and visibility, with no clipboard plaintext in the result.",
+      "Warm and reload Video and Links paths receive the harness-owned browser CDP session and panel URL."
+    ],
+    "blockers": [
+      {
+        "id": "restoration_failure_continues_actions",
+        "severity": "critical",
+        "evidence": "Independent observeVideoLinks simulation made Browser.setPermission(granted) succeed and restore(prompt) throw. The function returned normally with permission still granted, clipboardObservationPermissionRestored=false, and only video_clipboard_observation_unavailable. exerciseMediaControls then proceeds to Remove video and later actions. Abort the native run if restoration is unconfirmed."
+      },
+      {
+        "id": "hovered_copy_feedback_unobserved",
+        "severity": "important",
+        "evidence": "Happy DOM reproduction with an exact matching Video row, emerald Check, and Copy button whose hovered tooltip moved title to data-matrx-title returned unobserved. EXT-D-0124 established this same title transfer in the live Scrape DOM; the existing shared row observer handles both attributes. The new title-only feedback selector misses the success or failure icon."
+      }
+    ],
+    "native_limit": "No browser or native clipboard run was performed in this review; the historical receipt proves trusted clicks and opaque read failure, not product Copy success or failure."
+  },
+  "verdict_b_doctrine_and_quality": {
+    "status": "FAIL",
+    "working": [
+      "The existing D27 scoped permission helper is reused, rather than a second grant mechanism.",
+      "The observer uses the controlled URL only for an in-memory equality check and records bounded diagnostics.",
+      "Focused tests cover failed, pending, mismatched, and denied outcomes, and the prior helper's five unsafe mutations remain rejected."
+    ],
+    "findings": [
+      "The restoration-failure test asserts a partial result, thereby accepting continuation with a possible active permission override. It must require fail-closed abort of subsequent product actions.",
+      "The Copy feedback row test uses a querySelectorAll double that ignores its selector. It passes despite the title-only selector rejecting the documented hovered DOM. Add a forcing DOM case with data-matrx-title and the real selector."
+    ]
+  },
+  "independent_checks": [
+    "PASS node --test tests/browser/scrape-native-media-actions.test.mjs (17/17).",
+    "PASS node tests/browser/clipboard-observation.test.mjs (five unsafe mutations rejected).",
+    "PASS direct VM execution of readClipboardEquality: equal, wrong, and NotAllowedError returned bounded records without plaintext.",
+    "FAIL safety reproduction: restore transport failure left the simulated permission granted yet observeVideoLinks resolved normally.",
+    "FAIL hover DOM reproduction: a correct emerald Check under a Copy button with data-matrx-title was classified unobserved."
+  ],
+  "next_step": "Fix both blockers, rerun focused forcing checks, seek fresh independent re-verification, then run one guarded native retest."
+}
