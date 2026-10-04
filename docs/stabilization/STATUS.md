@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-04 03:52 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T03:52:44.728959+00:00. 205 features · 761 cases · 1333 controls · 106 linked defect records.
+Generated 2026-10-04 04:01 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T04:01:56.128811+00:00. 205 features · 761 cases · 1333 controls · 107 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -8,7 +8,7 @@ A feature is fully verified for a role only when every applicable case explicitl
 
 Applicable case-by-role slots: **1209** — Pass: 76 · Partial: 65 · Fail: 4 · Unverified: 1063 · N/A: 1.
 Unverified splits into **123 explicitly marked unverified** and **940 with no result record**.
-Full feature-role pairs: **0/394**. Procedure gaps: 148 cases without steps, 147 without expected outcomes, 31 without control links.
+Full feature-role pairs: **0/394**. Procedure gaps: 128 cases without steps, 127 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
 ## Tab and surface overview
@@ -16,7 +16,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | Tab or surface | Features | Guest cases | Member cases | Admin cases | All-role case slots | Active defects |
 | --- | ---: | --- | --- | --- | --- | ---: |
 | [Development installation](#development-installation) | 1 | 0 pass · 1 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 1 pass · 0 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 1 fail · 4 unverified · 0 deferred; 0/1 full | pass 2, partial 2, fail 3, unverified 14, n/a 0 | 2 |
-| [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 8, partial 2, fail 1, unverified 16, n/a 0 | 4 |
+| [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 8, partial 2, fail 1, unverified 16, n/a 0 | 5 |
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
@@ -114,9 +114,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: Unverified · member: Fail · admin: Partial. **Cases:** 10. **Controls:** 10.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0073, EXT-D-0079, EXT-D-0083, EXT-D-0101
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0073, EXT-D-0079, EXT-D-0083, EXT-D-0101, EXT-D-0107
 
-**Linked defects:** [EXT-D-0025](defects/EXT-D-0025.json) (closed), [EXT-D-0051](defects/EXT-D-0051.json) (closed), [EXT-D-0056](defects/EXT-D-0056.json) (closed), [EXT-D-0060](defects/EXT-D-0060.json) (closed), [EXT-D-0072](defects/EXT-D-0072.json) (closed), [EXT-D-0073](defects/EXT-D-0073.json) (fixed), [EXT-D-0079](defects/EXT-D-0079.json) (in-fix), [EXT-D-0083](defects/EXT-D-0083.json) (fixed), [EXT-D-0098](defects/EXT-D-0098.json) (closed), [EXT-D-0101](defects/EXT-D-0101.json) (fixed), [EXT-D-0102](defects/EXT-D-0102.json) (closed), [EXT-D-0103](defects/EXT-D-0103.json) (closed)
+**Linked defects:** [EXT-D-0025](defects/EXT-D-0025.json) (closed), [EXT-D-0051](defects/EXT-D-0051.json) (closed), [EXT-D-0056](defects/EXT-D-0056.json) (closed), [EXT-D-0060](defects/EXT-D-0060.json) (closed), [EXT-D-0072](defects/EXT-D-0072.json) (closed), [EXT-D-0073](defects/EXT-D-0073.json) (fixed), [EXT-D-0079](defects/EXT-D-0079.json) (in-fix), [EXT-D-0083](defects/EXT-D-0083.json) (fixed), [EXT-D-0098](defects/EXT-D-0098.json) (closed), [EXT-D-0101](defects/EXT-D-0101.json) (fixed), [EXT-D-0102](defects/EXT-D-0102.json) (closed), [EXT-D-0103](defects/EXT-D-0103.json) (closed), [EXT-D-0107](defects/EXT-D-0107.json) (open)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1699,7 +1699,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4001-T01 Controlled manual execution: list_chrome_categories | N/A | Unverified | Unverified | EXT-F-4001-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_core_tools (EXT-F-4002)
@@ -1712,7 +1712,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4002-T01 Controlled manual execution: list_core_tools | N/A | Unverified | Unverified | EXT-F-4002-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_reading_tools (EXT-F-4003)
@@ -1725,7 +1725,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4003-T01 Controlled manual execution: list_reading_tools | N/A | Unverified | Unverified | EXT-F-4003-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_interaction_tools (EXT-F-4004)
@@ -1738,7 +1738,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4004-T01 Controlled manual execution: list_interaction_tools | N/A | Unverified | Unverified | EXT-F-4004-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_tabs_tools (EXT-F-4005)
@@ -1751,7 +1751,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4005-T01 Controlled manual execution: list_tabs_tools | N/A | Unverified | Unverified | EXT-F-4005-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_capture_tools (EXT-F-4006)
@@ -1764,7 +1764,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4006-T01 Controlled manual execution: list_capture_tools | N/A | Unverified | Unverified | EXT-F-4006-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_chrome_tools (EXT-F-4007)
@@ -1777,7 +1777,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4007-T01 Controlled manual execution: list_chrome_tools | N/A | N/A | Unverified | EXT-F-4007-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_human_tools (EXT-F-4008)
@@ -1790,7 +1790,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4008-T01 Controlled manual execution: list_human_tools | N/A | Unverified | Unverified | EXT-F-4008-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_memory_tools (EXT-F-4009)
@@ -1803,7 +1803,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4009-T01 Controlled manual execution: list_memory_tools | N/A | Unverified | Unverified | EXT-F-4009-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_ai_tools (EXT-F-4010)
@@ -1816,7 +1816,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4010-T01 Controlled manual execution: list_ai_tools | N/A | Unverified | Unverified | EXT-F-4010-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_demos_tools (EXT-F-4011)
@@ -1829,7 +1829,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4011-T01 Controlled manual execution: list_demos_tools | N/A | Unverified | Unverified | EXT-F-4011-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_guidance_tools (EXT-F-4012)
@@ -1842,7 +1842,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4012-T01 Controlled manual execution: list_guidance_tools | N/A | Unverified | Unverified | EXT-F-4012-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_devtools_tools (EXT-F-4013)
@@ -1855,7 +1855,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4013-T01 Controlled manual execution: list_devtools_tools | N/A | N/A | Unverified | EXT-F-4013-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_webmcp_tools (EXT-F-4014)
@@ -1868,7 +1868,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4014-T01 Controlled manual execution: list_webmcp_tools | N/A | N/A | Unverified | EXT-F-4014-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_desktop_tools (EXT-F-4015)
@@ -1881,7 +1881,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4015-T01 Controlled manual execution: list_desktop_tools | N/A | Unverified | Unverified | EXT-F-4015-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_credentials_tools (EXT-F-4016)
@@ -1894,7 +1894,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4016-T01 Controlled manual execution: list_credentials_tools | N/A | Unverified | Unverified | EXT-F-4016-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_crm_tools (EXT-F-4017)
@@ -1907,7 +1907,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4017-T01 Controlled manual execution: list_crm_tools | N/A | Unverified | Unverified | EXT-F-4017-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_education_tools (EXT-F-4018)
@@ -1920,7 +1920,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4018-T01 Controlled manual execution: list_education_tools | N/A | Unverified | Unverified | EXT-F-4018-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_productivity_tools (EXT-F-4019)
@@ -1933,7 +1933,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4019-T01 Controlled manual execution: list_productivity_tools | N/A | Unverified | Unverified | EXT-F-4019-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### list_records_tools (EXT-F-4020)
@@ -1946,7 +1946,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4020-T01 Controlled manual execution: list_records_tools | N/A | Unverified | Unverified | EXT-F-4020-C01 |
 
-**Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Runtime and dispatcher authorization remain unverified; reviewed manual-run procedures are source-only.
 
 
 ### chrome_batch (EXT-F-4021)
