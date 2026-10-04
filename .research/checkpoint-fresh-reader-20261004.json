@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "document": "docs/stabilization/COORDINATOR.md",
+  "review_mode": "REPORT",
+  "reviewed_commit": "804f81e0",
+  "reader_hygiene": {
+    "verdict": "ONE_REWRITE",
+    "findings_table": [
+      {
+        "number": 1,
+        "quote": "The latest generated status records 205 features, 762 cases, 1,333 controls",
+        "tell": "An undated snapshot as a fact",
+        "verdict": "REWRITE",
+        "new_text": "Regenerate the linked status for current coverage counts and verification state.",
+        "applied": false
+      }
+    ],
+    "counts": {
+      "CUT": 0,
+      "REWRITE": 1,
+      "MOVE": 0,
+      "ASK": 0,
+      "GUARD": 0
+    },
+    "document_length_before_lines": 27,
+    "document_length_after_lines": 27
+  },
+  "current_fact_completeness": {
+    "verdict": "NEEDS_TWO_CLARIFICATIONS",
+    "basis": "Core resume boundaries and exact artifacts are retained: pending Store 0.2.205, unpacked versus installed proof, D96/D97/D112 closure gates, frozen Profile 0.2.189, D110/D111 existing-row native work, D114 hosted Profile refusal, and resource admission. Linked inventory and defect records cover broader work.",
+    "qualification": "The generated STATUS.md is timestamped 2026-10-04 06:46 UTC and contains an older member-run-in-progress statement; the later checkpoint and linked .research/hosted-member205-final.json supply the completed result. Refresh generated views before treating them as live state.",
+    "findings": [
+      {
+        "quote": "approved fixture staging",
+        "issue": "D114 says fixture staging is implemented but unreachable until durable recovery exists; the checkpoint can read as though implementation is missing.",
+        "suggested_text": "durable recovery outside the VM, activation of the implemented approved-organization fixture staging, and independent review"
+      },
+      {
+        "quote": "credential change on the resource-constrained host",
+        "issue": "Blanket wording can be read to prohibit the authorized temporary, point-of-use hosted login secret flow used by the member acceptance.",
+        "suggested_text": "credential rotation or persistent credential change on the resource-constrained host; authorized point-of-use hosted credentials remain governed by the contained workflow"
+      }
+    ]
+  },
+  "scope": "Document and linked-record review only; no browser, build, tests, dispatch, or document edits."
+}
