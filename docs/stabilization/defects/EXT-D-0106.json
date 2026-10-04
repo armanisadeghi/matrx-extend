@@ -14,7 +14,7 @@
   "actual": "Warm Identity/Employment save/reopen succeeds; reload fails before dimension evidence. Exact inner cause not retained. Owned row was subsequently conditionally removed and root independently read zero rows.",
   "severity": "S2 test lifecycle and cleanup blocked; product impact not established",
   "priority": "P1 prerequisite for full Profile verification",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root",
   "evidence": [
     ".research/profile-fields-clean-save-native.json",
@@ -24,7 +24,8 @@
     ".research/reload106-causal-capture.json",
     ".research/reload-context-boundary.json",
     ".research/reload-readiness-fix.json",
-    ".research/reload-readiness-peer.json"
+    ".research/reload-readiness-peer.json",
+    ".research/profile-fields-reload-fixed-native.json"
   ],
   "transition_history": [
     {
@@ -50,8 +51,22 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Harness readiness9eecf01c passes fresh source peer and independent guest lifecycle. Original member reload/full-field/automatic restoration remains pending; no closure."
+    },
+    {
+      "at": "2026-10-04T03:52:44.728959+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent existing-member run08 passes original extended Identity/Employment, section controls, full reload and exact automatic original-state restoration; root verified receipt/journal hashes."
+    },
+    {
+      "at": "2026-10-04T03:52:44.728959+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original current reproduction no longer reproduces and surrounding warm/reload/save/error-recovery checks pass on frozen189 with reviewed current runner. Closure is bounded to this defect, not overall Profile health."
     }
   ],
-  "next_action": "One independent guarded full member Profile run with extended cases on frozen189 and current reviewed harness; verify original reproduction, post-reload saved fields and automatic exact original-state restoration.",
-  "closure_requirement": "Prove reload cause, fix and independently verify actual reload plus saved-field and automatic original-state restoration. Recovery SQL alone does not close it."
+  "next_action": "Closed for current original reproduction; retain historical error uncertainty. Continue other Profile cases.",
+  "closure_requirement": "Prove reload cause, fix and independently verify actual reload plus saved-field and automatic original-state restoration. Recovery SQL alone does not close it.",
+  "closed_at": "2026-10-04T03:52:44.728959+00:00",
+  "historical_limit": "Original run07 inner exception was discarded and remains unknowable; closure rests on proven shared guest readiness race repair and successful original member scenario with surrounding cases, not a claimed reconstruction of that discarded error."
 }

@@ -14,13 +14,14 @@
   "actual": "Causal run189-06 observed disabled Save with dirty=true and all seven fields matching, then journal read the predecessor row. Persistent rejection ruled out by later exact successor reconciliation and original absence restoration.",
   "severity": "S2 acceptance blocked; product impact not established",
   "priority": "P1 contained Profile acceptance prerequisite",
-  "state": "fixed",
-  "owner": "profile_save_boundary_escalation",
+  "state": "closed",
+  "owner": "root",
   "evidence": [
     ".research/profile-expander-causal-native.json",
     "docs/stabilization/resource-journals/profile-expander-causal-189-05.jsonl",
     ".research/profile-save-boundary-escalation.json",
-    "docs/stabilization/resource-journals/profile-save-boundary-189-06.jsonl"
+    "docs/stabilization/resource-journals/profile-save-boundary-189-06.jsonl",
+    ".research/profile-fields-reload-fixed-native.json"
   ],
   "transition_history": [
     {
@@ -46,9 +47,22 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Both actual Save/restore callbacks reproduced premature journal reconciliation; clean-draft predicates repair both, 31 checks and mutations passed. Independent review/native pending."
+    },
+    {
+      "at": "2026-10-04T03:52:44.728959+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent existing-member run08 passes original extended Identity/Employment, section controls, full reload and exact automatic original-state restoration; root verified receipt/journal hashes."
+    },
+    {
+      "at": "2026-10-04T03:52:44.728959+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original current reproduction no longer reproduces and surrounding warm/reload/save/error-recovery checks pass on frozen189 with reviewed current runner. Closure is bounded to this defect, not overall Profile health."
     }
   ],
   "closure_requirement": "Prove actual cause, repair with meaningful red/green and fresh peer, independently verify original save and surrounding warm/reload/restoration cases.",
   "root_cause": "Save/restore predicates treated disabled Save as completion without requiring dirty=false.",
-  "fix_commits": ["710d14bf"]
+  "fix_commits": ["710d14bf"],
+  "closed_at": "2026-10-04T03:52:44.728959+00:00"
 }

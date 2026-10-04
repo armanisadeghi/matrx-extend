@@ -14,13 +14,14 @@
   "actual": "Resource-valid causal run isolated warm Identity failure to fill / Birthday / desired_value_matches=false. Six preceding Identity fills passed. This is a test-driver defect; Profile product impact is not established. Original row absence was restored.",
   "severity": "S2 testing blocked; product user impact not established.",
   "priority": "P1 next Profile acceptance prerequisite",
-  "state": "fixed",
-  "owner": "profile_identity_native_diagnosis",
+  "state": "closed",
+  "owner": "root",
   "evidence": [
     ".research/profile-fields-member-native.json",
     "docs/stabilization/resource-journals/profile-fields-member-189-01.jsonl",
     ".research/profile-identity-native-diagnosis.json",
-    "docs/stabilization/resource-journals/profile-identity-d104-189-02.jsonl"
+    "docs/stabilization/resource-journals/profile-identity-d104-189-02.jsonl",
+    ".research/profile-fields-reload-fixed-native.json"
   ],
   "transition_history": [
     {
@@ -46,7 +47,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "7e3f0f41 repairs native date segment entry and preserves primary field errors. Fresh source peer and independent extended native retest pending; builder probe is not acceptance."
+    },
+    {
+      "at": "2026-10-04T03:52:44.728959+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent existing-member run08 passes original extended Identity/Employment, section controls, full reload and exact automatic original-state restoration; root verified receipt/journal hashes."
+    },
+    {
+      "at": "2026-10-04T03:52:44.728959+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original current reproduction no longer reproduces and surrounding warm/reload/save/error-recovery checks pass on frozen189 with reviewed current runner. Closure is bounded to this defect, not overall Profile health."
     }
   ],
-  "closure_requirement": "Determine actual cause, reproduce exact failure with meaningful guard, independently review fix, and guarded native original-case plus surrounding acceptance with verified restoration."
+  "closure_requirement": "Determine actual cause, reproduce exact failure with meaningful guard, independently review fix, and guarded native original-case plus surrounding acceptance with verified restoration.",
+  "closed_at": "2026-10-04T03:52:44.728959+00:00"
 }

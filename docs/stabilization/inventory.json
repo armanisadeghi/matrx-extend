@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T03:30:51.559394+00:00",
+  "updated_at": "2026-10-04T03:52:44.728959+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -165,8 +165,12 @@
             "detail": "Frozen189 guest trusted pane transition and strict old-context retirement/exact replacement passed with zero runtime/manifest errors. Post-reload rendered content not sampled; full rendering case and current-main/Store-installation behavior remain unverified."
           },
           "member": {
-            "status": "unverified",
-            "detail": "No member-mode session evidence; the operational behavior is intended to be auth-independent."
+            "status": "pass",
+            "run_id": "profile-fields-reload-fixed-189-08",
+            "evidence": ".research/profile-fields-reload-fixed-native.json",
+            "detail": "Independent frozen189 member full extension reload retired old worker/panel, created replacements, restored signed-in account and rendered Profile controls; subsequent field/save/reopen cases passed. Original row absence restored; no Store installation claim.",
+            "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+            "verified_at": "2026-10-04T03:52:44.728959+00:00"
           },
           "admin": {
             "status": "pass",
@@ -210,6 +214,11 @@
             "run_id": "reload-final-peer-20261003-01",
             "detail": "Independent frozen184 guest fullReload lifecycle passed including enabledDeveloperMode, strictoldtargetretirement, newworker/panel andnativecontext. Runtimeerrorcount1 stillunclassified; no cleanruntime or currentmainclaim.",
             "evidence": ".research/reload-final-peer.json"
+          },
+          {
+            "mode": "member",
+            "status": "unverified",
+            "detail": "No member-mode session evidence; the operational behavior is intended to be auth-independent."
           }
         ],
         "defect_ids": [
@@ -10047,97 +10056,114 @@
           }
         },
         {
-          "id": "EXT-F-1004-T05",
-          "title": "member: Identity fields",
-          "modes": [
-            "member"
-          ],
-          "control_ids": [
-            "EXT-F-1004-C03"
-          ],
-          "preconditions": [
-            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
-            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
-            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
-            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
-            "Run independently as existing known member; do not change role or account."
-          ],
-          "steps": [
-            "Expand Identity. Change First name, Middle, Last name, Preferred, Suffix, Pronouns, and Birthday to distinct synthetic values (birthday in a valid YYYY-MM-DD date).",
-            "Verify Save becomes enabled, click Save, and wait for loading to finish.",
-            "Reopen Profile and compare each field and identity card name to the saved values; restore original values and save."
-          ],
-          "expected": [
-            "Edited legal/preferred names, suffix, pronouns and birthday appear in the saved profile after reload.",
-            "Each changed identity field and the identity card display saved values after reload/reopen; restoration can be saved."
-          ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
-          "source_anchors": [
-            "src/features/profile/ProfileView.tsx:100-148",
-            "src/hooks/use-user-profile.ts:87-100"
-          ],
-          "procedure_readiness": "ready",
-          "procedure_gaps": [],
-          "procedure_execution_matrix": [
-            {
-              "mode": "member",
-              "lifecycle_dimension": "warm",
-              "branch": "default",
-              "inventory_dimensions": [
-                "warm",
-                "reload"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "ready"
-            },
-            {
-              "mode": "member",
-              "lifecycle_dimension": "reload",
-              "branch": "default",
-              "inventory_dimensions": [
-                "warm",
-                "reload"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "ready"
-            }
-          ],
-          "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
-          "procedure_review": {
-            "proposal_commit": "22994d49",
-            "peer_commit": "2c318798",
-            "report": ".research/popup-profile-acceptance-peer.json",
-            "scope": "Source-reviewed procedure only; no runtime acceptance."
+        "id": "EXT-F-1004-T05",
+        "title": "member: Identity fields",
+        "modes": [
+          "member"
+        ],
+        "control_ids": [
+          "EXT-F-1004-C03"
+        ],
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+          "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+          "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+          "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+          "Run independently as existing known member; do not change role or account."
+        ],
+        "steps": [
+          "Expand Identity. Change First name, Middle, Last name, Preferred, Suffix, Pronouns, and Birthday to distinct synthetic values (birthday in a valid YYYY-MM-DD date).",
+          "Verify Save becomes enabled, click Save, and wait for loading to finish.",
+          "Reopen Profile and compare each field and identity card name to the saved values; restore original values and save."
+        ],
+        "expected": [
+          "Edited legal/preferred names, suffix, pronouns and birthday appear in the saved profile after reload.",
+          "Each changed identity field and the identity card display saved values after reload/reopen; restoration can be saved."
+        ],
+        "dimensions": [
+          "warm",
+          "reload"
+        ],
+        "source_anchors": [
+          "src/features/profile/ProfileView.tsx:100-148",
+          "src/hooks/use-user-profile.ts:87-100"
+        ],
+        "procedure_readiness": "ready",
+        "procedure_gaps": [],
+        "procedure_execution_matrix": [
+          {
+            "mode": "member",
+            "lifecycle_dimension": "warm",
+            "branch": "default",
+            "inventory_dimensions": [
+              "warm",
+              "reload"
+            ],
+            "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+            "evidence_refs": [
+              ".research/profile-fields-reload-fixed-native.json",
+              "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
+            ],
+            "status": "pass",
+            "readiness": "ready"
           },
-          "defect_ids": [
-            "EXT-D-0104",
-            "EXT-D-0105"
-          ],
-          "results": {
-            "member": {
-              "status": "partial",
-              "run_id": "profile-fields-clean-save-189-07",
-              "evidence": ".research/profile-fields-clean-save-native.json",
-              "verified_substeps": [
-                "Seven Identity fields including Birthday saved and reopened with exact values."
-              ],
-              "remaining_criteria": [
-                "Full extension reload exact-value verification.",
-                "Normal UI restoration; this run required conditional owned-row recovery after reload failure."
-              ],
-              "recovery_evidence": ".research/profile-owned-row-recovery-189-07.json",
-              "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
-              "verified_at": "2026-10-04T03:14:28.197043+00:00"
-            }
+          {
+            "mode": "member",
+            "lifecycle_dimension": "reload",
+            "branch": "default",
+            "inventory_dimensions": [
+              "warm",
+              "reload"
+            ],
+            "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+            "evidence_refs": [
+              ".research/profile-fields-reload-fixed-native.json",
+              "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
+            ],
+            "status": "pass",
+            "readiness": "ready"
+          }
+        ],
+        "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
+        "procedure_review": {
+          "proposal_commit": "22994d49",
+          "peer_commit": "2c318798",
+          "report": ".research/popup-profile-acceptance-peer.json",
+          "scope": "Source-reviewed procedure only; no runtime acceptance."
+        },
+        "defect_ids": [
+          "EXT-D-0104",
+          "EXT-D-0105"
+        ],
+        "results": {
+          "member": {
+            "status": "pass",
+            "run_id": "profile-fields-reload-fixed-189-08",
+            "evidence": ".research/profile-fields-reload-fixed-native.json",
+            "detail": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+            "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+            "verified_at": "2026-10-04T03:52:44.728959+00:00"
           }
         },
+        "previous_results": [
+          {
+            "mode": "member",
+            "status": "partial",
+            "run_id": "profile-fields-clean-save-189-07",
+            "evidence": ".research/profile-fields-clean-save-native.json",
+            "verified_substeps": [
+              "Seven Identity fields including Birthday saved and reopened with exact values."
+            ],
+            "remaining_criteria": [
+              "Full extension reload exact-value verification.",
+              "Normal UI restoration; this run required conditional owned-row recovery after reload failure."
+            ],
+            "recovery_evidence": ".research/profile-owned-row-recovery-189-07.json",
+            "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+            "verified_at": "2026-10-04T03:14:28.197043+00:00"
+          }
+        ]
+      },
         {
           "id": "EXT-F-1004-T06",
           "title": "admin: Identity fields",
@@ -10928,92 +10954,109 @@
           }
         },
         {
-          "id": "EXT-F-1004-T17",
-          "title": "member: Employment",
-          "modes": [
-            "member"
-          ],
-          "control_ids": [
-            "EXT-F-1004-C09"
-          ],
-          "preconditions": [
-            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
-            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
-            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
-            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
-            "Run independently as existing known member; do not change role or account."
-          ],
-          "steps": [
-            "Expand Employment; set Company and Title to unique synthetic values.",
-            "Save, reopen Profile, verify both values, then restore original values and save."
-          ],
-          "expected": [
-            "Company and title values persist after reload.",
-            "Company and Title values persist after reopening and restore successfully."
-          ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
-          "source_anchors": [
-            "src/features/profile/ProfileView.tsx:206-221",
-            "src/hooks/use-user-profile.ts:87-100"
-          ],
-          "procedure_readiness": "ready",
-          "procedure_gaps": [],
-          "procedure_execution_matrix": [
-            {
-              "mode": "member",
-              "lifecycle_dimension": "warm",
-              "branch": "default",
-              "inventory_dimensions": [
-                "warm",
-                "reload"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "ready"
-            },
-            {
-              "mode": "member",
-              "lifecycle_dimension": "reload",
-              "branch": "default",
-              "inventory_dimensions": [
-                "warm",
-                "reload"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "ready"
-            }
-          ],
-          "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
-          "procedure_review": {
-            "proposal_commit": "22994d49",
-            "peer_commit": "2c318798",
-            "report": ".research/popup-profile-acceptance-peer.json",
-            "scope": "Source-reviewed procedure only; no runtime acceptance."
+        "id": "EXT-F-1004-T17",
+        "title": "member: Employment",
+        "modes": [
+          "member"
+        ],
+        "control_ids": [
+          "EXT-F-1004-C09"
+        ],
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+          "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+          "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+          "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+          "Run independently as existing known member; do not change role or account."
+        ],
+        "steps": [
+          "Expand Employment; set Company and Title to unique synthetic values.",
+          "Save, reopen Profile, verify both values, then restore original values and save."
+        ],
+        "expected": [
+          "Company and title values persist after reload.",
+          "Company and Title values persist after reopening and restore successfully."
+        ],
+        "dimensions": [
+          "warm",
+          "reload"
+        ],
+        "source_anchors": [
+          "src/features/profile/ProfileView.tsx:206-221",
+          "src/hooks/use-user-profile.ts:87-100"
+        ],
+        "procedure_readiness": "ready",
+        "procedure_gaps": [],
+        "procedure_execution_matrix": [
+          {
+            "mode": "member",
+            "lifecycle_dimension": "warm",
+            "branch": "default",
+            "inventory_dimensions": [
+              "warm",
+              "reload"
+            ],
+            "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+            "evidence_refs": [
+              ".research/profile-fields-reload-fixed-native.json",
+              "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
+            ],
+            "status": "pass",
+            "readiness": "ready"
           },
-          "results": {
-            "member": {
-              "status": "partial",
-              "run_id": "profile-fields-clean-save-189-07",
-              "evidence": ".research/profile-fields-clean-save-native.json",
-              "verified_substeps": [
-                "Company and Title saved and reopened with exact values."
-              ],
-              "remaining_criteria": [
-                "Full extension reload exact-value verification.",
-                "Normal UI restoration; this run required conditional owned-row recovery after reload failure."
-              ],
-              "recovery_evidence": ".research/profile-owned-row-recovery-189-07.json",
-              "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
-              "verified_at": "2026-10-04T03:14:28.197043+00:00"
-            }
+          {
+            "mode": "member",
+            "lifecycle_dimension": "reload",
+            "branch": "default",
+            "inventory_dimensions": [
+              "warm",
+              "reload"
+            ],
+            "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+            "evidence_refs": [
+              ".research/profile-fields-reload-fixed-native.json",
+              "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
+            ],
+            "status": "pass",
+            "readiness": "ready"
+          }
+        ],
+        "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
+        "procedure_review": {
+          "proposal_commit": "22994d49",
+          "peer_commit": "2c318798",
+          "report": ".research/popup-profile-acceptance-peer.json",
+          "scope": "Source-reviewed procedure only; no runtime acceptance."
+        },
+        "results": {
+          "member": {
+            "status": "pass",
+            "run_id": "profile-fields-reload-fixed-189-08",
+            "evidence": ".research/profile-fields-reload-fixed-native.json",
+            "detail": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+            "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+            "verified_at": "2026-10-04T03:52:44.728959+00:00"
           }
         },
+        "previous_results": [
+          {
+            "mode": "member",
+            "status": "partial",
+            "run_id": "profile-fields-clean-save-189-07",
+            "evidence": ".research/profile-fields-clean-save-native.json",
+            "verified_substeps": [
+              "Company and Title saved and reopened with exact values."
+            ],
+            "remaining_criteria": [
+              "Full extension reload exact-value verification.",
+              "Normal UI restoration; this run required conditional owned-row recovery after reload failure."
+            ],
+            "recovery_evidence": ".research/profile-owned-row-recovery-189-07.json",
+            "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+            "verified_at": "2026-10-04T03:14:28.197043+00:00"
+          }
+        ]
+      },
         {
           "id": "EXT-F-1004-T18",
           "title": "admin: Employment",
@@ -11231,98 +11274,112 @@
           }
         },
         {
-          "id": "EXT-F-1004-T21",
-          "title": "member: Profile section expanders",
-          "modes": [
-            "member"
-          ],
-          "control_ids": [
-            "EXT-F-1004-C11"
-          ],
-          "preconditions": [
-            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
-            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
-            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
-            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
-            "Run independently as existing known member; do not change role or account."
-          ],
-          "steps": [
-            "For Identity, Phones, Emails, Web, Shipping address, Billing address, Employment, and Emergency contacts: note open/closed state. Toggle each section closed then open using its label.",
-            "Change a synthetic Preferred value before toggling Identity closed/open; confirm draft value remains and Unsaved changes stays visible. Click Discard."
-          ],
-          "expected": [
-            "Each selected section opens/closes without losing current draft.",
-            "Each section opens/closes from its label; toggling does not lose the current draft; Discard restores loaded value."
-          ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
-          "source_anchors": [
-            "src/features/profile/ProfileView.tsx:100-225"
-          ],
-          "procedure_readiness": "ready",
-          "procedure_gaps": [],
-          "procedure_execution_matrix": [
-            {
-              "mode": "member",
-              "lifecycle_dimension": "warm",
-              "branch": "default",
-              "inventory_dimensions": [
-                "warm",
-                "reload"
-              ],
-              "observed_outcome": "Independentnative verified alleight section controls, draft retention and Discard restoration beforeIdentity failure.",
-              "evidence_refs": [
-                ".research/profile-fields-member-native.json",
-                "docs/stabilization/resource-journals/profile-fields-member-189-01.jsonl"
-              ],
-              "status": "pass",
-              "readiness": "ready"
-            },
-            {
-              "mode": "member",
-              "lifecycle_dimension": "reload",
-              "branch": "default",
-              "inventory_dimensions": [
-                "warm",
-                "reload"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "ready"
-            }
-          ],
-          "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
-          "procedure_review": {
-            "proposal_commit": "22994d49",
-            "peer_commit": "2c318798",
-            "report": ".research/popup-profile-acceptance-peer.json",
-            "scope": "Source-reviewed procedure only; no runtime acceptance."
+        "id": "EXT-F-1004-T21",
+        "title": "member: Profile section expanders",
+        "modes": [
+          "member"
+        ],
+        "control_ids": [
+          "EXT-F-1004-C11"
+        ],
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+          "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+          "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+          "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+          "Run independently as existing known member; do not change role or account."
+        ],
+        "steps": [
+          "For Identity, Phones, Emails, Web, Shipping address, Billing address, Employment, and Emergency contacts: note open/closed state. Toggle each section closed then open using its label.",
+          "Change a synthetic Preferred value before toggling Identity closed/open; confirm draft value remains and Unsaved changes stays visible. Click Discard."
+        ],
+        "expected": [
+          "Each selected section opens/closes without losing current draft.",
+          "Each section opens/closes from its label; toggling does not lose the current draft; Discard restores loaded value."
+        ],
+        "dimensions": [
+          "warm",
+          "reload"
+        ],
+        "source_anchors": [
+          "src/features/profile/ProfileView.tsx:100-225"
+        ],
+        "procedure_readiness": "ready",
+        "procedure_gaps": [],
+        "procedure_execution_matrix": [
+          {
+            "mode": "member",
+            "lifecycle_dimension": "warm",
+            "branch": "default",
+            "inventory_dimensions": [
+              "warm",
+              "reload"
+            ],
+            "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+            "evidence_refs": [
+              ".research/profile-fields-reload-fixed-native.json",
+              "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
+            ],
+            "status": "pass",
+            "readiness": "ready"
           },
-          "results": {
-            "member": {
-              "status": "partial",
-              "run_id": "profile-fields-member-189-01",
-              "evidence": ".research/profile-fields-member-native.json",
-              "verified_substeps": [
-                "All eight sections opened/closed through controls; draft persisted across Identity toggles and Discard restored baseline."
-              ],
-              "remaining_criteria": [
-                "Full extension reload dimension remains unverified."
-              ],
-              "build_variant": "Exactdevelopment189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
-              "verified_at": "2026-10-04T02:09:46.544160+00:00",
-              "latest_attempt": {
-                "run_id": "profile-fields-member-189-04",
-                "status": "unverified",
-                "evidence": ".research/profile-d104-independent-native.json",
-                "detail": "Latest warm expander operation failed before receipt; internal cause lost. Earlier bounded warm pass retained as historical evidence, not current repeatability. Reload unverified; exact original absence restored."
-              }
-            }
+          {
+            "mode": "member",
+            "lifecycle_dimension": "reload",
+            "branch": "default",
+            "inventory_dimensions": [
+              "warm",
+              "reload"
+            ],
+            "observed_outcome": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+            "evidence_refs": [
+              ".research/profile-fields-reload-fixed-native.json",
+              "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl"
+            ],
+            "status": "pass",
+            "readiness": "ready"
+          }
+        ],
+        "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
+        "procedure_review": {
+          "proposal_commit": "22994d49",
+          "peer_commit": "2c318798",
+          "report": ".research/popup-profile-acceptance-peer.json",
+          "scope": "Source-reviewed procedure only; no runtime acceptance."
+        },
+        "results": {
+          "member": {
+            "status": "pass",
+            "run_id": "profile-fields-reload-fixed-189-08",
+            "evidence": ".research/profile-fields-reload-fixed-native.json",
+            "detail": "Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.",
+            "build_variant": "Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+            "verified_at": "2026-10-04T03:52:44.728959+00:00"
           }
         },
+        "previous_results": [
+          {
+            "mode": "member",
+            "status": "partial",
+            "run_id": "profile-fields-member-189-01",
+            "evidence": ".research/profile-fields-member-native.json",
+            "verified_substeps": [
+              "All eight sections opened/closed through controls; draft persisted across Identity toggles and Discard restored baseline."
+            ],
+            "remaining_criteria": [
+              "Full extension reload dimension remains unverified."
+            ],
+            "build_variant": "Exactdevelopment189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+            "verified_at": "2026-10-04T02:09:46.544160+00:00",
+            "latest_attempt": {
+              "run_id": "profile-fields-member-189-04",
+              "status": "unverified",
+              "evidence": ".research/profile-d104-independent-native.json",
+              "detail": "Latest warm expander operation failed before receipt; internal cause lost. Earlier bounded warm pass retained as historical evidence, not current repeatability. Reload unverified; exact original absence restored."
+            }
+          }
+        ]
+      },
         {
           "id": "EXT-F-1004-T22",
           "title": "admin: Profile section expanders",
