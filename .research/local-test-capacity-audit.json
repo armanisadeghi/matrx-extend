@@ -1,0 +1,95 @@
+{
+  "audit_date": "2026-10-04",
+  "purpose": "Determine whether the existing disk groomer has safe, eligible system-volume leftovers sufficient to restore the 20 GiB local-test launch floor.",
+  "result": "no_eligible_cleanup",
+  "measurements": {
+    "system_data_volume": {
+      "mount": "/System/Volumes/Data",
+      "free_gib_reported": 6.7,
+      "capacity_percent_used": 97,
+      "required_free_gib": 20,
+      "shortfall_gib_approx": 13.3
+    },
+    "repository_volume": {
+      "mount": "/Volumes/Samsung2TB",
+      "free_tib_reported": 1.6
+    },
+    "groomer_inventory": {
+      "linked_worktrees": 0,
+      "primary_checkouts": 9,
+      "next_caches": 0,
+      "stale_linked_worktrees": 0
+    }
+  },
+  "worktree_scan": {
+    "command": "python3 /Users/armanisadeghi/code/common-docs/meta/scripts/disk-groom/groom.py worktrees",
+    "mode": "dry-run",
+    "eligible_for_removal": 0,
+    "kept_paths": [
+      {
+        "path": "/private/tmp/matrx-frozen-11315305224",
+        "groomer_classification": "COPY; KEEP young (1.7h)",
+        "owner": "armanisadeghi",
+        "measured_size_kib": 59168,
+        "active_use": "young; preserved"
+      },
+      {
+        "path": "/private/tmp/matrx-scrape-member-37237361053",
+        "groomer_classification": "COPY; KEEP young (1.7h)",
+        "owner": "armanisadeghi",
+        "measured_size_kib": 84,
+        "active_use": "young; preserved"
+      },
+      {
+        "path": "/private/tmp/records-canonical-contract-profile",
+        "groomer_classification": "COPY; KEEP live-process",
+        "owner": "armanisadeghi",
+        "measured_size_kib": 0,
+        "active_use": "live process reported by groomer; preserved"
+      },
+      {
+        "path": "/private/tmp/matrx-dev-login-501",
+        "groomer_classification": "COPY; KEEP live-process",
+        "owner": "armanisadeghi",
+        "measured_size_kib": 0,
+        "active_use": "live process reported by groomer; preserved"
+      },
+      {
+        "path": "/private/tmp/matrx-tsc-queue-501",
+        "groomer_classification": "COPY; KEEP young (2.3h)",
+        "owner": "armanisadeghi",
+        "measured_size_kib": 23892,
+        "active_use": "young; preserved"
+      }
+    ],
+    "measured_total_kib": 83144,
+    "measured_total_mib_approx": 81.2,
+    "conclusion": "All five copies were kept by the existing dry-run. Their measured total is far below the approximately 13.3 GiB shortfall; none is an eligible safe cleanup candidate."
+  },
+  "cache_scan": {
+    "command": "python3 /Users/armanisadeghi/code/common-docs/meta/scripts/disk-groom/groom.py dev-caches",
+    "mode": "dry-run",
+    "next_caches_touched": 0,
+    "pnpm_cache_reported_mib": 119.6,
+    "pnpm_cache_cap_gib": 8,
+    "other_known_build_outputs": "none reported",
+    "conclusion": "No over-cap package cache or eligible idle build output was reported."
+  },
+  "docker_scan": {
+    "mode": "dry-run",
+    "result": "Docker engine is not up; groomer skipped prune. No Docker launch or prune was attempted."
+  },
+  "actions": {
+    "deletions_or_prunes": 0,
+    "browser_profiles_or_auth_files_inspected": false,
+    "d114_recovery_touched": false
+  },
+  "audit_side_effect": {
+    "command": "python3 /Users/armanisadeghi/code/common-docs/meta/scripts/disk-groom/groom.py inventory",
+    "detail": "Invoking inventory called ensure_state() and save_registry(); it may have updated the groomer's local inventory metadata at /Users/armanisadeghi/.matrx/disk-groom/registry.json. This was discovered in the CLI source after invocation. The state was left intact; no blind restore or deletion was attempted."
+  },
+  "limitations": [
+    "This bounded audit covers the existing groomer's registered/discovered worktrees, known Next caches, configured development caches, and Docker status only.",
+    "The groomer found no safe eligible cleanup large enough to restore the local-test capacity floor."
+  ]
+}
