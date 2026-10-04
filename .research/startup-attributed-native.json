@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "case": "EXT-D-0120 native startup attribution and frozen Scrape 0.2.215 acceptance",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 37205211642,
+    "job_id": 111444877748,
+    "head_sha": "14bbf2e6216b86fe11705622aac15ff5b402d411",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37205211642",
+    "dispatch_inputs": {
+      "development_run_id": 37193761291,
+      "development_artifact_id": 11299613935,
+      "acceptance_case": "guest-scrape-development"
+    },
+    "conclusion": "success",
+    "uploaded_artifact_id": 11304512920,
+    "uploaded_artifact_name": "hosted-guest-37205211642-1",
+    "uploaded_artifact_sha256": "ad09c4df8e26512d90756ec7055dc497b0ec26844a57f0d4828ab3c44e23d09c"
+  },
+  "frozen_product": {
+    "version": "0.2.215",
+    "source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+    "tree_sha256": "ab62d0755d03e8a7f2ca0cb99e0b5037f39e75d756b14a3e2d3ad6d8cc096d08",
+    "development_run_id": 37193761291,
+    "development_artifact_id": 11299613935,
+    "artifact_unexpired_before_dispatch": true
+  },
+  "resource_outcome": {
+    "hosted_preflight": "passed",
+    "readiness_gates": "package, browser, and acceptance readiness all passed",
+    "resource_policy_changed": false,
+    "resource_refusal": null,
+    "unsafe_watch_event": false,
+    "process_attribution_event": false,
+    "attribution_result": "No RESOURCE_PROCESS_ATTRIBUTION event was emitted because this run had no unsafe watch sample. This run does not identify the process responsible for earlier intermittent CPU spikes; do not infer ownership from its healthy aggregate samples.",
+    "journals": {
+      "package": {
+        "path": "docs/stabilization/evidence/scrape215/run37205211642/package-resource.jsonl",
+        "sha256": "f9dc707d6b3e3328a9a64762e37d3c983a410b097b9db1bc82776f2e8bca7c8f",
+        "decision": "valid",
+        "exit_code": 0
+      },
+      "browser": {
+        "path": "docs/stabilization/evidence/scrape215/run37205211642/browser-resource.jsonl",
+        "sha256": "be46d4a5c3d0a3396e6d450993c2f09f60bd106a576ceef92e27af9c0f58a0d1",
+        "decision": "valid",
+        "exit_code": 0
+      },
+      "guest": {
+        "path": "docs/stabilization/evidence/scrape215/run37205211642/guest-resource.jsonl",
+        "sha256": "b3b06d23af414003a5d2db2a32898e1703d619d3455edbbf2d65ef4f66e9f5f6",
+        "decision": "valid",
+        "exit_code": 0,
+        "admission_cpu_busy_fraction": 0.07,
+        "watch_cpu_busy_fraction": 0.11,
+        "watch_one_minute_load": 0.73,
+        "logical_cpus": 4,
+        "unsafe_reasons": []
+      }
+    }
+  },
+  "native_outcome": {
+    "overall_status": "partial",
+    "mode": "guest",
+    "native_stage": "exercise_panel",
+    "result_stage": "extension_reload",
+    "receipt": "docs/stabilization/evidence/scrape215/run37205211642/receipt.json.txt",
+    "receipt_sha256": "bce0f6a89b6204b09b9fa13bc438c6f5d39e222a18e68ff8eb00b4379a2d3f2b",
+    "cases": {
+      "EXT-F-1007-T20": "passed: initial guest empty state, navigation clearing, reload URL/title/capture, and empty state after extension reload",
+      "EXT-F-1007-T01": "partial: article and six tabs observed; full reload lifecycle remains outside this assertion",
+      "EXT-F-1007-T08": "partial: article, image (640x480), video URL row, links, SEO, schema, and image/video empty states observed; member/admin modes remain unverified",
+      "EXT-F-1007-T02": "partial: lazy content appeared in browser and capture; deep failure retry remains unverified",
+      "EXT-F-1007-T14": "partial: restricted page presented no recovery actions and was dismissed; recoverable natural failure remains unverified"
+    },
+    "reload_retirement": {
+      "old_targets_retired": true,
+      "old_worker_destroyed_event": true,
+      "old_worker_execution_retired": true,
+      "old_worker_absent": true,
+      "old_panel_absent": true,
+      "replacement_worker_created_event": true,
+      "replacement_worker_present": true,
+      "observed_worker_count": 1,
+      "dropped_timeline_entries": 0,
+      "final_predicate": true
+    }
+  },
+  "scope_and_limits": [
+    "Exactly one authorized hosted guest-scrape-development workflow was dispatched and followed to terminal success; no retry was made.",
+    "The successful run verifies this attempt against the frozen development artifact; earlier startup-spike causality remains unproven because this run was healthy and emitted no process attribution.",
+    "Guest mode only. T01, T02, T08, and T14 remain partial for the specific limits recorded in the receipt; no Store-installed claim is made."
+  ]
+}
