@@ -2927,6 +2927,11 @@
    "application/json"
   ]
  },
+ "/google-integrations/calendar/event/source": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/google-integrations/calendar/reschedule/confirm": {
   "post": [
    "application/json"
