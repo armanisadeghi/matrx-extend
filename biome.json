@@ -29,7 +29,8 @@
       "scripts/guard-origin.json",
       "scripts/package-twins.json",
       "tests/fixtures/portions/**",
-      "docs/stabilization/inventory.json"
+      "docs/stabilization/inventory.json",
+      "docs/stabilization/reports/**"
     ]
   },
   "formatter": {
