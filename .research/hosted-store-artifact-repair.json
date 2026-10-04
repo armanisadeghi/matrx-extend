@@ -1,0 +1,9 @@
+{
+  "issue": "EXT-D-0116",
+  "scope": "Hosted release guest-chat, guest-scrape, and member-chat acceptance now extracts the receipt-verified Store ZIP.",
+  "runtime_adaptation": "Only manifest.key is added from the matching-version local ZIP; the original Store ZIP remains unchanged.",
+  "release_205_store_tree_sha256": "b9084adcc8990ec1eef784b64b70aeaf6232709f11fec790a23152cfb68d7d0d",
+  "release_205_adapted_runtime_tree_sha256": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+  "tests": "11 focused and route tests passed; scratch wrong-ZIP-selection mutation failed as intended.",
+  "live_browser": "Not run in this implementation lane."
+}

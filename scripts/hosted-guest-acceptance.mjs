@@ -3,9 +3,9 @@
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { access, mkdir, readFile, readdir, unlink, writeFile } from 'node:fs/promises';
+import { access, mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
-import { basename, dirname, join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { matchingCrx3RsaKey } from './crx3-identity.mjs';
 import {
@@ -17,6 +17,7 @@ import {
   requireHostedAcceptanceCredential,
   stageProfileOrganizationConfig,
 } from './hosted-profile-route.mjs';
+import { prepareHostedReleaseArtifact } from './hosted-release-artifact.mjs';
 import { hashReleaseTree } from './sync-unpacked-release.mjs';
 
 const repo = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -35,64 +36,6 @@ function ownedProcess(command, args, options = {}) {
     child.once('error', reject);
     child.once('exit', (code, signal) => resolveRun({ code, signal }));
   });
-}
-
-async function prepare(artifactDir, outputDir, expectedSha) {
-  const receipt = JSON.parse(await readFile(join(artifactDir, 'release-receipt.json'), 'utf8'));
-  assert.match(expectedSha, /^[a-f0-9]{40}$/);
-  assert.equal(receipt.sourceSha, expectedSha, 'release source SHA must match selected tag');
-  assert.equal(receipt.publishState, 'pushed', 'release must be published');
-  assert.match(receipt.version, /^\d+\.\d+\.\d+$/);
-  assert.match(receipt.treeSha256, /^[a-f0-9]{64}$/);
-  const zipFiles = await readdir(artifactDir);
-  for (const kind of ['local', 'store']) {
-    const expectedName = `matrx-extend-${receipt.version}-${kind}.zip`;
-    assert.ok(
-      zipFiles.includes(expectedName),
-      `${kind} ZIP missing from selected release artifact`,
-    );
-    assert.equal(basename(receipt[`${kind}Zip`]?.path ?? ''), expectedName);
-    assert.match(receipt[`${kind}Zip`].sha256, /^[a-f0-9]{64}$/);
-    const actual = join(artifactDir, expectedName);
-    assert.equal(sha256(await readFile(actual)), receipt[`${kind}Zip`].sha256, `${kind} ZIP hash`);
-    receipt[`${kind}Zip`].path = actual;
-  }
-  const extensionDir = join(outputDir, 'chrome-mv3-dev');
-  await mkdir(extensionDir, { recursive: true });
-  // Refuse archive paths that could write beyond the owned extraction directory.
-  const listing = await new Promise((resolveList, reject) => {
-    const child = spawn('unzip', ['-Z1', receipt.localZip.path]);
-    let data = '';
-    child.stdout.on('data', (chunk) => {
-      data += chunk;
-    });
-    child.once('error', reject);
-    child.once('exit', (code) =>
-      code === 0 ? resolveList(data) : reject(new Error('local ZIP listing failed')),
-    );
-  });
-  const entries = listing.trimEnd().split('\n');
-  assert.ok(entries.includes('manifest.json'), 'local ZIP must contain root manifest');
-  assert.ok(
-    entries.every(
-      (entry) =>
-        entry &&
-        !entry.startsWith('/') &&
-        !entry.split('/').includes('..') &&
-        !entry.includes('\\'),
-    ),
-    'unsafe local ZIP entry',
-  );
-  const unzip = await ownedProcess('unzip', ['-q', receipt.localZip.path, '-d', extensionDir]);
-  assert.equal(unzip.code, 0, 'local ZIP extraction failed');
-  const manifest = JSON.parse(await readFile(join(extensionDir, 'manifest.json'), 'utf8'));
-  assert.equal(manifest.version, receipt.version);
-  assert.ok(typeof manifest.key === 'string' && manifest.key, 'local package must be keyed');
-  assert.equal(hashReleaseTree(extensionDir), receipt.treeSha256, 'release tree hash');
-  const relocatedReceipt = join(outputDir, 'release-receipt.json');
-  await writeFile(relocatedReceipt, `${JSON.stringify(receipt, null, 2)}\n`, { mode: 0o600 });
-  process.stdout.write(`PREPARED ${receipt.version} ${receipt.sourceSha} ${receipt.treeSha256}\n`);
-  return { extensionDir, relocatedReceipt, kind: 'published_release' };
 }
 
 async function prepareDevelopment(runId, artifactId) {
@@ -351,12 +294,26 @@ async function run(prepared) {
   if (acceptanceCase === 'audit-key-admin')
     assert.equal(kind, 'ci_development_test', 'Audit key requires CI development receipt');
   if (acceptanceCase === 'member-chat')
-    assert.equal(kind, 'published_release', 'Member Chat requires exact published release receipt');
+    assert.equal(
+      kind,
+      'published_store_zip_adapted',
+      'Member Chat requires exact Store ZIP payload',
+    );
+  if (
+    acceptanceCase === 'guest-chat' &&
+    kind !== 'ci_development_test' &&
+    kind !== 'published_store_crx_unpacked'
+  )
+    assert.equal(
+      kind,
+      'published_store_zip_adapted',
+      'Guest Chat release requires exact Store ZIP payload',
+    );
   if (acceptanceCase === 'guest-scrape')
     assert.equal(
       kind,
-      'published_release',
-      'Guest Scrape requires exact published release receipt',
+      'published_store_zip_adapted',
+      'Guest Scrape requires exact Store ZIP payload',
     );
   if (acceptanceCase === 'prepare-stale-results')
     assert.equal(kind, 'ci_development_test', 'Prepare requires exact CI development receipt');
@@ -583,7 +540,12 @@ if (
 const outputDir = resolve(outputDirArg);
 await mkdir(outputDir, { recursive: true });
 const prepared = releaseMode
-  ? await prepare(resolve(artifactDirArg), outputDir, expectedSha)
+  ? await prepareHostedReleaseArtifact(
+      resolve(artifactDirArg),
+      outputDir,
+      expectedSha,
+      process.env.MATRX_HOSTED_ACCEPTANCE_CASE ?? 'guest-chat',
+    )
   : developmentMode
     ? await prepareDevelopment(devRunId, devArtifactId)
     : await preparePublishedStoreCrx(outputDir);
