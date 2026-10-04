@@ -13,7 +13,7 @@
   "actual": "Prior acceptance recorded no request status or error code. UI answer evidence remains valid only for its bounded claim.",
   "severity": "S2: missing failure evidence can conceal transport regressions",
   "priority": "P1: diagnose urgent signed-out Chat incident",
-  "state": "fixed",
+  "state": "retest-fail",
   "owner": "root/guest_first_transport_observer",
   "evidence": [
     ".research/guest205-current-live-check.json",
@@ -21,7 +21,8 @@
     "tests/browser/guest-chat-store-acceptance.mjs",
     ".research/guest-first-transport-observer.json",
     ".research/guest-transport-fresh-peer.json",
-    ".research/guest-transport-correction-peer.json"
+    ".research/guest-transport-correction-peer.json",
+    ".research/guest205-first-transport-native.json"
   ],
   "transition_history": [
     {
@@ -47,8 +48,14 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Fresh5f3589d4 verified lateURLcapture, narrow optional-body protocol handling and cleanup;8 focused tests plus actual ownedCDP connector tests passed. Native pending."
+    },
+    {
+      "at": "2026-10-04T22:32:20.153300+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Native37239792825 exact205 completed grounded firstanswer but requests[]; opening_guest_ai_transport_unobserved. Rootcheckedrawreceipt, allthreehealthy/nonunsafejournals and screenshot. Followupnotrun."
     }
   ],
   "fix_commits": ["954277cf", "a0f6cd50"],
-  "next_action": "root/guest205_first_transport_native owns ONE current-server exact205 hosted guest acceptance, all raw journals/receipt/cleanup; no Store installation or whole-product claim."
+  "next_action": "Escalated to root/guest_transport_native_diagnosis (Astra): actual frozen205 route and CDP observation semantics; no new native run until proven source change independently reviewed."
 }
