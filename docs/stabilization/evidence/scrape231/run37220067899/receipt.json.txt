@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "mode": "guest",
+  "status": "unverified",
+  "artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.231",
+    "source_sha": "723433a7628b32fb610d3a7f36ca6b8dd5fd2b72",
+    "tree_sha256": "ae9bfe3d831a7278f0b347c1c08b8d6cec6780790c1f14813369bcf015786833",
+    "run_id": 37217066948,
+    "artifact_id": 11308203507
+  },
+  "guest_account_observed": false,
+  "cases": [],
+  "stage": "inputs",
+  "native_stage": "panel_context",
+  "failure": {
+    "stage": "inputs",
+    "code": "native_sidepanel_runtime_context_missing"
+  },
+  "original_busy_failure": null,
+  "cpu_diagnostic": null,
+  "horizontal_geometry": [],
+  "reload_milestones": [],
+  "reload_lifecycle": null,
+  "driver_failure": null,
+  "media_transitions": [],
+  "media_event_traces": []
+}
