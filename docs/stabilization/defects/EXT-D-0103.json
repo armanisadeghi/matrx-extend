@@ -11,14 +11,15 @@
     "The first markBrowserAgentTraffic call references WEB_ORIGIN, which has no declaration or import in the module."
   ],
   "expected": "Owned browser setup marks test traffic using an explicitly resolved origin and continues without an ambient global workaround.",
-  "actual": "Source-confirmed undeclared WEB_ORIGIN would prevent normal startup unless an ambient global exists; unmodified runtime failure has not yet been observed. Popup scratch driver supplied that global, so adapted setup evidence cannot establish unmodified startup.",
+  "actual": "The focused actual page_create marker block reproduced ReferenceError: WEB_ORIGIN is not defined without an ambient global. Canonical origin declaration fixes it; full unmodified native startup is still awaiting independent acceptance.",
   "severity": "S2 test infrastructure: blocks native acceptance; no product-user failure demonstrated.",
   "priority": "P1 next native launch prerequisite",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "native_harness_origin_fix",
   "evidence": [
     "tests/browser/native-sidepanel-qa-harness.mjs:713",
-    ".research/popup-owned-toolbar-smoke.json"
+    ".research/popup-owned-toolbar-smoke.json",
+    ".research/native-harness-origin-fix.json"
   ],
   "transition_history": [
     {
@@ -38,7 +39,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Small Sol low lane owns actual startup guard and canonical origin repair; no native launch until reviewed."
+    },
+    {
+      "at": "2026-10-04T01:55:57.891866+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "76d6832e actual marker-block RED ReferenceError to GREEN with web/server traffic origins verified; no ambient global. Fresh peer and native startup pending."
     }
   ],
-  "closure_requirement": "Meaningful actual startup/marking red-green guard, independent review and unmodified guarded native launch; no ambient global injection."
+  "closure_requirement": "Meaningful actual startup/marking red-green guard, independent review and unmodified guarded native launch; no ambient global injection.",
+  "fix_commits": ["76d6832e"]
 }

@@ -12,6 +12,8 @@ Previous turn classification: **progress** — independently verified member war
 
 `popup_owned_toolbar_smoke` is terminal: adapted owned browser setup completed and cleaned up, resource-valid; CUA could not safely address its toolbar, so no popup input/case pass. Report8303a177 was corrected byf0fd2a2c to disclose ambient WEB_ORIGIN workaround and distinguish inferred from observed failure. EXT-D-0103 tracks undeclared origin in shared native harness; `native_harness_origin_fix` (Sol low,30calls/6minutes) owns its actual red-green guard and small repair. No heavy job currently active. Next native launch must use the unmodified corrected harness.
 
+D103 sourcefix76d6832e reproduced and removed the undeclared-origin failure with an actual startup-marker guard. Field correction81eb4444 now holds saved Identity/Employment through full reload and requires exact extended case/dimension census;14 checks passed. Fresh lane `profile_fields_final_source_peer` reviews both changes (60calls/8minutes) before root grants one member extended native run. No heavy job active.
+
 Root owns tracking, review routing and synchronization. Preserve pending Store181; no new dashboard poll needed immediately after the previous 01:33UTC check.
 
 ## Previous checkpoint — independent member reload acceptance passed
