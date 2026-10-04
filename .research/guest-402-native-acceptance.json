@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "status": "candidate_205_same_conversation_and_nonadmin_pass_returning_guest_pending",
+  "scope": "Independent native acceptance of the exact hosted-release Store ZIP in owned isolated Chrome profiles; the ZIP was unpacked and only its public manifest key was adapted for Chrome testing. This is candidate evidence, not a Store-installed build.",
+  "artifact": {
+    "hosted_release_run_id": 37180303468,
+    "github_artifact_id": 11294843385,
+    "github_artifact_digest": "sha256:946c9615e203fcb278c8336f81aef4f0b420eef2873c4f24d4bff786238834fc",
+    "version": "0.2.205",
+    "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "store_zip": "test-results/guest-402-release-37180303468/.output/matrx-extend-0.2.205-store.zip",
+    "store_zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "local_zip": "test-results/guest-402-release-37180303468/.output/matrx-extend-0.2.205-local.zip",
+    "local_zip_sha256": "4b51354fc7d1bfae69e2d304995dc165d8a151b5d52744cf955b87f7854ceb69",
+    "publisher_receipt": "test-results/guest-402-release-37180303468/.output/release-receipt.json",
+    "publisher_receipt_sha256": "c90752544003303f5ce0d240c1806ccd27a84cbba0a93b5a477c0d9d661518bb",
+    "unadapted_store_tree_sha256": "b9084adcc8990ec1eef784b64b70aeaf6232709f11fec790a23152cfb68d7d0d",
+    "adapted_test_tree_sha256": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "modified_store_payload_paths": ["manifest.json"]
+  },
+  "guest_allowance": {
+    "verdict": "PASS_same_conversation",
+    "observed_at_utc": "2026-10-04T05:44:24Z",
+    "owned_fresh_guest": true,
+    "real_answer_count": 4,
+    "first_allowance_refusal_turn": 5,
+    "actual_offscreen_http_status": 402,
+    "actual_flat_error_code": "guest_ai_allowance_used",
+    "panel_free_account_remedy_present": true,
+    "panel_retry_absent": true,
+    "owner_only_table_get_count": 0,
+    "receipt": "test-results/guest-allowance-native-fffe1ebb-519b-47a1-85c1-6d9f043eee8e.json",
+    "receipt_sha256": "7b41a2d8eb1f7189e845f622dff7c939b3493a64e5d2bea3b547726e6e06c259",
+    "resource_journal": "docs/stabilization/resource-journals/guest-402-candidate205-01.jsonl",
+    "resource_journal_sha256": "f60d82246f7c6dc798b167fa5e6462459ce6c2e9b36546d7fd2f24f3ac86fe2d",
+    "resource_final_decision": "valid"
+  },
+  "signed_in_nonadmin_chat": {
+    "verdict": "PASS",
+    "observed_at_utc": "2026-10-04T05:47:47Z",
+    "authentication_method": "single-use first-party magic link for the existing reviewer; link removed after use",
+    "web_and_extension_signed_in": true,
+    "canonical_extension_admin_check_http_status": 200,
+    "canonical_extension_admin_rows": 0,
+    "real_chat_answer_on_public_demo": true,
+    "organization_limit": "The runner observed a selected organization in the UI, while its string-only storage-shape probe returned false for the current object-valued matrx.org.active key. This check does not establish organization persistence or key correctness.",
+    "receipt": "test-results/reviewer-chat-store-325c9323-63a7-41c3-a192-0cfc7e9b9e73.json",
+    "receipt_sha256": "bcd99f3b6f01d6004ad22f1af985fa7c9082e4afa3a8813df70be052d69d69a7",
+    "resource_journal": "docs/stabilization/resource-journals/guest-402-member205-01.jsonl",
+    "resource_journal_sha256": "a389f86ae83e8650f9b455ad92d4683daf945c5e6ad770a1bca827a981c78818",
+    "resource_final_decision": "valid"
+  },
+  "remaining": [
+    "The exact original lifecycle—close or reload the panel, open a new conversation in the same exhausted guest profile, then send—has not been retested against candidate 205. A fresh seat owns a narrow runner addition and one guarded rerun requiring the second live 402, the same remedy, no Retry, and a sanitized panel screenshot.",
+    "The candidate has not been installed from the Chrome Web Store or published there."
+  ],
+  "returning_case_recipe": {
+    "fresh_unadapted_extraction": "Extract the exact unchanged Store ZIP into a new owned directory; the first-run store-unpacked directory was manifest-key adapted by the runner and must not be passed as an unadapted input again.",
+    "reuse_publisher_receipt": "test-results/guest-402-release-37180303468/.output/release-receipt.json",
+    "source_runner_sha": "7dc3e204",
+    "resource_guard": "node scripts/stabilization-resource.mjs run --run-id <owned-id> --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch/<owned-profile> -- node tests/browser/guest-allowance-native-acceptance.mjs",
+    "required_environment": {
+      "TMPDIR": "/Volumes/Samsung2TB/code/.stabilization-scratch",
+      "MATRX_GUEST_CHAT_ARTIFACT_MODE": "pushed-release-store-zip-adapted",
+      "MATRX_GUEST_CHAT_DEV_RECEIPT": "absolute publisher receipt path above",
+      "MATRX_GUEST_CHAT_EXTENSION_DIR": "absolute path of the new unadapted extraction above",
+      "MATRX_GUEST_CHAT_STORE_ZIP": "absolute artifact.store_zip path above",
+      "MATRX_GUEST_CHAT_LOCAL_ZIP": "absolute artifact.local_zip path above",
+      "MATRX_EXPECTED_RELEASE_SOURCE_SHA": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+      "MATRX_EXPECTED_RELEASE_VERSION": "0.2.205",
+      "MATRX_EXPECTED_STORE_ZIP_SHA256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+      "MATRX_EXPECTED_STORE_UNPACKED_TREE_SHA256": "b9084adcc8990ec1eef784b64b70aeaf6232709f11fec790a23152cfb68d7d0d",
+      "MATRX_EXPECTED_ADAPTED_TREE_SHA256": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+      "MATRX_EXPECTED_LOCAL_ZIP_SHA256": "4b51354fc7d1bfae69e2d304995dc165d8a151b5d52744cf955b87f7854ceb69",
+      "MATRX_EXPECTED_PUBLISHER_RECEIPT_SHA256": "c90752544003303f5ce0d240c1806ccd27a84cbba0a93b5a477c0d9d661518bb",
+      "MATRX_GUEST_MAX_SENDS": "7",
+      "MATRX_PLAYWRIGHT_MODULE": "/Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+      "MATRX_CHROME_PATH": "/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing"
+    }
+  }
+}
