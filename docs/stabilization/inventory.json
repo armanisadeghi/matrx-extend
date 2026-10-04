@@ -10260,7 +10260,7 @@
           "scope": "Source-reviewed procedure only; no runtime acceptance."
         },
         "defect_ids": [
-          "EXT-D-0108"
+          "EXT-D-0108", "EXT-D-0114"
         ]
       },
         {
@@ -11411,7 +11411,7 @@
           "scope": "Source-reviewed procedure only; no runtime acceptance."
         },
         "defect_ids": [
-          "EXT-D-0108"
+          "EXT-D-0108", "EXT-D-0114"
         ]
       },
         {
