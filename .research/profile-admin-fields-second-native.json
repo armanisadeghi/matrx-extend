@@ -44,12 +44,12 @@
       "T02": "not_reached",
       "T04": "not_reached",
       "T25": "not_reached",
-      "T26": "not_reached; member-only save-failure branch"
+      "T26": "admin coverage unverified; current runner implements only the member save-failure branch"
     },
-    "original_row": "absent before the Profile cases and verified absent during runner cleanup; exact original row absence preserved",
+    "original_row": "initial HTTP 200 read observed no row; no writes occurred. Runner cleanup marked original_row_preserved without another read, so final row absence was not independently verified",
     "profile_field_values": "no Profile row existed; no field write or field mutation occurred",
     "automatic_ui_restoration": "no Profile UI write began; no field restoration action was needed",
-    "final_readback": "row absence verified; no field-level readback or extension reload occurred"
+    "final_readback": "not performed; initial row-absence observation only, no field-level readback or extension reload"
   },
   "evidence": {
     "raw_report": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-admin-fields-189-02/evidence/profile-native-profile-admin-fields-189-02.json",
