@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "686ed2dedefc9421910b5c751a46946cf28110b9",
+  "reviewer_outcome": "ACCEPTED",
+  "quality": "The dispatch choice contains only macos-15-intel (default) and macos-15. The runs-on expression maps only exact macos-15 to ARM and fails closed to Intel; the provenance step rejects invalid labels and checks RUNNER_ARCH plus uname before host preparation/readiness/acceptance.",
+  "scope": "Acceptance cases, provenance modes, global hosted-guest-side-panel concurrency, readiness phases, resource admission floors, owned resource permits, CPU/watch thresholds, unsafe-history refusal, and artifact upload remain unchanged. No build/release path was added and the runner label is constrained by a choice input rather than interpolated into runs-on.",
+  "verification": "Ruby YAML contract check passed for default, exact options, runner expression, and concurrency group. scripts/hosted-scrape-route.test.mjs passed 3/3, covering development provenance and Store restriction. git diff --check passed.",
+  "host_readiness": "UNVERIFIED: no macos-15 ARM dispatch was run. Capacity and resource-floor admission on that host remain unknown; one guarded trial is within the reviewed workflow scope.",
+  "limitations": "Source/workflow quality review only; no browser, native, build, or release execution."
+}
