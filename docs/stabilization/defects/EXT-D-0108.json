@@ -1,7 +1,12 @@
 {
   "id": "EXT-D-0108",
   "feature_id": "EXT-F-1004",
-  "case_ids": ["EXT-F-1004-T28", "EXT-F-1004-T06", "EXT-F-1004-T18", "EXT-F-1004-T22"],
+  "case_ids": [
+    "EXT-F-1004-T28",
+    "EXT-F-1004-T06",
+    "EXT-F-1004-T18",
+    "EXT-F-1004-T22"
+  ],
   "surface": "Admin Profile native acceptance first-save fixture",
   "auth_mode": "admin",
   "title": "Profile acceptance rejects designated admin when original Profile row is absent",
@@ -14,13 +19,14 @@
   "actual": "Member-only runner prerequisite blocks admin before any write or six extended acceptance cells. Product write behavior untested, not a product failure.",
   "severity": "S2 admin testing blocked; product impact not established",
   "priority": "P1 contained Profile acceptance prerequisite",
-  "state": "fixed",
-  "owner": "profile_admin_first_save_fix",
+  "state": "in-fix",
+  "owner": "admin_firstsave_diagnose_escalation",
   "evidence": [
     ".research/profile-admin-fields-second-native.json",
     "docs/stabilization/resource-journals/profile-admin-fields-189-02.jsonl",
     ".research/profile-admin-first-save-fix.json",
-    ".research/admin-first-save-peer.json"
+    ".research/admin-first-save-peer.json",
+    ".research/profile-admin-final-native.json"
   ],
   "transition_history": [
     {
@@ -46,8 +52,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Actual firstsave boundary red\u2192green5e82b422 passes fresh source A/B reviewdb0d0779 and26checks; native admin originalscenario stillpending."
+    },
+    {
+      "at": "2026-10-04T04:26:00.677986+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Independent admin03 failed before first write with profile_unclassified_failure. Root matched raw2590b2b5 and journaldaf0b8a0. Source-only passing checks did not establish runtime repair."
+    },
+    {
+      "at": "2026-10-04T04:26:00.677986+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Fresh Astra medium source diagnosis after repeated opaque pre-firstsave failures. No further native launch before actual boundary diagnosis/capture and fresh review."
     }
   ],
   "closure_requirement": "Actual first-save guard red/green with mismatched identity/role/org rejection, independent source review, and designated-admin native original scenario plus surrounding fields/reload/exact restoration pass.",
-  "next_action": "Fresh one guarded profile-admin-fields-189-03 with current reviewed runner; verify six admin field/sectioncells and originalabsence restoration. T26admin remainsunimplemented."
+  "next_action": "Diagnose the actual pre-marker caller boundary from source and existing evidence; safe fixed-code capture if original exception unrecoverable; fresh independent source review before any native retry. No mutation occurred in admin03; no separate final absence readback."
 }
