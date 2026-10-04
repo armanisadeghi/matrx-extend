@@ -125,6 +125,129 @@ test('journal writes only guard fields and refuses overwrite', async () => {
   }
 });
 
+test('startup bracket survives durable journal publication with only scoped CPU accounting', async () => {
+  // EXT-D-0129: run 37230193583 printed this event but the journal dropped bracket.
+  const runId = `journal-startup-bracket-${randomUUID()}`;
+  const path = journalPath(runId);
+  const journal = openResourceJournal(repo, runId);
+  const bracket = {
+    iostatStartedAt: '2026-10-04T20:02:59.757Z',
+    iostatCompletedAt: '2026-10-04T20:03:00.840Z',
+    beforeCompletedAt: '2026-10-04T20:02:59.757Z',
+    afterStartedAt: '2026-10-04T20:03:00.840Z',
+    resolutionSeconds: 0.01,
+    ownedAtStart: [12669, 12803],
+    ownedAtEnd: [12669, 12803],
+    exitedOrUnmatchedPids: [13103],
+    appearedPids: [13188],
+    categoryTotalsSeconds: {
+      ownedChromium: 0.36,
+      ownedOther: 0.03,
+      hostProvisioner: 0,
+      otherHost: 1.69,
+    },
+    observed: [
+      {
+        pid: 12803,
+        executable: 'Chromium Helper',
+        category: 'ownedChromium',
+        cpuSecondsDelta: 0.36,
+        argv: '--token=private',
+        environment: 'PRIVATE=private',
+      },
+    ],
+    otherHostObservedProcessCount: 523,
+    limitation:
+      'ps CPU time displays centiseconds; snapshots bracket but do not equal the iostat interval. Exited, newly spawned, reparented, or PID-reused processes cannot be assigned exact interval CPU time.',
+    rawCommand: '--token=private',
+  };
+  try {
+    for (const corrupt of [
+      {
+        ...bracket,
+        observed: [
+          {
+            pid: 12803,
+            executable: '/private/Chromium',
+            category: 'ownedChromium',
+            cpuSecondsDelta: 0.36,
+          },
+        ],
+      },
+      {
+        ...bracket,
+        categoryTotalsSeconds: { ...bracket.categoryTotalsSeconds, otherHost: Number.NaN },
+      },
+    ])
+      assert.throws(
+        () =>
+          journal.write({
+            schema: 1,
+            code: 'RESOURCE_STARTUP_INTERVAL_BRACKET',
+            runId,
+            bracket: corrupt,
+          }),
+        /RESOURCE_JOURNAL_WRITE_FAILED/,
+      );
+    journal.write({
+      schema: 1,
+      at: '2026-10-04T20:03:00.871Z',
+      code: 'RESOURCE_STARTUP_INTERVAL_BRACKET',
+      runId,
+      bracket,
+    });
+    journal.close();
+    const events = (await readFile(path, 'utf8')).trim().split('\n').map(JSON.parse);
+    const { rawCommand, ...safeBracket } = bracket;
+    safeBracket.observed = [
+      {
+        pid: 12803,
+        executable: 'Chromium Helper',
+        category: 'ownedChromium',
+        cpuSecondsDelta: 0.36,
+      },
+    ];
+    assert.deepEqual(events[0].bracket, safeBracket);
+    assert.doesNotMatch(JSON.stringify(events), /private|argv|environment|rawCommand/);
+  } finally {
+    await rm(path, { force: true });
+  }
+});
+
+test('startup bracket refuses malformed accounting and preserves unavailable evidence', async () => {
+  const runId = `journal-startup-refusal-${randomUUID()}`;
+  const path = journalPath(runId);
+  const journal = openResourceJournal(repo, runId);
+  try {
+    for (const bracket of [
+      undefined,
+      { unavailable: false },
+      { unavailable: true, limitation: 'private environment' },
+      { unavailable: true, iostatStartedAt: 'private command' },
+    ])
+      assert.throws(
+        () =>
+          journal.write({ schema: 1, code: 'RESOURCE_STARTUP_INTERVAL_BRACKET', runId, bracket }),
+        /RESOURCE_JOURNAL_WRITE_FAILED/,
+      );
+    journal.write({
+      schema: 1,
+      code: 'RESOURCE_STARTUP_INTERVAL_BRACKET',
+      runId,
+      bracket: { unavailable: true, rawError: 'private environment' },
+    });
+    journal.close();
+    const events = (await readFile(path, 'utf8')).trim().split('\n').map(JSON.parse);
+    assert.deepEqual(
+      events.map((event) => event.bracket),
+      [{ unavailable: true }],
+    );
+    assert.doesNotMatch(JSON.stringify(events), /private|rawError/);
+  } finally {
+    await rm(path, { force: true });
+  }
+});
+
 test('process attribution survives journal publication with only sanitized accounting fields', async () => {
   for (const [suffix, detail, expected] of [
     [
@@ -342,6 +465,7 @@ test('guard exits invalid and leaves no completed journal when close fails', asy
       'stabilization-resource-lease.mjs',
       'stabilization-resource-process.mjs',
       'stabilization-resource-verdict.mjs',
+      'startup-interval-attribution.mjs',
     ])
       await copyFile(resolve(repo, 'scripts', name), resolve(scripts, name));
     await copyFile(

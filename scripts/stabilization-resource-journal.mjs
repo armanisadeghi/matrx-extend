@@ -39,7 +39,91 @@ const JOURNAL_FIELDS = new Set([
   'processEvidence',
   'processes',
   'unavailable',
+  'bracket',
 ]);
+
+const BRACKET_LIMITATIONS = new Set([
+  'ps CPU time displays centiseconds; snapshots bracket but do not equal the iostat interval. Exited, newly spawned, reparented, or PID-reused processes cannot be assigned exact interval CPU time.',
+  'A process snapshot failed; no process attribution is available for this guard sample.',
+  'Process bracket calculation failed; guard sampling is unchanged.',
+]);
+const BRACKET_CATEGORIES = ['ownedChromium', 'ownedOther', 'hostProvisioner', 'otherHost'];
+const validTime = (value) =>
+  value === null ||
+  (typeof value === 'string' &&
+    /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(value) &&
+    Number.isFinite(Date.parse(value)));
+const validPid = (value) => Number.isSafeInteger(value) && value >= 0;
+const validCount = (value) => Number.isSafeInteger(value) && value >= 0;
+const validCpuTime = (value) => Number.isFinite(value) && value >= 0;
+const safeExecutable = (value) =>
+  typeof value === 'string' &&
+  value.length > 0 &&
+  !value.includes('/') &&
+  !value.includes('\\') &&
+  [...value].every((character) => {
+    const code = character.charCodeAt(0);
+    return code >= 32 && code !== 127;
+  });
+
+function sanitizeStartupBracket(bracket) {
+  if (!bracket || typeof bracket !== 'object' || Array.isArray(bracket))
+    throw new Error('invalid startup bracket');
+  const timestamps = Object.fromEntries(
+    ['iostatStartedAt', 'iostatCompletedAt', 'beforeCompletedAt', 'afterStartedAt']
+      .filter((key) => Object.hasOwn(bracket, key))
+      .map((key) => {
+        if (!validTime(bracket[key])) throw new Error('invalid startup time');
+        return [key, bracket[key]];
+      }),
+  );
+  if (bracket.unavailable === true) {
+    if (Object.hasOwn(bracket, 'limitation') && !BRACKET_LIMITATIONS.has(bracket.limitation))
+      throw new Error('invalid startup limitation');
+    return {
+      ...timestamps,
+      unavailable: true,
+      ...(bracket.limitation && { limitation: bracket.limitation }),
+    };
+  }
+  if (
+    Object.keys(timestamps).length !== 4 ||
+    Object.values(timestamps).some((value) => value === null) ||
+    bracket.resolutionSeconds !== 0.01 ||
+    !BRACKET_LIMITATIONS.has(bracket.limitation) ||
+    !['ownedAtStart', 'ownedAtEnd', 'exitedOrUnmatchedPids', 'appearedPids'].every(
+      (key) => Array.isArray(bracket[key]) && bracket[key].every(validPid),
+    ) ||
+    !bracket.categoryTotalsSeconds ||
+    !BRACKET_CATEGORIES.every((key) => validCpuTime(bracket.categoryTotalsSeconds[key])) ||
+    !Array.isArray(bracket.observed) ||
+    !validCount(bracket.otherHostObservedProcessCount)
+  )
+    throw new Error('invalid startup bracket');
+  return {
+    ...timestamps,
+    resolutionSeconds: bracket.resolutionSeconds,
+    ownedAtStart: [...bracket.ownedAtStart],
+    ownedAtEnd: [...bracket.ownedAtEnd],
+    exitedOrUnmatchedPids: [...bracket.exitedOrUnmatchedPids],
+    appearedPids: [...bracket.appearedPids],
+    categoryTotalsSeconds: Object.fromEntries(
+      BRACKET_CATEGORIES.map((key) => [key, bracket.categoryTotalsSeconds[key]]),
+    ),
+    observed: bracket.observed.map(({ pid, executable, category, cpuSecondsDelta }) => {
+      if (
+        !validPid(pid) ||
+        !safeExecutable(executable) ||
+        !BRACKET_CATEGORIES.includes(category) ||
+        !validCpuTime(cpuSecondsDelta)
+      )
+        throw new Error('invalid startup process');
+      return { pid, executable, category, cpuSecondsDelta };
+    }),
+    otherHostObservedProcessCount: bracket.otherHostObservedProcessCount,
+    limitation: bracket.limitation,
+  };
+}
 
 // This writer receives guard-owned events only. Child stdout still goes directly
 // to the caller's terminal and is never copied into the journal.
@@ -105,6 +189,9 @@ export function openResourceJournal(repo, runId, { closeFd = closeSync } = {}) {
         } else if (Object.hasOwn(safe, 'processes') || Object.hasOwn(safe, 'unavailable')) {
           throw new Error('unexpected process attribution');
         }
+        if (safe.code === 'RESOURCE_STARTUP_INTERVAL_BRACKET')
+          safe.bracket = sanitizeStartupBracket(safe.bracket);
+        else if (Object.hasOwn(safe, 'bracket')) throw new Error('unexpected startup bracket');
         if (safe.processEvidence) {
           const evidence = safe.processEvidence;
           if (

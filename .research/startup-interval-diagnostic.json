@@ -32,5 +32,10 @@
     "red": "node --test scripts/test-startup-interval-attribution.mjs failed both cases when the parser rejected actual Darwin ps fractional time.",
     "green": "node --test scripts/test-startup-interval-attribution.mjs passed both cases after fractional parsing; full local ps snapshot parsed 688/688 rows without reading process arguments or environment. Scoped cleanup check observed a real SIGTERM-ignoring child exit by SIGKILL before stopOwnedChild resolved.",
     "hosted_run": "Not launched by this lane. The local machine is below the 20 GiB system disk floor; no local browser/build/release run was attempted."
+  },
+  "durable_journal_repair": {
+    "defect": "EXT-D-0129: run 37230193583 emitted a full RESOURCE_STARTUP_INTERVAL_BRACKET on stdout, but openResourceJournal removed the bracket field from its durable JSONL event.",
+    "correction": "The guard journal now persists only the validated bracket timestamps, PID sets, category totals, process basenames and CPU-time deltas, or an explicit unavailable marker. Arguments, environment, and unknown fields are stripped; malformed accounting refuses the write.",
+    "evidence": "A direct openResourceJournal write/read test failed RED with bracket undefined before the correction and passed GREEN after it. The diagnostic was not rerun; the prior run's original JSONL remains unchanged and its stdout evidence remains separately retained."
   }
 }
