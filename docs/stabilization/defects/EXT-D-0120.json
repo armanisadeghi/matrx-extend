@@ -12,7 +12,7 @@
   "actual": "Receipt contains only extension_reload and generic target error; no returned reload result or target counts. Product cause remains unknown; same run also contains unsafe CPU evidence. Latest healthy development native37192733619 stopped earlier at native_extension_worker_retirement_unverified: old worker/panel absent and replacement present/created, but no old-worker destroyed event. It did not reach replacement-panel pointer lookup, so original pointer counts remain unknown. Healthy native37195986118 confirms complete strict retirement/replacement lifecycle with zero timeline drops, then pointer_target_not_unique at open_scrape_in_replacement_panel: matched0/visible0; target rendering/selection cause not yet known.",
   "severity": "S2: acceptance reliability; no proven product failure",
   "priority": "P1: prerequisite for trusted native acceptance",
-  "state": "open",
+  "state": "fixed",
   "owner": "/root/scrape_reload_pointer_diagnose",
   "evidence": [
     ".research/scrape-loading-fixed-native.json",
@@ -22,7 +22,9 @@
     ".research/reload-event-instrumentation.json",
     ".research/reload-event-retention-repair.json",
     ".research/scrape-final-retention-peer.json",
-    ".research/scrape-freshness-fixed-native.json"
+    ".research/scrape-freshness-fixed-native.json",
+    ".research/scrape-reload-pointer-diagnosis.json",
+    ".research/scrape-replacement-ready-peer.json"
   ],
   "transition_history": [
     {
@@ -30,8 +32,26 @@
       "from": null,
       "to": "open",
       "reason": "Exact native receipt and source inspection."
+    },
+    {
+      "at": "2026-10-04T10:54:17.039570+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Healthy native37195986118 isolates zero matching/visible Scrape controls after strict replacement lifecycle; DOM readiness was unobserved."
+    },
+    {
+      "at": "2026-10-04T10:54:17.039570+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol source lane owns bounded real-DOM readiness boundary before unchanged trusted click."
+    },
+    {
+      "at": "2026-10-04T10:54:17.039570+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "78ac468d adds readiness evidence and refusal for persistent absence; independent5d448307 source and6focused tests pass with always-ready mutant RED. Native recovery and earlier missing-destroyed-event intermittency remain unverified."
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
-  "next_action": "Bounded Sol source diagnosis against exact replacement target/context and pointer0 evidence; no acceptance predicate relaxation or blind retry."
+  "next_action": "One guarded native retest on frozen215 with driver78ac468d and independent5d448307; require real ready control, strict click and post-reload assertions. Keep separate missing-destroyed-event intermittency open."
 }
