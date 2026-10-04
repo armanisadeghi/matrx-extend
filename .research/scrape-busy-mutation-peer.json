@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0115",
+  "role": "independent_source_peer_review",
+  "reviewed_implementation_sha": "72c955fcdb6cc20c47497d8be39fd3b34ec64cdd",
+  "reviewed_causal_receipt": ".research/scrape-fast-busy-causal.json",
+  "verdicts": {
+    "A_source_readiness": "not_ready_for_trustworthy_native_acceptance",
+    "A_native_runtime": "not_run_in_this_lane; product busy state remains unverified",
+    "B_observer_quality": "fail_false_positive_for_foreign_and_hidden_busy_states"
+  },
+  "finding": {
+    "severity": "blocking_for_oracle_trust",
+    "summary": "The replay verifies button identity and visibility only at MutationObserver delivery. It can count a busy transition that occurred while that same button was outside the active Scrape pane or hidden, after the button returns idle to its original visible position before delivery.",
+    "source": "tests/browser/scrape-busy-observer.mjs: sample() resolves the current button, then replays all records targeting that node using current button.contains(record.target); overlap is not gated by historical pane ownership or visibility.",
+    "minimal_reproduction_foreign": [
+      "Arm the observer on the unique visible Capture button in the active Scrape pane.",
+      "Within one JavaScript turn, move that button into a foreign pane; set disabled=true and text=Capturing…; set disabled=false and text=Capture; move it back into the active Scrape pane.",
+      "Allow MutationObserver delivery and read the state. Actual owned visible busy overlap never occurred, but observed=true, text=Capturing…, overlappingMutationState=true, disabledSamples=0."
+    ],
+    "minimal_reproduction_hidden": [
+      "Arm the observer on the unique visible Capture button in the active Scrape pane.",
+      "Within one JavaScript turn, hide the button with display:none; set disabled=true and text=Capturing…; set disabled=false and text=Capture; show it again.",
+      "Allow MutationObserver delivery and read the state. Actual visible busy overlap never occurred, but observed=true, text=Capturing…, overlappingMutationState=true, disabledSamples=0."
+    ],
+    "repair_direction": "Reconstruct ownership and visibility at the same ordered transition as disabled and label, or decline a record-only verdict when those states changed during the callback batch. Preserve the strict requirement for one owned visible button simultaneously disabled with the correct busy label."
+  },
+  "checks": {
+    "existing_focused_tests": "node --test tests/browser/scrape-busy-observer.test.mjs: 5 passed, 0 failed",
+    "independent_dom_probes": "Two inline happy-dom probes against the committed observer both returned false-positive observed=true with overlappingMutationState=true.",
+    "product_change": "None in reviewed commit; observer and unit tests only.",
+    "criterion_change": "No explicit relaxation; defect is a false-positive implementation of the strict criterion.",
+    "native_browser_release": "Not run by this source-only peer lane."
+  },
+  "limits": [
+    "This report demonstrates an oracle defect, not that the product did or did not render a busy state in a real browser.",
+    "The existing unit cases cover same-button positive and nonoverlap transitions; they do not cover ownership or visibility changes within one MutationObserver batch.",
+    "The hosted run recorded in the causal receipt predates this observer and cannot validate its native behavior."
+  ]
+}
