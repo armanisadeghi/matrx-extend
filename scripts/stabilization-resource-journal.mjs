@@ -37,6 +37,8 @@ const JOURNAL_FIELDS = new Set([
   'childExitCode',
   'childSignal',
   'processEvidence',
+  'processes',
+  'unavailable',
 ]);
 
 // This writer receives guard-owned events only. Child stdout still goes directly
@@ -74,6 +76,35 @@ export function openResourceJournal(repo, runId, { closeFd = closeSync } = {}) {
         const safe = Object.fromEntries(
           Object.entries(event).filter(([key]) => JOURNAL_FIELDS.has(key)),
         );
+        if (safe.code === 'RESOURCE_PROCESS_ATTRIBUTION') {
+          const hasProcesses = Object.hasOwn(safe, 'processes');
+          const hasUnavailable = Object.hasOwn(safe, 'unavailable');
+          if (hasProcesses === hasUnavailable) throw new Error('invalid process attribution');
+          if (hasUnavailable) {
+            if (safe.unavailable !== true) throw new Error('invalid process availability');
+          } else {
+            if (!Array.isArray(safe.processes)) throw new Error('invalid process attribution');
+            safe.processes = safe.processes.map(({ pid, parentPid, cpuPercent, executable }) => {
+              if (
+                ![pid, parentPid].every((value) => Number.isSafeInteger(value) && value >= 0) ||
+                !Number.isFinite(cpuPercent) ||
+                cpuPercent < 0 ||
+                typeof executable !== 'string' ||
+                executable.length === 0 ||
+                executable.includes('/') ||
+                executable.includes('\\') ||
+                [...executable].some((character) => {
+                  const code = character.charCodeAt(0);
+                  return code < 32 || code === 127;
+                })
+              )
+                throw new Error('invalid process attribution');
+              return { pid, parentPid, cpuPercent, executable };
+            });
+          }
+        } else if (Object.hasOwn(safe, 'processes') || Object.hasOwn(safe, 'unavailable')) {
+          throw new Error('unexpected process attribution');
+        }
         if (safe.processEvidence) {
           const evidence = safe.processEvidence;
           if (

@@ -125,6 +125,99 @@ test('journal writes only guard fields and refuses overwrite', async () => {
   }
 });
 
+test('process attribution survives journal publication with only sanitized accounting fields', async () => {
+  for (const [suffix, detail, expected] of [
+    [
+      'success',
+      {
+        processes: [
+          {
+            pid: 413,
+            parentPid: 201,
+            cpuPercent: 72.5,
+            executable: 'Google Chrome fo',
+            argv: '--password=private',
+            environment: 'PRIVATE_TOKEN=private',
+            path: '/Applications/private',
+          },
+          { pid: 921, parentPid: 1, cpuPercent: 1.25, executable: 'node' },
+        ],
+        rawError: 'private error',
+      },
+      {
+        processes: [
+          { pid: 413, parentPid: 201, cpuPercent: 72.5, executable: 'Google Chrome fo' },
+          { pid: 921, parentPid: 1, cpuPercent: 1.25, executable: 'node' },
+        ],
+      },
+    ],
+    ['unavailable', { unavailable: true, rawError: 'private error' }, { unavailable: true }],
+  ]) {
+    const runId = `journal-attribution-${suffix}-${randomUUID()}`;
+    const path = journalPath(runId);
+    const journal = openResourceJournal(repo, runId);
+    try {
+      journal.write({
+        schema: 1,
+        at: '2026-10-04T00:00:00.000Z',
+        code: 'RESOURCE_WATCH_UNSAFE',
+        runId,
+      });
+      journal.write({
+        schema: 1,
+        at: '2026-10-04T00:00:00.100Z',
+        code: 'RESOURCE_PROCESS_ATTRIBUTION',
+        runId,
+        ...detail,
+      });
+      journal.close();
+      const events = (await readFile(path, 'utf8')).trim().split('\n').map(JSON.parse);
+      assert.deepEqual(
+        events.map((event) => event.code),
+        ['RESOURCE_WATCH_UNSAFE', 'RESOURCE_PROCESS_ATTRIBUTION'],
+      );
+      assert.deepEqual(events[1], {
+        schema: 1,
+        at: '2026-10-04T00:00:00.100Z',
+        code: 'RESOURCE_PROCESS_ATTRIBUTION',
+        runId,
+        ...expected,
+      });
+      assert.doesNotMatch(JSON.stringify(events), /private|argv|environment|rawError|path/);
+    } finally {
+      await rm(path, { force: true });
+    }
+  }
+});
+
+test('journal refuses path-like or malformed process attribution instead of persisting it', async () => {
+  const runId = `journal-attribution-invalid-${randomUUID()}`;
+  const path = journalPath(runId);
+  const journal = openResourceJournal(repo, runId);
+  try {
+    journal.write({ schema: 1, code: 'RESOURCE_WATCH_UNSAFE', runId });
+    for (const detail of [
+      { processes: [{ pid: 4, parentPid: 1, cpuPercent: 5, executable: '/private/Chrome' }] },
+      { processes: [{ pid: 4, parentPid: 1, cpuPercent: Number.NaN, executable: 'Chrome' }] },
+      { processes: [], unavailable: true },
+      { unavailable: false },
+    ]) {
+      assert.throws(
+        () => journal.write({ schema: 1, code: 'RESOURCE_PROCESS_ATTRIBUTION', runId, ...detail }),
+        /RESOURCE_JOURNAL_WRITE_FAILED/,
+      );
+    }
+    journal.close();
+    const events = (await readFile(path, 'utf8')).trim().split('\n').map(JSON.parse);
+    assert.deepEqual(
+      events.map((event) => event.code),
+      ['RESOURCE_WATCH_UNSAFE'],
+    );
+  } finally {
+    await rm(path, { force: true });
+  }
+});
+
 test('legacy refusal journal retains bounded identity without command or environment', async () => {
   const runId = `legacy-evidence-${randomUUID()}`;
   const path = journalPath(runId);

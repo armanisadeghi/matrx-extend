@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "case": "EXT-D-0120 same-run process attribution journal repair",
+  "root_cause": "The guard emitted processes or unavailable, but the resource journal allowlist removed both properties before fsync and publication.",
+  "repair": "The journal now persists exactly one validated attribution outcome: sanitized pid, parentPid, cpuPercent and executable accounting name rows, or unavailable:true. Unknown nested fields and raw error text are discarded. Malformed or path-like rows fail the journal write.",
+  "red_proof": "Before the source change, node --test --test-name-pattern='process attribution survives journal publication' scripts/test-stabilization-resource-journal.mjs failed because the published attribution event lacked processes.",
+  "local_verification": "After repair, node --test scripts/test-stabilization-resource-journal.mjs scripts/test-stabilization-resource-safety.mjs tests/browser/native-resource-boundary.test.mjs passed 15/15. The saved-journal test covers success, unavailable, ordering after unsafe, private field removal and invalid payload refusal.",
+  "prior_exact_commit_ci": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37204481673 ran the macOS disk integration without skip and failed at assert(Array.isArray(attribution.processes)) on e2a7cb96. Current repair needs a fresh exact-commit CI result.",
+  "fidelity_limits": "macOS ps ucomm is an accounting name that may truncate. ps %cpu is a decaying average, not the guard's preceding iostat interval. The rows suggest likely CPU consumers but cannot prove exact interval ownership.",
+  "scope": "No native browser run, heavy guard run, release or new CI was launched in this lane."
+}
