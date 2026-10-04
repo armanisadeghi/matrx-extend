@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "task": "profile-escalated-boundary-peer",
+  "reviewed_commit": "b83c2af0",
+  "status": "source_pass_native_member_gate_open",
+  "verdict_A_acceptance_live": {
+    "result": "PARTIAL",
+    "addressed": [
+      "The actual request observer now maps response code through a fixed allowlist before save/discard diagnostics snapshots are serialized.",
+      "The runner records the execution Error before owned-row cleanup and preserves it when native harness teardown later throws; cleanup-only failure remains the primary Error when execution succeeded."
+    ],
+    "unaddressed_live_limit": "No fresh guarded native member run on this source has established real T26 interception, final receipt status, or original row absence after restoration. Earlier native artifacts do not close this gate.",
+    "native_gate": "OPEN for one independent guarded member run with a private ownership receipt and explicit final row-absence verification; source and focused guards alone do not establish live acceptance."
+  },
+  "verdict_B_quality": {
+    "result": "PASS_FOR_DEMONSTRATED_FAILURE_CONTRACTS",
+    "prior_findings": [
+      {
+        "finding": "Arbitrary response code entered save_discard_diagnostics.requests[].error_code and the shared report",
+        "disposition": "addressed",
+        "evidence": "observeProfileRequests uses safeProfileBackendCode; only 42501, 23505, PGRST116, PGRST301 and PGRST302 survive, absent code stays null, other values become profile_backend_unclassified_error. The actual caseSaveDiscard snapshots this observer into the report."
+      },
+      {
+        "finding": "Native harness teardown rejection replaced the primary execution or cleanup Error",
+        "disposition": "addressed",
+        "evidence": "nativeExecutionError is captured before owned cleanup, cleanup-only Error is captured before throwing, and the outer catch records the captured Error while separately recording a bounded native_harness teardown failure."
+      },
+      {
+        "finding": "Panel detach transport rejection might mask the primary Error",
+        "disposition": "refuted_for_actual_panel_transport",
+        "evidence": "attachTargetSession.detach catches Target.detachFromTarget rejection; the focused guard executes that actual method with rejecting transport."
+      }
+    ],
+    "report_boundary": "Reviewed the runner's report assignments, request snapshot, failure helpers, owned restoration, native harness finally and final writer. Response body, request URL, Error.message, UI text and private ownership identifiers are not copied through the demonstrated failure paths. The useful fixed backend codes are retained. No broader claim about arbitrary preflight environment metadata or output write failures is made.",
+    "guards": "The new boundary suite executes extracted actual observer, caseSaveDiscard, owned cleanup, native harness finally and outer final handler with transport/persistence doubles. It tests adverse codes and known codes, primary Error identity, cleanup-only identity and teardown diagnostics. Source extraction is somewhat brittle to refactoring but does not replace the reviewed decisions. The reported mutation checks are in the implementation report; this peer did not repeat them."
+  },
+  "checks": [
+    "node --test tests/browser/profile-report-boundary.test.mjs tests/browser/profile-native-failure.test.mjs tests/browser/profile-save-failure-error-preservation.test.mjs: 23 passed, 0 failed",
+    "pnpm -s lint: exit 0, warnings only",
+    "git diff --check b83c2af0^ b83c2af0: passed"
+  ],
+  "scope": "Independent source and focused-guard review only. No browser, database, build, release, or implementation edits. This shared report contains no private receipt data."
+}
