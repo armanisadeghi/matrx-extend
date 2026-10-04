@@ -28,7 +28,8 @@
     ".research/guest-402-release-preparation.json",
     "docs/stabilization/evidence/release205/store-pending-review.png",
     ".research/guest-current-incident-audit.json",
-    ".research/guest205-current-live-check.json"
+    ".research/guest205-current-live-check.json",
+    ".research/guest205-discovery-native.json"
   ],
   "transition_history": [
     {
@@ -64,9 +65,10 @@
   ],
   "closure_requirement": "After 0.2.205 is published, verify the actual Store-installed fresh guest answer and returning exhausted-guest HTTP 402 remedy without Retry. Candidate proof is bounded; no whole-product health claim.",
   "current_server_recheck": {
-    "run_id": 37206303244,
-    "observed_at_utc": "2026-10-04T13:44:56Z",
-    "result": "Exact candidate205 Store payload with public-key adaptation passed fresh guest first answer and panel-reload follow-up against live backend. Root independently verified raw receipt and three valid resource journals.",
-    "limit": "No actual Store installation; request HTTP status/code absent from this receipt. No whole-product or new allowance retest claim."
+    "run_id": 37240870438,
+    "observed_at_utc": "2026-10-04T22:46Z",
+    "backend_sha": "60081efa8181e700443cbfe53bcf3b984e2a2af0",
+    "result": "Exact205 Store payload with public-key adaptation: fresh guest opening and panel-reload/new-conversation followup both realHTTP200 and groundedanswers. Rootchecked rawreceipt/all3validjournals,8hashes and screenshot.",
+    "limit": "No actual Store installation; no new allowance402 retest; reporter exact failedrequest remains unclassified."
   }
 }

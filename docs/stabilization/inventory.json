@@ -34987,9 +34987,11 @@
           "run_ids": [
             "guest-grounding-peer-native-20261001-001",
             "hosted-guest-controlled-20261003",
-            "urgent-context-rules-fixed-ci-01"
+            "urgent-context-rules-fixed-ci-01",
+            "37239792825",
+            "37240870438"
           ],
-          "retest_status": "Published 0.2.176 returning-guest HTTP 402 failure remains. Exact candidate 0.2.205 passed fresh and returning exhausted-guest native acceptance, including a second live HTTP 402 after panel reload and New chat; submitted Pending review at 05:57 UTC October 4 with automatic publication. Actual Store-installed acceptance and broader Chat remain open."
+          "retest_status": "Published 0.2.176 returning-guest HTTP 402 failure remains. Exact candidate 0.2.205 passed fresh and returning exhausted-guest native acceptance, including a second live HTTP 402 after panel reload and New chat; submitted Pending review at 05:57 UTC October 4 with automatic publication. Current-server exact205 run37240870438 also verifies opening and post-reload real HTTP200 plus grounded answers; prior37239792825 failed transport observation. Actual Store-installed acceptance and broader Chat remain open."
         },
         "member": {
           "test_status": "unverified",

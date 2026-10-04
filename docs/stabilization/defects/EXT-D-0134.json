@@ -13,7 +13,7 @@
   "actual": "Prior acceptance recorded no request status or error code. UI answer evidence remains valid only for its bounded claim.",
   "severity": "S2: missing failure evidence can conceal transport regressions",
   "priority": "P1: diagnose urgent signed-out Chat incident",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/guest_first_transport_observer",
   "evidence": [
     ".research/guest205-current-live-check.json",
@@ -24,7 +24,8 @@
     ".research/guest-transport-correction-peer.json",
     ".research/guest205-first-transport-native.json",
     ".research/guest-transport-native-diagnosis.json",
-    ".research/guest-discovery-fresh-peer.json"
+    ".research/guest-discovery-fresh-peer.json",
+    ".research/guest205-discovery-native.json"
   ],
   "transition_history": [
     {
@@ -68,8 +69,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "32113799 enables discovery before lazyautoattach and adds safe diagnostic counters; fresh09275530 verifies9tests/redmutants/connector. FullCI37240635247 succeeds. Changedconditionnativepending."
+    },
+    {
+      "at": "2026-10-04T22:49:42.330492+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Native37240870438 records real opening and postreload POST200 plus groundedanswers, exact205 unchanged adaptedtree; all3journals valid/no unsafe and no cleanupfailures. Rootverified8hashes/rawreceipt/followupscreenshot."
+    },
+    {
+      "at": "2026-10-04T22:49:42.330492+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Bounded observer capture defect verified end-to-end. Not a Store-install, quota-refusal, wholeChat or overallhealth closure."
     }
   ],
   "fix_commits": ["954277cf", "a0f6cd50", "32113799"],
-  "next_action": "ONE changed-condition exact205 guest native37240870438, root/guest205_first_transport_native owns terminal result/cleanup/evidence. No unchanged retry or Store replacement."
+  "next_action": "Continue original guest incident publication follow-up under D112; no further observer rerun without changed evidence."
 }
