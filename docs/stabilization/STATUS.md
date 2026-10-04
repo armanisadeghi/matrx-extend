@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-04 11:55 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T11:55:29.592265+00:00. 205 features · 762 cases · 1333 controls · 121 linked defect records.
+Generated 2026-10-04 12:17 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T12:17:42.755864+00:00. 205 features · 762 cases · 1333 controls · 121 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -855,8 +855,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
 - EXT-F-1007-T06 · guest: Pass. pass_cancel_discarded_draft_and_recapture_cleanup
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
-- EXT-F-1007-T08 · guest: Partial. Healthy exact development215 selectedall6tabs and matchedArticle/Links/SEO/Schema. All9geometryboundaries at360px showdocumentwidth360/scrollLeft0, strip336px; rootdeepPNGconfirmsno leftclip. Images/video content or empty state and normalwidth stillunverified.
-  Evidence / build / date recorded: 37195986118, .research/scrape-freshness-fixed-native.json
+- EXT-F-1007-T08 · guest: Partial. Healthy exact development215 guest: all6tabs selected, Article/Links/SEO/Schema matched, Images realSVG matchedURL/alt andloaded640x480, Video matchedURLrow. Actualrecapture of media-free referrals confirmed bothzero-count panes withAddcontrols. Rootmatchedreceipt+3journals; no native mediascreenshot, no video playbackclaim. FullreloadblockedbyD120 afterthesechecks; member/admin andnormalwidth unverified.
+  Evidence / build / date recorded: 37200570100, .research/scrape-media-native.json
 - EXT-F-1007-T14 · guest: Partial. Healthy exactdevelopment215 observed restrictedchrome://settings norecoveryactions andDismiss; recoverableReload/Tryagain/deepretryunverified.
   Evidence / build / date recorded: 37195986118, .research/scrape-freshness-fixed-native.json
 - EXT-F-1007-T20 · guest: Pass. Exact development215 guest (token/profile absent), healthy journals: initial empty state, navigation clears prior content and saved indicator, strict full extension reload, replacement Scrape empty and capture enabled. Readiness first0/0 then1/1 across2checks. Root matched receipt+3journal hashes and exactdriver savedfalse assertions. Bounded guest case only; no Store/member/admin/whole-feature pass. Earlier intermittent D120 remains open.
