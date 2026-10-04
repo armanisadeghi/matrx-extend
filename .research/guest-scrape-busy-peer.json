@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0115",
+  "role": "independent_narrow_peer_verification",
+  "reviewed_implementation_sha": "76e68d98",
+  "reviewed_receipt": ".research/guest-scrape-hosted-native.json",
+  "verdicts": {
+    "A_source_readiness": "ready_for_native_retest",
+    "A_native_runtime": "pending_unverified",
+    "B_observer_quality": "pass_for_busy_observation_contract"
+  },
+  "findings": [
+    "The old observer watched one button node; the repair watches the document subtree and re-resolves the unique visible button in the active Scrape pane after DOM replacement or title movement.",
+    "Fast and deep acceptance still require a disabled busy button with the corresponding Capturing or Scrolling label. A disabled button with a wrong label sets the observer's raw observed flag but fails the later label assertion.",
+    "The failed hosted run 37185080238 predates this repair and contains no mutation samples, so it does not establish whether the native product rendered a busy state.",
+    "The acceptance report now records busy diagnostics and a screenshot before a busy assertion fails, preserving evidence for the native rerun."
+  ],
+  "checks": {
+    "observer_unit_tests": "node --test tests/browser/scrape-busy-observer.test.mjs: 2 passed",
+    "independent_dom_probe": {
+      "enabled_capturing_label": "rejected",
+      "disabled_wrong_label": "rejected by acceptance label assertion",
+      "inactive_pane_disabled_capturing": "rejected",
+      "active_pane_disabled_capturing": "accepted"
+    },
+    "native_browser": "not run in this lane"
+  },
+  "limits": [
+    "Local DOM probes verify observer and oracle behavior, not Chromium side-panel behavior or the product capture lifecycle.",
+    "The committed unit tests cover two positive transitions; the independent negative probe was executed but is not a permanent regression test.",
+    "No full guest Scrape case pass or defect closure is claimed."
+  ]
+}
