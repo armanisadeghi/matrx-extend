@@ -28,6 +28,7 @@ on:
         options:
           - guest-chat
           - guest-scrape
+          - guest-scrape-development
           - settings-controls
           - settings-persistence
           - settings-persistence-admin
@@ -41,7 +42,7 @@ on:
           - profile-admin
           - profile-member
       scrape_diagnostic_cpu_rate:
-        description: Optional owned intake-page CPU diagnostic rate for guest-scrape (for example 4)
+        description: Optional owned intake-page CPU diagnostic rate for guest-scrape or guest-scrape-development (for example 4)
         required: false
         type: string
 
@@ -105,11 +106,14 @@ jobs:
         run: |
           set -euo pipefail
           if [[ -n "$SCRAPE_DIAGNOSTIC_CPU_RATE" ]]; then
-            [[ "$ACCEPTANCE_CASE" == guest-scrape ]] || exit 1
+            [[ "$ACCEPTANCE_CASE" == guest-scrape || "$ACCEPTANCE_CASE" == guest-scrape-development ]] || exit 1
             node -e 'const n=Number(process.argv[1]); if (!Number.isFinite(n)||n<=1) process.exit(1)' "$SCRAPE_DIAGNOSTIC_CPU_RATE"
           fi
           if [[ "$ACCEPTANCE_CASE" == member-chat || "$ACCEPTANCE_CASE" == guest-scrape ]]; then
             [[ -n "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
+          fi
+          if [[ "$ACCEPTANCE_CASE" == guest-scrape-development ]]; then
+            [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
           if [[ "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == desktop-settings-guest || "$ACCEPTANCE_CASE" == desktop-settings-member || "$ACCEPTANCE_CASE" == desktop-settings-admin || "$ACCEPTANCE_CASE" == audit-key-admin || "$ACCEPTANCE_CASE" == profile-admin || "$ACCEPTANCE_CASE" == profile-member ]]; then
             [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1

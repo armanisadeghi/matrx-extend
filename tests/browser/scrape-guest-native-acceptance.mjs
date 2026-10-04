@@ -13,6 +13,7 @@ import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 const REPO = resolve(import.meta.dirname, '../..');
 const EXTENSION_DIR = process.env.MATRX_SCRAPE_EXTENSION_DIR;
 const RECEIPT = process.env.MATRX_SCRAPE_RECEIPT;
+const ARTIFACT_CHANNEL = process.env.MATRX_SCRAPE_ARTIFACT_CHANNEL;
 const DIAGNOSTIC_RATE = diagnosticCpuRate(process.env.MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE);
 const OUTPUT = join(REPO, 'test-results', `scrape-guest-native-${randomUUID()}.json`);
 const article = 'Harbor Dental intake guide';
@@ -97,21 +98,42 @@ async function scrapeState(panel) {
 
 try {
   assert.ok(EXTENSION_DIR && RECEIPT, 'scrape_exact_artifact_inputs_required');
+  assert.ok(['development', 'store'].includes(ARTIFACT_CHANNEL), 'scrape_channel_required');
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
+  if (ARTIFACT_CHANNEL === 'development') {
+    assert.equal(receipt.kind, 'local_dev_unpacked', 'scrape_development_receipt_required');
+    assert.match(process.env.MATRX_SCRAPE_CI_SOURCE_SHA ?? '', /^[a-f0-9]{40}$/);
+    assert.match(process.env.MATRX_SCRAPE_CI_RUN_ID ?? '', /^[1-9][0-9]*$/);
+    assert.match(process.env.MATRX_SCRAPE_CI_ARTIFACT_ID ?? '', /^[1-9][0-9]*$/);
+  } else {
+    assert.equal(receipt.kind, 'published_store_zip_adapted', 'scrape_store_receipt_required');
+  }
   assert.equal(hashReleaseTree(EXTENSION_DIR), receipt.treeSha256, 'scrape_receipt_tree_mismatch');
   const manifest = JSON.parse(await readFile(join(EXTENSION_DIR, 'manifest.json'), 'utf8'));
   assert.equal(manifest.version, receipt.version, 'scrape_receipt_version_mismatch');
   report.artifact = {
-    kind: receipt.kind ?? 'published_release',
+    kind: ARTIFACT_CHANNEL === 'development' ? 'ci_development_test' : receipt.kind,
+    channel: ARTIFACT_CHANNEL,
     version: receipt.version,
-    source_sha: receipt.sourceSha ?? null,
+    source_sha:
+      ARTIFACT_CHANNEL === 'development'
+        ? process.env.MATRX_SCRAPE_CI_SOURCE_SHA
+        : (receipt.sourceSha ?? null),
     tree_sha256: receipt.treeSha256,
-    run_id: receipt.runId ?? null,
-    artifact_id: receipt.artifactId ?? null,
+    run_id:
+      ARTIFACT_CHANNEL === 'development'
+        ? Number(process.env.MATRX_SCRAPE_CI_RUN_ID)
+        : (receipt.runId ?? null),
+    artifact_id:
+      ARTIFACT_CHANNEL === 'development'
+        ? Number(process.env.MATRX_SCRAPE_CI_ARTIFACT_ID)
+        : (receipt.artifactId ?? null),
   };
   await runNativeSidepanelQa({
     extensionDir: EXTENSION_DIR,
-    releaseReceiptPath: RECEIPT,
+    ...(ARTIFACT_CHANNEL === 'development'
+      ? { localDevReceiptPath: RECEIPT }
+      : { releaseReceiptPath: RECEIPT }),
     expectedRelease: receipt,
     ownedPages: {
       '/intake': firstPage,

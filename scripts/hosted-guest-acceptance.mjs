@@ -18,6 +18,7 @@ import {
   stageProfileOrganizationConfig,
 } from './hosted-profile-route.mjs';
 import { prepareHostedReleaseArtifact } from './hosted-release-artifact.mjs';
+import { requireHostedScrapeRoute } from './hosted-scrape-route.mjs';
 import { hashReleaseTree } from './sync-unpacked-release.mjs';
 
 const repo = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -68,6 +69,7 @@ async function prepareDevelopment(runId, artifactId) {
     extensionDir,
     relocatedReceipt,
     kind: 'ci_development_test',
+    eligibleStore: false,
     sourceSha,
     runId: Number(runId),
     artifactId: Number(artifactId),
@@ -260,13 +262,14 @@ async function preparePublishedStoreCrx(outputDir) {
   return { extensionDir, relocatedReceipt, kind: receipt.kind };
 }
 
-async function run(prepared) {
+async function run(prepared, artifactMode) {
   const { extensionDir, relocatedReceipt, kind } = prepared;
   const acceptanceCase = process.env.MATRX_HOSTED_ACCEPTANCE_CASE ?? 'guest-chat';
   assert.ok(
     [
       'guest-chat',
       'guest-scrape',
+      'guest-scrape-development',
       'settings-controls',
       'settings-persistence',
       'settings-persistence-admin',
@@ -309,12 +312,7 @@ async function run(prepared) {
       'published_store_zip_adapted',
       'Guest Chat release requires exact Store ZIP payload',
     );
-  if (acceptanceCase === 'guest-scrape')
-    assert.equal(
-      kind,
-      'published_store_zip_adapted',
-      'Guest Scrape requires exact Store ZIP payload',
-    );
+  const scrapeRoute = requireHostedScrapeRoute(acceptanceCase, artifactMode, prepared);
   if (acceptanceCase === 'prepare-stale-results')
     assert.equal(kind, 'ci_development_test', 'Prepare requires exact CI development receipt');
   if (acceptanceCase === 'profile-admin' || acceptanceCase === 'profile-member') {
@@ -358,6 +356,14 @@ async function run(prepared) {
     MATRX_GUEST_CHAT_EXTENSION_DIR: extensionDir,
     MATRX_SCRAPE_EXTENSION_DIR: extensionDir,
     MATRX_SCRAPE_RECEIPT: relocatedReceipt,
+    MATRX_SCRAPE_ARTIFACT_CHANNEL: scrapeRoute?.channel,
+    ...(scrapeRoute?.channel === 'development'
+      ? {
+          MATRX_SCRAPE_CI_SOURCE_SHA: prepared.sourceSha,
+          MATRX_SCRAPE_CI_RUN_ID: String(prepared.runId),
+          MATRX_SCRAPE_CI_ARTIFACT_ID: String(prepared.artifactId),
+        }
+      : {}),
     MATRX_REVIEWER_EXTENSION_DIR: extensionDir,
     MATRX_REVIEWER_RELEASE_RECEIPT: relocatedReceipt,
     ...(acceptanceCase.startsWith('settings-persistence')
@@ -418,8 +424,8 @@ async function run(prepared) {
           repo,
           acceptanceCase === 'settings-controls'
             ? 'tests/browser/settings-local-controls-acceptance.mjs'
-            : acceptanceCase === 'guest-scrape'
-              ? 'tests/browser/scrape-guest-native-acceptance.mjs'
+            : scrapeRoute
+              ? scrapeRoute.driver
               : acceptanceCase.startsWith('desktop-settings-')
                 ? 'tests/browser/settings-desktop-native-acceptance.mjs'
                 : acceptanceCase === 'audit-key-admin'
@@ -549,4 +555,4 @@ const prepared = releaseMode
   : developmentMode
     ? await prepareDevelopment(devRunId, devArtifactId)
     : await preparePublishedStoreCrx(outputDir);
-await run(prepared);
+await run(prepared, releaseMode ? 'release' : developmentMode ? 'development' : 'published-crx');

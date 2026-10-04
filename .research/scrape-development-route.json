@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "scope": "Source-only hosted guest Scrape development route for a provenance-verified CI development artifact",
+  "source_base_sha": "92334b68eff1f3cbc88a2aa6a98fd6c47e2529b2",
+  "development_case": "guest-scrape-development",
+  "accepted_artifact_kind": "ci_development_test",
+  "accepted_source": "successful main-push CI run and exact development artifact through existing authenticated importer",
+  "native_driver": "tests/browser/scrape-guest-native-acceptance.mjs",
+  "store_case_unchanged": "guest-scrape requires published_store_zip_adapted",
+  "verification": [
+    "node --test scripts/hosted-scrape-route.test.mjs: passed",
+    "pnpm compile: passed",
+    "git diff --check: passed"
+  ],
+  "limits": "No hosted browser, native panel, release, or product verdict was run in this lane."
+}
