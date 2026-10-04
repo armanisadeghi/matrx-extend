@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0131 fresh independent reverify",
+  "reviewed_source_sha": "d7f41f37",
+  "reviewed_at_utc": "2026-10-04T20:45:10Z",
+  "verdict_a_measurement_path": "SOURCE_READY_FOR_DIAGNOSTIC_LAUNCH_NATIVE_UNVERIFIED",
+  "verdict_b_quality_safety": "PASS_SCOPED",
+  "findings": [],
+  "evidence": {
+    "ownership_and_binding": "The opt-in callback begins only after required Browser.getBrowserCommandLine, extension worker, and spawned profile-owner checks. The second connectOwnedCdp call rereads this owned profile's DevToolsActivePort and SingletonLock, checks the process executable and exact --user-data-dir, and opens only its browser-target WebSocket. No auth, page target, external endpoint, or browser command-line value is added to the report.",
+    "isolation_and_deadlines": "The diagnostic does not await the second connection or SystemInfo.getInfo during startup. The connector has the existing five-second endpoint/open and command deadlines. Its fatal timeout state is per connection. A stalled optional query becomes UNKNOWN while the primary connection can still issue required commands; a required command timeout on the primary remains fatal.",
+    "teardown": "The harness aborts the observation before primary detach and owned-child cleanup. Abort records UNKNOWN with failedAt and starts detaching an open optional socket; if connection completes after abort, the observer skips send and detaches it. No GPU result is promised once teardown wins. The controlled connector probe confirmed closure of its optional and primary sockets.",
+    "retained_measurements": "The strict resource journal retains bracket timing, sanitized positive named otherHost CPU deltas, unmatched PID evidence, and ownership categories. The diagnostic report saves each native stage timestamp and its last stage, plus requested/resolved/failed GPU timing and allowlisted backend fields. It omits commandLine and private GPU attributes.",
+    "acceptance_scope": "The backend callback remains diagnostic opt-in. The change does not alter ordinary native acceptance launch arguments, resource sampling, product assertions, or acceptance verdicts."
+  },
+  "verification": {
+    "focused_tests": "21 passed, 0 failed across startup GPU observation and transport, hosted diagnostic writer, process attribution, and strict resource journal.",
+    "actual_transport_positive_control": "A controlled WebSocket passed through connectOwnedCdp and observeStartupGpu. SystemInfo.getInfo returned Graphite, ANGLE Metal, and rasterization enabled; the report retained only allowlisted fields, the optional socket closed, and the independent primary Target.getTargets command succeeded with failureClass none.",
+    "actual_transport_negative_control": "The repository transport test stalls only SystemInfo.getInfo; the optional connector times out to UNKNOWN without poisoning the primary. Its required-command timeout control remains fatal.",
+    "limits": "Source and controlled transport verification only. No native browser, hosted workflow, build, release, or runtime backend measurement was performed. Actual renderer backend remains UNKNOWN and product acceptance remains UNVERIFIED."
+  }
+}
