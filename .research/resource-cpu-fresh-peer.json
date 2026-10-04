@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0132",
+  "role": "fresh independent reviewer; zero implementation authorship",
+  "reviewed_commit": "da9669c9f2d0cd0bbc23bac8572a15f90d08d876",
+  "review_package": {
+    "command": "git show --stat -U10 --no-ext-diff da9669c9f2d0cd0bbc23bac8572a15f90d08d876",
+    "sha256": "cd4d2572dba37dfce2a6fdbfcf5fec5cecde829f5709070161c7802eb5041efc",
+    "bytes": 30349,
+    "note": "Exact implementation commit, not a moving BASE..HEAD range. Later unrelated HEAD changes were excluded."
+  },
+  "verdict_A_behavior": {
+    "status": "PASS_SOURCE_ONLY_NATIVE_UNVERIFIED",
+    "evidence": [
+      "The original mismatch is established by .research/resource-guard-semantics.json and EXT-D-0132: a single retained CPU-only RESOURCE_WATCH_UNSAFE from run37234434600 was permanently refused by the old native boundary before a second watch, while the wrapper finalized child_failed/resourceInvalid=false. This does not prove that the physical spike recovered.",
+      "Current scripts/stabilization-resource-cpu.mjs:1-57 owns CPU timing: first CPU-only bad is pending, two consecutive bad are terminal unsafe, three consecutive reason-free watches recover, another bad resets the healthy count, and a monotonic episode deadline is derived from existing policy knobs.",
+      "Current scripts/stabilization-resource.mjs:752-818 publishes pending/recovered/unsafe states, then writes hold and stop markers and invokes the existing owned group stop for confirmed unsafe or expiry. Non-CPU and measurement failures take the immediate unsafe path. Child/operator exit while pending sets resourceInvalid at lines 711-733; final verdict includes unresolved pending at lines 883-899.",
+      "Current tests/browser/native-resource-boundary.mjs:34-158 retains owner, stop, hold, legacy unsafe and freshness refusals; pending prevents new actions, explicit recovered plus a fresh sample permits one. awaitNativeResourceHealth at lines 170-229 waits for guard evidence with a monotonic bound and leaves later calls independent.",
+      "The focused node --test command passed 23/23. The resource-policy.json numeric thresholds and preflight sampling were unchanged in the exact commit; the one-heavy lease and cleanup code were not changed."
+    ],
+    "limitations": [
+      "No native/browser run was authorized in this lane. No physical CPU recovery, product acceptance, or finalized native journal is verified here.",
+      "The source path for pending child exit and immediate non-CPU refusal is visible, but the focused suite does not drive those transitions through the live wrapper loop; see Verdict B."
+    ]
+  },
+  "verdict_B_quality": {
+    "status": "PARTIAL_IMPORTANT_TEST_GAP",
+    "finding": {
+      "severity": "Important",
+      "title": "The regression does not force the production watch-to-journal wiring",
+      "reproduction": "In a TemporaryDirectory scratch copy of scripts/, tests/browser/, and resource-policy.json, replace the unique wrapper expression ? 'RESOURCE_CPU_PENDING' in scripts/stabilization-resource.mjs:767 with ? 'RESOURCE_WATCH_HEALTHY'. Run node --test on tests/browser/resource-cpu-confirmation.test.mjs, tests/browser/native-resource-boundary.test.mjs, scripts/test-stabilization-resource-journal.mjs, and scripts/test-stabilization-resource-process.mjs in that copy. Actual: 23/23 pass, exit 0. The shared source was not modified.",
+      "why_it_matters": "The mutant mispublishes the first CPU-only bad watch as healthy. Since the native boundary scans pending/unsafe codes and then selects a prior fresh healthy event, an action can proceed during the unconfirmed candidate. The new test instead calls cpuEpisode.observe and manually emits the expected codes at tests/browser/resource-cpu-confirmation.test.mjs:59 and 92-97. No focused test executes the wrapper branch at scripts/stabilization-resource.mjs:765-778 under CPU load.",
+      "minimum_repair": "Add one controlled scratch guard subprocess case with real wrapper loop, journal writer, and native boundary. Inject only measurement/clock dependencies beneath the wrapper, then assert first CPU-only bad yields RESOURCE_CPU_PENDING and zero actions, three full healthy watches yield RESOURCE_CPU_RECOVERED and one later action, and a second bad or pending child exit yields invalid final evidence and owned stop/cleanup. Run the scratch mutation above as RED against that case, restore it, then run GREEN. Keep native confirmation as the next separate gate."
+    },
+    "other_checks": "No new parallel CPU classifier, compatibility shim, numeric threshold change, historical unsafe reinterpretation, or weakened legacy unsafe refusal was found. The existing unit test of cpuEpisode and manual journal/boundary replay are useful seam checks but cannot establish production wrapper wiring."
+  },
+  "readiness": "Do not treat this source review or green focused suite as native clearance yet. Close Verdict B with a forcing wrapper integration case and fresh re-review; then root may run one guarded native confirmation and judge its completed journal and actual product evidence.",
+  "verification": "Read-only exact-commit diff and source census; focused 23/23; one isolated scratch mutation also 23/23; no product source edit, native launch, build, workflow or release."
+}
