@@ -31,7 +31,9 @@
     ".research/reload-lifetime-peer.json",
     ".research/reload-lifetime-native.json",
     ".research/reload-lifetime-fresh-native.json",
-    ".research/scrape-media-native.json"
+    ".research/scrape-media-native.json",
+    ".research/reload-causal-escalation.json",
+    ".research/reload-execution-peer.json"
   ],
   "transition_history": [
     {
@@ -88,5 +90,13 @@
     "artifact": "development215 source3536b5cb0bea2fb33383f2b239b8602fafb79351 CI37193761291 artifact11299613935",
     "verified": "Chrome141.0.7390.37 measured; preclick version0 targetcorrelation, oldredundant/stopped anddestroyed observedbybothobservers; all5strict predicates true andreplacementcontext. RealScrape readinessfirst0/0 then1/1 in2checks, trustedclickandpostreloadempty passed. Rootmatchedreceipt+3healthyjournals.",
     "unverified": "Prior missing-destroyed-event intermittency not causally explained; failureonlyoldhostprobes notrun. A passingattemptdoesnotcloseit."
+  },
+  "causal_ruling": {
+    "source_fix": "babf71b7",
+    "review": "7623d86c",
+    "verdict": "in-fix; independent quality failure must be repaired before native run",
+    "finding": "Chrome execution retirement is distinct from debugger host destruction. Correlated stopped/redundant old version and running/activated replacement provide the new proof, but legacy TargetDestroyed OR branch bypasses it. Peer demonstrated acceptance of restartable stopped/activated old version with missing replacement version proof.",
+    "owner": "/root/reload_execution_fix",
+    "required": "Remove false-green bypass and independently retest actual harness refusals before native acceptance."
   }
 }
