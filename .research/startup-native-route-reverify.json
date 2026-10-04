@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "reviewed_at_utc": "2026-10-04T19:55:58Z",
+  "correction_commit": "3a7e5d9a",
+  "merged_commit_observed": "d6036fc4",
+  "status": "SOURCE_REVERIFY_PASS_UNLAUNCHED_DIAGNOSTIC_ONLY",
+  "scope": "Fresh independent review of the corrected native startup diagnostic route and its two prior findings. No hosted dispatch, native browser, build, release, credentials, or product acceptance was attempted.",
+  "A_route_measurement": {
+    "prior_finding": "The first diagnostic only launched headless Chromium on about:blank, missing the native panel workload at the failed run's exercise_panel resource boundary.",
+    "verdict": "ADDRESSED_FOR_PRE_EXERCISE_COMPARISON",
+    "evidence": "The diagnostic now calls runNativeSidepanelQa with the imported, verified CI development artifact. The common harness uses an owned profile, CDP and extension worker, serves its local root fixture, opens the real native panel, checks target/context, waits for panel settle, captures screenshots, and reaches exercise_panel. The diagnostic callback then calls the same requireResourceHealth boundary used by the Scrape driver. Its panelReadyAt and lastNativeStage fields are saved before the hold and its journal records guarded iostat samples plus diagnostic process brackets.",
+    "comparison_to_failed_run_37227042493": "That run's receipt says native_stage=exercise_panel and NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample; its first unsafe watch occurred about 16 seconds after admission. The diagnostic now reproduces the reached pre-exercise panel path with the same development run 37226671959 and artifact 11312153381. The failed selection was member/normal width, but the first resource check happened before authentication, viewport selection, fixture navigation, or Scrape actions. The diagnostic is guest/narrow and does not perform those later steps, so it cannot compare their CPU cost or establish member or normal-width product behavior.",
+    "measurement_limit": "The ps snapshots bracket, but do not exactly coincide with, iostat's one-second interval. Exited, new, reparented, or PID-reused processes leave attribution gaps. A healthy or unsafe diagnostic sample alone cannot allocate the prior 0.61 CPU-busy fraction to Chromium or prove a startup fix.",
+    "source": [
+      "scripts/hosted-startup-interval-diagnostic.mjs",
+      "tests/browser/native-sidepanel-qa-harness.mjs",
+      "tests/browser/scrape-guest-native-acceptance.mjs",
+      "scripts/stabilization-resource.mjs",
+      "docs/stabilization/evidence/scrape-member/run37227042493/acceptance-receipt.json"
+    ]
+  },
+  "B_safety_quality": {
+    "prior_finding": "SIGKILL escalation was not followed by confirmation of the owned Chromium child before profile removal and report completion.",
+    "verdict": "ADDRESSED_FOR_DIRECT_CHILD_TERMINATION_WITH_EVENT_LIMIT",
+    "evidence": "stopOwnedChild now sends SIGTERM, escalates to SIGKILL after five seconds, waits up to two more seconds for the ChildProcess exit event, and rejects if termination cannot be confirmed. The harness removes its profile only after that promise resolves. The diagnostic writes completedAt only after the harness returns; on refusal or unconfirmed termination it records failure and rethrows. A focused test spawned a real SIGTERM-ignoring child and observed SIGKILL plus ESRCH before resolution.",
+    "event_limit": "The implementation awaits exit, not the literal ChildProcess close event. Exit confirms the direct browser process has ended; close additionally confirms its stdio streams closed. The harness had a stderr pipe, so this distinction remains in source, but no surviving browser process or unsafe profile deletion was demonstrated. The outer resource guard's process-group and inherited-token census independently refuses to release the permit while owned descendants remain. Interpret completedAt as direct-child termination, and use the final guard journal for full ownership closure.",
+    "preserved_controls": "The correction did not change resource-policy floors, the iostat second-row guard sample, unsafe-history refusal, one-heavy permit, watchdog stop policy, or credential preflight on ordinary acceptance. The diagnostic route omits all member/admin secrets and remains explicitly DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE.",
+    "source": [
+      "tests/browser/native-sidepanel-qa-harness.mjs",
+      "tests/browser/native-sidepanel-child-stop.test.mjs",
+      "scripts/hosted-startup-interval-diagnostic.mjs",
+      "scripts/stabilization-resource.mjs",
+      ".github/workflows/hosted-guest-acceptance.yml"
+    ]
+  },
+  "verification": {
+    "passed": [
+      "node --test scripts/test-startup-interval-attribution.mjs tests/browser/native-sidepanel-child-stop.test.mjs tests/browser/native-resource-boundary.test.mjs: 4/4",
+      "node --test scripts/test-stabilization-resource-safety.mjs: 5/5",
+      "node --check on the three changed JavaScript modules",
+      "Ruby YAML parse: hosted-guest-side-panel concurrency and 14 workflow steps",
+      "Process-name census after tests: no matching native child or Chromium process"
+    ],
+    "not_run": "The local system volume had 7 GiB available against the unchanged 20 GiB floor. No native browser, hosted workflow, build, or release was run, so the proposed measurement has no runtime result and product acceptance remains unverified."
+  }
+}
