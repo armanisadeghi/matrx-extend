@@ -1,0 +1,45 @@
+{
+  "id": "EXT-D-0109",
+  "feature_id": "EXT-F-1004",
+  "case_ids": ["EXT-F-1004-T06", "EXT-F-1004-T18", "EXT-F-1004-T22", "EXT-F-1004-T28"],
+  "surface": "Profile native response observer",
+  "auth_mode": "admin; any authenticated account with existing Profile row",
+  "title": "Profile test observer reports a raw one-row response array as absent",
+  "reproduction": [
+    "Use frozen189 and designated admin with existing Profile; run reviewed native acceptance under resource guard.",
+    "Product maybeSingle uses a raw response list then client-side unwrap. Observer reads parsed.user_id directly and reports false for a one-row list.",
+    "Runner enters absent-row fixture path; separate owner prewrite read returns one row and first_save_row_appeared_before_write correctly refuses before any write."
+  ],
+  "expected": "Observer distinguishes verified empty list, verified existing row and unknown/malformed payload; existing Profile follows its preservation path, actual concurrent row appearance still refuses.",
+  "actual": "Existing row response array is mislabeled absent; admin acceptance aborts before writes. Native04 captured exact boundary.",
+  "severity": "S2 acceptance blocked and misleading evidence; no product failure established",
+  "priority": "P1 unblock contained Profile verification",
+  "state": "in-fix",
+  "owner": "admin_firstsave_diagnose_escalation",
+  "evidence": [
+    ".research/profile-admin-causal-native.json",
+    ".research/admin-firstsave-escalation.json",
+    "docs/stabilization/resource-journals/profile-admin-fields-189-04.jsonl"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T04:41:02.954162+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Native04 observer false conflicts with successful one-row owner read before write; root matched raw0720cbe8/journal8699be4f."
+    },
+    {
+      "at": "2026-10-04T04:41:02.954162+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Diagnostic worker confirmed installed client and frozen artifact unwrap raw response arrays only after fetch; observer expects object."
+    },
+    {
+      "at": "2026-10-04T04:41:02.954162+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Repair actual observer callback with connected client response guards, followed by fresh peer and native acceptance."
+    }
+  ],
+  "closure_requirement": "Actual raw-wire callback red\u2192green with existing/absent/malformed payloads, strict race refusal preserved, fresh review and actual admin scenario passes with original values restored."
+}

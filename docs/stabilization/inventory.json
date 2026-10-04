@@ -12799,10 +12799,14 @@
         "admin": {
           "test_status": "partial",
           "defect_ids": [
-            "EXT-D-0095"
+            "EXT-D-0095",
+            "EXT-D-0108",
+            "EXT-D-0109"
           ],
           "run_ids": [
-            "profile-independent-20261003-01"
+            "profile-independent-20261003-01",
+            "profile-admin-fields-189-03",
+            "profile-admin-fields-189-04"
           ],
           "retest_status": "partial"
         }
