@@ -25,7 +25,9 @@
     ".research/guest-scrape-busy-peer.json",
     ".research/guest-scrape-context-native.json",
     ".research/scrape-fast-busy-causal.json",
-    ".research/scrape-busy-mutation-peer.json"
+    ".research/scrape-busy-mutation-peer.json",
+    ".research/scrape-busy-ownership-repair.json",
+    ".research/scrape-busy-context-final-peer.json"
   ],
   "transition_history": [
     {
@@ -66,5 +68,5 @@
     }
   ],
   "closure_requirement": "Independent source review, causal RED/GREEN guard, and exact205 hosted native busy-state evidence without oracle weakening. Record any different runtime blocker separately; no full Scrape health claim.",
-  "next_action": "Repair peer hidden/foreign-pane mutation false positives, then fresh independent review before native retest. Do not infer original hosted cause from deterministic observer reproduction."
+  "next_action": "Two peer-rejected observer candidates triggered bounded fresh Astra escalation. Remove or replace unsound historical visible-state inference; original native product busy state remains unproven. Fresh independent review required before native run."
 }
