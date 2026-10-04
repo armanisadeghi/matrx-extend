@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "finding": "Hosted prepare() selected the 0.2.205 local development ZIP for member run 37182939504 and guest Scrape run 37185080238. Those runs are valid bounded native observations of that local payload, not acceptance of the distinct Store ZIP.",
+  "artifact_evidence": {
+    "release_run_id": 37180303468,
+    "release_artifact_id": 11294843385,
+    "selected_zip": "matrx-extend-v0.2.205-local.zip",
+    "local_tree_sha256": "20399f17af68ff9d40bffa93cdefe0c93b105af06f8e6cced1757323c124fd44",
+    "comparison": "Root compared actual release 205 manifests: action, background, content_scripts, externally_connectable and key differ; JavaScript payloads are distinct."
+  },
+  "preserved_store_evidence": {
+    "reports": [
+      ".research/guest-402-native-acceptance.json",
+      ".research/guest-returning-final-acceptance.json"
+    ],
+    "verification": "Root byte-verified the direct 205 test directory against the original Store ZIP: payload paths differ only at manifest.json, whose only changed key is key. These direct native Store ZIP observations remain valid."
+  },
+  "corrected_files": [
+    ".research/hosted-member205-final.json",
+    ".research/guest-scrape-hosted-native.json",
+    ".research/guest-scrape-busy-repair.json",
+    "docs/stabilization/defects/EXT-D-0113.json",
+    "docs/stabilization/defects/EXT-D-0115.json",
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/reports/coverage-audit-20261001.json",
+    "docs/stabilization/STATUS.md",
+    "docs/stabilization/CHECKLIST.md",
+    "docs/stabilization/COORDINATOR.md",
+    "docs/stabilization/STATUS.html",
+    "../common-docs/systems/apps/extension/CHROME-WEB-STORE.md"
+  ],
+  "limits": [
+    "No new native browser run was performed for this correction.",
+    "The two hosted runs do not verify Store ZIP behavior; D113 remains closed for the corrected development-probe shape.",
+    "Historical source reports were left as historical records."
+  ]
+}

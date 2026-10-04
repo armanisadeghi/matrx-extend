@@ -34096,7 +34096,7 @@
               "status": "partial",
               "run_id": "37182939504",
               "evidence": ".research/hosted-member205-final.json",
-              "detail": "Exact205 hosted nonadmin sign-in, saved organization presence and one real composer answer pass. Queue, interrupt, Stop, voice, keyboard variations and reload dimensions remain unverified; this does not pass the full case."
+              "detail": "Hosted local-development-ZIP 0.2.205 nonadmin sign-in, saved organization presence and one real composer answer pass. Queue, interrupt, Stop, voice, keyboard variations and reload dimensions remain unverified; this does not pass the full case."
             }
           }
         },

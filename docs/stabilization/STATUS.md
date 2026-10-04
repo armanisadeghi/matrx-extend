@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-04 06:59 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T06:46:14.971380+00:00. 205 features · 762 cases · 1333 controls · 114 linked defect records.
+Generated 2026-10-04 07:27 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T06:46:14.971380+00:00. 205 features · 762 cases · 1333 controls · 116 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -17,14 +17,14 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | --- | ---: | --- | --- | --- | --- | ---: |
 | [Development installation](#development-installation) | 1 | 0 pass · 1 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 1 pass · 0 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 1 fail · 4 unverified · 0 deferred; 0/1 full | pass 2, partial 2, fail 3, unverified 14, n/a 0 | 2 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 8, partial 2, fail 1, unverified 16, n/a 0 | 5 |
-| [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
+| [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 10 pass · 4 partial · 0 fail · 11 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 21 unverified · 0 deferred; 0/1 full | 14 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 26, partial 10, fail 0, unverified 55, n/a 1 | 0 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 1 pass · 0 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 1, partial 0, fail 0, unverified 87, n/a 0 | 2 |
+| [Scrape](#scrape) | 1 | 1 pass · 0 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 1, partial 0, fail 0, unverified 87, n/a 0 | 3 |
 | [SEO](#seo) | 1 | 0 pass · 5 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 5, fail 0, unverified 37, n/a 0 | 0 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
@@ -59,7 +59,7 @@ Role counts include only case-role combinations listed in each case. The all-rol
 
 **Release:** 0.2.205 at `2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3`. Authenticated primary Store dashboard confirmed submission success at approximately 05:57 UTC October 4: 0.2.205 Pending review, 0.2.176 Published, automatic publication enabled. The earlier 0.2.181 submission was cancelled because its 403-only guest allowance classifier missed the reproduced live HTTP 402 refusal; that submission is historical. D97 and D112 await publication and actual Store-installed 0.2.205 acceptance. D96 remains unclosed pending signed-in owner-table HTTP 200 proof and Store verification. No full extension health claim.
 **Local artifact:** Exact submitted Store 0.2.205 ZIP from hosted strict release run 37180303468, artifact 11294843385, source 2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3, SHA-256 6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26. This is a release package, not an installed Store build. Separate Profile development 0.2.189 evidence remains scoped to that older artifact.
-**Native evidence:** Independent exact 0.2.205 Store payload loaded unpacked with only its public manifest key adapted: four real fresh-guest answers, fifth live HTTP 402 guest_ai_allowance_used with free-account remedy/no Retry, and returning exhausted-guest panel reload/New chat with a second distinct live HTTP 402 and same remedy. Signed-in non-admin Chat answered with admin check HTTP 200/zero rows. The organization-present probe was source-fixed at bef9a4de after its string/object mismatch, and independent source/narrow-guard review 216c24c0 passed. The historical local receipt remains false. Corrected hosted exact-205 member run 37182939504 passed organization presence, canonical non-admin HTTP 200/zero rows and a real Chat answer; D113 is closed. Evidence: .research/hosted-member205-final.json. This does not verify full organization lifecycle or a Store installation. See .research/guest-402-native-acceptance.json, .research/guest-returning-final-acceptance.json, and .research/member-org-diagnostic-repair.json. Historical Profile 0.2.189 bounded results are retained in inventory; none certify Store 0.2.205.
+**Native evidence:** Independent exact 0.2.205 Store payload loaded unpacked with only its public manifest key adapted: four real fresh-guest answers, fifth live HTTP 402 guest_ai_allowance_used with free-account remedy/no Retry, and returning exhausted-guest panel reload/New chat with a second distinct live HTTP 402 and same remedy. Signed-in non-admin Chat answered with admin check HTTP 200/zero rows. The organization-present probe was source-fixed at bef9a4de after its string/object mismatch, and independent source/narrow-guard review 216c24c0 passed. The historical local receipt remains false. Corrected hosted local-development-ZIP 0.2.205 member run 37182939504 passed organization presence, canonical non-admin HTTP 200/zero rows and a real Chat answer; D113 is closed. Evidence: .research/hosted-member205-final.json. That hosted member run does not verify the Store ZIP, full organization lifecycle, or a Store installation. See .research/guest-402-native-acceptance.json, .research/guest-returning-final-acceptance.json, and .research/member-org-diagnostic-repair.json. Historical Profile 0.2.189 bounded results are retained in inventory; none certify Store 0.2.205.
 These current-build checks supplement the inventory matrix; they do not promote unobserved cases or certify whole features.
 
 ## Development installation
@@ -189,9 +189,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 11. **Controls:** 7.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0116
 
-**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed), [EXT-D-0092](defects/EXT-D-0092.json) (closed)
+**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed), [EXT-D-0092](defects/EXT-D-0092.json) (closed), [EXT-D-0116](defects/EXT-D-0116.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -807,9 +807,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 31. **Controls:** 33.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0115
 
-**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix)
+**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0115](defects/EXT-D-0115.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1595,7 +1595,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Recorded case details and evidence:**
 
-- EXT-F-2013-T02 · member: Partial. Exact205 hosted nonadmin sign-in, saved organization presence and one real composer answer pass. Queue, interrupt, Stop, voice, keyboard variations and reload dimensions remain unverified; this does not pass the full case.
+- EXT-F-2013-T02 · member: Partial. Hosted local-development-ZIP 0.2.205 nonadmin sign-in, saved organization presence and one real composer answer pass. Queue, interrupt, Stop, voice, keyboard variations and reload dimensions remain unverified; this does not pass the full case.
   Evidence / build / date recorded: 37182939504, .research/hosted-member205-final.json
 - EXT-F-2013-T10 · guest: Pass. Exact release0.2.176 guest first/reload grounded answers, all resource phases valid, artifact unchanged after interaction. Hosted unpacked receipt-bound acceptance; not Google-installed lifecycle or exhaustive Chat. Original startup schema incident EXT-D-0088 closed with separate published130 functional and nonadmin surrounding evidence.
   Evidence / build / date recorded: 37106907229, .research/candidate176-guest-acceptance.json

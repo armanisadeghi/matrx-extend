@@ -1,6 +1,6 @@
 # Stabilization checklist
 
-Generated 2026-10-04 06:59 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-10-04T06:46:14.971380+00:00.
+Generated 2026-10-04 07:27 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-10-04T06:46:14.971380+00:00.
 
 ## Current truth
 
@@ -8,18 +8,18 @@ Generated 2026-10-04 06:59 UTC from inventory.json, defect records, and the curr
 - Case results: pass 76, partial 66, fail 5, unverified 1062, n/a 1; 124 explicitly unverified and 938 with no result record. Missing results count as unverified, including later-wave surfaces.
 - Fully verified feature-role pairs: 0/394 under the rule that every applicable case passes and every control maps to a case.
 - Procedure gaps: 128 missing steps; 127 missing expected outcomes; 31 missing control links.
-- Defect states: closed 68, retest-pass 4, fixed 33, in-fix 6, open 1. A fixed or closed defect is not a feature-level UI pass.
+- Defect states: closed 68, retest-pass 4, fixed 33, in-fix 8, open 1. A fixed or closed defect is not a feature-level UI pass.
 
 ## Current-build evidence
 
 - **Release 0.2.205:** Authenticated primary Store dashboard confirmed submission success at approximately 05:57 UTC October 4: 0.2.205 Pending review, 0.2.176 Published, automatic publication enabled. The earlier 0.2.181 submission was cancelled because its 403-only guest allowance classifier missed the reproduced live HTTP 402 refusal; that submission is historical. D97 and D112 await publication and actual Store-installed 0.2.205 acceptance. D96 remains unclosed pending signed-in owner-table HTTP 200 proof and Store verification. No full extension health claim.
 - **Artifact:** Exact submitted Store 0.2.205 ZIP from hosted strict release run 37180303468, artifact 11294843385, source 2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3, SHA-256 6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26. This is a release package, not an installed Store build. Separate Profile development 0.2.189 evidence remains scoped to that older artifact.
-- **Scoped native acceptance:** Independent exact 0.2.205 Store payload loaded unpacked with only its public manifest key adapted: four real fresh-guest answers, fifth live HTTP 402 guest_ai_allowance_used with free-account remedy/no Retry, and returning exhausted-guest panel reload/New chat with a second distinct live HTTP 402 and same remedy. Signed-in non-admin Chat answered with admin check HTTP 200/zero rows. The organization-present probe was source-fixed at bef9a4de after its string/object mismatch, and independent source/narrow-guard review 216c24c0 passed. The historical local receipt remains false. Corrected hosted exact-205 member run 37182939504 passed organization presence, canonical non-admin HTTP 200/zero rows and a real Chat answer; D113 is closed. Evidence: .research/hosted-member205-final.json. This does not verify full organization lifecycle or a Store installation. See .research/guest-402-native-acceptance.json, .research/guest-returning-final-acceptance.json, and .research/member-org-diagnostic-repair.json. Historical Profile 0.2.189 bounded results are retained in inventory; none certify Store 0.2.205.
+- **Scoped native acceptance:** Independent exact 0.2.205 Store payload loaded unpacked with only its public manifest key adapted: four real fresh-guest answers, fifth live HTTP 402 guest_ai_allowance_used with free-account remedy/no Retry, and returning exhausted-guest panel reload/New chat with a second distinct live HTTP 402 and same remedy. Signed-in non-admin Chat answered with admin check HTTP 200/zero rows. The organization-present probe was source-fixed at bef9a4de after its string/object mismatch, and independent source/narrow-guard review 216c24c0 passed. The historical local receipt remains false. Corrected hosted local-development-ZIP 0.2.205 member run 37182939504 passed organization presence, canonical non-admin HTTP 200/zero rows and a real Chat answer; D113 is closed. Evidence: .research/hosted-member205-final.json. That hosted member run does not verify the Store ZIP, full organization lifecycle, or a Store installation. See .research/guest-402-native-acceptance.json, .research/guest-returning-final-acceptance.json, and .research/member-org-diagnostic-repair.json. Historical Profile 0.2.189 bounded results are retained in inventory; none certify Store 0.2.205.
 - These receipts establish only the named checks on the named artifact. Other inventory passes keep their recorded historical build boundary.
 
 ## Inventory freshness review
 
-Since inventory source `528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b`, **272 `src/` paths changed** through `11d21ec0c47e5086481c484710f66b4dfc2eb557`. A direct path-anchor comparison matched 32 and left 240 without an exact inventory anchor.
+Since inventory source `528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b`, **272 `src/` paths changed** through `1e195ef8f1f211d832ab48e9fb376d706068e3a1`. A direct path-anchor comparison matched 32 and left 240 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities

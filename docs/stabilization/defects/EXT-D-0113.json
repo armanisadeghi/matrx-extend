@@ -11,7 +11,7 @@
     "The harness storedSessionShape predicate expects the matrx.org.active storage value to be a string; the current production value is an object with id and name."
   ],
   "expected": "The native acceptance probe recognizes the production device organization shape and reports an exact organization readback, so a false shape mismatch cannot be mistaken for a product failure or a verified persistence pass.",
-  "actual": "Original false-negative storage-shape diagnostic no longer reproduces on hosted exact205 member acceptance. Successful first-party session, saved organization presence, canonical nonadmin check and real Chat answer are recorded; broader org lifecycle not certified.",
+  "actual": "Original false-negative storage-shape diagnostic no longer reproduces on hosted 0.2.205 local-development-ZIP member acceptance. Successful first-party session, saved organization presence, canonical nonadmin check and real Chat answer are recorded; broader org lifecycle not certified.",
   "severity": "S3: acceptance evidence is ambiguous; no product failure established",
   "priority": "P1: repair the probe before relying on member organization acceptance",
   "state": "closed",
@@ -64,13 +64,13 @@
       "reason": "Independent hosted run37182939504 reproduces original stored object shape and now reports presence truthfully; surrounding signed-in Chat passes. Root directly verified receipt/journal hashes and terminal run."
     }
   ],
-  "closure_requirement": "Fresh guarded native member acceptance on exact submitted 0.2.205 must capture the corrected organization-present diagnostic and a real Chat answer without exposing organization identifiers. Preserve the previous false receipt as historical. Source red/green and independent review have passed; no product organization failure was established.",
+  "closure_requirement": "Fresh guarded native member acceptance on 0.2.205 local development ZIP must capture the corrected organization-present diagnostic and a real Chat answer without exposing organization identifiers. Preserve the previous false receipt as historical. Source red/green and independent review have passed; no product organization failure was established.",
   "native_retest": {
     "state": "pass",
     "run_id": "37182939504",
     "artifact_id": 11296210998,
     "version": "0.2.205",
-    "scope": "Hosted exact-release payload, signed-in storage shape and completed nonadmin Chat; not Store installation, password login or full organization lifecycle.",
+    "scope": "Hosted 0.2.205 local development ZIP, signed-in storage shape and completed nonadmin Chat; Store ZIP, Store installation, password login and full organization lifecycle remain unverified by this run.",
     "root_verification": "Terminal successful workflow verified; raw receipt plus three resource-journal hashes matched; storage activeOrganizationPresent true, real completed answer and canonical HTTP200 zero-admin rows inspected; result screenshot viewed."
   }
 }

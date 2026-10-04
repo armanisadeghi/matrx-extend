@@ -16,7 +16,9 @@
     "release_source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
     "release_tree_sha256": "20399f17af68ff9d40bffa93cdefe0c93b105af06f8e6cced1757323c124fd44",
     "acceptance_artifact_id": "11297036718",
-    "acceptance_artifact": "hosted-guest-37185080238-1"
+    "acceptance_artifact": "hosted-guest-37185080238-1",
+    "selected_zip": "matrx-extend-v0.2.205-local.zip",
+    "artifact_scope": "Local development ZIP selected by hosted prepare(); tree SHA identifies that local payload, not the distinct Store ZIP."
   },
   "source_context": {
     "approved_source_sha": "4683c9e09524247f4f8633af744dcfe14a1831a8",
@@ -39,9 +41,21 @@
         "Product behavior versus observer/timing cause is unresolved."
       ]
     },
-    { "id": "EXT-F-1007-T02", "status": "unverified", "observed": "Not reached." },
-    { "id": "EXT-F-1007-T08", "status": "unverified", "observed": "Not reached." },
-    { "id": "EXT-F-1007-T14", "status": "unverified", "observed": "Not reached." }
+    {
+      "id": "EXT-F-1007-T02",
+      "status": "unverified",
+      "observed": "Not reached."
+    },
+    {
+      "id": "EXT-F-1007-T08",
+      "status": "unverified",
+      "observed": "Not reached."
+    },
+    {
+      "id": "EXT-F-1007-T14",
+      "status": "unverified",
+      "observed": "Not reached."
+    }
   ],
   "stages": {
     "passed": [

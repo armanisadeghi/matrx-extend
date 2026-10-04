@@ -6,7 +6,7 @@
   "auth_mode": "guest",
   "title": "Busy observer loses replaced capture button and can report false failure",
   "reproduction": [
-    "Run hosted guest-scrape acceptance against exact release205 via hosted release37180303468. Run37185080238 reached fast_capture then failed scrape_fast_busy_not_observed.",
+    "Run hosted guest-scrape acceptance against release205 local development ZIP via hosted release37180303468. Run37185080238 reached fast_capture then failed scrape_fast_busy_not_observed.",
     "The observer attaches once to the original button. In a DOM reproduction, replace that button with a disabled Capturing button; the original observer records false despite the replacement busy state.",
     "This reproduces a harness blind spot; whether replacement caused the hosted failure remains unverified until native diagnostics run."
   ],

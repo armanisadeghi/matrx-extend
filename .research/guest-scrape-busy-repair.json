@@ -17,7 +17,9 @@
       "Initial Scrape empty state observed",
       "Fast capture produced the expected article before the busy assertion"
     ],
-    "native_busy_state": "unverified"
+    "native_busy_state": "unverified",
+    "selected_zip": "matrx-extend-v0.2.205-local.zip",
+    "artifact_scope": "The recorded tree hash belongs to the local development ZIP; this run did not exercise the Store ZIP."
   },
   "causal_boundary": {
     "confirmed_local_harness_blind_spot": "The old observer attached to one button node. A DOM replacement with a disabled Capturing button leaves that observer false.",

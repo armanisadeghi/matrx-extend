@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "status": "pass",
-  "scope": "Existing nonadmin reviewer, frozen 0.2.205 hosted member Chat and signed-in storage-shape acceptance",
+  "scope": "Existing nonadmin reviewer, 0.2.205 hosted local development ZIP member Chat and signed-in storage-shape acceptance",
   "hosted_acceptance": {
     "run_id": 37182939504,
     "conclusion": "success",
@@ -10,7 +10,9 @@
     "release_source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
     "version": "0.2.205",
     "release_artifact_id": 11294843385,
-    "release_artifact_digest": "sha256:946c9615e203fcb278c8336f81aef4f0b420eef2873c4f24d4bff786238834fc"
+    "release_artifact_digest": "sha256:946c9615e203fcb278c8336f81aef4f0b420eef2873c4f24d4bff786238834fc",
+    "selected_zip": "matrx-extend-v0.2.205-local.zip",
+    "artifact_scope": "Local development ZIP selected by hosted prepare(); the Store ZIP was a distinct payload."
   },
   "observed": {
     "existing_user_magic_link": true,
@@ -36,6 +38,6 @@
   },
   "limits": [
     "An existing-user magic-link session proves signed-in member behavior, not reviewer password-form readiness.",
-    "This hosted run exercised the frozen 0.2.205 release artifact, not a published Chrome Web Store installation."
+    "This hosted run exercised the 0.2.205 local development ZIP, not the Store ZIP or a published Chrome Web Store installation."
   ]
 }
