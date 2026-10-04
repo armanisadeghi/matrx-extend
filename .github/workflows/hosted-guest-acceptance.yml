@@ -266,6 +266,7 @@ jobs:
         env:
           MATRX_HOSTED_PHASE: startup-diagnostic
           MATRX_STARTUP_INTERVAL_DIAGNOSTIC: '1'
+          MATRX_PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser-runtime/node_modules/playwright-core/index.mjs
           MATRX_HOSTED_ACCEPTANCE_CASE: startup-resource-diagnostic
           MATRX_HOSTED_BROWSER_RUNTIME_DIR: ${{ runner.temp }}/browser-runtime
           PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
@@ -294,3 +295,4 @@ jobs:
             test-results/profile-native-hosted-profile-*.json
             test-results/native-sidepanel-qa-*/*.png
             ${{ runner.temp }}/guest-acceptance/startup-interval-diagnostic.json
+            ${{ runner.temp }}/guest-acceptance/native-sidepanel-qa-*/*.png

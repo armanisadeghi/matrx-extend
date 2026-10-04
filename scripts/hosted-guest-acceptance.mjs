@@ -573,6 +573,7 @@ if (phase === 'startup-diagnostic') {
   await runHostedStartupIntervalDiagnostic({
     executable: chromium.executablePath(),
     extensionDir: prepared.extensionDir,
+    relocatedReceipt: prepared.relocatedReceipt,
     sourceSha: prepared.sourceSha,
     runId: prepared.runId,
     artifactId: prepared.artifactId,

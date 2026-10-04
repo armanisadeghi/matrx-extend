@@ -741,30 +741,34 @@ async function attachTargetSession(cdp, targetId) {
 
 function stopOwnedChild(child) {
   if (!child?.pid || child.exitCode !== null || child.signalCode !== null) return Promise.resolve();
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     let settled = false;
-    const finish = () => {
+    const finish = (error) => {
       if (settled) return;
       settled = true;
       clearTimeout(timeout);
       clearTimeout(killWait);
-      resolve();
+      child.off('exit', onExit);
+      error ? reject(error) : resolve();
     };
+    const onExit = () => finish();
     let killWait;
     const timeout = setTimeout(() => {
       try {
         child.kill('SIGKILL');
       } catch {}
-      // Node can miss an exit event if Chrome died between the initial check
-      // and listener registration. Never strand disposal on that event.
-      killWait = setTimeout(finish, 2000);
+      killWait = setTimeout(() => {
+        if (child.exitCode !== null || child.signalCode !== null) finish();
+        else finish(new Error('native_owned_child_termination_unconfirmed'));
+      }, 2000);
     }, 5000);
-    child.once('exit', finish);
+    child.once('exit', onExit);
     if (child.exitCode !== null || child.signalCode !== null) return finish();
     try {
       child.kill('SIGTERM');
     } catch {
-      finish();
+      if (child.exitCode !== null || child.signalCode !== null) finish();
+      else finish(new Error('native_owned_child_stop_failed'));
     }
   });
 }
@@ -1158,6 +1162,7 @@ export {
   requireSpawnedProfileOwner,
   resolveExpectedRelease,
   verifyReleasedArtifact,
+  stopOwnedChild,
   safeStartupFailureCode,
   safeEndpointDiagnostic,
   safeEndpointWaitDiagnostic,
