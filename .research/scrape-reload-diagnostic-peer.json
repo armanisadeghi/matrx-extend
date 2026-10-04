@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "831ba8b3ee9a74ba186c9b56d0b9aec702da79ce",
+  "role": "independent_zero_authorship_review",
+  "verdict_a": {
+    "status": "partial",
+    "evidence": [
+      "The existing shared pointer driver emits matchedTargetCount and visibleMatchCount in a bounded driverFailure object; the new catch path preserves that object on failure.",
+      "Successful reload helper return now preserves reload-click, target-retirement, replacement, and exact side-panel context observations before the replacement Scrape click.",
+      "Read-only geometry snapshots cover fast capture, every completed result-tab selection, return to Article, and deep capture, including document, pane, tab strip, title, capture row, and scrollable ancestor values."
+    ],
+    "finding": {
+      "severity": "important",
+      "kind": "missing",
+      "location": "tests/browser/scrape-guest-native-acceptance.mjs:471-509",
+      "detail": "reload_step is one object overwritten at each boundary. A completed run retains only replacement_scrape_observed, and a post-reload pointer failure retains only open_scrape_in_replacement_panel. The initial reload wall-clock anchor is lost, so future receipts cannot place the native reload interval or correlate it with the resource journal as claimed by the diagnosis. Preserve an append-only bounded step timeline or separate start/end fields."
+    },
+    "native_unknown": "No native rerun was made. This review cannot establish pointer cause, clean reload acceptance, or D118 geometry cause."
+  },
+  "verdict_b": {
+    "status": "partial",
+    "evidence": [
+      "The new pointer and lifecycle fields use existing driver/harness observations and do not change pointer resolution or mark the run passed.",
+      "The geometry expression returns numeric rectangles and scroll metrics, with no page text, URL, field value, or credential data.",
+      "node --check and focused Biome check passed for both changed files."
+    ],
+    "finding": "The overwrite above defeats the intended timestamp evidence. There is no focused guard proving a receipt retains multiple reload boundaries; static syntax and formatting checks do not verify that behavior.",
+    "separate_known_gap": "The test lacks a cooperative resource check at UI batch boundaries; EXT-D-0119 tracks this separately, and this diff does not worsen it."
+  }
+}
