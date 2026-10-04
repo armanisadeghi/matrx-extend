@@ -669,11 +669,6 @@ try {
         contextReadWatch.arm('chip_open');
         await openAndCloseGuestValuesChip(panel);
         report.context_rule_reads = contextReadWatch.snapshot();
-        assert.equal(
-          report.context_rule_reads.some((request) => request.method === 'GET'),
-          false,
-          'guest panel/chat/Values chip must not issue an owner-table GET',
-        );
 
         markStage('guest_question');
         networkWatch = await watchGuestAiRequests(panel);
@@ -714,11 +709,6 @@ try {
         report.failure_observation = diagnosticState(answered, fixture);
         report.guest_ai_requests = networkWatch.snapshot();
         report.context_rule_reads = contextReadWatch.snapshot();
-        assert.equal(
-          report.context_rule_reads.some((request) => request.method === 'GET'),
-          false,
-          'guest send must not issue an owner-table GET',
-        );
         assert.ok(
           openingTurn.verdict === 'terminal_answer' &&
             answered.answerContainsNonce &&
@@ -822,11 +812,6 @@ try {
         report.failure_observation = diagnosticState(followup, fixture);
         report.guest_ai_requests = networkWatch.snapshot();
         report.context_rule_reads = contextReadWatch.snapshot();
-        assert.equal(
-          report.context_rule_reads.some((request) => request.method === 'GET'),
-          false,
-          'post-reload guest send must not issue an owner-table GET',
-        );
         assert.ok(
           followupTurn.verdict === 'terminal_answer' &&
             followup.answerContainsNonce &&
@@ -845,6 +830,12 @@ try {
         report.followup_screenshot = await capture(
           panel,
           join(artifacts, 'guest-chat-real-followup-answer.png'),
+        );
+        report.context_rule_reads = contextReadWatch.snapshot();
+        assert.equal(
+          report.context_rule_reads.some((request) => request.method === 'GET'),
+          false,
+          'guest panel, Values chip, opening send, and post-reload send must not issue an owner-table GET',
         );
       } catch (error) {
         report.failure_stage = stage;

@@ -1,0 +1,13 @@
+{
+  "scope": "guest Chat store acceptance sequencing only; no browser run",
+  "source": "tests/browser/guest-chat-store-acceptance.mjs",
+  "guard": "tests/browser/guest-chat-store-sequence.test.mjs",
+  "change": "Defer the owner-table GET assertion until both Chat verdicts and screenshots are recorded; preserve the existing observer snapshots and fail the final result on any GET.",
+  "checks": [
+    "node --test tests/browser/guest-chat-store-sequence.test.mjs: pass (zero GET, chip-open GET, post-reload GET)",
+    "node --check tests/browser/guest-chat-store-acceptance.mjs: pass",
+    "pnpm exec biome check tests/browser/guest-chat-store-acceptance.mjs tests/browser/guest-chat-store-sequence.test.mjs: pass",
+    "git diff --check: pass"
+  ],
+  "live_browser": "Not run in this scoped source fix; root owns the fresh independent review."
+}
