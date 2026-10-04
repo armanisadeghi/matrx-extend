@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-04 14:46 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T14:02:37.940972+00:00. 205 features · 762 cases · 1333 controls · 122 linked defect records.
+Generated 2026-10-04 14:48 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T14:48:03.367631+00:00. 205 features · 762 cases · 1333 controls · 122 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1212** — Pass: 81 · Partial: 69 · Fail: 2 · Unverified: 1059 · N/A: 1.
-Unverified splits into **122 explicitly marked unverified** and **937 with no result record**.
+Applicable case-by-role slots: **1213** — Pass: 81 · Partial: 69 · Fail: 2 · Unverified: 1060 · N/A: 1.
+Unverified splits into **123 explicitly marked unverified** and **937 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 128 cases without steps, 127 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -16,7 +16,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | Tab or surface | Features | Guest cases | Member cases | Admin cases | All-role case slots | Active defects |
 | --- | ---: | --- | --- | --- | --- | ---: |
 | [Development installation](#development-installation) | 1 | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 6, partial 1, fail 0, unverified 14, n/a 0 | 1 |
-| [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 8, partial 2, fail 1, unverified 16, n/a 0 | 8 |
+| [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 8, partial 2, fail 1, unverified 17, n/a 0 | 8 |
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
@@ -24,7 +24,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 2 pass · 4 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 2, partial 4, fail 0, unverified 82, n/a 0 | 3 |
+| [Scrape](#scrape) | 1 | 2 pass · 4 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 2, partial 4, fail 0, unverified 82, n/a 0 | 4 |
 | [SEO](#seo) | 1 | 0 pass · 5 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 5, fail 0, unverified 37, n/a 0 | 0 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
@@ -127,7 +127,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-0002-T05 Manual browser stop confirmation | Unverified | Unverified | Unverified | EXT-F-0002-C05 |
 | EXT-F-0002-T06 Durable browser resource event and terminal proof | Pass | Pass | Pass | EXT-F-0002-C06 |
 | EXT-F-0002-T07 Native Chat acceptance distinguishes tool progress from terminal answer | Pass | Unverified | Unverified | EXT-F-0002-C07 |
-| EXT-F-0002-T08 Native fixture failure is actionable without exposing sensitive data | N/A | Fail | Partial | EXT-F-0002-C08 |
+| EXT-F-0002-T08 Native fixture failure is actionable without exposing sensitive data | Unverified | Fail | Partial | EXT-F-0002-C08 |
 | EXT-F-0002-T09 Persistent fixture cleanup survives write, assertion, and extension reload failures | N/A | Partial | Unverified | EXT-F-0002-C09 |
 | EXT-F-0002-T10 Authenticated Profile control readiness after reload | N/A | Pass | Unverified | EXT-F-0002-C10 |
 
@@ -171,6 +171,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: showcase-structured-journal-retest-20260928, ['docs/stabilization/reports/showcase-structured-journal-retest.json', 'docs/stabilization/reports/native-guard-finalize-peer.json']
 - EXT-F-0002-T07 · guest: Pass. Oracle-only: four tool resumptions observed before actual completion; wrong terminal content rejected. Ten surrounding helper/collector cases passed. Not a Chat product pass.
   Evidence / build / date recorded: guest-acceptance-final-native-20261001-001, docs/stabilization/reports/guest-acceptance-final-20261001.json
+- EXT-F-0002-T08 · guest: Unverified. Native37209834721 has fixed warm_media_controls stage but no failing-pane screenshot/group observation, preventing distinction between rendered-text mismatch and product groups. D122 repair/retest pending.
+  Evidence / build / date recorded: .research/scrape-media-capacity-recheck.json
 - EXT-F-0002-T08 · member: Fail. Native test-process failure: app re-selection automatically emitted an unmasked accessibility tree containing Store reviewer credentials before redaction. Containment was applied and no credential value is retained in repository evidence. The login was rejected; member identity and Notes setup/operations were never verified. This is an infrastructure failure only; no Notes product failure is claimed.
   Evidence / build / date recorded: notes-member-native-20261002-01, docs/stabilization/reports/notes-member-native-20261002.json
 - EXT-F-0002-T08 · admin: Partial. Native A readiness observed zero then one visible/enabled Capture target; successful create completed. New safe exception metadata branches were source reviewed but not forced through native failure.
@@ -807,9 +809,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 31. **Controls:** 33.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0122
 
-**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0115](defects/EXT-D-0115.json) (retest-pass), [EXT-D-0118](defects/EXT-D-0118.json) (fixed)
+**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0115](defects/EXT-D-0115.json) (retest-pass), [EXT-D-0118](defects/EXT-D-0118.json) (fixed), [EXT-D-0122](defects/EXT-D-0122.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |

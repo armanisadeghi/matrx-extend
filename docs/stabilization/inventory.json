@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T14:02:37.940972+00:00",
+  "updated_at": "2026-10-04T14:48:03.367631+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -1064,52 +1064,59 @@
           }
         },
         {
-        "id": "EXT-F-0002-T08",
-        "title": "Native fixture failure is actionable without exposing sensitive data",
-        "modes": [
-          "admin",
-          "member"
-        ],
-        "control_ids": [
-          "EXT-F-0002-C08"
-        ],
-        "preconditions": [
-          "Receipt-bound isolated native fixture setup under resource guard; only new test-owned records may be created."
-        ],
-        "steps": [
-          "Exercise fixture setup across page navigation, identity read, lazy pane readiness and native Capture/Save.",
-          "Inspect a failure receipt for its precise fixed operation and safe exception/driver metadata; verify no raw messages, credentials or page content are persisted."
-        ],
-        "expected": [
-          "Failure preserves exact safe operation instead of only fixture_A; successful readiness records before/after counts.",
-          "No cleanup without exact new-row ownership proof; no generic failure is marked as a product pass."
-        ],
-        "defect_ids": [
-          "EXT-D-0073",
-          "EXT-D-0079",
-          "EXT-D-0101",
-          "EXT-D-0103",
-          "EXT-D-0107",
-          "EXT-D-0117"
-        ],
-        "results": {
-          "admin": {
-            "status": "partial",
-            "run_id": "saved-capture-escalation-create-20261001-01",
-            "evidence": "docs/stabilization/reports/saved-capture-escalation-verify-20261001.json",
-            "detail": "Native A readiness observed zero then one visible/enabled Capture target; successful create completed. New safe exception metadata branches were source reviewed but not forced through native failure."
-          },
-          "member": {
-            "status": "fail",
-            "run_id": "notes-member-native-20261002-01",
-            "evidence": "docs/stabilization/reports/notes-member-native-20261002.json",
-            "defect_ids": [
-              "EXT-D-0079"
-            ],
-            "detail": "Native test-process failure: app re-selection automatically emitted an unmasked accessibility tree containing Store reviewer credentials before redaction. Containment was applied and no credential value is retained in repository evidence. The login was rejected; member identity and Notes setup/operations were never verified. This is an infrastructure failure only; no Notes product failure is claimed."
+          "id": "EXT-F-0002-T08",
+          "title": "Native fixture failure is actionable without exposing sensitive data",
+          "modes": [
+            "guest",
+            "admin",
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-0002-C08"
+          ],
+          "preconditions": [
+            "Receipt-bound isolated native fixture setup under resource guard; only new test-owned records may be created."
+          ],
+          "steps": [
+            "Exercise fixture setup across page navigation, identity read, lazy pane readiness and native Capture/Save.",
+            "Inspect a failure receipt for its precise fixed operation and safe exception/driver metadata; verify no raw messages, credentials or page content are persisted."
+          ],
+          "expected": [
+            "Failure preserves exact safe operation instead of only fixture_A; successful readiness records before/after counts.",
+            "No cleanup without exact new-row ownership proof; no generic failure is marked as a product pass."
+          ],
+          "defect_ids": [
+            "EXT-D-0073",
+            "EXT-D-0079",
+            "EXT-D-0101",
+            "EXT-D-0103",
+            "EXT-D-0107",
+            "EXT-D-0117",
+            "EXT-D-0122"
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "run_id": "saved-capture-escalation-create-20261001-01",
+              "evidence": "docs/stabilization/reports/saved-capture-escalation-verify-20261001.json",
+              "detail": "Native A readiness observed zero then one visible/enabled Capture target; successful create completed. New safe exception metadata branches were source reviewed but not forced through native failure."
+            },
+            "member": {
+              "status": "fail",
+              "run_id": "notes-member-native-20261002-01",
+              "evidence": "docs/stabilization/reports/notes-member-native-20261002.json",
+              "defect_ids": [
+                "EXT-D-0079"
+              ],
+              "detail": "Native test-process failure: app re-selection automatically emitted an unmasked accessibility tree containing Store reviewer credentials before redaction. Containment was applied and no credential value is retained in repository evidence. The login was rejected; member identity and Notes setup/operations were never verified. This is an infrastructure failure only; no Notes product failure is claimed."
+            },
+            "guest": {
+              "status": "unverified",
+              "evidence": ".research/scrape-media-capacity-recheck.json",
+              "detail": "Native37209834721 has fixed warm_media_controls stage but no failing-pane screenshot/group observation, preventing distinction between rendered-text mismatch and product groups. D122 repair/retest pending."
+            }
           }
-        }
-      },
+        },
         {
           "id": "EXT-F-0002-T09",
           "title": "Persistent fixture cleanup survives write, assertion, and extension reload failures",
@@ -17307,6 +17314,9 @@
               "result": "7 scoped tests pass across real ScrapeView and real media store; selective removal/exact survivors/count, blank/valid/cancel forms, video link target and copy request; no actual tab or clipboard access claimed.",
               "limits": "Native guest/member/admin interactions and reload remain unverified. No mode cell promoted from component tests."
             }
+          ],
+          "defect_ids": [
+            "EXT-D-0122"
           ]
         },
         {
