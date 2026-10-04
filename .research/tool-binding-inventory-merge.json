@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "merged_at": "2026-10-04T18:32:06Z",
+  "evidence": ".research/tool-binding-readonly-census.json",
+  "peer_review": ".research/tool-binding-census-peer.json",
+  "coverage": {
+    "registered_tool_feature_rows": 169,
+    "unique_names": 168,
+    "active_exact_name_metadata_rows": 83,
+    "inactive_exact_name_metadata_rows": 0,
+    "absent_exact_name_metadata_rows": 86,
+    "duplicate_name": "wait_for"
+  },
+  "identity": {
+    "all_169_feature_ids_matched": true,
+    "all_feature_id_name_pairs_matched": true,
+    "source_sha": "6256d7b43366e7eb337d39d892c388d5348279d6",
+    "inventory_declared_source_sha": "dc64e8a1c6c0ac28ac8102dd31857bf645d72df2",
+    "live_query_scope": [
+      "tool.definition",
+      "tool.binding",
+      "tool.surface_defaults"
+    ],
+    "query_sha256": "9dabbf865b3fba5f149f4a68da2b4ce78e967f62e312766a2e7e687764e53b1a"
+  },
+  "status_preservation": {
+    "all_runtime_cells_cases_controls_applicability_and_inventory_status_equal_before_after": true,
+    "before_sha256": "31bc830e1ea651e23b6655f4f319b1aabb2e102cba72941c398317d8185cba63",
+    "after_sha256": "31bc830e1ea651e23b6655f4f319b1aabb2e102cba72941c398317d8185cba63",
+    "scope_complete_before": false,
+    "scope_complete_after": false,
+    "inventory_gate_before": "source-census-peer-reviewed-native-visibility-pending",
+    "inventory_gate_after": "source-census-peer-reviewed-native-visibility-pending"
+  },
+  "interpretation": "Exact-name metadata integration only. Active/inactive/absent describes the queried registry metadata state; it is not proof of request advertisement, role access, permission outcomes, runtime execution, or feature health. Absent metadata is not a product-defect or manual-only conclusion.",
+  "generated_outputs": [
+    "docs/stabilization/STATUS.md",
+    "docs/stabilization/STATUS.html",
+    "docs/stabilization/CHECKLIST.md"
+  ]
+}
