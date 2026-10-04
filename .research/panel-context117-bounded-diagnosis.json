@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "issue": "EXT-D-0117",
+  "status": "NATIVE_CAUSE_UNCONFIRMED_DIAGNOSTIC_READY",
+  "scope": "Source-only diagnosis of hosted ARM run 37220067899; no native or browser dispatch, product, release, DB, inventory, defect, or resource-policy change.",
+  "facts": [
+    "The frozen 0.2.231 artifact source is 723433a7628b32fb610d3a7f36ca6b8dd5fd2b72; the hosted run used an ARM64 macos-15 runner and stopped at inputs/panel_context before guest identity, cases, or media.",
+    "The retained getContexts result had one SIDE_PANEL context and one tabId -1 context, but zero contexts whose documentUrl started with the expected extension origin or equaled the exact sidepanel URL.",
+    "The harness queries chrome.runtime.getContexts({contextTypes:['SIDE_PANEL']}) from the expected extension service worker and requires contextType SIDE_PANEL, exact documentUrl, and tabId -1 together. The raw returned entry was not retained, so its documentUrl field presence and value are unknown.",
+    "Current-run package and browser resource decisions were valid; the guest child was admitted and resourceInvalid was false. A prior ARM run of the same frozen product reached warm media controls."
+  ],
+  "inferences_not_findings": [
+    "The context mismatch is at the documentUrl predicate, not the contextType or tabId predicates, for the one returned entry in this run.",
+    "A missing/empty documentUrl, another extension origin, a non-extension URL, or a delayed exact value remain possible. The retained run cannot choose among them or establish a Chrome, extension, or product fault."
+  ],
+  "change": {
+    "source_commit": "db0477bd",
+    "files": [
+      "tests/browser/native-sidepanel-qa-harness.mjs",
+      "tests/browser/native-sidepanel-qa-harness.test.mjs"
+    ],
+    "behavior": "Only after the original exact-context check fails, log safe counts for missing, empty, other-extension-origin and non-extension documentUrl values; reuse the existing bounded observer for one follow-up query and record whether an exact context appeared or the query failed. The original error still throws even if the follow-up is exact.",
+    "preserved": "Exact runtime context requirement, owned worker/target checks, successful path, resource policy, and existing readiness deadlines are unchanged. No URL, ID, or arbitrary exception text is logged."
+  },
+  "verification": {
+    "focused_suite": "node tests/browser/native-sidepanel-qa-harness.test.mjs exited 0 after the final source/test edits",
+    "compile": "pnpm compile exited 0",
+    "syntax": "node --check on both changed files exited 0",
+    "format": "pnpm exec biome check on both changed files exited 0",
+    "red_proof": "plant.py changed the two-sample observer to one sample; the focused test failed at its expected exact-follow-up assertion, then plant.py restored the source byte-for-byte. A constant follow-up answer also failed the persistent-mismatch case and was restored byte-for-byte.",
+    "native": "Not run in this bounded lane"
+  },
+  "evidence": [
+    "docs/stabilization/evidence/scrape231/run37220067899/receipt.json.txt",
+    ".research/scrape231-observer-retest.json",
+    ".research/scrape231-arm-native.json",
+    ".research/hosted-panel-context-diagnosis.json",
+    ".research/panel-context-contract-audit.json"
+  ],
+  "open_questions": [
+    "Which documentUrl field shape did Chrome return on a failing first sample?",
+    "Does an exact context appear on the one follow-up read, or does the mismatch persist?",
+    "If the mismatch persists, which panel document lifecycle or URL value accounts for it?"
+  ]
+}
