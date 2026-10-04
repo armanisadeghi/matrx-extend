@@ -113,6 +113,7 @@ test('native Scrape resource boundary permits fresh own-run health and refuses u
   await writeEvents([admitted, healthy]);
   await assert.rejects(check(Date.parse('2026-10-04T09:14:36.000Z')), /stale_health/);
   let refreshClock = Date.parse('2026-10-04T09:14:36.000Z');
+  let refreshElapsed = 0;
   let refreshWaits = 0;
   let publishRefresh = true;
   let refreshedActionRan = false;
@@ -122,8 +123,10 @@ test('native Scrape resource boundary permits fresh own-run health and refuses u
       leaseRoot,
       env,
       clock: () => refreshClock,
+      monotonicClock: () => refreshElapsed,
       wait: async (ms) => {
         refreshClock += ms;
+        refreshElapsed += ms;
         refreshWaits++;
         if (publishRefresh && refreshWaits === 1)
           await writeEvents([
@@ -144,6 +147,7 @@ test('native Scrape resource boundary permits fresh own-run health and refuses u
   assert.equal(refreshedActionRan, true);
   await writeEvents([admitted, healthy]);
   refreshWaits = 0;
+  refreshElapsed = 0;
   publishRefresh = false;
   refreshedActionRan = false;
   await assert.rejects(
@@ -173,6 +177,64 @@ test('native Scrape resource boundary permits fresh own-run health and refuses u
     }),
     /unsafe_sample/,
   );
+  await writeEvents([admitted, healthy]);
+  let rollbackClock = Date.parse('2026-10-04T09:14:36.000Z');
+  let elapsedMs = 0;
+  let rollbackWaits = 0;
+  let rollbackActionRan = false;
+  await assert.rejects(
+    runNativeResourceAction(
+      () =>
+        awaitNativeResourceHealth({
+          repo,
+          leaseRoot,
+          env,
+          clock: () => rollbackClock,
+          monotonicClock: () => elapsedMs,
+          wait: async (ms) => {
+            elapsedMs += ms;
+            rollbackWaits++;
+            if (rollbackWaits === 1) rollbackClock -= 60_000;
+            if (rollbackWaits > 11) throw new Error('wall_clock_extended_wait');
+          },
+        }),
+      () => {
+        rollbackActionRan = true;
+      },
+    ),
+    /stale_health/,
+  );
+  assert.equal(elapsedMs, 15_000, 'wall-clock rollback must not extend the wait budget');
+  assert.equal(rollbackActionRan, false, 'clock rollback cannot admit a native action');
+  let lateClock = Date.parse('2026-10-04T09:14:36.000Z');
+  let lateElapsed = 0;
+  let lateActionRan = false;
+  await assert.rejects(
+    runNativeResourceAction(
+      () =>
+        awaitNativeResourceHealth({
+          repo,
+          leaseRoot,
+          env,
+          clock: () => lateClock,
+          monotonicClock: () => lateElapsed,
+          wait: async () => {
+            lateElapsed = 15_001;
+            lateClock += 15_001;
+            await writeEvents([
+              admitted,
+              healthy,
+              { ...healthy, at: new Date(lateClock).toISOString() },
+            ]);
+          },
+        }),
+      () => {
+        lateActionRan = true;
+      },
+    ),
+    /stale_health/,
+  );
+  assert.equal(lateActionRan, false, 'health published after the budget cannot start an action');
   await writeEvents([admitted, healthy]);
   let delayedClock = now;
   let delayedActionRan = false;

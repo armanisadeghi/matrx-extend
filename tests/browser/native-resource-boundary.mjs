@@ -1,5 +1,6 @@
 import { readFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
+import { performance } from 'node:perf_hooks';
 import { resourceLeaseRoot } from '../../scripts/stabilization-resource-lease.mjs';
 
 const RUN_ID = /^[A-Za-z0-9_.-]+$/;
@@ -133,6 +134,7 @@ export async function runNativeResourceAction(requireHealth, action) {
 export async function awaitNativeResourceHealth({
   repo,
   clock = Date.now,
+  monotonicClock = () => performance.now(),
   wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
   readEvidence = readFile,
   ...options
@@ -140,8 +142,11 @@ export async function awaitNativeResourceHealth({
   let deadline;
   let pollMs;
   while (true) {
+    if (deadline !== undefined && monotonicClock() > deadline) refuse('stale_health');
     try {
-      return await requireNativeResourceHealth({ repo, clock, readEvidence, ...options });
+      const health = await requireNativeResourceHealth({ repo, clock, readEvidence, ...options });
+      if (deadline !== undefined && monotonicClock() > deadline) refuse('stale_health');
+      return health;
     } catch (error) {
       if (error.message !== 'NATIVE_RESOURCE_BOUNDARY_REFUSED:stale_health') throw error;
       if (deadline === undefined) {
@@ -155,10 +160,10 @@ export async function awaitNativeResourceHealth({
         }
         const intervalMs = policy.watchIntervalSeconds * 1000;
         if (!Number.isFinite(intervalMs) || intervalMs <= 0) refuse('policy_invalid');
-        deadline = clock() + intervalMs;
+        deadline = monotonicClock() + intervalMs;
         pollMs = Math.max(1, Math.floor(intervalMs / 10));
       }
-      const remainingMs = deadline - clock();
+      const remainingMs = deadline - monotonicClock();
       if (remainingMs <= 0) throw error;
       await wait(Math.min(pollMs, remainingMs));
     }
