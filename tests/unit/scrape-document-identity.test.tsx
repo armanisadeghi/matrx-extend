@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, cleanup, renderHook } from '@testing-library/react';
+import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
@@ -42,7 +42,31 @@ afterEach(() => {
   mocks.tab.documentId = 'document-a';
   mocks.tab.pageKey = 'page-a';
   useScrapeStore.getState().setCurrent(null);
+  useScrapeStore.getState().setLoading(false);
+  useScrapeStore.getState().setError(null);
 });
+
+it.each(['fast', 'deep'] as const)(
+  '%s capture stays busy while the real capture pipeline is pending',
+  async (mode) => {
+    const pending = deferred<unknown>();
+    mocks.capture.mockReturnValue(pending.promise);
+    const hook = renderHook(() => useScrape());
+    let capture!: Promise<unknown>;
+    act(() => {
+      capture = hook.result.current.captureActiveTab({ mode });
+    });
+    await waitFor(() => expect(mocks.capture).toHaveBeenCalledOnce());
+    expect(hook.result.current.loading).toBe(true);
+    expect(hook.result.current.activeMode).toBe(mode);
+    await act(async () => {
+      pending.resolve({ ok: true, soup: soup(`${mode} intake`) });
+      await capture;
+    });
+    expect(hook.result.current.loading).toBe(false);
+    expect(useScrapeStore.getState().current?.article.title).toBe(`${mode} intake`);
+  },
+);
 
 it('late A manual capture cannot replace B at the same URL', async () => {
   const old = deferred<unknown>();

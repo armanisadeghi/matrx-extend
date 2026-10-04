@@ -94,7 +94,7 @@ export const useScrapeStore = create<ScrapeState>((set) => ({
       edited: false,
     }),
   setLoading: (loading) => set({ loading }),
-  setError: (error) => set({ error, loading: false }),
+  setError: (error) => set(error ? { error, loading: false } : { error: null }),
   setAlreadyCaptured: (alreadyCapturedAt) => set({ alreadyCapturedAt }),
   markSaved: () => set({ edited: false }),
   markUnsaved: () => set({ edited: true }),

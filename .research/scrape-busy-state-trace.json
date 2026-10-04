@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "defect": "D115",
+  "status": "source_cause_proven_native_retest_pending",
+  "native_evidence": {
+    "run_id": "37190128778",
+    "artifact_id": "11297584970",
+    "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "result": "Fast and rate-4 supplemental observers each sampled four times with one matching button, zero disabled samples, and zero disabled mutation records. The fast article completed; deep lazy content was observed but its busy assertion failed. The rate-4 result was not freshness-bound."
+  },
+  "source_trace": {
+    "artifact_and_current_match": "At source SHA 2f68bc4 and before this fix, useScrape.captureActiveTab called setLoading(true), setActiveMode(mode), then setError(null). The shared scrape store setError action unconditionally wrote loading:false.",
+    "component": "ScrapeView renders disabled=loading and mode-specific busy text only when loading is true. The error clear synchronously removed the busy value before the first await in fast mode and before deep scrolling.",
+    "observer": "The pre-armed MutationObserver could only sample the final idle button because no committed disabled busy DOM was required by those store transitions. Its zero disabled samples agree with the store-level failure. Native timing and compositor paint remain unmeasured."
+  },
+  "red_green": {
+    "red": "pnpm exec vitest run tests/unit/scrape-document-identity.test.tsx --maxWorkers=1: both pending fast and deep cases failed loading false versus true in the real hook and store.",
+    "fix": "setError(null) now clears only error; a non-null error still clears loading.",
+    "green": "Same focused command: 3 passed, 0 failed. pnpm compile and Biome check passed."
+  },
+  "remaining": "An exact newly built native artifact must demonstrate the visible disabled busy state, freshness-bound throttled recapture, and the remaining guest Scrape lifecycle cases. The 0.2.205 result cannot be promoted to a pass."
+}

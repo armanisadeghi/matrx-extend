@@ -910,7 +910,7 @@ Every entry follows this shape:
 
 - **What it does:** In a fresh guest profile, Scrape captures an owned dental intake page in fast and Scroll & capture modes, selects all six result tabs, clears stale content after navigation, and shows a restricted-page error with Dismiss.
 - **Where to test:** Hosted guest side-panel acceptance → `guest-scrape`, selecting the exact published release artifact.
-- **Steps:** Run the case on the hosted runner; inspect `scrape-guest-native-*.json` and native-panel screenshots. The intake fixture adds its checklist only after browser scrolling, so fast must omit it and deep must include it. Inspect each case's `status` and `remaining` fields before updating the stabilization inventory.
+- **Steps:** Run the case on the hosted runner; inspect `scrape-guest-native-*.json` and native-panel screenshots. While either capture is pending, its button must show Capturing or Scrolling and both capture buttons must be disabled; after completion they must be enabled again. The intake fixture adds its checklist only after browser scrolling, so fast must omit it and deep must include it. Inspect each case's `status` and `remaining` fields before updating the stabilization inventory.
 - **Expected:** Trusted UI clicks and an owned Chrome profile produce a receipt-bound report; any missed busy state, tab data, recovery action, or lifecycle dimension remains explicitly unverified. A script or setup pass alone never verifies the inventory rows.
 
 ### Scrape — Save lands a Source (never lost) and Saved captures reads Sources
