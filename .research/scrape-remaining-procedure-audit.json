@@ -7,10 +7,11 @@
     "current_constraints": "Checkpoint says local heavy browser/build/release work refused by internal disk floor; hosted TEST is the authorized path, one guarded heavy run at a time, after current-run resource health. This audit does not launch it."
   },
   "source_grounded_contract": {
-    "capture_error": "ScrapeView error card shows Reload page and Try again only for recoverable errors; restricted URL has no recovery actions and Dismiss remains. Try again calls captureActiveTab with activeMode, then lastModeRef, then fast. lastModeRef is set before both Capture and Scroll & capture.",
+    "capture_error": "ScrapeView error card shows Reload page and Try again only for recoverable errors; restricted URL has no recovery actions and Dismiss remains. Deep mode first calls scrollToLoadLazy, then captureWithFallback. On no-receiver, captureWithFallback attempts to inject content-scripts/content.js and retries; therefore a stale tab after extension reload ordinarily self-recovers and is not a deterministic error-card stimulus. If an actual error is shown, Try again uses activeMode, then lastModeRef, then fast; lastModeRef is set before either capture mode.",
     "save": "A successful save lands a Source and opens the optional filing panel. A refused/unreachable save remains in chrome.storage.local; the Unsaved card owns Retry for a held canonical URL and suppresses the competing ordinary Save. Queue is removed only after confirmed landing.",
-    "recognition_role": "Guest short-circuits Source lookup (no DB lookup); T26 must be N/A for guest, contrary to its current modes [guest, member, admin]. Signed-in recognition reads all RLS-visible organizations independent of selected org; the explicitly selected organization remains the destination for writes.",
-    "filing": "FileSourcePanel appears only after landing; Close performs no attachment write. Library is a select including No Library; target chips are staged and removable; filing submits only when at least one target or Library is selected."
+    "recognition_role": "T26 already specifies the guest no-lookup assertion. Preserve its guest applicability; do not remove or relabel that coverage. Signed-in recognition reads all RLS-visible organizations independent of selected org; explicitly selected organization remains the destination for writes.",
+    "filing": "FileSourcePanel appears only after landing; Close performs no attachment write. Library is a select including No Library; target chips are staged and removable; filing submits only when at least one target or Library is selected.",
+    "organization": "requireRequestOrganizationId delegates to holdForActiveOrganizationId. With no device selection it raises the picker and holds the save until selection; it does not immediately refuse. It errors immediately for zero memberships or after the person does not answer before timeout. Do not use no selection as a save-refusal fixture."
   },
   "executable_next_cases": [
     {
@@ -37,14 +38,14 @@
       "priority": 2,
       "case_ids": ["EXT-F-1007-T14", "EXT-F-1007-T02"],
       "modes": ["guest", "member", "admin"],
-      "procedure_quality": "The current procedure is not yet executable for the missing natural branches: no reproducible stimulus or exact stale-tab setup is specified, and restricted-page evidence does not prove recoverable UI. Source supplies one real-browser recoverable path: an already-open HTTP(S) tab without the content script yields no-receiver; deep mode is retained for Try again.",
+      "procedure_quality": "The current procedure is not executable for the missing natural branches: no reproducible real-browser failure stimulus is identified. Restricted-page evidence is nonrecoverable. An already-open HTTP(S) tab after extension reload is not a deterministic error-card path because captureWithFallback injects content-scripts/content.js and retries.",
       "procedure": [
-        "Use an owned ordinary HTTP(S) fixture, open it before reloading the exact unpacked extension so the tab lacks the newly loaded content script, then from Scrape request Scroll & capture. First assert a recoverable no-receiver card with Reload page, Try again, and Dismiss; capture the card, title/description, URL and error class from observed UI/diagnostic state.",
-        "In an independent fresh stale-tab setup, click Try again and observe Scrolling/progress, proving deep retry mode; expect the same no-receiver until page reload, then click Reload page in a separate setup, wait for completed navigation, manually retry deep capture, and assert lazy content. Dismiss in another fresh recoverable state and confirm card clears.",
-        "For the nonrecoverable branch, retain a restricted URL only as the already-covered Dismiss control check; assert no Reload page/Try again. Do not treat it as a recoverable failure."
+        "Keep the restricted-page case separate: assert no Reload page/Try again, use Dismiss, and confirm card clears.",
+        "For recoverable errors and deep-retry mode, no source-verified reproducible natural stimulus is currently available. Only when a real failure occurs during the guarded run, record its trigger, role, selected mode, visible card/actions, URL, and exact observed reason; then exercise each offered action and capture result. For a real deep failure, verify Try again shows the deep scroll progress and lazy-content result.",
+        "Do not induce or synthesize CaptureError state, claim the stale-tab recipe, or count restricted-page dismissal as recoverable coverage."
       ],
-      "role_applicability": "Capture failure mechanics are auth-independent, but the requested role cells still need at least one observed recovery/dismiss run per guest/member/admin unless the acceptance owner explicitly scopes one shared role-independent result. Keep mode evidence distinct.",
-      "limits": "This is a genuine Chrome content-script lifecycle failure induced by reloading the extension with the fixture tab left open, not a fabricated CaptureError. It does not cover no-host-permission or arbitrary pipeline failures."
+      "role_applicability": "Capture failure mechanics are auth-independent, but requested role cells need separate observed guest/member/admin evidence unless the acceptance owner explicitly scopes one shared role-independent result.",
+      "limits": "Source supports retrying deep mode if a recoverable error is genuinely reached, but does not establish a reliable way to reach such an error. This is an unfilled procedure prerequisite, not a product defect."
     },
     {
       "priority": 3,
@@ -57,14 +58,15 @@
         "EXT-F-1007-T31"
       ],
       "modes": ["guest", "member", "admin"],
-      "procedure_quality": "Source save UI and device-local queue are reachable. Existing inventory cases lack an exact refusal fixture and safe cleanup/readback contract. Guest refusal is naturally reachable by signing out; signed-in refusal is naturally reachable with no device-selected organization, and retry after choosing an organization exercises recovery. T04 happy-path member/admin still needs an isolated owned capture and explicit organization.",
+      "procedure_quality": "Source save UI and device-local queue are reachable. Guest sign-in refusal is a deterministic way to populate the queue. For signed-in member/admin, no selected organization raises a picker and holds the request until selection; it is not a refusal. No safe deterministic signed-in refusal fixture is identified. T04 happy-path member/admin still needs an isolated owned capture and explicit organization.",
       "procedure": [
         "Guest: capture owned page, sign out, Save; assert truthful sign-in-required sentence, exactly one Unsaved card for the canonical URL, Retry and Discard, and no ordinary duplicate Save for that held URL. Sign in, Retry, verify one landed Source and queue removal only after confirmed landing.",
-        "Member/admin: capture an owned fixture with organization A selected; clear the device-selected organization and Save; assert visible choose-workspace refusal and retained card. Select A, retry; verify one server Source in A, saved/open action and notices, then queue removal. Preserve separate role receipts.",
+        "Member/admin T04: with an owned fixture and organization A selected, capture and Save; verify landed Source is in A, saved/open action and notices. Do not clear selected organization to create a refusal: Save waits on the picker and proceeds after selection.",
+        "T22/T23/T25/T31 queue/refusal variants: guest sign-in refusal supplies a real queue entry. For member/admin, first identify an authorized controlled landing refusal/unreachable fixture; until then these role cells are not executable. T31 stale-completion variants additionally require a controlled in-flight response.",
         "T23: with a queued item, cancel Discard and verify it remains; reopen, confirm, verify queue absence and permanent-removal message. Use only the test-owned queued capture.",
         "T24: record original capture/markdown; edit a unique sentence and Apply; Save; inspect landed reader-facing Source for new sentence and absence of replaced sentence, and original JSON for untouched original article. Inventory currently assigns T24 only to member/admin.",
-        "T25: refuse save, close/reopen panel, assert same queue identity, URL and retry control; retry and verify landing/queue removal. Do not infer persistence from source/component tests.",
-        "T31: while URL is held, assert no banner/main Save competitor; make a local edit, use card Retry and verify newest edited capture landed. For a different held URL, retry while another page is active and verify the queued page payload wins. Assert one canonical queue item and one landed Source."
+        "T25: after a real refused guest save, close/reopen panel, assert same queue identity, URL and retry control; sign in, retry and verify landing/queue removal. Do not infer persistence from source/component tests.",
+        "T31: when a URL is held, assert no banner/main Save competitor; for guest, make a local edit after refusal, sign in, use card Retry and verify newest edited capture landed. For a different held URL, retry while another page is active only after a safe queue fixture exists; verify queued-page payload wins. Assert one canonical queue item and one landed Source."
       ],
       "cleanup_and_evidence": "Use a unique owned fixture URL and unique Source title per role/run; record pre-run Source lookup and organization. Afterward verify queue contents empty for fixture URL and detach only the test Source if the campaign cleanup contract authorizes it; retain explicit ID and deletion/readback receipt. Never delete existing unrelated Sources. Save UI screenshots, source id, org id, canonical URL, sanitized request/result receipt, and before/after queue snapshot; no credentials."
     },
@@ -72,14 +74,15 @@
       "priority": 4,
       "case_ids": ["EXT-F-1007-T26", "EXT-F-1007-T27"],
       "modes": ["member", "admin"],
-      "procedure_quality": "T26 has a useful current procedure but requires an authorized two-organization principal, visible Source only in B, selected A and no-selected-org states, plus a controlled lookup failure/recovery. T27 needs a genuinely absent owned URL and current source build. Guest applicability is contradictory: source deliberately performs no guest lookup, so guest should be N/A, not an unverified test cell.",
+      "procedure_quality": "T26 already gives guest applicability and explicitly requires confirming no saved-Source lookup is sent; preserve this as a guest assertion, not N/A. Signed-in procedure needs an authorized two-organization principal, visible Source only in B, selected A and no-selected-org states, plus lookup failure/recovery. T27 needs a genuinely absent owned URL and current source build.",
       "procedure": [
-        "With member/admin, record role and selected A; establish known Source in visible B and read-only evidence that it is RLS-visible. Assert saved recognition in B despite selected A. Clear selected org and assert recognition unchanged. Repeat inaccessible Source stays invisible only where an authorized fixture can demonstrate RLS exclusion.",
-        "Separately cause the lookup request to fail through a natural offline/service outage, assert explicit unknown/could-not-check state and Save remains available without a not-yet-saved claim; restore service and assert recognition refreshes. For guest, verify no lookup request and mark N/A."
+        "Guest: assert no prior-Source lookup is sent; do not manufacture a lookup failure.",
+        "With member/admin, record role and selected A; establish known Source in visible B and read-only evidence that it is RLS-visible. Assert saved recognition in B despite selected A. Clear selected org and assert recognition remains unchanged. Inaccessible Source invisibility requires an authorized RLS-exclusion fixture.",
+        "Separately, only if a real lookup outage occurs, assert explicit unknown/could-not-check state and Save availability without a not-yet-saved claim; restore service and assert recognition refreshes. Do not synthesize lookup failure in app state."
       ],
       "blockers": [
         "Current inventory does not provide approved two-organization fixture identifiers or an RLS visibility oracle; do not use an admin-only fixture to claim member RLS behavior.",
-        "No live non-mutating failure mechanism or concrete request/response observable is specified. A transient natural outage may be used only if it occurs in the guarded run; do not simulate a lookup failure in app state."
+        "No live non-mutating failure mechanism or concrete request/response observable is specified. A transient natural outage may be recorded if it occurs in the guarded run; do not simulate a lookup failure in app state."
       ],
       "cleanup": "Create no Source for the lookup-only unknown/failure subcase. Any positive Source fixture must be owned, uniquely identified, and removed only under the test fixture cleanup procedure with post-delete readback."
     },
@@ -108,12 +111,13 @@
     }
   ],
   "material_gaps_or_contradictions": [
-    "T26 currently lists guest/member/admin, but guest lookup is intentionally skipped by source; make guest N/A in inventory or explicitly define a no-request assertion, never manufacture a guest lookup outage.",
     "T04's guest cell mixes successful landing (impossible while signed out) with refusal; split evidence by role/outcome: guest refusal/queue/retry after sign-in, member/admin successful landing/open.",
-    "T14/T02 do not specify a real failure trigger. Restricted URL is classified nonrecoverable, so it cannot prove Reload page/Try again; stale content-script lifecycle gives a source-supported real recovery path and deep-mode retry oracle.",
-    "T23-T25/T31 refer to unsaved queue states but do not specify reliable entry (natural guest refusal or no selected organization), per-URL queue identity evidence, or safe fixture cleanup.",
     "T29 lacks exact owned targets/library and remember-choice restoration; T30 lacks a controlled delayed landing response. These are fixture/infrastructure prerequisites, not inferred product defects.",
-    "Checkpoint explicitly blocks local heavy work on disk capacity and directs authorized hosted TEST with one guarded run. No run was started in this lane."
+    "Checkpoint explicitly blocks local heavy work on disk capacity and directs authorized hosted TEST with one guarded run. No run was started in this lane.",
+    "T26 explicitly includes the guest no-request assertion; preserve its guest applicability. Only signed-in lookup-failure and cross-organization recognition require database behavior.",
+    "T14/T02 have no source-verified reproducible natural error stimulus. captureWithFallback injects content-scripts/content.js and retries after no-receiver; an ordinary stale tab is not a deterministic recoverable-card recipe. Deep mode scrolls before that call.",
+    "T22-T25/T31 need an unsaved queue fixture. Guest sign-in refusal is a source-supported queue entry. For signed-in member/admin, no organization selection opens a picker and holds the Save request; choosing an organization resumes that same request. No authorized deterministic signed-in refusal stimulus is identified.",
+    "T30 delayed completion and T31 stale completion require a controlled in-flight Source landing response mechanism not specified in the current procedure."
   ],
   "not_claimed": [
     "No UI, browser, source save, role, RLS, natural error, filing, or cleanup behavior was executed or verified by this source-only audit.",
@@ -128,6 +132,13 @@
     "src/lib/scrape/capture-error.ts",
     "src/lib/sources/save-capture.ts",
     "tests/browser/scrape-guest-native-acceptance.mjs",
+    "src/lib/api/routes/auth.ts: requireRequestOrganizationId",
+    "src/lib/org/active-org.ts: holdForActiveOrganizationId",
     ".research/scrape231-recapture-native.json"
-  ]
+  ],
+  "peer_reconciliation": {
+    "review": ".research/scrape-procedure-claims-peer.json",
+    "review_commit": "1b43edc1",
+    "status": "Applied corrections: stale-tab recoverable-error recipe removed; no-selected-organization described as hold/picker; guest T26 no-request assertion preserved. Remaining proposed procedures require independent validation before native use."
+  }
 }
