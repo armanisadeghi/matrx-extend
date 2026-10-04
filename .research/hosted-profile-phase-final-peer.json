@@ -1,0 +1,24 @@
+{
+  "task": "Independent narrow source review of d7622e51 hosted Profile phase boundary",
+  "reviewed_commit": "d7622e51b19e21903607442bc56d24baa30df1d3",
+  "scope": "Source and focused test only; no hosted workflow dispatch, browser run, or Profile data write",
+  "verdict_a": {
+    "status": "pass_for_phase_boundary",
+    "finding": "Explicit profile-admin and profile-member entry into preflight, package, browser, or acceptance throws hosted_profile_durable_recovery_unavailable after phase validation and before credential checks, resource admission, runtime setup, browser setup, artifact import, or native driver dispatch. The workflow passes the selected acceptance case into both package and browser steps. The focused tests exercise both Profile cases with private inputs across all four phases and confirm no package or browser ready marker.",
+    "previous_phase_gap": "addressed: direct package and browser entry now shares the early Profile refusal, and workflow preparation carries MATRX_HOSTED_ACCEPTANCE_CASE.",
+    "profile_data_write_bypass": "none found in the reviewed hosted entry path; Profile driver dispatch remains downstream of the unconditional phase guard.",
+    "full_profile_acceptance": "unresolved",
+    "D114": "unresolved"
+  },
+  "verdict_b": {
+    "status": "pass_for_causality_and_nonscope",
+    "causality": "The new guard is before requireHostedAcceptanceCredential and MATRX_RESOURCE_OWNER; its condition uses only MATRX_HOSTED_ACCEPTANCE_CASE. Valid or missing credentials cannot move an explicit Profile case beyond it.",
+    "non_profile": "The new guard does not match guest-chat. Focused tests show guest-chat preflight still succeeds and package/browser still require the owned resource permit without a new auth requirement.",
+    "remaining_limit": "This is a fail-closed boundary, not durable recovery. The existing-row ownership receipt remains on the disposable VM, and no interruption recovery or full hosted Profile acceptance was verified."
+  },
+  "checks": {
+    "node_test": "node --test scripts/hosted-profile-route.test.mjs: 8 passed, 0 failed",
+    "source_review": "d7622e51 diff; hosted workflow phase env; hosted adapter dispatch; previous peer finding; Profile driver write path",
+    "hosted_execution": "not run"
+  }
+}
