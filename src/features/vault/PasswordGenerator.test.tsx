@@ -241,6 +241,33 @@ describe('PasswordGenerator', () => {
     expect(/^[a-z]+$/.test(value)).toBe(true);
   });
 
+  it('excludes ambiguous digits when the same controlled entropy sample is selected', async () => {
+    vi.stubGlobal('crypto', {
+      getRandomValues: <T extends ArrayBufferView>(array: T) => {
+        (array as Uint32Array)[0] = 1;
+        return array;
+      },
+    });
+    try {
+      renderGenerator();
+      open();
+      fireEvent.change(screen.getByLabelText('Password length'), { target: { value: '22' } });
+      for (const label of ['Lowercase', 'Uppercase', 'Symbols'])
+        fireEvent.click(screen.getByRole('switch', { name: label }));
+      await generate();
+      fireEvent.click(screen.getByRole('button', { name: 'Reveal generated value' }));
+      expect(document.querySelector('code')?.textContent).toBe('3'.repeat(22));
+
+      fireEvent.click(screen.getByRole('switch', { name: 'Exclude ambiguous' }));
+      mocks.rpc.mockResolvedValue({ data: 1024, error: null });
+      await generate();
+      fireEvent.click(screen.getByRole('button', { name: 'Reveal generated value' }));
+      expect(document.querySelector('code')?.textContent).toBe('1'.repeat(22));
+    } finally {
+      vi.unstubAllGlobals();
+    }
+  });
+
   it('applies passphrase word count, separator, capitalization, and appended digit', async () => {
     renderGenerator();
     open();
