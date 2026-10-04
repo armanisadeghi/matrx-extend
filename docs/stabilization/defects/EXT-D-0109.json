@@ -14,7 +14,7 @@
   "actual": "Existing row response array is mislabeled absent; admin acceptance aborts before writes. Native04 captured exact boundary.",
   "severity": "S2 acceptance blocked and misleading evidence; no product failure established",
   "priority": "P1 unblock contained Profile verification",
-  "state": "fixed",
+  "state": "closed",
   "owner": "admin_firstsave_diagnose_escalation",
   "evidence": [
     ".research/profile-admin-causal-native.json",
@@ -23,7 +23,8 @@
     ".research/profile-wire-envelope-peer.json",
     ".research/profile-observer-owner-fix.json",
     ".research/profile-owner-final-peer.json",
-    ".research/profile-admin-wirefix-native.json"
+    ".research/profile-admin-wirefix-native.json",
+    ".research/profile-admin-resource-retest.json"
   ],
   "transition_history": [
     {
@@ -49,8 +50,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Raw-wire repair af3c463c plus owner-binding correction a99f101a accepted by fresh peer58119ce4;40focused checks. Native retest still pending."
+    },
+    {
+      "at": "2026-10-04T05:06:23.985861+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent admin06 correctly identified existing Profile, bypassed false absent-row fixture branch, passed warm Back/SaveDiscard/readRetry with original preferred restored. Root matched rawf6a069e4/journalf0be5267. Later unrelated Billing expander failure trackedD110."
+    },
+    {
+      "at": "2026-10-04T05:06:23.985861+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original raw-response observer defect and wrong-owner source gap resolved with independent source and native evidence. Closure does not certify full Profile or reload; D110 blocks remaining acceptance."
     }
   ],
   "closure_requirement": "Actual raw-wire callback red\u2192green with existing/absent/malformed payloads, strict race refusal preserved, fresh review and actual admin scenario passes with original values restored.",
-  "next_action": "Native admin05 refused before launch for pressure/swap growth. No product verdict. Resume one guarded existing-row admin acceptance after safe preflight under standing authorization; no threshold relaxation. Source fix remains fixed pending native. Minor source-reviewed duplicate-query-filter test gap remains."
+  "next_action": "Closed for observer classification only; D110 Billing expander repair and remaining admin fields/reload continue."
 }

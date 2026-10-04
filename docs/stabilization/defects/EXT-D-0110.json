@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0110",
+  "feature_id": "EXT-F-1004",
+  "case_ids": ["EXT-F-1004-T22"],
+  "surface": "Admin Profile Billing address section expander acceptance",
+  "auth_mode": "admin",
+  "title": "Billing address reexpand acceptance fails after existing-row warm Profile checks",
+  "reproduction": [
+    "Load frozen189 sourceb4b9f0c4/CI37164174445/artifact11288542496 with reviewed observera99f101a and admin extended cases under resource guard.",
+    "Sign in designated admin, verify organization and existing Profile; warm Back, SaveDiscard/restoration and read-failure Retry pass.",
+    "T22 warm toggles sections; Billing address reexpand fails with expander phase reexpand and profile_unclassified_failure. Reload and mutable extended fields not reached."
+  ],
+  "expected": "Actual supported Billing section states can collapse/reexpand with correct visible-state evidence, or a product defect is captured precisely; legitimate conditional UI must not create a false failure.",
+  "actual": "Native06 aborts Billing reexpand acceptance; product-vs-driver root cause under diagnosis.",
+  "severity": "S2 acceptance blocked; product failure not established",
+  "priority": "P1 contained Profile acceptance",
+  "state": "in-fix",
+  "owner": "profile_billing_expander_fix",
+  "evidence": [
+    ".research/profile-admin-resource-retest.json",
+    "docs/stabilization/resource-journals/profile-admin-fields-189-06.jsonl"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T05:06:23.985861+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual admitted native06 fails exact Billing reexpand boundary."
+    },
+    {
+      "at": "2026-10-04T05:06:23.985861+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Root matched raw/journal; original preferred restoration passed before expander failure; no row deletion or firstsave fixture."
+    },
+    {
+      "at": "2026-10-04T05:06:23.985861+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol medium owns actual conditional UI/driver diagnosis and connected guard; no blind native retry."
+    }
+  ],
+  "closure_requirement": "Confirmed cause red\u2192green, fresh independent source review and actual original Billing reexpand scenario plus neighboring sections passes; no blanket Profile acceptance claim."
+}

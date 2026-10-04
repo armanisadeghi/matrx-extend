@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-04 04:54 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T04:01:56.128811+00:00. 205 features · 761 cases · 1333 controls · 109 linked defect records.
+Generated 2026-10-04 05:06 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T04:01:56.128811+00:00. 205 features · 761 cases · 1333 controls · 110 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
 Applicable case-by-role slots: **1209** — Pass: 76 · Partial: 65 · Fail: 4 · Unverified: 1063 · N/A: 1.
-Unverified splits into **123 explicitly marked unverified** and **940 with no result record**.
+Unverified splits into **124 explicitly marked unverified** and **939 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 128 cases without steps, 127 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -562,9 +562,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: N/A · member: Partial · admin: Partial. **Cases:** 28. **Controls:** 17.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0095, EXT-D-0108, EXT-D-0109
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0095, EXT-D-0108, EXT-D-0110
 
-**Linked defects:** [EXT-D-0094](defects/EXT-D-0094.json) (closed), [EXT-D-0095](defects/EXT-D-0095.json) (fixed), [EXT-D-0104](defects/EXT-D-0104.json) (closed), [EXT-D-0105](defects/EXT-D-0105.json) (closed), [EXT-D-0108](defects/EXT-D-0108.json) (fixed), [EXT-D-0109](defects/EXT-D-0109.json) (fixed)
+**Linked defects:** [EXT-D-0094](defects/EXT-D-0094.json) (closed), [EXT-D-0095](defects/EXT-D-0095.json) (fixed), [EXT-D-0104](defects/EXT-D-0104.json) (closed), [EXT-D-0105](defects/EXT-D-0105.json) (closed), [EXT-D-0108](defects/EXT-D-0108.json) (fixed), [EXT-D-0109](defects/EXT-D-0109.json) (closed), [EXT-D-0110](defects/EXT-D-0110.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -613,6 +613,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: profile-fields-reload-fixed-189-08, Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496, 2026-10-04T03:52:44.728959+00:00, .research/profile-fields-reload-fixed-native.json
 - EXT-F-1004-T21 · member: Pass. Independent frozen189 member run verified actual warm/reload controls, saved-field persistence where applicable, normal UI value restoration and exact original row absence. Root matched raw90c2e27e and journale20fe07c hashes. No latest-main or Store installation claim.
   Evidence / build / date recorded: profile-fields-reload-fixed-189-08, Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496, 2026-10-04T03:52:44.728959+00:00, .research/profile-fields-reload-fixed-native.json
+- EXT-F-1004-T22 · admin: Unverified. Billing reexpand runner failed; product outcome unknown, EXT-D-0110. Reload not reached.
+  Evidence / build / date recorded: profile-admin-fields-189-06, .research/profile-admin-resource-retest.json
 - EXT-F-1004-T25 · member: Partial.
   Evidence / build / date recorded: profile-member-final-189-05, Development0.2.189, source b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced, CI37164174445/artifact11288542496, 2026-10-04T01:29:17.055381+00:00, ['.research/profile-member-final-189-native.json', 'docs/stabilization/resource-journals/profile-member-final-189-05.jsonl']
 - EXT-F-1004-T25 · admin: Partial.

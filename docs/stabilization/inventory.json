@@ -9773,7 +9773,19 @@
               "evidence": ".research/profile-independent-acceptance.json; docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl",
               "verified_at": "2026-10-03T20:16:36Z"
             }
-          }
+          },
+          "observations": [
+            {
+              "run_id": "profile-admin-fields-189-06",
+              "mode": "admin",
+              "lifecycle": "warm",
+              "artifact": "frozen189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+              "evidence": ".research/profile-admin-resource-retest.json",
+              "observed_at": "2026-10-04T05:06:23.985861+00:00",
+              "status": "pass",
+              "detail": "Warm bounded control/recovery passed; original preferred restored. Reload and remaining case branches not reached."
+            }
+          ]
         },
         {
           "id": "EXT-F-1004-T03",
@@ -10054,7 +10066,19 @@
               "evidence": ".research/profile-independent-acceptance.json; docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl",
               "verified_at": "2026-10-03T20:16:36Z"
             }
-          }
+          },
+          "observations": [
+            {
+              "run_id": "profile-admin-fields-189-06",
+              "mode": "admin",
+              "lifecycle": "warm",
+              "artifact": "frozen189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+              "evidence": ".research/profile-admin-resource-retest.json",
+              "observed_at": "2026-10-04T05:06:23.985861+00:00",
+              "status": "pass",
+              "detail": "Warm bounded control/recovery passed; original preferred restored. Reload and remaining case branches not reached."
+            }
+          ]
         },
         {
         "id": "EXT-F-1004-T05",
@@ -11388,77 +11412,100 @@
         ]
       },
         {
-        "id": "EXT-F-1004-T22",
-        "title": "admin: Profile section expanders",
-        "modes": [
-          "admin"
-        ],
-        "control_ids": [
-          "EXT-F-1004-C11"
-        ],
-        "preconditions": [
-          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
-          "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
-          "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
-          "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
-          "Run independently as existing known admin; do not change role or account."
-        ],
-        "steps": [
-          "For Identity, Phones, Emails, Web, Shipping address, Billing address, Employment, and Emergency contacts: note open/closed state. Toggle each section closed then open using its label.",
-          "Change a synthetic Preferred value before toggling Identity closed/open; confirm draft value remains and Unsaved changes stays visible. Click Discard."
-        ],
-        "expected": [
-          "Each selected section opens/closes without losing current draft.",
-          "Each section opens/closes from its label; toggling does not lose the current draft; Discard restores loaded value."
-        ],
-        "dimensions": [
-          "warm",
-          "reload"
-        ],
-        "source_anchors": [
-          "src/features/profile/ProfileView.tsx:100-225"
-        ],
-        "procedure_readiness": "ready",
-        "procedure_gaps": [],
-        "procedure_execution_matrix": [
-          {
-            "mode": "admin",
-            "lifecycle_dimension": "warm",
-            "branch": "default",
-            "inventory_dimensions": [
-              "warm",
-              "reload"
-            ],
-            "observed_outcome": null,
-            "evidence_refs": [],
-            "status": "unverified",
-            "readiness": "ready"
+          "id": "EXT-F-1004-T22",
+          "title": "admin: Profile section expanders",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1004-C11"
+          ],
+          "preconditions": [
+            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+            "Run independently as existing known admin; do not change role or account."
+          ],
+          "steps": [
+            "For Identity, Phones, Emails, Web, Shipping address, Billing address, Employment, and Emergency contacts: note open/closed state. Toggle each section closed then open using its label.",
+            "Change a synthetic Preferred value before toggling Identity closed/open; confirm draft value remains and Unsaved changes stays visible. Click Discard."
+          ],
+          "expected": [
+            "Each selected section opens/closes without losing current draft.",
+            "Each section opens/closes from its label; toggling does not lose the current draft; Discard restores loaded value."
+          ],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
+          "source_anchors": [
+            "src/features/profile/ProfileView.tsx:100-225"
+          ],
+          "procedure_readiness": "ready",
+          "procedure_gaps": [],
+          "procedure_execution_matrix": [
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "warm",
+              "branch": "default",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "ready"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "reload",
+              "branch": "default",
+              "inventory_dimensions": [
+                "warm",
+                "reload"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "ready"
+            }
+          ],
+          "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
+          "procedure_review": {
+            "proposal_commit": "22994d49",
+            "peer_commit": "2c318798",
+            "report": ".research/popup-profile-acceptance-peer.json",
+            "scope": "Source-reviewed procedure only; no runtime acceptance."
           },
-          {
-            "mode": "admin",
-            "lifecycle_dimension": "reload",
-            "branch": "default",
-            "inventory_dimensions": [
-              "warm",
-              "reload"
-            ],
-            "observed_outcome": null,
-            "evidence_refs": [],
-            "status": "unverified",
-            "readiness": "ready"
+          "defect_ids": [
+            "EXT-D-0108"
+          ],
+          "observations": [
+            {
+              "run_id": "profile-admin-fields-189-06",
+              "mode": "admin",
+              "lifecycle": "warm",
+              "artifact": "frozen189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+              "evidence": ".research/profile-admin-resource-retest.json",
+              "observed_at": "2026-10-04T05:06:23.985861+00:00",
+              "status": "unverified",
+              "detail": "Billing reexpand runner failed; product outcome unknown, EXT-D-0110. Reload not reached."
+            }
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "run_id": "profile-admin-fields-189-06",
+              "evidence": ".research/profile-admin-resource-retest.json",
+              "detail": "Billing reexpand runner failed; product outcome unknown, EXT-D-0110. Reload not reached.",
+              "defect_ids": [
+                "EXT-D-0110"
+              ]
+            }
           }
-        ],
-        "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
-        "procedure_review": {
-          "proposal_commit": "22994d49",
-          "peer_commit": "2c318798",
-          "report": ".research/popup-profile-acceptance-peer.json",
-          "scope": "Source-reviewed procedure only; no runtime acceptance."
         },
-        "defect_ids": [
-          "EXT-D-0108"
-        ]
-      },
         {
           "id": "EXT-F-1004-T23",
           "title": "guest: verify visibility denial",
@@ -11767,7 +11814,7 @@
           ],
           "expected": [
             "Loading ends and visible error identifies profile load failure; saved data is not presented as an empty profile.",
-            "Loading ends with the visible \u201cCould not load your profile: \u2026\u201d error; a failed read is not silently presented as a successful empty profile. After restoring service, reopening Profile starts a fresh load.",
+            "Loading ends with the visible “Could not load your profile: …” error; a failed read is not silently presented as a successful empty profile. After restoring service, reopening Profile starts a fresh load.",
             "After an initial read failure, Profile presents a prominent non-editable error state; no blank editable form or Save action is available.",
             "After an identity change whose read fails, no field from the previous identity's draft is displayed or saved."
           ],
@@ -12153,6 +12200,18 @@
               ],
               "evidence": ".research/profile-member-retest189.json",
               "verified_at": "2026-10-04T00:35:54.125394+00:00"
+            }
+          ],
+          "observations": [
+            {
+              "run_id": "profile-admin-fields-189-06",
+              "mode": "admin",
+              "lifecycle": "warm",
+              "artifact": "frozen189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+              "evidence": ".research/profile-admin-resource-retest.json",
+              "observed_at": "2026-10-04T05:06:23.985861+00:00",
+              "status": "pass",
+              "detail": "Warm bounded control/recovery passed; original preferred restored. Reload and remaining case branches not reached."
             }
           ]
         },
