@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "e00b8e98fef83ae6975fb5f81460bbf3868ab86b",
+  "review_scope": "Fresh source-only review of hosted guest Scrape acceptance and existing native UI/harness contracts; no hosted run or product edits.",
+  "verdict_a_spec_runtime_readiness": "blocked_before_clean_run",
+  "verdict_b_quality": "partial_with_actionable_blocker",
+  "findings": [
+    {
+      "severity": "blocking",
+      "code": "reload_from_restricted_page_cannot_reopen_panel",
+      "evidence": [
+        "tests/browser/scrape-guest-native-acceptance.mjs:289 navigates the sole owned page to chrome://settings/.",
+        "tests/browser/scrape-guest-native-acceptance.mjs:314 calls reloadExtension while page is still chrome://settings/.",
+        "tests/browser/native-sidepanel-qa-harness.mjs:404 reopens by clicking page.locator('#open-panel'), a control supplied only by the owned localhost root fixture."
+      ],
+      "effect": "The replacement panel cannot be opened, so the extension_reload stage times out and the overall report becomes unverified even if prior capture observations succeeded.",
+      "repair": "Navigate the owned page back to its localhost root fixture before reloadExtension; after reload, navigate to an owned content page, select Scrape with trusted input, and assert the intended empty state there."
+    },
+    {
+      "severity": "quality",
+      "code": "t20_reload_oracle_too_narrow",
+      "evidence": [
+        "tests/browser/scrape-guest-native-acceptance.mjs:315-325 checks only that the replacement panel's Scrape view is ready and empty, then marks T20 passed.",
+        "The T20 inventory criterion is No current capture empty state; the replacement panel may default to Chat, and an empty restricted-page state does not establish normal-page navigation/reload behavior."
+      ],
+      "effect": "After fixing the opener, T20 could be promoted on weak evidence or fail because the Scrape tab was never selected.",
+      "repair": "Select Scrape explicitly in the replacement panel and verify title, enabled Capture, empty result and cleared prior content on an owned normal page before marking T20 passed."
+    }
+  ],
+  "positive_source_observations": [
+    "Workflow guest-scrape requires a selected release run and rejects development and Store CRX modes.",
+    "Wrapper verifies published receipt source SHA, ZIP hashes, unpacked tree hash and version; native harness rechecks tree and manifest.",
+    "Isolated Chrome profile and trusted UI driver are reused; guest account and auth storage are checked before capture.",
+    "Fixture's late text starts absent and appears only after scroll; fast and deep assertions distinguish their outcomes.",
+    "Result tab and restricted-page checks retain partial status for unexercised content and natural recovery actions."
+  ],
+  "verification": {
+    "node_check": "passed",
+    "hosted_runtime": "not_run",
+    "product_behavior": "unverified",
+    "publication_or_release": "not_attempted"
+  }
+}
