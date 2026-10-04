@@ -17,6 +17,7 @@ const mocks = vi.hoisted(() => ({
   captureActiveTab: vi.fn(),
   reloadActiveTab: vi.fn(),
   clearError: vi.fn(),
+  edited: false,
   tab: {
     url: 'https://fieldnotes.test/garden/seed-starting',
     title: 'Starting seeds indoors',
@@ -50,7 +51,7 @@ vi.mock('@/hooks/use-scrape', () => ({
     activeMode: null,
     progress: null,
     error: mocks.error,
-    edited: false,
+    edited: mocks.edited,
     captureActiveTab: mocks.captureActiveTab,
     reloadActiveTab: mocks.reloadActiveTab,
     clearError: mocks.clearError,
@@ -94,12 +95,29 @@ beforeEach(() => {
   mocks.captureActiveTab.mockReset();
   mocks.reloadActiveTab.mockReset();
   mocks.clearError.mockReset();
+  mocks.edited = false;
   useAuthStore.getState().setUser(null);
   useAuthStore.getState().setIsAdmin(false);
 });
 afterEach(() => cleanup());
 
 describe('ScrapeView capture error recovery', () => {
+  it('requires discard confirmation before deep capture after local edits', async () => {
+    mocks.error = null;
+    mocks.edited = true;
+    render(<ScrapeView />);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Scroll & capture' }));
+    expect(screen.getByRole('alertdialog', { name: 'Discard unsaved edits?' })).toBeTruthy();
+    expect(mocks.captureActiveTab).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
+    expect(screen.queryByRole('alertdialog')).toBeNull();
+    expect(mocks.captureActiveTab).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: 'Scroll & capture' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Re-capture' }));
+    expect(mocks.captureActiveTab).toHaveBeenCalledExactlyOnceWith({ mode: 'deep' });
+  });
+
   it('reloads the active tab when Reload page is selected', async () => {
     render(<ScrapeView />);
 

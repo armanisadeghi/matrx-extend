@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0125",
+  "frozen_native_run": 37221586281,
+  "source_sha": "723433a7628b32fb610d3a7f36ca6b8dd5fd2b72",
+  "stage": "deep_capture",
+  "classification": "acceptance_driver_omission",
+  "observed_sequence": [
+    "Fast capture completed; warm media and link edits were observed in the native receipt.",
+    "Each media and link mutator sets Scrape store edited=true.",
+    "The driver clicked Scroll & capture after those edits, then waited for lazy article text.",
+    "The product defers capture while edited=true and opens Discard unsaved edits?; the driver did not confirm it.",
+    "At failure the old Article was still visible and Scroll & capture was idle. The receipt has no deep busy or result observation."
+  ],
+  "causal_reproduction": "ScrapeView test with edited=true: clicking Scroll & capture opens the discard dialog and does not call captureActiveTab; Cancel leaves capture uncalled; confirming a second request calls captureActiveTab({mode:'deep'}).",
+  "ruled_out": [
+    "A deep-scroll product failure is not demonstrated because captureActiveTab never starts before confirmation.",
+    "The lazy-content oracle cannot pass while the pending dialog holds the capture.",
+    "Clipboard observation remained a separate panel_runtime_exception limitation."
+  ],
+  "repair": "The native driver now cancels once, confirms edits remain with an idle deep button, requests deep capture again, and confirms the exact discard dialog through resource-gated trusted clicks.",
+  "verification": {
+    "product_control_test": "ScrapeView.error-controls.test.tsx: edited capture confirmation/cancel/deep-mode path",
+    "driver_test": "scrape-native-recapture.test.mjs: exact dialog sequence and missing-dialog refusal",
+    "mutation": "Scratch copy deleting the final Re-capture click exited 1 with scrape_discard_edits_dialog_closed_not_observed."
+  },
+  "limits": "Source and test repair only; no native rerun or product-health claim."
+}

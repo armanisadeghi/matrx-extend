@@ -17,6 +17,7 @@ import {
   observeVideoLinks,
   videoLinksVerdict,
 } from './scrape-native-media-actions.mjs';
+import { confirmScrapeRecapture } from './scrape-native-recapture.mjs';
 import { diagnosticCpuRate, runSupplementalCpuDiagnostic } from './scrape-page-cpu-diagnostic.mjs';
 import { recordReloadMilestone } from './scrape-reload-milestones.mjs';
 import { waitForReplacementScrapeTab } from './scrape-replacement-tab.mjs';
@@ -1106,6 +1107,7 @@ try {
           'Scroll the page top→bottom to load lazy content (images, infinite-scroll items), then capture. Better for dynamic pages.',
         ),
       );
+      await confirmScrapeRecapture({ panel, evaluate, waitFor, click, resourceAction });
       const deep = await waitFor(
         'scrape_deep_result',
         () => scrapeState(panel),
