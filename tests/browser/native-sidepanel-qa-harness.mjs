@@ -25,6 +25,10 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { markBrowserAgentTraffic } from './agent-traffic.mjs';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
+import {
+  requireNativeResourceHealth,
+  runNativeResourceAction,
+} from './native-resource-boundary.mjs';
 
 const require = createRequire(import.meta.url);
 const { prepareOwnedProfile, connectOwnedCdp } = require('./vault-owned-cdp.cjs');
@@ -921,6 +925,9 @@ export async function runNativeSidepanelQa({
             transportFailureClass: () => cdp.failureClass,
             panelTarget,
             artifacts,
+            requireResourceHealth: () => requireNativeResourceHealth({ repo: REPO }),
+            resourceAction: (action) =>
+              runNativeResourceAction(() => requireNativeResourceHealth({ repo: REPO }), action),
             attachWorker: () => attachTargetSession(cdp, extensionWorker.targetId),
             attachOffscreen: async () => {
               const offscreenUrl = `chrome-extension://${expectedExtensionId}/offscreen.html`;

@@ -182,7 +182,15 @@ try {
     onStage: (value) => {
       report.native_stage = value;
     },
-    exercisePanel: async ({ page, panel, artifacts, reloadExtension }) => {
+    exercisePanel: async ({
+      page,
+      panel,
+      artifacts,
+      reloadExtension,
+      requireResourceHealth,
+      resourceAction,
+    }) => {
+      await requireResourceHealth();
       report.stage = 'fixture_navigation';
       const account = await evaluate(
         panel,
@@ -207,21 +215,25 @@ try {
       report.guest_account_observed = true;
       report.guest_auth_storage = auth;
       const origin = new URL(page.url()).origin;
-      await page.goto(`${origin}/intake`);
+      await resourceAction(() => page.goto(`${origin}/intake`));
       assert.equal(await page.locator('#late p').count(), 0, 'lazy_content_must_start_absent');
-      await click(panel, 'title', 'Scrape');
+      await resourceAction(() => click(panel, 'title', 'Scrape'));
       const empty = await waitFor(
         'scrape_initial_empty',
         () => scrapeState(panel),
         (s) => s?.ready && s.empty && s.fast.length === 1 && !s.fast[0].disabled,
       );
+      await requireResourceHealth();
       mark('EXT-F-1007-T20', 'partial', { initial_empty: empty.empty, initial_url: page.url() }, [
         'Navigation and reload lifecycle remain to be exercised.',
       ]);
 
       report.stage = 'fast_capture';
+      await requireResourceHealth();
       await armBusyObserver(panel, 'fast');
-      await click(panel, 'title', 'Capture the page exactly as it is right now');
+      await resourceAction(() =>
+        click(panel, 'title', 'Capture the page exactly as it is right now'),
+      );
       const fast = await waitFor(
         'scrape_fast_result',
         () => scrapeState(panel),
@@ -235,6 +247,7 @@ try {
           !s.fast[0].disabled,
         30000,
       );
+      await requireResourceHealth();
       assert.equal(await page.locator('#late p').count(), 0, 'fast_capture_scrolled_fixture');
       const fastBusy = await busyObservation(panel);
       report.fast_busy_observation = fastBusy;
@@ -283,10 +296,13 @@ try {
           rate: DIAGNOSTIC_RATE,
           diagnostic,
           capture: async ({ target, cleanup }) => {
+            await requireResourceHealth();
             diagnostic.target = target;
             diagnostic.cleanup = cleanup;
             await armBusyObserver(panel, 'fast');
-            await click(panel, 'title', 'Capture the page exactly as it is right now');
+            await resourceAction(() =>
+              click(panel, 'title', 'Capture the page exactly as it is right now'),
+            );
             const result = await waitFor(
               'scrape_diagnostic_fast_result',
               () => scrapeState(panel),
@@ -300,6 +316,7 @@ try {
                 !s.fast[0].disabled,
               30000,
             );
+            await requireResourceHealth();
             diagnostic.full_result = result;
             diagnostic.no_scroll = {
               lazy_element_count: await page.locator('#late p').count(),
@@ -336,12 +353,14 @@ try {
       );
       const viewed = {};
       for (const label of expectedTabs) {
-        await click(panel, 'scrape-result-tab', label);
+        await requireResourceHealth();
+        await resourceAction(() => click(panel, 'scrape-result-tab', label));
         const state = await waitFor(
           `scrape_${label}_tab`,
           () => scrapeState(panel),
           (s) => s?.selected === label && s.visible && typeof s.resultText === 'string',
         );
+        await requireResourceHealth();
         viewed[label] = state.resultText.slice(0, 300);
         report.horizontal_geometry.push(await horizontalGeometry(panel, `after_${label}_tab`));
       }
@@ -367,13 +386,16 @@ try {
       );
 
       report.stage = 'deep_capture';
-      await click(panel, 'scrape-result-tab', 'Article');
+      await requireResourceHealth();
+      await resourceAction(() => click(panel, 'scrape-result-tab', 'Article'));
       report.horizontal_geometry.push(await horizontalGeometry(panel, 'after_return_to_Article'));
       await armBusyObserver(panel, 'deep');
-      await click(
-        panel,
-        'title',
-        'Scroll the page top→bottom to load lazy content (images, infinite-scroll items), then capture. Better for dynamic pages.',
+      await resourceAction(() =>
+        click(
+          panel,
+          'title',
+          'Scroll the page top→bottom to load lazy content (images, infinite-scroll items), then capture. Better for dynamic pages.',
+        ),
       );
       const deep = await waitFor(
         'scrape_deep_result',
@@ -385,6 +407,7 @@ try {
           !s.deep[0].disabled,
         45000,
       );
+      await requireResourceHealth();
       assert.equal(await page.locator('#late p').textContent(), lazy);
       const deepBusy = await busyObservation(panel);
       report.deep_busy_observation = deepBusy;
@@ -405,13 +428,15 @@ try {
       );
 
       report.stage = 'navigation_empty';
-      await page.goto(`${origin}/referrals`);
+      await requireResourceHealth();
+      await resourceAction(() => page.goto(`${origin}/referrals`));
       const cleared = await waitFor(
         'scrape_new_document_empty',
         () => scrapeState(panel),
         (s) =>
           s?.empty && !s.resultText?.includes(lazy) && s.title === 'Harbor Dental referral hours',
       );
+      await requireResourceHealth();
       assert.equal(cleared.saved, false, 'previous_page_saved_badge_retained');
       const t20 = report.cases.find((c) => c.id === 'EXT-F-1007-T20');
       t20.evidence.navigation_url = page.url();
@@ -419,12 +444,14 @@ try {
       t20.remaining = ['Full extension reload lifecycle remains unverified.'];
 
       report.stage = 'restricted_error';
-      await page.goto('chrome://settings/');
+      await requireResourceHealth();
+      await resourceAction(() => page.goto('chrome://settings/'));
       const restricted = await waitFor(
         'scrape_restricted_ready',
         () => scrapeState(panel),
         (s) => s?.ready && s.fast.length === 1,
       );
+      await requireResourceHealth();
       if (restricted.fast[0].disabled) {
         mark(
           'EXT-F-1007-T14',
@@ -435,20 +462,24 @@ try {
           ],
         );
       } else {
-        await click(panel, 'title', 'Capture the page exactly as it is right now');
+        await resourceAction(() =>
+          click(panel, 'title', 'Capture the page exactly as it is right now'),
+        );
         const blocked = await waitFor(
           'scrape_restricted_error',
           () => scrapeState(panel),
           (s) => s?.error && !s.reload && !s.retry,
         );
+        await requireResourceHealth();
         report.error_screenshot = await screenshot(panel, artifacts, 'scrape-restricted-error.png');
         assert.equal(blocked.empty, true);
-        await click(panel, 'scrape-dismiss', 'Dismiss');
+        await resourceAction(() => click(panel, 'scrape-dismiss', 'Dismiss'));
         await waitFor(
           'scrape_error_dismissed',
           () => scrapeState(panel),
           (s) => s?.ready && !s.error,
         );
+        await requireResourceHealth();
         mark(
           'EXT-F-1007-T14',
           'partial',
@@ -460,17 +491,19 @@ try {
       }
 
       report.stage = 'extension_reload';
-      await page.goto(`${origin}/`);
+      await requireResourceHealth();
+      await resourceAction(() => page.goto(`${origin}/`));
       const beforeReload = await waitFor(
         'scrape_owned_page_empty_before_reload',
         () => scrapeState(panel),
         (s) => s?.ready && s.empty && !s.saved && !s.resultText?.includes(lazy),
       );
+      await requireResourceHealth();
       assert.equal(beforeReload.title, 'Research brief: product discovery');
       t20.evidence.reload_origin_url = page.url();
       t20.evidence.previous_content_cleared_before_reload = true;
       recordReloadMilestone(report, 'reload_extension');
-      const replacement = await reloadExtension();
+      const replacement = await resourceAction(() => reloadExtension());
       report.reload_lifecycle = {
         observed_at: new Date().toISOString(),
         management_reload_clicked: replacement.management_reload_clicked,
@@ -480,9 +513,10 @@ try {
         context_boundary: replacement.context_boundary,
       };
       try {
-        await page.goto(`${origin}/referrals`);
+        await requireResourceHealth();
+        await resourceAction(() => page.goto(`${origin}/referrals`));
         recordReloadMilestone(report, 'open_scrape_in_replacement_panel');
-        await click(replacement.panel, 'title', 'Scrape');
+        await resourceAction(() => click(replacement.panel, 'title', 'Scrape'));
         recordReloadMilestone(report, 'observe_replacement_scrape');
         const after = await waitFor(
           'scrape_reload_empty',
@@ -496,6 +530,7 @@ try {
             !s.resultText?.includes(article) &&
             !s.resultText?.includes(lazy),
         );
+        await requireResourceHealth();
         assert.equal(after.saved, false);
         t20.evidence.reload_normal_page_url = page.url();
         t20.evidence.reload_title = after.title;
@@ -508,6 +543,7 @@ try {
       } finally {
         await replacement.panel.detach();
       }
+      await requireResourceHealth();
     },
   });
   assert.equal(
