@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "state": "candidate_verified_bounded_guest_member_and_returning_acceptance_pending",
+  "defect_id": "EXT-D-0112",
+  "classification": "routine bug fix; approved manifest policy surface unchanged",
+  "published_version": "0.2.176",
+  "pending_version": "0.2.181",
+  "pending_candidate_defect": "403-only guest allowance HTTP classifier misses current live HTTP402. Replacement justified by reproduced defect, not higher version alone.",
+  "candidate": {
+    "version": "0.2.205",
+    "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "hosted_run_id": 37180303468,
+    "artifact_id": 11294843385,
+    "store_zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "strict_gates": "success;2071 tests passed,5 skipped; no whole-product health claim",
+    "root_verification": "ZIP hash equals publisher receipt; exact ZIP manifest policy surface equals approved176 baseline; no development key or toolbar popup",
+    "package_refresh": "@ai-matrx/agents0.43.22\u21920.43.23, CHANGELOG states docs/metadata republish with no consumer action"
+  },
+  "independent_review": ".research/guest-402-independent-review.json",
+  "bounded_guest_native": {
+    "receipt_sha256": "7b41a2d8eb1f7189e845f622dff7c939b3493a64e5d2bea3b547726e6e06c259",
+    "journal_sha256": "f60d82246f7c6dc798b167fa5e6462459ce6c2e9b36546d7fd2f24f3ac86fe2d",
+    "root_matched": true,
+    "observed": "Four real signed-out answers, fifthactualoffscreenHTTP402 with flatguest_ai_allowance_used, correctfreeaccountcopy,noRetry",
+    "limits": "Owned unpackedStorepayload with onlymanifestpublickeyadapted; notactualStoreinstallation. Returningpanel/newchatstepstillpending."
+  },
+  "submission": "Not changed; replacement held for full scoped native gates. Cancel review action located in listing More menu, no cancellation performed."
+}
