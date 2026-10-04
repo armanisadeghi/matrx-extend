@@ -20,7 +20,8 @@
     ".research/profile-admin-fields-native.json",
     "docs/stabilization/resource-journals/profile-admin-fields-189-01.jsonl",
     ".research/owned-endpoint-diagnosis.json",
-    ".research/endpoint-diagnostic-peer.json"
+    ".research/endpoint-diagnostic-peer.json",
+    ".research/profile-admin-fields-second-native.json"
   ],
   "transition_history": [
     {
@@ -37,5 +38,5 @@
     }
   ],
   "closure_requirement": "Prove and repair demonstrated startup class with actual helper red/green and independent review; native admin original scenario and surrounding ownership rejection must pass.",
-  "next_action": "One guarded admin run02 with reviewed unchanged diagnostics; if failure recurs, stop after this second environment failure and fix captured cause."
+  "next_action": "Startup did not reproduce in admin02. Keep precise diagnostics active; original failure cause remains unknown, not fixed by a passing retry. Continue independent D108 admin fixture repair."
 }

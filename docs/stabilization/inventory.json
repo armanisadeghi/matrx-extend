@@ -10166,76 +10166,79 @@
         ]
       },
         {
-          "id": "EXT-F-1004-T06",
-          "title": "admin: Identity fields",
-          "modes": [
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-1004-C03"
-          ],
-          "preconditions": [
-            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
-            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
-            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
-            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
-            "Run independently as existing known admin; do not change role or account."
-          ],
-          "steps": [
-            "Expand Identity. Change First name, Middle, Last name, Preferred, Suffix, Pronouns, and Birthday to distinct synthetic values (birthday in a valid YYYY-MM-DD date).",
-            "Verify Save becomes enabled, click Save, and wait for loading to finish.",
-            "Reopen Profile and compare each field and identity card name to the saved values; restore original values and save."
-          ],
-          "expected": [
-            "Edited legal/preferred names, suffix, pronouns and birthday appear in the saved profile after reload.",
-            "Each changed identity field and the identity card display saved values after reload/reopen; restoration can be saved."
-          ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
-          "source_anchors": [
-            "src/features/profile/ProfileView.tsx:100-148",
-            "src/hooks/use-user-profile.ts:87-100"
-          ],
-          "procedure_readiness": "ready",
-          "procedure_gaps": [],
-          "procedure_execution_matrix": [
-            {
-              "mode": "admin",
-              "lifecycle_dimension": "warm",
-              "branch": "default",
-              "inventory_dimensions": [
-                "warm",
-                "reload"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "ready"
-            },
-            {
-              "mode": "admin",
-              "lifecycle_dimension": "reload",
-              "branch": "default",
-              "inventory_dimensions": [
-                "warm",
-                "reload"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "ready"
-            }
-          ],
-          "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
-          "procedure_review": {
-            "proposal_commit": "22994d49",
-            "peer_commit": "2c318798",
-            "report": ".research/popup-profile-acceptance-peer.json",
-            "scope": "Source-reviewed procedure only; no runtime acceptance."
+        "id": "EXT-F-1004-T06",
+        "title": "admin: Identity fields",
+        "modes": [
+          "admin"
+        ],
+        "control_ids": [
+          "EXT-F-1004-C03"
+        ],
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+          "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+          "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+          "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+          "Run independently as existing known admin; do not change role or account."
+        ],
+        "steps": [
+          "Expand Identity. Change First name, Middle, Last name, Preferred, Suffix, Pronouns, and Birthday to distinct synthetic values (birthday in a valid YYYY-MM-DD date).",
+          "Verify Save becomes enabled, click Save, and wait for loading to finish.",
+          "Reopen Profile and compare each field and identity card name to the saved values; restore original values and save."
+        ],
+        "expected": [
+          "Edited legal/preferred names, suffix, pronouns and birthday appear in the saved profile after reload.",
+          "Each changed identity field and the identity card display saved values after reload/reopen; restoration can be saved."
+        ],
+        "dimensions": [
+          "warm",
+          "reload"
+        ],
+        "source_anchors": [
+          "src/features/profile/ProfileView.tsx:100-148",
+          "src/hooks/use-user-profile.ts:87-100"
+        ],
+        "procedure_readiness": "ready",
+        "procedure_gaps": [],
+        "procedure_execution_matrix": [
+          {
+            "mode": "admin",
+            "lifecycle_dimension": "warm",
+            "branch": "default",
+            "inventory_dimensions": [
+              "warm",
+              "reload"
+            ],
+            "observed_outcome": null,
+            "evidence_refs": [],
+            "status": "unverified",
+            "readiness": "ready"
+          },
+          {
+            "mode": "admin",
+            "lifecycle_dimension": "reload",
+            "branch": "default",
+            "inventory_dimensions": [
+              "warm",
+              "reload"
+            ],
+            "observed_outcome": null,
+            "evidence_refs": [],
+            "status": "unverified",
+            "readiness": "ready"
           }
+        ],
+        "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
+        "procedure_review": {
+          "proposal_commit": "22994d49",
+          "peer_commit": "2c318798",
+          "report": ".research/popup-profile-acceptance-peer.json",
+          "scope": "Source-reviewed procedure only; no runtime acceptance."
         },
+        "defect_ids": [
+          "EXT-D-0108"
+        ]
+      },
         {
           "id": "EXT-F-1004-T07",
           "title": "member: Phones",
@@ -11059,75 +11062,78 @@
         ]
       },
         {
-          "id": "EXT-F-1004-T18",
-          "title": "admin: Employment",
-          "modes": [
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-1004-C09"
-          ],
-          "preconditions": [
-            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
-            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
-            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
-            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
-            "Run independently as existing known admin; do not change role or account."
-          ],
-          "steps": [
-            "Expand Employment; set Company and Title to unique synthetic values.",
-            "Save, reopen Profile, verify both values, then restore original values and save."
-          ],
-          "expected": [
-            "Company and title values persist after reload.",
-            "Company and Title values persist after reopening and restore successfully."
-          ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
-          "source_anchors": [
-            "src/features/profile/ProfileView.tsx:206-221",
-            "src/hooks/use-user-profile.ts:87-100"
-          ],
-          "procedure_readiness": "ready",
-          "procedure_gaps": [],
-          "procedure_execution_matrix": [
-            {
-              "mode": "admin",
-              "lifecycle_dimension": "warm",
-              "branch": "default",
-              "inventory_dimensions": [
-                "warm",
-                "reload"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "ready"
-            },
-            {
-              "mode": "admin",
-              "lifecycle_dimension": "reload",
-              "branch": "default",
-              "inventory_dimensions": [
-                "warm",
-                "reload"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "ready"
-            }
-          ],
-          "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
-          "procedure_review": {
-            "proposal_commit": "22994d49",
-            "peer_commit": "2c318798",
-            "report": ".research/popup-profile-acceptance-peer.json",
-            "scope": "Source-reviewed procedure only; no runtime acceptance."
+        "id": "EXT-F-1004-T18",
+        "title": "admin: Employment",
+        "modes": [
+          "admin"
+        ],
+        "control_ids": [
+          "EXT-F-1004-C09"
+        ],
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+          "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+          "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+          "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+          "Run independently as existing known admin; do not change role or account."
+        ],
+        "steps": [
+          "Expand Employment; set Company and Title to unique synthetic values.",
+          "Save, reopen Profile, verify both values, then restore original values and save."
+        ],
+        "expected": [
+          "Company and title values persist after reload.",
+          "Company and Title values persist after reopening and restore successfully."
+        ],
+        "dimensions": [
+          "warm",
+          "reload"
+        ],
+        "source_anchors": [
+          "src/features/profile/ProfileView.tsx:206-221",
+          "src/hooks/use-user-profile.ts:87-100"
+        ],
+        "procedure_readiness": "ready",
+        "procedure_gaps": [],
+        "procedure_execution_matrix": [
+          {
+            "mode": "admin",
+            "lifecycle_dimension": "warm",
+            "branch": "default",
+            "inventory_dimensions": [
+              "warm",
+              "reload"
+            ],
+            "observed_outcome": null,
+            "evidence_refs": [],
+            "status": "unverified",
+            "readiness": "ready"
+          },
+          {
+            "mode": "admin",
+            "lifecycle_dimension": "reload",
+            "branch": "default",
+            "inventory_dimensions": [
+              "warm",
+              "reload"
+            ],
+            "observed_outcome": null,
+            "evidence_refs": [],
+            "status": "unverified",
+            "readiness": "ready"
           }
+        ],
+        "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
+        "procedure_review": {
+          "proposal_commit": "22994d49",
+          "peer_commit": "2c318798",
+          "report": ".research/popup-profile-acceptance-peer.json",
+          "scope": "Source-reviewed procedure only; no runtime acceptance."
         },
+        "defect_ids": [
+          "EXT-D-0108"
+        ]
+      },
         {
           "id": "EXT-F-1004-T19",
           "title": "member: Emergency contacts",
@@ -11382,74 +11388,77 @@
         ]
       },
         {
-          "id": "EXT-F-1004-T22",
-          "title": "admin: Profile section expanders",
-          "modes": [
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-1004-C11"
-          ],
-          "preconditions": [
-            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
-            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
-            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
-            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
-            "Run independently as existing known admin; do not change role or account."
-          ],
-          "steps": [
-            "For Identity, Phones, Emails, Web, Shipping address, Billing address, Employment, and Emergency contacts: note open/closed state. Toggle each section closed then open using its label.",
-            "Change a synthetic Preferred value before toggling Identity closed/open; confirm draft value remains and Unsaved changes stays visible. Click Discard."
-          ],
-          "expected": [
-            "Each selected section opens/closes without losing current draft.",
-            "Each section opens/closes from its label; toggling does not lose the current draft; Discard restores loaded value."
-          ],
-          "dimensions": [
-            "warm",
-            "reload"
-          ],
-          "source_anchors": [
-            "src/features/profile/ProfileView.tsx:100-225"
-          ],
-          "procedure_readiness": "ready",
-          "procedure_gaps": [],
-          "procedure_execution_matrix": [
-            {
-              "mode": "admin",
-              "lifecycle_dimension": "warm",
-              "branch": "default",
-              "inventory_dimensions": [
-                "warm",
-                "reload"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "ready"
-            },
-            {
-              "mode": "admin",
-              "lifecycle_dimension": "reload",
-              "branch": "default",
-              "inventory_dimensions": [
-                "warm",
-                "reload"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "ready"
-            }
-          ],
-          "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
-          "procedure_review": {
-            "proposal_commit": "22994d49",
-            "peer_commit": "2c318798",
-            "report": ".research/popup-profile-acceptance-peer.json",
-            "scope": "Source-reviewed procedure only; no runtime acceptance."
+        "id": "EXT-F-1004-T22",
+        "title": "admin: Profile section expanders",
+        "modes": [
+          "admin"
+        ],
+        "control_ids": [
+          "EXT-F-1004-C11"
+        ],
+        "preconditions": [
+          "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+          "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+          "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+          "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+          "Run independently as existing known admin; do not change role or account."
+        ],
+        "steps": [
+          "For Identity, Phones, Emails, Web, Shipping address, Billing address, Employment, and Emergency contacts: note open/closed state. Toggle each section closed then open using its label.",
+          "Change a synthetic Preferred value before toggling Identity closed/open; confirm draft value remains and Unsaved changes stays visible. Click Discard."
+        ],
+        "expected": [
+          "Each selected section opens/closes without losing current draft.",
+          "Each section opens/closes from its label; toggling does not lose the current draft; Discard restores loaded value."
+        ],
+        "dimensions": [
+          "warm",
+          "reload"
+        ],
+        "source_anchors": [
+          "src/features/profile/ProfileView.tsx:100-225"
+        ],
+        "procedure_readiness": "ready",
+        "procedure_gaps": [],
+        "procedure_execution_matrix": [
+          {
+            "mode": "admin",
+            "lifecycle_dimension": "warm",
+            "branch": "default",
+            "inventory_dimensions": [
+              "warm",
+              "reload"
+            ],
+            "observed_outcome": null,
+            "evidence_refs": [],
+            "status": "unverified",
+            "readiness": "ready"
+          },
+          {
+            "mode": "admin",
+            "lifecycle_dimension": "reload",
+            "branch": "default",
+            "inventory_dimensions": [
+              "warm",
+              "reload"
+            ],
+            "observed_outcome": null,
+            "evidence_refs": [],
+            "status": "unverified",
+            "readiness": "ready"
           }
+        ],
+        "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
+        "procedure_review": {
+          "proposal_commit": "22994d49",
+          "peer_commit": "2c318798",
+          "report": ".research/popup-profile-acceptance-peer.json",
+          "scope": "Source-reviewed procedure only; no runtime acceptance."
         },
+        "defect_ids": [
+          "EXT-D-0108"
+        ]
+      },
         {
           "id": "EXT-F-1004-T23",
           "title": "guest: verify visibility denial",
@@ -12477,294 +12486,297 @@
           }
         },
         {
-          "id": "EXT-F-1004-T28",
-          "title": "First profile save names active organization and existing profile stays filed",
-          "control_ids": [
-            "EXT-F-1004-C02",
-            "EXT-F-1004-C17"
-          ],
-          "modes": [
-            "member",
-            "admin"
-          ],
-          "preconditions": [
-            "Use a disposable profile with no existing row and a principal belonging to two organizations; then use a separate existing profile filed in the other organization.",
-            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
-            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
-            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
-            "Execute each mode row only after the role-specific identity and both required profile-row fixtures are verified privately; no account or row provisioning is part of this procedure."
-          ],
-          "steps": [
-            "Before touching the extension, privately verify the existing designated test identity, member/admin role, membership in two organizations, and pre-existing profile fixtures: one principal with no user_form_profile row and one with an existing row filed under org A. Do not expose identifiers, credentials, or personal data in evidence. If either role-specific fixture or its approved access path is unavailable, leave that role\u2019s matrix rows unverified.",
-            "On the existing no-row fixture, set device organization A, save a synthetic Preferred value, and use an authorized read-only observation to confirm organization_id A.",
-            "On the existing row fixture, confirm row organization A; switch device organization to B, edit a synthetic field and save; confirm the row stays filed under A.",
-            "On a pre-existing no-row fixture with device organization unset, attempt Save; record whether the resolver holds/presents the organization picker and confirm no write until a choice is made. Restore any changed synthetic values/selection under the existing fixture protocol."
-          ],
-          "expected": [
-            "First save explicitly uses A.",
-            "Saving the existing row retains A and does not move it to B.",
-            "Without an active organization, no profile write occurs and the user receives the resolver remedy.",
-            "New row uses explicit active device organization A. Existing row retains A after device selection changes to B. Without an active organization, no profile write occurs until a user selects one. No account, membership, role, or profile fixture is created or rotated by this procedure."
-          ],
-          "dimensions": [
-            "warm",
-            "reload",
-            "organization-unset",
-            "organization-switch"
-          ],
-          "source_anchors": [
-            "src/hooks/use-user-profile.ts:87-100",
-            "src/lib/supabase/user-profile.ts",
-            "src/lib/org/active-org.ts"
-          ],
-          "procedure_readiness": "requires_fixture",
-          "procedure_gaps": [
-            "The case requires controlled disposable database rows and membership in two organizations. Existing profile repository semantics may be server-owned; check current user-profile module/database contract before executing."
-          ],
-          "procedure_execution_matrix": [
-            {
-              "mode": "member",
-              "lifecycle_dimension": "warm",
-              "branch": "new-row-with-device-org-A",
-              "inventory_dimensions": [
-                "warm",
-                "reload",
-                "organization-unset",
-                "organization-switch"
-              ],
-              "observed_outcome": "Independent guarded member observation passed this bounded branch on frozen b4/189; original row absence restored and authenticated-read verified.",
-              "evidence_refs": [
-                ".research/profile-member-final-189-native.json",
-                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
-              ],
-              "status": "pass",
-              "readiness": "requires_fixture"
-            },
-            {
-              "mode": "member",
-              "lifecycle_dimension": "warm",
-              "branch": "existing-row-org-A-after-device-switch-to-B",
-              "inventory_dimensions": [
-                "warm",
-                "reload",
-                "organization-unset",
-                "organization-switch"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "requires_fixture"
-            },
-            {
-              "mode": "member",
-              "lifecycle_dimension": "warm",
-              "branch": "new-row-without-device-org",
-              "inventory_dimensions": [
-                "warm",
-                "reload",
-                "organization-unset",
-                "organization-switch"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "requires_fixture"
-            },
-            {
-              "mode": "member",
-              "lifecycle_dimension": "reload",
-              "branch": "new-row-with-device-org-A",
-              "inventory_dimensions": [
-                "warm",
-                "reload",
-                "organization-unset",
-                "organization-switch"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "requires_fixture"
-            },
-            {
-              "mode": "member",
-              "lifecycle_dimension": "reload",
-              "branch": "existing-row-org-A-after-device-switch-to-B",
-              "inventory_dimensions": [
-                "warm",
-                "reload",
-                "organization-unset",
-                "organization-switch"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "requires_fixture"
-            },
-            {
-              "mode": "member",
-              "lifecycle_dimension": "reload",
-              "branch": "new-row-without-device-org",
-              "inventory_dimensions": [
-                "warm",
-                "reload",
-                "organization-unset",
-                "organization-switch"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "requires_fixture"
-            },
-            {
-              "mode": "admin",
-              "lifecycle_dimension": "warm",
-              "branch": "new-row-with-device-org-A",
-              "inventory_dimensions": [
-                "warm",
-                "reload",
-                "organization-unset",
-                "organization-switch"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "requires_fixture"
-            },
-            {
-              "mode": "admin",
-              "lifecycle_dimension": "warm",
-              "branch": "existing-row-org-A-after-device-switch-to-B",
-              "inventory_dimensions": [
-                "warm",
-                "reload",
-                "organization-unset",
-                "organization-switch"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "requires_fixture"
-            },
-            {
-              "mode": "admin",
-              "lifecycle_dimension": "warm",
-              "branch": "new-row-without-device-org",
-              "inventory_dimensions": [
-                "warm",
-                "reload",
-                "organization-unset",
-                "organization-switch"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "requires_fixture"
-            },
-            {
-              "mode": "admin",
-              "lifecycle_dimension": "reload",
-              "branch": "new-row-with-device-org-A",
-              "inventory_dimensions": [
-                "warm",
-                "reload",
-                "organization-unset",
-                "organization-switch"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "requires_fixture"
-            },
-            {
-              "mode": "admin",
-              "lifecycle_dimension": "reload",
-              "branch": "existing-row-org-A-after-device-switch-to-B",
-              "inventory_dimensions": [
-                "warm",
-                "reload",
-                "organization-unset",
-                "organization-switch"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "requires_fixture"
-            },
-            {
-              "mode": "admin",
-              "lifecycle_dimension": "reload",
-              "branch": "new-row-without-device-org",
-              "inventory_dimensions": [
-                "warm",
-                "reload",
-                "organization-unset",
-                "organization-switch"
-              ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "requires_fixture"
-            }
-          ],
-          "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
-          "procedure_review": {
-            "proposal_commit": "22994d49",
-            "peer_commit": "2c318798",
-            "report": ".research/popup-profile-acceptance-peer.json",
-            "scope": "Source-reviewed procedure only; no runtime acceptance."
+        "id": "EXT-F-1004-T28",
+        "title": "First profile save names active organization and existing profile stays filed",
+        "control_ids": [
+          "EXT-F-1004-C02",
+          "EXT-F-1004-C17"
+        ],
+        "modes": [
+          "member",
+          "admin"
+        ],
+        "preconditions": [
+          "Use a disposable profile with no existing row and a principal belonging to two organizations; then use a separate existing profile filed in the other organization.",
+          "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+          "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+          "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+          "Execute each mode row only after the role-specific identity and both required profile-row fixtures are verified privately; no account or row provisioning is part of this procedure."
+        ],
+        "steps": [
+          "Before touching the extension, privately verify the existing designated test identity, member/admin role, membership in two organizations, and pre-existing profile fixtures: one principal with no user_form_profile row and one with an existing row filed under org A. Do not expose identifiers, credentials, or personal data in evidence. If either role-specific fixture or its approved access path is unavailable, leave that role\u2019s matrix rows unverified.",
+          "On the existing no-row fixture, set device organization A, save a synthetic Preferred value, and use an authorized read-only observation to confirm organization_id A.",
+          "On the existing row fixture, confirm row organization A; switch device organization to B, edit a synthetic field and save; confirm the row stays filed under A.",
+          "On a pre-existing no-row fixture with device organization unset, attempt Save; record whether the resolver holds/presents the organization picker and confirm no write until a choice is made. Restore any changed synthetic values/selection under the existing fixture protocol."
+        ],
+        "expected": [
+          "First save explicitly uses A.",
+          "Saving the existing row retains A and does not move it to B.",
+          "Without an active organization, no profile write occurs and the user receives the resolver remedy.",
+          "New row uses explicit active device organization A. Existing row retains A after device selection changes to B. Without an active organization, no profile write occurs until a user selects one. No account, membership, role, or profile fixture is created or rotated by this procedure."
+        ],
+        "dimensions": [
+          "warm",
+          "reload",
+          "organization-unset",
+          "organization-switch"
+        ],
+        "source_anchors": [
+          "src/hooks/use-user-profile.ts:87-100",
+          "src/lib/supabase/user-profile.ts",
+          "src/lib/org/active-org.ts"
+        ],
+        "procedure_readiness": "requires_fixture",
+        "procedure_gaps": [
+          "The case requires controlled disposable database rows and membership in two organizations. Existing profile repository semantics may be server-owned; check current user-profile module/database contract before executing."
+        ],
+        "procedure_execution_matrix": [
+          {
+            "mode": "member",
+            "lifecycle_dimension": "warm",
+            "branch": "new-row-with-device-org-A",
+            "inventory_dimensions": [
+              "warm",
+              "reload",
+              "organization-unset",
+              "organization-switch"
+            ],
+            "observed_outcome": "Independent guarded member observation passed this bounded branch on frozen b4/189; original row absence restored and authenticated-read verified.",
+            "evidence_refs": [
+              ".research/profile-member-final-189-native.json",
+              "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
+            ],
+            "status": "pass",
+            "readiness": "requires_fixture"
           },
-          "required_fixture": "Pre-existing disposable member/admin principals and profile-row fixtures must be verified before execution. The designated non-admin test principal test@test.com has prior read-only membership evidence in docs/stabilization/reports/member-access-probe.json, but its extension OAuth access and the required absent/existing user_form_profile rows are not established here. Verify identity and fixture metadata privately without reading or recording secrets; do not create accounts, rotate credentials, change memberships, or write to live profiles. If pre-existing fixtures cannot be verified, keep every row unverified.",
-          "results": {
-            "member": {
-              "status": "partial",
-              "run_id": "profile-member-final-189-05",
-              "build_variant": "Development0.2.189, source b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced, CI37164174445/artifact11288542496",
-              "verified_substeps": [
-                "First real UI Save created a test-owned row with the explicit active device organization; original absence restored."
-              ],
-              "remaining_criteria": [
-                "Organization switch/unset, reload first-save and admin branches remain unverified."
-              ],
-              "evidence": [
-                ".research/profile-member-final-189-native.json",
-                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
-              ],
-              "verified_at": "2026-10-04T01:29:17.055381+00:00"
-            }
+          {
+            "mode": "member",
+            "lifecycle_dimension": "warm",
+            "branch": "existing-row-org-A-after-device-switch-to-B",
+            "inventory_dimensions": [
+              "warm",
+              "reload",
+              "organization-unset",
+              "organization-switch"
+            ],
+            "observed_outcome": null,
+            "evidence_refs": [],
+            "status": "unverified",
+            "readiness": "requires_fixture"
           },
-          "previous_results": [
-            {
-              "mode": "member",
-              "status": "partial",
-              "run_id": "profile-member-native-next-04",
-              "build_variant": "receipt-bound development 0.2.184; CI37159097093/artifact11286822448/source9dfb5911",
-              "verified_substeps": [
-                "Real member first Save created its owner row with the selected device organization. Original absence was later restored through verified guarded conditional owner cleanup."
-              ],
-              "remaining_criteria": [
-                "True extension reload was not established.",
-                "All other unverified execution-matrix branches remain required."
-              ],
-              "evidence": ".research/profile-member-bounded-owner-verification.json",
-              "verified_at": "2026-10-03T23:14:01.024268+00:00"
-            },
-            {
-              "mode": "member",
-              "status": "partial",
-              "run_id": "profile-member-retest-189-01",
-              "build_variant": "receipt-bound development0.2.189; CI37164174445/artifact11288542496/sourceb4b9f0c4",
-              "verified_substeps": [
-                "Real member first Save created its owner row with the selected device organization. Original absence was later restored through verified guarded conditional owner cleanup."
-              ],
-              "remaining_criteria": [
-                "Reload-mode Profile cases remain unverified: genuineextensionreloadpassed butsubsequentdriverclickfailed.",
-                "All other unverified execution-matrix branches remain required."
-              ],
-              "evidence": ".research/profile-member-retest189.json",
-              "verified_at": "2026-10-04T00:35:54.125394+00:00"
-            }
-          ]
-        }
+          {
+            "mode": "member",
+            "lifecycle_dimension": "warm",
+            "branch": "new-row-without-device-org",
+            "inventory_dimensions": [
+              "warm",
+              "reload",
+              "organization-unset",
+              "organization-switch"
+            ],
+            "observed_outcome": null,
+            "evidence_refs": [],
+            "status": "unverified",
+            "readiness": "requires_fixture"
+          },
+          {
+            "mode": "member",
+            "lifecycle_dimension": "reload",
+            "branch": "new-row-with-device-org-A",
+            "inventory_dimensions": [
+              "warm",
+              "reload",
+              "organization-unset",
+              "organization-switch"
+            ],
+            "observed_outcome": null,
+            "evidence_refs": [],
+            "status": "unverified",
+            "readiness": "requires_fixture"
+          },
+          {
+            "mode": "member",
+            "lifecycle_dimension": "reload",
+            "branch": "existing-row-org-A-after-device-switch-to-B",
+            "inventory_dimensions": [
+              "warm",
+              "reload",
+              "organization-unset",
+              "organization-switch"
+            ],
+            "observed_outcome": null,
+            "evidence_refs": [],
+            "status": "unverified",
+            "readiness": "requires_fixture"
+          },
+          {
+            "mode": "member",
+            "lifecycle_dimension": "reload",
+            "branch": "new-row-without-device-org",
+            "inventory_dimensions": [
+              "warm",
+              "reload",
+              "organization-unset",
+              "organization-switch"
+            ],
+            "observed_outcome": null,
+            "evidence_refs": [],
+            "status": "unverified",
+            "readiness": "requires_fixture"
+          },
+          {
+            "mode": "admin",
+            "lifecycle_dimension": "warm",
+            "branch": "new-row-with-device-org-A",
+            "inventory_dimensions": [
+              "warm",
+              "reload",
+              "organization-unset",
+              "organization-switch"
+            ],
+            "observed_outcome": null,
+            "evidence_refs": [],
+            "status": "unverified",
+            "readiness": "requires_fixture"
+          },
+          {
+            "mode": "admin",
+            "lifecycle_dimension": "warm",
+            "branch": "existing-row-org-A-after-device-switch-to-B",
+            "inventory_dimensions": [
+              "warm",
+              "reload",
+              "organization-unset",
+              "organization-switch"
+            ],
+            "observed_outcome": null,
+            "evidence_refs": [],
+            "status": "unverified",
+            "readiness": "requires_fixture"
+          },
+          {
+            "mode": "admin",
+            "lifecycle_dimension": "warm",
+            "branch": "new-row-without-device-org",
+            "inventory_dimensions": [
+              "warm",
+              "reload",
+              "organization-unset",
+              "organization-switch"
+            ],
+            "observed_outcome": null,
+            "evidence_refs": [],
+            "status": "unverified",
+            "readiness": "requires_fixture"
+          },
+          {
+            "mode": "admin",
+            "lifecycle_dimension": "reload",
+            "branch": "new-row-with-device-org-A",
+            "inventory_dimensions": [
+              "warm",
+              "reload",
+              "organization-unset",
+              "organization-switch"
+            ],
+            "observed_outcome": null,
+            "evidence_refs": [],
+            "status": "unverified",
+            "readiness": "requires_fixture"
+          },
+          {
+            "mode": "admin",
+            "lifecycle_dimension": "reload",
+            "branch": "existing-row-org-A-after-device-switch-to-B",
+            "inventory_dimensions": [
+              "warm",
+              "reload",
+              "organization-unset",
+              "organization-switch"
+            ],
+            "observed_outcome": null,
+            "evidence_refs": [],
+            "status": "unverified",
+            "readiness": "requires_fixture"
+          },
+          {
+            "mode": "admin",
+            "lifecycle_dimension": "reload",
+            "branch": "new-row-without-device-org",
+            "inventory_dimensions": [
+              "warm",
+              "reload",
+              "organization-unset",
+              "organization-switch"
+            ],
+            "observed_outcome": null,
+            "evidence_refs": [],
+            "status": "unverified",
+            "readiness": "requires_fixture"
+          }
+        ],
+        "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
+        "procedure_review": {
+          "proposal_commit": "22994d49",
+          "peer_commit": "2c318798",
+          "report": ".research/popup-profile-acceptance-peer.json",
+          "scope": "Source-reviewed procedure only; no runtime acceptance."
+        },
+        "required_fixture": "Pre-existing disposable member/admin principals and profile-row fixtures must be verified before execution. The designated non-admin test principal test@test.com has prior read-only membership evidence in docs/stabilization/reports/member-access-probe.json, but its extension OAuth access and the required absent/existing user_form_profile rows are not established here. Verify identity and fixture metadata privately without reading or recording secrets; do not create accounts, rotate credentials, change memberships, or write to live profiles. If pre-existing fixtures cannot be verified, keep every row unverified.",
+        "results": {
+          "member": {
+            "status": "partial",
+            "run_id": "profile-member-final-189-05",
+            "build_variant": "Development0.2.189, source b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced, CI37164174445/artifact11288542496",
+            "verified_substeps": [
+              "First real UI Save created a test-owned row with the explicit active device organization; original absence restored."
+            ],
+            "remaining_criteria": [
+              "Organization switch/unset, reload first-save and admin branches remain unverified."
+            ],
+            "evidence": [
+              ".research/profile-member-final-189-native.json",
+              "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
+            ],
+            "verified_at": "2026-10-04T01:29:17.055381+00:00"
+          }
+        },
+        "previous_results": [
+          {
+            "mode": "member",
+            "status": "partial",
+            "run_id": "profile-member-native-next-04",
+            "build_variant": "receipt-bound development 0.2.184; CI37159097093/artifact11286822448/source9dfb5911",
+            "verified_substeps": [
+              "Real member first Save created its owner row with the selected device organization. Original absence was later restored through verified guarded conditional owner cleanup."
+            ],
+            "remaining_criteria": [
+              "True extension reload was not established.",
+              "All other unverified execution-matrix branches remain required."
+            ],
+            "evidence": ".research/profile-member-bounded-owner-verification.json",
+            "verified_at": "2026-10-03T23:14:01.024268+00:00"
+          },
+          {
+            "mode": "member",
+            "status": "partial",
+            "run_id": "profile-member-retest-189-01",
+            "build_variant": "receipt-bound development0.2.189; CI37164174445/artifact11288542496/sourceb4b9f0c4",
+            "verified_substeps": [
+              "Real member first Save created its owner row with the selected device organization. Original absence was later restored through verified guarded conditional owner cleanup."
+            ],
+            "remaining_criteria": [
+              "Reload-mode Profile cases remain unverified: genuineextensionreloadpassed butsubsequentdriverclickfailed.",
+              "All other unverified execution-matrix branches remain required."
+            ],
+            "evidence": ".research/profile-member-retest189.json",
+            "verified_at": "2026-10-04T00:35:54.125394+00:00"
+          }
+        ],
+        "defect_ids": [
+          "EXT-D-0108"
+        ]
+      }
       ],
       "cells": {
         "guest": {

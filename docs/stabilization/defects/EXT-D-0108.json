@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0108",
+  "feature_id": "EXT-F-1004",
+  "case_ids": ["EXT-F-1004-T28", "EXT-F-1004-T06", "EXT-F-1004-T18", "EXT-F-1004-T22"],
+  "surface": "Admin Profile native acceptance first-save fixture",
+  "auth_mode": "admin",
+  "title": "Profile acceptance rejects designated admin when original Profile row is absent",
+  "reproduction": [
+    "Use frozen189/sourceb4b9f0c4/CI37164174445/artifact11288542496, current reviewed diagnostics4d54b6d9 and .research/profile-reload-hydration.json launch recipe under resourceguard.",
+    "Set PROFILE_AUTH_MODE=admin and PROFILE_EXTENDED_CASES=1; sign in as existing designated admin through first-party helper, verify actual identity/role and selected device organization.",
+    "When initial owner Profile GET200 returns no row, actual runner asserts AUTH_MODE must equal member and throws first_save_requires_designated_member before firstsave or field cases. Captured in profile-admin-fields-189-02."
+  ],
+  "expected": "Authorized designated admin and member can execute first-save through actual UI under identical exact ownership/revision/originalabsence restoration requirements.",
+  "actual": "Member-only runner prerequisite blocks admin before any write or six extended acceptance cells. Product write behavior untested, not a product failure.",
+  "severity": "S2 admin testing blocked; product impact not established",
+  "priority": "P1 contained Profile acceptance prerequisite",
+  "state": "in-fix",
+  "owner": "profile_admin_first_save_fix",
+  "evidence": [
+    ".research/profile-admin-fields-second-native.json",
+    "docs/stabilization/resource-journals/profile-admin-fields-189-02.jsonl"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T04:14:03.906187+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual guarded admin02 read absent Profile row and failed hardcoded member gate before writes."
+    },
+    {
+      "at": "2026-10-04T04:14:03.906187+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Root matched raw230f5693 and journal2e5f0563 hashes and confirmed exact unconditional admin rejection in source."
+    },
+    {
+      "at": "2026-10-04T04:14:03.906187+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol source repair owns designated verified account support with original strict journal/restoration retained; fresh source and native peer required."
+    }
+  ],
+  "closure_requirement": "Actual first-save guard red/green with mismatched identity/role/org rejection, independent source review, and designated-admin native original scenario plus surrounding fields/reload/exact restoration pass."
+}
