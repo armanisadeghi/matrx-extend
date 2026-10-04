@@ -1,0 +1,33 @@
+{
+  "reviewed_commit": "b9d7acbc37bf6ee960208654b66199ce8a6a2834",
+  "defect": "EXT-D-0118",
+  "reviewer_lane": "fresh_independent_zero_authorship",
+  "verdict_a_acceptance": {
+    "status": "PARTIAL",
+    "basis": "Source changes directly address the measured cause, but no independent native run of this commit exists. Acceptance is not established.",
+    "evidence": [
+      "Baseline receipt in .research/scrape-guarded-development-native.json records a 360px viewport, resultTabs width 378.765625px/right 390.765625px, document scrollWidth 391px, and document scrollLeft 31 after Links/SEO/Schema; title and capture row move from left 12px to -19px.",
+      "Commit b9d7acbc changes result TabsList from self-start to self-stretch, sets min-w-0, flex-wrap, justify-start and h-auto. At a 360px parent width with mx-3, this should constrain its content box to the available 336px and wrap the six non-wrapping triggers.",
+      "The committed .research/scrape-layout-fix.json explicitly leaves native_panel_geometry pending_independent_hosted_run. There is no post-change receipt/screenshot proving every trigger visible/selectable, document scrollWidth <= clientWidth after each tab, no horizontal shift, or normal-width behavior."
+    ],
+    "native_gaps": [
+      "Run exact native hosted verification on commit/artifact containing b9d7acbc at 360px: capture, select Article/Images/Video/Links/SEO/Schema, inspect screenshots and geometry after each; verify title and capture controls stay inside viewport and document scrollWidth <= clientWidth.",
+      "Verify deep capture after returning to Article, and a normal-width panel to confirm the ordinary layout remains acceptable."
+    ],
+    "readiness": "Ready for exact CI native verification; not ready for product closure."
+  },
+  "verdict_b_quality": {
+    "status": "PASS_WITH_NATIVE_EVIDENCE_OPEN",
+    "basis": "The implementation targets the causal intrinsic-width overflow at the source and reuses the existing shared TabsList primitive.",
+    "findings": [
+      "Inspected installed @ai-matrx/design-system 0.52.0 source map: TabsList renders inline-flex h-9 items-center justify-center-safe; cn() uses tailwind-merge, so caller h-auto replaces h-9 and justify-start replaces justify-center-safe. The class overrides are effective.",
+      "Tabs is Radix Root; this caller supplies flex flex-1 flex-col min-h-0. In a column flex container, self-stretch constrains the TabsList cross-axis width; mx-3 leaves 336px at 360px. flex-wrap permits the whitespace-nowrap triggers to flow to another line, while auto height allows that row to be shown.",
+      "No hidden-tab, clipping, or bespoke tabs implementation was introduced. Feature test documents all six tabs, viewport overflow, horizontal movement, and title/capture-control visibility."
+    ],
+    "quality_gaps": [
+      "Source/class reasoning is not layout proof. Only the requested post-change native run can establish that ancestor sizing/scroll behavior is fixed and normal-width presentation remains acceptable."
+    ]
+  },
+  "scope": "Review only; no product edits or tests run.",
+  "independent_review_limit": "No browser, hosted runner, build, release, or live native session used, per lane constraints."
+}
