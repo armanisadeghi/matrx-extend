@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "task": "profile-member-retest189-next",
+  "status": "partial_member_cases_passed_reload_reopen_failed_restoration_verified",
+  "recorded_at_utc": "2026-10-04T00:50:36Z",
+  "run_id": "profile-member-retest-189-02",
+  "scope": "One guarded non-admin member Profile run with bounded first-save, warm cases, T26 save-failure retry, and extension reload. No inventory or defect status promoted.",
+  "artifact": {
+    "source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "fix_commit": "26005bd42fb85109e9f24af64d736f2b0359d186",
+    "ci_run_id": 37164174445,
+    "ci_conclusion": "success",
+    "artifact_id": 11288542496,
+    "version": "0.2.189",
+    "tree_sha256": "494646f6dd65399e0e7eee65fd1d9bd00ef97d173c5ceb9674de276ca12dc23a",
+    "receipt_sha256": "59508f1709b214b329ee2b59456322177e7a1d5862680e685872e6122a5b4ecb",
+    "claim_boundary": "Exact imported b4b9f0c4 artifact only; no later main/version runtime claim."
+  },
+  "resource": {
+    "admitted": true,
+    "resource_invalid": false,
+    "child_exit_code": 1,
+    "decision": "child_failed",
+    "journal_path": "docs/stabilization/resource-journals/profile-member-retest-189-02.jsonl",
+    "journal_sha256": "d721055b53018e4475e30ae8afa744f683548729baeabe7eaaa492e2c2ee0993",
+    "fresh_profile_directories_mode": "0700"
+  },
+  "member_identity": {
+    "first_party_identity_verified": true,
+    "extension_profile_matches_first_party": true,
+    "canonical_nonadmin_check_http_status": 200,
+    "canonical_admin_rows": 0,
+    "device_organization_verified": true,
+    "identity_values_recorded": false
+  },
+  "initial_state_and_cleanup": {
+    "profile_row_existed_before": false,
+    "first_save_created_row_through_member_ui": true,
+    "owner_and_device_organization_verified": true,
+    "original_absence_restored": true,
+    "authenticated_owner_read_absent_after_cleanup": true,
+    "private_ownership_receipt_retained": true,
+    "private_ownership_receipt_mode": "0600",
+    "single_use_magic_link_removed": true
+  },
+  "cases": [
+    {
+      "id": "EXT-F-1004-T28",
+      "dimension": "first-save",
+      "status": "bounded_pass_after_restoration",
+      "branch": "new-row-with-device-organization"
+    },
+    {
+      "id": "EXT-F-1004-T01",
+      "dimension": "warm",
+      "status": "passed",
+      "observed": {
+        "draft_dirty": true,
+        "discard_visible": true,
+        "back_to_chat": true,
+        "reopened_original": true
+      }
+    },
+    {
+      "id": "EXT-F-1004-T03",
+      "dimension": "warm",
+      "branch": "discard-draft",
+      "status": "passed",
+      "observed": {
+        "discard_restored": true,
+        "save_disabled": true
+      }
+    },
+    {
+      "id": "EXT-F-1004-T03",
+      "dimension": "warm",
+      "branch": "save-draft",
+      "status": "passed",
+      "observed": {
+        "saved_after_reopen": true,
+        "original_restored_after_reopen": true
+      }
+    },
+    {
+      "id": "EXT-F-1004-T25",
+      "dimension": "warm",
+      "branch": "denied-owner-read-retry",
+      "status": "passed",
+      "observed": {
+        "network_owner_reads_refused": 4,
+        "editors_during_denial": 0,
+        "header_save_disabled": true,
+        "footer_save_enabled": false,
+        "retry_restored_original": true,
+        "owner_read_http_200_after_retry": true
+      }
+    },
+    {
+      "id": "EXT-F-1004-T26",
+      "dimension": "warm",
+      "branch": "profile-write-failure-then-retry",
+      "status": "passed_after_restoration",
+      "observed": {
+        "intercepted_upserts": 1,
+        "failed_draft_retained": true,
+        "failed_save_stopped_busy": true,
+        "failed_save_error_visible": true,
+        "retry_enabled": true,
+        "retry_persisted_after_reopen": true,
+        "owned_row_value_restored": true,
+        "runner_verified_original_row_absence": true
+      }
+    }
+  ],
+  "reload": {
+    "management_reload_clicked": true,
+    "old_targets_retired": true,
+    "worker_replaced": true,
+    "panel_replaced": true,
+    "failure_code": "pointer_target_not_unique",
+    "stage": "extension_reload",
+    "operation": "open_profile_after_reload",
+    "logical_pointer_call": "account_menu",
+    "matched_target_count": 0,
+    "visible_match_count": 0,
+    "ui_counts": {
+      "active_settings_tab": false,
+      "active_chat_tab": true,
+      "active_tab_count": 1,
+      "account_button_count": 0,
+      "profile_button_count": 0,
+      "back_button_count": 0,
+      "menu_count": 0
+    },
+    "reload_dimension_cases_recorded": false,
+    "overall_acceptance": "failed; do not promote reload-mode cases"
+  },
+  "evidence": {
+    "raw_report_external_path": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-member-retest-189-02/evidence/profile-native-profile-member-retest-189-02.json",
+    "raw_report_sha256": "610650c325de52462787d81f266a9bc0c0deaab6b4a75bb74381eb00c999ca40",
+    "screenshots_external_only": true
+  },
+  "limitations": [
+    "The runner returned child exit 1 after extension reload when reopening Profile; the reload lifecycle itself succeeded but reload-mode Profile cases are unverified.",
+    "Structured diagnostics include only safe operation labels, codes, counts, and content-free UI counts; no identity values, selectors, titles, or DOM contents are recorded.",
+    "This evidence is not a full Profile acceptance or defect closure. No further native attempt was made."
+  ]
+}
