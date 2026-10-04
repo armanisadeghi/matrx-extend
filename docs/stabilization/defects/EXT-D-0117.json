@@ -1,0 +1,29 @@
+{
+  "id": "EXT-D-0117",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T08"],
+  "surface": "Hosted side-panel acceptance initialization",
+  "auth_mode": "guest intended; authentication state not reached",
+  "title": "Exact Store acceptance cannot confirm side-panel runtime context after panel opening",
+  "reproduction": [
+    "Dispatch hosted-guest-acceptance.yml guest-scrape with release_run_id37180303468 at workflow head3c173006ebb6d5ee6ca767db84340234252580f4.",
+    "Run37187228871 passes measured package/browser/acceptance admission and connects owned Chrome CDP.",
+    "Native setup opens the panel then fails native_sidepanel_runtime_context_missing at panel_context; receipt has no guest observation or cases."
+  ],
+  "expected": "Owned panel is confirmed through its exact extension runtime context before guest test actions; failures retain safe causal evidence.",
+  "actual": "Panel initialization fails before product case execution; cause and product impact remain unknown.",
+  "severity": "S2: acceptance blocked; product impact unestablished",
+  "priority": "P1: restore trustworthy Store acceptance",
+  "state": "open",
+  "owner": "hosted_chrome_startup",
+  "evidence": [".research/guest-scrape-diagnostic-native.json"],
+  "transition_history": [
+    {
+      "at": "2026-10-04T08:04:16.972876+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Exact hosted Store205 run retained runtime-context failure before cases."
+    }
+  ],
+  "closure_requirement": "Demonstrate cause, independently verify repair and actual owned Store panel initialization; surrounding ownership checks must still reject foreign contexts."
+}

@@ -11,7 +11,7 @@
     "Compare local/store ZIP205: action, background, content_scripts, externally_connectable and key differ, alongside JavaScript payloads; they are not equivalent except manifest key."
   ],
   "expected": "A Store acceptance case uses the exact Store ZIP with only a declared identity adaptation, verifies its byte/source/tree provenance, and labels development-only evidence honestly.",
-  "actual": "Hosted Store selection source-fixed in edaf85c3 and independently reviewed; current overclaims corrected. ExactStore browser acceptance pending run37186201850.",
+  "actual": "Explicit Store selection independently reviewed; exact Store205 runs37186201850 and37187228871 bound the expected adapted tree but failed before product cases at CDP timeout and panel runtime context respectively. Native acceptance remains incomplete.",
   "severity": "S2: release evidence can misrepresent the package tested",
   "priority": "P1: correct selection and evidence before next hosted Store acceptance",
   "state": "fixed",
@@ -23,7 +23,9 @@
     ".research/guest-402-native-acceptance.json",
     ".research/hosted-store-artifact-repair.json",
     ".research/hosted-store-artifact-peer.json",
-    ".research/hosted-artifact-scope-correction.json"
+    ".research/hosted-artifact-scope-correction.json",
+    ".research/guest-scrape-store-native.json",
+    ".research/guest-scrape-diagnostic-native.json"
   ],
   "transition_history": [
     {
