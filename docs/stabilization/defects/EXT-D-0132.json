@@ -50,11 +50,7 @@
       "reason": "Fresh independent4cc242d3 reproduced actualwrapper baseline GREEN/exactbad-event-label mutation RED plus23focusedpass. FullCI37237036998 at2fed8191 succeeded; root read actualwrapper joblog1pass0fail0skip. Native confirmation pending, no priorrun promoted."
     }
   ],
-  "fix_commits": [
-    "da9669c9",
-    "e2d06172",
-    "2fed8191"
-  ],
+  "fix_commits": ["da9669c9", "e2d06172", "2fed8191"],
   "hosted_ci": {
     "run_id": 37237036998,
     "head": "2fed8191b89f6cb8a8d07ca599bc24ee74b36296",
