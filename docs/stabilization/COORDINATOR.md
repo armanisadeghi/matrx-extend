@@ -5,7 +5,8 @@
 Previous turn classification: **progress** — independently verified member warm/reload cases, closed D101/D102 for their reproduced failures, and reconciled/pushed all managed repositories. Baseline for this turn was copied from the final workspace ledger before refreshing remotes.
 
 - `profile_identity_employment_cases` (Sol medium, source only): executable Identity, Employment and section-expander cases T05/T06/T17/T18/T21/T22 across warm/reload, preserving strict private per-write ownership and original restoration. Owns new case modules and narrow runner integration; no native/DB/build/release. Fifteen-minute bound, fresh source review before native.
-- `popup_guest_native_census` (Luna medium): sole guarded heavy owner for local/unpacked guest popup T01/T04 warm/reload and Options only if its procedure is straightforward. Exact frozen b4/189 artifact. Real toolbar entrypoint required; direct popup URL is not acceptance. Ten-minute/two-attempt bound; no sign-in or database writes.
+- `popup_guest_native_census` (Luna medium) is terminal at b08421ef: valid scratch preflight only, no owned browser launched. CUA selected existing shared CFT; no input sent. All guest popup cases remain unverified.
+- `popup_owned_toolbar_smoke` (Sol medium) now owns sole guarded heavy slot: launch generic native harness in an unmistakably owned profile/window, prove one actual toolbar action, then bounded guest T01/T04 warm/reload if supported. Sixty-tool-call/ten-minute bound, two environment failures then handoff. No member login, DB writes, or product edits.
 
 Root owns tracking, review routing and synchronization. Preserve pending Store181; no new dashboard poll needed immediately after the previous 01:33UTC check.
 
