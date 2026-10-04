@@ -1,0 +1,203 @@
+{
+  "status": "procedure-ready-unverified",
+  "scope": {
+    "feature_ids": [
+      "EXT-F-4061",
+      "EXT-F-4062",
+      "EXT-F-4063",
+      "EXT-F-4064",
+      "EXT-F-4065",
+      "EXT-F-4066",
+      "EXT-F-4067",
+      "EXT-F-4068",
+      "EXT-F-4069"
+    ],
+    "control_count": 9,
+    "case_count": 9,
+    "design_status": "procedure-ready-unverified",
+    "test_status": "preserved-unverified",
+    "roles": [
+      "member",
+      "admin"
+    ],
+    "guest": "not-applicable (Tools UI sign-in gate)"
+  },
+  "procedures": [
+    {
+      "id": "EXT-F-4061",
+      "name": "press_keys",
+      "steps": 6,
+      "expected": 3
+    },
+    {
+      "id": "EXT-F-4062",
+      "name": "hover_element",
+      "steps": 6,
+      "expected": 3
+    },
+    {
+      "id": "EXT-F-4063",
+      "name": "focus_element",
+      "steps": 6,
+      "expected": 3
+    },
+    {
+      "id": "EXT-F-4064",
+      "name": "blur_element",
+      "steps": 6,
+      "expected": 3
+    },
+    {
+      "id": "EXT-F-4065",
+      "name": "right_click_element",
+      "steps": 6,
+      "expected": 3
+    },
+    {
+      "id": "EXT-F-4066",
+      "name": "select_dropdown_option",
+      "steps": 6,
+      "expected": 3
+    },
+    {
+      "id": "EXT-F-4067",
+      "name": "set_checkbox",
+      "steps": 6,
+      "expected": 3
+    },
+    {
+      "id": "EXT-F-4068",
+      "name": "set_radio",
+      "steps": 6,
+      "expected": 3
+    },
+    {
+      "id": "EXT-F-4069",
+      "name": "submit_form",
+      "steps": 6,
+      "expected": 3
+    }
+  ],
+  "source_evidence": [
+    {
+      "claim": "Tools manual Run parses JSON, validates local handler argsSchema, then invokes local handler with permissionMode act and assignedTabId null; this is an active-tab manual route, not agent dispatcher coverage.",
+      "files": [
+        "src/features/tools/ToolsView.tsx:390-461"
+      ]
+    },
+    {
+      "claim": "Keyboard/mouse handlers synthesize DOM events and return the documented result fields; blur accepts an optional selector and can return handler-level no-focused-element failure.",
+      "files": [
+        "src/lib/tools/handlers/keyboard.ts"
+      ]
+    },
+    {
+      "claim": "Form handlers implement select-by-value/label/index, checkbox checked state, radio selection, and button-click or requestSubmit; the procedures use an owned fixture with network/navigation suppression.",
+      "files": [
+        "src/lib/tools/handlers/forms.ts"
+      ]
+    },
+    {
+      "claim": "The exact-name metadata census leaves eight names absent and submit_form with active definition/binding; this does not establish request-time advertisement or actual role availability.",
+      "files": [
+        ".research/tool-binding-readonly-census.json"
+      ]
+    }
+  ],
+  "live_binding_snapshot": [
+    {
+      "feature_id": "EXT-F-4061",
+      "inventory_name": "press_keys",
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "direct_surface_default_inclusions": [],
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4062",
+      "inventory_name": "hover_element",
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "direct_surface_default_inclusions": [],
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4063",
+      "inventory_name": "focus_element",
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "direct_surface_default_inclusions": [],
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4064",
+      "inventory_name": "blur_element",
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "direct_surface_default_inclusions": [],
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4065",
+      "inventory_name": "right_click_element",
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "direct_surface_default_inclusions": [],
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4066",
+      "inventory_name": "select_dropdown_option",
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "direct_surface_default_inclusions": [],
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4067",
+      "inventory_name": "set_checkbox",
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "direct_surface_default_inclusions": [],
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4068",
+      "inventory_name": "set_radio",
+      "has_active_definition": false,
+      "has_active_chrome_extension_binding": false,
+      "direct_surface_default_inclusions": [],
+      "mapping_status": "unresolved_manual_only_or_registry_drift"
+    },
+    {
+      "feature_id": "EXT-F-4069",
+      "inventory_name": "submit_form",
+      "has_active_definition": true,
+      "has_active_chrome_extension_binding": true,
+      "direct_surface_default_inclusions": [
+        "chrome-extension/assistant",
+        "chrome-extension/pilot"
+      ],
+      "mapping_status": "active_definition_and_executor_binding"
+    }
+  ],
+  "fixture_gap": "No checked-in or named owned HTTP fixture was found in the inspected stabilization sources. Each case now specifies the local-only markup/event oracle to stage; execution must stop until that owned fixture is provisioned and its URL/hash recorded.",
+  "remaining_gaps": [
+    "No browser execution was performed; all role cells remain unverified.",
+    "Member/admin manual-run modes are intended repetitions, not proof of actual agent-call role access.",
+    "Dispatcher Ask/Act confirmation, missing-permission refusal, and assigned-tab routing are outside this manual-run case and remain unverified.",
+    "Eight exact-name definition/binding mappings are unresolved; submit_form has active metadata but request-time advertisement is unverified.",
+    "Current hosted resource permit/build receipt must be obtained before any browser action."
+  ],
+  "files": [
+    "docs/stabilization/inventory.json",
+    ".research/form-control-procedures.json"
+  ],
+  "source_hashes": {
+    "src/features/tools/ToolsView.tsx": "05242f54c731c609b0c792b3af8c0f4a7e67a8f765513512ba8101d4190f6551",
+    "src/lib/tools/handlers/keyboard.ts": "97fb657d1d2aeb4b7a7de9a4fd92210533fb690726eff61e507689b42876c01e",
+    "src/lib/tools/handlers/forms.ts": "84beca4334d114b429ff00a0f3d20be6fb783b90f794ff48fe6510fecc34ac49",
+    "types/tool-catalog.json": "94654c3dcbba3b9b5153cd380f09fa510758b8e8575d23134065aa5496e0717c",
+    ".research/tool-binding-readonly-census.json": "ab9316697e39820a3003202a4253815ef6c38cd51071c2cae4a654ef10078cf4"
+  }
+}
