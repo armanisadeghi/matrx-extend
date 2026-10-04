@@ -101,6 +101,62 @@ async function screenshot(panel, artifacts, name) {
   await writeFile(path, Buffer.from(data, 'base64'), { mode: 0o600 });
   return path;
 }
+
+async function authenticatedPanelForegroundDiagnostic({
+  page,
+  panel,
+  browserSession,
+  panelTarget,
+}) {
+  // Keep the failed boundary observable without serializing any URLs, page text,
+  // credentials, or target IDs from the authenticated browser.
+  const observation = {
+    owned_root_page: false,
+    open_control_count: null,
+    normal_page_visibility: null,
+    panel_visibility: null,
+    panel_has_focus: null,
+    original_panel_target_present: null,
+    exact_panel_target_count: null,
+    original_is_only_exact_panel_target: null,
+  };
+  try {
+    const url = new URL(page.url());
+    observation.owned_root_page =
+      ['localhost', '127.0.0.1'].includes(url.hostname) && url.pathname === '/';
+    if (observation.owned_root_page) {
+      observation.open_control_count = await page.locator('#open-panel').count();
+      observation.normal_page_visibility = await page.evaluate(() => document.visibilityState);
+    }
+  } catch {
+    // A closed page is itself distinguishable from a live owned fixture.
+  }
+  try {
+    const state = await evaluate(
+      panel,
+      '({ visibility: document.visibilityState, hasFocus: document.hasFocus() })',
+    );
+    observation.panel_visibility = state?.visibility ?? null;
+    observation.panel_has_focus = state?.hasFocus ?? null;
+  } catch {
+    // The original CDP session may have been retired after authentication.
+  }
+  try {
+    const targets = (await browserSession.send('Target.getTargets')).targetInfos;
+    const exact = targets.filter(
+      (target) => target.type === 'page' && target.url === panelTarget.url,
+    );
+    observation.original_panel_target_present = targets.some(
+      (target) => target.targetId === panelTarget.targetId,
+    );
+    observation.exact_panel_target_count = exact.length;
+    observation.original_is_only_exact_panel_target =
+      exact.length === 1 && exact[0].targetId === panelTarget.targetId;
+  } catch {
+    // Leave unknown fields null when target discovery itself fails.
+  }
+  return observation;
+}
 async function captureMediaFailure(panel, artifacts, phase, work) {
   try {
     return await work();
@@ -886,11 +942,21 @@ try {
         };
         assert.equal(authentication.mode, selection.mode, 'scrape_authenticated_mode_mismatch');
         await resourceAction(() => activatePanel());
-        await waitFor(
-          'scrape_authenticated_panel_foreground',
-          () => evaluate(panel, 'document.visibilityState === "visible"'),
-          (visible) => visible === true,
-        );
+        try {
+          await waitFor(
+            'scrape_authenticated_panel_foreground',
+            () => evaluate(panel, 'document.visibilityState === "visible"'),
+            (visible) => visible === true,
+          );
+        } catch (error) {
+          report.panel_foreground_diagnostic = await authenticatedPanelForegroundDiagnostic({
+            page,
+            panel,
+            browserSession,
+            panelTarget,
+          });
+          throw error;
+        }
         await requireResourceHealth();
       }
       report.panel_viewports.push({

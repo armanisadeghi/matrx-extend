@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "task": "scrape-auth-panel-focus",
+  "defect_id": "EXT-D-0133-pending-owner-registration",
+  "run": {
+    "id": 37237361053,
+    "artifact_id": 11315937709,
+    "frozen_product_source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "receipt": "docs/stabilization/evidence/scrape-member/run37237361053/acceptance-receipt.json"
+  },
+  "current_truth": {
+    "native_status": "unverified",
+    "original_red_boundary": "After real member web and extension sign-in and verified organization selection, the Scrape driver called activatePanel, then waitFor returned scrape_authenticated_panel_foreground_not_observed:false. No viewport or Scrape case ran.",
+    "first_failure_stage": "organization_selection",
+    "authentication": "Member web and extension identity matched; canonical non-admin request returned HTTP 200 with zero rows; organization UUID and rendered name matched storage.",
+    "resource": "Current guest journal has two healthy watches and resourceInvalid=false. The child exited 1 from the acceptance failure; no CPU_PENDING or RESOURCE_WATCH_UNSAFE appeared."
+  },
+  "source_boundary": {
+    "harness": "tests/browser/native-sidepanel-qa-harness.mjs passes activatePanel as Target.activateTarget for the initial panel target. The owned #open-panel control sends FRONTEND_RPC/openPanel from a trusted click at initial open and on reload.",
+    "auth_driver": "tests/browser/settings-native-auth-driver.mjs closes its temporary member web tab and brings the owned page to front before returning.",
+    "acceptance": "tests/browser/scrape-guest-native-acceptance.mjs activates the initial CDP target and asserts its document.visibilityState is visible.",
+    "product": "src/lib/frontend-bridge/handler.ts invokes openPanelInGesture before awaiting; src/lib/frontend-bridge/panel-gesture.ts uses chrome.sidePanel.open for the sender window or tab. Target.activateTarget does not use this product route."
+  },
+  "causality": {
+    "confirmed": "The foreground assertion was false after activation of the initial target.",
+    "unconfirmed": "The captured receipt contains no target inventory, panel context, owned page visibility, or panel focus state at the failing boundary. It cannot distinguish a hidden live panel, a replaced panel target, or a missing side-panel context. It does not prove a product Scrape failure.",
+    "fix_decision": "No focus behavior, timeouts, visibility assertion, or product code changed without that discriminator."
+  },
+  "source_change": {
+    "file": "tests/browser/scrape-guest-native-acceptance.mjs",
+    "effect": "On the same foreground failure, record only bounded booleans and counts for the owned root, its open control, normal-page visibility, original panel session visibility/focus, and exact panel target identity. Preserve the original failure and all role, artifact, and resource gates.",
+    "privacy": "No credential, account identity, URL, target ID, page text, or screenshot is serialized."
+  },
+  "next_evidence": "Run one owned member native acceptance with the same frozen artifact and normal 600px request. The new panel_foreground_diagnostic field should identify whether the owned fixture and original panel target remain present and whether the original panel is hidden. If the target was replaced, reacquire and validate exact extension identity/context; if it is live but hidden, exercise the existing trusted #open-panel route and verify its reply and same target before retrying the visibility assertion. Do not infer either branch from the original receipt.",
+  "verification": {
+    "syntax": "node --check tests/browser/scrape-guest-native-acceptance.mjs",
+    "format": "pnpm exec biome check tests/browser/scrape-guest-native-acceptance.mjs",
+    "native": "Not rerun in this lane by assignment; live cause and repair remain unverified."
+  },
+  "peer_review": "Ready for a fresh peer to check diagnostic sufficiency and that no authenticated data enters the receipt."
+}
