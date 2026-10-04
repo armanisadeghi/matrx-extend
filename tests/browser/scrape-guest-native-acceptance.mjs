@@ -107,6 +107,8 @@ async function authenticatedPanelForegroundDiagnostic({
   panel,
   browserSession,
   panelTarget,
+  inspectPanelContext,
+  timeoutMs = 5_000,
 }) {
   // Keep the failed boundary observable without serializing any URLs, page text,
   // credentials, or target IDs from the authenticated browser.
@@ -119,43 +121,73 @@ async function authenticatedPanelForegroundDiagnostic({
     original_panel_target_present: null,
     exact_panel_target_count: null,
     original_is_only_exact_panel_target: null,
+    side_panel_context: null,
+    diagnostic_timed_out: false,
   };
-  try {
-    const url = new URL(page.url());
-    observation.owned_root_page =
-      ['localhost', '127.0.0.1'].includes(url.hostname) && url.pathname === '/';
-    if (observation.owned_root_page) {
-      observation.open_control_count = await page.locator('#open-panel').count();
-      observation.normal_page_visibility = await page.evaluate(() => document.visibilityState);
-    }
-  } catch {
-    // A closed page is itself distinguishable from a live owned fixture.
-  }
-  try {
-    const state = await evaluate(
-      panel,
-      '({ visibility: document.visibilityState, hasFocus: document.hasFocus() })',
-    );
-    observation.panel_visibility = state?.visibility ?? null;
-    observation.panel_has_focus = state?.hasFocus ?? null;
-  } catch {
-    // The original CDP session may have been retired after authentication.
-  }
-  try {
-    const targets = (await browserSession.send('Target.getTargets')).targetInfos;
-    const exact = targets.filter(
-      (target) => target.type === 'page' && target.url === panelTarget.url,
-    );
-    observation.original_panel_target_present = targets.some(
-      (target) => target.targetId === panelTarget.targetId,
-    );
-    observation.exact_panel_target_count = exact.length;
-    observation.original_is_only_exact_panel_target =
-      exact.length === 1 && exact[0].targetId === panelTarget.targetId;
-  } catch {
-    // Leave unknown fields null when target discovery itself fails.
-  }
-  return observation;
+  let expired = false;
+  const probes = [
+    (async () => {
+      try {
+        const url = new URL(page.url());
+        observation.owned_root_page =
+          ['localhost', '127.0.0.1'].includes(url.hostname) && url.pathname === '/';
+        if (observation.owned_root_page) {
+          observation.open_control_count = await page.locator('#open-panel').count();
+          observation.normal_page_visibility = await page.evaluate(() => document.visibilityState);
+        }
+      } catch {
+        // A closed page is itself distinguishable from a live owned fixture.
+      }
+    })(),
+    (async () => {
+      try {
+        const state = await evaluate(
+          panel,
+          '({ visibility: document.visibilityState, hasFocus: document.hasFocus() })',
+        );
+        observation.panel_visibility = state?.visibility ?? null;
+        observation.panel_has_focus = state?.hasFocus ?? null;
+      } catch {
+        // The original CDP session may have been retired after authentication.
+      }
+    })(),
+    (async () => {
+      try {
+        const targets = (await browserSession.send('Target.getTargets')).targetInfos;
+        const exact = targets.filter(
+          (target) => target.type === 'page' && target.url === panelTarget.url,
+        );
+        observation.original_panel_target_present = targets.some(
+          (target) => target.targetId === panelTarget.targetId,
+        );
+        observation.exact_panel_target_count = exact.length;
+        observation.original_is_only_exact_panel_target =
+          exact.length === 1 && exact[0].targetId === panelTarget.targetId;
+      } catch {
+        // Leave unknown fields null when target discovery itself fails.
+      }
+    })(),
+    (async () => {
+      try {
+        // The harness uses chrome.runtime.getContexts from its exact owned worker
+        // and reduces the result through its canonical context classifier.
+        observation.side_panel_context = await inspectPanelContext();
+      } catch {
+        // A retired worker or unavailable context query remains unmeasured.
+      }
+    })(),
+  ];
+  let timer;
+  await Promise.race([
+    Promise.allSettled(probes),
+    new Promise((resolveTimeout) => {
+      timer = setTimeout(() => {
+        expired = true;
+        resolveTimeout();
+      }, timeoutMs);
+    }),
+  ]).finally(() => clearTimeout(timer));
+  return { ...observation, diagnostic_timed_out: expired };
 }
 async function captureMediaFailure(panel, artifacts, phase, work) {
   try {
@@ -893,6 +925,7 @@ try {
       browserSession,
       activatePanel,
       panelTarget,
+      inspectPanelContext,
       artifacts,
       reloadExtension,
       requireResourceHealth,
@@ -954,6 +987,7 @@ try {
             panel,
             browserSession,
             panelTarget,
+            inspectPanelContext,
           });
           throw error;
         }

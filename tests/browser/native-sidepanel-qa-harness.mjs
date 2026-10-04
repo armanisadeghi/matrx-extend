@@ -1112,6 +1112,11 @@ export async function runNativeSidepanelQa({
             resourceAction: (action) =>
               runNativeResourceAction(() => awaitNativeResourceHealth({ repo: REPO }), action),
             attachWorker: () => attachTargetSession(cdp, extensionWorker.targetId),
+            inspectPanelContext: async () =>
+              panelContextDiagnostic(
+                await sidePanelContexts(cdp, extensionWorker.targetId),
+                panelUrl,
+              ),
             attachOffscreen: async () => {
               const offscreenUrl = `chrome-extension://${expectedExtensionId}/offscreen.html`;
               const targets = (await cdp.send('Target.getTargets')).targetInfos.filter(

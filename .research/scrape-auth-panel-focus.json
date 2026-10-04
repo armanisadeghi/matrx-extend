@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "task": "scrape-auth-panel-focus",
-  "defect_id": "EXT-D-0133-pending-owner-registration",
+  "defect_id": "EXT-D-0133",
   "run": {
     "id": 37237361053,
     "artifact_id": 11315937709,
@@ -28,13 +28,14 @@
   },
   "source_change": {
     "file": "tests/browser/scrape-guest-native-acceptance.mjs",
-    "effect": "On the same foreground failure, record only bounded booleans and counts for the owned root, its open control, normal-page visibility, original panel session visibility/focus, and exact panel target identity. Preserve the original failure and all role, artifact, and resource gates.",
+    "effect": "On the same foreground failure, record only bounded booleans and counts for the owned root, its open control, normal-page visibility, original panel session visibility/focus, exact panel target identity, and canonical SIDE_PANEL context classification from the owned worker. A five-second aggregate deadline preserves the original failure receipt even if a probe stalls. Preserve the original failure and all role, artifact, and resource gates.",
     "privacy": "No credential, account identity, URL, target ID, page text, or screenshot is serialized."
   },
-  "next_evidence": "Run one owned member native acceptance with the same frozen artifact and normal 600px request. The new panel_foreground_diagnostic field should identify whether the owned fixture and original panel target remain present and whether the original panel is hidden. If the target was replaced, reacquire and validate exact extension identity/context; if it is live but hidden, exercise the existing trusted #open-panel route and verify its reply and same target before retrying the visibility assertion. Do not infer either branch from the original receipt.",
+  "next_evidence": "Run one owned member native acceptance with the same frozen artifact and normal 600px request. The new panel_foreground_diagnostic field should identify whether the owned fixture and original panel target remain present, whether the original panel is hidden, and whether an exact SIDE_PANEL context remains registered. Null fields or diagnostic_timed_out=true remain unmeasured. If the target was replaced, reacquire and validate exact extension identity/context; if it is live but hidden, exercise the existing trusted #open-panel route and verify its reply and same target before retrying the visibility assertion. Do not infer either branch from the original receipt.",
   "verification": {
     "syntax": "node --check tests/browser/scrape-guest-native-acceptance.mjs",
-    "format": "pnpm exec biome check tests/browser/scrape-guest-native-acceptance.mjs",
+    "format": "pnpm exec biome check tests/browser/scrape-guest-native-acceptance.mjs tests/browser/native-sidepanel-qa-harness.mjs .research/scrape-auth-panel-focus.json",
+    "focused_runtime": "In-memory execution of the diagnostic helper passed with an exact owned SIDE_PANEL context and with a deliberately stalled page probe; the latter returned a partial receipt with diagnostic_timed_out=true.",
     "native": "Not rerun in this lane by assignment; live cause and repair remain unverified."
   },
   "peer_review": "Ready for a fresh peer to check diagnostic sufficiency and that no authenticated data enters the receipt."
