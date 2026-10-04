@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "issue": "EXT-D-0107",
+  "reviewed_commit": "4d54b6d9",
+  "review_scope": "Independent source and focused-test review of the owned CDP endpoint diagnostic; no native browser, authentication, build, database, or release run.",
+  "verdict_A_report_conveyance": "PASS_SOURCE_ONLY",
+  "verdict_A_reason": "connectOwnedCdp attaches fixed boundary/reason and shape fields to each endpoint refusal. The native startup catch calls safeEndpointDiagnostic and adds the validated result to BROWSER_STARTUP_FAILURE. The read and record-validation branches are covered by real filesystem tests. An actual native startup report has not yet been observed.",
+  "verdict_B_privacy_quality_ownership": "PASS_SOURCE_ONLY",
+  "verdict_B_reason": "The producer includes no endpoint bytes, port, browser identifier, path, or read error text. The sink whitelists fixed boundary/reason values and exact primitive shape fields, discarding malicious extra keys and raw strings. The original refusal message, endpoint deadline and polling, profile preexistence check, SingletonLock/process verification, and later owned-browser assertions remain in place.",
+  "evidence": {
+    "producer": "tests/browser/vault-owned-cdp.cjs:9-86",
+    "sink": "tests/browser/native-sidepanel-qa-harness.mjs:632-663,742-763",
+    "filesystem_guard": "tests/browser/vault-owned-cdp-diagnostic.test.cjs:30-99 covers unreadable path, incomplete then complete record reaching owner refusal, out-of-range port, and foreign browser path.",
+    "malicious_input_guard": "tests/browser/native-sidepanel-qa-harness.test.mjs:221-250 checks extra raw fields, unlisted reason, nonnumeric lineCount, and unrelated failure code.",
+    "verification": "node --test tests/browser/vault-owned-cdp-diagnostic.test.cjs tests/browser/vault-owned-cdp.test.cjs: 5/5 passed; node tests/browser/native-sidepanel-qa-harness.test.mjs: passed."
+  },
+  "limitations": "The retained original admin failure lacks the endpoint branch and cannot be recovered from timing or DevTools listening alone. The next resource-admitted native run must use this unchanged reviewed source to establish the actual branch; this review makes no product-fix or live-launch claim."
+}
