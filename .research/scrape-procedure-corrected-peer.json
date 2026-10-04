@@ -1,0 +1,101 @@
+{
+  "reviewed_artifact": ".research/scrape-remaining-procedure-audit.json at c09f4566",
+  "review_type": "Fresh independent source-only reverify of corrected Scrape procedure audit",
+  "source_head": "147ac1c49b4b8bae78d0ae0042ba29207f791e26",
+  "scope_limits": "No browser, native extension, test, build, release, database write, or fixture setup was run. This review evaluates proposed procedures and claims, not live acceptance outcomes.",
+  "original_findings": [
+    {
+      "finding": "Ordinary stale HTTP(S) tab claimed as deterministic recoverable no-receiver and deep-retry fixture",
+      "status": "ADDRESSED",
+      "evidence": [
+        ".research/scrape-remaining-procedure-audit.json: source_grounded_contract.capture_error and priority-2 procedure",
+        "src/lib/scrape/capture-with-fallback.ts:104-140 auto-injects and retries after no-receiver",
+        "src/hooks/use-scrape.ts:223-256 scrolls before the deep capture fallback",
+        "src/lib/scrape/capture-error.ts:89-145 distinguishes restricted, no-receiver and inject-failed actions"
+      ],
+      "assessment": "The guaranteed stale-tab recipe was removed. Recoverable actions and deep retry are now conditional on a real observed failure, with the missing natural stimulus declared. Restricted-page Dismiss is kept separate."
+    },
+    {
+      "finding": "No selected organization claimed as immediate signed-in save refusal and queue fixture",
+      "status": "ADDRESSED",
+      "evidence": [
+        ".research/scrape-remaining-procedure-audit.json: source_grounded_contract.organization and priority-3 procedure",
+        "src/lib/api/routes/auth.ts:21-23 delegates to the active-organization hold",
+        "src/lib/org/active-org.ts:357-385 opens the picker and waits for a choice",
+        "src/lib/sources/save-capture.ts:172-196 converts only an actual hold error into a refusal"
+      ],
+      "assessment": "The correction describes picker/held request and removes missing selection as a deterministic member/admin refusal fixture. Signed-in queue variants remain explicitly without a controlled refusal setup."
+    },
+    {
+      "finding": "T26 guest applicability previously discarded despite inventory no-request assertion",
+      "status": "ADDRESSED",
+      "evidence": [
+        ".research/scrape-remaining-procedure-audit.json: source_grounded_contract.recognition_role, priority-4 procedure, and material gaps",
+        "docs/stabilization/inventory.json: EXT-F-1007-T26 modes, guest step and expected result",
+        "src/lib/supabase/queries.ts:634-638 returns none without an access token before querying"
+      ],
+      "assessment": "The correction preserves guest T26 as a no-lookup assertion; only lookup-failure/recovery and cross-organization branches are inapplicable to guest."
+    },
+    {
+      "finding": "Restricted URL cannot prove Reload page or Try again",
+      "status": "ADDRESSED",
+      "evidence": [
+        ".research/scrape-remaining-procedure-audit.json: priority-2 procedure",
+        "src/lib/scrape/capture-error.ts:89-106 gives restricted URLs no recovery actions"
+      ],
+      "assessment": "The corrected procedure counts restricted-page dismissal only for the nonrecoverable branch."
+    },
+    {
+      "finding": "Guest sign-in refusal can populate a device-local queue, then successful signed-in retry clears it",
+      "status": "ADDRESSED",
+      "evidence": [
+        ".research/scrape-remaining-procedure-audit.json: priority-3 guest procedure",
+        "src/lib/sources/save-capture.ts:160-172 returns sign_in_required for a signed-out user",
+        "src/lib/sources/save-capture.ts:353-447 persists a refused save and drops it after successful landing"
+      ],
+      "assessment": "The correction splits guest refusal from signed-in landing and requires source and queue readback. Nonempty article content and working device storage remain prerequisites."
+    },
+    {
+      "finding": "Recognition spans RLS-visible organizations independent of selected write organization",
+      "status": "ADDRESSED",
+      "evidence": [
+        ".research/scrape-remaining-procedure-audit.json: priority-4 procedure and blockers",
+        "src/lib/supabase/queries.ts:634-674 has no selected-organization filter and returns found/none/unknown",
+        "src/hooks/use-page-recognition.ts:50-80 renders the lookup result"
+      ],
+      "assessment": "The correction requires a real two-organization/RLS fixture and does not claim runtime visibility."
+    },
+    {
+      "finding": "T26/T27 failure, T29 filing, and T30 delayed response lacked repeatable fixture details",
+      "status": "ADDRESSED_AS_LIMITATION",
+      "evidence": [
+        ".research/scrape-remaining-procedure-audit.json: priorities 4-6 blockers and prerequisites",
+        "docs/stabilization/inventory.json: EXT-F-1007-T26, T27, T29 and T30 preconditions"
+      ],
+      "assessment": "The correction calls out missing lookup-outage, RLS, filing-target/Library and delayed-landing fixtures. It no longer treats those cells as runnable or passed. A controlled filing-refusal fixture is also still unspecified."
+    }
+  ],
+  "correction_only_findings": [
+    {
+      "severity": "procedure_gap",
+      "case_ids": ["EXT-F-1007-T26"],
+      "finding": "The proposed no-selected-organization recognition check says to clear selected org but gives no supported UI action or authorized setup to reach that state for a signed-in principal.",
+      "evidence": [
+        ".research/scrape-remaining-procedure-audit.json: priority-4 procedure, second step",
+        "src/lib/org/active-org.ts:477 declares clearActiveOrganization; current src search found no caller",
+        "docs/stabilization/inventory.json: EXT-F-1007-T26 requires the no-selected-organization dimension"
+      ],
+      "effect": "The cross-org selected-A check is source-grounded; the no-selection variant remains a procedure prerequisite. Do not manufacture state or count it as native coverage."
+    }
+  ],
+  "A_procedure_scope_correctness": {
+    "verdict": "CORRECTIONS_ACCEPTED_WITH_OPEN_FIXTURE_GAPS",
+    "assessment": "All three refuted claims from the prior peer are corrected. Guest T26, restricted errors, and signed-in cross-org read scope are preserved. Member/admin refusal, natural recoverable capture error, lookup outage and RLS exclusion, controlled filing refusal, delayed response, and no-selection UI setup still lack repeatable approved procedures. Proposed observations are useful only after those prerequisites exist."
+  },
+  "B_evidence_quality": {
+    "verdict": "SOURCE_REASONING_ONLY_NO_NATIVE_PASS",
+    "assessment": "The corrected audit is candid that it collected no current browser or server outcome. Its code and inventory citations justify procedure boundaries but cannot promote guest/member/admin cells, establish fixture availability, or verify cleanup. Prior native guest receipts remain bounded historical evidence, not a pass from this audit.",
+    "native_evidence_used": false,
+    "product_defect_inferred": false
+  }
+}
