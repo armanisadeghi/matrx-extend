@@ -21,7 +21,8 @@
     "tests/browser/profile-native-acceptance.mjs: failure catch currently omits existing driverFailure metadata",
     ".research/profile-diagnostics-peer.json",
     ".research/profile-runner-final-peer.json",
-    ".research/profile-member-retest189-next.json"
+    ".research/profile-member-retest189-next.json",
+    ".research/profile-189-final-source-peer.json"
   ],
   "transition_history": [
     {
@@ -57,5 +58,5 @@
   ],
   "closure_requirement": "Meaningfulfailurecaptureguard and independentreview, then actualguardedfailure or equivalentverifiednativeobservation preservingoriginaloperation/stage withoutprivatecontent. UnderlyingProfile targetfailure handledseparately.",
   "fix_commits": ["aa7df0d2", "c77982ec"],
-  "known_remaining": "T26module can surface restorationerror overprimary ifbothfail; peerobservation retained, notnativeobserved. Allowedboundedrun because exactownerconditionalcleanup stillruns andcasescannotpasswithoutrestoration. Do notclaimallfailurediagnosticscomplete; repairthissecondarypath beforeclosingfullscope."
+  "known_remaining": "Fresh peer 20f5286b reproduced arbitrary no-colon error text reaching execution_failure_code and final failure_code. Native launch is held while the original implementation lane replaces message-derived public codes with a fixed allowlist and adds actual-boundary/final-report privacy guards. Dual-error preservation source 85a95c40 is also awaiting final independent acceptance. No actual credential leak was established by the synthetic reproduction."
 }
