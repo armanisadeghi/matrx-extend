@@ -48,3 +48,52 @@ test('EXT-D-0115 observes busy state when tooltip moves title to data-matrx-titl
   assert.equal(observed.text, 'Capturing…');
   assert.equal(observed.buttonReplacements, 0);
 });
+
+test('fast busy transition is observed when it starts and ends before mutation delivery', async () => {
+  const window = panel();
+  const title = 'Capture the page exactly as it is right now';
+  window.eval(armBusyExpression(title));
+  const button = window.document.querySelector('#scrape-pane button');
+  button.disabled = true;
+  button.textContent = 'Capturing…';
+  button.disabled = false;
+  button.textContent = 'Re-capture';
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  const observed = window.eval(readBusyExpression);
+  assert.equal(observed.observed, true);
+  assert.equal(observed.text, 'Capturing…');
+  assert.equal(observed.overlappingMutationState, true);
+  assert.equal(observed.disabledSamples, 0);
+});
+
+test('nonoverlapping disabled and busy text mutations do not count as busy', async () => {
+  const window = panel();
+  const title = 'Capture the page exactly as it is right now';
+  window.eval(armBusyExpression(title));
+  const button = window.document.querySelector('#scrape-pane button');
+  button.disabled = true;
+  button.disabled = false;
+  button.textContent = 'Capturing…';
+  button.textContent = 'Re-capture';
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  const observed = window.eval(readBusyExpression);
+  assert.equal(observed.observed, false);
+  assert.equal(observed.disabledMutationRecords, 2);
+  assert.equal(observed.busyLabelMutationRecords, 2);
+});
+
+test('same-turn text-node updates count only when disabled and busy overlap', async () => {
+  const window = panel();
+  const title = 'Capture the page exactly as it is right now';
+  window.eval(armBusyExpression(title));
+  const button = window.document.querySelector('#scrape-pane button');
+  button.disabled = true;
+  button.firstChild.textContent = 'Capturing…';
+  button.disabled = false;
+  button.firstChild.textContent = 'Re-capture';
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  const observed = window.eval(readBusyExpression);
+  assert.equal(observed.observed, true);
+  assert.equal(observed.text, 'Capturing…');
+  assert.equal(observed.overlappingMutationState, true);
+});
