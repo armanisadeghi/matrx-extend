@@ -1,0 +1,32 @@
+{
+  "defect": "EXT-D-0126",
+  "status": "PASS_SOURCE_NATIVE_RETEST_PENDING",
+  "reviewed_fix_commit": "1e46e144e6affea91d0a5a7bb8f6f5298a90e4e4",
+  "findings": [
+    {
+      "id": "restoration_failure_continues_actions",
+      "verdict": "ADDRESSED",
+      "evidence": "The shared link observer throws clipboard_observation_permission_restore_unconfirmed when restoration evidence is false. Both Video and Links callers await it before subsequent removal or form actions; captureMediaFailure records then rethrows. The focused transport-failure case rejects while the simulated permission remains granted."
+    },
+    {
+      "id": "hovered_copy_feedback_unobserved",
+      "verdict": "ADDRESSED",
+      "evidence": "The exact matching anchor's sibling Copy selector accepts the hovered data-matrx-title form. A Happy DOM test with an unrelated red sibling and a hovered emerald target executes the generated expression through the real querySelectorAll implementation and returns copied."
+    }
+  ],
+  "verdict_a_source_native_readiness": {
+    "status": "PASS",
+    "scope": "Source readiness for one guarded native discriminator. This is not a product-health or clipboard-write verdict.",
+    "remaining": "Run guarded native Video and Links Copy on warm and reload paths to establish actual product outcome."
+  },
+  "verdict_b_doctrine_quality": {
+    "status": "PASS",
+    "evidence": "The fix reuses the scoped permission helper and existing active-pane expression; restoration failure cannot silently become a partial result. New hovered feedback coverage evaluates a real DOM, removing the earlier selector-blind double for this finding. No new source-native blocker found in the reviewed path."
+  },
+  "independent_checks": [
+    "PASS node --test tests/browser/scrape-native-media-actions.test.mjs: 18/18.",
+    "PASS node tests/browser/clipboard-observation.test.mjs: five unsafe mutations rejected.",
+    "PASS source trace: observeVideoLinks/observeScrapeLinks -> exerciseMediaControls/exerciseLinkControls -> captureMediaFailure rethrows."
+  ],
+  "limits": "No browser, native clipboard, build, or release was run in this review lane."
+}
