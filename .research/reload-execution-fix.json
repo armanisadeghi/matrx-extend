@@ -1,0 +1,18 @@
+{
+  "case": "EXT-D-0120 reload acceptance false-green repair",
+  "status": "READY_FOR_FRESH_REVIEW",
+  "changed": "The composite reload predicate now requires correlated old stopped/redundant and replacement running/activated ServiceWorker version evidence. TargetDestroyed remains diagnostic evidence and cannot authorize acceptance.",
+  "red": "Before the predicate fix, node tests/browser/native-sidepanel-qa-harness.test.mjs failed with Missing expected rejection: destroyed debugger target must not bypass restartable execution evidence.",
+  "green": [
+    "node --test tests/browser/reload-execution-retirement.test.mjs tests/browser/reload-lifetime-diagnostic.test.mjs tests/browser/profile-reload-capture.test.mjs: 23 passed",
+    "node tests/browser/native-sidepanel-qa-harness.test.mjs: passed after adding the missing-replacement case"
+  ],
+  "fixtures": "Harness tests use the real acceptance caller with controlled CDP events. They refuse destroyed-target reloads with restartable old execution, missing replacement version, unavailable ServiceWorker protocol, or ambiguous old identity, and preserve the captured stopped/redundant sequence as a valid case.",
+  "files": [
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/native-sidepanel-qa-harness.test.mjs",
+    ".research/reload-execution-fix.json"
+  ],
+  "own_commits": ["9f09009a EXT-D-0120 require execution retirement for reload acceptance"],
+  "limits": "No native Chrome run, build, or release was performed in this repair lane. The captured real lifecycle fixture and historical native evidence were not changed."
+}
