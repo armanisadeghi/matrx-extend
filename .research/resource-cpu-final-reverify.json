@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0132",
+  "role": "fresh scoped reviewer; zero implementation authorship",
+  "reviewed_commits": [
+    "da9669c9f2d0cd0bbc23bac8572a15f90d08d876",
+    "e2d06172",
+    "2fed8191b89f6cb8a8d07ca599bc24ee74b36296"
+  ],
+  "verdict_A_behavior": {
+    "status": "ADDRESSED_IN_SOURCE_NATIVE_UNVERIFIED",
+    "basis": "The real wrapper now publishes a first CPU-only bad watch as RESOURCE_CPU_PENDING, keeps the sole lease, and gives the native boundary that actual pending journal to refuse. Three reason-free watches publish RESOURCE_CPU_RECOVERED and a later fresh native action succeeds. A second bad watch publishes RESOURCE_WATCH_UNSAFE and stop/hold evidence, then final invalid; a child exit zero while pending also finalizes invalid. The historical unsafe scan remains irreversible. This is consistent with the binding temporal contract and preserves the original conservative thresholds.",
+    "limit": "Controlled telemetry and shortened watch intervals establish source wiring, not physical recovery of run 37234434600 or native product acceptance."
+  },
+  "verdict_B_test_quality": {
+    "status": "PRIOR_IMPORTANT_GAP_ADDRESSED",
+    "basis": "The new standalone integration test starts a copied real guard wrapper, controls only external measurements and scratch lease/policy timing, consumes its actual pending journal through requireNativeResourceHealth and runNativeResourceAction, and checks pending refusal, recovery, confirmed stop, terminal journal, and pending child exit. It does not manually choose the guard's event codes or terminal decisions.",
+    "forcing_mutation": "In a disposable copy, changing the wrapper's unique first-CPU-event expression from RESOURCE_CPU_PENDING to RESOURCE_WATCH_HEALTHY made the standalone test fail at the first actual journal event, exit 1. Shared source was untouched. This exact mutation passed the former 23 focused tests in the prior review.",
+    "limits": "The test checks the stop event and hold marker for the confirmed case; owned group cleanup and permit release are enforced by the real wrapper and existing process tests, but this new test does not independently assert post-exit process and lease absence. No additional critical contract hole was reproduced."
+  },
+  "verification": {
+    "new_test": "node --test scripts/test-stabilization-resource-cpu-integration.mjs: 1 passed, 0 failed; run alone because legacy-runner census rejects concurrent wrappers",
+    "focused_tests": "node --test tests/browser/resource-cpu-confirmation.test.mjs tests/browser/native-resource-boundary.test.mjs scripts/test-stabilization-resource-journal.mjs scripts/test-stabilization-resource-process.mjs: 23 passed, 0 failed; run separately",
+    "mutation": "Disposable source copy, same standalone command: 0 passed, 1 failed on RESOURCE_WATCH_HEALTHY versus expected RESOURCE_CPU_PENDING",
+    "ci_wiring": "Fetched origin/main contains 2fed8191. .github/workflows/ci.yml runs the new test as its own sequential step in the macOS resource-guard-integration job, after safety and disk guard tests. Hosted CI result is for the root reviewer to verify separately.",
+    "scope": "No native run, physical CPU measurement, build, workflow execution, release, or production source edit. Another writer's dirty incident report was left untouched."
+  },
+  "readiness": "Source/test re-review passes the prior blocker; root still owns hosted CI check and one guarded native confirmation with completed journal and product evidence."
+}
