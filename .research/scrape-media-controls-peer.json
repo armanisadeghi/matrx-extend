@@ -1,0 +1,23 @@
+{
+  "scope": "Independent review of commits dfa74dc0 and 4540020c for guest Scrape image/video editing T10/T11/T12. Review only; no product or test edits.",
+  "previous_finding": {
+    "finding": "The original image removal assertions did not prove that unrelated images survive a removal.",
+    "verdict": "ADDRESSED",
+    "evidence": "The component test clicks a rendered Remove image control and asserts the exact two retained image URLs, then checks the count changed from 3 to 2. The store test also asserts exact video survivor identity. Independent scoped run passed."
+  },
+  "A_behavior_evidence_scope": {
+    "verdict": "SOURCE_COMPONENT_EVIDENCE_ONLY",
+    "evidence": "The component test mounts actual ScrapeView and real Zustand store. Rendered media tabs, AddItemRow controls, image/video row controls, and CopyButton are active; clicking them changes the store and rendered image count. The video anchor exposes the captured URL, and CopyButton passes its URL to a mocked clipboard boundary. Page identity/recognition, organization, unrelated panels, clipboard I/O, capture/save actions are stubbed or outside the exercised scope.",
+    "limit": "This establishes source/component behavior in Vitest only. It does not establish browser tab launch, native extension behavior, or real clipboard I/O."
+  },
+  "B_test_quality": {
+    "verdict": "PASS_FOR_SCOPED_CONTROLS",
+    "evidence": "The real store owns media mutations; the UI test's useScrape mock delegates current/edited/mark actions to that store, while ScrapeView directly selects real media mutators. User-facing controls drive those mutators. Assertions check exact retained identities, additions, blank-input state, cancel reset, link href, clipboard argument, and image count. The selected-image removal is forced by exact survivor identity; a wrong-row removal diverges. No mocks replace media mutations or AddItemRow/CopyButton logic.",
+    "limitation": "The checked report records a remove-all mutation failure for the state test. This peer review did not rerun a mutant or native/browser acceptance; green tests alone are not end-to-end verification."
+  },
+  "verification": {
+    "command": "pnpm exec vitest run src/state/scrape.media-controls.test.ts src/features/scrape/ScrapeView.media-controls.test.tsx --maxWorkers=1 --reporter=dot",
+    "result": "2 files passed; 7 tests passed."
+  },
+  "defects": []
+}
