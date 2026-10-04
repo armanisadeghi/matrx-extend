@@ -1,0 +1,30 @@
+{
+  "defect": "EXT-D-0126",
+  "status": "SOURCE_DISCRIMINATOR_READY_NATIVE_RETEST_REQUIRED",
+  "source_base": "6256d7b43366e7eb337d39d892c388d5348279d6",
+  "source_commit": "4acfe298",
+  "changes": [
+    "Samples the CopyButton Check, X, or pending state on the exact active Scrape row within the feedback window, immediately after the trusted click and before the transition probe completes.",
+    "Classifies X as a product write failure and leaves pending or missing feedback unresolved without reading or granting clipboard permission.",
+    "Self-catches clipboard read rejection in the panel and records only an allowlisted code, focus, visibility, and equality with the known fixture URL. No clipboard text or raw exception enters the receipt.",
+    "Only a focused, visible NotAllowedError after Check uses the existing D27 scoped read grant on the owned browser session; the helper restores the original permission before returning.",
+    "Threads the harness-owned browser CDP session and panel origin through warm and reload Video and Links observations; native resource gates and trusted click paths remain in place."
+  ],
+  "evidence": [
+    "Causal RED: the prior source tests failed 5 of 11 after the discriminator replaced opaque readback; the failures named missing feedback and obsolete plaintext expectations.",
+    "Mutation RED: plant.py changed the failed-feedback branch to if(false); the failed Copy feedback test failed with an absent video_copy_write_failed result. plant.py restored the exact source hash.",
+    "GREEN: node --test tests/browser/scrape-native-media-actions.test.mjs passed 17 of 17, including failed write, pending feedback, mismatch, denied read, grant restoration, restore failure, and exact-row icon cases.",
+    "GREEN: node tests/browser/clipboard-observation.test.mjs passed with its five unsafe mutations rejected.",
+    "GREEN: pnpm compile and scoped Biome format passed."
+  ],
+  "files": [
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/scrape-guest-native-acceptance.mjs",
+    "tests/browser/scrape-native-media-actions.mjs",
+    "tests/browser/scrape-native-media-actions.test.mjs"
+  ],
+  "open_limits": [
+    "No native/browser run or product clipboard result was obtained in this lane; the parent owns fresh peer review and one guarded native retest.",
+    "Source tests use controlled CDP/DOM doubles for clipboard and feedback. The next native receipt must establish actual CopyButton feedback and equality after permission restoration."
+  ]
+}
