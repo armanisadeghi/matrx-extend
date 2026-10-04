@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0115",
+  "scope": "Hosted guest Scrape busy observation repair",
+  "status": "source_fixed_native_retest_pending",
+  "implementation_sha": "76e68d98",
+  "failed_hosted_run": {
+    "id": 37185080238,
+    "artifact_version": "0.2.205",
+    "artifact_source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "artifact_tree_sha256": "20399f17af68ff9d40bffa93cdefe0c93b105af06f8e6cced1757323c124fd44",
+    "stage": "fast_capture",
+    "failure": "scrape_fast_busy_not_observed",
+    "observed_before_failure": [
+      "Guest account UI present and auth token/profile storage absent",
+      "Owned intake page opened with lazy text absent",
+      "Initial Scrape empty state observed",
+      "Fast capture produced the expected article before the busy assertion"
+    ],
+    "native_busy_state": "unverified"
+  },
+  "causal_boundary": {
+    "confirmed_local_harness_blind_spot": "The old observer attached to one button node. A DOM replacement with a disabled Capturing button leaves that observer false.",
+    "red_command": "node --input-type=module with happy-dom: observe original button; replace it with disabled Capturing button; await mutation delivery",
+    "red_result": {
+      "observed": false,
+      "currentDisabled": true
+    },
+    "hosted_mechanism": "Unconfirmed: the original hosted receipt lacks DOM replacement and mutation samples; a genuinely unrendered busy state remains possible."
+  },
+  "repair": {
+    "observer": "Watch the document subtree and re-resolve the unique visible button inside the active Scrape pane on each mutation; accept title or data-matrx-title.",
+    "diagnostics": [
+      "samples",
+      "matchingButtons",
+      "buttonReplacements",
+      "disabledSamples",
+      "observed",
+      "text"
+    ],
+    "oracle": "Fast still requires a disabled Capturing state and deep still requires a disabled Scrolling state. No fallback, skip, or relaxed assertion was added.",
+    "failure_evidence": "The fast/deep observation summary and panel screenshot are saved before the busy assertion so a failed hosted run preserves them."
+  },
+  "lightweight_checks": {
+    "local_red_reproduction": "observed=false with currentDisabled=true",
+    "new_observer_tests": "2 passed: replacement and tooltip title move",
+    "syntax": "passed",
+    "biome_changed_files": "passed",
+    "diff_check": "passed",
+    "native_browser": "not_run_by_this_lane"
+  },
+  "next_gate": "Root-owned exact-205 hosted native rerun and independent review; no inventory or defect closure from local DOM tests."
+}
