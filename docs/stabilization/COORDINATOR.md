@@ -1,6 +1,6 @@
 # Matrx Extend stabilization: resume here
 
-## Active lanes — remaining Profile fields and guest popup
+## Active lanes — independent Birthday driver review and Profile acceptance
 
 Previous turn classification: **progress** — independently verified member warm/reload cases, closed D101/D102 for their reproduced failures, and reconciled/pushed all managed repositories. Baseline for this turn was copied from the final workspace ledger before refreshing remotes.
 
@@ -20,7 +20,9 @@ Fresh final peer635283fb passed the diagnostic correction2318bbac and surroundin
 
 Independent native run `profile-fields-member-189-01` (55100df8) passed basewarmT01/T03/T25/T26 and newT21alleightexpanders, thenfailed T05:warm:run withsafeunclassifiedcode beforeIdentityreceipt. Originalrowabsence verifiedrestored; resourcevalid child_failed. Root matched rawSHA2a5156e1aea49118646a81edce12ce21610bbb4957f872d300fe02cdfb9e2ed0 and journalSHA46d692bb6d232c9168091f876e84e06e8f90806b57696d292a4042fd8eb2ef14. D103 closes foractualunmodifiedstartup; T21memberpartial, othernewfield/reloadcellsunverified. D104 records unknownlayerIdentityfailure; `profile_identity_native_diagnosis` owns60calls/10minute diagnosis and atmostoneguardedcausalnative run. No speculativeproductpatch or retry.
 
-Root owns tracking, review routing and synchronization. Preserve pending Store181; no new dashboard poll needed immediately after the previous 01:33UTC check.
+D104 causal run `profile-identity-d104-189-02` isolated Birthday fill in the driver; root matched raw and journal hashes in `.research/profile-identity-native-diagnosis.json`. Repair `7e3f0f41` is pushed. Fresh Sol medium `profile_d104_source_peer` owns a 35-call/six-minute source review; native grant remains held until its verdict. Builder's additional local Chromium probe has no acceptance status; guard provenance is being clarified. T05/T17 warm/reload and T21 reload remain unverified.
+
+Root refreshed the authenticated Store dashboard at approximately 02:20 UTC October 4: pending 0.2.181, published 0.2.176, upload disabled. Preserve that pending submission. Root owns tracking, review routing and synchronization.
 
 ## Previous checkpoint — independent member reload acceptance passed
 
