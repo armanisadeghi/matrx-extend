@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "issue": "EXT-D-0117",
+  "status": "SOURCE_AND_PRIMARY_DOC_AUDIT_CAUSE_PENDING_COUNTS",
+  "scope": "Source-only audit while the root-owned hosted diagnostic run is in progress; no browser, acceptance, or code change in this lane.",
+  "official_sources": [
+    {
+      "url": "https://developer.chrome.com/docs/extensions/reference/api/runtime/",
+      "facts": "runtime.getContexts returns active extension contexts matching all specified filters; SIDE_PANEL is a context type; ExtensionContext.documentUrl is optional; tabId is -1 when the context is not hosted in a tab. The API documentation does not promise that a context query is synchronized with CDP target discovery."
+    },
+    {
+      "url": "https://developer.chrome.com/docs/extensions/reference/api/sidePanel/",
+      "facts": "sidePanel.open accepts windowId to open a global panel in a window or tabId to open a tab-specific panel when configured; a tabId request can also open the global panel when no tab-specific panel exists. Its promise resolves when Chrome reports the panel opened. The documentation does not state the precise getContexts registration ordering after open resolves."
+    }
+  ],
+  "repository_facts": [
+    "The manifest configures side_panel.default_path as sidepanel.html; the harness expects chrome-extension://<expected-id>/sidepanel.html, and the previous run found a CDP page target at that exact URL before querying runtime contexts.",
+    "The externally connected page sends FRONTEND_RPC openPanel on a trusted click. bootstrap threads sender.tab.windowId and sender.tab.id into handleFrontendRpc. openPanelInGesture passes windowId when available, otherwise tabId; the resulting reply confirms opened=true but the retained receipt does not record which request shape was used.",
+    "The harness evaluates chrome.runtime.getContexts({contextTypes:['SIDE_PANEL']}) in the extension worker. Since the failure code was runtime_context_missing rather than runtime_context_query_failed, the evaluation returned an array but no entry matched SIDE_PANEL, exact panel URL, and tabId -1 together.",
+    "A separate extension consumer in src/lib/panel/launch-intent.ts polls getContexts up to five times at 50 ms intervals and selects by windowId. This shows local code already accounts for possible delayed enumeration but is not evidence that delay caused this run.",
+    "A Chrome 153 note in src/lib/credentials/generation-host.ts says observed SIDE_PANEL windowId/tabId were -1. That is local observation, not a Chrome guarantee for this Store 0.2.205 hosted run."
+  ],
+  "contract_assessment": "The contextType and exact documentUrl checks are consistent with Chrome's documented fields and the verified target URL. The tabId -1 requirement is consistent with a global panel not hosted in a tab, but the actual open request shape and returned context fields were not retained. Chrome's docs do not establish a guarantee that target discovery implies getContexts visibility at the next immediate query.",
+  "ranked_hypotheses_not_findings": [
+    {
+      "hypothesis": "Context registration lagged the CDP target and single immediate query",
+      "prediction": "New log reports contextCount 0 or exactContextCount 0 while a later query under the same owned target would report the exact context.",
+      "discriminator": "First obtain the root run's count line. If zero, a separate authorized same-run bounded second observation after panel document readiness would test this; do not treat a retry alone as proof."
+    },
+    {
+      "hypothesis": "The panel was reported under a different document URL or tab association",
+      "prediction": "New log reports nonzero contextCount with exactUrlCount 0 or exactUrlCount > 0 but globalTabCount 0, respectively.",
+      "discriminator": "Use the six safe counts; with multiple contexts, their marginal counts may require per-entry equality booleans to identify the joint mismatch without exposing values."
+    },
+    {
+      "hypothesis": "The open call used the tabId fallback despite the expected window-wide route",
+      "prediction": "The actual request lacked sender.windowId and the returned exact-URL context is tab-associated instead of tabId -1.",
+      "discriminator": "Only if counts indicate a tab mismatch, capture the open route as the fixed token window_or_tab and a boolean comparing context.tabId to the sender tab; do not log IDs."
+    }
+  ],
+  "minimal_next_observation": "Preserve one BROWSER_PANEL_CONTEXT_FAILURE line from the root-owned run. contextCount 0 distinguishes absence from field mismatch. If nonzero, compare sidePanelCount, expectedExtensionCount, exactUrlCount, globalTabCount and exactContextCount, recognizing these are marginal counts. No predicate relaxation or timeout change is justified until the count pattern and route are known.",
+  "limits": "This audit does not attribute D117 to timing, Chrome, the extension, or Store packaging. No product Scrape case ran in the retained failure; D107's intermittent endpoint timeout remains separate."
+}
