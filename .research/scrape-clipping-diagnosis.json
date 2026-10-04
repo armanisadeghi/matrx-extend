@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0118",
+  "status": "confirmed_visual_displacement_cause_unverified",
+  "source_run": "37190128778",
+  "artifact": "Store 0.2.205 adapted candidate; see .research/guest-scrape-cpu-native.json for provenance and screenshot hashes",
+  "verified_comparison": {
+    "fast": "scrape-fast-article.png, 360x373: outer navigation begins with the Chat icon at about x=16; page title, Diagnose label, Article tab, article heading and capture buttons have visible left margins.",
+    "deep": "scrape-deep-article.png, 360x373: outer navigation begins with the Scrape icon at about x=8; Chat has moved out of frame. The page title, Diagnose label, Article tab, article heading and bottom capture buttons all shift left and some leading text is clipped. Rightmost Schema tab is fully visible.",
+    "conclusion": "The displacement affects the outer navigation and Scrape content together, so an Article-only overflow cannot explain the image. Both files have the same captured dimensions. The screenshot routine uses Page.captureScreenshot without a clip or crop, making a distinct image-processing crop unsupported by source; a shared layout/scroll displacement is the stronger explanation. Retained evidence does not identify the scrolling element or prove whether the state persists after another interaction."
+  },
+  "source_sequence": "tests/browser/scrape-guest-native-acceptance.mjs captures the fast image before selecting Article, Images, Video, Links, SEO, Schema; it returns to Article, performs Scroll & capture, then captures the deep image. No horizontal geometry or scroll offsets were retained at these boundaries.",
+  "source_candidates_not_proven": [
+    "ScrapeView.tsx renders six result triggers in a TabsList with self-start, gap and no local horizontal overflow container; the list may extend past a 360px viewport.",
+    "Selecting the rightmost Schema trigger may scroll an ancestor horizontally. The outer App navigation has its own overflow-x-auto, so its scrollLeft also needs measurement.",
+    "Deep capture content or capture controls could widen a flex ancestor; screenshot timing alone cannot isolate the result-tab clicks from deep capture."
+  ],
+  "minimal_next_measurement": "In the native 360px side panel, record after fast capture, after each result-tab click, after returning to Article, and after deep capture: window.innerWidth; document.documentElement/body scrollLeft, scrollWidth, clientWidth; scrollLeft/scrollWidth/clientWidth and getBoundingClientRect().left/right for the outer TabsList, Scrape root, Scrape result TabsList, selected trigger, title, and capture row. Also capture the nearest scrollable ancestors of the selected trigger and whether clicking Schema changes any scrollLeft. A changed document or ancestor scrollLeft together with unchanged element widths would prove a scroll cause; a new scrollWidth/rect exceeding the viewport would identify overflow growth.",
+  "fix_status": "No CSS fix applied: retained evidence confirms user-visible clipping but does not distinguish a root scroll, outer-tab scroll, or flex overflow cause.",
+  "limits": "No native/browser session run in this bounded investigation; independent reproduction and closure requirement remain open. The guest Scrape acceptance run failed its busy observation and does not establish a full pass."
+}
