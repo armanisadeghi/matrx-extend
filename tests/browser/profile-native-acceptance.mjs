@@ -14,6 +14,7 @@ import {
   recordProfileFinalFailure,
   runProfileExecutionBoundary,
   runProfilePointer,
+  safeProfileBackendCode,
   safeProfileFailureCode,
 } from './profile-native-failure.mjs';
 import { createOwnedWriteJournal } from './profile-owned-write-journal.mjs';
@@ -277,7 +278,7 @@ function observeProfileRequests(panel) {
         if (entry.route === 'profile_row' && entry.method === 'GET' && entry.status === 200)
           entry.row_present = Boolean(parsed && typeof parsed === 'object' && parsed.user_id);
         const code = parsed?.code;
-        if (typeof code === 'string' && /^[A-Za-z0-9_]{1,40}$/.test(code)) entry.error_code = code;
+        entry.error_code = safeProfileBackendCode(code);
       })
       .catch(() => {});
   });
@@ -717,6 +718,7 @@ async function caseT25(panel, original, email, mode, dimension) {
   });
 }
 
+let nativeExecutionError = null;
 try {
   assert.ok(RUN_ID && /^[a-zA-Z0-9_-]+$/.test(RUN_ID), 'run_id_required');
   assert.ok(['admin', 'member'].includes(AUTH_MODE), 'profile_auth_mode_invalid');
@@ -970,6 +972,7 @@ try {
               : Promise.resolve({ sample_unavailable: true }),
         },
       );
+      nativeExecutionError = executionError;
       let cleanupError = null;
       try {
         if (reloadAttempted && !reloadedPanel && (owned || pendingMarker)) {
@@ -1025,7 +1028,10 @@ try {
         if (reloadedPanel) await reloadedPanel.detach();
       }
       if (executionError) throw executionError;
-      if (cleanupError) throw cleanupError;
+      if (cleanupError) {
+        nativeExecutionError = cleanupError;
+        throw cleanupError;
+      }
     },
   });
   report.native = {
@@ -1037,7 +1043,11 @@ try {
   report.status = 'passed';
   report.stage = 'complete';
 } catch (error) {
-  recordProfileFinalFailure(report, error);
+  if (nativeExecutionError && error !== nativeExecutionError) {
+    report.teardown_failures ??= [];
+    report.teardown_failures.push({ stage: 'native_harness', code: safeProfileFailureCode(error) });
+  }
+  recordProfileFinalFailure(report, nativeExecutionError ?? error);
 } finally {
   report.finished_at = new Date().toISOString();
   await mkdir(OUTPUT_DIR ?? join(REPO, 'test-results'), { recursive: true, mode: 0o700 });

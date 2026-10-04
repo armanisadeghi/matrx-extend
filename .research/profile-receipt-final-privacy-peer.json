@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "task": "profile-receipt-final-privacy-peer",
+  "reviewed_commits": ["5f417356", "b7f63d0c", "85a95c40"],
+  "status": "source_partial_native_gate_held",
+  "verdict_A_acceptance_live": {
+    "result": "PARTIAL",
+    "addressed": [
+      "The actual runProfileExecutionBoundary catch and recordProfileFinalFailure produce a fixed allowlisted code or profile_unclassified_failure; Error('private@example.com') no longer enters either report field.",
+      "The T26 case retains its primary Error when restoration also throws, attaches the secondary restoration Error nonenumerably, and records fixed restoration code/stage at the execution boundary.",
+      "The runner records the execution failure before owned-row cleanup, records a separate cleanup_failure_code when that cleanup throws, and rethrows executionError first after successful panel detach."
+    ],
+    "not_addressed": [
+      "No fresh guarded native member run on the corrected source has established real T26 request interception, receipt status, or final row absence. Inherited reload evidence is from an earlier artifact."
+    ],
+    "live_limit": "This lane did not launch a browser, query the database, or inspect private credentials. It does not claim that a real credential was exposed or that native T26 passed.",
+    "native_gate": "HOLD until the report-code privacy finding below is corrected and independently rechecked; then one fresh guarded member native run is justified to close real T26 and restoration acceptance."
+  },
+  "verdict_B_quality": {
+    "result": "FAIL",
+    "addressed": [
+      "The raw Error.message prefix leak identified by the previous peer is corrected in execution_failure_code, top-level failure_code, save_discard_diagnostics first/cleanup failure, and restoration failure fields with a shared fixed allowlist.",
+      "Twelve focused tests passed, including the actual save-failure case through the execution boundary and no-colon private-message tests through execution and final handlers."
+    ],
+    "not_addressed": [
+      {
+        "severity": "important",
+        "finding": "A different final-report path still copies an arbitrary server response code into save_discard_diagnostics.requests[].error_code after only an alphanumeric length check. A tokenlike value passes that check and is serialized unchanged. This is a synthetic negative proof of a privacy contract gap, not evidence that a real server sent a credential.",
+        "location": "tests/browser/profile-native-acceptance.mjs observeProfileRequests Network.loadingFinished and caseSaveDiscard diagnostic.requests assignment",
+        "proof": "Read-only extraction and execution of the repository's real observeProfileRequests function with a synthetic 500 response code SYNTHETICSECRET1234567890 yielded copiedSyntheticCode=true and serializedReportContainsSyntheticCode=true."
+      },
+      {
+        "severity": "minor_unverified",
+        "finding": "The runner's panel detach calls are in a finally block before `if (executionError) throw executionError`. A detach rejection would bypass that rethrow and make the detach error the final caught error. The already captured execution fields would remain in the report. No detach rejection was exercised, so this is a source-level masking risk, not a demonstrated native failure.",
+        "location": "tests/browser/profile-native-acceptance.mjs cleanup finally following owned-row restoration"
+      }
+    ]
+  },
+  "checks": [
+    "node --test tests/browser/profile-native-failure.test.mjs tests/browser/profile-save-failure-error-preservation.test.mjs: 12 passed, 0 failed",
+    "Read-only synthetic execution of actual observeProfileRequests function showed unallowlisted response code survives into serialized diagnostic report",
+    "Reviewed final report writer and execution/cleanup rethrow order; no source, product, browser, database, build or release changes"
+  ],
+  "remaining": "Close the response-code serialization gap, independently recheck it and the detach-order concern, then run one fresh guarded member native acceptance with a private ownership receipt and confirm original absence restoration."
+}

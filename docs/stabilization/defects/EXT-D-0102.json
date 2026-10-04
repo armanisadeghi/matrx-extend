@@ -14,12 +14,14 @@
   "actual": "The immediate click races useAuth hydration and reports normal startup as a missing target.",
   "severity": "S3: false test failure blocks coverage; no product session loss demonstrated.",
   "priority": "P1: blocks Profile reload acceptance.",
-  "state": "fixed",
+  "state": "closed",
   "owner": "profile_reload_target_repair",
   "fix_commits": ["b7f63d0c"],
   "evidence": [
     ".research/profile-member-retest189-next.json",
-    ".research/profile-reload-hydration.json"
+    ".research/profile-reload-hydration.json",
+    ".research/profile-member-final-189-native.json",
+    ".research/profile-escalated-boundary-peer.json"
   ],
   "transition_history": [
     {
@@ -45,7 +47,27 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source b7f63d0c and native evidence 919b0be5 passed reload T01/T03/T25 and restored original absence. Fresh source review and independent final native retest remain pending."
+    },
+    {
+      "at": "2026-10-04T01:29:17.055381+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent guarded final member run passed on b4/189 with original absence restored. Root matched raw and journal hashes; source peer e813fb48 accepted the final contracts."
+    },
+    {
+      "at": "2026-10-04T01:29:17.055381+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original reproduced defect and affected surrounding cases verified. D101 also has prior real failed-operation capture and actual boundary negative guards; D102 exact original hydration race independently passed. No full feature or other-role claim."
     }
   ],
-  "closure_requirement": "Fresh independent source review of the condition and oracle, then a guarded exact-artifact member retest preserving strict reload proof, the failure bound and original-state cleanup. No current-main or full-Profile claim."
+  "closure_requirement": "Fresh independent source review of the condition and oracle, then a guarded exact-artifact member retest preserving strict reload proof, the failure bound and original-state cleanup. No current-main or full-Profile claim.",
+  "closure_evidence": {
+    "run_id": "profile-member-final-189-05",
+    "raw_sha256": "7011bf997e26f1266a05ea2f3483b3326e3069e1caf87b79e6afb5aca4c05b9e",
+    "journal_sha256": "f5b6cb79e33e1eca8218c2236157bd050afe93e5957116daa27014480dc27d91",
+    "resource": "admitted, resourceInvalid=false, exit0 valid",
+    "restoration": "authenticated original absence verified",
+    "scope": "Original reproduced test-runner defect only; no full Profile or extension certification."
+  }
 }

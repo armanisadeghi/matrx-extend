@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T01:04:06.442420+00:00",
+  "updated_at": "2026-10-04T01:29:17.055381+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -546,7 +546,7 @@
         {
           "id": "EXT-F-0002-C10",
           "label": "Verify authenticated UI readiness after real extension reload",
-          "action": "Require exactsigned-inaccountcontrol afterstrictreplacement, notmerelypersistedsession orruntimecontext."
+          "action": "Require the exact signed-in account control after strict extension replacement, not merely a persisted session or runtime context."
         }
       ],
       "source_anchors": [
@@ -1114,30 +1114,35 @@
             "EXT-F-0002-C10"
           ],
           "preconditions": [
-            "Exactreceipt-bounddevelopmentartifact, firstpartyauthenticatedtestidentity andfreshguardedprofile; originalpersistentstatemustberestored."
+            "Exact receipt-bound development artifact, first-party authenticated identity and a fresh guarded profile; original persistent state must be restored."
           ],
           "steps": [
-            "RecordloadedbuildidentityandperformfullChromeextensionReload, verifyingworker/panelretirementandreplacement.",
-            "Recordcontent-freeauthUIbefore/afterconditionwait, thenopenProfilethroughactualaccountmenu.",
-            "Verifyoriginalownedfixturestate restoration; persistfailureifexpectedaccountneverappears."
+            "Record loaded build identity and perform full Chrome extension Reload, verifying worker/panel retirement and replacement.",
+            "Record content-free auth UI before and after the condition wait, then open Profile through the actual account menu.",
+            "Verify original fixture restoration; preserve a failure if the expected account control never appears."
           ],
           "expected": [
-            "No click beforeexactaccountcontrolready; initialhydrationdelaydoesnotcausefalsefailure.",
-            "No authinjection,selectorfallback,timeoutincrease,privateidentitylogging orfalsepass."
+            "Do not click until the exact signed-in account control is ready; initial hydration delay causes no false failure.",
+            "No auth injection, selector fallback, timeout increase, private identity logging or false pass."
           ],
           "defect_ids": [
             "EXT-D-0102"
           ],
           "results": {
             "member": {
-              "status": "partial",
-              "run_id": "profile-member-reload-hydration-189-04",
-              "evidence": ".research/profile-reload-hydration.json",
-              "detail": "Buildercausalnativerun passes actualreadiness/reloadcases; independentfinalreview/retest pending."
+              "status": "pass",
+              "run_id": "profile-member-final-189-05",
+              "evidence": [
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl",
+                ".research/profile-escalated-boundary-peer.json"
+              ],
+              "detail": "Independent strict full reload observed saved identity/org/token while Account was initially guest, then exact signed-in control appeared under existing readiness bound; all reload cases passed and original absence restored.",
+              "verified_at": "2026-10-04T01:29:17.055381+00:00"
             },
             "admin": {
               "status": "unverified",
-              "detail": "No adminrunforthisconditionyet."
+              "detail": "No admin run of this readiness condition yet."
             }
           }
         }
@@ -9552,10 +9557,10 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": "Warm member Back discarded the draft and reopening returned the test baseline. Reload and remaining branches unverified.",
+              "observed_outcome": "Independent exact-artifact member run verified this branch, both warm and after strict full extension reload, with original persistent absence restored.",
               "evidence_refs": [
-                ".research/profile-member-bounded-owner-verification.json",
-                ".research/profile-member-reload-recovery.json"
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
               ],
               "status": "pass",
               "readiness": "ready"
@@ -9568,9 +9573,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "Independent exact-artifact member run verified this branch, both warm and after strict full extension reload, with original persistent absence restored.",
+              "evidence_refs": [
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
+              ],
+              "status": "pass",
               "readiness": "ready"
             }
           ],
@@ -9583,18 +9591,18 @@
           },
           "results": {
             "member": {
-              "status": "partial",
-              "run_id": "profile-member-retest-189-01",
-              "build_variant": "receipt-bound development0.2.189; CI37164174445/artifact11288542496/sourceb4b9f0c4",
+              "status": "pass",
+              "run_id": "profile-member-final-189-05",
+              "build_variant": "Development0.2.189, source b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced, CI37164174445/artifact11288542496",
               "verified_substeps": [
-                "Warm member Back discarded the draft and reopening returned the test baseline."
+                "Back discards draft; reopening restores baseline, warm and after true full extension reload."
               ],
-              "remaining_criteria": [
-                "Reload-mode Profile cases remain unverified: genuineextensionreloadpassed butsubsequentdriverclickfailed.",
-                "All other unverified execution-matrix branches remain required."
+              "remaining_criteria": [],
+              "evidence": [
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
               ],
-              "evidence": ".research/profile-member-retest189.json",
-              "verified_at": "2026-10-04T00:35:54.125394+00:00"
+              "verified_at": "2026-10-04T01:29:17.055381+00:00"
             }
           },
           "previous_results": [
@@ -9612,6 +9620,21 @@
               ],
               "evidence": ".research/profile-member-bounded-owner-verification.json",
               "verified_at": "2026-10-03T23:14:01.024268+00:00"
+            },
+            {
+              "mode": "member",
+              "status": "partial",
+              "run_id": "profile-member-retest-189-01",
+              "build_variant": "receipt-bound development0.2.189; CI37164174445/artifact11288542496/sourceb4b9f0c4",
+              "verified_substeps": [
+                "Warm member Back discarded the draft and reopening returned the test baseline."
+              ],
+              "remaining_criteria": [
+                "Reload-mode Profile cases remain unverified: genuineextensionreloadpassed butsubsequentdriverclickfailed.",
+                "All other unverified execution-matrix branches remain required."
+              ],
+              "evidence": ".research/profile-member-retest189.json",
+              "verified_at": "2026-10-04T00:35:54.125394+00:00"
             }
           ]
         },
@@ -9753,10 +9776,10 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": "Warm member Discard restored the baseline; Save persisted after reopen and the baseline was restored. Reload and remaining branches unverified.",
+              "observed_outcome": "Independent exact-artifact member run verified this branch, both warm and after strict full extension reload, with original persistent absence restored.",
               "evidence_refs": [
-                ".research/profile-member-bounded-owner-verification.json",
-                ".research/profile-member-reload-recovery.json"
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
               ],
               "status": "pass",
               "readiness": "ready"
@@ -9769,10 +9792,10 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": "Warm member Discard restored the baseline; Save persisted after reopen and the baseline was restored. Reload and remaining branches unverified.",
+              "observed_outcome": "Independent exact-artifact member run verified this branch, both warm and after strict full extension reload, with original persistent absence restored.",
               "evidence_refs": [
-                ".research/profile-member-bounded-owner-verification.json",
-                ".research/profile-member-reload-recovery.json"
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
               ],
               "status": "pass",
               "readiness": "ready"
@@ -9785,9 +9808,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "Independent exact-artifact member run verified this branch, both warm and after strict full extension reload, with original persistent absence restored.",
+              "evidence_refs": [
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
+              ],
+              "status": "pass",
               "readiness": "ready"
             },
             {
@@ -9798,9 +9824,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "Independent exact-artifact member run verified this branch, both warm and after strict full extension reload, with original persistent absence restored.",
+              "evidence_refs": [
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
+              ],
+              "status": "pass",
               "readiness": "ready"
             }
           ],
@@ -9813,18 +9842,18 @@
           },
           "results": {
             "member": {
-              "status": "partial",
-              "run_id": "profile-member-retest-189-01",
-              "build_variant": "receipt-bound development0.2.189; CI37164174445/artifact11288542496/sourceb4b9f0c4",
+              "status": "pass",
+              "run_id": "profile-member-final-189-05",
+              "build_variant": "Development0.2.189, source b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced, CI37164174445/artifact11288542496",
               "verified_substeps": [
-                "Warm member Discard restored the baseline; Save persisted after reopen and the baseline was restored."
+                "Discard restores baseline and disables Save; Save persists after reopen and restoration persists, warm and after true full extension reload."
               ],
-              "remaining_criteria": [
-                "Reload-mode Profile cases remain unverified: genuineextensionreloadpassed butsubsequentdriverclickfailed.",
-                "All other unverified execution-matrix branches remain required."
+              "remaining_criteria": [],
+              "evidence": [
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
               ],
-              "evidence": ".research/profile-member-retest189.json",
-              "verified_at": "2026-10-04T00:35:54.125394+00:00"
+              "verified_at": "2026-10-04T01:29:17.055381+00:00"
             }
           },
           "previous_results": [
@@ -9842,6 +9871,21 @@
               ],
               "evidence": ".research/profile-member-bounded-owner-verification.json",
               "verified_at": "2026-10-03T23:14:01.024268+00:00"
+            },
+            {
+              "mode": "member",
+              "status": "partial",
+              "run_id": "profile-member-retest-189-01",
+              "build_variant": "receipt-bound development0.2.189; CI37164174445/artifact11288542496/sourceb4b9f0c4",
+              "verified_substeps": [
+                "Warm member Discard restored the baseline; Save persisted after reopen and the baseline was restored."
+              ],
+              "remaining_criteria": [
+                "Reload-mode Profile cases remain unverified: genuineextensionreloadpassed butsubsequentdriverclickfailed.",
+                "All other unverified execution-matrix branches remain required."
+              ],
+              "evidence": ".research/profile-member-retest189.json",
+              "verified_at": "2026-10-04T00:35:54.125394+00:00"
             }
           ]
         },
@@ -11588,10 +11632,10 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": "Warm member denied owner-row GETs showed zero editors and disabled Save; Retry completed owner GET 200 and restored the baseline. Reload and remaining branches unverified.",
+              "observed_outcome": "Independent guarded member observation passed this bounded branch on frozen b4/189; original row absence restored and authenticated-read verified.",
               "evidence_refs": [
-                ".research/profile-member-bounded-owner-verification.json",
-                ".research/profile-member-reload-recovery.json"
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
               ],
               "status": "pass",
               "readiness": "requires_fixture"
@@ -11604,10 +11648,10 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": "Warm member denied owner-row GETs showed zero editors and disabled Save; Retry completed owner GET 200 and restored the baseline. Reload and remaining branches unverified.",
+              "observed_outcome": "Independent guarded member observation passed this bounded branch on frozen b4/189; original row absence restored and authenticated-read verified.",
               "evidence_refs": [
-                ".research/profile-member-bounded-owner-verification.json",
-                ".research/profile-member-reload-recovery.json"
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
               ],
               "status": "pass",
               "readiness": "requires_fixture"
@@ -11633,9 +11677,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "Independent guarded member observation passed this bounded branch on frozen b4/189; original row absence restored and authenticated-read verified.",
+              "evidence_refs": [
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
+              ],
+              "status": "pass",
               "readiness": "requires_fixture"
             },
             {
@@ -11646,9 +11693,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "Independent guarded member observation passed this bounded branch on frozen b4/189; original row absence restored and authenticated-read verified.",
+              "evidence_refs": [
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
+              ],
+              "status": "pass",
               "readiness": "requires_fixture"
             },
             {
@@ -11756,10 +11806,10 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": "Warm member denied owner-row GETs showed zero editors and disabled Save; Retry completed owner GET 200 and restored the baseline. Reload and remaining branches unverified.",
+              "observed_outcome": "Independent guarded member observation passed this bounded branch on frozen b4/189; original row absence restored and authenticated-read verified.",
               "evidence_refs": [
-                ".research/profile-member-bounded-owner-verification.json",
-                ".research/profile-member-reload-recovery.json"
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
               ],
               "status": "pass",
               "readiness": "requires_fixture"
@@ -11785,9 +11835,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "Independent guarded member observation passed this bounded branch on frozen b4/189; original row absence restored and authenticated-read verified.",
+              "evidence_refs": [
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
+              ],
+              "status": "pass",
               "readiness": "requires_fixture"
             },
             {
@@ -11891,17 +11944,20 @@
             },
             "member": {
               "status": "partial",
-              "run_id": "profile-member-retest-189-01",
-              "build_variant": "receipt-bound development0.2.189; CI37164174445/artifact11288542496/sourceb4b9f0c4",
+              "run_id": "profile-member-final-189-05",
+              "build_variant": "Development0.2.189, source b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced, CI37164174445/artifact11288542496",
               "verified_substeps": [
-                "Warm member denied owner-row GETs showed zero editors and disabled Save; Retry completed owner GET 200 and restored the baseline."
+                "Warm and full-reload owner-read denial shows a non-editable error; Retry restores baseline with owner HTTP200."
               ],
               "remaining_criteria": [
-                "Reload-mode Profile cases remain unverified: genuineextensionreloadpassed butsubsequentdriverclickfailed.",
-                "All other unverified execution-matrix branches remain required."
+                "Reopen recovery branch and real mounted identity-transition failure remain unverified.",
+                "Admin reload and other unobserved matrix branches remain required."
               ],
-              "evidence": ".research/profile-member-retest189.json",
-              "verified_at": "2026-10-04T00:35:54.125394+00:00"
+              "evidence": [
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
+              ],
+              "verified_at": "2026-10-04T01:29:17.055381+00:00"
             }
           },
           "previous_results": [
@@ -11919,6 +11975,21 @@
               ],
               "evidence": ".research/profile-member-bounded-owner-verification.json",
               "verified_at": "2026-10-03T23:14:01.024268+00:00"
+            },
+            {
+              "mode": "member",
+              "status": "partial",
+              "run_id": "profile-member-retest-189-01",
+              "build_variant": "receipt-bound development0.2.189; CI37164174445/artifact11288542496/sourceb4b9f0c4",
+              "verified_substeps": [
+                "Warm member denied owner-row GETs showed zero editors and disabled Save; Retry completed owner GET 200 and restored the baseline."
+              ],
+              "remaining_criteria": [
+                "Reload-mode Profile cases remain unverified: genuineextensionreloadpassed butsubsequentdriverclickfailed.",
+                "All other unverified execution-matrix branches remain required."
+              ],
+              "evidence": ".research/profile-member-retest189.json",
+              "verified_at": "2026-10-04T00:35:54.125394+00:00"
             }
           ]
         },
@@ -11970,9 +12041,10 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": "Real failed-write/draft-retention/retry path passed with original state restored.",
+              "observed_outcome": "Independent guarded member observation passed this bounded branch on frozen b4/189; original row absence restored and authenticated-read verified.",
               "evidence_refs": [
-                ".research/profile-member-retest189-next.json"
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
               ],
               "status": "pass",
               "readiness": "ready"
@@ -11985,9 +12057,10 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": "Real failed-write/draft-retention/retry path passed with original state restored.",
+              "observed_outcome": "Independent guarded member observation passed this bounded branch on frozen b4/189; original row absence restored and authenticated-read verified.",
               "evidence_refs": [
-                ".research/profile-member-retest189-next.json"
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
               ],
               "status": "pass",
               "readiness": "ready"
@@ -12082,6 +12155,25 @@
           "results": {
             "member": {
               "status": "partial",
+              "run_id": "profile-member-final-189-05",
+              "build_variant": "Development0.2.189, source b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced, CI37164174445/artifact11288542496",
+              "verified_substeps": [
+                "Warm exact single intended upsert failure retains editable draft and error, retry persists after reopen, final original absence restored."
+              ],
+              "remaining_criteria": [
+                "Member reload and all admin write-failure branches remain unverified."
+              ],
+              "evidence": [
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
+              ],
+              "verified_at": "2026-10-04T01:29:17.055381+00:00"
+            }
+          },
+          "previous_results": [
+            {
+              "mode": "member",
+              "status": "partial",
               "run_id": "profile-member-retest-189-02",
               "build_variant": "receipt-bound development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
               "verified_at": "2026-10-04T00:54:21.007514+00:00",
@@ -12096,7 +12188,7 @@
                 "No full Profile or later-main build claim."
               ]
             }
-          }
+          ]
         },
         {
           "id": "EXT-F-1004-T27",
@@ -12286,10 +12378,10 @@
                 "organization-unset",
                 "organization-switch"
               ],
-              "observed_outcome": "Real member first Save created its owner row with the selected device organization. Original absence was later restored through verified guarded conditional owner cleanup. Reload and remaining branches unverified.",
+              "observed_outcome": "Independent guarded member observation passed this bounded branch on frozen b4/189; original row absence restored and authenticated-read verified.",
               "evidence_refs": [
-                ".research/profile-member-bounded-owner-verification.json",
-                ".research/profile-member-reload-recovery.json"
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
               ],
               "status": "pass",
               "readiness": "requires_fixture"
@@ -12471,17 +12563,19 @@
           "results": {
             "member": {
               "status": "partial",
-              "run_id": "profile-member-retest-189-01",
-              "build_variant": "receipt-bound development0.2.189; CI37164174445/artifact11288542496/sourceb4b9f0c4",
+              "run_id": "profile-member-final-189-05",
+              "build_variant": "Development0.2.189, source b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced, CI37164174445/artifact11288542496",
               "verified_substeps": [
-                "Real member first Save created its owner row with the selected device organization. Original absence was later restored through verified guarded conditional owner cleanup."
+                "First real UI Save created a test-owned row with the explicit active device organization; original absence restored."
               ],
               "remaining_criteria": [
-                "Reload-mode Profile cases remain unverified: genuineextensionreloadpassed butsubsequentdriverclickfailed.",
-                "All other unverified execution-matrix branches remain required."
+                "Organization switch/unset, reload first-save and admin branches remain unverified."
               ],
-              "evidence": ".research/profile-member-retest189.json",
-              "verified_at": "2026-10-04T00:35:54.125394+00:00"
+              "evidence": [
+                ".research/profile-member-final-189-native.json",
+                "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl"
+              ],
+              "verified_at": "2026-10-04T01:29:17.055381+00:00"
             }
           },
           "previous_results": [
@@ -12499,6 +12593,21 @@
               ],
               "evidence": ".research/profile-member-bounded-owner-verification.json",
               "verified_at": "2026-10-03T23:14:01.024268+00:00"
+            },
+            {
+              "mode": "member",
+              "status": "partial",
+              "run_id": "profile-member-retest-189-01",
+              "build_variant": "receipt-bound development0.2.189; CI37164174445/artifact11288542496/sourceb4b9f0c4",
+              "verified_substeps": [
+                "Real member first Save created its owner row with the selected device organization. Original absence was later restored through verified guarded conditional owner cleanup."
+              ],
+              "remaining_criteria": [
+                "Reload-mode Profile cases remain unverified: genuineextensionreloadpassed butsubsequentdriverclickfailed.",
+                "All other unverified execution-matrix branches remain required."
+              ],
+              "evidence": ".research/profile-member-retest189.json",
+              "verified_at": "2026-10-04T00:35:54.125394+00:00"
             }
           ]
         }

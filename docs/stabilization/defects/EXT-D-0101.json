@@ -14,7 +14,7 @@
   "actual": "Report cannot locate the failing control or distinguish readiness/ambiguity; cleanup overwritesstage so it cannot identify originalfailure.",
   "severity": "S3: diagnosticloss delays reliabletesting; no productuserimpact demonstrated.",
   "priority": "P1: blocks currentProfile reloadacceptance diagnosis.",
-  "state": "retest-pass",
+  "state": "closed",
   "owner": "profile_reload_target_repair",
   "evidence": [
     ".research/profile-member-retest189.json",
@@ -22,7 +22,11 @@
     ".research/profile-diagnostics-peer.json",
     ".research/profile-runner-final-peer.json",
     ".research/profile-member-retest189-next.json",
-    ".research/profile-189-final-source-peer.json"
+    ".research/profile-189-final-source-peer.json",
+    ".research/profile-receipt-final-privacy-peer.json",
+    ".research/profile-report-boundary-escalation.json",
+    ".research/profile-member-final-189-native.json",
+    ".research/profile-escalated-boundary-peer.json"
   ],
   "transition_history": [
     {
@@ -54,9 +58,47 @@
       "from": "fixed",
       "to": "retest-pass",
       "reason": "Actualnativefailure retained original extension_reload/open_profile_after_reload/account_menu, safe0/0counts andUIbooleans despitecleanupfinalstage. Rootverifiedraw/journalhashes. KnownT26dual-errorsecondarypath stillrequiresrepairbeforefullclosure."
+    },
+    {
+      "at": "2026-10-04T01:22:50.079102+00:00",
+      "from": "retest-pass",
+      "to": "retest-fail",
+      "reason": "Independent600e09fb synthetic actual observer report reproduced an unallowlisted backend code. Earlier native capture pass remains bounded; class-level report contract failed."
+    },
+    {
+      "at": "2026-10-04T01:22:50.079102+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Escalation owned final report and real outer teardown boundaries."
+    },
+    {
+      "at": "2026-10-04T01:22:50.079102+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "b83c2af0 bounds backend codes and preserves primary through reproduced filesystem teardown rejection;23 focused checks and3 mutations passed. Fresh independent peer pending."
+    },
+    {
+      "at": "2026-10-04T01:29:17.055381+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent guarded final member run passed on b4/189 with original absence restored. Root matched raw and journal hashes; source peer e813fb48 accepted the final contracts."
+    },
+    {
+      "at": "2026-10-04T01:29:17.055381+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original reproduced defect and affected surrounding cases verified. D101 also has prior real failed-operation capture and actual boundary negative guards; D102 exact original hydration race independently passed. No full feature or other-role claim."
     }
   ],
   "closure_requirement": "Meaningfulfailurecaptureguard and independentreview, then actualguardedfailure or equivalentverifiednativeobservation preservingoriginaloperation/stage withoutprivatecontent. UnderlyingProfile targetfailure handledseparately.",
-  "fix_commits": ["aa7df0d2", "c77982ec"],
-  "known_remaining": "Fresh peer 20f5286b reproduced arbitrary no-colon error text reaching execution_failure_code and final failure_code. Native launch is held while the original implementation lane replaces message-derived public codes with a fixed allowlist and adds actual-boundary/final-report privacy guards. Dual-error preservation source 85a95c40 is also awaiting final independent acceptance. No actual credential leak was established by the synthetic reproduction."
+  "fix_commits": ["aa7df0d2", "c77982ec", "85a95c40", "5f417356", "b83c2af0"],
+  "known_remaining": "No remaining reproduced failure in this defect scope. Preflight/output filesystem failures and broader native fixture branches remain separate unverified coverage; primary/final report privacy guards and actual adverse cleanup boundaries passed independent source review.",
+  "closure_evidence": {
+    "run_id": "profile-member-final-189-05",
+    "raw_sha256": "7011bf997e26f1266a05ea2f3483b3326e3069e1caf87b79e6afb5aca4c05b9e",
+    "journal_sha256": "f5b6cb79e33e1eca8218c2236157bd050afe93e5957116daa27014480dc27d91",
+    "resource": "admitted, resourceInvalid=false, exit0 valid",
+    "restoration": "authenticated original absence verified",
+    "scope": "Original reproduced test-runner defect only; no full Profile or extension certification."
+  }
 }
