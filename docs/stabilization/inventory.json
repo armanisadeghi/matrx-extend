@@ -18365,13 +18365,15 @@
             "EXT-D-0129",
             "EXT-D-0130",
             "EXT-D-0131",
-            "EXT-D-0132"
+            "EXT-D-0132",
+            "EXT-D-0133"
           ],
           "run_ids": [
             "incoming-sources-001",
-            "37227042493"
+            "37227042493",
+            "37237361053"
           ],
-          "retest_status": "not-run"
+          "retest_status": "unverified: run37237361053 verified member identity/org but failed panel visibility before viewport or Scrape cases; D133 open."
         },
         "admin": {
           "test_status": "unverified",

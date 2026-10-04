@@ -1,0 +1,32 @@
+{
+  "id": "EXT-D-0133",
+  "feature_id": "EXT-F-1007",
+  "surface": "Authenticated Scrape native acceptance setup",
+  "auth_mode": "member (admin sibling unverified)",
+  "title": "Authenticated panel foreground is not observed before Scrape acceptance",
+  "reproduction": [
+    "Use frozen CI artifact11315305224, source b81587021d689078ed428dafe3e15474a84c41e2, manifest0.2.244, tree3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7.",
+    "Run hosted member guest-scrape-development acceptance with normal600 viewport request as run37237361053.",
+    "After real sign-in, canonical nonadmin check and organization selection, initial panel activation returns but visibility assertion fails before viewport measurement or Scrape cases."
+  ],
+  "expected": "Owned native side panel is visible and exact context verified before feature acceptance. Failure evidence distinguishes hidden versus replaced context.",
+  "actual": "scrape_authenticated_panel_foreground_not_observed:false; cases and viewports empty; original receipt lacks target/focus discriminator. Cause remains unproven.",
+  "severity": "S2: authenticated Scrape coverage blocked; product failure not established",
+  "priority": "P2: resume after urgent guest Chat verification",
+  "state": "open",
+  "evidence": [
+    ".research/scrape-member-guard132-native.json",
+    ".research/scrape-auth-panel-focus.json",
+    "docs/stabilization/evidence/scrape-member/run37237361053/acceptance-receipt.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T22:01:48.703577+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Captured exact native failure; no inferred product diagnosis."
+    }
+  ],
+  "diagnostic_commit": "eb856fea",
+  "next_action": "Independent review of bounded diagnostic; one future guarded diagnostic run only after guest incident priority. No blind rerun or visibility bypass."
+}

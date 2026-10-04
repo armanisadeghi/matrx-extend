@@ -46,12 +46,12 @@
     "limit": "activeOrganizationPresent string-only probe returned false on current object-valued storage key; organization persistence remains unverified; not a product org defect."
   },
   "latest_dashboard_check": {
-    "observed_at_utc": "2026-10-04T21:28:44.805187+00:00",
+    "observed_at_utc": "2026-10-04T22:01:48.703577+00:00",
     "method": "Authenticated primary Package page refreshed through Chrome native UI; Pending review205, Published176, Upload disabled.",
     "published_version": "0.2.176",
     "pending_version": "0.2.205",
     "status": "Pending review",
-    "action": "Preserve pending submission; continue contained acceptance."
+    "action": "Preserve pending205; urgent guest transport evidence repair underway, no new submission until eligible."
   },
   "publisher_access": {
     "observed_at_utc": "2026-10-04T08:14:16Z",
