@@ -1,8 +1,10 @@
 # Matrx Extend stabilization: resume here
 
-## Active lanes — independent Birthday driver review and Profile acceptance
+## Active lanes — Profile causal acceptance
 
-Previous turn classification: **progress** — independently verified member warm/reload cases, closed D101/D102 for their reproduced failures, and reconciled/pushed all managed repositories. Baseline for this turn was copied from the final workspace ledger before refreshing remotes.
+Previous turn classification: **progress** — verified current-server guest opening and reload replies while retaining overall D96 failure, independently reviewed diagnostic repairs, and pushed synchronized main. All prior workers are terminal. New ledger baseline copied from the last finalized remote snapshot before fetching.
+
+`profile_expander_causal_native` (fresh Sol medium, 40 calls/seven minutes) owns the sole heavy slot for one guarded extended member run `profile-expander-causal-189-05` on frozen b4/189 with reviewed expander diagnostics. No source edits or second browser attempt. Exact failure phase/control or completed warm/reload field evidence, resource validity, and original absence restoration determine the next action.
 
 - `profile_identity_employment_cases` (Sol medium, source only): executable Identity, Employment and section-expander cases T05/T06/T17/T18/T21/T22 across warm/reload, preserving strict private per-write ownership and original restoration. Owns new case modules and narrow runner integration; no native/DB/build/release. Fifteen-minute bound, fresh source review before native.
 - `popup_guest_native_census` (Luna medium) is terminal at b08421ef: valid scratch preflight only, no owned browser launched. CUA selected existing shared CFT; no input sent. All guest popup cases remain unverified.
