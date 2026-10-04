@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "status": "stopped_before_chat",
+  "scope": "One fresh native Chromium guest opening of unpacked frozen published extension 0.2.176 against the current live backend. The runner stopped at its pre-Chat guest Values-chip owner-table assertion; no Chat prompt, panel reload, or follow-up ran.",
+  "classification": {
+    "finding": "Known D96 owner-table guest 401 behavior, per root-agent context; not a fresh Chat regression finding.",
+    "repair_context": "Root reports the repair is submitted in 0.2.181. This run did not exercise that build.",
+    "chat_verdict": "unverified; acceptance stopped before the opening Chat prompt"
+  },
+  "backend": {
+    "health_url": "https://server.app.matrxserver.com/health/version",
+    "before": {
+      "git_sha": "9b3483e7cf868d5f2e04e30d9e36b4f7502c0250",
+      "built_at": "2026-10-04T02:12:02Z",
+      "captured_at": "immediately before guarded run"
+    },
+    "after": {
+      "git_sha": "9b3483e7cf868d5f2e04e30d9e36b4f7502c0250",
+      "built_at": "2026-10-04T02:12:02Z",
+      "captured_at": "2026-10-04T02:33:56.968Z"
+    }
+  },
+  "release_artifact": {
+    "release_run_id": 37105966615,
+    "github_artifact_id": 11267544261,
+    "version": "0.2.176",
+    "embedded_release_source_sha": "3fe608d949a06aa10bfea57b43c9b05638386bc1",
+    "local_zip_sha256_before": "2bb4ddc89f113897829271d5125e46b438a625c60cf28017dd1c6f35838cbb93",
+    "local_zip_sha256_after": "2bb4ddc89f113897829271d5125e46b438a625c60cf28017dd1c6f35838cbb93",
+    "store_zip_sha256_before": "813715b8dcd6421d4ee001c04e99c3729f6dad439064f8bf5922e6fb38ce09f8",
+    "store_zip_sha256_after": "813715b8dcd6421d4ee001c04e99c3729f6dad439064f8bf5922e6fb38ce09f8",
+    "keyed_tree_sha256_before": "755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272",
+    "keyed_tree_sha256_after": "755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272",
+    "input_artifact_unchanged": true,
+    "receipt_kind": "published release local ZIP extracted for unpacked loading; actual Chrome Web Store installation/update lifecycle not exercised"
+  },
+  "runner": {
+    "command": "node scripts/hosted-guest-acceptance.mjs",
+    "acceptance_case": "guest-chat",
+    "run_id": "published176-guest-current-20261003-01",
+    "resource_decision": "child_failed; admission valid and resourceInvalid false",
+    "child_exit_code": 1,
+    "failure_stage": "guest_values_chip_open",
+    "failure_code": "assertionerror",
+    "failure_assertion": "guest panel/chat/Values chip must not issue an owner-table GET",
+    "resource_journal": "docs/stabilization/resource-journals/published176-guest-current-20261003-01.jsonl",
+    "resource_journal_sha256": "99447e9f004a2010e5c23dc975e06bcf9248e3f891c49c9c46c4793b25dc892d",
+    "sanitized_receipt": "docs/stabilization/reports/published176-guest-backend-current/raw/guest-chat.receipt.json",
+    "sanitized_receipt_sha256": "35a8ed013a77f1543add116782c40e3f64476fc8c411eaccaccacd9f6bcd5f1d",
+    "screenshots": {
+      "failure": {
+        "path": "docs/stabilization/reports/published176-guest-backend-current/raw/guest-chat-failure.png",
+        "sha256": "b0345d69dfd44eaf662727563f43e83ba2a2aeb619a01f28203451859accf2d2"
+      },
+      "side_panel": {
+        "path": "docs/stabilization/reports/published176-guest-backend-current/raw/native-side-panel.png",
+        "sha256": "940ab735c895f6c895ac2cc4f839545a4ba3846f8108900d8f6cf22ac72c7b59"
+      },
+      "page_after_open": {
+        "path": "docs/stabilization/reports/published176-guest-backend-current/raw/normal-target-after-open.png",
+        "sha256": "d8315ee4f722ece4331237a135f58ba50aa8f78724ff95fc1fcc7ced3a0b3e34"
+      }
+    }
+  },
+  "guest_observation": {
+    "fresh_profile": true,
+    "guest_visible": true,
+    "access_token_absent": true,
+    "profile_absent": true,
+    "organization_absent": true,
+    "chat_pane_visible": true,
+    "users_schema_get_during_values_chip_open": {
+      "observed": true,
+      "authorization_header_present": true,
+      "http_status": 401
+    },
+    "guest_ai_requests_before_stop": 0,
+    "opening_prompt_submitted": false,
+    "opening_terminal_answer": false,
+    "panel_reloaded": false,
+    "followup_prompt_submitted": false,
+    "followup_terminal_answer": false,
+    "screenshot_shows_guest_banner": true
+  },
+  "cleanup": {
+    "heavy_lease_present": false,
+    "unsafe_hold_present": false,
+    "owned_runner_or_pinned_browser_processes_remaining": 0,
+    "external_tmp_directory_empty": true
+  },
+  "evidence_root": "docs/stabilization/reports/published176-guest-backend-current",
+  "limits": [
+    "This run records the known pre-Chat D96 seam only; it does not answer whether guest Chat works on this backend.",
+    "No second run, alternate browser, authentication, database write, source repair, or newer candidate was used.",
+    "Evidence is from an unpacked release artifact, not a Store-installed extension."
+  ]
+}

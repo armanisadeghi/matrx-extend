@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "scope": "fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat answer and post-reload guest follow-up",
+  "context_rule_read_observation_scope": "CDP observer attaches after panel load and runs through Values chip open, both guest sends, and panel reload; it cannot establish requests before attachment",
+  "status": "unverified",
+  "build": {
+    "version": "0.2.176",
+    "tree_sha256": "755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272",
+    "receipt_kind": "release"
+  },
+  "guest": {
+    "fresh": true,
+    "chat_visible": true,
+    "after_reload": false
+  },
+  "chat": null,
+  "screenshot": null,
+  "followup_screenshot": null,
+  "failure_stage": "guest_values_chip_open",
+  "failure_code": "assertionerror",
+  "failure_reason": "guest panel/chat/Values chip must not issue an owner-table GET",
+  "stage_progress": [
+    "owned_profile",
+    "fresh_guest",
+    "owned_article_page",
+    "page_specific_fixture",
+    "guest_chat_open",
+    "guest_values_chip_open"
+  ],
+  "guest_ai_requests": [],
+  "context_rule_reads": [
+    {
+      "stage": "chip_open",
+      "method": "GET",
+      "usersSchema": true,
+      "authorizationPresent": true,
+      "status": 401
+    }
+  ],
+  "grounding_diagnostics": {},
+  "failure_observation": {
+    "guestAccount": true,
+    "accessTokenAbsent": true,
+    "profileAbsent": true,
+    "organizationAbsent": true,
+    "chatVisible": true,
+    "chatSelected": true,
+    "paneVisible": true,
+    "composerVisible": true,
+    "composerLength": 0,
+    "sendEnabled": false,
+    "streaming": false,
+    "replyCount": 0,
+    "answerContainsNonce": false,
+    "answerContainsFixtureHeading": false,
+    "answerMatchesPublicStages": false,
+    "answerStagesInOrder": false,
+    "answerIsRefusal": false,
+    "terminalAnswerError": false,
+    "interruptionNotice": false,
+    "errorNotice": false,
+    "latestAssistantReply": "",
+    "visibleAlerts": [],
+    "streamTrace": null
+  },
+  "failure_screenshot": "/Volumes/Samsung2TB/code/matrx-extend/test-results/native-sidepanel-qa-bGkmnB/guest-chat-failure.png"
+}
