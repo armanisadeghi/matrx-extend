@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "6d8f27182e29053408be09ba03141c0e8c4a3462",
+  "reopened_finding": {
+    "severity": "IMPORTANT",
+    "status": "ADDRESSED",
+    "finding": "The original native fixture returned 404 for the image URL, while the driver only checked the tile link and alt text.",
+    "evidence": [
+      "The exact artifact changes the owned intake page to /intake.svg and passes its matching SVG body as an in-memory owned asset to the native harness.",
+      "The shared test server serves only exact keys in ownedAssets with the supplied image MIME type and bytes; unknown paths return 404. It performs no filesystem lookup or path-to-file mapping.",
+      "The HTTP test fetched /intake.svg and observed 200, image/svg+xml, and the exact SVG body; /missing.svg and /etc/passwd returned 404.",
+      "The native driver reads the selected active pane DOM, including img.href, resolved img.src, complete, naturalWidth, and naturalHeight. Its assertion requires the expected href/src/alt and complete=true with positive natural dimensions.",
+      "Focused assertion and HTTP tests passed: node --test tests/browser/scrape-media-assertions.test.mjs tests/browser/owned-fixture-server.test.mjs (5 passed, 0 failed). The guard rejects incomplete images, zero width or height, wrong pane, missing/swapped media, and false empty states."
+    ]
+  },
+  "verdict_a": {
+    "result": "PARTIAL_SOURCE_BEHAVIOR_NATIVE_UNVERIFIED",
+    "evidence": [
+      "At source level, the amended guest acceptance driver now has a real HTTP image fixture and checks rendered image load dimensions from the active Images pane; Video remains a visible URL-row check.",
+      "The driver also selects Images and Video on the media-free captured referral page and asserts each active pane is empty while its add control remains visible.",
+      "No native acceptance run was performed. Actual rendered image/video content, both empty states, and the live collector-to-pane path are therefore unverified. T08 must remain partial."
+    ],
+    "coverage": {
+      "guest_media_source": "Source-ready; native observation not run",
+      "guest_empty_panes": "Source-ready; native observation not run",
+      "member_admin_reload": "Unverified and outside this repair"
+    }
+  },
+  "verdict_b": {
+    "result": "SOURCE_READY_FOR_ONE_GUARDED_NATIVE_TEST",
+    "evidence": [
+      "The HTTP asset route uses exact in-memory asset keys and never opens arbitrary paths. Requests for missing routes receive 404.",
+      "The native acceptance assertion consumes pane DOM collected by scrapeState; the harness does not inject expected media into application state.",
+      "The focused tests exercise real HTTP serving and adversarial assertion inputs, including broken-image dimensions and empty-state mismatch."
+    ],
+    "limitations": [
+      "Unit assertion cases construct pane-state inputs and cannot prove native DOM selectors, SVG decoding in the browser, or content-script-to-pane integration.",
+      "The one guarded native run against the exact artifact is still required to prove active-pane content and the two empty states."
+    ]
+  },
+  "source_checks": [
+    "Reviewed exact commit 6d8f27182e29053408be09ba03141c0e8c4a3462 and original finding commit 8c53f36cae54f8dd39a81e66b78ee886abbdce3d.",
+    "Ran node --test tests/browser/scrape-media-assertions.test.mjs tests/browser/owned-fixture-server.test.mjs: 5 passed, 0 failed.",
+    "Ran node --check tests/browser/scrape-guest-native-acceptance.mjs and git diff --check 6d8f2718^ 6d8f2718 successfully.",
+    "No native/browser run, build, release, extension source edit, or version change was performed."
+  ],
+  "overall": "ADDRESSED at source level; T08 remains PARTIAL until one exact-artifact native run observes matching image/video panes and both empty panes."
+}
