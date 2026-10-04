@@ -1,0 +1,1165 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "mode": "guest",
+  "status": "unverified",
+  "artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.215",
+    "source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+    "tree_sha256": "ab62d0755d03e8a7f2ca0cb99e0b5037f39e75d756b14a3e2d3ad6d8cc096d08",
+    "run_id": 37193761291,
+    "artifact_id": 11299613935
+  },
+  "guest_account_observed": true,
+  "cases": [
+    {
+      "id": "EXT-F-1007-T20",
+      "status": "partial",
+      "evidence": {
+        "initial_empty": true,
+        "initial_url": "http://localhost:49194/intake"
+      },
+      "remaining": [
+        "Navigation and reload lifecycle remain to be exercised."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T01",
+      "status": "partial",
+      "evidence": {
+        "url": "http://localhost:49194/intake",
+        "busy_disabled": true,
+        "article_title": "Harbor Dental intake guide",
+        "lazy_content_absent": true,
+        "result_tabs": [
+          "Article",
+          "Images",
+          "Video",
+          "Links",
+          "SEO",
+          "Schema"
+        ]
+      },
+      "remaining": [
+        "Warm/full reload lifecycle not yet exercised."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T08",
+      "status": "partial",
+      "evidence": {
+        "tabs_selected": [
+          "Article",
+          "Images",
+          "Video",
+          "Links",
+          "SEO",
+          "Schema"
+        ],
+        "matching_content": {
+          "article": true,
+          "images": {
+            "pane": "Images",
+            "state": "matching_content",
+            "count": 3,
+            "paths": [
+              "/intake.svg",
+              "/appointment-card.svg",
+              "/clinic-icon.svg"
+            ],
+            "alt": [
+              "New patient intake desk",
+              "Appointment card",
+              "Clinic icon"
+            ],
+            "natural_sizes": [
+              [
+                640,
+                480
+              ],
+              [
+                96,
+                96
+              ],
+              [
+                32,
+                32
+              ]
+            ]
+          },
+          "video": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 2,
+            "paths": [
+              "/intake-walkthrough.mp4",
+              "/referral-walkthrough.mp4"
+            ]
+          },
+          "links": true,
+          "seo": true,
+          "schema": true
+        }
+      },
+      "remaining": [
+        "Image and video empty states and reload lifecycle need full observation."
+      ]
+    }
+  ],
+  "stage": "warm_media_controls",
+  "native_stage": "exercise_panel",
+  "failure": {
+    "stage": "warm_media_controls",
+    "code": "unique visible pointer target"
+  },
+  "original_busy_failure": null,
+  "cpu_diagnostic": null,
+  "horizontal_geometry": [
+    {
+      "boundary": "after_fast_capture",
+      "at": "2026-10-04T15:22:56.449Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 12,
+          "right": 69.921875,
+          "width": 57.921875,
+          "scrollLeft": 0,
+          "scrollWidth": 58,
+          "clientWidth": 58
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Article_tab",
+      "at": "2026-10-04T15:22:56.629Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 12,
+          "right": 69.921875,
+          "width": 57.921875,
+          "scrollLeft": 0,
+          "scrollWidth": 58,
+          "clientWidth": 58
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Images_tab",
+      "at": "2026-10-04T15:22:56.915Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 73.921875,
+          "right": 148.25,
+          "width": 74.328125,
+          "scrollLeft": 0,
+          "scrollWidth": 74,
+          "clientWidth": 74
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Video_tab",
+      "at": "2026-10-04T15:22:57.097Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 152.25,
+          "right": 217.90625,
+          "width": 65.65625,
+          "scrollLeft": 0,
+          "scrollWidth": 66,
+          "clientWidth": 66
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Links_tab",
+      "at": "2026-10-04T15:22:57.276Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 221.90625,
+          "right": 284.65625,
+          "width": 62.75,
+          "scrollLeft": 0,
+          "scrollWidth": 63,
+          "clientWidth": 63
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_SEO_tab",
+      "at": "2026-10-04T15:22:57.530Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 288.65625,
+          "right": 333.03125,
+          "width": 44.375,
+          "scrollLeft": 0,
+          "scrollWidth": 44,
+          "clientWidth": 44
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Schema_tab",
+      "at": "2026-10-04T15:22:57.711Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 12,
+          "right": 78.296875,
+          "width": 66.296875,
+          "scrollLeft": 0,
+          "scrollWidth": 66,
+          "clientWidth": 66
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "reload_milestones": [],
+  "reload_lifecycle": null,
+  "driver_failure": {
+    "code": "pointer_target_not_unique",
+    "sampleStage": null,
+    "matchedTargetCount": 0,
+    "visibleMatchCount": 0,
+    "uniqueVisibleTarget": false,
+    "hitTarget": false,
+    "animating": false,
+    "stableSamples": 0,
+    "positionStable": false,
+    "targetHasArea": null,
+    "clippedTargetHasArea": null,
+    "selectedPointAvailable": null,
+    "centerHitCategory": null,
+    "targetDisabled": null,
+    "pointerEventsNone": null,
+    "clippingAncestorCount": null,
+    "testedPointCount": null,
+    "interiorHitKinds": null,
+    "targetRectangle": null,
+    "centerOccluder": null,
+    "firstInteriorOccluder": null
+  },
+  "guest_auth_storage": {
+    "hasAccessToken": false,
+    "hasUserProfile": false
+  },
+  "fast_busy_observation": {
+    "observed": true,
+    "text": "Capturing…",
+    "samples": 5,
+    "matchingButtons": 1,
+    "buttonReplacements": 0,
+    "disabledSamples": 1,
+    "disabledMutationRecords": 2,
+    "observedAtMs": 1596.7000000000116,
+    "observationBasis": "current_owned_visible_dom"
+  },
+  "fast_screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-tIKEde/scrape-fast-article.png",
+  "media_failure_observation": {
+    "phase": "warm-media",
+    "code": "unique visible pointer target",
+    "selected": "Article",
+    "visible": true,
+    "resultText": "defuddle · 17 words · 1 min read\nEDITED\nHarbor Dental intake guide\n\nhttp://localhost:49194/intake · 17 words · 1 min read\n\nHarbor Dental new patient appointments\n\nNew patients can review appointment timing, forms, and arrival instructions before visiting our clinic.\n\nPatient forms Appointments",
+    "media": {
+      "tabCount": null,
+      "formOpen": false,
+      "imageToolbar": "edited",
+      "imageToolbarRendered": "EDITED",
+      "imageGroups": {
+        "large": [],
+        "medium": [],
+        "icon": []
+      },
+      "imageItems": [],
+      "videoItems": [],
+      "linkItems": [],
+      "linkToolbar": "edited"
+    },
+    "screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-tIKEde/scrape-warm-media-failure.png"
+  }
+}

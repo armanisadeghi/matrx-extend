@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "task": "blank-startup-native-experiment",
+  "verdict": "unverified_product_acceptance",
+  "workflow": {
+    "run_id": 37212405505,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37212405505",
+    "job_id": 111466082976,
+    "head_sha": "30fe6781de042b00ef50a0f83fcb69286d35aacb",
+    "conclusion": "failure",
+    "inputs": {
+      "acceptance_case": "guest-scrape-development",
+      "development_run_id": "37193761291",
+      "development_artifact_id": "11299613935"
+    },
+    "hosted_phases": {
+      "package": "completed; admitted; child exit 0; valid final decision",
+      "browser": "completed; admitted; child exit 0; valid final decision",
+      "acceptance": "admitted; one healthy watch; child exit 1; resourceInvalid=false; final decision=child_failed"
+    },
+    "acceptance_started_utc": "2026-10-04T15:21:37.438Z",
+    "acceptance_terminal_utc": "2026-10-04T15:23:03.047Z",
+    "healthy_watch_count": 1,
+    "unsafe_watch_count": 0
+  },
+  "artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.215",
+    "source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+    "tree_sha256": "ab62d0755d03e8a7f2ca0cb99e0b5037f39e75d756b14a3e2d3ad6d8cc096d08",
+    "run_id": 37193761291,
+    "artifact_id": 11299613935
+  },
+  "observation": {
+    "stage": "warm_media_controls",
+    "failure": {
+      "stage": "warm_media_controls",
+      "code": "unique visible pointer target"
+    },
+    "native_driver_failure": {
+      "code": "pointer_target_not_unique",
+      "sampleStage": null,
+      "matchedTargetCount": 0,
+      "visibleMatchCount": 0,
+      "uniqueVisibleTarget": false,
+      "hitTarget": false,
+      "animating": false,
+      "stableSamples": 0,
+      "positionStable": false,
+      "targetHasArea": null,
+      "clippedTargetHasArea": null,
+      "selectedPointAvailable": null,
+      "centerHitCategory": null,
+      "targetDisabled": null,
+      "pointerEventsNone": null,
+      "clippingAncestorCount": null,
+      "testedPointCount": null,
+      "interiorHitKinds": null,
+      "targetRectangle": null,
+      "centerOccluder": null,
+      "firstInteriorOccluder": null
+    },
+    "guest_account_observed": true,
+    "initial_guest_auth_storage": {
+      "hasAccessToken": false,
+      "hasUserProfile": false
+    },
+    "observed_cases": [
+      {
+        "id": "EXT-F-1007-T20",
+        "status": "partial",
+        "evidence": {
+          "initial_empty": true,
+          "initial_url": "http://localhost:49194/intake"
+        },
+        "remaining": ["Navigation and reload lifecycle remain to be exercised."]
+      },
+      {
+        "id": "EXT-F-1007-T01",
+        "status": "partial",
+        "evidence": {
+          "url": "http://localhost:49194/intake",
+          "busy_disabled": true,
+          "article_title": "Harbor Dental intake guide",
+          "lazy_content_absent": true,
+          "result_tabs": ["Article", "Images", "Video", "Links", "SEO", "Schema"]
+        },
+        "remaining": ["Warm/full reload lifecycle not yet exercised."]
+      },
+      {
+        "id": "EXT-F-1007-T08",
+        "status": "partial",
+        "evidence": {
+          "tabs_selected": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+          "matching_content": {
+            "article": true,
+            "images": {
+              "pane": "Images",
+              "state": "matching_content",
+              "count": 3,
+              "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+              "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+              "natural_sizes": [[640, 480], [96, 96], [32, 32]]
+            },
+            "video": {
+              "pane": "Video",
+              "state": "matching_content",
+              "count": 2,
+              "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+            },
+            "links": true,
+            "seo": true,
+            "schema": true
+          }
+        },
+        "remaining": ["Image and video empty states and reload lifecycle need full observation."]
+      }
+    ],
+    "scope_limit": "T08 has only partial warm pane/content evidence. T08 full assertions, T10/T11/T12/T13 warm control assertions and all populated-pane reload assertions were not reached. No reload milestone exists. No feature pass or capacity improvement is established."
+  },
+  "evidence_directory": "docs/stabilization/evidence/scrape215/run37212405505",
+  "files_sha256": {
+    "receipt.json.txt": "b9bc1752a7a956151d9401723747e088326cbb77a9324e7f590b43330e927653",
+    "package-resource.jsonl": "484d132fdec31df5bbce73c439b4c3a6b5f50caea7345cc72bfae8f84c544c49",
+    "browser-resource.jsonl": "7bff2522ac2fbe309ce5062600e63abc8a52e09b496d17d91b25004cb00ec9f1",
+    "guest-resource.jsonl": "cc83372c05fb4e16550a11d6b65436da5249bfce722d3ef11e5a711737b4f7a1",
+    "native-side-panel.png": "2cfda86f86cad54e4a73aa3480585a0e0ab5d74b20da4921a35999d22e3c462f",
+    "normal-target-after-open.png": "60d95c01c8bf5fa8f0807e1aed08d2adb43b4a5532190ae0eadd54c5e3aef79c",
+    "scrape-fast-article.png": "a130f613398d2549c0af94f54840492657edf693ea6d38d84f432cff75da02b2",
+    "scrape-warm-media-failure.png": "0fd0b701ebdef8919c2d15f6c33653656e14fbf952c3091518a78d9b86b121e8"
+  },
+  "notes": [
+    "The native driver stopped in warm_media_controls with unique visible pointer target / pointer_target_not_unique (zero matching visible targets).",
+    "The resource guard admitted the acceptance process, observed one healthy watch, and recorded child_failed with resourceInvalid=false; this was a product-driver failure after healthy startup sampling, not a resource refusal.",
+    "One authorized attempt only; no retry was launched.",
+    "A pre-existing modification to docs/stabilization/inventory.json was observed at task start and left untouched."
+  ]
+}
