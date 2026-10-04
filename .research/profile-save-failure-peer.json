@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "228704a9",
+  "inventory_id": "EXT-F-1004-T26",
+  "verdict_a_acceptance": {
+    "status": "partial_source_only",
+    "basis": "The unintegrated case follows the real Profile UI and owned-write journal, checks a visible failed-save state, retries through the actual Save control, rereads after reopening, and attempts restoration. It has not run in the native panel. Its receipt covers only member/warm while the inventory also names reload. These are source capabilities, not native acceptance evidence.",
+    "missing": [
+      "Native execution with a receipt showing the intended member's POST was the failed request and the owned row was absent again after runner cleanup.",
+      "The inventory's reload failure and retry branch is not represented by this warm-only case."
+    ]
+  },
+  "verdict_b_quality": {
+    "status": "fail",
+    "findings": [
+      {
+        "severity": "important",
+        "location": "tests/browser/profile-save-failure-case.mjs:162-185",
+        "finding": "The fault matches only origin, route and POST. It does not check the verified owner ID, organization, or request body, and fails every matching POST until disabled. A concurrent or unexpected profile write can be denied instead of the intended Save. The count check detects a second denial only afterward; it cannot undo that denial. Scope the fault to the intended owner's upsert and fail exactly one matching request."
+      },
+      {
+        "severity": "important",
+        "location": "tests/browser/profile-save-failure-case.mjs:203-216",
+        "finding": "If Fetch.disable rejects, stop removes the sole requestPaused listener anyway. CDP interception can remain enabled, leaving later matching reads paused with nobody to continue them; journal reconciliation and the runner's owned-row cleanup can then hang or lose restoration. Preserve a working continuation or recover the Fetch domain before detaching the handler, and make failure explicit."
+      },
+      {
+        "severity": "important",
+        "location": "tests/browser/profile-save-failure-case.mjs:102-151",
+        "finding": "The case records original_restored=true when no retry write was observed even if cleanup only discarded the local draft. For the owned first-save row, the outer runner's exact conditional deletion is the actual original-absence restoration. The local receipt should distinguish draft discard or value restoration from verified row absence so it cannot imply complete restoration before outer cleanup succeeds."
+      }
+    ],
+    "positive_evidence": [
+      "The failed-save observation uses the real panel's Preferred input, visible error, dirty state, and enabled Save; retry and restore go through journal.save and the UI, with server rereads in journal reconciliation.",
+      "The case receipt carries booleans, not Preferred values; syntax and targeted Biome checks pass."
+    ]
+  },
+  "checks": {
+    "node_check": "passed",
+    "biome_check": "passed: 2 files",
+    "native_ui": "not_run_review_scope",
+    "database": "not_written_review_scope"
+  },
+  "source_basis": [
+    "tests/browser/profile-save-failure-case.mjs",
+    "tests/browser/profile-native-acceptance.mjs",
+    "tests/browser/profile-owned-write-journal.mjs",
+    "tests/browser/profile-empty-row-restoration.mjs",
+    "src/hooks/use-user-profile.ts",
+    "src/lib/supabase/user-profile.ts",
+    "src/features/profile/ProfileView.tsx",
+    ".research/popup-profile-procedures.json"
+  ]
+}
