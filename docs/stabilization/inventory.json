@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T13:30:38.711263+00:00",
+  "updated_at": "2026-10-04T14:02:37.940972+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -17410,6 +17410,20 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "supporting_evidence": [
+            {
+              "level": "source/component; unrelated runtime dependencies and clipboard boundary mocked",
+              "report": ".research/scrape-links-controls-test.json",
+              "independent_review": ".research/scrape-links-controls-final-peer.json",
+              "commits": [
+                "21af0218",
+                "0f1665b0",
+                "b604e8f6"
+              ],
+              "result": "Four real ScrapeView/store tests pass: selective removal with exact survivors/count; blank, valid and cancelled forms; link target attributes and copy-boundary delivery. Remove-all and constant-link mutants rejected.",
+              "limits": "Guest/member/admin native, warm/reload, actual new-tab opening and OS clipboard remain unverified; no mode cell promoted."
+            }
           ]
         },
         {
