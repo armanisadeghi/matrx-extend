@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "reviewed_implementation_commit": "33301689cccff585a9ae800f0d801d68a1b3f83f",
+  "authorship": "independent source review; no implementation edits",
+  "verdict_a_acceptance": {
+    "source": "PASS",
+    "native_installed": "UNVERIFIED",
+    "evidence": [
+      "The deployed producer's UsageLimitReachedError has HTTP 402 and a flat error=guest_ai_allowance_used envelope for guests; its API exception handler emits that envelope. A preparation refusal may also reach the HTTP boundary; a later refusal emits an NDJSON error_type.",
+      "The client now recognizes only exact guest_ai_allowance_used at HTTP 402 or 403. streamFetch emits fixed safe signup copy and a typed code. Offscreen forwards that code; use-chat-stream passes it to presentChatStreamError, which clears streamInterruption. ChatView renders Retry only when streamInterruption exists.",
+      "Fresh reviewer run: pnpm exec vitest run --maxWorkers=1 tests/unit/api-stream.test.ts tests/unit/chat-stream-error.test.ts passed 2 files and 18 tests. The new tests exercise real streamFetch plus the real chat presenter with a substituted network response, including unrelated 402 and both NDJSON code forms. Existing tests cover unrelated 403 and response detail privacy.",
+      "The observed Store 0.2.176 HTTP 402 body bytes were not captured. No new installed artifact was exercised in this review; source acceptance does not establish the published binary's behavior."
+    ],
+    "missing": [],
+    "extra": [],
+    "misunderstood": [],
+    "remaining_acceptance": "Install an accepted current build, trigger the live guest HTTP 402 refusal, and verify the specific free-account remedy appears without Retry."
+  },
+  "verdict_b_quality": {
+    "result": "PASS",
+    "evidence": [
+      "The production diff changes only the HTTP status predicate in the existing classifier; it adds no second implementation, legacy path, quota policy, or server behavior.",
+      "The new 402 case was reported red before the predicate change and green after it. Different expected outcomes for allowance and unrelated 402 make a constant-result shortcut fail; the tests assert rendered message and retry state rather than only classifier output.",
+      "Response bodies are parsed for known code but never forwarded as UI text. The fixed user-safe message is preserved, while unrelated 402 remains generic and retryable and unrelated 403 retains its old behavior."
+    ],
+    "findings": [],
+    "limit": "The network substitute and direct presenter callback do not execute the offscreen broadcast or native UI. Their wiring was independently inspected in source, and installed acceptance remains a separate gate."
+  }
+}
