@@ -11,6 +11,11 @@ import { armBusyExpression, readBusyExpression } from './scrape-busy-observer.mj
 import { scrapeLayoutFailure } from './scrape-layout-guard.mjs';
 import { assertMediaPane } from './scrape-media-assertions.mjs';
 import { intakeImage } from './scrape-media-fixture.mjs';
+import {
+  enterMediaField,
+  observeVideoLinks,
+  videoLinksVerdict,
+} from './scrape-native-media-actions.mjs';
 import { diagnosticCpuRate, runSupplementalCpuDiagnostic } from './scrape-page-cpu-diagnostic.mjs';
 import { recordReloadMilestone } from './scrape-reload-milestones.mjs';
 import { waitForReplacementScrapeTab } from './scrape-replacement-tab.mjs';
@@ -172,11 +177,6 @@ async function scrapeState(panel) {
   );
 }
 
-async function enterMediaField(panel, field, value) {
-  await click(panel, 'scrape-media-form-field', field);
-  await panel.send('Input.insertText', { text: value });
-}
-
 async function selectedMedia(panel, label, items, name) {
   if (label === 'Images') {
     await evaluate(
@@ -274,8 +274,14 @@ async function exerciseMediaControls({
     'blank_image_form_not_retained',
   );
   await selectedMedia(panel, 'Images', [], `${phase}_blank_image_rejected`);
-  await enterMediaField(panel, 'src', `${origin}/followup-card.svg`);
-  await enterMediaField(panel, 'alt', 'Follow-up card');
+  await enterMediaField({
+    panel,
+    field: 'src',
+    value: `${origin}/followup-card.svg`,
+    resourceAction,
+    click,
+  });
+  await enterMediaField({ panel, field: 'alt', value: 'Follow-up card', resourceAction, click });
   await resourceAction(() => click(panel, 'scrape-media-form-action', 'Add'));
   const addedImage = await selectedMedia(
     panel,
@@ -283,7 +289,13 @@ async function exerciseMediaControls({
     [image('/followup-card.svg', 'Follow-up card')],
     `${phase}_image_added`,
   );
-  await enterMediaField(panel, 'src', `${origin}/appointment-card.svg`);
+  await enterMediaField({
+    panel,
+    field: 'src',
+    value: `${origin}/appointment-card.svg`,
+    resourceAction,
+    click,
+  });
   await resourceAction(() => click(panel, 'scrape-media-form-action', 'Cancel'));
   await resourceAction(() => click(panel, 'scrape-media-add-row', 'Add image URL'));
   assert.deepEqual(
@@ -299,29 +311,14 @@ async function exerciseMediaControls({
   );
   await resourceAction(() => click(panel, 'scrape-result-tab', 'Video'));
   const beforeVideos = await selectedMedia(panel, 'Video', videos, `${phase}_two_videos`);
-  const linkEvidence = { opened_url: null, clipboard_url: null, limitations: [] };
-  try {
-    const newTab = page
-      .context()
-      .waitForEvent('page', { timeout: 5000 })
-      .catch((error) => error);
-    await resourceAction(() => click(panel, 'scrape-media-open', videos[0].href));
-    const opened = await newTab;
-    if (opened instanceof Error) throw opened;
-    await opened.waitForURL(videos[0].href, { timeout: 5000 });
-    linkEvidence.opened_url = opened.url();
-    await opened.close();
-  } catch (error) {
-    linkEvidence.limitations.push(`open:${String(error?.message ?? error).slice(0, 120)}`);
-  }
-  try {
-    await resourceAction(() => click(panel, 'scrape-media-copy', videos[1].href));
-    const copied = await evaluate(panel, 'navigator.clipboard.readText()');
-    assert.equal(copied, videos[1].href, 'video_clipboard_url_mismatch');
-    linkEvidence.clipboard_url = copied;
-  } catch (error) {
-    linkEvidence.limitations.push(`copy:${String(error?.message ?? error).slice(0, 120)}`);
-  }
+  const linkEvidence = await observeVideoLinks({
+    page,
+    panel,
+    urls: videos.map((item) => item.href),
+    resourceAction,
+    click,
+    evaluate,
+  });
   await resourceAction(() => click(panel, 'scrape-media-remove', videos[0].href));
   const removedVideo = await selectedMedia(panel, 'Video', [videos[1]], `${phase}_video_removed`);
   await resourceAction(() => click(panel, 'scrape-media-add-row', 'Add video URL'));
@@ -332,7 +329,13 @@ async function exerciseMediaControls({
     'blank_video_form_not_retained',
   );
   await selectedMedia(panel, 'Video', [videos[1]], `${phase}_blank_video_rejected`);
-  await enterMediaField(panel, 'src', `${origin}/consultation.mp4`);
+  await enterMediaField({
+    panel,
+    field: 'src',
+    value: `${origin}/consultation.mp4`,
+    resourceAction,
+    click,
+  });
   await resourceAction(() => click(panel, 'scrape-media-form-action', 'Add'));
   const addedVideo = await selectedMedia(
     panel,
@@ -340,7 +343,13 @@ async function exerciseMediaControls({
     [videos[1], video('/consultation.mp4')],
     `${phase}_video_added`,
   );
-  await enterMediaField(panel, 'src', `${origin}/intake-walkthrough.mp4`);
+  await enterMediaField({
+    panel,
+    field: 'src',
+    value: `${origin}/intake-walkthrough.mp4`,
+    resourceAction,
+    click,
+  });
   await resourceAction(() => click(panel, 'scrape-media-form-action', 'Cancel'));
   await resourceAction(() => click(panel, 'scrape-media-add-row', 'Add video URL'));
   assert.deepEqual(
@@ -682,9 +691,17 @@ try {
         },
         ['Repeat controls after full extension reload.'],
       );
-      mark('EXT-F-1007-T12', 'partial', { warm: warmControls.videos }, [
-        'Repeat controls after full extension reload; verify native link and clipboard outcomes.',
-      ]);
+      const warmLinks = videoLinksVerdict(warmControls.videos.links);
+      mark(
+        'EXT-F-1007-T12',
+        warmLinks.status === 'failed' ? 'failed' : 'partial',
+        { warm: warmControls.videos },
+        [
+          'Repeat controls after full extension reload; verify native link and clipboard outcomes.',
+          ...warmLinks.remaining,
+        ],
+      );
+      if (warmLinks.failures.length) report.cases.at(-1).failure = warmLinks.failures;
 
       report.stage = 'deep_capture';
       await requireResourceHealth();
@@ -949,14 +966,13 @@ try {
         ]) {
           const item = report.cases.find((c) => c.id === id);
           item.evidence.reload = evidence;
-          item.remaining =
+          const verdict =
             id === 'EXT-F-1007-T12'
-              ? [
-                  ...warmControls.videos.links.limitations,
-                  ...reloadControls.videos.links.limitations,
-                ]
-              : [];
-          item.status = item.remaining.length ? 'partial' : 'passed';
+              ? videoLinksVerdict(warmControls.videos.links, reloadControls.videos.links)
+              : { status: 'passed', failures: [], remaining: [] };
+          item.remaining = verdict.remaining;
+          if (verdict.failures.length) item.failure = verdict.failures;
+          item.status = verdict.status;
         }
       } finally {
         await replacement.panel.detach();
@@ -973,11 +989,14 @@ try {
     ? 'unverified'
     : report.cases.every((c) => c.status === 'passed')
       ? 'passed'
-      : 'partial';
+      : report.cases.some((c) => c.status === 'failed')
+        ? 'failed'
+        : 'partial';
   if (report.original_busy_failure) {
     report.failure = { stage: 'fast_capture', code: report.original_busy_failure };
     process.exitCode = 1;
   }
+  if (report.status === 'failed') process.exitCode = 1;
 } catch (error) {
   report.status = 'unverified';
   report.failure = { stage: report.stage, code: String(error?.message ?? error).slice(0, 300) };

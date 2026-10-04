@@ -1,0 +1,20 @@
+{
+  "defect": "EXT-D-0119",
+  "reviewed_commit": "2a0b2e4121cc2f01bae438c4b650e49a4f28d613",
+  "scope": "Guest Scrape native media-control acceptance driver only",
+  "status": "ready_for_independent_review",
+  "corrections": [
+    "Both trusted media-field click and Input.insertText pass through resourceAction in warm and reload phases.",
+    "Open and copy resourceAction failures abort the native procedure; observation catches cannot swallow a resource refusal or failed action.",
+    "Observed opened-URL and clipboard-text mismatches are failed T12 evidence. Unavailable page and clipboard observations stay bounded partial evidence. Any failed case makes the overall receipt failed with exit code 1."
+  ],
+  "forcing_evidence": {
+    "insert_text_gate_removed": "RED: media click and text insertion each require a fresh resource gate; plant.py restored byte-identically",
+    "copy_gate_removed": "RED: video open and copy refuse the native run when resource health fails; plant.py restored byte-identically",
+    "constant_link_result": "RED: observed URL and clipboard mismatches are failures, not limitations; plant.py restored byte-identically",
+    "green": "node --test tests/browser/scrape-native-media-actions.test.mjs tests/browser/scrape-media-assertions.test.mjs tests/browser/owned-fixture-server.test.mjs: 13 passed, 0 failed",
+    "compile": "pnpm compile: passed",
+    "format_lint": "pnpm exec biome check on three touched browser files: passed"
+  },
+  "limits": "No native browser or heavy run in this repair lane; live product acceptance remains for the parent lane after independent review."
+}
