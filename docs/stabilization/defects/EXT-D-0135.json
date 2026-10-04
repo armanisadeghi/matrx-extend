@@ -13,10 +13,11 @@
   "actual": "Observed unsafe_hold refusal causes false test failure; product resource protection remains active.",
   "severity": "S3: false CI failure",
   "priority": "P1: restore required verification gate",
-  "state": "in-fix",
+  "state": "closed",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/37238819180",
-    "scripts/test-stabilization-resource-disk-integration.mjs"
+    "scripts/test-stabilization-resource-disk-integration.mjs",
+    ".research/disk-guard-refusal-peer.json"
   ],
   "transition_history": [
     {
@@ -36,6 +37,30 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Narrow assertion accepts only three fail-closed unsafe states; all causal evidence and no-action checks unchanged. Independent review and hosted rerun pending."
+    },
+    {
+      "at": "2026-10-04T22:20:57.986992+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Narrow test assertion repair dc4881b8 independently reviewed as preserving every causal safeguard."
+    },
+    {
+      "at": "2026-10-04T22:20:57.986992+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Actual hosted resource integration and full CI37239259767 passed with changed assertion."
+    },
+    {
+      "at": "2026-10-04T22:20:57.986992+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Harness-only false failure resolved; no product acceptance promoted."
     }
-  ]
+  ],
+  "hosted_verification": {
+    "run_id": 37239259767,
+    "source": "59bf516b61b7387de03caf3928034689c6e48fbf",
+    "conclusion": "success",
+    "limits": "Source contains dc4881b8; actual disk integration and full checks passed. No product feature pass."
+  }
 }

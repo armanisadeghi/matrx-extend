@@ -17,7 +17,10 @@
   "evidence": [
     ".research/scrape-member-guard132-native.json",
     ".research/scrape-auth-panel-focus.json",
-    "docs/stabilization/evidence/scrape-member/run37237361053/acceptance-receipt.json"
+    "docs/stabilization/evidence/scrape-member/run37237361053/acceptance-receipt.json",
+    ".research/scrape-focus-diagnostic-peer.json",
+    ".research/scrape-focus-final-peer.json",
+    ".research/scrape-focus-deadline-reverify.json"
   ],
   "transition_history": [
     {
@@ -27,6 +30,6 @@
       "reason": "Captured exact native failure; no inferred product diagnosis."
     }
   ],
-  "diagnostic_commit": "eb856fea",
-  "next_action": "Independent review of bounded diagnostic; one future guarded diagnostic run only after guest incident priority. No blind rerun or visibility bypass."
+  "diagnostic_commit": "427e75a4",
+  "next_action": "Source diagnostic independently accepted by1f58cc3a; real focus cause remains open. Future one guarded member600 diagnostic run after urgent guest incident; no focus behavior patched or Scrape pass claimed."
 }
