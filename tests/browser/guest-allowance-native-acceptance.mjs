@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Real three-turn guest allowance followed by the fourth-turn recovery message. */
+/** Real guest answers followed by a bounded live allowance refusal and recovery message. */
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';
@@ -35,22 +35,28 @@ const QUESTIONS = [
   'What is 31 plus 46? Answer with the number.',
   'What is 58 plus 27? Answer with the number.',
   'What is 64 plus 19? Answer with the number.',
+  'What is 28 plus 35? Answer with the number.',
+  'What is 43 plus 29? Answer with the number.',
+  'What is 26 plus 57? Answer with the number.',
 ];
-const ANSWERS = ['42', '77', '85'];
+const ANSWERS = ['42', '77', '85', '83', '63', '72', '83'];
+const MAX_SENDS = Number(process.env.MATRX_GUEST_MAX_SENDS ?? QUESTIONS.length);
 const SAFE_COPY = "You've used your free AI tries. Sign up free to keep chatting.";
 const report = {
   schema_version: 1,
   scope:
-    'nominated immutable extension artifact; one owned guest profile; three live answers then fourth live allowance response',
+    'nominated immutable extension artifact; one owned guest profile; real answer then bounded live allowance response',
   status: 'unverified',
+  max_sends: MAX_SENDS,
   context_rule_observation_horizon:
-    'observer attached before turn 1 through turn 4; no owner-table GET expected',
+    'panel observer attached before turn 1; offscreen observer attached after the first real answer',
   limitation:
-    'panel-target run proves rendered live behavior; it does not observe offscreen fetch HTTP status',
+    'owned unpacked Store payload proves candidate behavior, not a published Store installation',
   build: null,
   completed_turns: [],
   send_observations: [],
   exhausted_turn: null,
+  live_allowance_http: null,
   owner_table_gets_after_observer_attachment: [],
   failure_stage: null,
 };
@@ -83,6 +89,10 @@ async function fileInventory(root) {
 
 try {
   assert.ok(RECEIPT && EXTENSION_DIR, 'exact receipt and unpacked artifact paths are required');
+  assert.ok(
+    Number.isInteger(MAX_SENDS) && MAX_SENDS >= 2 && MAX_SENDS <= QUESTIONS.length,
+    'owned diagnostic send budget must be between 2 and the supplied questions',
+  );
   assert.ok(
     ['ci-development', 'pushed-release-store-zip-adapted'].includes(ARTIFACT_MODE),
     'explicit CI or published release artifact mode is required',
@@ -319,7 +329,7 @@ try {
     ...harnessOptions,
     ...(runtimeExtensionId && { expectedExtensionId: runtimeExtensionId }),
     onStage,
-    exercisePanel: async ({ panel }) => {
+    exercisePanel: async ({ panel, attachOffscreen }) => {
       stage = 'guest_ready';
       const state = () =>
         evaluate(
@@ -370,9 +380,52 @@ try {
         const item = reads.get(requestId);
         if (item) item.status = Number.isFinite(response?.status) ? response.status : null;
       });
+      let offscreen = null;
+      let stopOffscreen = [];
+      const chatRequests = new Set();
+      const chatStatuses = new Map();
+      const observeOffscreen = async () => {
+        if (offscreen) return;
+        offscreen = await attachOffscreen();
+        await offscreen.send('Network.enable');
+        stopOffscreen = [
+          offscreen.on('Network.requestWillBeSent', ({ requestId, request }) => {
+            try {
+              if (new URL(request?.url).pathname.endsWith('/v2/ai/mandates/extend.browser_chat'))
+                chatRequests.add(requestId);
+            } catch {
+              /* unrelated request */
+            }
+          }),
+          offscreen.on('Network.responseReceived', ({ requestId, response }) => {
+            if (chatRequests.has(requestId)) chatStatuses.set(requestId, response?.status ?? null);
+          }),
+          offscreen.on('Network.loadingFinished', ({ requestId }) => {
+            if (chatStatuses.get(requestId) !== 402) return;
+            void offscreen
+              .send('Network.getResponseBody', { requestId })
+              .then(({ body, base64Encoded }) => {
+                const parsed = JSON.parse(
+                  base64Encoded ? Buffer.from(body, 'base64').toString('utf8') : body,
+                );
+                report.live_allowance_http = {
+                  status: 402,
+                  exact_guest_allowance_code: parsed.error === 'guest_ai_allowance_used',
+                  flat_error_field: typeof parsed.error === 'string',
+                  ...(parsed.error === 'guest_ai_allowance_used' && {
+                    error: 'guest_ai_allowance_used',
+                  }),
+                };
+              })
+              .catch(() => {
+                report.live_allowance_http = { status: 402, body: 'unavailable' };
+              });
+          }),
+        ];
+      };
 
       try {
-        for (let index = 0; index < QUESTIONS.length; index += 1) {
+        for (let index = 0; index < MAX_SENDS; index += 1) {
           stage = `turn_${index + 1}`;
           const before = await state();
           const focused = await evaluate(
@@ -420,31 +473,36 @@ try {
             120_000,
           );
           const text = finished.latest;
-          if (index < 3) {
-            assert.ok(
-              text.includes(ANSWERS[index]),
-              `real answer ${index + 1} contains expected arithmetic result`,
-            );
-            assert.ok(!/error\s*:/i.test(text), `turn ${index + 1} is not an error`);
-            report.completed_turns.push({ ordinal: index + 1, expected_answer_present: true });
-          } else {
-            assert.ok(
-              text.includes(SAFE_COPY),
-              'fourth turn renders the guest allowance recovery copy',
-            );
+          if (text.includes(SAFE_COPY)) {
+            assert.ok(report.completed_turns.length >= 1, 'fresh guest completed a real answer');
             assert.ok(
               !/don't have access to this chat|do not have access to this chat/i.test(text),
-              'fourth turn avoids generic access denial',
+              'allowance turn avoids generic access denial',
             );
-            assert.equal(finished.retryVisible, false, 'fourth turn has no Retry action');
+            assert.equal(finished.retryVisible, false, 'allowance turn has no Retry action');
             report.exhausted_turn = {
-              ordinal: 4,
+              ordinal: index + 1,
               safe_allowance_copy_present: true,
               generic_access_denial_absent: true,
               retry_absent: true,
             };
+            break;
           }
+          assert.ok(
+            text.includes(ANSWERS[index]),
+            `real answer ${index + 1} contains expected arithmetic result`,
+          );
+          assert.ok(!/error\s*:/i.test(text), `turn ${index + 1} is not an error`);
+          report.completed_turns.push({ ordinal: index + 1, expected_answer_present: true });
+          if (!offscreen) await observeOffscreen();
         }
+        assert.ok(report.exhausted_turn, 'bounded guest run reached the live allowance gate');
+        await waitFor(
+          'allowance_http_body',
+          () => report.live_allowance_http,
+          (body) => body?.status === 402 && body.exact_guest_allowance_code === true,
+          10_000,
+        );
         report.owner_table_gets_after_observer_attachment = [...reads.values()].filter(
           (r) => r.method === 'GET',
         );
@@ -456,6 +514,8 @@ try {
       } finally {
         offRequest();
         offResponse();
+        for (const stop of stopOffscreen) stop();
+        await offscreen?.detach();
       }
     },
   });

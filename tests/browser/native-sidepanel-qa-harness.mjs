@@ -860,6 +860,15 @@ export async function runNativeSidepanelQa({
             panelTarget,
             artifacts,
             attachWorker: () => attachTargetSession(cdp, extensionWorker.targetId),
+            attachOffscreen: async () => {
+              const offscreenUrl = `chrome-extension://${expectedExtensionId}/offscreen.html`;
+              const targets = (await cdp.send('Target.getTargets')).targetInfos.filter(
+                (target) => target.url === offscreenUrl,
+              );
+              if (targets.length !== 1)
+                throw new Error('native_sidepanel_offscreen_target_missing');
+              return attachTargetSession(cdp, targets[0].targetId);
+            },
             reloadExtension: () =>
               reloadOwnedExtension({
                 cdp,
