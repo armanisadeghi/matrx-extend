@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-04 17:58 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T16:32:56.071159+00:00. 205 features · 762 cases · 1333 controls · 125 linked defect records.
+Generated 2026-10-04 18:18 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T18:18:28.980085+00:00. 205 features · 762 cases · 1333 controls · 126 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1213** — Pass: 80 · Partial: 73 · Fail: 3 · Unverified: 1056 · N/A: 1.
-Unverified splits into **123 explicitly marked unverified** and **933 with no result record**.
+Applicable case-by-role slots: **1213** — Pass: 83 · Partial: 72 · Fail: 2 · Unverified: 1055 · N/A: 1.
+Unverified splits into **123 explicitly marked unverified** and **932 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 112 cases without steps, 111 without expected outcomes, 28 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -16,7 +16,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | Tab or surface | Features | Guest cases | Member cases | Admin cases | All-role case slots | Active defects |
 | --- | ---: | --- | --- | --- | --- | ---: |
 | [Development installation](#development-installation) | 1 | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 6, partial 1, fail 0, unverified 14, n/a 0 | 1 |
-| [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 8, partial 2, fail 1, unverified 17, n/a 0 | 7 |
+| [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 8, partial 2, fail 1, unverified 17, n/a 0 | 6 |
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
@@ -24,7 +24,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 1 pass · 8 partial · 1 fail · 16 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 1, partial 8, fail 1, unverified 78, n/a 0 | 6 |
+| [Scrape](#scrape) | 1 | 4 pass · 7 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 4, partial 7, fail 0, unverified 77, n/a 0 | 4 |
 | [SEO](#seo) | 1 | 0 pass · 5 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 5, fail 0, unverified 37, n/a 0 | 0 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
@@ -114,9 +114,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: Unverified · member: Fail · admin: Partial. **Cases:** 10. **Controls:** 10.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0073, EXT-D-0079, EXT-D-0083, EXT-D-0101, EXT-D-0107, EXT-D-0117, EXT-D-0119
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0073, EXT-D-0079, EXT-D-0083, EXT-D-0101, EXT-D-0107, EXT-D-0117
 
-**Linked defects:** [EXT-D-0025](defects/EXT-D-0025.json) (closed), [EXT-D-0051](defects/EXT-D-0051.json) (closed), [EXT-D-0056](defects/EXT-D-0056.json) (closed), [EXT-D-0060](defects/EXT-D-0060.json) (closed), [EXT-D-0072](defects/EXT-D-0072.json) (closed), [EXT-D-0073](defects/EXT-D-0073.json) (fixed), [EXT-D-0079](defects/EXT-D-0079.json) (in-fix), [EXT-D-0083](defects/EXT-D-0083.json) (fixed), [EXT-D-0098](defects/EXT-D-0098.json) (closed), [EXT-D-0101](defects/EXT-D-0101.json) (fixed), [EXT-D-0102](defects/EXT-D-0102.json) (closed), [EXT-D-0103](defects/EXT-D-0103.json) (closed), [EXT-D-0107](defects/EXT-D-0107.json) (triaged), [EXT-D-0117](defects/EXT-D-0117.json) (triaged), [EXT-D-0119](defects/EXT-D-0119.json) (fixed), [EXT-D-0122](defects/EXT-D-0122.json) (closed)
+**Linked defects:** [EXT-D-0025](defects/EXT-D-0025.json) (closed), [EXT-D-0051](defects/EXT-D-0051.json) (closed), [EXT-D-0056](defects/EXT-D-0056.json) (closed), [EXT-D-0060](defects/EXT-D-0060.json) (closed), [EXT-D-0072](defects/EXT-D-0072.json) (closed), [EXT-D-0073](defects/EXT-D-0073.json) (fixed), [EXT-D-0079](defects/EXT-D-0079.json) (in-fix), [EXT-D-0083](defects/EXT-D-0083.json) (fixed), [EXT-D-0098](defects/EXT-D-0098.json) (closed), [EXT-D-0101](defects/EXT-D-0101.json) (fixed), [EXT-D-0102](defects/EXT-D-0102.json) (closed), [EXT-D-0103](defects/EXT-D-0103.json) (closed), [EXT-D-0107](defects/EXT-D-0107.json) (triaged), [EXT-D-0117](defects/EXT-D-0117.json) (triaged), [EXT-D-0119](defects/EXT-D-0119.json) (closed), [EXT-D-0122](defects/EXT-D-0122.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -807,25 +807,25 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Capture and manage current page scrape (EXT-F-1007)
 
-**Role status:** guest: Fail · member: Unverified · admin: Unverified. **Cases:** 31. **Controls:** 33.
+**Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 31. **Controls:** 33.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0123, EXT-D-0124, EXT-D-0125
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0126
 
-**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0115](defects/EXT-D-0115.json) (retest-pass), [EXT-D-0118](defects/EXT-D-0118.json) (fixed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0123](defects/EXT-D-0123.json) (fixed), [EXT-D-0124](defects/EXT-D-0124.json) (fixed), [EXT-D-0125](defects/EXT-D-0125.json) (in-fix)
+**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0115](defects/EXT-D-0115.json) (retest-pass), [EXT-D-0118](defects/EXT-D-0118.json) (fixed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0123](defects/EXT-D-0123.json) (retest-pass), [EXT-D-0124](defects/EXT-D-0124.json) (closed), [EXT-D-0125](defects/EXT-D-0125.json) (closed), [EXT-D-0126](defects/EXT-D-0126.json) (triaged)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-1007-T01 Fast capture | Partial | Unverified | Unverified | EXT-F-1007-C01 |
-| EXT-F-1007-T02 Deep capture | Fail | Unverified | Unverified | EXT-F-1007-C02 |
-| EXT-F-1007-T03 Recapture unsaved edits guard | Unverified | Unverified | Unverified | EXT-F-1007-C03 |
+| EXT-F-1007-T02 Deep capture | Partial | Unverified | Unverified | EXT-F-1007-C02 |
+| EXT-F-1007-T03 Recapture unsaved edits guard | Partial | Unverified | Unverified | EXT-F-1007-C03 |
 | EXT-F-1007-T04 Save capture as a Source | Unverified | Unverified | Unverified | EXT-F-1007-C04, EXT-F-1007-C21 |
 | EXT-F-1007-T05 Article markdown edit/apply | Unverified | Unverified | Unverified | EXT-F-1007-C05 |
 | EXT-F-1007-T06 Article markdown cancel | Pass | Unverified | Unverified | EXT-F-1007-C06 |
 | EXT-F-1007-T07 Article scroll sync | Unverified | Unverified | Unverified | EXT-F-1007-C07 |
 | EXT-F-1007-T08 Scrape result tabs | Partial | Unverified | Unverified | EXT-F-1007-C08 |
 | EXT-F-1007-T09 Copy capture and section data | Unverified | Unverified | Unverified | EXT-F-1007-C09 |
-| EXT-F-1007-T10 Remove image | Partial | Unverified | Unverified | EXT-F-1007-C10 |
-| EXT-F-1007-T11 Add image URL validation | Partial | Unverified | Unverified | EXT-F-1007-C11 |
+| EXT-F-1007-T10 Remove image | Pass | Unverified | Unverified | EXT-F-1007-C10 |
+| EXT-F-1007-T11 Add image URL validation | Pass | Unverified | Unverified | EXT-F-1007-C11 |
 | EXT-F-1007-T12 Video actions | Partial | Unverified | Unverified | EXT-F-1007-C12 |
 | EXT-F-1007-T13 Link actions | Partial | Unverified | Unverified | EXT-F-1007-C13 |
 | EXT-F-1007-T14 Capture error recovery | Partial | Unverified | Unverified | EXT-F-1007-C14 |
@@ -834,7 +834,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1007-T17 Diagnose result actions | Unverified | Unverified | Unverified | EXT-F-1007-C17 |
 | EXT-F-1007-T18 Highlight regions handoff | Unverified | Unverified | Unverified | EXT-F-1007-C18 |
 | EXT-F-1007-T19 Add current page to project | Unverified | Unverified | Unverified | EXT-F-1007-C19 |
-| EXT-F-1007-T20 No current capture empty state | Partial | Unverified | Unverified | EXT-F-1007-C20 |
+| EXT-F-1007-T20 No current capture empty state | Pass | Unverified | Unverified | EXT-F-1007-C20 |
 | EXT-F-1007-T21 Save a capture as a Source and follow its success state | N/A | Unverified | Unverified | EXT-F-1007-C04, EXT-F-1007-C21 |
 | EXT-F-1007-T22 Retain and retry a refused or unreachable save | Unverified | Unverified | Unverified | EXT-F-1007-C04, EXT-F-1007-C22, EXT-F-1007-C23 |
 | EXT-F-1007-T23 Discard an unsaved capture only after confirmation | Unverified | Unverified | Unverified | EXT-F-1007-C22, EXT-F-1007-C24 |
@@ -849,28 +849,30 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Recorded case details and evidence:**
 
-- EXT-F-1007-T01 · guest: Partial. Exact development231 guest ARM: Fast capture disabled busy button, expected article and lazy-content absence observed; reload not reached.
-  Evidence / build / date recorded: 37221586281, .research/scrape231-context-diagnostic-native.json
-- EXT-F-1007-T02 · guest: Fail. After warm media edits, Scroll & capture expected deep result not observed. D125 source diagnosis pending; no product cause established from assertion. Four healthy resource watches.
-  Evidence / build / date recorded: 37221586281, .research/scrape231-context-diagnostic-native.json
+- EXT-F-1007-T01 · guest: Partial. Exact development231 guest ARM: Fast capture and post-reload repopulated article observed. Raw early case remaining note is stale; no exhaustive case promotion from that discrepancy.
+  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
+- EXT-F-1007-T02 · guest: Partial. Exact development231 guest ARM: Unsaved-edit Cancel preserves edits; explicit confirmation starts Scrolling and lazy-content deep result. Natural deep-retry failure and deep capture after reload remain unverified.
+  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
+- EXT-F-1007-T03 · guest: Partial. Trusted exact dialog Cancel retained edited state/idle deep button; second request confirmed Re-capture and deep mode completed. Evidence is native script assertion contract plus subsequent deep result; no separate dialog screenshot. Other auth/mode variants unverified.
+  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
 - EXT-F-1007-T05 · guest: Unverified.
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
 - EXT-F-1007-T06 · guest: Pass. pass_cancel_discarded_draft_and_recapture_cleanup
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
-- EXT-F-1007-T08 · guest: Partial. Exact development231 guest ARM: All six result panes had matching content; image/video empty states exercised later; reload unverified.
-  Evidence / build / date recorded: 37221586281, .research/scrape231-context-diagnostic-native.json
-- EXT-F-1007-T10 · guest: Partial. Exact development231 guest ARM: Three selective image removals reached empty and exact follow-up image/alt was added; full reload remains.
-  Evidence / build / date recorded: 37221586281, .research/scrape231-context-diagnostic-native.json
-- EXT-F-1007-T11 · guest: Partial. Exact development231 guest ARM: Blank image rejected, valid URL/alt added, Cancel cleared form; full reload remains.
-  Evidence / build / date recorded: 37221586281, .research/scrape231-context-diagnostic-native.json
-- EXT-F-1007-T12 · guest: Partial. Exact development231 guest ARM: Video Open returned correctly; exact removal/addition survivors observed. Copy click occurred but readback unavailable (panel_runtime_exception); full reload remains.
-  Evidence / build / date recorded: 37221586281, .research/scrape231-context-diagnostic-native.json
-- EXT-F-1007-T13 · guest: Partial. Exact development231 guest ARM: Link Open, selective Remove, blank/valid Add and Cancel reached expected identities/counts. Copy readback unavailable (panel_runtime_exception); full reload/member/admin remain.
-  Evidence / build / date recorded: 37221586281, .research/scrape231-context-diagnostic-native.json
-- EXT-F-1007-T14 · guest: Partial. Healthy exactdevelopment215 observed restrictedchrome://settings norecoveryactions andDismiss; recoverableReload/Tryagain/deepretryunverified.
-  Evidence / build / date recorded: 37195986118, .research/scrape-freshness-fixed-native.json
-- EXT-F-1007-T20 · guest: Partial. Exact development231 guest ARM: Initial empty panel and exact fixture observed; full reload not reached.
-  Evidence / build / date recorded: 37221586281, .research/scrape231-context-diagnostic-native.json
+- EXT-F-1007-T08 · guest: Partial. Exact development231 guest ARM: All result panes populated before and after reload; normal width unverified.
+  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
+- EXT-F-1007-T10 · guest: Pass. Exact development231 guest ARM: Three exact image removals through empty and valid replacement image/alt verified warm and after full reload.
+  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
+- EXT-F-1007-T11 · guest: Pass. Exact development231 guest ARM: Blank image rejected, valid URL/alt added, Cancel cleared form warm and after full reload.
+  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
+- EXT-F-1007-T12 · guest: Partial. Exact development231 guest ARM: Open-return retains Video; exact removal/addition identities warm and after reload. Clipboard readback unavailable (D126), so partial.
+  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
+- EXT-F-1007-T13 · guest: Partial. Exact development231 guest ARM: Open, selective removal, blank/valid Add and Cancel have exact rows/counts warm and after reload. Clipboard readback unavailable (D126), so partial.
+  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
+- EXT-F-1007-T14 · guest: Partial. Exact development231 guest ARM: Restricted-page error/Dismiss exercised. Recoverable Reload/Try again and deep-retry path remain unverified.
+  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
+- EXT-F-1007-T20 · guest: Pass. Exact development231 guest ARM: Original and replacement panel navigation/reload observed; worker retired/replaced and sole running replacement; empty capture state verified.
+  Evidence / build / date recorded: 37222954472, .research/scrape231-recapture-native.json
 
 **Other remaining work:** Source landing, refusal/retry, organization authorization, and server persistence require live member/admin evidence; guest Save must show sign-in remedy while retaining the device-local capture. Endpoint/RLS behavior is a runtime readiness gap, not a source-census blocker.; D59 document identity: candidate a021ae82 remains partial; guarded peer a702ba6c passes narrow capture tests/compile but finds mixed-document Diagnose bundle and refresh status race. Native guest/member/admin retest pending; reports/scrape-document-peer.json.
 
@@ -2630,7 +2632,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4071-T01 Controlled manual execution: open_new_tab | N/A | Unverified | Unverified | EXT-F-4071-C01 |
 
-**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### close_tab (EXT-F-4072)
@@ -2643,7 +2645,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4072-T01 Controlled manual execution: close_tab | N/A | Unverified | Unverified | EXT-F-4072-C01 |
 
-**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### switch_to_tab (EXT-F-4073)
@@ -2656,7 +2658,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4073-T01 Controlled manual execution: switch_to_tab | N/A | Unverified | Unverified | EXT-F-4073-C01 |
 
-**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### duplicate_tab (EXT-F-4074)
@@ -2669,7 +2671,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4074-T01 Controlled manual execution: duplicate_tab | N/A | Unverified | Unverified | EXT-F-4074-C01 |
 
-**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### pin_tab (EXT-F-4075)
@@ -2682,7 +2684,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4075-T01 Controlled manual execution: pin_tab | N/A | Unverified | Unverified | EXT-F-4075-C01 |
 
-**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### mute_tab (EXT-F-4076)
@@ -2695,7 +2697,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4076-T01 Controlled manual execution: mute_tab | N/A | Unverified | Unverified | EXT-F-4076-C01 |
 
-**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### reload_tab (EXT-F-4077)
@@ -2708,7 +2710,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4077-T01 Controlled manual execution: reload_tab | N/A | Unverified | Unverified | EXT-F-4077-C01 |
 
-**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### go_back (EXT-F-4078)
@@ -2721,7 +2723,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4078-T01 Controlled manual execution: go_back | N/A | Unverified | Unverified | EXT-F-4078-C01 |
 
-**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.; Confirm current catalog against imported source registry before source inventory signoff; Optional `tab_id` omitted/manual active-tab fallback is covered by the added variant; assigned-agent tab pinning remains unverified, and other optional/default combinations are not exhaustive.
 
 
 ### go_forward (EXT-F-4079)
@@ -2734,7 +2736,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4079-T01 Controlled manual execution: go_forward | N/A | Unverified | Unverified | EXT-F-4079-C01 |
 
-**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.; Confirm current catalog against imported source registry before source inventory signoff; Optional `tab_id` omitted/manual active-tab fallback is covered by the added variant; assigned-agent tab pinning remains unverified, and other optional/default combinations are not exhaustive.
 
 
 ### set_tab_zoom (EXT-F-4080)
@@ -2747,7 +2749,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4080-T01 Controlled manual execution: set_tab_zoom | N/A | Unverified | Unverified | EXT-F-4080-C01 |
 
-**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.; Confirm current catalog against imported source registry before source inventory signoff; Optional `tab_id` omitted/manual active-tab fallback is covered by the added variant; assigned-agent tab pinning remains unverified, and other optional/default combinations are not exhaustive.
 
 
 ### move_tab (EXT-F-4081)
@@ -2760,7 +2762,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4081-T01 Controlled manual execution: move_tab | N/A | Unverified | Unverified | EXT-F-4081-C01 |
 
-**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### resize_window (EXT-F-4082)
@@ -2773,7 +2775,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4082-T01 Controlled manual execution: resize_window | N/A | Unverified | Unverified | EXT-F-4082-C01 |
 
-**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.; Confirm current catalog against imported source registry before source inventory signoff; Optional `tab_id` omitted/manual active-tab fallback is covered by the added variant; assigned-agent tab pinning remains unverified, and other optional/default combinations are not exhaustive.
 
 
 ### create_tab_group (EXT-F-4083)
@@ -2786,7 +2788,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4083-T01 Controlled manual execution: create_tab_group | N/A | Unverified | Unverified | EXT-F-4083-C01 |
 
-**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### add_tabs_to_group (EXT-F-4084)
@@ -2799,7 +2801,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4084-T01 Controlled manual execution: add_tabs_to_group | N/A | Unverified | Unverified | EXT-F-4084-C01 |
 
-**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### remove_tabs_from_group (EXT-F-4085)
@@ -2812,7 +2814,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4085-T01 Controlled manual execution: remove_tabs_from_group | N/A | Unverified | Unverified | EXT-F-4085-C01 |
 
-**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### update_tab_group (EXT-F-4086)
@@ -2825,7 +2827,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4086-T01 Controlled manual execution: update_tab_group | N/A | Unverified | Unverified | EXT-F-4086-C01 |
 
-**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Confirm current catalog against imported source registry before source inventory signoff
+**Other remaining work:** Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.; Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.; Confirm current catalog against imported source registry before source inventory signoff
 
 
 ### download_url (EXT-F-4087)

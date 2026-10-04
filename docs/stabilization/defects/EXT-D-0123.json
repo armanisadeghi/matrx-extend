@@ -14,7 +14,7 @@
   "actual": "Video Open precedes tabs disconnection and Article remount; subsequent video Copy cannot target its control. Exact action chronology proven; causal product versus driver lifecycle boundary remains under investigation.",
   "severity": "S2: media acceptance is blocked; user-facing pane-reset defect not yet proven",
   "priority": "P1: identify transition before further media acceptance",
-  "state": "fixed",
+  "state": "retest-pass",
   "owner": "root",
   "evidence": [
     ".research/blank-startup-native-experiment.json",
@@ -31,7 +31,8 @@
     ".research/scrape-pane-retention-peer.json",
     ".research/scrape-pane-retention-native.json",
     ".research/scrape231-arm-native.json",
-    ".research/scrape231-context-diagnostic-native.json"
+    ".research/scrape231-context-diagnostic-native.json",
+    ".research/scrape231-recapture-native.json"
   ],
   "transition_history": [
     {
@@ -57,18 +58,26 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "c2186f64 controls pane selection outside identity-gated Tabs, scoped to original capture; real guard RED\u2192GREEN5/5, compile and fresh peer0da1d574 pass. Native rebuilt-product retest outstanding."
+    },
+    {
+      "at": "2026-10-04T18:16:48.232466+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original Video Open-return preserves selected pane and Copy control target; warm and full-reload surrounding image/video/link controls succeed on exact231. Clipboard bytes remain separate unverified observation, not the original pane-remount defect. Root matched all9evidence hashes, read raw receipt/three journals and deep screenshot."
     }
   ],
-  "next_action": "Resolve D125 then finish exact-artifact full reload and clipboard/surrounding acceptance.",
+  "next_action": "Ship in next eligible Store package after pending205 disposition; verify actual Store-installed pane-return behavior.",
   "diagnostic_correction": {
     "at": "2026-10-04T15:57:43.076775+00:00",
     "reason": "Run37214124282 native trace refutes earlier third-removal inference. All3removals succeed; count1 can reflect a subsequently added image. Raw receipts unchanged."
   },
   "native_retest": {
-    "status": "partial",
-    "run_id": 37221586281,
-    "artifact": "development231 source723433a7",
-    "verified": "Warm Open-return pane retention and exact video/link survivor identities/counts; image/video/link forms exercised.",
-    "remaining": "OS clipboard observation unavailable; full reload not reached because D125 deep-capture assertion failed. No closure or whole-case claim."
-  }
+    "status": "pass-original-reproduction",
+    "run_id": 37222954472,
+    "product_version": "0.2.231",
+    "source_sha": "723433a7628b32fb610d3a7f36ca6b8dd5fd2b72",
+    "report": ".research/scrape231-recapture-native.json",
+    "scope_limit": "Specific defect plus exercised surrounding cases; full Scrape remains partial, clipboard readback, normal width and member/admin unverified."
+  },
+  "release_status": "Verified in development231; not included in pending Store205. Await eligible future Store release and installed verification."
 }

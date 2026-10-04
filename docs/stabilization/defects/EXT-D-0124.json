@@ -14,7 +14,7 @@
   "actual": "The assertion failed despite the panel showing the expected remaining video. No product removal failure is established; observer/parser cause being verified.",
   "severity": "S2: acceptance blocked by inconsistent observation; product impact not established",
   "priority": "P1: repair oracle before surrounding media acceptance",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/scrape_video_observer_fix",
   "evidence": [
     "docs/stabilization/evidence/scrape231/run37218903375/receipt.json.txt",
@@ -22,7 +22,8 @@
     ".research/scrape231-arm-native.json",
     ".research/scrape-video-observer-fix.json",
     ".research/scrape-video-observer-peer.json",
-    ".research/scrape231-context-diagnostic-native.json"
+    ".research/scrape231-context-diagnostic-native.json",
+    ".research/scrape231-recapture-native.json"
   ],
   "transition_history": [
     {
@@ -48,14 +49,27 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "3d96bc71 shared row observer recognizes title/data-matrx-title, proven RED\u2192GREEN on actual component DOM. Fresh peere4f855f4 validates serialized native use and exactidentity/count checks;6component+8assertiontests+compile pass."
+    },
+    {
+      "at": "2026-10-04T18:16:48.232466+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Shared observer returns exact survivors/counts through video/link hover/removal/addition both warm and after full reload; original empty-row false failure no longer reproduces. Root matched all9evidence hashes, read raw receipt/three journals and deep screenshot."
+    },
+    {
+      "at": "2026-10-04T18:16:48.232466+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Native-test infrastructure repair verified and integrated to main; no Store package is required for this test-only change."
     }
   ],
-  "next_action": "Resolve D125 then finish exact-artifact full reload and clipboard/surrounding acceptance.",
+  "next_action": "Closed for scoped native-test defect. Continue separately tracked product coverage; no whole-feature health claim.",
   "native_retest": {
-    "status": "partial",
-    "run_id": 37221586281,
-    "artifact": "development231 source723433a7",
-    "verified": "Warm Open-return pane retention and exact video/link survivor identities/counts; image/video/link forms exercised.",
-    "remaining": "OS clipboard observation unavailable; full reload not reached because D125 deep-capture assertion failed. No closure or whole-case claim."
+    "status": "pass-original-reproduction",
+    "run_id": 37222954472,
+    "product_version": "0.2.231",
+    "source_sha": "723433a7628b32fb610d3a7f36ca6b8dd5fd2b72",
+    "report": ".research/scrape231-recapture-native.json",
+    "scope_limit": "Specific defect plus exercised surrounding cases; full Scrape remains partial, clipboard readback, normal width and member/admin unverified."
   }
 }

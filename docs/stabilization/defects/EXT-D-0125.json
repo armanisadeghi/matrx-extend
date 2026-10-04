@@ -14,13 +14,14 @@
   "actual": "Warm media/link mutations set edited=true. Product correctly opens Discard unsaved edits? and defers capture; native driver waits for deep result without confirmation. Sol actual-component causal reproduction verifies capture starts only on explicit confirmation. No product repair indicated.",
   "severity": "S2: acceptance blocked by driver omission; product unsaved-edit protection works in causal reproduction",
   "priority": "P1: blocks remaining contained Scrape lifecycle acceptance",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/scrape125_fix",
   "evidence": [
     "docs/stabilization/evidence/scrape231/run37221586281/receipt.json.txt",
     ".research/scrape231-context-diagnostic-native.json",
     ".research/scrape-deep-capture125-diagnose.json",
-    ".research/scrape125-fresh-peer.json"
+    ".research/scrape125-fresh-peer.json",
+    ".research/scrape231-recapture-native.json"
   ],
   "transition_history": [
     {
@@ -46,7 +47,27 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "0600d571 repairs native Cancel/preserve/request/explicit deep confirmation. Fresh peer099ec9de accepts source without product bypass; independent focused execution then exact231 native retest assigned separately."
+    },
+    {
+      "at": "2026-10-04T18:16:48.232466+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent2node+6component checks and native37222954472 verify Cancel preserving edits, explicit confirmation, deep busy/result and subsequent full reload. Original omitted-confirmation assertion no longer reproduces. Root matched all9evidence hashes, read raw receipt/three journals and deep screenshot."
+    },
+    {
+      "at": "2026-10-04T18:16:48.232466+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Native-test infrastructure repair verified and integrated to main; no Store package is required for this test-only change."
     }
   ],
-  "next_action": "Independent focused tests then one guarded frozen231 ARM native original sequence and full reload; report .research/scrape231-recapture-native.json. No closure from source tests."
+  "next_action": "Closed for scoped native-test defect. Continue separately tracked product coverage; no whole-feature health claim.",
+  "native_retest": {
+    "status": "pass-original-reproduction",
+    "run_id": 37222954472,
+    "product_version": "0.2.231",
+    "source_sha": "723433a7628b32fb610d3a7f36ca6b8dd5fd2b72",
+    "report": ".research/scrape231-recapture-native.json",
+    "scope_limit": "Specific defect plus exercised surrounding cases; full Scrape remains partial, clipboard readback, normal width and member/admin unverified."
+  }
 }

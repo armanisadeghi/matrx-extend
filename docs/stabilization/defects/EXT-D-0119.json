@@ -13,7 +13,7 @@
   "actual": "Original per-batch repair was independently verified and closed. New media procedure2a0b2e41 reintroduced unguarded form input and swallowed resource refusals; fresh peer7cf6ee9a blocked its first native run.",
   "severity": "S2: acceptance reliability; no proven product failure",
   "priority": "P1: prerequisite for trusted native acceptance",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/scrape_native_guard_fix",
   "evidence": [
     ".research/scrape-loading-fixed-native.json",
@@ -26,7 +26,8 @@
     ".research/scrape-native-controls-peer.json",
     ".research/scrape-native-guard-fix.json",
     ".research/scrape-native-guard-final-peer.json",
-    ".research/scrape-link-observation-fix.json"
+    ".research/scrape-link-observation-fix.json",
+    ".research/scrape231-recapture-native.json"
   ],
   "transition_history": [
     {
@@ -88,10 +89,22 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "b89c725c gates field click and insertion and propagates resource failures; 4aa99248 fixes observable wrong-URL timeout classification after fresh peer570c4829. Executed causal RED/GREEN,16 focused checks and compile pass; final peer/native pending."
+    },
+    {
+      "at": "2026-10-04T18:16:48.232466+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Native warm and post-reload media/link form actions execute through reviewed resource boundaries; all three journals valid, acceptance three healthy watches and zero unsafe. Prior causal refusal checks/source peer remain valid. Root matched all9evidence hashes, read raw receipt/three journals and deep screenshot."
+    },
+    {
+      "at": "2026-10-04T18:16:48.232466+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Native-test infrastructure repair verified and integrated to main; no Store package is required for this test-only change."
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
-  "next_action": "New media action-boundary regression is source-fixed and fresh final peer accepted (.research/scrape-observation-final-peer.json). Verify actual native form-action paths in the guarded source-repair run; keep original closure evidence historical. Runs37208889373(resource refusal) and37209834721(image-group assertion) did not reach those actions. Never infer product health from guard refusal.",
+  "next_action": "Closed for scoped native-test defect. Continue separately tracked product coverage; no whole-feature health claim.",
   "retest_attempts": [
     {
       "at": "2026-10-04T15:06:04.877305+00:00",
@@ -100,5 +113,13 @@
       "evidence": ".research/scrape-media-repaired-native.json",
       "root_verification": "Receipt and all3journal hashes independently matched; guest journal one RESOURCE_WATCH_UNSAFE CPU0.77, finalchild_failed/exit1/resourceInvalidfalse, nativeinputs refused with cases[]. No product or assertion verdict; state remains fixed."
     }
-  ]
+  ],
+  "native_retest": {
+    "status": "pass-original-reproduction",
+    "run_id": 37222954472,
+    "product_version": "0.2.231",
+    "source_sha": "723433a7628b32fb610d3a7f36ca6b8dd5fd2b72",
+    "report": ".research/scrape231-recapture-native.json",
+    "scope_limit": "Specific defect plus exercised surrounding cases; full Scrape remains partial, clipboard readback, normal width and member/admin unverified."
+  }
 }

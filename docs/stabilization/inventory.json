@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T16:32:56.071159+00:00",
+  "updated_at": "2026-10-04T18:18:28.980085+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -17002,24 +17002,30 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37221586281",
-              "evidence": ".research/scrape231-context-diagnostic-native.json",
-              "detail": "Exact development231 guest ARM: Fast capture disabled busy button, expected article and lazy-content absence observed; reload not reached.",
+              "run_id": "37222954472",
+              "evidence": ".research/scrape231-recapture-native.json",
+              "detail": "Exact development231 guest ARM: Fast capture and post-reload repopulated article observed. Raw early case remaining note is stale; no exhaustive case promotion from that discrepancy.",
               "historical_result": {
                 "status": "partial",
-                "run_id": "37195986118",
-                "evidence": ".research/scrape-freshness-fixed-native.json",
-                "detail": "Healthy exact development215 run observed disabled Capturing and real article/no lazy content; same original busy fix remains working. Full-duration/retry and replacement-panel recovery remain unverified. Store205 predates busy/layoutfixes.",
+                "run_id": "37221586281",
+                "evidence": ".research/scrape231-context-diagnostic-native.json",
+                "detail": "Exact development231 guest ARM: Fast capture disabled busy button, expected article and lazy-content absence observed; reload not reached.",
                 "historical_result": {
-                  "status": "unverified",
-                  "run_id": "render-retest-001",
-                  "evidence": "docs/stabilization/runs/render-retest-001.json",
-                  "verified_substeps": [
-                    "Capture produced a 16-word article and result tabs were visible."
-                  ],
-                  "remaining_criteria": [
-                    "Observe busy-button disable/progress while capture runs and exercise error recovery actions."
-                  ]
+                  "status": "partial",
+                  "run_id": "37195986118",
+                  "evidence": ".research/scrape-freshness-fixed-native.json",
+                  "detail": "Healthy exact development215 run observed disabled Capturing and real article/no lazy content; same original busy fix remains working. Full-duration/retry and replacement-panel recovery remain unverified. Store205 predates busy/layoutfixes.",
+                  "historical_result": {
+                    "status": "unverified",
+                    "run_id": "render-retest-001",
+                    "evidence": "docs/stabilization/runs/render-retest-001.json",
+                    "verified_substeps": [
+                      "Capture produced a 16-word article and result tabs were visible."
+                    ],
+                    "remaining_criteria": [
+                      "Observe busy-button disable/progress while capture runs and exercise error recovery actions."
+                    ]
+                  }
                 }
               }
             }
@@ -17051,20 +17057,26 @@
           ],
           "results": {
             "guest": {
-              "status": "fail",
-              "run_id": "37221586281",
-              "evidence": ".research/scrape231-context-diagnostic-native.json",
-              "detail": "After warm media edits, Scroll & capture expected deep result not observed. D125 source diagnosis pending; no product cause established from assertion. Four healthy resource watches.",
+              "status": "partial",
+              "run_id": "37222954472",
+              "evidence": ".research/scrape231-recapture-native.json",
+              "detail": "Exact development231 guest ARM: Unsaved-edit Cancel preserves edits; explicit confirmation starts Scrolling and lazy-content deep result. Natural deep-retry failure and deep capture after reload remain unverified.",
               "historical_result": {
-                "status": "partial",
-                "run_id": "37195986118",
-                "evidence": ".research/scrape-freshness-fixed-native.json",
-                "detail": "Healthy exact development215 run observed disabled Scrolling plus lazy content in real page/capture; narrow layoutcontained. Deepretry and replacement-panel recovery remainunverified.",
+                "status": "fail",
+                "run_id": "37221586281",
+                "evidence": ".research/scrape231-context-diagnostic-native.json",
+                "detail": "After warm media edits, Scroll & capture expected deep result not observed. D125 source diagnosis pending; no product cause established from assertion. Four healthy resource watches.",
                 "historical_result": {
-                  "status": "unverified",
-                  "run_id": "render-retest-001",
-                  "detail": "unverified_short_static_fixture_identical_output_inconclusive",
-                  "evidence": "docs/stabilization/runs/render-retest-001.json"
+                  "status": "partial",
+                  "run_id": "37195986118",
+                  "evidence": ".research/scrape-freshness-fixed-native.json",
+                  "detail": "Healthy exact development215 run observed disabled Scrolling plus lazy content in real page/capture; narrow layoutcontained. Deepretry and replacement-panel recovery remainunverified.",
+                  "historical_result": {
+                    "status": "unverified",
+                    "run_id": "render-retest-001",
+                    "detail": "unverified_short_static_fixture_identical_output_inconclusive",
+                    "evidence": "docs/stabilization/runs/render-retest-001.json"
+                  }
                 }
               }
             }
@@ -17093,7 +17105,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "partial",
+              "run_id": "37222954472",
+              "evidence": ".research/scrape231-recapture-native.json",
+              "detail": "Trusted exact dialog Cancel retained edited state/idle deep button; second request confirmed Re-capture and deep mode completed. Evidence is native script assertion contract plus subsequent deep result; no separate dialog screenshot. Other auth/mode variants unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1007-T04",
@@ -17251,16 +17271,22 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37221586281",
-              "evidence": ".research/scrape231-context-diagnostic-native.json",
-              "detail": "Exact development231 guest ARM: All six result panes had matching content; image/video empty states exercised later; reload unverified.",
+              "run_id": "37222954472",
+              "evidence": ".research/scrape231-recapture-native.json",
+              "detail": "Exact development231 guest ARM: All result panes populated before and after reload; normal width unverified.",
               "historical_result": {
                 "status": "partial",
-                "run_id": "37205211642",
-                "evidence": ".research/startup-attributed-native.json",
-                "detail": "Guest warm capture selected all6tabs with matching content; image loaded640x480, video URLrow matched, media-free recapture showed image/videoempty states. Globalreload and emptyScrape renderingpassed, but data-pane capture/assertions afterreload, normalwidth and othermodes remainunverified. No video playbackclaim.",
-                "build_variant": "Frozen development215/source3536b5cb/CI37193761291/artifact11299613935",
-                "verified_at": "2026-10-04T13:30:38.711263+00:00"
+                "run_id": "37221586281",
+                "evidence": ".research/scrape231-context-diagnostic-native.json",
+                "detail": "Exact development231 guest ARM: All six result panes had matching content; image/video empty states exercised later; reload unverified.",
+                "historical_result": {
+                  "status": "partial",
+                  "run_id": "37205211642",
+                  "evidence": ".research/startup-attributed-native.json",
+                  "detail": "Guest warm capture selected all6tabs with matching content; image loaded640x480, video URLrow matched, media-free recapture showed image/videoempty states. Globalreload and emptyScrape renderingpassed, but data-pane capture/assertions afterreload, normalwidth and othermodes remainunverified. No video playbackclaim.",
+                  "build_variant": "Frozen development215/source3536b5cb/CI37193761291/artifact11299613935",
+                  "verified_at": "2026-10-04T13:30:38.711263+00:00"
+                }
               }
             }
           },
@@ -17349,18 +17375,24 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37221586281",
-              "evidence": ".research/scrape231-context-diagnostic-native.json",
-              "detail": "Exact development231 guest ARM: Three selective image removals reached empty and exact follow-up image/alt was added; full reload remains.",
+              "status": "pass",
+              "run_id": "37222954472",
+              "evidence": ".research/scrape231-recapture-native.json",
+              "detail": "Exact development231 guest ARM: Three exact image removals through empty and valid replacement image/alt verified warm and after full reload.",
               "historical_result": {
                 "status": "partial",
-                "build": "development0.2.215/source3536b5cb",
-                "run_id": "37214124282",
-                "evidence": [
-                  ".research/scrape-transition-native-diagnostic.json"
-                ],
-                "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3→2→1→empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
+                "run_id": "37221586281",
+                "evidence": ".research/scrape231-context-diagnostic-native.json",
+                "detail": "Exact development231 guest ARM: Three selective image removals reached empty and exact follow-up image/alt was added; full reload remains.",
+                "historical_result": {
+                  "status": "partial",
+                  "build": "development0.2.215/source3536b5cb",
+                  "run_id": "37214124282",
+                  "evidence": [
+                    ".research/scrape-transition-native-diagnostic.json"
+                  ],
+                  "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3→2→1→empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
+                }
               }
             }
           }
@@ -17405,15 +17437,21 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37221586281",
-              "evidence": ".research/scrape231-context-diagnostic-native.json",
-              "detail": "Exact development231 guest ARM: Blank image rejected, valid URL/alt added, Cancel cleared form; full reload remains.",
+              "status": "pass",
+              "run_id": "37222954472",
+              "evidence": ".research/scrape231-recapture-native.json",
+              "detail": "Exact development231 guest ARM: Blank image rejected, valid URL/alt added, Cancel cleared form warm and after full reload.",
               "historical_result": {
                 "status": "partial",
-                "evidence": ".research/scrape231-arm-native.json",
-                "run_id": "37218903375",
-                "detail": "Healthy exact231 ARM warm Add image blank/valid+alt/Cancel sequence completed; full reload and other roles unverified."
+                "run_id": "37221586281",
+                "evidence": ".research/scrape231-context-diagnostic-native.json",
+                "detail": "Exact development231 guest ARM: Blank image rejected, valid URL/alt added, Cancel cleared form; full reload remains.",
+                "historical_result": {
+                  "status": "partial",
+                  "evidence": ".research/scrape231-arm-native.json",
+                  "run_id": "37218903375",
+                  "detail": "Healthy exact231 ARM warm Add image blank/valid+alt/Cancel sequence completed; full reload and other roles unverified."
+                }
               }
             }
           }
@@ -17459,14 +17497,20 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37221586281",
-              "evidence": ".research/scrape231-context-diagnostic-native.json",
-              "detail": "Exact development231 guest ARM: Video Open returned correctly; exact removal/addition survivors observed. Copy click occurred but readback unavailable (panel_runtime_exception); full reload remains.",
+              "run_id": "37222954472",
+              "evidence": ".research/scrape231-recapture-native.json",
+              "detail": "Exact development231 guest ARM: Open-return retains Video; exact removal/addition identities warm and after reload. Clipboard readback unavailable (D126), so partial.",
               "historical_result": {
                 "status": "partial",
-                "evidence": ".research/scrape231-arm-native.json",
-                "run_id": "37218903375",
-                "detail": "Healthy exact231 ARM returns to Video after Open; Copy receives trusted click. Remove intake leaves visually correct referral row/count1, but structured observer empty causes D124 assertion failure. Clipboard/full video forms/reload unverified."
+                "run_id": "37221586281",
+                "evidence": ".research/scrape231-context-diagnostic-native.json",
+                "detail": "Exact development231 guest ARM: Video Open returned correctly; exact removal/addition survivors observed. Copy click occurred but readback unavailable (panel_runtime_exception); full reload remains.",
+                "historical_result": {
+                  "status": "partial",
+                  "evidence": ".research/scrape231-arm-native.json",
+                  "run_id": "37218903375",
+                  "detail": "Healthy exact231 ARM returns to Video after Open; Copy receives trusted click. Remove intake leaves visually correct referral row/count1, but structured observer empty causes D124 assertion failure. Clipboard/full video forms/reload unverified."
+                }
               }
             }
           }
@@ -17523,9 +17567,15 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37221586281",
-              "evidence": ".research/scrape231-context-diagnostic-native.json",
-              "detail": "Exact development231 guest ARM: Link Open, selective Remove, blank/valid Add and Cancel reached expected identities/counts. Copy readback unavailable (panel_runtime_exception); full reload/member/admin remain."
+              "run_id": "37222954472",
+              "evidence": ".research/scrape231-recapture-native.json",
+              "detail": "Exact development231 guest ARM: Open, selective removal, blank/valid Add and Cancel have exact rows/counts warm and after reload. Clipboard readback unavailable (D126), so partial.",
+              "historical_result": {
+                "status": "partial",
+                "run_id": "37221586281",
+                "evidence": ".research/scrape231-context-diagnostic-native.json",
+                "detail": "Exact development231 guest ARM: Link Open, selective Remove, blank/valid Add and Cancel reached expected identities/counts. Copy readback unavailable (panel_runtime_exception); full reload/member/admin remain."
+              }
             }
           }
         },
@@ -17556,9 +17606,15 @@
           "results": {
             "guest": {
               "status": "partial",
-              "evidence": ".research/scrape-freshness-fixed-native.json",
-              "run_id": "37195986118",
-              "detail": "Healthy exactdevelopment215 observed restrictedchrome://settings norecoveryactions andDismiss; recoverableReload/Tryagain/deepretryunverified."
+              "run_id": "37222954472",
+              "evidence": ".research/scrape231-recapture-native.json",
+              "detail": "Exact development231 guest ARM: Restricted-page error/Dismiss exercised. Recoverable Reload/Try again and deep-retry path remain unverified.",
+              "historical_result": {
+                "status": "partial",
+                "evidence": ".research/scrape-freshness-fixed-native.json",
+                "run_id": "37195986118",
+                "detail": "Healthy exactdevelopment215 observed restrictedchrome://settings norecoveryactions andDismiss; recoverableReload/Tryagain/deepretryunverified."
+              }
             }
           },
           "component_evidence": [
@@ -17723,17 +17779,23 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37221586281",
-              "evidence": ".research/scrape231-context-diagnostic-native.json",
-              "detail": "Exact development231 guest ARM: Initial empty panel and exact fixture observed; full reload not reached.",
+              "status": "pass",
+              "run_id": "37222954472",
+              "evidence": ".research/scrape231-recapture-native.json",
+              "detail": "Exact development231 guest ARM: Original and replacement panel navigation/reload observed; worker retired/replaced and sole running replacement; empty capture state verified.",
               "historical_result": {
-                "status": "pass",
-                "run_id": "37205211642",
-                "evidence": ".research/startup-attributed-native.json",
-                "detail": "Exact development215 genuine guest initialempty, navigation clearing priorcapture, prere-loadempty, actual fullreload and replacementScrape empty/capture-enabled normalpage with expectedtitle. Root matched receipt and3healthyjournals.",
-                "build_variant": "Frozen development215/source3536b5cb/CI37193761291/artifact11299613935",
-                "verified_at": "2026-10-04T13:30:38.711263+00:00"
+                "status": "partial",
+                "run_id": "37221586281",
+                "evidence": ".research/scrape231-context-diagnostic-native.json",
+                "detail": "Exact development231 guest ARM: Initial empty panel and exact fixture observed; full reload not reached.",
+                "historical_result": {
+                  "status": "pass",
+                  "run_id": "37205211642",
+                  "evidence": ".research/startup-attributed-native.json",
+                  "detail": "Exact development215 genuine guest initialempty, navigation clearing priorcapture, prere-loadempty, actual fullreload and replacementScrape empty/capture-enabled normalpage with expectedtitle. Root matched receipt and3healthyjournals.",
+                  "build_variant": "Frozen development215/source3536b5cb/CI37193761291/artifact11299613935",
+                  "verified_at": "2026-10-04T13:30:38.711263+00:00"
+                }
               }
             }
           },
@@ -18244,7 +18306,8 @@
             "EXT-D-0118",
             "EXT-D-0123",
             "EXT-D-0124",
-            "EXT-D-0125"
+            "EXT-D-0125",
+            "EXT-D-0126"
           ],
           "run_ids": [
             "guest-local-001",
@@ -18254,9 +18317,10 @@
             "svg-caption-native-003",
             "37192733619",
             "37218903375",
-            "37221586281"
+            "37221586281",
+            "37222954472"
           ],
-          "retest_status": "partial: exact231 warm image/video/link original targeting and row observations passed; clipboard readback unavailable. Deep capture D125 blocks full reload; D123/D124 remain unclosed."
+          "retest_status": "partial: warm/full-reload media/link and deep confirmation verified on231; D119/D124/D125 closed, D123 native retest-pass awaiting Store. Clipboard D126, normal-width/auth/error recovery remain."
         },
         "member": {
           "test_status": "unverified",

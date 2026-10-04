@@ -1,0 +1,39 @@
+{
+  "id": "EXT-D-0126",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T12", "EXT-F-1007-T13"],
+  "surface": "Scrape video/link clipboard native observation",
+  "auth_mode": "guest",
+  "title": "Native clipboard readback unavailable in warm and reloaded panel",
+  "reproduction": [
+    "Use guarded ARM native37222954472, frozen development231 source723433a7 and driver5cfd955e; exact raw receipt and immutable artifact retained.",
+    "Run warm and post-full-extension-reload Video and Links Copy URL controls on owned fixture.",
+    "Each outcome retains clipboard_url=null and copy_unavailable:panel_runtime_exception; same limitation appears in prior37221586281."
+  ],
+  "expected": "Observe exact synthetic fixture URL from real trusted Copy action with safe clipboard preservation/restoration, or retain a precise causal failure discriminator without claiming pass.",
+  "actual": "Copy actions are attempted but generic panel runtime exception prevents clipboard readback; product copy failure versus observer permission/focus failure remains unestablished.",
+  "severity": "S2: clipboard acceptance blocked; product impact pending diagnosis",
+  "priority": "P1: remaining contained media acceptance",
+  "state": "triaged",
+  "owner": "root/scrape_clipboard126_diagnose",
+  "evidence": [
+    ".research/scrape231-recapture-native.json",
+    ".research/scrape231-context-diagnostic-native.json",
+    "docs/stabilization/evidence/scrape231/run37222954472/receipt.json.txt"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T18:16:48.232466+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Repeated retained native clipboard limitation, never counted as pass."
+    },
+    {
+      "at": "2026-10-04T18:16:48.232466+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Root checked exact raw warm/reload results; bounded source/evidence diagnosis assigned. Historical D27 is a reuse lead, not assumed same cause."
+    }
+  ],
+  "next_action": "Bounded causal diagnosis .research/scrape-clipboard126-diagnose.json; no blind native retry, no new permission grant."
+}
