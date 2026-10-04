@@ -1,0 +1,20 @@
+{
+  "review": "independent source and evidence review of correction 8b1a56c4",
+  "previous_finding": {
+    "finding": "Generated status still identified 0.2.181 as the pending Store submission and current artifact.",
+    "verdict": "ADDRESSED",
+    "evidence": "docs/stabilization/STATUS.md and CHECKLIST.md now identify 0.2.205 Pending review and 0.2.176 Published; 0.2.181 is explicitly historical/cancelled. STATUS.html carries the matching generated coverage totals and release-case evidence."
+  },
+  "A_factual_accuracy": {
+    "verdict": "PASS",
+    "coverage": "Current generated coverage is 205 features, 762 cases, 1333 controls, 1210 applicable case-role slots; 76 pass, 65 partial, 5 fail, 1063 unverified, 1 N/A; 0/394 fully verified feature-role pairs. STATUS.md and CHECKLIST.md agree. These counts are inventory-derived and do not count release checks as feature coverage.",
+    "release": "Coverage audit checkpoint and generated STATUS/CHECKLIST identify 0.2.205 pending review, 0.2.176 published, automatic publication enabled, with 0.2.181 cancelled and historical. Candidate source SHA 2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3 and ZIP SHA-256 6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26 match .research/guest-402-release-preparation.json.",
+    "D113": "EXT-D-0113 is accurately fixed at the diagnostic-source level: the shape guard and independent source review passed, while fresh native organization readback/persistence remains unverified. The report does not claim a product defect or native acceptance."
+  },
+  "B_generator_and_claim_quality": {
+    "verdict": "PASS WITH ROUTINE LIMIT",
+    "evidence": "scripts/generate-stabilization-tracker.py derives current coverage from inventory and defect records; the release checkpoint is explicitly supplemental and says it does not promote unobserved cases or certify whole features. Generated current-release prose preserves the pending-publication and artifact-installation limits. Historical audit counts are explicitly dated snapshots.",
+    "limitation": "STATUS.html contains generated matrix detail and matches the 205/762/1333/113 header, while the rendered HTML is a single-line document and is less convenient to manually inspect. No substantive mismatch found."
+  },
+  "scope": "Read-only source/evidence review; no UI, tests, or build run."
+}
