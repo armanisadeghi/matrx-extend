@@ -478,7 +478,7 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
         ).length,
       };
       const accepted = Boolean(
-        (destroyedTargets.has(oldWorkerId) || retirementEvidence.old_worker_execution_retired) &&
+        retirementEvidence.old_worker_execution_retired &&
           retirementEvidence.observed_worker_count === 1 &&
           !ids.has(oldWorkerId) &&
           !ids.has(oldPanelId) &&

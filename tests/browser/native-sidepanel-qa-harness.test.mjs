@@ -308,6 +308,8 @@ async function reloadCase({
   skipDestroyed = false,
   retainedHost = false,
   multipleWorkers = false,
+  executionEvidence = 'valid',
+  expectFailure = false,
 }) {
   let developerMode = initiallyEnabled;
   let reloaded = false;
@@ -333,6 +335,8 @@ async function reloadCase({
   independent.detach = async () => {};
   const pageSession = new EventEmitter();
   pageSession.send = async (method) => {
+    if (method === 'ServiceWorker.enable' && executionEvidence === 'unavailable')
+      throw new Error('ServiceWorker domain unavailable');
     if (method === 'ServiceWorker.enable')
       pageSession.emit('ServiceWorker.workerVersionUpdated', {
         versions: [
@@ -344,6 +348,18 @@ async function reloadCase({
             runningStatus: 'running',
             status: 'activated',
           },
+          ...(executionEvidence === 'ambiguous'
+            ? [
+                {
+                  versionId: 'version-other',
+                  registrationId: 'registration-1',
+                  scriptURL: `chrome-extension://${extensionId}/background.js`,
+                  targetId: 'old-worker',
+                  runningStatus: 'running',
+                  status: 'activated',
+                },
+              ]
+            : []),
         ],
       });
     return {};
@@ -402,7 +418,7 @@ async function reloadCase({
               },
             ],
           });
-          if (retainedHost) {
+          if (executionEvidence === 'valid' || executionEvidence === 'noReplacementVersion') {
             pageSession.emit('ServiceWorker.workerVersionUpdated', {
               versions: [
                 {
@@ -412,14 +428,18 @@ async function reloadCase({
                   runningStatus: 'stopped',
                   status: 'redundant',
                 },
-                {
-                  versionId: 'version-new',
-                  registrationId: 'registration-2',
-                  scriptURL: worker.url,
-                  targetId: worker.targetId,
-                  runningStatus: 'running',
-                  status: 'activated',
-                },
+                ...(executionEvidence === 'valid'
+                  ? [
+                      {
+                        versionId: 'version-new',
+                        registrationId: 'registration-2',
+                        scriptURL: worker.url,
+                        targetId: worker.targetId,
+                        runningStatus: 'running',
+                        status: 'activated',
+                      },
+                    ]
+                  : []),
               ],
             });
           }
@@ -456,7 +476,7 @@ async function reloadCase({
       return {};
     },
   };
-  const result = await reloadOwnedExtension({
+  const resultPromise = reloadOwnedExtension({
     cdp,
     browser: { newBrowserCDPSession: async () => independent },
     context: { newPage: async () => details, newCDPSession: async () => pageSession },
@@ -471,6 +491,8 @@ async function reloadCase({
     extensionId,
     oldPanelId: oldPanel.targetId,
   });
+  if (expectFailure) return resultPromise;
+  const result = await resultPromise;
   assert.equal(result.management_reload_clicked, true);
   assert.equal(result.retirement_evidence.reload_lifetime.old_version_mapping, 'correlated');
   assert.equal(result.old_targets_retired, true);
@@ -507,6 +529,22 @@ async function reloadCase({
 }
 await reloadCase({ initiallyEnabled: false });
 await reloadCase({ initiallyEnabled: true });
+for (const executionEvidence of [
+  'restartable',
+  'noReplacementVersion',
+  'unavailable',
+  'ambiguous',
+]) {
+  await assert.rejects(
+    reloadCase({ initiallyEnabled: true, executionEvidence, expectFailure: true }),
+    (error) =>
+      error.message === 'native_extension_worker_retirement_unverified' &&
+      error.lifecycleEvidence.old_worker_destroyed_event === true &&
+      error.lifecycleEvidence.old_worker_execution_retired === false &&
+      error.lifecycleEvidence.timeline.final_predicate === false,
+    `destroyed debugger target must not bypass ${executionEvidence} execution evidence`,
+  );
+}
 const retainedResult = await reloadCase({
   initiallyEnabled: true,
   skipDestroyed: true,
@@ -536,20 +574,23 @@ await assert.rejects(
   /native_extension_worker_retirement_unverified/,
 );
 
-await assert.rejects(reloadCase({ initiallyEnabled: true, skipDestroyed: true }), (error) => {
-  const captured = captureLifecycleEvidence(error.lifecycleEvidence);
-  return (
-    error.message === 'native_extension_worker_retirement_unverified' &&
-    captured.old_worker_destroyed_event === false &&
-    captured.old_worker_absent === true &&
-    captured.replacement_worker_present === true &&
-    captured.timeline.final_predicate === false &&
-    captured.reload_lifetime.old_version_mapping === 'correlated' &&
-    captured.reload_lifetime.versions.at(-1).running_status === 'stopped' &&
-    captured.reload_lifetime.old_host_probe.outcome === 'target_absent' &&
-    captured.reload_lifetime.independent_targets.some((entry) => entry.phase === 'destroyed')
-  );
-});
+await assert.rejects(
+  reloadCase({ initiallyEnabled: true, skipDestroyed: true, executionEvidence: 'restartable' }),
+  (error) => {
+    const captured = captureLifecycleEvidence(error.lifecycleEvidence);
+    return (
+      error.message === 'native_extension_worker_retirement_unverified' &&
+      captured.old_worker_destroyed_event === false &&
+      captured.old_worker_absent === true &&
+      captured.replacement_worker_present === true &&
+      captured.timeline.final_predicate === false &&
+      captured.reload_lifetime.old_version_mapping === 'correlated' &&
+      captured.reload_lifetime.versions.at(-1).running_status === 'stopped' &&
+      captured.reload_lifetime.old_host_probe.outcome === 'target_absent' &&
+      captured.reload_lifetime.independent_targets.some((entry) => entry.phase === 'destroyed')
+    );
+  },
+);
 await assert.rejects(reloadCase({ initiallyEnabled: true, clickFailure: true }), (error) => {
   const captured = captureLifecycleEvidence(error.lifecycleEvidence);
   return (
