@@ -14,13 +14,14 @@
   "actual": "Copy actions are attempted but generic panel runtime exception prevents clipboard readback; product copy failure versus observer permission/focus failure remains unestablished.",
   "severity": "S2: clipboard acceptance blocked; product impact pending diagnosis",
   "priority": "P1: remaining contained media acceptance",
-  "state": "triaged",
-  "owner": "root/scrape_clipboard126_diagnose",
+  "state": "in-fix",
+  "owner": "root/clipboard126_discriminator",
   "evidence": [
     ".research/scrape231-recapture-native.json",
     ".research/scrape231-context-diagnostic-native.json",
     "docs/stabilization/evidence/scrape231/run37222954472/receipt.json.txt",
-    ".research/scrape-clipboard126-diagnose.json"
+    ".research/scrape-clipboard126-diagnose.json",
+    ".research/clipboard126-discriminator.json"
   ],
   "transition_history": [
     {
@@ -34,7 +35,13 @@
       "from": "open",
       "to": "triaged",
       "reason": "Root checked exact raw warm/reload results; bounded source/evidence diagnosis assigned. Historical D27 is a reuse lead, not assumed same cause."
+    },
+    {
+      "at": "2026-10-04T18:30:36.751628+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Source discriminator4acfe298 implemented; fresh independent review required before native execution."
     }
   ],
-  "next_action": "Implement/review minimal Copy feedback and safe read exception name/focus/visibility discriminator using existing D27 primitive; diagnosis19f7a6da establishes evidence gap, not product failure. No blind native retry."
+  "next_action": "Fresh source peer review, resolve findings, then one guarded ARM native run against frozen231; no clipboard or whole-product pass inferred."
 }
