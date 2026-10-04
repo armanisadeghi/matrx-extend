@@ -41,7 +41,7 @@
   },
   "native_outcome": {
     "status": "unverified",
-    "receipt_path": "docs/stabilization/evidence/scrape-member/run37227042493/test-results/scrape-guest-native-406fca09-e1e5-4632-b032-ad9cc84d3dc1.json",
+    "receipt_path": "docs/stabilization/evidence/scrape-member/run37227042493/acceptance-receipt.json",
     "receipt_sha256": "0b9971ce8cfeabd3f609fa685459c5ad7e14ff26ad69bf43804f224b029df57e",
     "stage": "inputs",
     "native_stage": "exercise_panel",
@@ -90,12 +90,12 @@
   ],
   "screenshots": [
     {
-      "path": "docs/stabilization/evidence/scrape-member/run37227042493/test-results/native-sidepanel-qa-9VhQ1a/native-side-panel.png",
+      "path": "docs/stabilization/evidence/scrape-member/run37227042493/screenshots/native-side-panel.png",
       "sha256": "9b6a2a8f7271bb133a9ad3e83d6eb9187c87eccf4c707b421867a6c1f1b98be9",
       "limitation": "Shows the extension panel as guest before member sign-in; not member evidence."
     },
     {
-      "path": "docs/stabilization/evidence/scrape-member/run37227042493/test-results/native-sidepanel-qa-9VhQ1a/normal-target-after-open.png",
+      "path": "docs/stabilization/evidence/scrape-member/run37227042493/screenshots/normal-target-after-open.png",
       "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
       "limitation": "Shows the fixture page after requesting panel open; no width assertion was recorded."
     }
