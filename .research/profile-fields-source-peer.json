@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "review_type": "independent source acceptance review; zero implementation authorship",
+  "reviewed_commits": ["0534a562", "352cdf4d"],
+  "reviewed_paths": [
+    "tests/browser/profile-identity-employment-cases.mjs",
+    "tests/browser/profile-native-acceptance.mjs",
+    "tests/browser/profile-owned-write-journal.mjs",
+    "tests/browser/profile-owned-write-journal.test.mjs",
+    ".research/profile-identity-employment-cases.json"
+  ],
+  "A_scope_and_live_readiness": {
+    "verdict": "SOURCE_PARTIAL_NATIVE_NOT_READY_FOR_FULL_ACCEPTANCE",
+    "covered_in_source": "T05/T06 identity seven fields and card; T17/T18 company/title; T21/T22 eight section expanders, member and admin, warm and after actual extension reload. UI edits use CDP pointer and key events; field saves use a member row created by this run and a private durable prewrite field intent. Existing admin/member saved-field cases are explicitly unverified; expander cases can run without a persisted write.",
+    "material_gap": "The warm field cases save and restore their original fields before reloadExtension. The post-reload cases edit and save new values only after reload. Thus both can pass when extension reload loses a previously saved Identity or Employment value, despite the inventory's persistence-after-reload criterion. Preserve an owned saved value across the actual reload, assert all fields and identity card immediately after re-opening, then restore through the journal before conditional deletion.",
+    "native_status": "No native browser execution in this review. Chrome date input, UI selectors, role/build identity, and actual conditional restoration remain unverified on the loaded extension. The report's source_ready_partial_scope_native_unverified status is accurate."
+  },
+  "B_quality": {
+    "verdict": "FAIL_MATERIAL_ACCEPTANCE_GUARD",
+    "findings": [
+      {
+        "id": "B1",
+        "severity": "Important",
+        "evidence": "tests/browser/profile-native-acceptance.mjs:959-1014 and tests/browser/profile-identity-employment-cases.mjs:273-320",
+        "finding": "Field values are restored before the extension reload. The subsequent field pass only proves a save/reopen inside the newly loaded panel; it cannot reject lost persisted fields during reload.",
+        "negative_guard": "Plant a reload behavior that resets one saved identity or employment field, while ordinary save/reopen still works. The current sequence can remain green because it reloads only the restored baseline; a fixed oracle must turn red."
+      },
+      {
+        "id": "B2",
+        "severity": "Important",
+        "evidence": "tests/browser/profile-native-acceptance.mjs:633-635,1094-1096",
+        "finding": "PROFILE_EXTENDED_CASES defaults off, and final status only searches existing cases for 'unverified'. A valid base run with the flag absent can report passed with none of T05/T06/T17/T18/T21/T22 recorded. The extended acceptance request needs an exact case-and-dimension census before an overall pass.",
+        "negative_guard": "Run a source-bound or native receipt with the extended flag omitted and assert the extended acceptance gate fails for missing expected case IDs/dimensions; verify admin saved-field unverified yields partial."
+      }
+    ],
+    "positives": [
+      "The requested field labels, DB columns and eight section names match the current Profile UI and case procedures.",
+      "The field journal persists intent before Save and validates owner, organization, marker, creation time, version and intended fields before advancing; cleanup deletes the exact owned row and verifies absence.",
+      "Field-case restoration attempts run after an earlier UI failure, and unresolved journal state prevents conditional deletion.",
+      "Existing-row saved-field cases are explicitly unverified, with overall partial status when the extended flag is on."
+    ]
+  },
+  "checks": {
+    "journal_unit_tests": "12 passed",
+    "field_successor_mutation": "Removed pending.fields comparison in an isolated temporary copy; node --test exited 1 with one failing test.",
+    "source_oracle_review": "The reload and missing-case gaps above are reachable green paths by the runner's control flow; no browser or DB was used."
+  },
+  "limits": [
+    "No native browser, database mutation, build, release, or implementation edit occurred.",
+    "The source report contains no private profile values, identity, credentials, or raw errors.",
+    "The separate admin saved-field omission is an allowed incomplete coverage result, not full acceptance."
+  ]
+}
