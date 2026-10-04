@@ -10,6 +10,8 @@ const logMock = vi.hoisted(() => ({
 vi.mock('@/lib/debug/log', () => ({ log: logMock }));
 
 import { type StreamEvent, streamFetch } from '@/lib/api/stream';
+import { presentChatStreamError } from '@/lib/chat/stream-error';
+import { useChatStore } from '@/state/chat';
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -36,6 +38,163 @@ function fragmentedResponse(parts: Uint8Array[]): Response {
 }
 
 describe('streamFetch public NDJSON kernel integration', () => {
+  it.each([
+    { status: 402, code: 'guest_ai_allowance_used' },
+    { status: 403, code: 'guest_ai_allowance_used' },
+  ])(
+    'routes the structured HTTP $status guest allowance refusal through the chat presenter without Retry',
+    async ({ status, code }) => {
+      useChatStore.setState({
+        messages: [
+          {
+            id: 'assistant-harbor-dental',
+            role: 'assistant',
+            content: '',
+            timestamp: 1,
+            pending: true,
+          },
+        ],
+        streamInterruption: null,
+      });
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue(
+          new Response(
+            JSON.stringify({
+              error: code,
+              message: 'server response text must remain hidden',
+              detail: 'private server diagnostics must remain hidden',
+            }),
+            { status },
+          ),
+        ),
+      );
+
+      await streamFetch({
+        url: 'https://example.test/stream',
+        headers: {},
+        onEvent: (event) => {
+          if (event.type === 'error') {
+            presentChatStreamError({
+              messageId: 'assistant-harbor-dental',
+              runId: 'run-harbor-dental',
+              message: event.message,
+              lastInput: 'What is two plus two?',
+              ...(event.code !== undefined && { code: event.code }),
+            });
+          }
+        },
+      });
+
+      const state = useChatStore.getState();
+      expect(state.messages[0]?.content).toBe(
+        "\n\n_Error:_ You've used your free AI tries. Sign up free to keep chatting.",
+      );
+      expect(state.streamInterruption).toBeNull();
+      expect(JSON.stringify(state.messages)).not.toContain('server response text');
+      expect(JSON.stringify(state.messages)).not.toContain('private server diagnostics');
+    },
+  );
+
+  it('keeps an unrelated structured HTTP 402 refusal generic and retryable', async () => {
+    useChatStore.setState({
+      messages: [
+        {
+          id: 'assistant-harbor-dental',
+          role: 'assistant',
+          content: '',
+          timestamp: 1,
+          pending: true,
+        },
+      ],
+      streamInterruption: null,
+    });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue(
+        new Response('{"error":"payment_required","message":"private detail"}', {
+          status: 402,
+        }),
+      ),
+    );
+
+    await streamFetch({
+      url: 'https://example.test/stream',
+      headers: {},
+      onEvent: (event) => {
+        if (event.type === 'error') {
+          presentChatStreamError({
+            messageId: 'assistant-harbor-dental',
+            runId: 'run-harbor-dental',
+            message: event.message,
+            lastInput: 'What is two plus two?',
+            ...(event.code !== undefined && { code: event.code }),
+          });
+        }
+      },
+    });
+
+    const state = useChatStore.getState();
+    expect(state.messages[0]?.content).toBe(
+      '\n\n_Error:_ The chat service could not complete this request. Try again.',
+    );
+    expect(state.streamInterruption).toEqual(
+      expect.objectContaining({ runId: 'run-harbor-dental', reason: 'error' }),
+    );
+    expect(JSON.stringify(state.messages)).not.toContain('private detail');
+  });
+
+  it.each(['error_type', 'code'] as const)(
+    'routes the documented stream error %s allowance form through the chat presenter without Retry',
+    async (field) => {
+      useChatStore.setState({
+        messages: [
+          {
+            id: 'assistant-harbor-dental',
+            role: 'assistant',
+            content: '',
+            timestamp: 1,
+            pending: true,
+          },
+        ],
+        streamInterruption: null,
+      });
+      const bytes = new TextEncoder().encode(
+        `${JSON.stringify({
+          event: 'error',
+          data: {
+            [field]: 'guest_ai_allowance_used',
+            user_message: 'server-provided copy must remain hidden',
+          },
+        })}\n`,
+      );
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue(fragmentedResponse([bytes])));
+
+      await streamFetch({
+        url: 'https://example.test/stream',
+        headers: {},
+        onEvent: (event) => {
+          if (event.type === 'error') {
+            presentChatStreamError({
+              messageId: 'assistant-harbor-dental',
+              runId: 'run-harbor-dental',
+              message: event.message,
+              lastInput: 'What is two plus two?',
+              ...(event.code !== undefined && { code: event.code }),
+            });
+          }
+        },
+      });
+
+      const state = useChatStore.getState();
+      expect(state.messages[0]?.content).toBe(
+        "\n\n_Error:_ You've used your free AI tries. Sign up free to keep chatting.",
+      );
+      expect(state.streamInterruption).toBeNull();
+      expect(JSON.stringify(state.messages)).not.toContain('server-provided copy');
+    },
+  );
+
   it('preserves fragmented UTF-8 and trailing input while diagnostics retain only structure', async () => {
     const wire =
       '{"e":"c","t":"café"}\n' +

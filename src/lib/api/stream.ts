@@ -322,7 +322,7 @@ const GUEST_ALLOWANCE_MESSAGE = "You've used your free AI tries. Sign up free to
 
 function isGuestAllowanceUsed(status: number, detail: unknown): boolean {
   return (
-    status === 403 &&
+    (status === 402 || status === 403) &&
     detail !== null &&
     typeof detail === 'object' &&
     !Array.isArray(detail) &&

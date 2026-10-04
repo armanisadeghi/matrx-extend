@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "status": "SOURCE_FIX_TESTED_NATIVE_PENDING",
+  "base_source_sha": "e201b5d077e7288795b05b46f20c2c9c49bec82a",
+  "diagnosis": {
+    "live_installed_evidence": ".research/urgent-live-guest-20261004.json",
+    "server_boundary_evidence": ".research/urgent-guest-server-20261004.json",
+    "observed": "Store 0.2.176 guest request at 2026-10-04T05:29:10.852638Z returned HTTP 402 and the UI showed generic error plus Retry. Server logs correlate request ID 96172141-2df1-460f-ae90-65624ae3efdc and live over-limit usage state; response bytes were not retained.",
+    "source_contract": "Deployed server source maps guest UsageLimitReachedError to the flat guest_ai_allowance_used code. Extension streamFetch previously accepted that exact top-level error code only with status 403. Exact live body shape is not independently captured; classification code shape is based on the documented producer contract."
+  },
+  "change": {
+    "production_file": "src/lib/api/stream.ts",
+    "production_behavior": "Accept HTTP 402 or 403 only when the parsed top-level error is exactly guest_ai_allowance_used. Other statuses/codes keep existing behavior; fixed safe copy is used and response body details are not forwarded.",
+    "test_file": "tests/unit/api-stream.test.ts",
+    "test_scope": "Real streamFetch and presentChatStreamError with network fetch replaced by per-case Response fixtures: HTTP 402 and 403 allowance cases; unrelated structured HTTP 402 generic/retryable control; documented NDJSON error_type and code forms. Assert visible safe copy, Retry state, and response-detail non-disclosure."
+  },
+  "verification": {
+    "red": "Before production change, pnpm exec vitest run --maxWorkers=1 tests/unit/api-stream.test.ts: 1 failed, 13 passed. The 402 guest allowance case produced generic service copy instead of the signup remedy.",
+    "green": "After change, pnpm exec vitest run --maxWorkers=1 tests/unit/api-stream.test.ts tests/unit/chat-stream-error.test.ts: 2 files passed, 18 tests passed.",
+    "format": "pnpm exec biome check tests/unit/api-stream.test.ts src/lib/api/stream.ts: passed.",
+    "native_or_published_acceptance": "Not run in this source lane. The reproduced Store 0.2.176 binary remains old; new artifact and installed acceptance are outside this task."
+  },
+  "limits": [
+    "The production change affects client classification only; it does not alter allowance/quota policy or server code.",
+    "The exact live HTTP response body was not captured, so native verification against a returned 402 remains required.",
+    "This defect is separate from D97's earlier HTTP 403 guest request allowance incident; no claim is made that D97 reproduces this current cause."
+  ],
+  "defect": "docs/stabilization/defects/EXT-D-0112.json",
+  "independent_review": "pending"
+}
