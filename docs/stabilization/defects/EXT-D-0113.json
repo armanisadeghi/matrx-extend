@@ -11,14 +11,17 @@
     "The harness storedSessionShape predicate expects the matrx.org.active storage value to be a string; the current production value is an object with id and name."
   ],
   "expected": "The native acceptance probe recognizes the production device organization shape and reports an exact organization readback, so a false shape mismatch cannot be mistaken for a product failure or a verified persistence pass.",
-  "actual": "The string-only probe reports false on the object-valued key. Signed-in non-admin Chat answered, but exact organization storage readback and persistence remain unverified. No product organization defect is established.",
+  "actual": "Source repair bef9a4de recognizes the production object-valued matrx.org.active selection by its nonblank id and records only presence booleans. The production-shape guard failed on the old string-only probe and passed after repair (3 tests); previous member native receipt remains historically false. Fresh native organization readback and persistence are unverified. No product organization defect is established.",
   "severity": "S3: acceptance evidence is ambiguous; no product failure established",
   "priority": "P1: repair the probe before relying on member organization acceptance",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "guest_402_driver_review",
   "evidence": [
     ".research/guest-402-native-acceptance.json",
-    "test-results/reviewer-chat-store-325c9323-63a7-41c3-a192-0cfc7e9b9e73.json"
+    "test-results/reviewer-chat-store-325c9323-63a7-41c3-a192-0cfc7e9b9e73.json",
+    ".research/member-org-diagnostic-repair.json",
+    "tests/browser/reviewer-chat-storage-shape.test.mjs",
+    ".research/member-org-diagnostic-peer.json"
   ],
   "transition_history": [
     {
@@ -38,7 +41,13 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Narrow source guard and diagnostic repair assigned; native persistence proof remains pending."
+    },
+    {
+      "at": "2026-10-04T06:07:34Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source repair bef9a4de changed the probe to read object.id. The production-shape guard was red on the old classifier and green after repair; 3 focused tests pass. Independent source/narrow-guard review 216c24c0 passed. Fresh native organization readback remains pending."
     }
   ],
-  "closure_requirement": "Prove the corrected production-shape probe fails against the old harness and passes after repair, obtain independent source review, then capture exact member device organization readback in native acceptance. Do not infer a product bug from the prior false probe."
+  "closure_requirement": "Fresh guarded native member acceptance on exact submitted 0.2.205 must capture the corrected organization-present diagnostic and a real Chat answer without exposing organization identifiers. Preserve the previous false receipt as historical. Source red/green and independent review have passed; no product organization failure was established."
 }
