@@ -348,5 +348,10 @@
     "The artifact also contained stale journals from unrelated run 37105304739; they were excluded. Only this run\u2019s three current journals and four screenshots were retained.",
     "The receipt.json.txt file is a byte-for-byte copy of the uploaded native result JSON. No redundant ZIP was committed.",
     "The new trace disproves the earlier inferred third-removal failure boundary: all three image removals succeeded. The first unexpected Article selection and exact later failing control remain unobserved."
-  ]
+  ],
+  "root_verification": {
+    "hashes": "All8raw receipt/journal/screenshot hashes independently matched.",
+    "observed": "All3removal pre/post identities, trusteddown/up/click and Images selection independently read. One healthyCPU0.13watch, zerounsafe.",
+    "scope": "Warm image removals verified on frozen215; fullreload/otherroles remain unverified. Later media action causing Article switch notidentified. Earlier third-removal inference is refuted."
+  }
 }

@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-04 15:33 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T15:33:32.918684+00:00. 205 features · 762 cases · 1333 controls · 123 linked defect records.
+Generated 2026-10-04 16:00 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T15:33:32.918684+00:00. 205 features · 762 cases · 1333 controls · 123 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -859,8 +859,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
 - EXT-F-1007-T08 · guest: Partial. Guest warm capture selected all6tabs with matching content; image loaded640x480, video URLrow matched, media-free recapture showed image/videoempty states. Globalreload and emptyScrape renderingpassed, but data-pane capture/assertions afterreload, normalwidth and othermodes remainunverified. No video playbackclaim.
   Evidence / build / date recorded: 37205211642, Frozen development215/source3536b5cb/CI37193761291/artifact11299613935, 2026-10-04T13:30:38.711263+00:00, .research/startup-attributed-native.json
-- EXT-F-1007-T10 · guest: Partial. Warm native medium/icon removals and exact survivor/group checks were traversed; final screenshot confirms count3→1. Third removal failed after unexpected switch to Article. Cause unresolved; remaining large removal, reload and other roles unverified.
-  Evidence / build / date recorded: 37212405505, ['.research/blank-startup-native-experiment.json', '.research/scrape-media-pointer-diagnosis.json']
+- EXT-F-1007-T10 · guest: Partial. Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3→2→1→empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified.
+  Evidence / build / date recorded: 37214124282, ['.research/scrape-transition-native-diagnostic.json']
 - EXT-F-1007-T14 · guest: Partial. Healthy exactdevelopment215 observed restrictedchrome://settings norecoveryactions andDismiss; recoverableReload/Tryagain/deepretryunverified.
   Evidence / build / date recorded: 37195986118, .research/scrape-freshness-fixed-native.json
 - EXT-F-1007-T20 · guest: Pass. Exact development215 genuine guest initialempty, navigation clearing priorcapture, prere-loadempty, actual fullreload and replacementScrape empty/capture-enabled normalpage with expectedtitle. Root matched receipt and3healthyjournals.

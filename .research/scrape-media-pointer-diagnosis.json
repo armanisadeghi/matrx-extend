@@ -4,7 +4,7 @@
   "run_id": 37212405505,
   "artifact_source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
   "driver_head_sha": "30fe6781de042b00ef50a0f83fcb69286d35aacb",
-  "status": "boundary_identified_origin_unverified",
+  "status": "prior_boundary_inference_refuted_by_run37214124282",
   "observed": {
     "resource": "Acceptance was admitted; one healthy watch, zero unsafe watches, child_failed, resourceInvalid=false.",
     "before_controls": "The populated Images pane contained intake.svg, appointment-card.svg, and clinic-icon.svg; the Video pane contained two videos.",
@@ -13,7 +13,7 @@
     "source_sequence": "The frozen driver selects Images, verifies three images, removes appointment-card.svg, verifies two, removes clinic-icon.svg, verifies one, then requests removal of intake.svg before any Add image URL or video action."
   },
   "causal_boundary": {
-    "failed_action": "The third image removal request for intake.svg is the only pointer action consistent with the captured count of one and the preceding successful assertions. This is a high-confidence inference from the frozen sequence and final state; the receipt did not name the failing click.",
+    "failed_action": "Earlier inference attributed failure to thirdremoval from screenshotcount1. Run37214124282 disproves that inference: all3removals succeed and failure comes later; count1canreflectsubsequentimageadd. Exact later failingaction remainsunidentified.",
     "mechanism": "The shared scrape-media-remove driver searches anchors only inside the currently selected result pane, then finds their sibling Remove button. With Article selected, intake.svg has no matching anchor in that pane, so zero candidates produce pointer_target_not_unique before hit testing or dispatch.",
     "not_established": "The receipt has no selected-pane sample immediately before or after each removal, no tab activation trace, and no per-action pointer coordinates. It cannot distinguish a product pane reset, a pointer event activating Article during a removal, or an intervening mount/race. The zero-target code alone does not establish a hidden or obstructed Remove button."
   },
@@ -28,5 +28,6 @@
     "method": "Read-only comparison of the raw receipt and failure screenshot against the frozen driver and product sources; no native rerun or source edit was authorized for this lane.",
     "raw_receipts_unchanged": true,
     "product_acceptance": "unverified"
-  }
+  },
+  "current_evidence": ".research/scrape-transition-native-diagnostic.json"
 }

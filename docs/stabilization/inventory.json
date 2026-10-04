@@ -17333,12 +17333,11 @@
             "guest": {
               "status": "partial",
               "build": "development0.2.215/source3536b5cb",
-              "run_id": "37212405505",
+              "run_id": "37214124282",
               "evidence": [
-                ".research/blank-startup-native-experiment.json",
-                ".research/scrape-media-pointer-diagnosis.json"
+                ".research/scrape-transition-native-diagnostic.json"
               ],
-              "detail": "Warm native medium/icon removals and exact survivor/group checks were traversed; final screenshot confirms count3\u21921. Third removal failed after unexpected switch to Article. Cause unresolved; remaining large removal, reload and other roles unverified."
+              "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3\u21922\u21921\u2192empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
             }
           }
         },
