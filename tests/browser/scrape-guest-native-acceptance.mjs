@@ -338,12 +338,24 @@ try {
       t20.evidence.previous_content_cleared_before_reload = true;
       const replacement = await reloadExtension();
       try {
+        await page.goto(`${origin}/referrals`);
+        await click(replacement.panel, 'title', 'Scrape');
         const after = await waitFor(
           'scrape_reload_empty',
           () => scrapeState(replacement.panel),
-          (s) => s?.ready && s.empty,
+          (s) =>
+            s?.ready &&
+            s.title === 'Harbor Dental referral hours' &&
+            s.empty &&
+            s.fast.length === 1 &&
+            !s.fast[0].disabled &&
+            !s.resultText?.includes(article) &&
+            !s.resultText?.includes(lazy),
         );
         assert.equal(after.saved, false);
+        t20.evidence.reload_normal_page_url = page.url();
+        t20.evidence.reload_title = after.title;
+        t20.evidence.reload_capture_enabled = true;
         for (const id of ['EXT-F-1007-T01', 'EXT-F-1007-T02', 'EXT-F-1007-T08', 'EXT-F-1007-T20'])
           report.cases.find((c) => c.id === id).evidence.extension_reload_empty = true;
         report.cases.find((c) => c.id === 'EXT-F-1007-T20').status = 'passed';
