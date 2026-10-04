@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0134",
+  "scope": "Native guest transport observer second capture gap",
+  "failed_native_run": "37239792825",
+  "frozen_artifact": {
+    "version": "0.2.205",
+    "zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "key_adapted_tree_sha256": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+    "inspection": "ZIP background.js resolves browser mandate to /v2/ai/mandates/extend.browser_chat; chunks/offscreen-B1xG-u6-.js handles STREAM_RUN and calls streaming fetch. Endpoint mismatch against current observer ruled out at artifact-code level."
+  },
+  "hypotheses": [
+    {
+      "cause": "Frozen 205 uses a different endpoint",
+      "prediction": "ZIP route differs from observer CHAT_PATH",
+      "result": "Ruled out by frozen ZIP inspection"
+    },
+    {
+      "cause": "Lazy target remains provisional because navigation discovery is disabled",
+      "prediction": "A protocol producer withholding navigation events until discovery is enabled leaves matching network records unconfirmed",
+      "result": "Confirmed contract defect; same assertion fails before fix and passes after. Native causality remains unproven without lifecycle capture."
+    },
+    {
+      "cause": "Target never autoattaches or Network enable never occurs",
+      "prediction": "Terminal inventory has offscreen but observer attachment/network-enabled counters are zero",
+      "result": "Old receipt lacks discriminator; new diagnostics ready"
+    },
+    {
+      "cause": "Network event routing or path classification drops the POST",
+      "prediction": "Attachment succeeds but request/chat-path counts and buffered requests diverge",
+      "result": "Old receipt lacks discriminator; new diagnostics ready; connector tests pass but do not prove native delivery"
+    }
+  ],
+  "primary_source": {
+    "url": "https://github.com/chromium/chromium/blob/main/content/browser/devtools/protocol/target_handler.cc",
+    "functions": [
+      "UpdateAgentHostObserver registers only when discover()",
+      "DevToolsAgentHostNavigated calls TargetInfoChanged",
+      "TargetInfoChanged accepts auto-attached sessions but still needs navigation observer delivery"
+    ],
+    "related_source": "https://github.com/chromium/chromium/blob/main/content/browser/devtools/browser_devtools_agent_host.cc",
+    "related_note": "BrowserAutoAttacher independently observes target creation; it does not forward navigation changes to TargetHandler."
+  },
+  "repair": "Enable Target discovery before lazy autoattach. Discovery belongs to the owned browser CDP session and remains enabled until session closure; observer stop removes its listeners and autoattach without disabling discovery needed by existing/later harness consumers. Existing direct offscreen attachment is unchanged.",
+  "diagnostics": "Acceptance saves guest_ai_observer at both transport assertions and on failure: mode, fixed counters, provisional/confirmed counts, buffered request count, fixed failure code and terminal target inventory classified as offscreen/provisional/other. No target URLs, headers, bodies, or target/session IDs are retained in this diagnostic.",
+  "sibling_census": "Only guest-chat-transport-observer subscribes to late target identity without discovery. Native reload harness already enables discovery and does not disable it; shared owned CDP preserves flattened session IDs for listeners. No product transport changes.",
+  "verification": {
+    "red": "New discovery-dependent producer test failed before repair with opening_guest_ai_transport_unobserved. plant.py removing discovery reproduced this same failure and restored identical source.",
+    "gut_check": "plant.py replaced snapshot with constant successful opening 200 record; suite failed on the real 402 structured-code path; source restored identically.",
+    "green": "node --test observer and store-sequence: 9 passed; vault-owned-cdp connector PASS; scoped biome and git diff --check passed."
+  },
+  "limits": [
+    "No native browser launched, build, release, Store operation, prewarming, allowance mutation or session injection performed.",
+    "Run 37239792825 proves grounded first answer but no observed HTTP status; follow-up not attempted after observer failure.",
+    "Fresh independent review and one owner-authorized native run remain required; cannot yet claim unique native cause or live closure."
+  ]
+}

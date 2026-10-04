@@ -37,7 +37,7 @@ test('fresh offscreen target is observed before its first fetch, without precrea
   });
   assert.deepEqual(
     calls.map((call) => call.method),
-    ['Target.setAutoAttach'],
+    ['Target.setDiscoverTargets', 'Target.setAutoAttach'],
   );
   watch.arm('opening');
   events.emit('Target.attachedToTarget', {
@@ -348,4 +348,101 @@ test('existing target detach failure is reported', async () => {
     }),
   });
   await assert.rejects(() => watch.stop(), /guest_transport_observer_cleanup_failed/);
+});
+
+// Chromium TargetHandler only observes target navigation after discovery is enabled.
+// A lazy offscreen document starts blank; network metadata must not remain provisional.
+test('discovery delivers the late offscreen identity required for transport proof', async () => {
+  const events = new EventEmitter();
+  let discovery = false;
+  let network = false;
+  const watch = await watchGuestAiRequests({
+    panelTarget: { url: 'chrome-extension://abc/sidepanel.html' },
+    attachOffscreen: async () => {
+      throw new Error('native_sidepanel_offscreen_target_missing');
+    },
+    browserSession: {
+      on: events.on.bind(events),
+      off: events.off.bind(events),
+      async send(method, params, sessionId) {
+        if (method === 'Target.getTargets')
+          return {
+            targetInfos: [
+              {
+                targetId: 'late-target',
+                type: 'other',
+                url: 'chrome-extension://abc/offscreen.html',
+              },
+              {
+                targetId: 'private-target',
+                type: 'page',
+                url: 'https://private.invalid/?secret=never-retain',
+              },
+            ],
+          };
+        if (method === 'Target.setDiscoverTargets') discovery = params.discover;
+        if (method === 'Network.enable') network = true;
+        if (method === 'Runtime.runIfWaitingForDebugger') {
+          if (discovery)
+            events.emit('Target.targetInfoChanged', {
+              targetInfo: { targetId: 'late-target', url: 'chrome-extension://abc/offscreen.html' },
+            });
+          if (network) {
+            events.emit(
+              'Network.requestWillBeSent',
+              {
+                requestId: 'opening-request',
+                request: {
+                  method: 'POST',
+                  url: 'https://server.invalid/v2/ai/mandates/extend.browser_chat',
+                },
+              },
+              sessionId,
+            );
+            events.emit(
+              'Network.responseReceived',
+              { requestId: 'opening-request', response: { status: 200 } },
+              sessionId,
+            );
+          }
+        }
+        return {};
+      },
+    },
+  });
+  const before = await watch.diagnostics();
+  assert.equal(before.counters.request_events, 0);
+  assert.equal(before.confirmed_sessions, 0);
+  watch.arm('opening');
+  events.emit('Target.attachedToTarget', {
+    sessionId: 'late-session',
+    targetInfo: { targetId: 'late-target', url: '' },
+    waitingForDebugger: true,
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  requireGuestTransport(watch.snapshot(), 'opening');
+  const observed = await watch.diagnostics();
+  assert.deepEqual(observed.counters, {
+    attached: 1,
+    identity_changed: 1,
+    network_enabled: 1,
+    request_events: 1,
+    post_events: 1,
+    chat_path_events: 1,
+    response_events: 1,
+  });
+  assert.equal(observed.confirmed_sessions, 1);
+  assert.equal(observed.provisional_sessions, 0);
+  assert.equal(observed.buffered_requests, 1);
+  assert.deepEqual(observed.target_inventory, [
+    { identity: 'offscreen', auto_attached_by_observer: true, type: 'other' },
+    { identity: 'other', auto_attached_by_observer: false, type: 'page' },
+  ]);
+  assert.equal(JSON.stringify(observed).includes('never-retain'), false);
+  await watch.stop();
+  assert.equal(
+    discovery,
+    true,
+    'observer cleanup must preserve session-wide discovery for other harness consumers',
+  );
 });

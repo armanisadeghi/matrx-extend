@@ -76,6 +76,7 @@ const report = {
   failure_reason: null,
   stage_progress: [],
   guest_ai_requests: [],
+  guest_ai_observer: null,
   guest_ai_transport_proven: false,
   context_rule_reads: [],
   grounding_diagnostics: {},
@@ -686,6 +687,7 @@ try {
         report.opening_turn_timeline = openingTurn.timeline;
         report.failure_observation = diagnosticState(answered, fixture);
         await networkWatch.settle();
+        report.guest_ai_observer = await networkWatch.diagnostics();
         report.guest_ai_requests = networkWatch.snapshot();
         requireGuestTransport(report.guest_ai_requests, 'opening');
         report.context_rule_reads = contextReadWatch.snapshot();
@@ -791,6 +793,7 @@ try {
         report.followup_turn_timeline = followupTurn.timeline;
         report.failure_observation = diagnosticState(followup, fixture);
         await networkWatch.settle();
+        report.guest_ai_observer = await networkWatch.diagnostics();
         report.guest_ai_requests = networkWatch.snapshot();
         requireGuestTransport(report.guest_ai_requests, 'post_reload_new_conversation');
         report.context_rule_reads = contextReadWatch.snapshot();
@@ -834,6 +837,7 @@ try {
           }).catch(() => null),
           fixture,
         );
+        report.guest_ai_observer = (await networkWatch?.diagnostics()) ?? null;
         report.guest_ai_requests = networkWatch?.snapshot() ?? [];
         try {
           report.failure_screenshot = await capture(

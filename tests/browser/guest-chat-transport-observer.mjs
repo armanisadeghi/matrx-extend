@@ -26,8 +26,24 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
   let existingOffscreen = null;
   let autoAttach = false;
   let observerFailure = null;
+  const counters = {
+    attached: 0,
+    identity_changed: 0,
+    network_enabled: 0,
+    request_events: 0,
+    post_events: 0,
+    chat_path_events: 0,
+    response_events: 0,
+  };
+  const classifyUrl = (url) =>
+    !url || url === 'about:blank' ? 'provisional' : url === offscreenUrl ? 'offscreen' : 'other';
 
   const onRequest = ({ requestId, request }, sessionId) => {
+    counters.request_events++;
+    if (request?.method === 'POST') counters.post_events++;
+    try {
+      if (new URL(request?.url).pathname.endsWith(CHAT_PATH)) counters.chat_path_events++;
+    } catch {}
     if (
       (!confirmedSessions.has(sessionId) && !candidateSessions.has(sessionId)) ||
       !armedLabel ||
@@ -51,6 +67,7 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
     }
   };
   const onResponse = ({ requestId, response }, sessionId) => {
+    counters.response_events++;
     const entry = requests.get(`${sessionId}:${requestId}`);
     if (entry) entry.record.status = Number.isFinite(response?.status) ? response.status : null;
   };
@@ -70,7 +87,8 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
     void pending.finally(() => pendingCodes.delete(pending));
   };
   const onAttached = ({ sessionId, targetInfo, waitingForDebugger }) => {
-    const provisional = !targetInfo?.url || targetInfo.url === 'about:blank';
+    counters.attached++;
+    const provisional = classifyUrl(targetInfo?.url) === 'provisional';
     if (waitingForDebugger) pausedSessions.add(sessionId);
     if (targetInfo?.targetId) sessionsByTarget.set(targetInfo.targetId, sessionId);
     if (provisional) candidateSessions.add(sessionId);
@@ -81,6 +99,7 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
         // Target.targetInfoChanged establishes the exact document identity.
         if (targetInfo?.url === offscreenUrl || provisional) {
           await browserSession.send('Network.enable', {}, sessionId);
+          counters.network_enabled++;
           if (targetInfo?.url === offscreenUrl) confirmedSessions.add(sessionId);
         }
       } catch {
@@ -100,6 +119,7 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
     void task.finally(() => targetTasks.delete(task));
   };
   const onTargetInfoChanged = ({ targetInfo }) => {
+    counters.identity_changed++;
     const sessionId = sessionsByTarget.get(targetInfo?.targetId);
     if (!sessionId || !targetInfo?.url || targetInfo.url === 'about:blank') return;
     candidateSessions.delete(sessionId);
@@ -121,8 +141,13 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
     try {
       existingOffscreen = await attachOffscreen();
       await existingOffscreen.send('Network.enable');
+      counters.network_enabled++;
     } catch (error) {
       if (error?.message !== 'native_sidepanel_offscreen_target_missing') throw error;
+      // Navigation identity events require discovery, independently of auto-attach.
+      // This is the harness's owned browser session: discovery remains enabled
+      // until that session closes, preserving existing and later consumers.
+      await browserSession.send('Target.setDiscoverTargets', { discover: true });
       await browserSession.send('Target.setAutoAttach', {
         autoAttach: true,
         waitForDebuggerOnStart: true,
@@ -159,6 +184,38 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
       return [...requests.values()]
         .filter((entry) => confirmedSessions.has(entry.sessionId))
         .map((entry) => ({ ...entry.record }));
+    },
+    async diagnostics() {
+      let inventory;
+      try {
+        const { targetInfos } = await browserSession.send('Target.getTargets');
+        inventory = (targetInfos ?? []).map((target) => ({
+          identity: classifyUrl(target.url),
+          auto_attached_by_observer: sessionsByTarget.has(target.targetId),
+          type: [
+            'page',
+            'other',
+            'service_worker',
+            'shared_worker',
+            'tab',
+            'browser',
+            'iframe',
+          ].includes(target.type)
+            ? target.type
+            : 'other_type',
+        }));
+      } catch {
+        inventory = 'unavailable';
+      }
+      return {
+        mode: existingOffscreen ? 'existing' : 'auto_attach',
+        counters: { ...counters },
+        provisional_sessions: candidateSessions.size,
+        confirmed_sessions: confirmedSessions.size,
+        buffered_requests: requests.size,
+        observer_failure: observerFailure,
+        target_inventory: inventory,
+      };
     },
     async settle() {
       await Promise.all([...pendingCodes]);
