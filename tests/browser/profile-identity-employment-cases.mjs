@@ -88,7 +88,7 @@ async function inputPoint(panel, section, label) {
     const el=labels.length===1?labels[0].parentElement?.querySelector('input'):null;
     if(!el || el.closest('[inert]')) return null;
     el.scrollIntoView({block:'center',behavior:'instant'});
-    const r=el.getBoundingClientRect(), x=r.x+r.width/2, y=r.y+r.height/2;
+    const r=el.getBoundingClientRect(), x=el.type==='date'?r.x+Math.min(12,r.width/4):r.x+r.width/2, y=r.y+r.height/2;
     return el.contains(document.elementFromPoint(x,y))?{x,y}:null;
   })()`,
       ),
@@ -114,7 +114,26 @@ async function fill(panel, section, label, value) {
     modifiers: process.platform === 'darwin' ? 4 : 2,
     windowsVirtualKeyCode: 65,
   });
-  if (value) await panel.send('Input.insertText', { text: value });
+  if (value && label === 'Birthday') {
+    assert.match(value, /^\d{4}-\d{2}-\d{2}$/, 'birthday_iso_date_required');
+    // Chromium's native date control has month/day/year segments. Trusted
+    // digit key events reach those segments; insertText of an ISO date does not.
+    for (const digit of `${value.slice(5, 7)}${value.slice(8, 10)}${value.slice(0, 4)}`) {
+      await panel.send('Input.dispatchKeyEvent', {
+        type: 'keyDown',
+        key: digit,
+        code: `Digit${digit}`,
+        windowsVirtualKeyCode: digit.charCodeAt(0),
+        text: digit,
+      });
+      await panel.send('Input.dispatchKeyEvent', {
+        type: 'keyUp',
+        key: digit,
+        code: `Digit${digit}`,
+        windowsVirtualKeyCode: digit.charCodeAt(0),
+      });
+    }
+  } else if (value) await panel.send('Input.insertText', { text: value });
   else
     await panel.send('Input.dispatchKeyEvent', {
       type: 'keyDown',
@@ -245,11 +264,19 @@ export async function runProfileFieldCase({
     assert.notEqual(value, original[label], `${section}_${label}_not_distinct`);
   const preferredBefore = (await sample(panel, 'Identity', ['Preferred'])).values?.Preferred;
   let firstError;
+  let phase = 'fill';
+  let field = null;
   try {
-    for (const [label, value] of Object.entries(desired)) await fill(panel, section, label, value);
+    for (const [label, value] of Object.entries(desired)) {
+      field = label;
+      await fill(panel, section, label, value);
+    }
+    phase = 'draft_assert';
+    field = null;
     const draft = await sample(panel, section, labels);
     equalFields(draft, desired, `${section}_draft`);
     assert.equal(draft.save_enabled, true, `${section}_save_disabled`);
+    phase = 'save';
     await ownedJournal.save(
       section === 'Identity' ? desired.Preferred : preferredBefore,
       async () => {
@@ -263,6 +290,7 @@ export async function runProfileFieldCase({
       },
       persistedFields(desired),
     );
+    phase = 'reopen';
     await back(panel);
     await openProfile(panel, email);
     await ensureOpen(panel, section);
@@ -276,6 +304,19 @@ export async function runProfileFieldCase({
       );
   } catch (error) {
     firstError = error;
+    let fieldMatched = null;
+    if (phase === 'fill' && field) {
+      try {
+        fieldMatched = (await sample(panel, section, [field])).values?.[field] === desired[field];
+      } catch {
+        // Keep the original failure when the panel cannot be sampled.
+      }
+    }
+    error.profileFieldFailure = {
+      phase,
+      field,
+      fieldMatched,
+    };
   }
   async function restore(activePanel) {
     await ensureOpen(activePanel, section);
@@ -313,8 +354,7 @@ export async function runProfileFieldCase({
       restoreError = error;
     }
   }
-  if (restoreError) throw restoreError;
-  if (firstError) throw firstError;
+  throwFieldCaseFailure(firstError, restoreError);
   const receipt = {
     id,
     mode,
@@ -350,6 +390,18 @@ export async function runProfileFieldCase({
       if (receipt.observed.reload_persistence_verified) receipt.status = 'passed';
     },
   };
+}
+
+export function throwFieldCaseFailure(firstError, restoreError) {
+  if (firstError && restoreError) {
+    firstError.profileRestorationError = restoreError;
+    firstError.profileRestorationFailure = {
+      code: 'profile_case_restoration_failed',
+      stage: 'restore_profile_ui',
+    };
+  }
+  if (firstError) throw firstError;
+  if (restoreError) throw restoreError;
 }
 
 export async function runProfileExpandersCase({ panel, mode, dimension }) {

@@ -26,6 +26,18 @@ const PROFILE_RESTORATION_STAGES = new Set([
   'verify_restored_reopen',
   'discard_local_draft',
 ]);
+const PROFILE_FIELD_PHASES = new Set(['fill', 'draft_assert', 'save', 'reopen']);
+const PROFILE_FIELD_NAMES = new Set([
+  'First name',
+  'Middle',
+  'Last name',
+  'Preferred',
+  'Suffix',
+  'Pronouns',
+  'Birthday',
+  'Company',
+  'Title',
+]);
 const PROFILE_FAILURE_CODES = new Set([
   ...POINTER_CODES,
   'profile_original_row_absent_mutation_refused',
@@ -93,6 +105,14 @@ export async function captureProfileExecutionFailure(report, error, { operation,
   };
   const driver = error?.driverFailure;
   const restoration = error?.profileRestorationFailure;
+  const field = error?.profileFieldFailure;
+  if (field) {
+    failure.field = {
+      phase: PROFILE_FIELD_PHASES.has(field.phase) ? field.phase : 'unknown',
+      name: PROFILE_FIELD_NAMES.has(field.field) ? field.field : null,
+      desired_value_matches: typeof field.fieldMatched === 'boolean' ? field.fieldMatched : null,
+    };
+  }
   if (restoration) {
     failure.restoration = {
       code: restoration.code === 'profile_case_restoration_failed' ? restoration.code : 'unknown',

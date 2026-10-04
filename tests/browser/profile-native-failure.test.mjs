@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { throwFieldCaseFailure } from './profile-identity-employment-cases.mjs';
 import {
   captureProfileExecutionFailure,
   recordProfileFinalFailure,
@@ -199,4 +200,38 @@ test('preserves a non-pointer failure stage without inventing pointer evidence',
     },
   });
   assert.deepEqual(report.execution_failure, { stage: 'profile', operation: 'warm_profile' });
+});
+
+test('field failure keeps the first error and reports only fixed field diagnostics', async () => {
+  const primary = new Error('Birthday failed:private@example.com');
+  primary.profileFieldFailure = {
+    phase: 'fill',
+    field: 'Birthday',
+    fieldMatched: false,
+    rawValue: 'private@example.com',
+  };
+  const secondary = new Error('restore failed:private@example.com');
+  let caught;
+  try {
+    throwFieldCaseFailure(primary, secondary);
+  } catch (error) {
+    caught = error;
+  }
+  assert.equal(caught, primary);
+  assert.equal(caught.profileRestorationError, secondary);
+  const report = { stage: 'profile' };
+  await captureProfileExecutionFailure(report, caught, {
+    operation: 'EXT-F-1004-T05:warm:run',
+    readUiState: async () => null,
+  });
+  assert.deepEqual(report.execution_failure.field, {
+    phase: 'fill',
+    name: 'Birthday',
+    desired_value_matches: false,
+  });
+  assert.deepEqual(report.execution_failure.restoration, {
+    code: 'profile_case_restoration_failed',
+    stage: 'restore_profile_ui',
+  });
+  assert.equal(JSON.stringify(report).includes('private@example.com'), false);
 });
