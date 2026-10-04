@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "task": "scrape-pane-retention-native",
+  "defect": "EXT-D-0123",
+  "verdict": "ARM_RUN_REACHED_REPAIRED_PRODUCT_BUT_ACCEPTANCE_FAILED_DURING_WARM_VIDEO_REMOVAL",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 37218903375,
+    "job_id": 111485022487,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37218903375",
+    "head_sha": "bbb64c35259d9c890bf01557aa2929cf5f748a79",
+    "conclusion": "failure",
+    "runner": {
+      "label": "macos-15",
+      "runner_arch": "ARM64",
+      "machine": "arm64",
+      "verified_from": "HOSTED_RUNNER_PLATFORM"
+    },
+    "inputs": {
+      "acceptance_case": "guest-scrape-development",
+      "development_run_id": 37217066948,
+      "development_artifact_id": 11308203507
+    },
+    "uploaded_artifact": {
+      "id": 11309192278,
+      "name": "hosted-guest-37218903375-1",
+      "size_bytes": 114879,
+      "sha256": "cd9475b37172d4832f63d2fb7fd94d9dfb502618109aec5b23e69fb6108791d8"
+    }
+  },
+  "frozen_product": {
+    "version": "0.2.231",
+    "source_sha": "723433a7628b32fb610d3a7f36ca6b8dd5fd2b72",
+    "tree_sha256": "ae9bfe3d831a7278f0b347c1c08b8d6cec6780790c1f14813369bcf015786833",
+    "development_run_id": 37217066948,
+    "development_artifact_id": 11308203507,
+    "artifact_import_verified": true,
+    "import_observed": "DEVELOPMENT_TEST_IMPORTED exact_pushed_commit_only; PREPARED_DEVELOPMENT source and tree hashes matched"
+  },
+  "resource_outcome": {
+    "hosted_preflight": "passed; no other hosted guest workflow active before dispatch",
+    "readiness_gates": {
+      "package": "passed",
+      "browser": "passed",
+      "acceptance": "passed"
+    },
+    "guard_policy": "unchanged: global hosted-guest-side-panel concurrency, owned child, readiness phases, admission/watch intervals, 20 GiB disk and 4 GiB available-memory floors, CPU/watch thresholds, unsafe-history refusal",
+    "package": {
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "sample": {
+        "available_memory_gib": 6.02,
+        "required_memory_gib": 4,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.09857142857142857,
+        "system_free_gib": 43.35947799682617
+      }
+    },
+    "browser": {
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "sample": {
+        "available_memory_gib": 5.95,
+        "required_memory_gib": 4,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.07714285714285715,
+        "system_free_gib": 43.32632827758789
+      }
+    },
+    "acceptance_journal": {
+      "decision": "child_failed",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "healthy_watch_count": 2,
+      "unsafe_watch_count": 0,
+      "available_memory_gib_at_admission": 5.88,
+      "required_memory_gib": 4,
+      "logical_cpus": 3,
+      "system_free_gib_at_admission": 43.06110382080078
+    },
+    "interpretation": "Resource guard remained valid; the acceptance failed on its product observation assertion, not because a resource boundary refused execution."
+  },
+  "native_outcome": {
+    "overall_status": "unverified",
+    "acceptance_disposition": "warm_video_removal_assertion_failed_after_video_open_return_and_copy",
+    "guest_account_observed": true,
+    "stage": "warm_media_controls",
+    "native_stage": "exercise_panel",
+    "failure": {
+      "code": "warm_video_removed_not_observed",
+      "observation": "Video Open temporarily disconnected the result tabs; tabs later returned with Video selected. Copy video URL was exercised. After removing /intake-walkthrough.mp4, the failure observation's resultText listed one remaining /referral-walkthrough.mp4 row and tabCount=1, while its videoItems observer was empty. The acceptance assertion failed; this evidence does not establish that selective removal failed."
+    },
+    "cases": [
+      { "id": "EXT-F-1007-T20", "status": "partial" },
+      { "id": "EXT-F-1007-T01", "status": "partial" },
+      { "id": "EXT-F-1007-T08", "status": "partial" }
+    ],
+    "media_transitions_count": 18,
+    "media_event_trace_count": 1,
+    "events_dropped": 0,
+    "trace_truncated": false,
+    "surrounding_results": {
+      "images": "Warm image removal, empty state, and add/cancel actions ran with connected tabs and pane; transitions recorded expected changes.",
+      "video_open_return_copy": "Ran; transient tab disconnect after Open was followed by Video selection returning, then a Copy video URL operation. The following remove action left visible result text for the other video at count 1; videoItems observation was empty.",
+      "links": "Not reached after the video-removal assertion failed.",
+      "reload": "Not reached; reload_milestones is empty and reload_lifecycle is null."
+    },
+    "product_verdict": "The repair reached the real side-panel acceptance and its Video pane retained selection after the Open return. The acceptance has no pass because its video-removal assertion failed, although the captured result text and count are consistent with selective removal. The empty videoItems observation leaves the assertion seam/root cause unresolved; no product failure is adjudicated from this evidence alone.",
+    "limits": [
+      "One ARM64 run cannot establish reliability or isolate architecture as the cause of the earlier Intel refusal.",
+      "The original requested Open/return/Copy sequence was reached, but the remaining links and reload acceptance did not run after the failure.",
+      "No follow-up run or threshold change was made."
+    ]
+  },
+  "evidence_directory": "docs/stabilization/evidence/scrape231/run37218903375",
+  "files_sha256": {
+    "receipt.json.txt": "0ae8952c04c826241f429637a6b3122bcf3af56385d270c62938b6f77264199c",
+    "browser-resource.jsonl": "f9bb84c08f27a556e7786551d657f0efed0ef846c99e5f2c25049768262fc663",
+    "guest-resource.jsonl": "0dc14ae1c27e0af582b84070dbc374c87e0ed4323c154700fac2664405991d73",
+    "package-resource.jsonl": "a7e28bedcb729f599c8c37489465e4fa39e55116faefeb6d34e56e8a58647e52",
+    "native-side-panel.png": "9520c564b67fe4bfdf8ddfb40f20bb6adb313aba47d79dbc79cbfe4a2b216a56",
+    "normal-target-after-open.png": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+    "scrape-fast-article.png": "334f0372e2c9fb200147dbf8e77d6c896bc661047031a81b6cd1aa10e6585f72",
+    "scrape-warm-media-failure.png": "c89418bff5d7119c8437faf6f5b97ccf91a75dd2cb5661745dfffc02cee02c25"
+  },
+  "notes": [
+    "Exactly one ARM64 guarded hosted acceptance was dispatched; no retry was made.",
+    "The workflow artifact included three resource journals from an unrelated prior hosted run; those were excluded. Only this run's package, browser, and guest journals are retained.",
+    "Receipt and screenshots are exact copies from artifact 11309192278; no ZIP or logs were committed.",
+    "No product, inventory, build, release, or guard-policy change was made."
+  ]
+}

@@ -1,0 +1,2603 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "mode": "guest",
+  "status": "unverified",
+  "artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.231",
+    "source_sha": "723433a7628b32fb610d3a7f36ca6b8dd5fd2b72",
+    "tree_sha256": "ae9bfe3d831a7278f0b347c1c08b8d6cec6780790c1f14813369bcf015786833",
+    "run_id": 37217066948,
+    "artifact_id": 11308203507
+  },
+  "guest_account_observed": true,
+  "cases": [
+    {
+      "id": "EXT-F-1007-T20",
+      "status": "partial",
+      "evidence": {
+        "initial_empty": true,
+        "initial_url": "http://localhost:49194/intake"
+      },
+      "remaining": [
+        "Navigation and reload lifecycle remain to be exercised."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T01",
+      "status": "partial",
+      "evidence": {
+        "url": "http://localhost:49194/intake",
+        "busy_disabled": true,
+        "article_title": "Harbor Dental intake guide",
+        "lazy_content_absent": true,
+        "result_tabs": [
+          "Article",
+          "Images",
+          "Video",
+          "Links",
+          "SEO",
+          "Schema"
+        ]
+      },
+      "remaining": [
+        "Warm/full reload lifecycle not yet exercised."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T08",
+      "status": "partial",
+      "evidence": {
+        "tabs_selected": [
+          "Article",
+          "Images",
+          "Video",
+          "Links",
+          "SEO",
+          "Schema"
+        ],
+        "matching_content": {
+          "article": true,
+          "images": {
+            "pane": "Images",
+            "state": "matching_content",
+            "count": 3,
+            "paths": [
+              "/intake.svg",
+              "/appointment-card.svg",
+              "/clinic-icon.svg"
+            ],
+            "alt": [
+              "New patient intake desk",
+              "Appointment card",
+              "Clinic icon"
+            ],
+            "natural_sizes": [
+              [
+                640,
+                480
+              ],
+              [
+                96,
+                96
+              ],
+              [
+                32,
+                32
+              ]
+            ]
+          },
+          "video": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 2,
+            "paths": [
+              "/intake-walkthrough.mp4",
+              "/referral-walkthrough.mp4"
+            ]
+          },
+          "links": true,
+          "seo": true,
+          "schema": true
+        }
+      },
+      "remaining": [
+        "Image and video empty states and reload lifecycle need full observation."
+      ]
+    }
+  ],
+  "stage": "warm_media_controls",
+  "native_stage": "exercise_panel",
+  "failure": {
+    "stage": "warm_media_controls",
+    "code": "warm_video_removed_not_observed:{\"ready\":true,\"title\":\"Harbor Dental intake guide\",\"empty\":false,\"fast\":[{\"disabled\":false,\"text\":\"Re-capture\"}],\"deep\":[{\"disabled\":false,\"text\":\"Scroll & capture\"}],\"tabs\":[{\"label\":\"Article\",\"selected\":false},{\"label\":\"Images\",\"selected\":false},{\"label\":\"Video\",\"se"
+  },
+  "original_busy_failure": null,
+  "cpu_diagnostic": null,
+  "horizontal_geometry": [
+    {
+      "boundary": "after_fast_capture",
+      "at": "2026-10-04T17:07:25.502Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 12,
+          "right": 69.921875,
+          "width": 57.921875,
+          "scrollLeft": 0,
+          "scrollWidth": 58,
+          "clientWidth": 58
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Article_tab",
+      "at": "2026-10-04T17:07:25.677Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 12,
+          "right": 69.921875,
+          "width": 57.921875,
+          "scrollLeft": 0,
+          "scrollWidth": 58,
+          "clientWidth": 58
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Images_tab",
+      "at": "2026-10-04T17:07:25.871Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 73.921875,
+          "right": 148.25,
+          "width": 74.328125,
+          "scrollLeft": 0,
+          "scrollWidth": 74,
+          "clientWidth": 74
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Video_tab",
+      "at": "2026-10-04T17:07:26.055Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 152.25,
+          "right": 217.90625,
+          "width": 65.65625,
+          "scrollLeft": 0,
+          "scrollWidth": 66,
+          "clientWidth": 66
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Links_tab",
+      "at": "2026-10-04T17:07:26.242Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 221.90625,
+          "right": 284.65625,
+          "width": 62.75,
+          "scrollLeft": 0,
+          "scrollWidth": 63,
+          "clientWidth": 63
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_SEO_tab",
+      "at": "2026-10-04T17:07:26.496Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 288.65625,
+          "right": 333.03125,
+          "width": 44.375,
+          "scrollLeft": 0,
+          "scrollWidth": 44,
+          "clientWidth": 44
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    },
+    {
+      "boundary": "after_Schema_tab",
+      "at": "2026-10-04T17:07:26.677Z",
+      "geometry": {
+        "viewportWidth": 360,
+        "document": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "body": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "outerTabs": {
+          "left": 8,
+          "right": 288,
+          "width": 280,
+          "scrollLeft": 0,
+          "scrollWidth": 280,
+          "clientWidth": 280
+        },
+        "scrapePane": {
+          "left": 0,
+          "right": 360,
+          "width": 360,
+          "scrollLeft": 0,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        },
+        "resultTabs": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedTrigger": {
+          "left": 12,
+          "right": 78.296875,
+          "width": 66.296875,
+          "scrollLeft": 0,
+          "scrollWidth": 66,
+          "clientWidth": 66
+        },
+        "title": {
+          "left": 12,
+          "right": 280,
+          "width": 268,
+          "scrollLeft": 0,
+          "scrollWidth": 268,
+          "clientWidth": 268
+        },
+        "captureRow": {
+          "left": 12,
+          "right": 348,
+          "width": 336,
+          "scrollLeft": 0,
+          "scrollWidth": 336,
+          "clientWidth": 336
+        },
+        "selectedScrollableAncestors": [],
+        "triggers": [
+          {
+            "label": "Article",
+            "rect": {
+              "left": 12,
+              "right": 69.921875,
+              "width": 57.921875,
+              "scrollLeft": 0,
+              "scrollWidth": 58,
+              "clientWidth": 58
+            }
+          },
+          {
+            "label": "Images",
+            "rect": {
+              "left": 73.921875,
+              "right": 148.25,
+              "width": 74.328125,
+              "scrollLeft": 0,
+              "scrollWidth": 74,
+              "clientWidth": 74
+            }
+          },
+          {
+            "label": "Video",
+            "rect": {
+              "left": 152.25,
+              "right": 217.90625,
+              "width": 65.65625,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          },
+          {
+            "label": "Links",
+            "rect": {
+              "left": 221.90625,
+              "right": 284.65625,
+              "width": 62.75,
+              "scrollLeft": 0,
+              "scrollWidth": 63,
+              "clientWidth": 63
+            }
+          },
+          {
+            "label": "SEO",
+            "rect": {
+              "left": 288.65625,
+              "right": 333.03125,
+              "width": 44.375,
+              "scrollLeft": 0,
+              "scrollWidth": 44,
+              "clientWidth": 44
+            }
+          },
+          {
+            "label": "Schema",
+            "rect": {
+              "left": 12,
+              "right": 78.296875,
+              "width": 66.296875,
+              "scrollLeft": 0,
+              "scrollWidth": 66,
+              "clientWidth": 66
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "reload_milestones": [],
+  "reload_lifecycle": null,
+  "driver_failure": null,
+  "media_transitions": [
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-result-tab",
+        "target": "Images"
+      },
+      "pre": {
+        "selected": "Schema",
+        "imagePaths": [],
+        "imageCount": "3",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [
+          "/intake.svg",
+          "/appointment-card.svg",
+          "/clinic-icon.svg"
+        ],
+        "imageCount": "3",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 6701,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 111,
+          "y": 166,
+          "target": "tab:Images",
+          "selected": "Schema"
+        },
+        {
+          "ms": 6706,
+          "type": "tab_change",
+          "selected": "Images",
+          "sameTabs": true
+        },
+        {
+          "ms": 6709,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 111,
+          "y": 166,
+          "target": "tab:Images",
+          "selected": "Images"
+        },
+        {
+          "ms": 6709,
+          "type": "click",
+          "trusted": true,
+          "x": 111,
+          "y": 166,
+          "target": "tab:Images",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "remove_image",
+        "target": "/appointment-card.svg"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [
+          "/intake.svg",
+          "/appointment-card.svg",
+          "/clinic-icon.svg"
+        ],
+        "imageCount": "3",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [
+          "/intake.svg",
+          "/clinic-icon.svg"
+        ],
+        "imageCount": "2",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 7001,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 60,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 7018,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 60,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 7018,
+          "type": "click",
+          "trusted": true,
+          "x": 60,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "remove_image",
+        "target": "/clinic-icon.svg"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [
+          "/intake.svg",
+          "/clinic-icon.svg"
+        ],
+        "imageCount": "2",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [
+          "/intake.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 7212,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 41,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 7215,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 41,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 7215,
+          "type": "click",
+          "trusted": true,
+          "x": 41,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "remove_image",
+        "target": "/intake.svg"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [
+          "/intake.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 7463,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 100,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 7464,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 100,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 7464,
+          "type": "click",
+          "trusted": true,
+          "x": 100,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-add-row",
+        "target": "Add image URL"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 7706,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 180,
+          "y": 231,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 7707,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 180,
+          "y": 231,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 7707,
+          "type": "click",
+          "trusted": true,
+          "x": 180,
+          "y": 231,
+          "target": "Add image URL",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-form-action",
+        "target": "Add"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 7888,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 57,
+          "y": 245,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 7891,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 57,
+          "y": 245,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 7891,
+          "type": "click",
+          "trusted": true,
+          "x": 56,
+          "y": 245,
+          "target": "Add",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-form-field",
+        "target": "src"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 8079,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 237,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 8088,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 237,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 8089,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 237,
+          "target": "field:https://…",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-field-insert",
+        "target": "src"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "events": [],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-form-field",
+        "target": "alt"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 8288,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 245,
+          "target": "field:alt text (optional)",
+          "selected": "Images"
+        },
+        {
+          "ms": 8292,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 245,
+          "target": "field:alt text (optional)",
+          "selected": "Images"
+        },
+        {
+          "ms": 8292,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 245,
+          "target": "field:alt text (optional)",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-field-insert",
+        "target": "alt"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "events": [],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-form-action",
+        "target": "Add"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [],
+        "imageCount": null,
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 8489,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 57,
+          "y": 245,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 8494,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 57,
+          "y": 245,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 8494,
+          "type": "click",
+          "trusted": true,
+          "x": 56,
+          "y": 245,
+          "target": "Add",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-form-field",
+        "target": "src"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 8700,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 245,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 8704,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 245,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 8704,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 245,
+          "target": "field:https://…",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-field-insert",
+        "target": "src"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-form-action",
+        "target": "Cancel"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 8900,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 132,
+          "y": 245,
+          "target": "Cancel",
+          "selected": "Images"
+        },
+        {
+          "ms": 8905,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 132,
+          "y": 245,
+          "target": "Cancel",
+          "selected": "Images"
+        },
+        {
+          "ms": 8906,
+          "type": "click",
+          "trusted": true,
+          "x": 131,
+          "y": 245,
+          "target": "Cancel",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-add-row",
+        "target": "Add image URL"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 9164,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 248,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 9166,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 248,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 9166,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 248,
+          "target": "Add image URL",
+          "selected": "Images"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-result-tab",
+        "target": "Video"
+      },
+      "pre": {
+        "selected": "Images",
+        "imagePaths": [
+          "/followup-card.svg"
+        ],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 9360,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 185,
+          "y": 166,
+          "target": "tab:Video",
+          "selected": "Images"
+        },
+        {
+          "ms": 9370,
+          "type": "tab_change",
+          "selected": "Video",
+          "sameTabs": true
+        },
+        {
+          "ms": 9377,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 185,
+          "y": 166,
+          "target": "tab:Video",
+          "selected": "Video"
+        },
+        {
+          "ms": 9377,
+          "type": "click",
+          "trusted": true,
+          "x": 185,
+          "y": 166,
+          "target": "tab:Video",
+          "selected": "Video"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-open",
+        "target": "/intake-walkthrough.mp4"
+      },
+      "pre": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": null,
+        "imagePaths": null,
+        "imageCount": null,
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 9571,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 162,
+          "y": 245,
+          "target": "open:/intake-walkthrough.mp4",
+          "selected": "Video"
+        },
+        {
+          "ms": 9575,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 162,
+          "y": 245,
+          "target": "open:/intake-walkthrough.mp4",
+          "selected": "Video"
+        },
+        {
+          "ms": 9575,
+          "type": "click",
+          "trusted": true,
+          "x": 162,
+          "y": 245,
+          "target": "open:/intake-walkthrough.mp4",
+          "selected": "Video"
+        },
+        {
+          "ms": 9639,
+          "type": "tab_change",
+          "selected": null,
+          "sameTabs": false
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": false,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "scrape-media-copy",
+        "target": "/referral-walkthrough.mp4"
+      },
+      "pre": {
+        "selected": null,
+        "imagePaths": null,
+        "imageCount": null,
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 9822,
+          "type": "tab_change",
+          "selected": "Video",
+          "sameTabs": false
+        },
+        {
+          "ms": 10378,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 294,
+          "y": 245,
+          "target": "Copy video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 10381,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 294,
+          "y": 245,
+          "target": "Copy video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 10381,
+          "type": "click",
+          "trusted": true,
+          "x": 294,
+          "y": 245,
+          "target": "Copy video URL",
+          "selected": "Video"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    },
+    {
+      "operation": {
+        "phase": "warm",
+        "kind": "remove_video",
+        "target": "/intake-walkthrough.mp4"
+      },
+      "pre": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "post": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "events": [
+        {
+          "ms": 10635,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 318,
+          "y": 245,
+          "target": "Remove video",
+          "selected": "Video"
+        },
+        {
+          "ms": 10639,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 318,
+          "y": 245,
+          "target": "Remove video",
+          "selected": "Video"
+        },
+        {
+          "ms": 10639,
+          "type": "click",
+          "trusted": true,
+          "x": 318,
+          "y": 245,
+          "target": "Remove video",
+          "selected": "Video"
+        }
+      ],
+      "pointerFailure": null,
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": true,
+      "paneConnected": true
+    }
+  ],
+  "media_event_traces": [
+    {
+      "phase": "warm-media",
+      "events": [
+        {
+          "ms": 6701,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 111,
+          "y": 166,
+          "target": "tab:Images",
+          "selected": "Schema"
+        },
+        {
+          "ms": 6706,
+          "type": "tab_change",
+          "selected": "Images",
+          "sameTabs": true
+        },
+        {
+          "ms": 6709,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 111,
+          "y": 166,
+          "target": "tab:Images",
+          "selected": "Images"
+        },
+        {
+          "ms": 6709,
+          "type": "click",
+          "trusted": true,
+          "x": 111,
+          "y": 166,
+          "target": "tab:Images",
+          "selected": "Images"
+        },
+        {
+          "ms": 7001,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 60,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 7018,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 60,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 7018,
+          "type": "click",
+          "trusted": true,
+          "x": 60,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 7212,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 41,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 7215,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 41,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 7215,
+          "type": "click",
+          "trusted": true,
+          "x": 41,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 7463,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 100,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 7464,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 100,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 7464,
+          "type": "click",
+          "trusted": true,
+          "x": 100,
+          "y": 245,
+          "target": "Remove image",
+          "selected": "Images"
+        },
+        {
+          "ms": 7706,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 180,
+          "y": 231,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 7707,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 180,
+          "y": 231,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 7707,
+          "type": "click",
+          "trusted": true,
+          "x": 180,
+          "y": 231,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 7888,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 57,
+          "y": 245,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 7891,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 57,
+          "y": 245,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 7891,
+          "type": "click",
+          "trusted": true,
+          "x": 56,
+          "y": 245,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 8079,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 237,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 8088,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 237,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 8089,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 237,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 8288,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 245,
+          "target": "field:alt text (optional)",
+          "selected": "Images"
+        },
+        {
+          "ms": 8292,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 245,
+          "target": "field:alt text (optional)",
+          "selected": "Images"
+        },
+        {
+          "ms": 8292,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 245,
+          "target": "field:alt text (optional)",
+          "selected": "Images"
+        },
+        {
+          "ms": 8489,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 57,
+          "y": 245,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 8494,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 57,
+          "y": 245,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 8494,
+          "type": "click",
+          "trusted": true,
+          "x": 56,
+          "y": 245,
+          "target": "Add",
+          "selected": "Images"
+        },
+        {
+          "ms": 8700,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 245,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 8704,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 245,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 8704,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 245,
+          "target": "field:https://…",
+          "selected": "Images"
+        },
+        {
+          "ms": 8900,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 132,
+          "y": 245,
+          "target": "Cancel",
+          "selected": "Images"
+        },
+        {
+          "ms": 8905,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 132,
+          "y": 245,
+          "target": "Cancel",
+          "selected": "Images"
+        },
+        {
+          "ms": 8906,
+          "type": "click",
+          "trusted": true,
+          "x": 131,
+          "y": 245,
+          "target": "Cancel",
+          "selected": "Images"
+        },
+        {
+          "ms": 9164,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 176,
+          "y": 248,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 9166,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 176,
+          "y": 248,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 9166,
+          "type": "click",
+          "trusted": true,
+          "x": 176,
+          "y": 248,
+          "target": "Add image URL",
+          "selected": "Images"
+        },
+        {
+          "ms": 9360,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 185,
+          "y": 166,
+          "target": "tab:Video",
+          "selected": "Images"
+        },
+        {
+          "ms": 9370,
+          "type": "tab_change",
+          "selected": "Video",
+          "sameTabs": true
+        },
+        {
+          "ms": 9377,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 185,
+          "y": 166,
+          "target": "tab:Video",
+          "selected": "Video"
+        },
+        {
+          "ms": 9377,
+          "type": "click",
+          "trusted": true,
+          "x": 185,
+          "y": 166,
+          "target": "tab:Video",
+          "selected": "Video"
+        },
+        {
+          "ms": 9571,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 162,
+          "y": 245,
+          "target": "open:/intake-walkthrough.mp4",
+          "selected": "Video"
+        },
+        {
+          "ms": 9575,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 162,
+          "y": 245,
+          "target": "open:/intake-walkthrough.mp4",
+          "selected": "Video"
+        },
+        {
+          "ms": 9575,
+          "type": "click",
+          "trusted": true,
+          "x": 162,
+          "y": 245,
+          "target": "open:/intake-walkthrough.mp4",
+          "selected": "Video"
+        },
+        {
+          "ms": 9639,
+          "type": "tab_change",
+          "selected": null,
+          "sameTabs": false
+        },
+        {
+          "ms": 9822,
+          "type": "tab_change",
+          "selected": "Video",
+          "sameTabs": false
+        },
+        {
+          "ms": 10378,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 294,
+          "y": 245,
+          "target": "Copy video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 10381,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 294,
+          "y": 245,
+          "target": "Copy video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 10381,
+          "type": "click",
+          "trusted": true,
+          "x": 294,
+          "y": 245,
+          "target": "Copy video URL",
+          "selected": "Video"
+        },
+        {
+          "ms": 10635,
+          "type": "pointerdown",
+          "trusted": true,
+          "x": 318,
+          "y": 245,
+          "target": "Remove video",
+          "selected": "Video"
+        },
+        {
+          "ms": 10639,
+          "type": "pointerup",
+          "trusted": true,
+          "x": 318,
+          "y": 245,
+          "target": "Remove video",
+          "selected": "Video"
+        },
+        {
+          "ms": 10639,
+          "type": "click",
+          "trusted": true,
+          "x": 318,
+          "y": 245,
+          "target": "Remove video",
+          "selected": "Video"
+        }
+      ],
+      "eventsDropped": 0,
+      "truncated": false,
+      "tabsConnected": false,
+      "paneConnected": true,
+      "state": {
+        "selected": "Video",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      }
+    }
+  ],
+  "guest_auth_storage": {
+    "hasAccessToken": false,
+    "hasUserProfile": false
+  },
+  "fast_busy_observation": {
+    "observed": true,
+    "text": "Capturing…",
+    "samples": 5,
+    "matchingButtons": 1,
+    "buttonReplacements": 0,
+    "disabledSamples": 1,
+    "disabledMutationRecords": 2,
+    "observedAtMs": 5120.5,
+    "observationBasis": "current_owned_visible_dom"
+  },
+  "fast_screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-UJ2LO2/scrape-fast-article.png",
+  "media_failure_observation": {
+    "phase": "warm-media",
+    "code": "warm_video_removed_not_observed:{\"ready\":true,\"title\":\"Harbor Dental intake guide\",\"empty\":false,\"fast\":[{\"disabled\":false,\"text\":\"Re-capture\"}],\"deep\":[{\"disabled\":false,\"text\":\"Scroll & capture\"}],\"tabs\":[{\"label\":\"Article\",\"selected\":false},{\"label\":\"Images\",\"selected\":false},{\"label\":\"Video\",\"se",
+    "selected": "Video",
+    "visible": true,
+    "resultText": "1 VIDEO\nhttp://localhost:49194/referral-walkthrough.mp4\nAdd video URL",
+    "media": {
+      "tabCount": "1",
+      "formOpen": false,
+      "imageToolbar": "1 video",
+      "imageToolbarRendered": "1 VIDEO",
+      "imageGroups": {
+        "large": [],
+        "medium": [],
+        "icon": []
+      },
+      "imageItems": [],
+      "videoItems": [],
+      "linkItems": [],
+      "linkToolbar": "1 video"
+    },
+    "screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-UJ2LO2/scrape-warm-media-failure.png"
+  }
+}
