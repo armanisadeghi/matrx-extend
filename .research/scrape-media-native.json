@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "run_id": 37200570100,
+  "job_id": 111431247420,
+  "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37200570100",
+  "workflow": "hosted-guest-acceptance.yml",
+  "head_sha": "f405e156579dee028c91bc66bbfa10745f25fa56",
+  "head_parent": "ab99e4cbaa7f36cc4e51fe7328ad113fd9570f5d",
+  "dispatch_inputs": {
+    "development_run_id": 37193761291,
+    "development_artifact_id": 11299613935,
+    "acceptance_case": "guest-scrape-development",
+    "release_run_id": null,
+    "published_store_crx": false,
+    "scrape_diagnostic_cpu_rate": null
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "version": "0.2.215",
+    "source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+    "tree_sha256": "ab62d0755d03e8a7f2ca0cb99e0b5037f39e75d756b14a3e2d3ad6d8cc096d08",
+    "run_id": 37193761291,
+    "artifact_id": 11299613935,
+    "expired_before_dispatch": false
+  },
+  "run": {
+    "status": "completed",
+    "conclusion": "failure",
+    "started_at": "2026-10-04T12:04:38Z",
+    "completed_at": "2026-10-04T12:11:18Z",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "uploaded_artifact_id": 11301909240,
+    "uploaded_artifact_name": "hosted-guest-37200570100-1"
+  },
+  "verdict_a_behavior": {
+    "media_subscope": "PASS_GUEST_NATIVE_DOM_ASSERTIONS",
+    "overall_acceptance": "FAIL_STRICT_EXTENSION_RELOAD_RETIREMENT_GATE",
+    "t08_status": "PARTIAL",
+    "evidence": {
+      "image": {
+        "pane": "Images",
+        "observed_fixture_origin": "http://localhost:49199",
+        "href_path": "/intake.svg",
+        "src_path": "/intake.svg",
+        "alt": "New patient intake desk",
+        "complete": true,
+        "natural_width": 640,
+        "natural_height": 480,
+        "assertions": "Exact rendered href/src/alt; complete and positive natural dimensions were required by assertMediaPane."
+      },
+      "video": {
+        "pane": "Video",
+        "href_path": "/intake-walkthrough.mp4",
+        "row_text_path": "/intake-walkthrough.mp4"
+      },
+      "empty_states": {
+        "page": "http://localhost:49199/referrals",
+        "images": {
+          "state": "empty",
+          "count": 0,
+          "add_control_visible": true
+        },
+        "video": {
+          "state": "empty",
+          "count": 0,
+          "add_control_visible": true
+        }
+      },
+      "reload_failure": {
+        "code": "native_extension_worker_retirement_unverified",
+        "strict_predicate": false,
+        "old_worker_destroyed_event": false,
+        "old_worker_absent": true,
+        "old_panel_absent": true,
+        "replacement_worker_created_event": true,
+        "replacement_worker_present": true,
+        "observed_worker_count": 1,
+        "old_version_id": "0",
+        "old_version_status": "redundant",
+        "old_version_running_status": "stopping",
+        "independent_old_host_probe": {
+          "outcome": "present",
+          "attached": false
+        },
+        "escalation_branch": "Old stopped + host exists: debugger-host retention is established for this run; exact retaining session and causal repair remain unidentified."
+      },
+      "scope_limits": [
+        "Only guest mode was exercised.",
+        "Member/admin modes and full extension reload lifecycle remain unverified.",
+        "The native artifact contains no screenshot of the media panes; its native-side-panel.png is the unrelated chat surface and was excluded."
+      ]
+    }
+  },
+  "verdict_b_evidence_quality": {
+    "result": "SUFFICIENT_FOR_MEDIA_SUBSCOPE_AND_RELOAD_FAILURE",
+    "receipt": "docs/stabilization/evidence/scrape215/run37200570100/receipt.json.txt",
+    "receipt_sha256": "ccac4c5e602e3054d5418b5a83c1d1627002451dd2c2b220b27ff63c600af17b",
+    "resource_journals": {
+      "package": {
+        "path": "docs/stabilization/evidence/scrape215/run37200570100/package-resource.jsonl",
+        "sha256": "94d26058fbe78eeb72f2996202e7b572d60df064fab54e370e1b89e24f05c646",
+        "decision": "valid",
+        "exit_code": 0,
+        "unsafe_reasons": []
+      },
+      "browser": {
+        "path": "docs/stabilization/evidence/scrape215/run37200570100/browser-resource.jsonl",
+        "sha256": "321a57fe4e3f3a795371364e2b6136d2f11c05913c78f2d6aa320c2c4eeb07bf",
+        "decision": "valid",
+        "exit_code": 0,
+        "unsafe_reasons": []
+      },
+      "guest": {
+        "path": "docs/stabilization/evidence/scrape215/run37200570100/guest-resource.jsonl",
+        "sha256": "d6a6952c0e1eb9992c5310ddf494bc5aedb01d222ab02242a3b33b4848e56d61",
+        "decision": "child_failed",
+        "exit_code": 1,
+        "resource_invalid": false,
+        "unsafe_reasons": []
+      }
+    },
+    "limitations": [
+      "Behavior is asserted from the active rendered pane DOM, but no media-pane screenshot was uploaded.",
+      "No retry or second native run was performed."
+    ]
+  }
+}
