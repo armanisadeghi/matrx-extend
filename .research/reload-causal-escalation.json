@@ -1,0 +1,117 @@
+{
+  "status": "READY_FOR_INDEPENDENT_REVIEW_AND_NATIVE_VERIFICATION",
+  "defect": "EXT-D-0120",
+  "decision": "Repair the acceptance oracle using authoritative execution retirement. No claim that a product worker lifecycle bug was fixed, and no claim of native green.",
+  "findings": [
+    "Native37200570100 establishes exact pre-click old version0/target correlation; subsequent old stopped/redundant with targetId omitted; old host remains present attached=false. Neither observer saw destruction. This refutes using missing TargetDestroyed as proof that old execution is still alive.",
+    "Exact Chrome141.0.7390.37 source rejects StartWorker on redundant versions. A correlated version that is both stopped and redundant cannot restart. The retained host owner remains unknown and is unnecessary for this execution contract.",
+    "Stopping/redundant is insufficient, as is stopped/activated: the latter may restart. The new branch requires stopped AND redundant in the latest post-click old-version event."
+  ],
+  "hypotheses": [
+    {
+      "cause": "Old worker still executes",
+      "prediction": "Correlated old status remains running/stopping; authoritative stopped/redundant would refute it",
+      "result": "Refuted for captured37200570100 by explicit stopped/redundant update."
+    },
+    {
+      "cause": "Destruction notification lost after actual host destruction",
+      "prediction": "Independent old-host lookup reports absent",
+      "result": "Refuted at probe instant: old host exists; both observers omit destruction."
+    },
+    {
+      "cause": "Oracle confuses execution retirement with debugger-object destruction",
+      "prediction": "Captured exact old stopped/redundant plus sole new running/activated version passes authoritative execution proof while destruction-only oracle fails",
+      "result": "Supported by matching Chromium source and captured-event replay; old-only oracle mutation reproduces native_extension_worker_retirement_unverified in real harness orchestration."
+    }
+  ],
+  "changed": [
+    "Added reloadExecutionRetired over retained sanitized protocol evidence, exposed through live diagnostic. The pre-click boundary count is recorded synchronously at correlation, and version-event truncation is counted and refuses new proof.",
+    "Requires unique old target/version correlation and running/activated pre-click state; exact unchanged old registration/target identity; latest post-click stopped/redundant; distinct newly observed replacement version with exact target, consistent registration and latest running/activated. Target omission on retired old update is permitted only through pre-click version identity.",
+    "Existing destroyed-event branch remains. Both branches require exactly one owned service worker, old worker and panel absent, replacement-created event and replacement present. Existing replacement panel/context, Chrome management, caller resource gates remain.",
+    "Retains old_worker_destroyed_event separately from old_worker_execution_retired so native evidence does not claim debugger-host destruction. Capture sanitizer preserves proof boundary and drop count."
+  ],
+  "evidence": {
+    "captured_fixture": {
+      "path": "tests/browser/fixtures/reload-stopped-redundant.json",
+      "source_receipt": "docs/stabilization/evidence/scrape215/run37200570100/receipt.json.txt",
+      "source_receipt_sha256": "ccac4c5e602e3054d5418b5a83c1d1627002451dd2c2b220b27ff63c600af17b",
+      "meaning": "Exact retained version-event sequence extracted from the real failing receipt, without fabricated lifecycle statuses."
+    },
+    "checks": [
+      {
+        "command": "node --test tests/browser/reload-execution-retirement.test.mjs tests/browser/reload-lifetime-diagnostic.test.mjs tests/browser/profile-reload-capture.test.mjs",
+        "result": "23 passed"
+      },
+      {
+        "command": "node tests/browser/native-sidepanel-qa-harness.test.mjs",
+        "result": "Passed full harness: retained-host success, missing replacement context refused, multiple workers refused, existing strict path and management refusal retained."
+      },
+      {
+        "command": "pnpm exec biome check [seven changed test/harness files]",
+        "result": "Passed"
+      },
+      {
+        "command": "git diff --check",
+        "result": "Passed"
+      }
+    ],
+    "forcing_mutations": [
+      {
+        "mutation": "reloadExecutionRetired constant true",
+        "result": "RED: unsafe stopping and other refusals fail; plant.py verified identical restoration"
+      },
+      {
+        "mutation": "reloadExecutionRetired constant false",
+        "result": "RED: captured stopped/redundant success fails; identical restoration"
+      },
+      {
+        "mutation": "Remove old stopped condition",
+        "result": "RED: only-stopping refusal fails; identical restoration"
+      },
+      {
+        "mutation": "Restore destruction-only real harness predicate",
+        "result": "RED: native_extension_worker_retirement_unverified on retained-host case; identical restoration"
+      }
+    ],
+    "source_contract": [
+      {
+        "url": "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/content/browser/service_worker/service_worker_version.cc",
+        "sha256": "3015eb47c17e4eb6d06f2c7a818518441f81552aeecbe9c3bc92555d998915f1",
+        "finding": "StartWorker lines545-570 explicitly rejects redundant versions with kErrorRedundant; stopped plus redundant is execution retirement, not ordinary idle stop."
+      },
+      {
+        "url": "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/content/browser/devtools/service_worker_devtools_agent_host.cc",
+        "sha256": "8f62e780f368472a0ff3460e4b9e4e181f795ab52ac7a42ad045d57470a99244",
+        "finding": "WorkerStopped lines317-331 marks WORKER_TERMINATED, clears process/route and renderer; host destruction is separate."
+      },
+      {
+        "url": "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/content/browser/devtools/protocol/service_worker_handler.cc",
+        "sha256": "87e1371e9f2683916e8653d90bf7717885baaba80b79e0a8cfe29625ea716d6e",
+        "finding": "OnWorkerVersionUpdated serializes version/registration IDs and actual running/version status; optional targetId comes from live-worker lookup."
+      },
+      {
+        "url": "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/content/browser/devtools/protocol/target_handler.cc",
+        "sha256": "ac4be199af07967a217b79afbd220e2116bef77e35d53b4aba964b2950d2ebfa",
+        "finding": "GetTargetInfo looks up a host by ID; TargetDestroyed is emitted by DevToolsAgentHostDestroyed. Presence of a debugger object does not establish execution."
+      }
+    ]
+  },
+  "files": [
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/native-sidepanel-qa-harness.test.mjs",
+    "tests/browser/profile-reload-capture.mjs",
+    "tests/browser/profile-reload-capture.test.mjs",
+    "tests/browser/reload-lifetime-diagnostic.mjs",
+    "tests/browser/reload-execution-retirement.test.mjs",
+    "tests/browser/fixtures/reload-stopped-redundant.json",
+    ".research/reload-causal-escalation.json"
+  ],
+  "own_commits": ["babf71b7"],
+  "limits_open_questions": [
+    "Exact debugger-host retaining owner remains unknown; attached=false never attributed to Playwright.",
+    "Focused tests prove acceptance orchestration and refusal behavior, not native Chromium execution. Root owns fresh independent peer and guarded native exact-artifact run.",
+    "No browser/native run, heavy build, release, version bump, global debugger change, foreign detach, stopWorker, unregister, retry increase or timeout increase performed.",
+    "Native must retain resource validity, exact replacement SIDE_PANEL context and all downstream Scrape/media checks; this repair cannot supply those missing observations from the prior failed attempt.",
+    "Existing destruction-event path remains for protocol-observation-unavailable cases; new execution branch fails closed when protocol evidence is unavailable, ambiguous, truncated or lacks pre-click identity."
+  ]
+}
