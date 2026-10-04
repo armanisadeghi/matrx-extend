@@ -1,0 +1,7 @@
+{
+  "issue": "CI37204481673",
+  "scope": "ScrapeView media-controls test indexed element typing",
+  "cause": "Unchecked indexed array access yields HTMLElement | undefined under current TypeScript settings.",
+  "fix": "Require first matched controls through explicit existence narrowing and locate draft inputs by distinct placeholders.",
+  "product_changes": false
+}

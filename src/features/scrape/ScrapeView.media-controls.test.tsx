@@ -164,12 +164,18 @@ const openTab = async (label: 'Images' | 'Video') => {
   await userEvent.click(screen.getByRole('tab', { name: new RegExp(label) }));
 };
 
+const firstElement = (elements: HTMLElement[], description: string): HTMLElement => {
+  const element = elements[0];
+  if (!element) throw new Error(`Expected ${description} to exist`);
+  return element;
+};
+
 describe('ScrapeView media controls', () => {
   it('removes only the selected image and updates the visible image count', async () => {
     render(<ScrapeView />);
     await openTab('Images');
     expect(screen.getByRole('tab', { name: /Images 3/ })).toBeTruthy();
-    fireEvent.click(screen.getAllByTitle('Remove image')[0]);
+    fireEvent.click(firstElement(screen.getAllByTitle('Remove image'), 'remove image button'));
     expect(useScrapeStore.getState().current?.images.map((image) => image.src)).toEqual([
       'https://fieldnotes.example/media/site-mark.svg',
       'https://fieldnotes.example/media/soil-chart.png',
@@ -182,7 +188,8 @@ describe('ScrapeView media controls', () => {
     render(<ScrapeView />);
     await openTab('Images');
     fireEvent.click(screen.getByRole('button', { name: 'Add image URL' }));
-    const [src, alt] = screen.getAllByPlaceholderText(/https:|alt text/);
+    const src = screen.getByPlaceholderText('https://…');
+    const alt = screen.getByPlaceholderText('alt text (optional)');
     fireEvent.click(screen.getByRole('button', { name: 'Add' }));
     expect(useScrapeStore.getState().current?.images).toHaveLength(3);
     expect((src as HTMLInputElement).value).toBe('');
@@ -212,11 +219,11 @@ describe('ScrapeView media controls', () => {
     await openTab('Video');
     const videoLink = screen.getByRole('link', { name: 'https://video.example/watch/seedlings' });
     expect(videoLink.getAttribute('href')).toBe('https://video.example/watch/seedlings');
-    fireEvent.click(screen.getAllByTitle('Copy video URL')[0]);
+    fireEvent.click(firstElement(screen.getAllByTitle('Copy video URL'), 'copy video URL button'));
     await waitFor(() =>
       expect(mocks.copiedText).toHaveBeenCalledWith('https://video.example/watch/seedlings'),
     );
-    fireEvent.click(screen.getAllByTitle('Remove video')[0]);
+    fireEvent.click(firstElement(screen.getAllByTitle('Remove video'), 'remove video button'));
     expect(useScrapeStore.getState().current?.videos.map((video) => video.src)).toEqual([
       'https://video.example/watch/watering',
     ]);
