@@ -1,14 +1,14 @@
 # Matrx Extend stabilization: resume here
 
-## Active lanes — Profile causal acceptance
+## Active lanes — reload cause and discovery-tool census
 
-Previous turn classification: **progress** — verified current-server guest opening and reload replies while retaining overall D96 failure, independently reviewed diagnostic repairs, and pushed synchronized main. All prior workers are terminal. New ledger baseline copied from the last finalized remote snapshot before fetching.
+Previous turn classification: **progress** — proved/fixed Save completion race, verified warm Identity/Employment save/reopen, diagnosed missing reload evidence, and recovered exact owned row with independent zero-row readback. Final ledger baseline copied before fresh fetch; main initially clean/current.
 
-Current checkpoint: **progress**, not complete. Escalation proved D105 disabled-Save/dirty-draft race; repair710d14bf independently reviewed at e6df8226 (49 checks). Independent native189-07 (`6a2d461e`) then saved/reopened all seven Identity and both Employment fields, and passed eight expanders. Full extension reload failed; separate automatic cleanup failed. T05/T17 are partial, reload/restoration remain unverified. D104/D105 remain fixed awaiting full acceptance.
+`reload106_causal_capture` (Sol medium,55calls/nine minutes) owns safe actual reload-boundary capture and at most one guarded read-only native189 diagnostic run. Sole heavy slot; strict lifecycle assertions stay intact. No Profile writes or unguarded probes. Root reviews demonstrated fixes and routes independent retest.
 
-Exact owned row was conditionally recovered at e568b110 using its owner/org/creation/revision7/field state; root independently queried the protected receipt's owner and confirmed zero rows. No test-owned row remains. Raw native SHA3162b7fcdf5e6813382a9aaa380e7824326ddcec0824ac77f8f5ff212ecef2de and journalSHA6cc1e57ed8f8e9309cacef7cca35470fd210661e321892438907e6b9f1ccd812 matched independently. All browser work is terminal, no heavy job remains.
+`tool_discovery_inventory_census` (Luna medium,30calls/five minutes) owns a read-only source/live-registry comparison for discovery-tool IDs4001–4020. It writes a machine-readable evidence report only; canonical inventory and coverage statuses stay under root control. No browser/heavy work or automatic retirement of missing names.
 
-D106 tracks full reload plus automatic cleanup failure. Fresh source diagnosis a1062437 could not recover the exact lifecycle cause; the prior184 guest worker-retirement failure is only a lead. Next: instrument the actual reload callback with fixed lifecycle code, safe context counts/booleans and transport class; run one guarded exact-artifact read-only causal reload before speculative fixes. Preserve strict retirement/replacement and ownership assertions. Then complete member Identity/Employment/expander full reload and normal restoration before expanding to remaining Profile fields/admin.
+Current known acceptance: Identity seven fields and Employment two fields saved/reopened in native189-07; full reload and normal restoration remain unverified. D104/D105 fixed, D106 triaged. Test-owned row independently absent. Store181 pending, published176, last authenticated refresh03:06UTC.
 
 - `profile_identity_employment_cases` (Sol medium, source only): executable Identity, Employment and section-expander cases T05/T06/T17/T18/T21/T22 across warm/reload, preserving strict private per-write ownership and original restoration. Owns new case modules and narrow runner integration; no native/DB/build/release. Fifteen-minute bound, fresh source review before native.
 - `popup_guest_native_census` (Luna medium) is terminal at b08421ef: valid scratch preflight only, no owned browser launched. CUA selected existing shared CFT; no input sent. All guest popup cases remain unverified.
