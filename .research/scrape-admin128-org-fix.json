@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0128",
+  "status": "source_fix_locally_verified_native_unverified",
+  "cause": {
+    "finding": "Settings auth intentionally accepts a null active organization when callers expect null. The admin sign-in path passed the stored organizationId through that permissive Settings check, and Scrape reused the resulting null identity for both its warm and post-reload checks.",
+    "reproduction": "Before the fix, `node --test tests/browser/settings-native-auth-driver.test.mjs` failed the new Scrape strictness assertion: expected false for valid admin identity plus organizationId=null and organizationSelected=false, received true. The same identity remains true under the default Settings contract.",
+    "alternatives_ruled_out": [
+      "The member selector is not missing: its existing exact visible-option path selects Matrx's Org and verifies the storage UUID/name.",
+      "The defect is not in product organization resolution; it is the acceptance driver's reuse of Settings' nullable matcher for a Scrape case that requires explicit selection."
+    ]
+  },
+  "change": {
+    "files": [
+      "tests/browser/settings-native-auth-driver.mjs",
+      "tests/browser/settings-native-auth-driver.test.mjs",
+      "tests/browser/scrape-guest-native-acceptance.mjs"
+    ],
+    "behavior": "Settings retains its default null-organization contract. Scrape now explicitly selects the existing approved member-test organization using the shared picker before warm controls, requires a UUID plus the exact rendered/stored Matrx's Org name, and verifies that same selected organization identity after extension reload. The required path is used for both authenticated modes; guest stays outside it. No first-membership, account-default, or invented organization fallback was added.",
+    "receipt_privacy": "Organization IDs and account identity values remain out of the receipt; it records only selection and verification booleans."
+  },
+  "verification": {
+    "red": "Before the implementation, the new null-admin strictness assertion failed with `true !== false` at the expected predicate boundary.",
+    "green": "`node --test tests/browser/settings-native-auth-driver.test.mjs tests/browser/scrape-native-selection.test.mjs` passed 7 tests, 0 failed. The focused assertions cover null refusal in Scrape, mismatched label and ID refusal, approved organization acceptance for admin and member, Settings null-org preservation, and the existing default guest selection contract.",
+    "native": "Not run; run 37227042493 was already dispatched before this change and was left untouched. A new admin native run requires parent review first."
+  },
+  "limits": [
+    "No browser/native acceptance, build, release, database read, or secret access was performed.",
+    "The admin account's live availability of the approved Matrx's Org option and persistence across a real extension reload remain unverified until a separately approved native run.",
+    "This is an acceptance-harness correction and makes no Scrape product-health claim."
+  ]
+}

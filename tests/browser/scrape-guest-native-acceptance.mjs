@@ -24,7 +24,9 @@ import { recordReloadMilestone } from './scrape-reload-milestones.mjs';
 import { waitForReplacementScrapeTab } from './scrape-replacement-tab.mjs';
 import { observeScrapeRows } from './scrape-row-observer.mjs';
 import {
+  MEMBER_TEST_ORGANIZATION_NAME,
   panelIdentity,
+  selectRequiredSettingsOrganization,
   signInSettings,
   verifyCurrentSettingsIdentity,
 } from './settings-native-auth-driver.mjs';
@@ -856,13 +858,32 @@ try {
             },
           }),
         );
+        report.stage = 'organization_selection';
+        const selectedOrganization = await resourceAction(() =>
+          selectRequiredSettingsOrganization({
+            panel,
+            mode: selection.mode,
+            email: authentication.email,
+            profileId: authentication.profileId,
+          }),
+        );
         expectedIdentity = {
           profileId: authentication.profileId,
           email: authentication.email,
-          organizationId: authentication.organizationId,
+          organizationId: selectedOrganization.organizationId,
+          organizationName: selectedOrganization.organizationName,
         };
-        const { profileId, email, organizationId, ...safeAuthentication } = authentication;
-        report.authentication = safeAuthentication;
+        report.authentication = {
+          mode: authentication.mode,
+          account_fingerprint: authentication.account_fingerprint,
+          web_signed_in: authentication.web_signed_in,
+          extension_signed_in: authentication.extension_signed_in,
+          admin_role: authentication.admin_role,
+          canonical_nonadmin_check: authentication.canonical_nonadmin_check,
+          organization_selected: true,
+          selected_organization_verified: true,
+          rendered_identity: selectedOrganization.renderedIdentity,
+        };
         assert.equal(authentication.mode, selection.mode, 'scrape_authenticated_mode_mismatch');
         await resourceAction(() => activatePanel());
         await waitFor(
@@ -911,6 +932,11 @@ try {
           identity.organizationId,
           expectedIdentity.organizationId,
           'scrape_organization_identity_mismatch',
+        );
+        assert.equal(
+          identity.organizationName,
+          expectedIdentity.organizationName,
+          'scrape_organization_name_mismatch',
         );
         assert.equal(identity.isAdmin, selection.mode === 'admin', 'scrape_role_mismatch');
       }
@@ -1370,6 +1396,8 @@ try {
               email: expectedIdentity.email,
               profileId: expectedIdentity.profileId,
               organizationId: expectedIdentity.organizationId,
+              requireSelectedOrganization: true,
+              requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
             }),
           );
           assert.equal(
@@ -1388,9 +1416,16 @@ try {
             expectedIdentity.organizationId,
             'scrape_reloaded_organization_mismatch',
           );
+          assert.equal(
+            stored.organizationName,
+            expectedIdentity.organizationName,
+            'scrape_reloaded_organization_name_mismatch',
+          );
           report.reload_authentication = {
             mode: selection.mode,
             ...rendered,
+            organization_selected: true,
+            selected_organization_verified: true,
             profile_matches_warm: true,
             organization_matches_warm: true,
           };
