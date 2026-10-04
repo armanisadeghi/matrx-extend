@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T02:34:39.130986+00:00",
+  "updated_at": "2026-10-04T02:56:50.386861+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -10108,14 +10108,21 @@
             "scope": "Source-reviewed procedure only; no runtime acceptance."
           },
           "defect_ids": [
-            "EXT-D-0104"
+            "EXT-D-0104",
+            "EXT-D-0105"
           ],
           "results": {
             "member": {
               "status": "unverified",
               "run_id": "profile-fields-member-189-01",
               "evidence": ".research/profile-fields-member-native.json",
-              "detail": "Attempt failed in native test process before Identity receipt; product-vs-driver cause under D104 diagnosis. Original absence restored; no fieldpass inferred."
+              "detail": "Attempt failed in native test process before Identity receipt; product-vs-driver cause under D104 diagnosis. Original absence restored; no fieldpass inferred.",
+              "latest_attempt": {
+                "run_id": "profile-expander-causal-189-05",
+                "status": "unverified",
+                "evidence": ".research/profile-expander-causal-native.json",
+                "detail": "All exact Identity draft values including Birthday passed; save failed. No persistence/reload pass. Original absence restored."
+              }
             }
           }
         },

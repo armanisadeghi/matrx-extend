@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0105",
+  "feature_id": "EXT-F-1004",
+  "case_ids": ["EXT-F-1004-T05"],
+  "surface": "Profile Identity save acceptance",
+  "auth_mode": "member",
+  "title": "Identity save acceptance fails after exact draft values pass",
+  "reproduction": [
+    "Use frozen development189/sourceb4b9f0c4efd4e79d9910a7e8dc589f312fe8bced/CI37164174445/artifact11288542496 and current reviewed runner as recorded by .research/profile-expander-causal-native.json.",
+    "Follow .research/profile-reload-hydration.json launch recipe with PROFILE_EXTENDED_CASES=1 under the refusing resource wrapper; sign in as existing first-party member, verify zero admin assignments and device organization.",
+    "Baseline and eight warm expanders pass. Identity fills and exact draft assertions pass, then phase save fails; later UI restoration fails separately, final owned-row absence is restored."
+  ],
+  "expected": "Exact Identity values save, reopen, survive full extension reload, and restore with strict owned-write verification.",
+  "actual": "Resource-valid native05 fails during save; particular Save/UI/journal cause unknown. Birthday exact entry and draft checks pass. Employment/reload not reached.",
+  "severity": "S2 acceptance blocked; product impact not established",
+  "priority": "P1 contained Profile acceptance prerequisite",
+  "state": "in-fix",
+  "owner": "profile_save_boundary_escalation",
+  "evidence": [
+    ".research/profile-expander-causal-native.json",
+    "docs/stabilization/resource-journals/profile-expander-causal-189-05.jsonl"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T02:56:50.386861+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual independent native failure captured after Identity draft checks."
+    },
+    {
+      "at": "2026-10-04T02:56:50.386861+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Root matched raw and resource hashes; exact original absence restored. Save sub-boundary still unknown."
+    },
+    {
+      "at": "2026-10-04T02:56:50.386861+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Fresh Astra escalation owns source/private-evidence diagnosis and at most one guarded causal run after repeated inconclusive boundaries."
+    }
+  ],
+  "closure_requirement": "Prove actual cause, repair with meaningful red/green and fresh peer, independently verify original save and surrounding warm/reload/restoration cases."
+}
