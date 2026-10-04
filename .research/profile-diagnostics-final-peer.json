@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_source_peer",
+  "reviewed_commits": [
+    "17b8f3f59543a56b344b3ffff05922d8a8f28021",
+    "048a3a22c8344ba5abc37d0bffc6a757f916a8c0"
+  ],
+  "source_verdict_A": "pass_live_pending",
+  "source_verdict_B": "pass_quality",
+  "findings": [
+    "The expander case labels its failing phase and section before restoration. The report boundary admits only enumerated phase and section labels, so private error messages and field values are not serialized.",
+    "When discard also fails, the original Error remains primary; the discard Error is attached separately and the report records a fixed restoration stage.",
+    "The restored boundary fixture declares heldFieldCases in the extracted runner scope. Its execution, cleanup-only, and native teardown cases assert primary Error identity and separate cleanup and teardown evidence."
+  ],
+  "checks": {
+    "command": "node --test tests/browser/profile-expander-diagnostics.test.mjs tests/browser/profile-native-failure.test.mjs tests/browser/profile-report-boundary.test.mjs",
+    "passed": 25,
+    "failed": 0
+  },
+  "red_proofs_inspected": [
+    ".research/profile-expander-diagnostics.json records three pre-fix assertion failures: two missing diagnostics and one primary error replaced by discard failure.",
+    ".research/profile-boundary-guard-repair.json records two pre-repair failures caused by the missing heldFieldCases fixture declaration, followed by 11 passing boundary tests."
+  ],
+  "native_gap": "No native browser run in this peer review. The original T21 expander failure cause and a native pass remain unverified."
+}
