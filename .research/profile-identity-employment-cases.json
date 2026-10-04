@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "task": "profile-identity-employment-cases",
+  "status": "source_ready_partial_scope_native_unverified",
+  "source_commit": "0534a562",
+  "inventory_cases": [
+    "EXT-F-1004-T05",
+    "EXT-F-1004-T06",
+    "EXT-F-1004-T17",
+    "EXT-F-1004-T18",
+    "EXT-F-1004-T21",
+    "EXT-F-1004-T22"
+  ],
+  "dimensions": ["warm", "extension_reload"],
+  "execution": {
+    "flag": "PROFILE_EXTENDED_CASES=1",
+    "native_run": "not_run_in_source_lane",
+    "member_field_cases": "enabled_only_for_run_owned_profile_row_with_durable_per_write_journal",
+    "admin_field_cases": "explicitly_unverified_for_preexisting_row_without_conditional_restoration_proof",
+    "expander_cases": "enabled_for_member_and_admin_without_persisted_write",
+    "original_absence_cleanup": "owned_row_conditional_delete_requires_verified_owner_organization_marker_creation_and_version"
+  },
+  "source_drift": {
+    "frozen_ci_189_source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "affected_product_profile_files_changed": false,
+    "runner_source_changed_after_frozen_artifact": true,
+    "fresh_ci_for_profile_product_source": "not_required_by_source_diff",
+    "native_validation": "still_required_on_exact_loaded_extension_and_runner"
+  },
+  "checks": {
+    "node_syntax": "passed",
+    "biome_focused": "passed",
+    "journal_unit_tests": "12_passed",
+    "journal_field_successor_mutation": "red_in_scratch_copy_when_field_verification_removed",
+    "git_diff_check": "passed"
+  },
+  "touched_files": [
+    "tests/browser/profile-identity-employment-cases.mjs",
+    "tests/browser/profile-native-acceptance.mjs",
+    "tests/browser/profile-owned-write-journal.mjs",
+    "tests/browser/profile-owned-write-journal.test.mjs"
+  ],
+  "limits": [
+    "No native browser execution, database mutation, build, or release occurred in this source lane.",
+    "Saved-field acceptance for an existing admin row remains unverified until a private durable baseline and conditional restoration path are added and independently checked.",
+    "Birthday input and all visible controls require native execution; source checks do not prove Chrome accepted the trusted input.",
+    "No shared report contains private profile values, identity, credentials, or raw errors."
+  ]
+}
