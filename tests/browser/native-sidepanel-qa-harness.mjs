@@ -932,6 +932,7 @@ export async function runNativeSidepanelQa({
   let launchError;
   let startupStartedAt;
   let gpuObservation;
+  let gpuAbort;
   try {
     onStage('browser_spawn');
     startupStartedAt = performance.now();
@@ -1008,7 +1009,15 @@ export async function runNativeSidepanelQa({
     requireSpawnedProfileOwner(await readlink(join(profile, 'SingletonLock')), child.pid);
     verified = true;
 
-    if (onStartupGpuObservation) gpuObservation = observeStartupGpu(cdp, onStartupGpuObservation);
+    if (onStartupGpuObservation) {
+      gpuAbort = new AbortController();
+      gpuObservation = observeStartupGpu(
+        () => connectOwnedCdp({ preparedProfile, chromeExecutable }),
+        onStartupGpuObservation,
+        gpuAbort.signal,
+      );
+      void gpuObservation.catch(() => {});
+    }
 
     onStage('local_server');
     server = createServer((request, response) => {
@@ -1140,8 +1149,8 @@ export async function runNativeSidepanelQa({
   } finally {
     // Browser.close is intentionally absent, including for Playwright's CDP
     // connection. Only the exact ChildProcess this harness spawned is ended.
+    gpuAbort?.abort();
     await cdp?.detach().catch(() => {});
-    await gpuObservation;
     await new Promise((resolve) => server?.close(resolve) ?? resolve());
     await stopOwnedChild(child);
     await rm(root, { recursive: true, force: true });

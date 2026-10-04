@@ -58,6 +58,7 @@ export async function runHostedStartupIntervalDiagnostic({
       onStage: (stage) => {
         report.lastNativeStage = stage;
         report.nativeStages.push({ stage, at: new Date().toISOString() });
+        void save().catch(() => {});
       },
       onStartupGpuObservation: (observation) => {
         report.gpuObservation = observation;
