@@ -16945,16 +16945,22 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "render-retest-001",
-              "evidence": "docs/stabilization/runs/render-retest-001.json",
-              "verified_substeps": [
-                "Capture produced a 16-word article and result tabs were visible."
-              ],
-              "remaining_criteria": [
-                "Observe busy-button disable/progress while capture runs and exercise error recovery actions."
-              ]
-            }
+                "status": "partial",
+                "run_id": "hosted-guest-37188132857-1",
+                "evidence": ".research/guest-scrape-context-native.json",
+                "detail": "Exact Store205 hosted37188132857 produced the expected fast article without scrolling or lazy content; root viewed retained result screenshot. Busy observer failed (4 samples, zero disabled); busy behavior, recovery and reload remain unverified.",
+                "historical_result": {
+                  "status": "unverified",
+                  "run_id": "render-retest-001",
+                  "evidence": "docs/stabilization/runs/render-retest-001.json",
+                  "verified_substeps": [
+                    "Capture produced a 16-word article and result tabs were visible."
+                  ],
+                  "remaining_criteria": [
+                    "Observe busy-button disable/progress while capture runs and exercise error recovery actions."
+                  ]
+                }
+              }
           }
         },
         {
@@ -17470,14 +17476,20 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37185080238",
-              "evidence": ".research/guest-scrape-hosted-native.json",
-              "detail": "Release205 local development ZIP: signed-out token/profile absence and initial Scrape empty state observed. Navigation/reload were not reached. Exact Store ZIP rerun37186201850 failed at browser startup before any UI case; no Store pass.",
-              "additional_evidence": [
-                ".research/guest-scrape-store-native.json"
-              ]
-            }
+                "status": "partial",
+                "run_id": "hosted-guest-37188132857-1",
+                "evidence": ".research/guest-scrape-context-native.json",
+                "detail": "Exact Store205 hosted37188132857 verified signed-out storage and initial Scrape empty state. Navigation and reload lifecycle not reached; no full case pass.",
+                "historical_result": {
+                  "status": "partial",
+                  "run_id": "37185080238",
+                  "evidence": ".research/guest-scrape-hosted-native.json",
+                  "detail": "Release205 local development ZIP: signed-out token/profile absence and initial Scrape empty state observed. Navigation/reload were not reached. Exact Store ZIP rerun37186201850 failed at browser startup before any UI case; no Store pass.",
+                  "additional_evidence": [
+                    ".research/guest-scrape-store-native.json"
+                  ]
+                }
+              }
           }
         },
         {

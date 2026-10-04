@@ -14,7 +14,7 @@
   "actual": "Stale-node observer blind spot is source-fixed and independently reviewed. Native busy-state retest remains pending; original hosted failure used the local development ZIP, and the next acceptance targets exact205 Store payload.",
   "severity": "S3: false-negative acceptance risk; no product busy-state failure established",
   "priority": "P1: restore reliable native acceptance before promoting capture cases",
-  "state": "fixed",
+  "state": "retest-fail",
   "owner": "guest_scrape_native",
   "evidence": [
     ".research/guest-scrape-hosted-native.json",
@@ -22,7 +22,8 @@
     "tests/browser/scrape-guest-native-acceptance.mjs",
     "tests/browser/scrape-busy-observer.mjs",
     "tests/browser/scrape-busy-observer.test.mjs",
-    ".research/guest-scrape-busy-peer.json"
+    ".research/guest-scrape-busy-peer.json",
+    ".research/guest-scrape-context-native.json"
   ],
   "transition_history": [
     {
@@ -48,6 +49,12 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "76e68d98 causal DOM repair; independent5e316438 positive/negative review. No native closure."
+    },
+    {
+      "at": "2026-10-04T08:22:43.135970+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "ExactStore205 native37188132857 reached fast result but new observer still recorded no disabled Capturing sample. Original replacement blind spot fix alone does not satisfy native acceptance; causal investigation continues."
     }
   ],
   "closure_requirement": "Independent source review, causal RED/GREEN guard, and exact205 hosted native busy-state evidence without oracle weakening. Record any different runtime blocker separately; no full Scrape health claim."
