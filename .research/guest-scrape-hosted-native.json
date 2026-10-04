@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "status": "unverified",
+  "changed": [],
+  "case": "guest-scrape",
+  "run": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "workflow_file": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": "37185080238",
+    "conclusion": "failure",
+    "head_sha": "4683c9e09524247f4f8633af744dcfe14a1831a8",
+    "release_run_id": "37180303468",
+    "release_artifact_id": "11294843385",
+    "release_artifact": "matrx-extend-v0.2.205",
+    "release_source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "release_tree_sha256": "20399f17af68ff9d40bffa93cdefe0c93b105af06f8e6cced1757323c124fd44",
+    "acceptance_artifact_id": "11297036718",
+    "acceptance_artifact": "hosted-guest-37185080238-1"
+  },
+  "source_context": {
+    "approved_source_sha": "4683c9e09524247f4f8633af744dcfe14a1831a8",
+    "prepared_implementation_sha": "1eb38fff0af1b3cb3564c196442e71ae7791451b",
+    "final_peer_review": "source_ready_runtime_unverified; honest_partial_no_known_deterministic_blocker"
+  },
+  "case_observations": [
+    {
+      "id": "EXT-F-1007-T20",
+      "status": "partial",
+      "observed": "Fresh guest initial empty state was true at http://localhost:49195/intake.",
+      "limits": ["Navigation and extension-reload lifecycle were not exercised before failure."]
+    },
+    {
+      "id": "EXT-F-1007-T01",
+      "status": "unverified",
+      "observed": "Native panel opened against the owned intake page. Fast capture failed because the pre-armed observer did not observe the busy button (scrape_fast_busy_not_observed; false !== true).",
+      "limits": [
+        "Receipt stops at fast_capture; no fast-result assertion or later case ran.",
+        "Product behavior versus observer/timing cause is unresolved."
+      ]
+    },
+    { "id": "EXT-F-1007-T02", "status": "unverified", "observed": "Not reached." },
+    { "id": "EXT-F-1007-T08", "status": "unverified", "observed": "Not reached." },
+    { "id": "EXT-F-1007-T14", "status": "unverified", "observed": "Not reached." }
+  ],
+  "stages": {
+    "passed": [
+      "release provenance",
+      "authentication preflight",
+      "hosted indexing policy",
+      "measured package readiness",
+      "pinned browser preparation",
+      "measured browser readiness",
+      "full Chromium preparation",
+      "measured acceptance readiness"
+    ],
+    "failed": {
+      "stage": "Exercise the selected Chrome side-panel case / fast_capture",
+      "cause": "scrape_fast_busy_not_observed; failure source not yet isolated"
+    },
+    "resource_journals": {
+      "hosted-package-37185080238-1": {
+        "decision": "valid",
+        "sha256": "685e76b71b84735bbc2c184798739cc33e3a2393a4951a16da9dbb8707ec9760"
+      },
+      "hosted-browser-37185080238-1": {
+        "decision": "valid",
+        "sha256": "f6255ea189986fed50e0be85d0d8ad462a44cf03cc593a375950c6fbef851008"
+      },
+      "hosted-guest-37185080238-1": {
+        "decision": "child_failed",
+        "resource_invalid": false,
+        "exit_code": 1,
+        "sha256": "1032c6f3f9187272368d59e8bd8ac6edf45e91c484888c93f0852bde0d9116ba"
+      }
+    }
+  },
+  "evidence": {
+    "receipt": {
+      "file": "test-results/hosted-scrape-37185080238/test-results/scrape-guest-native-8f25a706-fac5-4e6c-b70e-65d4dd1c16f6.json",
+      "sha256": "d431e6554ea3edb56b5887c709ef90972e08ba065f6c887eebea8086b5ca06c6"
+    },
+    "screenshots": [
+      {
+        "file": "test-results/hosted-scrape-37185080238/test-results/native-sidepanel-qa-6pH2Gf/native-side-panel.png",
+        "sha256": "2cfda86f86cad54e4a73aa3480585a0e0ab5d74b20da4921a35999d22e3c462f"
+      },
+      {
+        "file": "test-results/hosted-scrape-37185080238/test-results/native-sidepanel-qa-6pH2Gf/normal-target-after-open.png",
+        "sha256": "60d95c01c8bf5fa8f0807e1aed08d2adb43b4a5532190ae0eadd54c5e3aef79c"
+      }
+    ],
+    "failed_step_log": "gh run view 37185080238 --log-failed; exercise step emitted PREPARED 0.2.205 then UNVERIFIED receipt and fast_capture assertion failure.",
+    "artifact_note": "Acceptance artifact also contained resource journals from a prior run; only the three current run-ID journals above were used for this verdict."
+  },
+  "open_questions": [
+    "Did the product disable the fast-capture button too briefly for the observer, or did the observer miss a real busy state?",
+    "Can the hosted fast-capture case be made deterministically observable without changing its behavioral contract?",
+    "T01/T02/T08/T14/T20 remain incomplete or unverified; no full guest Scrape case pass is claimed."
+  ]
+}
