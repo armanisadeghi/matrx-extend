@@ -1,4 +1,5 @@
 import { statfs, writeFile } from 'node:fs/promises';
+import { basename } from 'node:path';
 
 const GiB = 1024 ** 3;
 
@@ -26,6 +27,34 @@ export async function cpuBusyFraction(output) {
   if (!Number.isFinite(idle) || idle < 0 || idle > 100)
     throw new Error('RESOURCE_MEASUREMENT_INVALID:cpu-idle');
   return (100 - idle) / 100;
+}
+
+/** Read-only process attribution for an already unsafe watch sample. */
+export async function processCpuAttribution(output) {
+  // ucomm is the macOS accounting name; unlike args/command it contains no
+  // process arguments. Basename is a second boundary on the recorded value.
+  const raw = await output('/bin/ps', ['-A', '-o', 'pid=,ppid=,%cpu=,ucomm=']);
+  return raw
+    .split('\n')
+    .map((line) => {
+      const match = line.match(/^\s*(\d+)\s+(\d+)\s+([\d.]+)\s+(.+)$/);
+      if (!match) throw new Error('RESOURCE_PROCESS_DIAGNOSTIC_INVALID');
+      const pid = Number(match[1]);
+      const parentPid = Number(match[2]);
+      const cpuPercent = Number(match[3]);
+      const executable = basename(match[4].trim());
+      if (
+        !Number.isSafeInteger(pid) ||
+        !Number.isSafeInteger(parentPid) ||
+        !Number.isFinite(cpuPercent) ||
+        cpuPercent < 0 ||
+        !executable
+      )
+        throw new Error('RESOURCE_PROCESS_DIAGNOSTIC_INVALID');
+      return { pid, parentPid, cpuPercent, executable };
+    })
+    .filter((item) => item.cpuPercent > 0)
+    .sort((a, b) => b.cpuPercent - a.cpuPercent);
 }
 
 function freeGiB(info, name) {

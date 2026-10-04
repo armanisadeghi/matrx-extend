@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "case": "EXT-D-0120 same-run hosted startup CPU attribution",
+  "status": "SOURCE_READY_FOR_INDEPENDENT_REVIEW_HOSTED_INTEGRATION_UNRUN",
+  "change": "After the guard durably emits the first unsafe watch event, it starts one bounded read-only /bin/ps snapshot and writes a separate process-attribution event. The event carries only numeric pid, parentPid, cpuPercent and executable accounting name, normalized to basename, for nonzero rows. Failure writes unavailable:true without raw process output or error text. The watch and stop loop proceeds without waiting for diagnosis.",
+  "safety_contract": {
+    "unchanged": [
+      "macOS interval iostat CPU sampler and resource thresholds",
+      "RESOURCE_WATCH_UNSAFE emission and native refusal on any own-run unsafe event",
+      "two-consecutive-unsafe process stop and hold behavior",
+      "hosted acceptance readiness and concurrency group"
+    ],
+    "diagnostic_bound": "The /bin/ps child uses the existing guard command runner's 5,000 ms timeout and policy processSnapshotMaxBytes buffer limit. It starts only after the first unsafe event is durable. The stop loop does not wait for it; final journal publication waits after owned-process cleanup so the diagnostic event remains in the same run.",
+    "privacy": "The macOS ps ucomm field is the executable accounting name, unlike args/command which include arguments. The parser also reduces it to basename. Arbitrary exception messages and raw process rows are never journaled."
+  },
+  "verification": {
+    "local": [
+      "node --test scripts/test-stabilization-resource-safety.mjs tests/browser/native-resource-boundary.test.mjs: pass",
+      "node --check on guard and integration test: pass",
+      "Biome check on changed files and git diff --check: pass"
+    ],
+    "integration_test": "scripts/test-stabilization-resource-disk-integration.mjs now drives a real copied guard wrapper, detects the first unsafe journal event, calls the real native resource boundary before the next watch, and asserts refusal plus sanitized process attribution. It skipped on this Mac because the system volume had 3.46 GiB free at test time, below the unchanged 20 GiB admission floor. The existing macOS CI workflow runs this integration before native acceptance.",
+    "native_acceptance": "not run"
+  },
+  "next": "Independent peer reviews the guard ordering, diagnostic privacy and integration test. Run the focused integration on a host satisfying the existing disk floor, then one authorized hosted native acceptance against the exact frozen artifact. Attribute the burst using the same-run process event, but accept the product only with a valid resource journal and actual native receipt.",
+  "limits": [
+    "A ps %CPU snapshot follows the one-second iostat sample, so it can identify likely consumers but cannot by itself prove the entire preceding CPU interval belonged to one process.",
+    "No hosted or local native browser was launched; the original D120 product verdict remains unverified after the two resource refusals."
+  ]
+}

@@ -6,6 +6,7 @@ import { test } from 'node:test';
 import {
   cpuBusyFraction,
   diskIsLow,
+  processCpuAttribution,
   sampleDiskSpace,
   writeSafetyState,
 } from './stabilization-resource-safety.mjs';
@@ -38,6 +39,37 @@ test('CPU sampler uses the second interval and refuses a missing reading', async
       throw Object.assign(new Error('timed out'), { killed: true, signal: 'SIGTERM' });
     }),
     /timed out/,
+  );
+});
+
+test('unsafe CPU attribution keeps only bounded numeric process identity and executable basenames', async () => {
+  const raw = [
+    '  413  201  72.5 /private/credential=secret/Chromium',
+    '  829  413  18.2 /Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+    '  992    1   0.0 /usr/sbin/syslogd',
+  ].join('\n');
+  const processes = await processCpuAttribution(async (command, args) => {
+    assert.equal(command, '/bin/ps');
+    assert.deepEqual(args, ['-A', '-o', 'pid=,ppid=,%cpu=,ucomm=']);
+    return raw;
+  });
+  assert.deepEqual(processes, [
+    { pid: 413, parentPid: 201, cpuPercent: 72.5, executable: 'Chromium' },
+    { pid: 829, parentPid: 413, cpuPercent: 18.2, executable: 'Google Chrome' },
+  ]);
+  assert.doesNotMatch(JSON.stringify(processes), /credential|secret|Applications|MacOS/);
+  assert.deepEqual(
+    await processCpuAttribution(async () =>
+      [
+        '  100  1  0.0 /usr/sbin/syslogd',
+        '  202  100  7.1 /private/another-sensitive-directory/node',
+      ].join('\n'),
+    ),
+    [{ pid: 202, parentPid: 100, cpuPercent: 7.1, executable: 'node' }],
+  );
+  await assert.rejects(
+    processCpuAttribution(async () => 'not a process row'),
+    /RESOURCE_PROCESS_DIAGNOSTIC_INVALID/,
   );
 });
 

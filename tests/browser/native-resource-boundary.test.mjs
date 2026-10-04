@@ -89,6 +89,13 @@ test('native Scrape resource boundary permits fresh own-run health and refuses u
     admitted,
     healthy,
     { ...healthy, code: 'RESOURCE_WATCH_UNSAFE', at: '2026-10-04T09:14:21.000Z', reasons: ['cpu'] },
+    {
+      schema: 1,
+      runId,
+      code: 'RESOURCE_PROCESS_ATTRIBUTION',
+      at: '2026-10-04T09:14:21.100Z',
+      processes: [{ pid: 413, parentPid: 201, cpuPercent: 72.5, executable: 'Chromium' }],
+    },
   ]);
   await assert.rejects(check(), /unsafe_sample/);
   await assert.rejects(

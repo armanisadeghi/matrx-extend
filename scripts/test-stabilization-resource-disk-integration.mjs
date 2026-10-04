@@ -5,6 +5,10 @@ import { copyFile, mkdir, mkdtemp, readFile, rm, stat, statfs, writeFile } from 
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { test } from 'node:test';
+import {
+  requireNativeResourceHealth,
+  runNativeResourceAction,
+} from '../tests/browser/native-resource-boundary.mjs';
 import { setHealthyHostMeasurements } from './stabilization-resource-test-measurements.mjs';
 
 const source = resolve(import.meta.dirname, '..');
@@ -153,6 +157,8 @@ test(
     let closed = false;
     let workloadPid;
     let phaseError;
+    let refusalPromise;
+    let nativeActionRan = false;
     let timeout;
     try {
       await writeFile(item.phasePath, 'high\n');
@@ -178,6 +184,32 @@ test(
       let stderr = '';
       guard.stdout.on('data', (chunk) => {
         stdout += chunk;
+        if (!refusalPromise && stdout.includes('"code":"RESOURCE_WATCH_UNSAFE"')) {
+          refusalPromise = (async () => {
+            const owner = JSON.parse(
+              await readFile(join(item.leaseRoot, 'heavy', 'owner.json'), 'utf8'),
+            );
+            await assert.rejects(
+              runNativeResourceAction(
+                () =>
+                  requireNativeResourceHealth({
+                    repo: item.scratch,
+                    leaseRoot: item.leaseRoot,
+                    env: {
+                      MATRX_RESOURCE_RUN_ID: runId,
+                      MATRX_RESOURCE_OWNER: owner.nonce,
+                      MATRX_RESOURCE_STOP_FILE: join(item.leaseRoot, `stop-${owner.nonce}.json`),
+                    },
+                  }),
+                () => {
+                  nativeActionRan = true;
+                },
+              ),
+              /NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample/,
+            );
+          })();
+          void refusalPromise.catch(() => {});
+        }
         if (workloadPid) return;
         const match = stdout.match(/WORKLOAD_ALIVE:(\d+)/);
         if (!match) return;
@@ -197,12 +229,28 @@ test(
       });
       assert.equal(phaseError, undefined);
       assert(workloadPid, stdout);
+      assert(refusalPromise, stdout);
+      await refusalPromise;
+      assert.equal(nativeActionRan, false);
       assert.deepEqual(exit, { code: 3, signal: null }, stderr);
       const events = await eventsFor(item.docs, runId);
       assert(events.some((event) => event.code === 'RESOURCE_ADMITTED'));
       const unsafe = events.find((event) => event.code === 'RESOURCE_WATCH_UNSAFE');
       assert(unsafe);
       assert(unsafe.reasons.includes('RESOURCE_DISK_LOW'));
+      const attribution = events.find((event) => event.code === 'RESOURCE_PROCESS_ATTRIBUTION');
+      assert(attribution);
+      assert.equal(attribution.unavailable, undefined);
+      assert(Array.isArray(attribution.processes));
+      for (const process of attribution.processes) {
+        assert.deepEqual(Object.keys(process).sort(), [
+          'cpuPercent',
+          'executable',
+          'parentPid',
+          'pid',
+        ]);
+        assert.equal(process.executable.includes('/'), false);
+      }
       assert.equal(unsafe.sample.repoFreeGiB, 1600);
       assert.equal(unsafe.sample.profileFreeGiB, 1600);
       assert.equal(unsafe.sample.safetyFreeGiB, 116 / 1024);

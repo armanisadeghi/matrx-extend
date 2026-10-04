@@ -27,6 +27,7 @@ import { classifyLegacyRunner, parseProcessIdentity } from './stabilization-reso
 import {
   cpuBusyFraction,
   diskIsLow,
+  processCpuAttribution,
   sampleDiskSpace,
   writeSafetyState,
 } from './stabilization-resource-safety.mjs';
@@ -585,6 +586,7 @@ async function main() {
   });
   let unsafe = 0;
   let healthy = 0;
+  let attributionPending;
   let previous;
   let swapWindowAt = 0;
   const stopSignal = (signal) => {
@@ -700,6 +702,22 @@ async function main() {
         reasons: bad,
         sample: current,
       });
+      if (
+        bad.length &&
+        unsafe === 1 &&
+        unsafe < policy.unsafeSamplesToStop &&
+        !attributionPending
+      ) {
+        // The unsafe event is durable first. Diagnosis uses the existing
+        // bounded command runner and never delays the watch/stop loop.
+        attributionPending = processCpuAttribution(output)
+          .then(
+            (processes) => ({ processes }),
+            () => ({ unavailable: true }),
+          )
+          .then((detail) => emit('RESOURCE_PROCESS_ATTRIBUTION', { runId, ...detail }));
+        void attributionPending.catch(() => {});
+      }
       if (unsafe >= policy.unsafeSamplesToStop) {
         const hold = {
           schema: 1,
@@ -733,16 +751,21 @@ async function main() {
   } finally {
     // Once launch begins, no exception path may release before the all-session
     // census succeeds. Failed census/cleanup deliberately leaves durable ownership.
+    let canRelease = true;
     if (owner.ownership && !(await stopOwnedProcesses(owner))) {
       emit('RESOURCE_OWNED_PROCESS_STILL_RUNNING', {
         runId,
         recovery: 'Rerun the same guarded command; stale ownership cleanup is automatic.',
       });
       process.exitCode = 3;
+      canRelease = false;
     } else if (groupId && !(await groupGone(groupId))) {
       emit('RESOURCE_GROUP_STILL_RUNNING', { runId, groupId });
       process.exitCode = 3;
-    } else if (!journalBroken && !safetyStateBroken) await release(owner);
+      canRelease = false;
+    }
+    if (attributionPending) await attributionPending;
+    if (canRelease && !journalBroken && !safetyStateBroken) await release(owner);
   }
 }
 
