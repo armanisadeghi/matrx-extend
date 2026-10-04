@@ -1,0 +1,315 @@
+{
+  "schema_version": 1,
+  "task": "scrape-complete-trace-native",
+  "defect": "EXT-D-0123",
+  "verdict": "native_all_action_trace_locates_final_zero_target_copy_after_video_open_detached_tabs_and_article_selection; cause_unverified",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 37215748629,
+    "job_id": 111475786069,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37215748629",
+    "head_sha": "a4f65cac8f7c51d1d856b6a9f13304e3221006f9",
+    "conclusion": "failure",
+    "inputs": {
+      "acceptance_case": "guest-scrape-development",
+      "development_run_id": 37193761291,
+      "development_artifact_id": 11299613935
+    },
+    "uploaded_artifact": {
+      "id": 11308321916,
+      "name": "hosted-guest-37215748629-1",
+      "size_bytes": 113600,
+      "sha256": "b52dac99b88cd1cc21aebbc9f17b8d8f4687d55e70aa22537b6279d0f2a5147d"
+    }
+  },
+  "frozen_product": {
+    "version": "0.2.215",
+    "source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+    "tree_sha256": "ab62d0755d03e8a7f2ca0cb99e0b5037f39e75d756b14a3e2d3ad6d8cc096d08",
+    "development_run_id": 37193761291,
+    "development_artifact_id": 11299613935,
+    "development_artifact_sha256": "9197f3df76ec1163b15069bd8d24846791855c07e5c58a02b680e552bc5ae3ce",
+    "artifact_import_verified": true,
+    "reviewed_driver_commit": "504fcdf56c4fda523e32cd785966e2d83f0cf4fd",
+    "driver_diff_from_reviewed_commit": "clean before dispatch"
+  },
+  "resource_outcome": {
+    "hosted_preflight": "passed",
+    "readiness_gates": {
+      "package": {
+        "samples": 3,
+        "healthy": 3
+      },
+      "browser": {
+        "samples": 3,
+        "healthy": 3
+      },
+      "acceptance": {
+        "samples": 3,
+        "healthy": 3
+      }
+    },
+    "package": {
+      "decision": "valid",
+      "admitted": true,
+      "child_exit_code": 0,
+      "admission_cpu_busy_samples": 7,
+      "resource_invalid": false
+    },
+    "browser": {
+      "decision": "valid",
+      "admitted": true,
+      "child_exit_code": 0,
+      "admission_cpu_busy_samples": 7,
+      "resource_invalid": false
+    },
+    "acceptance": {
+      "decision": "child_failed",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "admission_cpu_busy_samples": 7,
+      "healthy_watch_count": 1,
+      "unsafe_watch_count": 0,
+      "healthy_watch_at": "2026-10-04T16:16:09.342Z"
+    },
+    "resource_policy_changed": false
+  },
+  "native_outcome": {
+    "overall_status": "unverified",
+    "stage": "warm_media_controls",
+    "native_stage": "exercise_panel",
+    "failure": {
+      "stage": "warm_media_controls",
+      "code": "unique visible pointer target"
+    },
+    "driver_failure": {
+      "code": "pointer_target_not_unique",
+      "sampleStage": null,
+      "matchedTargetCount": 0,
+      "visibleMatchCount": 0,
+      "uniqueVisibleTarget": false,
+      "hitTarget": false,
+      "animating": false,
+      "stableSamples": 0,
+      "positionStable": false,
+      "targetHasArea": null,
+      "clippedTargetHasArea": null,
+      "selectedPointAvailable": null,
+      "centerHitCategory": null,
+      "targetDisabled": null,
+      "pointerEventsNone": null,
+      "clippingAncestorCount": null,
+      "testedPointCount": null,
+      "interiorHitKinds": null,
+      "targetRectangle": null,
+      "centerOccluder": null,
+      "firstInteriorOccluder": null
+    },
+    "cases": [
+      {
+        "id": "EXT-F-1007-T20",
+        "status": "partial",
+        "evidence": {
+          "initial_empty": true,
+          "initial_url": "http://localhost:49195/intake"
+        },
+        "remaining": ["Navigation and reload lifecycle remain to be exercised."]
+      },
+      {
+        "id": "EXT-F-1007-T01",
+        "status": "partial",
+        "evidence": {
+          "url": "http://localhost:49195/intake",
+          "busy_disabled": true,
+          "article_title": "Harbor Dental intake guide",
+          "lazy_content_absent": true,
+          "result_tabs": ["Article", "Images", "Video", "Links", "SEO", "Schema"]
+        },
+        "remaining": ["Warm/full reload lifecycle not yet exercised."]
+      },
+      {
+        "id": "EXT-F-1007-T08",
+        "status": "partial",
+        "evidence": {
+          "tabs_selected": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+          "matching_content": {
+            "article": true,
+            "images": {
+              "pane": "Images",
+              "state": "matching_content",
+              "count": 3,
+              "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+              "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+              "natural_sizes": [[640, 480], [96, 96], [32, 32]]
+            },
+            "video": {
+              "pane": "Video",
+              "state": "matching_content",
+              "count": 2,
+              "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+            },
+            "links": true,
+            "seo": true,
+            "schema": true
+          }
+        },
+        "remaining": ["Image and video empty states and reload lifecycle need full observation."]
+      }
+    ],
+    "case_scope": "Guest T20, T01 and T08 were partial. Fast capture showed busy_disabled=true and the fixture article/result tabs. All six tabs had matching content before warm controls. Warm image/video acceptance, links, full extension reload, and other auth roles remain unverified.",
+    "all_action_trace": {
+      "phase": "warm-media",
+      "action_count": 18,
+      "shared_event_count": 46,
+      "events_dropped": 0,
+      "truncated": false,
+      "final_action": {
+        "phase": "warm",
+        "kind": "scrape-media-copy",
+        "target": "/referral-walkthrough.mp4"
+      },
+      "final_action_pre": {
+        "selected": null,
+        "imagePaths": null,
+        "imageCount": null,
+        "panePresent": true
+      },
+      "final_action_post": {
+        "selected": "Article",
+        "imagePaths": [],
+        "imageCount": "1",
+        "panePresent": true
+      },
+      "final_action_failure": {
+        "code": "pointer_target_not_unique",
+        "sampleStage": null,
+        "matchedTargetCount": 0,
+        "visibleMatchCount": 0,
+        "uniqueVisibleTarget": false,
+        "hitTarget": false,
+        "animating": false,
+        "stableSamples": 0,
+        "positionStable": false,
+        "targetHasArea": null,
+        "clippedTargetHasArea": null,
+        "selectedPointAvailable": null,
+        "centerHitCategory": null,
+        "targetDisabled": null,
+        "pointerEventsNone": null,
+        "clippingAncestorCount": null,
+        "testedPointCount": null,
+        "interiorHitKinds": null,
+        "targetRectangle": null,
+        "centerOccluder": null,
+        "firstInteriorOccluder": null
+      },
+      "first_article_transition": {
+        "ms": 9094,
+        "type": "tab_change",
+        "selected": "Article",
+        "sameTabs": false
+      },
+      "preceding_transition": {
+        "ms": 8743,
+        "type": "tab_change",
+        "selected": null,
+        "sameTabs": false
+      },
+      "relevant_timeline": [
+        {
+          "ms": 8691,
+          "type": "trusted pointerdown",
+          "target": "open:/intake-walkthrough.mp4",
+          "selected": "Video"
+        },
+        {
+          "ms": 8695,
+          "type": "trusted click",
+          "target": "open:/intake-walkthrough.mp4",
+          "selected": "Video"
+        },
+        {
+          "ms": 8743,
+          "type": "tab_change",
+          "selected": null,
+          "sameTabs": false
+        },
+        {
+          "ms": 9094,
+          "type": "tab_change",
+          "selected": "Article",
+          "sameTabs": false,
+          "action": "copy /referral-walkthrough.mp4"
+        }
+      ],
+      "successful_image_removals": [
+        {
+          "path": "/appointment-card.svg",
+          "pre": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+          "post": ["/intake.svg", "/clinic-icon.svg"],
+          "selected": "Images",
+          "pointerFailure": null
+        },
+        {
+          "path": "/clinic-icon.svg",
+          "pre": ["/intake.svg", "/clinic-icon.svg"],
+          "post": ["/intake.svg"],
+          "selected": "Images",
+          "pointerFailure": null
+        },
+        {
+          "path": "/intake.svg",
+          "pre": ["/intake.svg"],
+          "post": [],
+          "selected": "Images",
+          "pointerFailure": null
+        }
+      ],
+      "event_caps": {
+        "shared_phase": 256,
+        "per_action": 32,
+        "observed_shared_events": 46,
+        "observed_dropped": 0,
+        "truncated": false
+      }
+    },
+    "observed": [
+      "All three warm image removals succeeded in sequence: /appointment-card.svg, /clinic-icon.svg, /intake.svg. Images remained selected; the last removal left zero fixture images.",
+      "The add flow succeeded and added /followup-card.svg; therefore the later image count of one belongs to the new item and does not identify the failing action.",
+      "The warm Video tab was selected normally. Trusted pointer events clicked Open for /intake-walkthrough.mp4; 48 ms later the observer recorded selected=null with sameTabs=false and tabs disconnected.",
+      "The next and final attempted operation was Copy for /referral-walkthrough.mp4. The shared phase trace first recorded Article selected at 9094 ms with sameTabs=false. That action failed with pointer_target_not_unique, matchedTargetCount=0, visibleMatchCount=0; its post-state had Article selected and one image.",
+      "The warm shared trace captured 46 events, eventsDropped=0, truncated=false. One acceptance CPU health watch was healthy; zero unsafe watches. Package and browser admission were valid and childExitCode=0."
+    ],
+    "inferred": [
+      "The recorded chronology places the selected=null/tab disconnection after the Video Open click and Article selection during the subsequent Copy action. This associates the observed transitions with that interval, but the run does not establish whether opening the video, active-tab handoff, a state reset, or another interaction caused the Article selection.",
+      "The earlier hypothesis that the last image removal was the failing action is refuted: it succeeded, and the add flow later created the one remaining image.",
+      "No causal product diagnosis or repair is established by this single diagnostic."
+    ],
+    "limits": [
+      "This is a development artifact diagnostic, not a product acceptance pass.",
+      "No reload milestones were recorded; T20 navigation/reload lifecycle is partial.",
+      "T01 busy observation is a bounded sample, not an assertion for the full action.",
+      "T08 was partial; empty states and reload behavior remain unverified.",
+      "No additional auth roles, full link sequence, or post-repair native behavior was exercised."
+    ]
+  },
+  "evidence_directory": "docs/stabilization/evidence/scrape215/run37215748629",
+  "files_sha256": {
+    "browser-resource.jsonl": "659f3fe480f6eed2be29fed12e74277702c1a22198336679ab809f40f6ec1085",
+    "guest-resource.jsonl": "0698fe01a3d86673559d674c4e1d47159793bd06684375a8a56ca68c792d1b16",
+    "native-side-panel.png": "2cfda86f86cad54e4a73aa3480585a0e0ab5d74b20da4921a35999d22e3c462f",
+    "normal-target-after-open.png": "60d95c01c8bf5fa8f0807e1aed08d2adb43b4a5532190ae0eadd54c5e3aef79c",
+    "package-resource.jsonl": "0e599f69126988ac01b929d581edc5138e1c10e4672b4c1e7c365b5b6ef8d266",
+    "receipt.json.txt": "d6f92a1d6eea9a20d718c6d2b0cf9eafea48c688c776d8ef7430ac482db1aa39",
+    "scrape-fast-article.png": "5cb06d19f278760ff45183ea9269e7ab08eb9923207e79c94dda877f2fa796e3",
+    "scrape-warm-media-failure.png": "fb5a5028ec813d36732e5da50744084b0586ad96ffaafd77688b62c59c7b25ea"
+  },
+  "notes": [
+    "Exactly one guarded hosted native diagnostic was dispatched; no retry was made.",
+    "The three resource journal JSONL files preserve exact structured records emitted in the hosted run logs; the workflow artifact contained the native receipt and screenshots, but not journal files.",
+    "receipt.json.txt is copied byte-for-byte from the uploaded artifact. Screenshots are copied byte-for-byte. No artifact ZIP was committed.",
+    "Driver files matched reviewed commit 504fcdf before dispatch; no local build, browser run, product source edit, or release was performed.",
+    "The concurrently running automatic CI was separate and was not treated as a competing hosted native run."
+  ]
+}
