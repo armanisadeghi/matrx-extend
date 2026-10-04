@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "task": "scrape-pane-retention-fix",
+  "defect": "EXT-D-0123",
+  "status": "component_guard_green_native_acceptance_pending",
+  "cause": "The capture identity gate unmounts result Tabs while a newly opened media tab is active. Uncontrolled Tabs remount at Article when the original capture page becomes active again.",
+  "change": "ScrapeView controls the selected result pane using the original capture object as its identity. Active-page identity still gates stale results; a new capture receives Article even when its page key matches the previous capture.",
+  "red_proof": "The real ScrapeView component guard failed after pageKey null, a different document, and return to the original page: Video aria-selected was false instead of true.",
+  "green_proof": "ScrapeView.media-controls.test.tsx passes five tests, including same-capture pane restoration, second-video Copy, stale-page hiding, and new-capture Article reset.",
+  "mutation_proof": "The forcing-function plant replaced selectedPane with constant Article; the targeted guard failed and plant.py restored ScrapeView.tsx byte-identically.",
+  "sibling_census": "ScrapeView is the only active-capture result Tabs with an active-page identity gate and an uncontrolled Article default. SavedCapturesView has a separate saved-item viewer; FilesView and ShowcaseView use controlled Tabs. No sibling repair needed.",
+  "native_limit": "The previous complete native trace and receipt cover the failing Open flow, but this change has not been exercised in a rebuilt native side panel. Native active-tab timestamps and the opened.close timestamp remain absent from that trace.",
+  "compile": "pnpm compile passed after a concurrent PasswordGenerator.test.tsx TS2352 at line 247 was resolved by its owner; the first two attempts were blocked outside this lane.",
+  "product_files": [
+    "src/features/scrape/ScrapeView.tsx",
+    "src/features/scrape/ScrapeView.media-controls.test.tsx",
+    "docs/feature-tests.md"
+  ]
+}

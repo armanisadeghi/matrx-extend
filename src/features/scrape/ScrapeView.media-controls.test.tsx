@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -11,7 +11,7 @@ const mocks = vi.hoisted(() => ({
     documentId: 'seed-page',
     identityStatus: 'ready' as const,
     identityError: null,
-    pageKey: 'seed-page',
+    pageKey: 'seed-page' as string | null,
   },
 }));
 
@@ -152,6 +152,7 @@ const capture: SoupResult = {
 };
 
 beforeEach(() => {
+  mocks.tab.pageKey = 'seed-page';
   useScrapeStore.getState().setCurrent(capture, mocks.tab.pageKey);
   mocks.copiedText.mockReset();
 });
@@ -171,6 +172,38 @@ const firstElement = (elements: HTMLElement[], description: string): HTMLElement
 };
 
 describe('ScrapeView media controls', () => {
+  it('restores the selected pane only for the same capture after an active-tab round trip', async () => {
+    const view = render(<ScrapeView />);
+    await openTab('Video');
+    expect(screen.getByRole('tab', { name: /Video/ }).getAttribute('aria-selected')).toBe('true');
+
+    mocks.tab.pageKey = null;
+    view.rerender(<ScrapeView />);
+    expect(screen.queryByRole('tab', { name: /Video/ })).toBeNull();
+
+    mocks.tab.pageKey = 'another-document';
+    view.rerender(<ScrapeView />);
+    expect(screen.queryByRole('tab', { name: /Video/ })).toBeNull();
+
+    mocks.tab.pageKey = 'seed-page';
+    view.rerender(<ScrapeView />);
+    expect(screen.getByRole('tab', { name: /Video/ }).getAttribute('aria-selected')).toBe('true');
+    const copySecondVideo = screen.getAllByTitle('Copy video URL')[1];
+    if (!copySecondVideo) throw new Error('Expected the second video copy button');
+    fireEvent.click(copySecondVideo);
+    await waitFor(() =>
+      expect(mocks.copiedText).toHaveBeenCalledWith('https://video.test/watch/watering'),
+    );
+
+    act(() => {
+      useScrapeStore
+        .getState()
+        .setCurrent({ ...capture, capturedAt: capture.capturedAt + 1 }, 'seed-page');
+    });
+    expect(screen.getByRole('tab', { name: 'Article' }).getAttribute('aria-selected')).toBe('true');
+    expect(screen.getByRole('tab', { name: /Video/ }).getAttribute('aria-selected')).toBe('false');
+  });
+
   it('removes only the selected image and updates the visible image count', async () => {
     render(<ScrapeView />);
     await openTab('Images');

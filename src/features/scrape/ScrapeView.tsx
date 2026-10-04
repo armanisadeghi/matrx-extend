@@ -88,6 +88,14 @@ export function ScrapeView() {
   const recognition = usePageRecognition();
   const tab = useActiveTab();
   const capturedPageKey = useScrapeStore((s) => s.pageKey);
+  // The original changes only when a new capture replaces this one. Keep pane
+  // choice across temporary active-tab identity loss, but reset on re-capture.
+  const originalCapture = useScrapeStore((s) => s.original);
+  const [paneSelection, setPaneSelection] = useState<{
+    capture: typeof originalCapture;
+    value: string;
+  } | null>(null);
+  const selectedPane = paneSelection?.capture === originalCapture ? paneSelection.value : 'article';
   const captureIsCurrent =
     isCurrentPageIdentity(capturedPageKey) && capturedPageKey === tab.pageKey;
   const current = captureIsCurrent ? captured : null;
@@ -416,7 +424,11 @@ export function ScrapeView() {
 
       <div className="flex flex-1 flex-col min-h-0">
         {current ? (
-          <Tabs defaultValue="article" className="flex flex-1 flex-col min-h-0">
+          <Tabs
+            value={selectedPane}
+            onValueChange={(value) => setPaneSelection({ capture: originalCapture, value })}
+            className="flex flex-1 flex-col min-h-0"
+          >
             <TabsList className="mx-3 mt-1 h-auto min-w-0 self-stretch flex-wrap justify-start gap-1 bg-transparent p-0">
               <ScrapeTab value="article">Article</ScrapeTab>
               <ScrapeTab value="images" count={current.images.length}>
