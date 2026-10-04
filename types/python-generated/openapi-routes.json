@@ -403,6 +403,14 @@
  "/affinity/public/status": {
   "get": []
  },
+ "/agent-battles/{set_id}/cancel": {
+  "post": []
+ },
+ "/agent-battles/{set_id}/run": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/agent-iteration/commit-choice": {
   "post": [
    "application/json"

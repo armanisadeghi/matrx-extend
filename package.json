@@ -1,6 +1,6 @@
 {
   "name": "matrx-extend",
-  "version": "0.2.194",
+  "version": "0.2.195",
   "private": true,
   "type": "module",
   "description": "AI assistant for understanding and working with the page open in your browser.",
