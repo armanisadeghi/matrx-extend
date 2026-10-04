@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-case-procedure-patch",
+  "task_id": "procedure-gap-batch-chrome-local-data",
+  "patch_id": "chrome-local-read-and-restore-procedures-20261004",
+  "source": {
+    "source_inventory": "docs/stabilization/inventory.json",
+    "scope": "Five source-derived proposed procedures for existing Chrome-local history, downloads, and recently-closed cases. Proposed JSON updates only; no acceptance status or inventory cells changed, and no cases executed.",
+    "source_sha": "0fc8f137f7a33c755811f912402da7977fda1882",
+    "source_files_reviewed": [
+      "docs/stabilization/INVENTORY-CONTRACT.md",
+      "docs/stabilization/PLAN.md",
+      "docs/stabilization/inventory.json",
+      "src/features/tools/ToolsView.tsx",
+      "src/lib/tools/handlers/browser-data.ts",
+      "src/lib/tools/handlers/optional-perms.ts",
+      "src/lib/tools/handlers/canonical-mergers.ts",
+      "src/lib/tools/dispatch.ts",
+      ".research/tool-binding-readonly-census.json"
+    ]
+  },
+  "selectedFeatureIDs": ["EXT-F-4042", "EXT-F-4043", "EXT-F-4094", "EXT-F-4165", "EXT-F-4166"],
+  "shared_setup": {
+    "build_profile_reload": [
+      "Follow the complete resource permit and build/reload contract in docs/stabilization/PLAN.md. Use an existing receipt-bound development artifact; confirm its source SHA and tree hash match the loaded unpacked extension before opening the side panel. Record the exact artifact, Chrome version, disposable profile, role, permission state, and timestamp without recording credentials or personal browser data.",
+      "Use separate existing signed-in ordinary-member and admin test profiles. Keep each role's result separate. Guest applicability stays as currently recorded; these procedures do not test the Tools sign-in gate.",
+      "After the warm pass, repeat the applicable case after the source-relevant extension reload, side-panel reopen, and fixture-tab reload described in PLAN.md. A source-only procedure does not count as execution evidence."
+    ],
+    "manual_surface": [
+      "In the signed-in side panel, open Tools \u2192 Catalog, leave the surface selector at Agent surface, search for the exact tool name, expand its row, enter the listed JSON in the test runner, select Run, and inspect the inline result. ToolsView runs local handlers directly and skips the dispatcher permission gate; these cases cover that user-initiated manual path only, not agent advertisement, Ask/Act gating, or dispatcher permission enforcement.",
+      "Use a dedicated disposable Chrome profile containing only synthetic/public test browsing data. Do not run these history/download/session reads in a personal profile or include unrelated returned records in evidence. Keep evidence limited to the known synthetic fixture and aggregate count where possible."
+    ],
+    "fixtures_and_permissions": [
+      "Before history procedures, visit two public pages in the disposable profile and record their exact URLs and visit time in the run receipt. If these controlled visits are absent from history, stop and leave the case unverified.",
+      "Before the download procedure, create one completed download from an owned test fixture with a distinctive synthetic filename. The current source does not establish that this fixture exists; if no safe owned fixture is available, leave the case unverified rather than using a real or personal download.",
+      "Before recently-closed procedures, open a disposable tab to a public test page and close only that tab, preserving the fixture URL/title for comparison. Grant the optional sessions permission through the product's authorized Settings path before invoking the handler; do not remove permissions to create a denial. If permission or the fixture is unavailable, leave the relevant case unverified."
+    ]
+  },
+  "case_updates": {
+    "EXT-F-4042-T01": {
+      "feature_id": "EXT-F-4042",
+      "title": "List recent controlled history entries",
+      "control_ids": ["EXT-F-4042-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-ready-unverified",
+      "preconditions": [
+        "Complete shared receipt-bound build/profile/reload setup.",
+        "Complete shared history fixture preparation in the disposable profile; the two fixture visits must be within the selected lookback window.",
+        "The Tools manual runner directly invokes this handler; this procedure does not establish dispatcher permission behavior."
+      ],
+      "steps": [
+        "Warm run: open list_recent_history and run with {\"minutes\":60,\"max_results\":50} immediately after the controlled fixture visits.",
+        "Inspect the inline result's count and items. Find only the two recorded fixture URLs and compare their titles, visit timestamps, and visit counts with the browser actions; do not copy other result rows into evidence.",
+        "Run the same arguments once more and confirm the fixture entries remain present and ordered newest first by last_visit_ms.",
+        "After the required extension/panel/target-tab reload, rerun the same arguments and compare only the controlled fixture entries."
+      ],
+      "expected": [
+        "The result has a count and items array; controlled pages visited within 60 minutes appear with their URL/title and visit metadata, subject to Chrome history API results.",
+        "Items are ordered by descending last_visit_ms when timestamps are present. Exact total count and visit_count may include browser-generated changes, so use the two known fixture URLs as the assertion boundary.",
+        "An unavailable API or surfaced error is recorded as unverified/failure evidence for review; an empty list does not prove the feature works when fixture visits are missing."
+      ],
+      "dimensions": ["valid-input", "controlled-history-fixture", "warm", "reload"],
+      "source_evidence": [
+        "src/lib/tools/handlers/browser-data.ts:138-168",
+        "src/features/tools/ToolsView.tsx:1-12",
+        "src/features/tools/ToolsView.tsx:420-477"
+      ],
+      "uncertainty": [
+        "No history query was executed. A dedicated disposable profile and matching Chrome history permission are prerequisites, not confirmed available fixtures.",
+        "Manual Run skips dispatcher permission checks; this is not evidence about registered tool binding or agent-call reachability."
+      ]
+    },
+    "EXT-F-4043-T01": {
+      "feature_id": "EXT-F-4043",
+      "title": "Find a controlled completed download",
+      "control_ids": ["EXT-F-4043-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-ready-unverified",
+      "preconditions": [
+        "Complete shared receipt-bound build/profile/reload setup.",
+        "Complete the shared owned-download fixture preparation and record its exact synthetic filename; do not use an existing personal download.",
+        "The extension manifest must provide the downloads API permission in the tested artifact."
+      ],
+      "steps": [
+        "Warm run: open list_downloads and run with {\"query\":\"<exact synthetic fixture filename>\",\"state\":\"complete\",\"limit\":10}, substituting only the recorded fixture name.",
+        "Inspect the inline downloads array for the controlled fixture and compare filename, state, byte totals, and nonempty start_time with the known download. Avoid copying its URL or other download rows into the report.",
+        "Run with the same filename query and limit but omit state to confirm query matching still finds the fixture; compare by its synthetic filename only.",
+        "After the required extension/panel reload, rerun the state-filtered query and confirm the same controlled record remains discoverable."
+      ],
+      "expected": [
+        "The response has count and downloads; the controlled fixture appears in the complete-state query with state complete, a matching filename, and coherent bytes_received/total_bytes.",
+        "The unfiltered query also finds the fixture. Results are requested newest first; the procedure does not require an exact total count.",
+        "If the controlled download fixture or required API is absent, stop and record the case unverified; never infer success from unrelated profile data."
+      ],
+      "dimensions": ["valid-input", "controlled-download-fixture", "state-filter", "reload"],
+      "source_evidence": [
+        "src/lib/tools/handlers/browser-data.ts:173-204",
+        "src/lib/tools/catalog.ts:87-88",
+        "src/features/tools/ToolsView.tsx:420-477"
+      ],
+      "uncertainty": [
+        "The repository source does not provide or confirm an owned completed-download fixture; safe fixture availability must be established before execution.",
+        "Manual Run skips dispatcher authorization. This procedure does not assess dispatcher enforcement, live binding, or account-level data exposure."
+      ]
+    },
+    "EXT-F-4094-T01": {
+      "feature_id": "EXT-F-4094",
+      "title": "List the controlled recently-closed tab",
+      "control_ids": ["EXT-F-4094-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-ready-unverified",
+      "preconditions": [
+        "Complete shared receipt-bound build/profile/reload setup and recently-closed fixture preparation.",
+        "Grant sessions permission through the extension's authorized Settings path; confirm it is granted before running. Missing permission is a prerequisite gap, not a product result.",
+        "Only the dedicated test tab is closed; do not close or restore personal tabs/windows."
+      ],
+      "steps": [
+        "Warm run: open list_recently_closed and run with {\"max_results\":10}.",
+        "Inspect entries for the exact controlled test tab URL/title and its tab session ID. Record only that matching row and whether a tab or window entry was returned.",
+        "Run a second time without changing browser state; confirm the controlled closed-tab entry remains listed and is within the requested maximum.",
+        "After extension/panel reload, run again and compare the controlled row. Do not restore it in this case; restoration is covered by EXT-F-4166-T01."
+      ],
+      "expected": [
+        "The result reports ok=true, count, and entries; the controlled recently closed tab appears with the recorded URL/title when Chrome retains the session.",
+        "Returned entries do not exceed max_results. Exact count/order can change due to browser activity and are not fixed assertions.",
+        "If sessions API is absent or permission was not granted, retain the refusal/error and leave behavior unverified rather than treating it as a successful empty result."
+      ],
+      "dimensions": [
+        "valid-input",
+        "sessions-permission",
+        "controlled-closed-tab",
+        "warm",
+        "reload"
+      ],
+      "source_evidence": [
+        "src/lib/tools/handlers/optional-perms.ts:166-194",
+        "src/lib/tools/dispatch.ts:779-799",
+        "src/features/tools/ToolsView.tsx:420-477"
+      ],
+      "uncertainty": [
+        "Chrome's retained session entry and the sessions permission are runtime prerequisites and were not inspected or exercised.",
+        "Manual Run bypasses the dispatcher gate described in dispatch.ts; only the direct handler path is covered."
+      ]
+    },
+    "EXT-F-4165-T01": {
+      "feature_id": "EXT-F-4165",
+      "title": "Search and list recent controlled history",
+      "control_ids": ["EXT-F-4165-C01", "EXT-F-4165-C02", "EXT-F-4165-C03"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-ready-unverified",
+      "preconditions": [
+        "Complete shared receipt-bound build/profile/reload setup and controlled history fixture preparation.",
+        "The Tools catalog row's schema must load from the current handler source; if it does not, stop and preserve the schema error as an unresolved prerequisite."
+      ],
+      "steps": [
+        "Warm recent branch: open chrome_history and run with {\"action\":\"recent\",\"minutes\":60,\"limit\":50}; compare only the recorded fixture URLs and verify recent ordering.",
+        "Search branch: run with {\"action\":\"search\",\"query\":\"<distinctive public hostname from controlled fixture>\",\"limit\":50}, replacing the placeholder with the hostname actually visited.",
+        "Check the search output for the controlled fixture URL/title and compare it with the recent result. Do not infer search support from recent-only success.",
+        "After extension/panel/target-tab reload, repeat both action values and compare only the known fixture rows."
+      ],
+      "expected": [
+        "The recent action delegates to the recent-history handler and returns the controlled entries visited in the configured window, ordered newest first where timestamps are present.",
+        "The search action delegates to history search and includes the controlled URL/title matching the supplied hostname query.",
+        "Exact count and timestamps are not fixed. Missing fixture entries, schema-loading errors, or API errors remain unverified evidence until reviewed."
+      ],
+      "dimensions": [
+        "recent-branch",
+        "search-branch",
+        "controlled-history-fixture",
+        "warm",
+        "reload"
+      ],
+      "source_evidence": [
+        "src/lib/tools/handlers/canonical-mergers.ts:407-435",
+        "src/lib/tools/handlers/browser-data.ts:138-168",
+        "src/features/tools/ToolsView.tsx:420-477"
+      ],
+      "uncertainty": [
+        "No browser calls were executed; visibility of this tool in the current DB-driven canonical surface is not established by source or the inventory's live-binding census.",
+        "Manual Tools Run invokes the local handler without dispatcher authorization; the procedure does not resolve binding or Ask/Act behavior."
+      ]
+    },
+    "EXT-F-4166-T01": {
+      "feature_id": "EXT-F-4166",
+      "title": "List and restore one controlled recently-closed tab",
+      "control_ids": ["EXT-F-4166-C01", "EXT-F-4166-C02", "EXT-F-4166-C03"],
+      "modes": ["member", "admin"],
+      "design_status": "procedure-ready-unverified",
+      "preconditions": [
+        "Complete shared receipt-bound build/profile/reload setup and recently-closed fixture preparation.",
+        "Grant sessions permission through the extension's authorized Settings path. Confirm the permission and the exact disposable fixture tab before running.",
+        "Restore affects only the deliberately closed disposable test tab; do not use an unknown session ID or restore a real user tab."
+      ],
+      "steps": [
+        "Open chrome_recently_closed and run with {\"action\":\"list\"}; identify the single controlled fixture entry and copy its tab session ID into the run notes, not into shared evidence.",
+        "Run with {\"action\":\"restore\",\"session_id\":\"<fixture tab session ID>\"}, substituting only the ID just returned for that fixture.",
+        "Observe the inline restore result and browser tab strip; verify that the restored tab has the controlled fixture URL/title. Do not select restore without a session ID because it targets the most recent entry.",
+        "Run action=list again and verify the restored fixture is no longer offered as the same recently-closed entry. Record the result without retaining unrelated session rows.",
+        "Repeat from a newly created and closed disposable fixture tab after the required extension/panel reload; do not reuse an already-restored session."
+      ],
+      "expected": [
+        "The list action returns the controlled closed tab with its session ID, URL, and title when Chrome retains the session.",
+        "The restore action returns ok=true and Chrome reopens the controlled test URL/title; the subsequent list no longer presents that restored entry as closed.",
+        "If the fixture row, sessions API, or permission is missing, do not try an arbitrary session ID; stop and leave the affected procedure unverified."
+      ],
+      "dimensions": [
+        "list-branch",
+        "restore-branch",
+        "sessions-permission",
+        "controlled-tab",
+        "reload"
+      ],
+      "source_evidence": [
+        "src/lib/tools/handlers/canonical-mergers.ts:442-453",
+        "src/lib/tools/handlers/optional-perms.ts:166-214",
+        "src/features/tools/ToolsView.tsx:420-477"
+      ],
+      "uncertainty": [
+        "This action mutates the disposable browser session by reopening a tab; the controlled test profile and fixture must be confirmed before execution.",
+        "No session permission, UI reachability, tool binding, or restored-tab outcome was verified in this source-only lane."
+      ]
+    }
+  },
+  "review_notes": [
+    "The selected cases are one cohesive Chrome-local browser-data family and exclude Chat/Pilot-specific acceptance, form cases 4061-4069, and the broad downloads mutation surface EXT-F-4154.",
+    "All proposed updates are procedure design only. Existing applicability, control IDs, status/result fields, live_binding metadata, and inventory contents remain untouched.",
+    "Fresh independent review is required before applying any proposed case update to docs/stabilization/inventory.json."
+  ]
+}
