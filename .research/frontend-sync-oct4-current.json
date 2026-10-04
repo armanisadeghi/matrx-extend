@@ -1,0 +1,57 @@
+{
+  "lane": "frontend-sync-oct4-current",
+  "checked_at_utc": "2026-10-04T21:20:31Z",
+  "repository": "/Volumes/Samsung2TB/code/ai-matrx",
+  "state_after_fetch": {
+    "local_main": "c0950e18a9207c73f77760b31ba0bb9525ae520c",
+    "origin_main": "773c8eb6d7b458f22e4ba39cb007265151f089d8",
+    "behind_commits": 7,
+    "ahead_commits": 0,
+    "branch": "main",
+    "worktrees": 1,
+    "local_branches": ["main"],
+    "open_pull_requests": 0,
+    "stash_sha": "d806b9dcfc125ee60c4570dc49607021fe84a2a8",
+    "stash_subject": "codex generated sync 2026-10-04T20:54Z",
+    "stash_paths": [
+      "packages/chat/src/host/db-types.ts",
+      "scripts/schema-check/current-schema.json",
+      "types/database.types.ts"
+    ]
+  },
+  "remaining_dirty_paths": [
+    {
+      "path": "pnpm-lock.yaml",
+      "mtime_epoch": 1791147720,
+      "age_seconds_at_check": 1111,
+      "finding": "Working bytes equal origin/main. Git still marks it dirty against lagging local HEAD. Under the 20-minute active-edit window, so untouched."
+    },
+    {
+      "path": "scripts/schema-check/current-schema.json",
+      "mtime_epoch": 1791147895,
+      "age_seconds_at_check": 936,
+      "finding": "Valid JSON. Adds billing coupon, coupon_redemption, and free_period_grant tables versus local/remote HEAD. Equals stash semantically after removing generated_at; working copy has later timestamp. Under active-edit window, so untouched."
+    },
+    {
+      "path": "types/database.types.ts",
+      "mtime_epoch": 1791147744,
+      "age_seconds_at_check": 1087,
+      "finding": "Working bytes equal stash. Relative to origin/main, removes coupon_mark_sent RPC signature and makes one connection_id nonnullable. TypeScript syntax parses. Under active-edit window, so untouched."
+    }
+  ],
+  "stash_reconciliation": {
+    "packages/chat/src/host/db-types.ts": "Stash content already present on origin/main; check:chat-db-types confirms generated mirror current.",
+    "types/database.types.ts": "Stash and working file have identical SHA-256 a98b265b8fc57e67d33fa345ac606d3c3bfa43451c930683e03d82dd128009cc.",
+    "scripts/schema-check/current-schema.json": "Stash and working snapshot are semantically equal except generated_at; stash at 20:59:06Z, working at 21:04:55Z.",
+    "disposition": "Preserved stash by exact SHA; do not drop until all unique generated content is on main and verified."
+  },
+  "checks": {
+    "git_diff_check": "passed",
+    "database_types_parse": "passed; 0 parse diagnostics",
+    "schema_snapshot_json_parse": "passed",
+    "check_chat_db_types": "passed; 16 schemas current",
+    "check_schema_strict": "failed on 19 existing source findings outside these generated deltas, including unexposed hr schema and old relation references",
+    "type_check": "failed with widespread existing frontend errors outside the three dirty generated paths; output was too large for a useful full capture"
+  },
+  "next_action": "After each path's own 20-minute threshold, recheck its mtime and latest origin/main. If no longer actively edited, preserve and reconcile exact generated deltas, commit and push them, fast-forward local main, then deduplicate stash by SHA only after confirming every unique blob is on main. If another writer refreshes a path, keep that path as an active-edit exception and report it separately. Do not run manual build, release, or migration."
+}
