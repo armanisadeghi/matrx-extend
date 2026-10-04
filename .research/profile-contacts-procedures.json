@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "source_only_profile_contacts_procedures",
-  "status": "unverified",
+  "status": "source_only_procedure_revised_runtime_unverified",
   "scope": "Procedures for EXT-F-1004-T07 through T10, derived from current source and existing inventory. No UI, account, database, build, or runtime action performed.",
   "source_basis": {
     "inventory": "docs/stabilization/inventory.json: EXT-F-1004-T07..T10; shared control mappings C04 Phones and C05 Emails",
@@ -17,10 +17,11 @@
       "For reload dimension, use chrome://extensions to reload the same extension, record completion, reopen the surface, recheck account/role/organization, and repeat the complete case independently. Panel reopen or page refresh is not extension reload."
     ],
     "organization": "Record the currently selected device organization for authenticated save. If the UI cannot establish the expected identity or organization, stop that execution as unverified; do not modify organization/account settings to force a pass.",
-    "initial_snapshot": "Expand the target section. Record every item's ordered value, label, phone country_code and sms_capable where present, and is_primary state. Preserve this complete snapshot for cleanup. Record empty state explicitly.",
-    "save_and_reopen": "After exercising controls, inspect draft controls and primary marker, click Profile Save, wait until saving settles and Save is disabled/clean, navigate Back, reopen Profile, expand the section, and compare all values and flags. For reload dimension, additionally compare after extension reload.",
-    "cleanup": "Restore the exact original ordered list and every original property from the initial snapshot using the same UI controls, save, wait for settled state, Back/reopen and verify. Empty initial list must be restored to empty. Cleanup must be confirmed before pass; if a write outcome is uncertain or restoration cannot be proven, stop further mutations and report unverified with cleanup failure. Do not delete rows through direct API/DB cleanup.",
-    "failure_semantics": "Keep a separate result for each role × lifecycle dimension. Any missing control, unobserved outcome, failed save, mismatch after reopen/reload, ambiguous write, or failed cleanup is unverified/failed for that execution; missing dimension leaves the overall case unverified/partial. Record safe phase/control identifiers and sanitized error category, never credentials or raw sensitive values."
+    "preflight_and_fixture": "Before EACH role × lifecycle run, obtain an approved, owner-scoped, read-only exact JSON capture of the target persisted list and compare it with the expanded UI. A UI snapshot cannot see notes or distinguish absent, null, and false optional keys. Mutation is eligible only when that raw list is exactly [] and the UI shows its empty state, with an approved owner-scoped exact-list readback available after writes. Treat this as an empty owned fixture; only same-run synthetic entries may be removed. If the list contains any existing row, is unreadable, disagrees with the UI, or lacks an exact readback path, make no mutation and mark the product row unverified. A separately approved exact capture and restoration method would be required to test a nonempty list; this procedure supplies none. Never clear, delete, reorder, or change existing private rows to create a fixture.",
+    "discard_and_back": "Before the committed test, create one synthetic unsaved draft change, inspect it, click Discard, and assert the entire target draft list and raw persisted list still equal the empty baseline. Both header and bottom action bars contain Save and Discard; identify which instance was exercised. Click Back and assert the Chat surface is visible; reopen Profile, expand the target section, and confirm the empty list before starting the committed phase.",
+    "save_and_reopen": "After exercising controls, compare the COMPLETE ordered draft list with expected original [] plus the surviving synthetic entry, including all exposed values and flags. Click a named header or bottom Save and wait for saving to settle. While still in Profile, require no visible profile.error/save error and compare the complete displayed list, then obtain an independent approved owner-scoped raw readback of the entire persisted list. A disabled Save button alone proves nothing. Click Back and assert Chat is visible; reopen Profile and compare the complete list again. For reload dimension, additionally reload the extension, recheck identity/organization, reopen Profile, and compare the complete list and raw readback again. A rejected save or reproducible wrong list is fail; an unreadable/ambiguous write is unverified.",
+    "cleanup": "Only for an eligible empty owned fixture, remove the surviving same-run synthetic entry through the UI, Save, require no visible save error, and verify both full UI list and approved owner-scoped raw readback equal exact []. Reopen Profile and repeat the UI comparison; repeat after extension reload for reload rows. Never use a blanket clear, direct API/DB delete, or delete any pre-existing row. If a write is ambiguous, stop further mutation until an approved owner-scoped read-only reconciliation establishes exactly what was written; report cleanup_result unverified until empty restoration is proven. If cleanup is attempted and demonstrably fails, report cleanup_result failed. Do not claim cleanup from the UI alone.",
+    "failure_semantics": "Record product_result pass/fail/unverified and cleanup_result restored/failed/unverified separately for every role × lifecycle row. Reproducibly missing control, save error/rejection, failed Discard or Back assertion, or verified draft/persistence mismatch is product fail, even if cleanup later succeeds. Missing identity/organization, unavailable exact-state capture/readback, uncertain write, or an unexecuted dimension is unverified, never pass. Preserve any product failure alongside cleanup failure. Overall acceptance requires all eight product rows pass and all eight cleanup results restored; any failed row fails acceptance, otherwise any unverified row leaves acceptance unverified. Record safe phase/control identifiers and sanitized error category, never credentials or raw sensitive values."
   },
   "cases": [
     {
@@ -30,7 +31,10 @@
       "section": "Phones",
       "dimensions": ["warm", "reload"],
       "source_controls": [
-        { "control": "section expander", "source": "ProfileView.tsx Phones Collapsible" },
+        {
+          "control": "section expander",
+          "source": "ProfileView.tsx Phones Collapsible"
+        },
         {
           "control": "Add",
           "effect": "append {value:'', label:'Mobile'}",
@@ -67,24 +71,24 @@
           "source": "PhonesEditor FormRow SMS / Switch"
         },
         {
-          "control": "Save / Discard / Back",
-          "effect": "persists draft, resets draft, or leaves Profile",
-          "source": "ProfileView header"
+          "control": "header and bottom Save / Discard; header Back",
+          "effect": "persists draft, resets draft, or leaves Profile for Chat",
+          "source": "ProfileView header and bottom action bar"
         }
       ],
       "procedure": [
-        "Execute shared run protocol as member and record the initial phone list.",
+        "Execute shared preflight as member; only an exact persisted [] and matching UI empty state permit mutation. Run Discard and Back assertions before the committed phase.",
         "Use Add twice. Fill the two appended entries with distinct synthetic, non-routable test strings; edit first entry label, number, country code and SMS switch to the opposite of its observed initial/default state. Do not use a real person's number.",
         "Set the second new entry primary. Verify exactly that entry has the active primary star and the first does not. Remove the first new entry; verify it is absent while the second remains primary.",
-        "Run shared save-and-reopen comparison for the remaining synthetic entry, including label/value/country_code/sms_capable/is_primary, then shared cleanup."
+        "Run shared full-list save, error, owner-scoped readback, Back/reopen and reload assertions for the surviving synthetic entry, including label/value/country_code/sms_capable/is_primary, then shared owned-fixture cleanup."
       ],
       "acceptance": [
         "Add, edit each exposed phone field, set primary, and remove are reflected in draft.",
         "Saved surviving entry and all exposed properties persist after Profile close/reopen and after extension reload in the reload dimension.",
-        "Removed synthetic entry remains absent; original list is restored and verified."
+        "Removed synthetic entry remains absent; the empty owned fixture is restored to exact [] and verified by UI and raw owner-scoped readback."
       ],
       "validation_and_limits": "Source exposes ordinary text inputs and a boolean SMS switch; no phone-number format validator or country-code picker is present in this editor. Record browser input behavior only; do not infer server acceptance from source. Empty state text is 'No phones added'.",
-      "runner_gap": "Current native runner has no phone control sampler, click/fill/add/remove/primary/switch helpers, phone-list draft/persistence assertions, or exact list restoration. Add focused native procedure support before runtime execution; reuse its role/lifecycle orchestration and owned-write safety principles."
+      "runner_gap": "Current native runner lacks the contact control driver, exact owner-scoped readback, and empty-fixture cleanup proof. Implement these prerequisites before runtime execution; source-only procedure is not product acceptance."
     },
     {
       "id": "EXT-F-1004-T08",
@@ -95,7 +99,7 @@
       "same_procedure_as": "EXT-F-1004-T07",
       "role_constraint": "Run independently with an existing known admin identity; all shared protocol and acceptance requirements apply.",
       "validation_and_limits": "Same source-backed phone controls and limits as T07; no admin-specific control difference is evident in ProfileView source.",
-      "runner_gap": "Same missing phone native procedure support as T07."
+      "runner_gap": "Current native runner lacks the contact control driver, exact owner-scoped readback, and empty-fixture cleanup proof. Implement these prerequisites before runtime execution; source-only procedure is not product acceptance."
     },
     {
       "id": "EXT-F-1004-T09",
@@ -104,7 +108,10 @@
       "section": "Emails",
       "dimensions": ["warm", "reload"],
       "source_controls": [
-        { "control": "section expander", "source": "ProfileView.tsx Emails Collapsible" },
+        {
+          "control": "section expander",
+          "source": "ProfileView.tsx Emails Collapsible"
+        },
         {
           "control": "Add",
           "effect": "append {value:'', label:'Personal'}",
@@ -131,24 +138,24 @@
           "source": "EmailsEditor FormRow Email / TextField type=email"
         },
         {
-          "control": "Save / Discard / Back",
-          "effect": "persists draft, resets draft, or leaves Profile",
-          "source": "ProfileView header"
+          "control": "header and bottom Save / Discard; header Back",
+          "effect": "persists draft, resets draft, or leaves Profile for Chat",
+          "source": "ProfileView header and bottom action bar"
         }
       ],
       "procedure": [
-        "Execute shared run protocol as member and record the initial email list.",
+        "Execute shared preflight as member; only an exact persisted [] and matching UI empty state permit mutation. Run Discard and Back assertions before the committed phase.",
         "Use Add twice. Enter distinct reserved example.test addresses (for example profile-run-<unique-token>-1@example.test and -2@example.test); edit the first label and address. Avoid real mailboxes.",
         "Set the second new entry primary. Verify its star is active and the first is inactive. Remove the first; verify it is absent and second remains primary.",
-        "Run shared save-and-reopen comparison for the surviving synthetic entry, including label/value/is_primary, then shared cleanup."
+        "Run shared full-list save, error, owner-scoped readback, Back/reopen and reload assertions for the surviving synthetic entry, including label/value/is_primary, then shared owned-fixture cleanup."
       ],
       "acceptance": [
         "Add, edit label/address, set primary, and remove are reflected in draft.",
         "Saved surviving entry and exposed properties persist after Profile close/reopen and extension reload in reload dimension.",
-        "Removed synthetic entry remains absent; original list is restored and verified."
+        "Removed synthetic entry remains absent; the empty owned fixture is restored to exact [] and verified by UI and raw owner-scoped readback."
       ],
       "validation_and_limits": "Source sets input type=email; native browser validity can be observed, but source alone does not establish whether Save is blocked or backend persistence rejects malformed values. This case uses valid example.test addresses. Empty state text is 'No additional emails'.",
-      "runner_gap": "Current native runner has no email control sampler, click/fill/add/remove/primary helpers, email-list draft/persistence assertions, or exact list restoration. Add focused native procedure support before runtime execution; reuse role/lifecycle orchestration and owned-write safety principles."
+      "runner_gap": "Current native runner lacks the contact control driver, exact owner-scoped readback, and empty-fixture cleanup proof. Implement these prerequisites before runtime execution; source-only procedure is not product acceptance."
     },
     {
       "id": "EXT-F-1004-T10",
@@ -159,17 +166,79 @@
       "same_procedure_as": "EXT-F-1004-T09",
       "role_constraint": "Run independently with an existing known admin identity; all shared protocol and acceptance requirements apply.",
       "validation_and_limits": "Same source-backed email controls and limits as T09; no admin-specific control difference is evident in ProfileView source.",
-      "runner_gap": "Same missing email native procedure support as T09."
+      "runner_gap": "Current native runner lacks the contact control driver, exact owner-scoped readback, and empty-fixture cleanup proof. Implement these prerequisites before runtime execution; source-only procedure is not product acceptance."
     }
   ],
   "unverified_runtime_dimensions": [
-    { "case": "EXT-F-1004-T07", "role": "member", "dimension": "warm" },
-    { "case": "EXT-F-1004-T07", "role": "member", "dimension": "reload" },
-    { "case": "EXT-F-1004-T08", "role": "admin", "dimension": "warm" },
-    { "case": "EXT-F-1004-T08", "role": "admin", "dimension": "reload" },
-    { "case": "EXT-F-1004-T09", "role": "member", "dimension": "warm" },
-    { "case": "EXT-F-1004-T09", "role": "member", "dimension": "reload" },
-    { "case": "EXT-F-1004-T10", "role": "admin", "dimension": "warm" },
-    { "case": "EXT-F-1004-T10", "role": "admin", "dimension": "reload" }
+    {
+      "case": "EXT-F-1004-T07",
+      "role": "member",
+      "dimension": "warm",
+      "product_result": "unverified",
+      "cleanup_result": "unverified",
+      "reason": "Not executed; identity, exact owner-scoped list readback, empty fixture, and contact driver are prerequisites."
+    },
+    {
+      "case": "EXT-F-1004-T07",
+      "role": "member",
+      "dimension": "reload",
+      "product_result": "unverified",
+      "cleanup_result": "unverified",
+      "reason": "Not executed; identity, exact owner-scoped list readback, empty fixture, and contact driver are prerequisites."
+    },
+    {
+      "case": "EXT-F-1004-T08",
+      "role": "admin",
+      "dimension": "warm",
+      "product_result": "unverified",
+      "cleanup_result": "unverified",
+      "reason": "Not executed; identity, exact owner-scoped list readback, empty fixture, and contact driver are prerequisites."
+    },
+    {
+      "case": "EXT-F-1004-T08",
+      "role": "admin",
+      "dimension": "reload",
+      "product_result": "unverified",
+      "cleanup_result": "unverified",
+      "reason": "Not executed; identity, exact owner-scoped list readback, empty fixture, and contact driver are prerequisites."
+    },
+    {
+      "case": "EXT-F-1004-T09",
+      "role": "member",
+      "dimension": "warm",
+      "product_result": "unverified",
+      "cleanup_result": "unverified",
+      "reason": "Not executed; identity, exact owner-scoped list readback, empty fixture, and contact driver are prerequisites."
+    },
+    {
+      "case": "EXT-F-1004-T09",
+      "role": "member",
+      "dimension": "reload",
+      "product_result": "unverified",
+      "cleanup_result": "unverified",
+      "reason": "Not executed; identity, exact owner-scoped list readback, empty fixture, and contact driver are prerequisites."
+    },
+    {
+      "case": "EXT-F-1004-T10",
+      "role": "admin",
+      "dimension": "warm",
+      "product_result": "unverified",
+      "cleanup_result": "unverified",
+      "reason": "Not executed; identity, exact owner-scoped list readback, empty fixture, and contact driver are prerequisites."
+    },
+    {
+      "case": "EXT-F-1004-T10",
+      "role": "admin",
+      "dimension": "reload",
+      "product_result": "unverified",
+      "cleanup_result": "unverified",
+      "reason": "Not executed; identity, exact owner-scoped list readback, empty fixture, and contact driver are prerequisites."
+    }
+  ],
+  "execution_prerequisites": [
+    "Existing member and admin identities on the intended device, verified organization, and same extension build for warm/reload; no account or organization changes to manufacture eligibility.",
+    "Approved owner-scoped read-only capture/readback of the exact persisted phones or emails JSON list, including hidden notes and optional-key presence; no raw sensitive values in the report.",
+    "For each independent role/lifecycle run, persisted list exactly [] and UI empty state; nonempty private lists remain untouched until a separately approved exact restoration method exists.",
+    "Focused native control driver and observations for list controls, both action bars, error display, full-list comparisons, Back to Chat, and reload. Current runner does not implement these."
   ]
 }

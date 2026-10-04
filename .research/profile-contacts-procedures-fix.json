@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "kind": "source_only_profile_contacts_procedures_fix",
+  "candidate": ".research/profile-contacts-procedures.json",
+  "reviewed_peer": ".research/profile-contacts-procedures-peer.json",
+  "peer_proposal_commit": "c722d017",
+  "scope": "Source-only procedure repair for EXT-F-1004-T07..T10; no browser, DB, account, build, auth, or runtime execution.",
+  "disposition": {
+    "exact_restore_not_possible_from_ui": "Mutation requires approved owner-scoped exact raw list readback and an exactly empty persisted/UI list before each run. Existing private rows are never modified; nonempty lists remain unverified pending a separately approved exact restoration method. Only same-run synthetic rows may be removed, with raw [] cleanup proof.",
+    "failure_semantics_conflated": "Each of eight role/lifecycle rows has independent product_result pass/fail/unverified and cleanup_result restored/failed/unverified. Reproducible product failure persists after cleanup. Ambiguous or unexecuted is unverified; overall pass requires all eight product passes and restorations.",
+    "discard_not_exercised": "Unsaved synthetic draft edit, Discard rollback, Back-to-Chat and Profile reopen assertions precede committed phase; header/bottom actions are identified.",
+    "save_state_ambiguous": "Save requires no visible error, full ordered list comparison while in Profile, owner-scoped raw persisted list readback, then Back/reopen and reload comparisons."
+  },
+  "residual_prerequisites": [
+    "Approved exact owner-scoped raw readback",
+    "Eligible empty fixture for every independent run, or separately approved exact restoration method for nonempty data",
+    "Known member/admin identities and organization",
+    "Native contact driver and actual runtime execution"
+  ],
+  "runtime_status": "All eight product and cleanup results remain unverified; full T07-T10 acceptance remains open."
+}
