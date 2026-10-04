@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "task": "scrape-pane-retention-native",
+  "defect": "EXT-D-0123",
+  "verdict": "unverified_resource_boundary_refused_before_scrape_case",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 37217349220,
+    "job_id": 111480453198,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37217349220",
+    "head_sha": "09d6cf9d4c9a26516c32dcf73abd88ee4c6c7143",
+    "conclusion": "failure",
+    "inputs": {
+      "acceptance_case": "guest-scrape-development",
+      "development_run_id": 37217066948,
+      "development_artifact_id": 11308203507
+    },
+    "uploaded_artifact": {
+      "id": 11308398764,
+      "name": "hosted-guest-37217349220-1",
+      "size_bytes": 55926,
+      "sha256": "26f85391a481164a53450da276053feeca60d1d9cd60e5730112a7f413bebf9f"
+    }
+  },
+  "frozen_product": {
+    "version": "0.2.231",
+    "source_sha": "723433a7628b32fb610d3a7f36ca6b8dd5fd2b72",
+    "tree_sha256": "ae9bfe3d831a7278f0b347c1c08b8d6cec6780790c1f14813369bcf015786833",
+    "development_run_id": 37217066948,
+    "development_artifact_id": 11308203507,
+    "development_artifact_sha256": "a4c72ad8f0c5fb42749d84a5c79026cac426d59a3c6677611593f46b49f16d8f",
+    "version_verified_from": [
+      "development artifact ci-build-provenance.json",
+      "development artifact ci-build-receipt.json",
+      "development artifact manifest.json",
+      "native receipt artifact block"
+    ],
+    "artifact_import_verified": true,
+    "reviewed_driver_commit": "504fcdf56c4fda523e32cd785966e2d83f0cf4fd",
+    "driver_diff_from_reviewed_commit": "clean before dispatch"
+  },
+  "resource_outcome": {
+    "hosted_preflight": "passed",
+    "readiness_gates": {
+      "package": "passed",
+      "browser": "passed",
+      "acceptance": "passed"
+    },
+    "package": {
+      "decision": "valid",
+      "admitted": true,
+      "child_exit_code": 0,
+      "resource_invalid": false
+    },
+    "browser": {
+      "decision": "valid",
+      "admitted": true,
+      "child_exit_code": 0,
+      "resource_invalid": false
+    },
+    "acceptance_journal": {
+      "decision": "child_failed",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "unsafe_watch_count": 1,
+      "healthy_watch_count": 0,
+      "unsafe_sample": {
+        "at": "2026-10-04T16:42:47.385Z",
+        "reasons": ["RESOURCE_CPU_BUSY"],
+        "cpuBusyFraction": 0.91,
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.6,
+        "swapUsedMiB": 0
+      },
+      "process_attribution": [
+        {
+          "executable": "Chromium Helper",
+          "cpuPercent": 56.7
+        },
+        {
+          "executable": "siriknowledged",
+          "cpuPercent": 38
+        },
+        {
+          "executable": "provjobd22996586",
+          "cpuPercent": 30.4
+        }
+      ]
+    },
+    "interpretation": "The workflow-level guest journal ended admitted=true, resourceInvalid=false, decision=child_failed, exitCode=1. Separately, the native receipt records NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample before test cases; preserve both exact classifications."
+  },
+  "native_outcome": {
+    "overall_status": "unverified",
+    "acceptance_disposition": "resource_refused_before_any_scrape_case",
+    "guest_account_observed": false,
+    "stage": "inputs",
+    "native_stage": "exercise_panel",
+    "failure": {
+      "stage": "inputs",
+      "code": "NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample"
+    },
+    "cases": [],
+    "media_transitions": [],
+    "media_event_traces": [],
+    "reload_milestones": [],
+    "reload_lifecycle": null,
+    "observed": "Receipt is stage inputs with NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample. Cases, media_transitions, shared phase traces, and reload milestones are empty; guest_account_observed is false. Therefore no native Video Open, return, Copy, or other Scrape action ran in this attempt.",
+    "product_verdict": "No pass or product failure can be inferred. The native repair retest did not reach the Scrape case.",
+    "trace_status": "No action trace emitted; truncation is not applicable.",
+    "limits": [
+      "The new native run does not verify the c2186f64 pane-retention repair.",
+      "The earlier 37215748629 Open/disconnect/Article/Copy trace predates the repair and is not a post-fix result.",
+      "The workflow artifact contains only the native-side-panel and normal-target-after-open setup screenshots; neither is a Scrape case screenshot."
+    ]
+  },
+  "evidence_directory": "docs/stabilization/evidence/scrape231/run37217349220",
+  "files_sha256": {
+    "browser-resource.jsonl": "7c084d7b03b1205235b9eab4d9786c37b7014db0fb9428ef8d5fd5d424ede6f9",
+    "guest-resource.jsonl": "49025b578fbf47f5c3d348e93b42ba4f556812aa4ad21692bd43a7b6761cc891",
+    "native-side-panel.png": "2cfda86f86cad54e4a73aa3480585a0e0ab5d74b20da4921a35999d22e3c462f",
+    "normal-target-after-open.png": "60d95c01c8bf5fa8f0807e1aed08d2adb43b4a5532190ae0eadd54c5e3aef79c",
+    "package-resource.jsonl": "12a19109ee01ef5f1af02473728894e362bfbd1e1cd822de75d76d47a02001f5",
+    "receipt.json.txt": "3de42c5f0a63e628da99a18916f22c587c22c356f080d483183ed63a36aa7aad"
+  },
+  "notes": [
+    "Exactly one guarded hosted native run was dispatched; no retry was made.",
+    "The three resource JSONL files and receipt were copied from this workflow artifact. Other-run 37105304739 journals also present in the artifact were excluded.",
+    "receipt.json.txt and PNG files are byte-for-byte artifact copies; no redundant ZIP was committed.",
+    "The resource guard settings and reviewed all-action driver were unchanged. No product source or inventory file was edited.",
+    "No other hosted guest workflow remained active after this run completed."
+  ]
+}
