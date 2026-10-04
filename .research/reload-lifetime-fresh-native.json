@@ -153,7 +153,11 @@
     "receipt_sha256": "cd1e893bde4be9bd302f71e6b3b2f8666030cecdde38aa2945976a10719793b4",
     "secrets_review": {
       "result": "no credential values, token-like values, or secret-bearing URL query parameters found",
-      "credential_named_field": "guest_auth_storage.hasAccessToken is boolean true only"
+      "credential_named_fields": {
+        "guest_auth_storage.hasAccessToken": false,
+        "guest_auth_storage.hasUserProfile": false,
+        "interpretation": "Both are boolean flags only; no credential values are present."
+      }
     },
     "quality": "sufficient to select single-attempt pass branch; browser version, pre-click worker identity correlation, both destruction observers, strict predicate, and all three resource journals are present",
     "resource_journals": [
