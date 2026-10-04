@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0108 / EXT-F-1004 admin first-save independent source review",
+  "reviewed_source_sha": "5e82b4220b5bbb6f5972f08779d7950adfe3f834",
+  "scope": "Fresh source-only review of the row-absent first-save gate, identity producers, owned-write cleanup, report boundary, and focused source tests. No browser, database, authentication, build, release, or native retest.",
+  "A_source_acceptance": {
+    "status": "source_pass_native_pending",
+    "evidence": [
+      "The actual profile-native-acceptance.mjs row-absent branch calls assertFirstSaveIdentity before owner lookup, ownership receipt, or UI Save.",
+      "Admin proof comes from first-party /api/whoami after designated admin sign-in, the extension Account UI admin check, and panel storage; the gate requires exact admin@admin.com, matching UUID, token, admin flag, UUID device organization, and selected organization name matching storage.",
+      "Member proof comes from the existing signInSettings helper; the gate requires verified first-party/extension identity, matching UUID, a canonical zero-row nonadmin check, token, nonadmin flag, UUID device organization, and selected organization.",
+      "The focused test executes the gate slice from the actual runner with the real assertion helper. Wrong admin email, profile UUID, role, token, selected organization, and device organization fail; missing member identity proof, failed nonadmin check, and unselected organization fail.",
+      "The producer's admin and member authentication steps precede the row-absent branch. Existing preflight still requires source/artifact identity before launching the browser."
+    ],
+    "limits": "The focused test substitutes identity objects and browser transport; it is source boundary evidence, not a native authenticated first-save result. The original admin native rerun and row-absence restoration remain required."
+  },
+  "B_quality": {
+    "status": "source_pass_native_pending",
+    "evidence": [
+      "A mode-0600 private ownership receipt is synced before first Save; the UI-created row is accepted only at version 1 with matching owner, organization, marker, and creation timestamp.",
+      "The owned-write journal persists write intent before later Saves and reconciles exact successor fields; conditional deletion binds owner, organization, marker, creation timestamp, and version, then reads back absence.",
+      "The first-save report remains provisional until deletion and absent-row readback succeed. Cleanup failure marks restoration unverified and fails the run; execution failure remains the primary error while cleanup failure is retained separately.",
+      "Failure codes are allowlisted; error messages and backend diagnostic payloads are excluded from the public report. Boundary tests include synthetic private values and failure/teardown combinations.",
+      "Four focused source suites passed locally: 26 tests, 0 failures. The producer records the pre-change admin rejection and subsequent green suite, but this review did not independently replay the red revision."
+    ],
+    "limits": "The source tests do not prove an actual browser Save, database restoration, or report truth under real transport failure. Admin T26 save-failure retry is still unimplemented and unverified; the runner only invokes that case for a member with an owned first-save row."
+  },
+  "peer_conclusion": "No source-level blocker found in the admin first-save authorization or owned cleanup. Do not promote native acceptance until the designated admin run verifies insertion and exact original absence restoration."
+}
