@@ -1,0 +1,30 @@
+{
+  "lane": "frontend-generated-sync-1018",
+  "checked_at_utc": "2026-10-04T17:20:32Z",
+  "repository": "/Volumes/Samsung2TB/code/ai-matrx",
+  "original_state": {
+    "local_main": "fca756746a9c6e8ec5c7d4a74e227b18cacded75",
+    "origin_main_after_fetch": "2f69fe738085019bebbf26fdaae2e645521541d3",
+    "behind_commits": 4,
+    "dirty_paths": ["packages/chat/src/host/db-types.ts", "pnpm-lock.yaml", "types/database.types.ts"],
+    "dirty_mtime_utc": "2026-10-04T16:59:05Z",
+    "stash_sha": "d0e9a45179474e1d68615909c06877221637f79b",
+    "stash_paths": ["packages/chat/src/host/db-types.ts", "pnpm-lock.yaml", "scripts/schema-check/current-schema.json", "types/database.types.ts"]
+  },
+  "ruling": "Waited until each dirty file exceeded 20 minutes old. Landed both generated type files on origin/main. Remote pnpm-lock.yaml already advanced @ai-matrx/design-system from stashed 0.60.8 to 0.60.9. Stashed schema snapshot matches remote after excluding generated_at; its only unique content was a timestamp. Removed the verified redundant stash ref by exact SHA.",
+  "checks": {
+    "git_diff_check": "passed",
+    "check_chat_db_types": "passed; generated chat type mirror current for 16 schemas",
+    "type_check": "failed with widespread existing errors outside these generated files, including missing replaces-line module in a newer remote commit; full check not a passing gate"
+  },
+  "pushed_commit": "90858f0c0df674a4cb6f9ecc201ab42ae70f5fec",
+  "final_state": {
+    "local_main": "90858f0c0df674a4cb6f9ecc201ab42ae70f5fec",
+    "origin_main": "90858f0c0df674a4cb6f9ecc201ab42ae70f5fec",
+    "remote_main": "90858f0c0df674a4cb6f9ecc201ab42ae70f5fec",
+    "clean": true,
+    "local_branches": ["main"],
+    "worktrees": 1,
+    "stashes": 0
+  }
+}
