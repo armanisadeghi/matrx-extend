@@ -106,7 +106,7 @@ jobs:
           set -euo pipefail
           if [[ -n "$SCRAPE_DIAGNOSTIC_CPU_RATE" ]]; then
             [[ "$ACCEPTANCE_CASE" == guest-scrape ]] || exit 1
-            node -e 'const n=Number(process.argv[1]); if (!Number.isFinite(n)||n<=1||n>20) process.exit(1)' "$SCRAPE_DIAGNOSTIC_CPU_RATE"
+            node -e 'const n=Number(process.argv[1]); if (!Number.isFinite(n)||n<=1) process.exit(1)' "$SCRAPE_DIAGNOSTIC_CPU_RATE"
           fi
           if [[ "$ACCEPTANCE_CASE" == member-chat || "$ACCEPTANCE_CASE" == guest-scrape ]]; then
             [[ -n "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1

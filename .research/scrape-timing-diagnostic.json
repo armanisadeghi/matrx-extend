@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "defect": "EXT-D-0115",
-  "status": "source_ready_native_unverified",
+  "status": "source_ready_after_cleanup_review_native_unverified",
   "scope": "Supplemental CPU timing discriminator for exact Store guest Scrape hosted acceptance",
   "prior_evidence": {
     "source": ".research/scrape-busy-escalation.json",
@@ -11,19 +11,20 @@
   "route": {
     "workflow": ".github/workflows/hosted-guest-acceptance.yml",
     "case": "guest-scrape",
-    "explicit_input": "scrape_diagnostic_cpu_rate, finite >1 and <=20; suggested 4",
+    "explicit_input": "scrape_diagnostic_cpu_rate, finite >1; suggested 4",
     "default": "omitted, preserving the original unthrottled case",
     "artifact": "same exact release artifact and receipt used by the original case"
   },
   "diagnostic_contract": {
     "target": "Playwright CDP session attached only to the owned localhost /intake page; Target.getTargetInfo type, URL, and target ID checked before throttling",
     "condition": "Emulation.setCPUThrottlingRate on the page at the explicit rate during a second real fast capture",
-    "cleanup": "Rate 1 restoration and session detach in finally, including extraction failure; both outcomes recorded",
+    "cleanup": "Rate 1 restoration and session detach in finally, including extraction failure; both outcomes recorded. Restore or detach failure stops all subsequent original native actions.",
     "evidence": "Separate cpu_diagnostic report object holds artifact identity, target identity, rate, full result, busy observation, no-scroll count and scrollY, screenshot, and cleanup",
-    "original_verdict": "Original fast busy assertions are unchanged, their failure is retained, remaining original assertions continue, and supplemental success never promotes T01 or overall status"
+    "original_verdict": "Original fast busy assertions are unchanged and T01 is recorded before the diagnostic starts. Their failure is retained, remaining original assertions continue when cleanup succeeds, and supplemental success never promotes T01 or overall status.",
+    "peer_blocker_repair": "A diagnostic restore or detach failure now rejects before result tabs, deep capture, or navigation; an ordinary diagnostic extraction failure with successful cleanup remains supplemental. The unsupported maximum rate was removed."
   },
   "verification": {
-    "focused": "node --test tests/browser/scrape-page-cpu-diagnostic.test.mjs tests/browser/scrape-busy-observer.test.mjs scripts/hosted-profile-route.test.mjs: 25 passed, 0 failed",
+    "focused": "node --test tests/browser/scrape-page-cpu-diagnostic.test.mjs tests/browser/scrape-busy-observer.test.mjs scripts/hosted-profile-route.test.mjs: 27 passed, 0 failed; cleanup failure abort and extraction failure continuation covered",
     "syntax": "node --check tests/browser/scrape-guest-native-acceptance.mjs passed",
     "format_lint": "pnpm exec biome check on the three changed browser JavaScript files passed",
     "native": "Not run in this source-only lane; no browser launch, heavy build, or release"

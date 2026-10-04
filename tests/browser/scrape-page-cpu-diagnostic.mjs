@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 export function diagnosticCpuRate(value) {
   if (value === undefined || value === '') return null;
   const rate = Number(value);
-  assert.ok(Number.isFinite(rate) && rate > 1 && rate <= 20, 'scrape_diagnostic_cpu_rate_invalid');
+  assert.ok(Number.isFinite(rate) && rate > 1, 'scrape_diagnostic_cpu_rate_invalid');
   return rate;
 }
 
@@ -63,4 +63,23 @@ export async function withOwnedPageCpuThrottle(page, expectedUrl, rate, run) {
     throw error;
   }
   return { target, result, cleanup };
+}
+
+export async function runSupplementalCpuDiagnostic({
+  page,
+  expectedUrl,
+  rate,
+  diagnostic,
+  capture,
+}) {
+  try {
+    const throttled = await withOwnedPageCpuThrottle(page, expectedUrl, rate, capture);
+    diagnostic.cleanup = throttled.cleanup;
+    diagnostic.status = 'observed_under_cpu_constraint';
+  } catch (error) {
+    diagnostic.error = String(error?.message ?? error).slice(0, 300);
+    if (error?.cleanup) diagnostic.cleanup = error.cleanup;
+    // The original case can continue only after this page has returned to normal.
+    if (diagnostic.cleanup?.restore_error || diagnostic.cleanup?.detach_error) throw error;
+  }
 }

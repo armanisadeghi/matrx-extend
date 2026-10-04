@@ -7,7 +7,7 @@ import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { armBusyExpression, readBusyExpression } from './scrape-busy-observer.mjs';
-import { diagnosticCpuRate, withOwnedPageCpuThrottle } from './scrape-page-cpu-diagnostic.mjs';
+import { diagnosticCpuRate, runSupplementalCpuDiagnostic } from './scrape-page-cpu-diagnostic.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
@@ -185,6 +185,21 @@ try {
       } catch (error) {
         report.original_busy_failure = String(error?.message ?? error).slice(0, 300);
       }
+      mark(
+        'EXT-F-1007-T01',
+        report.original_busy_failure ? 'unverified' : 'partial',
+        {
+          url: page.url(),
+          busy_disabled: fastBusy.observed,
+          article_title: fast.title,
+          lazy_content_absent: true,
+          result_tabs: fast.tabs.map((t) => t.label),
+        },
+        [
+          ...(report.original_busy_failure ? [report.original_busy_failure] : []),
+          'Warm/full reload lifecycle not yet exercised.',
+        ],
+      );
       if (DIAGNOSTIC_RATE !== null) {
         report.stage = 'supplemental_cpu_diagnostic';
         const diagnostic = {
@@ -201,82 +216,56 @@ try {
           error: null,
         };
         report.cpu_diagnostic = diagnostic;
-        try {
-          const throttled = await withOwnedPageCpuThrottle(
-            page,
-            `${origin}/intake`,
-            DIAGNOSTIC_RATE,
-            async ({ target, cleanup }) => {
-              diagnostic.target = target;
-              diagnostic.cleanup = cleanup;
-              await armBusyObserver(panel, 'fast');
-              await click(panel, 'title', 'Capture the page exactly as it is right now');
-              const result = await waitFor(
-                'scrape_diagnostic_fast_result',
-                () => scrapeState(panel),
-                (s) =>
-                  s?.title === article &&
-                  s.selected === 'Article' &&
-                  s.visible &&
-                  s.resultText?.includes(article) &&
-                  !s.resultText.includes(lazy) &&
-                  s.fast.length === 1 &&
-                  !s.fast[0].disabled,
-                30000,
-              );
-              diagnostic.full_result = result;
-              diagnostic.no_scroll = {
-                lazy_element_count: await page.locator('#late p').count(),
-                scroll_y: await page.evaluate(() => window.scrollY),
-              };
-              diagnostic.busy_observation = await busyObservation(panel);
-              diagnostic.screenshot = await screenshot(
-                panel,
-                artifacts,
-                'scrape-diagnostic-cpu-fast-article.png',
-              );
-              assert.equal(
-                diagnostic.no_scroll.lazy_element_count,
-                0,
-                'scrape_diagnostic_scrolled',
-              );
-              assert.equal(diagnostic.no_scroll.scroll_y, 0, 'scrape_diagnostic_scroll_y');
-              assert.equal(
-                diagnostic.busy_observation.observed,
-                true,
-                'scrape_diagnostic_busy_unobserved',
-              );
-              assert.match(
-                diagnostic.busy_observation.text ?? '',
-                /Capturing/,
-                'scrape_diagnostic_busy_label',
-              );
-              return result;
-            },
-          );
-          diagnostic.cleanup = throttled.cleanup;
-          diagnostic.status = 'observed_under_cpu_constraint';
-        } catch (error) {
-          diagnostic.error = String(error?.message ?? error).slice(0, 300);
-          if (error?.cleanup) diagnostic.cleanup = error.cleanup;
-        }
+        await runSupplementalCpuDiagnostic({
+          page,
+          expectedUrl: `${origin}/intake`,
+          rate: DIAGNOSTIC_RATE,
+          diagnostic,
+          capture: async ({ target, cleanup }) => {
+            diagnostic.target = target;
+            diagnostic.cleanup = cleanup;
+            await armBusyObserver(panel, 'fast');
+            await click(panel, 'title', 'Capture the page exactly as it is right now');
+            const result = await waitFor(
+              'scrape_diagnostic_fast_result',
+              () => scrapeState(panel),
+              (s) =>
+                s?.title === article &&
+                s.selected === 'Article' &&
+                s.visible &&
+                s.resultText?.includes(article) &&
+                !s.resultText.includes(lazy) &&
+                s.fast.length === 1 &&
+                !s.fast[0].disabled,
+              30000,
+            );
+            diagnostic.full_result = result;
+            diagnostic.no_scroll = {
+              lazy_element_count: await page.locator('#late p').count(),
+              scroll_y: await page.evaluate(() => window.scrollY),
+            };
+            diagnostic.busy_observation = await busyObservation(panel);
+            diagnostic.screenshot = await screenshot(
+              panel,
+              artifacts,
+              'scrape-diagnostic-cpu-fast-article.png',
+            );
+            assert.equal(diagnostic.no_scroll.lazy_element_count, 0, 'scrape_diagnostic_scrolled');
+            assert.equal(diagnostic.no_scroll.scroll_y, 0, 'scrape_diagnostic_scroll_y');
+            assert.equal(
+              diagnostic.busy_observation.observed,
+              true,
+              'scrape_diagnostic_busy_unobserved',
+            );
+            assert.match(
+              diagnostic.busy_observation.text ?? '',
+              /Capturing/,
+              'scrape_diagnostic_busy_label',
+            );
+            return result;
+          },
+        });
       }
-      mark(
-        'EXT-F-1007-T01',
-        report.original_busy_failure ? 'unverified' : 'partial',
-        {
-          url: page.url(),
-          busy_disabled: fastBusy.observed,
-          article_title: fast.title,
-          lazy_content_absent: true,
-          result_tabs: fast.tabs.map((t) => t.label),
-        },
-        [
-          ...(report.original_busy_failure ? [report.original_busy_failure] : []),
-          'Warm/full reload lifecycle not yet exercised.',
-        ],
-      );
-
       report.stage = 'result_tabs';
       const expectedTabs = ['Article', 'Images', 'Video', 'Links', 'SEO', 'Schema'];
       assert.deepEqual(

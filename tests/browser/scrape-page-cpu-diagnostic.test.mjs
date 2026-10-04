@@ -1,19 +1,30 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { diagnosticCpuRate, withOwnedPageCpuThrottle } from './scrape-page-cpu-diagnostic.mjs';
+import {
+  diagnosticCpuRate,
+  runSupplementalCpuDiagnostic,
+  withOwnedPageCpuThrottle,
+} from './scrape-page-cpu-diagnostic.mjs';
 
 const intake = 'http://localhost:38541/intake';
 
-function pageFor(url = intake, target = { type: 'page', url: intake, targetId: 'owned-intake' }) {
+function pageFor(
+  url = intake,
+  target = { type: 'page', url: intake, targetId: 'owned-intake' },
+  failure = null,
+) {
   const calls = [];
   const session = {
     async send(method, args) {
       calls.push([method, args]);
       if (method === 'Target.getTargetInfo') return { targetInfo: target };
+      if (failure === 'restore' && method === 'Emulation.setCPUThrottlingRate' && args.rate === 1)
+        throw new Error('restore_failed');
       return {};
     },
     async detach() {
       calls.push(['detach']);
+      if (failure === 'detach') throw new Error('detach_failed');
     },
   };
   return {
@@ -69,9 +80,57 @@ test('foreign and panel pages never receive a throttling command', async () => {
   }
 });
 
-test('the explicit rate must be finite and bounded', () => {
+test('cleanup failure stops downstream original native actions while retaining diagnostic evidence', async () => {
+  for (const failure of ['restore', 'detach']) {
+    const page = pageFor(intake, undefined, failure);
+    const diagnostic = { status: 'unverified', cleanup: null, error: null };
+    const actions = [];
+    await assert.rejects(async () => {
+      await runSupplementalCpuDiagnostic({
+        page,
+        expectedUrl: intake,
+        rate: 4,
+        diagnostic,
+        capture: async () => {
+          actions.push('real_capture');
+        },
+      });
+      actions.push('original_result_tabs');
+    });
+    assert.deepEqual(actions, ['real_capture']);
+    assert.match(diagnostic.error, /cleanup_failed/);
+    assert.equal(
+      diagnostic.cleanup?.[failure === 'restore' ? 'rate_restored' : 'session_detached'],
+      false,
+    );
+  }
+});
+
+test('a diagnostic capture failure with successful cleanup allows original checks to continue', async () => {
+  const page = pageFor();
+  const diagnostic = { status: 'unverified', cleanup: null, error: null };
+  const actions = [];
+  await runSupplementalCpuDiagnostic({
+    page,
+    expectedUrl: intake,
+    rate: 4,
+    diagnostic,
+    capture: async () => {
+      actions.push('real_capture');
+      throw new Error('capture_failed');
+    },
+  });
+  actions.push('original_result_tabs');
+  assert.deepEqual(actions, ['real_capture', 'original_result_tabs']);
+  assert.match(diagnostic.error, /capture_failed/);
+  assert.equal(diagnostic.cleanup.rate_restored, true);
+  assert.equal(diagnostic.cleanup.session_detached, true);
+});
+
+test('the explicit rate must be finite and greater than normal speed', () => {
   assert.equal(diagnosticCpuRate(''), null);
   assert.equal(diagnosticCpuRate('4'), 4);
-  for (const value of ['NaN', 'Infinity', '0', '1', '21', 'abc'])
+  assert.equal(diagnosticCpuRate('21'), 21);
+  for (const value of ['NaN', 'Infinity', '0', '1', 'abc'])
     assert.throws(() => diagnosticCpuRate(value), /scrape_diagnostic_cpu_rate_invalid/);
 });
