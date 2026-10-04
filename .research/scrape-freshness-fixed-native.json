@@ -58,8 +58,8 @@
       "old_worker_and_panel_retired": true,
       "replacement_worker_and_panel_present": true,
       "reload_milestones": [
-        {"name": "reload_extension", "at": "2026-10-04T10:44:59.691Z"},
-        {"name": "open_scrape_in_replacement_panel", "at": "2026-10-04T10:45:01.443Z"}
+        { "name": "reload_extension", "at": "2026-10-04T10:44:59.691Z" },
+        { "name": "open_scrape_in_replacement_panel", "at": "2026-10-04T10:45:01.443Z" }
       ],
       "diagnosis": "Reload lifecycle and replacement-panel context boundary were observed. The run then failed in the extension_reload stage on a pointer target with zero visible matches; the intended post-reload interaction was not verified."
     }
