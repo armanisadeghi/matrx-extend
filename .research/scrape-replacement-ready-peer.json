@@ -1,0 +1,28 @@
+{
+  "review_id": "scrape-replacement-ready-independent-peer",
+  "reviewed_commit": "78ac468db29c959e75134b19150ff21e3b84b1ce",
+  "verdict_a_behavior": {
+    "status": "PARTIAL",
+    "source": "PASS",
+    "native": "UNKNOWN",
+    "evidence": "waitForReplacementScrapeTab polls the replacement panel's actual DOM and only resolves for exactly one matched and visible Scrape tab (.research change 78ac468d; tests/browser/scrape-replacement-tab.mjs:3-28). The acceptance awaits this boundary before recording the open milestone and invoking the existing click driver (tests/browser/scrape-guest-native-acceptance.mjs:530-538). The boundary returns first/last samples and attempts. The source-receipt facts remain lifecycle pass followed by zero matched/visible targets; that receipt has no subsequent DOM observation. No later native receipt or proof of successful trusted click was found in this checkout or its available /tmp run directory.",
+    "strictness": "The repair adds a readiness gate only. It leaves the unique target, stable hit, and trusted pointer input checks in the existing click driver intact; this review found no predicate weakening.",
+    "causal_limit": "The prior receipt proves the harness sampled before the control was observed, not that React later mounted it or that the product has a persistent render defect. Native causal status remains unknown until the next run records readiness and click evidence."
+  },
+  "verdict_b_quality": {
+    "status": "PASS_SOURCE_AND_FOCUSED_TESTS",
+    "guard": "The focused tests cover no-tab then ready, duplicate then unique, invisible then visible, and persistent missing control with a bounded timeout. They assert observations/attempt counts as well as acceptance/refusal, so a mere immediate success does not satisfy the cases.",
+    "verification": [
+      "node --test tests/browser/scrape-replacement-tab.test.mjs tests/browser/scrape-reload-milestones.test.mjs: 6 passed, 0 failed",
+      "forcing-function-tests/plant.py replaced the readiness predicate with an always-true predicate; the focused file went RED on its zero, duplicate, invisible, and missing-control assertions; plant.py restored the source byte-identically (SHA-256 467abbb3a971...)",
+      "git diff --check: passed"
+    ],
+    "scope_limit": "The fixture evaluates the actual DOM expression against controlled panel DOM states, but is not a Chrome/React integration run. This supports the source/guard verdict only; it does not resolve Verdict A native behavior."
+  },
+  "findings": [],
+  "remaining": [
+    "Run one hosted native acceptance against the specified frozen product artifact and require scrape_tab_boundary.last.matched=1 and last.visible=1, successful strict trusted click, subsequent empty-state/T20 assertions, and healthy resources.",
+    "If the bounded wait expires, retain its last sample and investigate product rendering; do not weaken identity, context, resource, or click predicates.",
+    "Earlier missing-destroyed-event run 371927 is a separate reload-lifecycle issue."
+  ]
+}
