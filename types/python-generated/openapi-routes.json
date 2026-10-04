@@ -2367,6 +2367,9 @@
    "application/json"
   ]
  },
+ "/esign/envelopes/{envelope_id}/verify": {
+  "post": []
+ },
  "/esign/envelopes/{envelope_id}/void": {
   "post": [
    "application/json"
