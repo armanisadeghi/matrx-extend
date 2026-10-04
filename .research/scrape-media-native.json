@@ -77,12 +77,45 @@
         "observed_worker_count": 1,
         "old_version_id": "0",
         "old_version_status": "redundant",
-        "old_version_running_status": "stopping",
+        "old_version_running_status": "stopped",
         "independent_old_host_probe": {
           "outcome": "present",
           "attached": false
         },
-        "escalation_branch": "Old stopped + host exists: debugger-host retention is established for this run; exact retaining session and causal repair remain unidentified."
+        "escalation_branch": "Old version explicitly reported stopped + host still exists unattached: execution stop is established and the DevTools host remained present at the independent probe; destruction event is absent, and the retaining session/cause remain unidentified.",
+        "old_version_running_status_observations": [
+          {
+            "at": "2026-10-04T12:10:52.158Z",
+            "running_status": "running",
+            "status": "activated",
+            "target_id": "13CCF66B639A035D8EA322ABDC27BDA0"
+          },
+          {
+            "at": "2026-10-04T12:10:52.528Z",
+            "running_status": "stopping",
+            "status": "activated",
+            "target_id": "13CCF66B639A035D8EA322ABDC27BDA0"
+          },
+          {
+            "at": "2026-10-04T12:10:52.536Z",
+            "running_status": "stopping",
+            "status": "redundant",
+            "target_id": "13CCF66B639A035D8EA322ABDC27BDA0"
+          },
+          {
+            "at": "2026-10-04T12:10:52.543Z",
+            "running_status": "stopping",
+            "status": "redundant",
+            "target_id": "13CCF66B639A035D8EA322ABDC27BDA0"
+          },
+          {
+            "at": "2026-10-04T12:10:52.638Z",
+            "running_status": "stopped",
+            "status": "redundant",
+            "target_id": null
+          }
+        ],
+        "execution_stop_observation": "Version 0 / registration 0 was correlated to the old target before target_id became null; the final version update explicitly reports running_status=stopped."
       },
       "scope_limits": [
         "Only guest mode was exercised.",
