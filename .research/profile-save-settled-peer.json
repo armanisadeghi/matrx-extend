@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task": "profile-save-settled-peer",
+  "reviewed_source_sha": "710d14bfbd5725e0231f63cc38967d9b980d83e8",
+  "authorship": "independent_source_review_only",
+  "A_source_native_pending": {
+    "verdict": "source_pass_native_pending",
+    "finding": "Both actual Identity and Employment field Save and restore callbacks require save_enabled === false, dirty === false, and equality for every desired or original field before the owned journal reads the successor. Null, missing, or partial snapshots cannot satisfy these predicates; disabled Save with dirty === true cannot satisfy them. A clean snapshot with exact fields can. The journal still requires the exact owned successor, including version, owner, organization, marker, creation time, and field values; reopen and extension-reload verification remain in sequence before restoration and census verdict.",
+    "native_gap": "No post-fix native browser run was performed by this reviewer. End-to-end Identity/Employment save, reload, date field, and restoration remain unverified on the corrected driver."
+  },
+  "B_quality": {
+    "verdict": "pass_with_narrow_guard_scope",
+    "finding": "The focused guard extracts each actual Save/restore callback and runs it through the real owned-write journal. It creates the captured causal condition (Save disabled, draft dirty, exact values) and fails if the journal reads the predecessor before the clean successor. It then accepts a clean exact-value sample and reconciles version 2. The test itself does not enumerate null or missing samples; those are rejected by the reviewed predicate's strict comparisons. The browser sample converts a missing Save button to false and a missing dirty indicator to false, but exact field values and later strict journal/reopen checks still gate completion."
+  },
+  "checks": {
+    "command": "node --test tests/browser/profile-*.test.mjs",
+    "result": "49 passed, 0 failed",
+    "scope": "focused Profile source guards; no native browser session"
+  },
+  "source_locations": [
+    "tests/browser/profile-identity-employment-cases.mjs:285",
+    "tests/browser/profile-identity-employment-cases.mjs:339",
+    "tests/browser/profile-field-save-settled.test.mjs:15",
+    "tests/browser/profile-owned-write-journal.mjs:26",
+    "tests/browser/profile-native-acceptance.mjs:1026"
+  ],
+  "private_values_included": false
+}
