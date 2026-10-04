@@ -16,11 +16,12 @@
     "scripts/_tool-db-row-validation.ts",
     "scripts/check-tool-db-drift.ts",
     ".research/tool-row-validator-peer.json",
-    "https://github.com/armanisadeghi/matrx-extend/commit/e932a092"
+    "https://github.com/armanisadeghi/matrx-extend/commit/e932a092",
+    ".research/registry-gate-current-retest.json"
   ],
   "severity": "S1: verified fixes cannot be packaged while canonical registry is falsely rejected",
   "priority": "P0: unblock urgent guest regression release without weakening gates",
-  "state": "fixed",
+  "state": "closed",
   "transition_history": [
     {
       "at": "2026-10-03T04:54:28.674747+00:00",
@@ -45,6 +46,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "e932a092 accepts canonical metadata and preserves malformed-parameter rejection; independent peer6d03c87b accepted. Actual strict check now reaches genuine Records contract drift tracked separately inD91; hosted complete gate still not passed."
+    },
+    {
+      "at": "2026-10-04T10:43:41.516942+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent a27096cf validates canonical metadata and malformed parameter guards (3/3). Exact hosted205 run37180303468 succeeded through mandatory strict drift gate; root checked exact release contract and publisher receipt hash. No isolated gate stdout; contract inference explicit."
+    },
+    {
+      "at": "2026-10-04T10:43:41.516942+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Specified validator/rejection/independent-review/hosted-strict-gate criteria met for205; broader product health remains unverified."
     }
   ],
   "closure_requirement": "Metadata fixture RED/GREEN, malformed actual parameter guard retained, independent review, and successful hosted strict live tool-drift gate."

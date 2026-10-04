@@ -8,5 +8,13 @@
     "result": "PASS_WITH_EVIDENCE_LIMIT",
     "evidence": "GitHub Hosted release run 37180303468 (https://github.com/armanisadeghi/matrx-extend/actions/runs/37180303468), candidate head 996b2a173c54ebbca654e1ddf7fe6fb08e23cf57, concluded success. Its 'Release through the repository contract' step succeeded; release.sh defines tool-drift as pnpm -s catalog:tools:drift:strict, and the successful release step executes required release checks. Thus this exact hosted candidate completed the strict live tool-drift gate successfully. The run artifact is matrx-extend-v0.2.205, artifact id 11294843385. No separate gate-specific log receipt was available in the narrow log extraction, so the gate verdict rests on the exact successful run plus the repository's blocking release contract, not an isolated drift stdout line."
   },
-  "closure": "The two specified D90 closure criteria are fulfilled for source e932a092 and hosted candidate/run above. This closes only EXT-F-0001-T07 / EXT-D-0090 evidence; it makes no claim about unrelated records contract drift or native product health."
+  "closure": "The two specified D90 closure criteria are fulfilled for source e932a092 and hosted candidate/run above. This closes only EXT-F-0001-T07 / EXT-D-0090 evidence; it makes no claim about unrelated records contract drift or native product health.",
+  "root_verification": {
+    "observed_at": "2026-10-04T10:43:41.516942+00:00",
+    "contract": "Read exact996b2a17 workflow and release.sh: release-with-gate-auth executes repository release; SKIP_CATALOG initialized false and --skip-catalog is a deprecated no-op. tool-drift strict is therefore required and run_checks failure hard-stops publication. No standalone gate stdout available; inference from mandatory contract and exact successful release remains explicit.",
+    "publisher_receipt_sha256": "c90752544003303f5ce0d240c1806ccd27a84cbba0a93b5a477c0d9d661518bb",
+    "release_source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "version": "0.2.205",
+    "decision": "Accept scoped D90 closure; no native product or current-main health claim."
+  }
 }

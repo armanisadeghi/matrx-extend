@@ -413,24 +413,50 @@
           ],
           "results": {
             "guest": {
-              "status": "fail",
-              "run_id": "37097488341",
-              "detail": "Shared release gate exit3. Management API returned82 bound rows; records row rejected valid $envelope string. Auth-independent gate evidence only.",
-              "evidence": "docs/stabilization/defects/EXT-D-0090.json"
+              "status": "pass",
+              "run_id": "37180303468",
+              "evidence": ".research/registry-gate-current-retest.json",
+              "detail": "Auth-independent release gate only: fresh metadata/rejection checks3/3 and exact hosted205 mandatory strict drift gate success. Scoped historical205/source2f68bc4f evidence, not native role or current-main acceptance. Previous failure retained.",
+              "verified_at": "2026-10-04T10:43:41.516942+00:00"
             },
             "member": {
+              "status": "pass",
+              "run_id": "37180303468",
+              "evidence": ".research/registry-gate-current-retest.json",
+              "detail": "Auth-independent release gate only: fresh metadata/rejection checks3/3 and exact hosted205 mandatory strict drift gate success. Scoped historical205/source2f68bc4f evidence, not native role or current-main acceptance. Previous failure retained.",
+              "verified_at": "2026-10-04T10:43:41.516942+00:00"
+            },
+            "admin": {
+              "status": "pass",
+              "run_id": "37180303468",
+              "evidence": ".research/registry-gate-current-retest.json",
+              "detail": "Auth-independent release gate only: fresh metadata/rejection checks3/3 and exact hosted205 mandatory strict drift gate success. Scoped historical205/source2f68bc4f evidence, not native role or current-main acceptance. Previous failure retained.",
+              "verified_at": "2026-10-04T10:43:41.516942+00:00"
+            }
+          },
+          "previous_results": [
+            {
+              "mode": "guest",
               "status": "fail",
               "run_id": "37097488341",
               "detail": "Shared release gate exit3. Management API returned82 bound rows; records row rejected valid $envelope string. Auth-independent gate evidence only.",
               "evidence": "docs/stabilization/defects/EXT-D-0090.json"
             },
-            "admin": {
+            {
+              "mode": "member",
+              "status": "fail",
+              "run_id": "37097488341",
+              "detail": "Shared release gate exit3. Management API returned82 bound rows; records row rejected valid $envelope string. Auth-independent gate evidence only.",
+              "evidence": "docs/stabilization/defects/EXT-D-0090.json"
+            },
+            {
+              "mode": "admin",
               "status": "fail",
               "run_id": "37097488341",
               "detail": "Shared release gate exit3. Management API returned82 bound rows; records row rejected valid $envelope string. Auth-independent gate evidence only.",
               "evidence": "docs/stabilization/defects/EXT-D-0090.json"
             }
-          }
+          ]
         }
       ],
       "cells": {
