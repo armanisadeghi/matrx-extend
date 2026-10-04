@@ -1,0 +1,28 @@
+{
+  "review": "tab-fallbacks-final-check",
+  "commit": "881d9698d4f6c565c728c0b362393b3fd0c1fd41",
+  "scope": ["EXT-F-4078-T01", "EXT-F-4079-T01", "EXT-F-4080-T01", "EXT-F-4082-T01"],
+  "verdicts": {
+    "A": {
+      "result": "addressed",
+      "procedure": "correct",
+      "basis": "Each case now has an explicit omitted-tab_id manual variant with owned-tab setup/activation, input, expected result, and cleanup. go_back/go_forward establish the corresponding history state; set_tab_zoom expects 1.5 and the existing cleanup resets zoom to 1; resize_window expects 900x650 and the existing cleanup restores original dimensions before closing the disposable window."
+    },
+    "B": {
+      "result": "preserved",
+      "unverified": [
+        "Actual browser outcomes for these procedures",
+        "Agent assigned-tab pinning behavior",
+        "Other optional/default argument combinations; coverage is not exhaustive"
+      ],
+      "constraints": "Manual Tools runner supplies assignedTabId:null; getAssignedTabId then queries the active tab in the current window. No browser, build, product, inventory, database, or child-agent verification was performed."
+    }
+  },
+  "no_new_breakage": "No source behavior changed in the reviewed commit; this bounded review found no procedure inconsistency against current handlers, runner context, or active-tab fallback. This is not a broader inventory or regression signoff.",
+  "evidence": [
+    "src/features/tools/ToolsView.tsx: manual runner context sets assignedTabId:null",
+    "src/lib/tools/handlers/_active-tab.ts: null assignment resolves active current-window tab",
+    "src/lib/tools/handlers/tabs.ts: four handlers accept optional tab_id and use getAssignedTabId fallback",
+    "docs/stabilization/inventory.json: four variants include setup, input, expected result, cleanup, and readiness gaps"
+  ]
+}
