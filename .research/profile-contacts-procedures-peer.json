@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "source_only_profile_contacts_procedures_peer",
+  "proposal_commit": "c722d017",
+  "review_scope": "EXT-F-1004-T07/T08/T09/T10; source and inventory only; no runtime, account, DB, build, or browser verification",
+  "A_acceptance_verdict": "conditional: all four inventory cases and their member/admin x warm/reload rows are represented, and the listed phone/email editor controls match source; not yet execution-ready or runtime-accepted",
+  "B_quality_verdict": "changes_required",
+  "evidence": [
+    "docs/stabilization/inventory.json C04/C05 and T07-T10 require separate member/admin and warm/reload outcomes",
+    "src/features/profile/ProfileView.tsx PhonesEditor/EmailsEditor expose Add, label, primary star, remove, and phone Number/Country code/SMS or Email; header/footer expose Save/Discard and Back",
+    "src/lib/supabase/user-profile.ts PhoneSchema and EmailEntrySchema include optional notes and optional/null fields; use-user-profile saves whole changed lists and refetches",
+    "tests/browser/profile-native-acceptance.mjs has identity/lifecycle orchestration but no contacts list restore or contact control driver"
+  ],
+  "gaps": [
+    {
+      "severity": "blocking",
+      "id": "exact_restore_not_possible_from_ui",
+      "finding": "The original snapshot requested by the proposal cannot capture hidden notes or distinguish absent from null/false for optional fields. The UI cannot recreate notes or absent optional keys, nor move entries except delete/re-add. Setting a synthetic primary rewrites is_primary on every original row; where the original list had no primary, multiple primaries, or absent flags, the UI has no control to restore that exact state. A UI-only cleanup cannot promise exact original order/properties for arbitrary private data.",
+      "required_change": "Make preflight refuse mutation unless an approved owner-scoped exact-state capture and restoration method exists; otherwise explicitly mark those rows unverified. Do not claim UI-only exact restoration. If limiting to a safely restorable fixture, document the allowed original shape and verify it before each run."
+    },
+    {
+      "severity": "blocking",
+      "id": "failure_semantics_conflated",
+      "finding": "The proposal groups missing control, failed save, mismatch, ambiguous write, failed cleanup, and unexecuted rows under 'unverified/failed'. A reproducible missing control or observed wrong behavior is a failure; a missing identity/device, uncertain write, or unexecuted dimension is unverified. Cleanup failure must remain separately visible even when the product assertion already failed.",
+      "required_change": "Define per-row product_result pass/fail/unverified and cleanup_result restored/failed/unverified, with overall pass only after all eight product rows pass and cleanup is proven. Preserve a failure even if cleanup later succeeds; never turn ambiguity into pass."
+    },
+    {
+      "severity": "major",
+      "id": "discard_not_exercised",
+      "finding": "Save / Discard / Back are listed as controls, but the steps never click Discard or verify draft rollback. Back is used only as navigation, with no explicit check of the resulting Chat surface.",
+      "required_change": "Add a reversible unsaved edit then Discard assertion for each role/lifecycle row, plus explicit Back navigation assertion; keep the committed synthetic list and cleanup phases distinct."
+    },
+    {
+      "severity": "major",
+      "id": "save_state_ambiguous",
+      "finding": "A disabled Save button after click is insufficient proof: use-user-profile can return ok:false after a write/refetch failure and ProfileView displays profile.error; Back can hide the error. The proposal does not require checking that error or confirming the full list before leaving.",
+      "required_change": "Require no visible save error, post-save full-list comparison while still in Profile, and independent comparison after Back/reopen and reload. Treat a failed save or verified mismatch as fail, uncertain persistence as unverified."
+    }
+  ],
+  "source_accuracy": "No invented phone validator, country picker, or email save blocking claim. Email type=email is a native input hint only. The two duplicated Save/Discard surfaces are not distinguished in the proposal; either may be exercised, but both should be identified if 'every control' is literal.",
+  "runtime_status": "all eight role x lifecycle rows unverified; no pass claim"
+}
