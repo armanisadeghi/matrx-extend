@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0134",
+  "reviewed_commit": "321137996160934d267159e4654b3279d02045e6",
+  "review_scope": "Fresh independent source and focused-test review of discovery repair after exact-205 native run 37239792825; no browser, native run, build, workflow, or product change",
+  "verdict_a_source_contract_capture_readiness": {
+    "result": "READY_FOR_ONE_NATIVE_CONDITION_LIVE_UNVERIFIED",
+    "source_contract": "Chromium TargetHandler registers as a DevToolsAgentHost observer when discovery is enabled; navigation calls TargetInfoChanged, which forwards an identity change for a reported or auto-attached host. BrowserAutoAttacher separately observes target creation. Discovery before auto-attach is therefore a justified way to receive the late offscreen URL, but the prior native receipt does not prove discovery was the unique cause of its empty requests array.",
+    "producer_order": "On missing offscreen target, the observer registers listeners, sends Target.setDiscoverTargets before Target.setAutoAttach, then enables Network on an offscreen or provisional attached session before Runtime.runIfWaitingForDebugger. It buffers the matching POST metadata until exact offscreen URL confirmation. The acceptance arms before first submit and requires status-bearing opening and post-reload observations before transport_proven.",
+    "native_limit": "Run 37239792825 produced a grounded first answer but guest_ai_requests was empty and had no observer counters. Current changes are source and simulated-event evidence only. One owner-controlled exact-205 native run with the new counters is still needed; the outcome must discriminate attachment, Network enable, request routing, URL confirmation, and response capture."
+  },
+  "verdict_b_privacy": {
+    "result": "PASS_SOURCE_SCOPE",
+    "evidence": "Observer snapshots persist attempt, UTC timestamp, browser-local request ID, numeric status, and syntax-restricted error code. Diagnostics persist fixed counters, session counts, observer failure code, and target inventory reduced to identity class, attachment boolean, and allowlisted type. No target URL, headers, request body, response body, target ID, or session ID enters those objects; failure capture writes diagnostics and snapshot before cleanup. Existing acceptance report fields outside this observer were not audited here."
+  },
+  "verdict_c_lifecycle": {
+    "result": "PASS_SOURCE_SCOPE",
+    "evidence": "Discovery is left enabled on the owned shared browser CDP session for later consumers. Stop resumes paused sessions, disables its auto-attach, removes its listeners, waits for optional body reads, and verifies direct offscreen detach. Acceptance records cleanup codes separately and rethrows the primary failure first. Actual native cleanup is unverified."
+  },
+  "verdict_d_testing": {
+    "result": "PASS_FOCUSED_WITH_LIVE_LIMIT",
+    "checks": [
+      "node --test tests/browser/guest-chat-transport-observer.test.mjs tests/browser/guest-chat-store-sequence.test.mjs: 9 passed, 0 failed",
+      "node tests/browser/vault-owned-cdp.test.cjs: PASS",
+      "Scratch-copy removal of discovery: producer test fails with opening_guest_ai_transport_unobserved; its separate call-order assertion also fails",
+      "Scratch-copy constant successful snapshot: 402 structured-code and unavailable-body cases fail"
+    ],
+    "limits": "The acceptance sequence test includes source-order assertions and a constructed tail, so it does not substitute for actual native transport. No hosted/live behavior was run in this review."
+  },
+  "sources": [
+    "https://chromium.googlesource.com/chromium/src/+/c81dc1b550aa5e3ef392aedd34926d6f348271f1/content/browser/devtools/protocol/target_handler.cc",
+    "https://github.com/chromium/chromium/blob/main/content/browser/devtools/browser_devtools_agent_host.cc",
+    "tests/browser/guest-chat-transport-observer.mjs",
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    "docs/stabilization/evidence/guest205-first-transport/run37239792825/acceptance-receipt.json"
+  ],
+  "open_item": "Root owns one changed-condition exact-205 hosted native run; inspect sanitized guest_ai_observer and HTTP status before any live-closure claim."
+}
