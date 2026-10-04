@@ -1,0 +1,46 @@
+{
+  "id": "EXT-D-0116",
+  "feature_id": "EXT-F-0003",
+  "case_ids": ["EXT-F-0003-T06"],
+  "surface": "Hosted release artifact selection and acceptance evidence",
+  "auth_mode": "guest and signed-in non-admin",
+  "title": "Hosted release acceptance extracts development ZIP while reports claim Store payload",
+  "reproduction": [
+    "Select successful hosted release37180303468 in hosted-guest-acceptance.yml with member-chat or guest-scrape.",
+    "prepare() verifies both ZIP hashes then extracts receipt.localZip.path and checks local treeSha256. Runs37182939504 and37185080238 therefore exercised local development ZIP205.",
+    "Compare local/store ZIP205: action, background, content_scripts, externally_connectable and key differ, alongside JavaScript payloads; they are not equivalent except manifest key."
+  ],
+  "expected": "A Store acceptance case uses the exact Store ZIP with only a declared identity adaptation, verifies its byte/source/tree provenance, and labels development-only evidence honestly.",
+  "actual": "Hosted member and Scrape evidence was overclaimed as exact Storepayload. Earlier direct StoreZIP guest/member/returning checks are separate and unaffected.",
+  "severity": "S2: release evidence can misrepresent the package tested",
+  "priority": "P1: correct selection and evidence before next hosted Store acceptance",
+  "state": "in-fix",
+  "owner": "hosted_store_artifact",
+  "evidence": [
+    "scripts/hosted-guest-acceptance.mjs",
+    ".research/hosted-member205-final.json",
+    ".research/guest-scrape-hosted-native.json",
+    ".research/guest-402-native-acceptance.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T07:27:10.486454+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Root inspected actual importer selection and compared both205ZIPs."
+    },
+    {
+      "at": "2026-10-04T07:27:10.486454+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Both verified artifacts present, but extraction unconditionally chose local ZIP; manifests and payloads differ."
+    },
+    {
+      "at": "2026-10-04T07:27:10.486454+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Explicit Storeselection repair and currentevidence corrections delegated in disjoint lanes."
+    }
+  ],
+  "closure_requirement": "Independent review plus actual hosted runtime bound to Store ZIP/source/key-only-adapted tree; current records corrected without rewriting original receipts."
+}
