@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "case": "EXT-D-0120 journal repair and media test typing final independent peer review",
+  "authorship": "Independent verification only; no production or test source edits.",
+  "reviewed_commits": {
+    "journal": "93c9280431a97c8834a041beb14b5e89411658db",
+    "media_types": "50e7c47d7eec556ef69d4a4d93c1ad4799cfe437"
+  },
+  "journal_finding": "ADDRESSED: The journal allowlist now retains exactly one attribution outcome, either validated processes with only pid, parentPid, cpuPercent, executable or unavailable:true. It discards unknown nested fields and raw error text, and refuses malformed or path-like process entries before writing. Focused persisted-journal tests assert publication, sanitized content, malformed refusal, and unsafe event ordering. The repair diff touches neither watchdog policy nor action boundary.",
+  "verdict_A_behavior": "PASS_SOURCE_READY: The previously missing attribution payload survives durable journal publication. The automatic exact-commit macOS disk integration passed both tests with zero skips, including the real guard case that checks unsafe native-action refusal before attribution. Native browser acceptance and product receipt remain unverified.",
+  "verdict_B_quality": "PASS_WITH_FIDELITY_LIMIT: The repair stays at the shared journal persistence boundary and keeps the allowlist. ps ucomm may truncate accounting names and ps %cpu is a decaying average, so rows suggest likely consumers but cannot prove ownership of the preceding iostat interval. The attribution event has pid and parentPid but no guaranteed durable owned group identity; groupId appears in conditional stop events, so a run cannot always correlate sampled rows to its owned group from the completed journal alone.",
+  "media_finding": "ADDRESSED: The type fix explicitly narrows the first queried controls and uses distinct placeholders. It does not remove actions, skip tests, suppress errors, or change product source. Four store and three view media control tests remain active and pass together.",
+  "verification": {
+    "local_journal_safety_native_boundary": "node --test scripts/test-stabilization-resource-journal.mjs scripts/test-stabilization-resource-safety.mjs tests/browser/native-resource-boundary.test.mjs: 15 passed, 0 failed, 0 skipped",
+    "local_typecheck": "pnpm compile: passed",
+    "local_media_controls": "pnpm exec vitest run src/state/scrape.media-controls.test.ts src/features/scrape/ScrapeView.media-controls.test.tsx: 7 passed across two files, 0 failed",
+    "exact_commit_ci": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37204825794; exact head 93c9280431a97c8834a041beb14b5e89411658db. Completed success in both checks and resource-guard-integration jobs. The automatic macOS disk integration log shows 2 passed, 0 failed, 0 skipped. Hosted Typecheck, Unit tests, and Resource safety regression steps passed."
+  },
+  "scope_limits": "No heavy local guard, manual native browser, release, or new CI run was launched. Local disk is below the unchanged admission floor; the real disk integration ran in automatic hosted macOS CI."
+}
