@@ -4,6 +4,11 @@
   "correction_commit": "3a7e5d9a",
   "merged_commit_observed": "d6036fc4",
   "status": "SOURCE_REVERIFY_PASS_UNLAUNCHED_DIAGNOSTIC_ONLY",
+  "launch_readiness": {
+    "source_verdict": "READY_FOR_CONFIGURED_ARM_TEST_DIAGNOSTIC_DISPATCH",
+    "hosted_outcome": "UNKNOWN_NOT_DISPATCHED",
+    "product_acceptance": "NOT_ESTABLISHED"
+  },
   "scope": "Fresh independent review of the corrected native startup diagnostic route and its two prior findings. No hosted dispatch, native browser, build, release, credentials, or product acceptance was attempted.",
   "A_route_measurement": {
     "prior_finding": "The first diagnostic only launched headless Chromium on about:blank, missing the native panel workload at the failed run's exercise_panel resource boundary.",
