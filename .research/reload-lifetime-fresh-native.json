@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "case": "EXT-D-0120 fresh native reload lifetime measurement",
+  "status": "PASS_SINGLE_ATTEMPT_INTERMITTENCY_OPEN",
+  "decision": "The fresh hosted native attempt reached Scrape and satisfied the unchanged strict retirement predicate, replacement context, and resource gates. This is a pass for this attempt only; the intermittent failure is not closed or causally explained.",
+  "workflow": {
+    "run_id": 37199709918,
+    "job_id": 111428700962,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37199709918",
+    "event": "workflow_dispatch",
+    "head_sha": "dfb848077bcd35324cc4a4fd600be243100a3ee0",
+    "conclusion": "success",
+    "artifact_id": 11302772521,
+    "artifact_name": "hosted-guest-37199709918-1",
+    "acceptance_case": "guest-scrape-development",
+    "inputs": {
+      "development_run_id": 37193761291,
+      "development_artifact_id": 11299613935,
+      "release_run_id": null,
+      "published_store_crx": false,
+      "scrape_diagnostic_cpu_rate": null
+    }
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.215",
+    "source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+    "tree_sha256": "ab62d0755d03e8a7f2ca0cb99e0b5037f39e75d756b14a3e2d3ad6d8cc096d08",
+    "development_run_id": 37193761291,
+    "development_artifact_id": 11299613935,
+    "artifact_expired_before_dispatch": false
+  },
+  "native_measurement": {
+    "status": "RELOAD_GATE_PASSED",
+    "receipt_status": "partial_overall_scrape_acceptance",
+    "guest_account_observed": true,
+    "actual_browser_version": {
+      "protocol_version": "1.3",
+      "product": "Chrome/141.0.7390.37",
+      "revision": "@9f043f63b0e5b728c8d09f3e3ddfc1681a4bd58e"
+    },
+    "pre_click_identity_correlation": {
+      "status": "observed",
+      "old_worker_target_id": "D8F9B52AC7EDA110F4DBAFCE20A01114",
+      "old_worker_version_id": "0",
+      "old_worker_registration_id": "0",
+      "replacement_worker_target_id": "CADF345F2E963A7A7221969C0D93BFDF",
+      "replacement_worker_version_id": "1",
+      "replacement_worker_registration_id": "1",
+      "old_worker_present_before_click": true
+    },
+    "old_host_lifecycle": {
+      "before_click": {
+        "at": "2026-10-04T11:49:52.718Z",
+        "running_status": "running",
+        "version_status": "activated",
+        "attached": true
+      },
+      "target_info_changed_to_unattached_at": "2026-10-04T11:49:53.158Z",
+      "version_became_redundant_at": "2026-10-04T11:49:53.139Z",
+      "version_stopped_at": "2026-10-04T11:49:53.179Z",
+      "owned_destroyed_at": "2026-10-04T11:49:53.325Z",
+      "independent_destroyed_at": "2026-10-04T11:49:53.325Z",
+      "host_probe": "not_needed_on_strict_success_path"
+    },
+    "owned_vs_independent_destruction": {
+      "owned_observer": {
+        "old_panel_destroyed_at": "2026-10-04T11:49:53.110Z",
+        "old_worker_destroyed_at": "2026-10-04T11:49:53.325Z"
+      },
+      "independent_observer": {
+        "old_panel_destroyed_at": "2026-10-04T11:49:53.109Z",
+        "old_worker_destroyed_at": "2026-10-04T11:49:53.325Z"
+      }
+    },
+    "strict_predicate": {
+      "evaluated": true,
+      "old_target_destroyed_event": true,
+      "old_worker_absent": true,
+      "old_panel_absent": true,
+      "replacement_worker_present": true,
+      "replacement_worker_created_event": true,
+      "observed_worker_count": 1,
+      "result": "pass"
+    },
+    "replacement_context": {
+      "replacement_panel_opened_at": "2026-10-04T11:49:54.246Z",
+      "replacement_scrape_observed_at": "2026-10-04T11:49:54.826Z",
+      "scrape_tab_boundary": {
+        "first_observation": { "matched": 0, "visible": 0 },
+        "last_observation": { "matched": 1, "visible": 1 },
+        "attempts": 2,
+        "interpretation": "The expected Scrape tab transitioned from absent to visible in the replacement panel."
+      },
+      "failure": null,
+      "management_diagnostic": null
+    },
+    "reload_milestones": [
+      { "name": "reload_extension", "at": "2026-10-04T11:49:51.946Z" },
+      { "name": "open_scrape_in_replacement_panel", "at": "2026-10-04T11:49:54.246Z" },
+      { "name": "observe_replacement_scrape", "at": "2026-10-04T11:49:54.509Z" },
+      { "name": "replacement_scrape_observed", "at": "2026-10-04T11:49:54.826Z" }
+    ],
+    "other_acceptance_cases": {
+      "T20": "passed",
+      "T01": "partial",
+      "T08": "partial",
+      "T02": "partial",
+      "T14": "partial"
+    }
+  },
+  "current_run_resources": {
+    "package": {
+      "path": "docs/stabilization/evidence/scrape215/run37199709918/package-resource.jsonl",
+      "sha256": "7fdeba31acfe766eb818702d204024c3d75fb84688e1f41285f554cd901b15c2",
+      "decision": "valid",
+      "resource_invalid": false,
+      "admission_at": "2026-10-04T11:45:38.053Z",
+      "cpu_busy_fraction": 0.018571428571428572,
+      "one_minute_load": 1.53,
+      "available_memory_gib": 12.6,
+      "unsafe_reasons": []
+    },
+    "browser": {
+      "path": "docs/stabilization/evidence/scrape215/run37199709918/browser-resource.jsonl",
+      "sha256": "c3794514d53f8e9eacc631ea479b5ff8a5c073bb43b5c15b233f59f206ba63f1",
+      "decision": "valid",
+      "resource_invalid": false,
+      "admission_at": "2026-10-04T11:47:34.332Z",
+      "cpu_busy_fraction": 0.0985714285714286,
+      "one_minute_load": 0.88,
+      "available_memory_gib": 12.6,
+      "unsafe_reasons": []
+    },
+    "guest": {
+      "path": "docs/stabilization/evidence/scrape215/run37199709918/guest-resource.jsonl",
+      "sha256": "e2c79020000d5b458f9e984b97299eccc58f925fa34cacd4fdbfb8ed7cf27b36",
+      "decision": "valid",
+      "resource_invalid": false,
+      "admission_at": "2026-10-04T11:49:30.252Z",
+      "cpu_busy_fraction": 0.06285714285714286,
+      "one_minute_load": 0.98,
+      "unsafe_reasons": [],
+      "watch_at": "2026-10-04T11:49:46.402Z",
+      "watch_cpu_busy_fraction": 0.1,
+      "watch_one_minute_load": 3.36,
+      "exit_code": 0
+    }
+  },
+  "evidence": {
+    "receipt_path": "docs/stabilization/evidence/scrape215/run37199709918/receipt.json.txt",
+    "receipt_sha256": "cd1e893bde4be9bd302f71e6b3b2f8666030cecdde38aa2945976a10719793b4",
+    "secrets_review": {
+      "result": "no credential values, token-like values, or secret-bearing URL query parameters found",
+      "credential_named_field": "guest_auth_storage.hasAccessToken is boolean true only"
+    },
+    "quality": "sufficient to select single-attempt pass branch; browser version, pre-click worker identity correlation, both destruction observers, strict predicate, and all three resource journals are present",
+    "resource_journals": [
+      "docs/stabilization/evidence/scrape215/run37199709918/package-resource.jsonl",
+      "docs/stabilization/evidence/scrape215/run37199709918/browser-resource.jsonl",
+      "docs/stabilization/evidence/scrape215/run37199709918/guest-resource.jsonl"
+    ]
+  },
+  "limitations": [
+    "This passing run does not close the intermittent prior failure or establish its cause.",
+    "The overall Scrape acceptance receipt remains partial because T01, T08, T02, and T14 have separate unverified requirements.",
+    "Failure-only independent target probes were not run because the strict retirement path passed.",
+    "No source change, resource-policy change, CPU diagnostic, local browser run, build, release, or Store action was performed."
+  ]
+}
