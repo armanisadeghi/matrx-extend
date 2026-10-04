@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "task": "profile-fields-clean-save-native",
+  "run_id": "profile-fields-clean-save-189-07",
+  "status": "failed_before_extension_reload_verification",
+  "scope": "one native member run; PROFILE_EXTENDED_CASES=1",
+  "repo_head": "1f677243958f32c69a38fd02c79d20c19aaab646",
+  "artifact": {
+    "source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "ci_run_id": 37164174445,
+    "artifact_id": 11288542496,
+    "version": "0.2.189",
+    "tree_sha256": "494646f6dd65399e0e7eee65fd1d9bd00ef97d173c5ceb9674de276ca12dc23a",
+    "extension_dir": "test-results/ci-artifacts/b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced/37164174445-1/chrome-mv3"
+  },
+  "identity_and_scope": {
+    "first_party_identity_verified": true,
+    "extension_identity_matches": true,
+    "selected_device_organization_matches_stored_identity": true,
+    "canonical_nonadmin_check": {
+      "http_status": 200,
+      "returned_rows": 0
+    },
+    "baseline_first_actual_input_smoke": {
+      "case_id": "EXT-F-1004-T01",
+      "dimension": "warm",
+      "status": "passed"
+    }
+  },
+  "case_dimension_census": [
+    {
+      "case_id": "EXT-F-1004-T05",
+      "dimension": "warm",
+      "status": "provisional_saved_and_reopened"
+    },
+    {
+      "case_id": "EXT-F-1004-T05",
+      "dimension": "extension_reload",
+      "status": "missing_primary_reload_failure"
+    },
+    {
+      "case_id": "EXT-F-1004-T17",
+      "dimension": "warm",
+      "status": "provisional_saved_and_reopened"
+    },
+    {
+      "case_id": "EXT-F-1004-T17",
+      "dimension": "extension_reload",
+      "status": "missing_primary_reload_failure"
+    },
+    { "case_id": "EXT-F-1004-T21", "dimension": "warm", "status": "passed" },
+    {
+      "case_id": "EXT-F-1004-T21",
+      "dimension": "extension_reload",
+      "status": "missing_primary_reload_failure"
+    }
+  ],
+  "additional_completed_warm_cases": [
+    "EXT-F-1004-T03 discard and save/reopen",
+    "EXT-F-1004-T25 owner-read retry",
+    "EXT-F-1004-T26 write failure/retry (provisional pending original-absence verification)"
+  ],
+  "failures": {
+    "primary": {
+      "stage": "extension_reload",
+      "operation": "reload_extension",
+      "safe_code": "profile_unclassified_failure"
+    },
+    "secondary_cleanup": {
+      "stage": "restore_original_absence",
+      "safe_code": "pointer_target_not_unique",
+      "original_absence_verified": false,
+      "owned_row_may_remain": true,
+      "owner": "root recovery lane"
+    }
+  },
+  "resource": {
+    "decision": "child_failed",
+    "admitted": true,
+    "resource_invalid": false,
+    "watch": "healthy",
+    "journal": "docs/stabilization/resource-journals/profile-fields-clean-save-189-07.jsonl",
+    "journal_sha256": "6cc1e57ed8f8e9309cacef7cca35470fd210661e321892438907e6b9f1ccd812"
+  },
+  "evidence": {
+    "raw_report": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-fields-clean-save-189-07/evidence/profile-native-profile-fields-clean-save-189-07.json",
+    "raw_report_sha256": "3162b7fcdf5e6813382a9aaa380e7824326ddcec0824ac77f8f5ff212ecef2de",
+    "runner_sha256": "e427b00309ada3ba9d2e4b87047d572016f65e0237fa7ef16eaded53eec7633b",
+    "field_driver_sha256": "6ca3cf046214d2dc6255e39272e3b04af8758833fda4e5b81a7b9dc3dc4e3e7b"
+  },
+  "cleanup_and_recovery": {
+    "private_magic_link_removed": true,
+    "private_ownership_receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-fields-clean-save-189-07/evidence/owned-profile-private.json",
+    "private_ownership_receipt_mode": "0600",
+    "permit_profile": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-fields-clean-save-189-07/permit-profile",
+    "permit_profile_empty_after_run": true,
+    "browser_profile_recoverable": false,
+    "owned_row_cleanup": "pending root recovery lane"
+  }
+}
