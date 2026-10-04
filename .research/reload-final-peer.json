@@ -15,8 +15,20 @@
     "verdict": "PASS_WITH_OBSERVATION",
     "evidence": "Fresh read-only run reload-final-peer-20261003-01. Guard decision valid; child exit 0. Report SHA-256 9be767f5d6606bab9c9da74ab394791c9db111fb06429921b29f004506daa03a.",
     "observed": {
-      "management_before": {"state": "ENABLED", "unsupported_developer_extension": false, "developer_mode": true, "runtime_error_count": 0, "manifest_error_count": 0},
-      "management_after": {"state": "ENABLED", "unsupported_developer_extension": false, "developer_mode": true, "runtime_error_count": 1, "manifest_error_count": 0},
+      "management_before": {
+        "state": "ENABLED",
+        "unsupported_developer_extension": false,
+        "developer_mode": true,
+        "runtime_error_count": 0,
+        "manifest_error_count": 0
+      },
+      "management_after": {
+        "state": "ENABLED",
+        "unsupported_developer_extension": false,
+        "developer_mode": true,
+        "runtime_error_count": 1,
+        "manifest_error_count": 0
+      },
       "old_worker_destroyed_event": true,
       "old_worker_absent": true,
       "old_panel_absent": true,
@@ -50,6 +62,10 @@
       "/Volumes/Samsung2TB/code/.stabilization-scratch/reload-final-peer-20261003-01/evidence/native-sidepanel-qa-G63EGJ/normal-target-after-open.png"
     ]
   },
-  "constraints_observed": ["No local build or release", "No Profile or database mutation", "No edits to builder code"],
+  "constraints_observed": [
+    "No local build or release",
+    "No Profile or database mutation",
+    "No edits to builder code"
+  ],
   "remaining": "Runtime error detail was not exposed by the read-only probe and needs separate diagnosis before claiming the extension runtime is clean."
 }
