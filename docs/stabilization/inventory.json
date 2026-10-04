@@ -34972,6 +34972,7 @@
         "guest": {
           "test_status": "partial",
           "defect_ids": [
+            "EXT-D-0134",
             "EXT-D-0066",
             "EXT-D-0074",
             "EXT-D-0075",

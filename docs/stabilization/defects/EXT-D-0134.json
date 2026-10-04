@@ -1,0 +1,43 @@
+{
+  "id": "EXT-D-0134",
+  "feature_id": "EXT-F-2013",
+  "surface": "Guest Chat acceptance transport observation",
+  "auth_mode": "guest",
+  "title": "Native guest acceptance observes side panel instead of offscreen request owner",
+  "reproduction": [
+    "Run exact candidate205 guest acceptance37206303244.",
+    "Observe completed real answers but empty guest_ai_requests receipt.",
+    "Inspect acceptance observer attachment: Network is enabled on sidepanel while real streaming fetch executes in offscreen document."
+  ],
+  "expected": "First guest send is observed on actual transport without prewarming or changing its startup; missing capture remains explicit failure/unverified.",
+  "actual": "Prior acceptance recorded no request status or error code. UI answer evidence remains valid only for its bounded claim.",
+  "severity": "S2: missing failure evidence can conceal transport regressions",
+  "priority": "P1: diagnose urgent signed-out Chat incident",
+  "state": "in-fix",
+  "owner": "root/guest_first_transport_observer",
+  "evidence": [
+    ".research/guest205-current-live-check.json",
+    ".research/guest-incident-oct4-live-audit.json",
+    "tests/browser/guest-chat-store-acceptance.mjs"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T22:03:29.320123+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Raw receipt confirms zero transport observations."
+    },
+    {
+      "at": "2026-10-04T22:03:29.320123+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Observer target mismatches actual offscreen fetch owner."
+    },
+    {
+      "at": "2026-10-04T22:03:29.320123+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded passive first-send capture repair delegated with independent review and native proof required."
+    }
+  ]
+}
