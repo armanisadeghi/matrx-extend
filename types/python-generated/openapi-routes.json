@@ -3176,6 +3176,11 @@
    "application/json"
   ]
  },
+ "/google-workspace/chat/messages/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/google-workspace/documents/append": {
   "post": [
    "application/json"
