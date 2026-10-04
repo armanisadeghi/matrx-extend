@@ -194,6 +194,30 @@ describe('PasswordGenerator', () => {
     expect(mocks.sendMessage.mock.calls.some(([item]) => item?.operation === 'submit')).toBe(false);
   });
 
+  it('sends the selected offered field when more than one target is available', async () => {
+    mocks.sendMessage
+      .mockResolvedValueOnce({
+        status: 'ready',
+        offers: [offer, { ...offer, id: 'offer-2', origin: 'https://profile.example' }],
+      })
+      .mockResolvedValueOnce({
+        status: 'filled',
+        message: 'Filled. Matrx did not submit the form.',
+      });
+    renderGenerator();
+    open();
+    await generate();
+    const selectedTarget = screen.getByRole('radio', { name: /profile\.example/ });
+    fireEvent.click(selectedTarget);
+    expect(selectedTarget).toHaveProperty('checked', true);
+    const useButton = screen.getByRole('button', { name: 'Use' });
+    expect(useButton).toHaveProperty('disabled', false);
+    fireEvent.click(useButton);
+    await waitFor(() => expect(mocks.sendMessage).toHaveBeenCalledTimes(3));
+    const request = mocks.sendMessage.mock.calls.at(-1)?.[0] as Record<string, unknown>;
+    expect(request.operation === 'use' && request.offerId === 'offer-2').toBe(true);
+  });
+
   it('generates a six-word passphrase under the configured 64-word ceiling', async () => {
     renderGenerator();
     open();
@@ -202,6 +226,33 @@ describe('PasswordGenerator', () => {
     await generate();
     fireEvent.click(screen.getByRole('button', { name: 'Reveal generated value' }));
     expect((document.querySelector('code')?.textContent ?? '').split('.')).toHaveLength(6);
+  });
+
+  it('applies password length and disabled character groups to the real generator', async () => {
+    renderGenerator();
+    open();
+    fireEvent.change(screen.getByLabelText('Password length'), { target: { value: '32' } });
+    for (const label of ['Uppercase', 'Digits', 'Symbols'])
+      fireEvent.click(screen.getByRole('switch', { name: label }));
+    await generate();
+    fireEvent.click(screen.getByRole('button', { name: 'Reveal generated value' }));
+    const value = document.querySelector('code')?.textContent ?? '';
+    expect(value.length === 32).toBe(true);
+    expect(/^[a-z]+$/.test(value)).toBe(true);
+  });
+
+  it('applies passphrase word count, separator, capitalization, and appended digit', async () => {
+    renderGenerator();
+    open();
+    fireEvent.click(screen.getByRole('button', { name: 'Passphrase' }));
+    fireEvent.change(screen.getByLabelText('Passphrase word count'), { target: { value: '7' } });
+    fireEvent.change(screen.getByLabelText('Passphrase separator'), { target: { value: ' ' } });
+    fireEvent.click(screen.getByRole('switch', { name: 'Capitalize' }));
+    fireEvent.click(screen.getByRole('switch', { name: 'Append digit' }));
+    await generate();
+    fireEvent.click(screen.getByRole('button', { name: 'Reveal generated value' }));
+    const value = document.querySelector('code')?.textContent ?? '';
+    expect(/^(?:[A-Z][a-z]* ){6}[A-Z][a-z]*[0-9]$/.test(value)).toBe(true);
   });
 
   it('uses the installed engine defaults at the documented 64-bit floor', () => {
