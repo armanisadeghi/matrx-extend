@@ -14,8 +14,8 @@
   "actual": "At360px viewport, document/body/Scrape pane scrollWidth391px and result-tab right390.77px; Links/SEO/Schema selection scrolls document31px and clips panel left. Reproduced in development213 after earlier Store205 evidence.",
   "severity": "S3: narrow-panel content/navigation visibility",
   "priority": "P1: contained Scrape layout",
-  "state": "triaged",
-  "owner": "unassigned_scrape_layout",
+  "state": "in-fix",
+  "owner": "/root/scrape_layout_fix",
   "evidence": [
     ".research/guest-scrape-cpu-native.json",
     "docs/stabilization/evidence/scrape205/tab-strip-left-clipping.png",
@@ -35,6 +35,12 @@
       "from": "open",
       "to": "triaged",
       "reason": "Independent healthy native37192733619 reproduces document scrollLeft31 at360px viewport with391px scrollWidth after Links/SEO/Schema; root inspected retained screenshot. Source overflow cause still to localize."
+    },
+    {
+      "at": "2026-10-04T09:54:21.457213+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded source repair delegated from exact healthy native geometry; no root cropping or hidden controls permitted."
     }
   ],
   "closure_requirement": "Independently reproduce and repair confirmed clipping class, then verify normal/narrow panel tab selection and deep capture without horizontal displacement.",

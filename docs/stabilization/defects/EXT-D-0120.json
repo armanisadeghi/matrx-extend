@@ -13,7 +13,7 @@
   "severity": "S2: acceptance reliability; no proven product failure",
   "priority": "P1: prerequisite for trusted native acceptance",
   "state": "open",
-  "owner": "root",
+  "owner": "/root/reload_lifecycle_diagnose",
   "evidence": [
     ".research/scrape-loading-fixed-native.json",
     ".research/scrape-reload-diagnosis.json",
@@ -28,5 +28,5 @@
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
-  "next_action": "Diagnose shared native reload lifecycle retirement observation with exact receipt; distinguish missing event proof from actual retained old worker. Preserve lifecycle rigor; no blind retry or product fault inference."
+  "next_action": "Bounded source lane /root/reload_lifecycle_diagnose traces missing worker-retirement event using exact37192733619 lifecycle evidence; causal repair or precise next measurement only, no loosened predicate."
 }
