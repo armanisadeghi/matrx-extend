@@ -184,7 +184,7 @@ describe('diagnose picker page component', () => {
 
     fireEvent.click(target as HTMLButtonElement);
 
-    const message = vi.mocked(chrome.runtime.sendMessage).mock.calls.at(-1)?.[0] as {
+    const message = vi.mocked(chrome.runtime.sendMessage).mock.calls.at(-1)?.[0] as unknown as {
       kind: string;
       payload: { mode: string; sessionId: string; leafHtml: string; selectorChain: string[] };
     };

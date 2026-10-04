@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "checked_at": "2026-10-04T18:59:17Z",
+  "checked_at": "2026-10-04T19:00:59Z",
   "scope": {
     "feature_id": "EXT-F-1007",
     "case_ids": ["EXT-F-1007-T15", "EXT-F-1007-T16", "EXT-F-1007-T17"],
@@ -41,7 +41,8 @@
       "reproduction": "The focused test rejects chrome.scripting.executeScript during DiagnoseLauncher startup; the real useScrape catch resets picking and logs [matrx-extend] diagnose picker injection failed.",
       "observed": "The scrape store error remains null and the Scrape UI has no visible explanation for why the picker did not start.",
       "evidence": "src/hooks/use-scrape.ts:124-165; src/features/scrape/DiagnoseControls.test.tsx injection-rejection case.",
-      "classification": "Confirmed source/component behavior; Chrome script injection itself was mocked. Potential silent-failure UX issue for a later product-fix lane."
+      "classification": "Defect candidate for product-owner triage: reproducible script-injection rejection leaves the picker unavailable without visible explanation. No product fix was in scope.",
+      "expected_user_visible_behavior": "A persistent or actionable visible error should explain that the picker could not start and offer retry/dismissal; a console warning alone is not visible to the user."
     },
     {
       "area": "shadow Cancel button probe",
