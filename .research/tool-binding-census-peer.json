@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-10-04T18:32:06Z",
+  "reviewed_commit": "4a51798b",
+  "reviewer_scope": "Independent lightweight consistency audit; no live DB, browser, build, or runtime checks.",
+  "verdict_a": {
+    "status": "PASS",
+    "basis": "All 169 canonical inventory entries whose surface is exactly “Tools / registered executor” are represented once by feature ID and name in the census; the explicit name filter covers all 168 unique tool names. Canonical inventory has one duplicate name (wait_for), represented as two feature rows.",
+    "coverage": {
+      "canonical_tool_feature_count": 169,
+      "census_feature_row_count": 169,
+      "canonical_tool_ids_exactly_covered": true,
+      "canonical_tool_id_name_pairs_match": true,
+      "duplicate_canonical_tool_names": ["wait_for"],
+      "duplicate_census_feature_ids": 0,
+      "duplicate_census_names": 1,
+      "query_name_count": 168,
+      "query_unique_name_count": 168,
+      "query_covers_every_unique_canonical_tool_name": true,
+      "query_extra_names": [],
+      "query_sha256_recomputed": "9dabbf865b3fba5f149f4a68da2b4ce78e967f62e312766a2e7e687764e53b1a",
+      "query_sha256_matches_both_records": true,
+      "report_metadata_lengths": {
+        "definitions": 84,
+        "bindings": 84,
+        "surfaces": 2
+      },
+      "binding_activity": {
+        "unique_binding_ids": 84,
+        "active": 82,
+        "inactive": 2
+      },
+      "definition_duplicates": {
+        "ids": 0,
+        "names": 0
+      },
+      "source_feature_file_blob_at_census_commit": "0bd6ffcc801103dcdcefbe2b9366e6f6289f6434",
+      "non_registry_tools_surfaces": [
+        {
+          "id": "EXT-F-2012",
+          "name": "Browse and manually run extension tools",
+          "surface": "Tools/manual runner"
+        },
+        {
+          "id": "EXT-F-2015",
+          "name": "Run built-in browser AI scenarios",
+          "surface": "Tools Smart tests"
+        },
+        {
+          "id": "EXT-F-2016",
+          "name": "Record active browser tab",
+          "surface": "Tools Recorder"
+        }
+      ]
+    },
+    "limits": [
+      "The canonical inventory also contains 3 separate Tools-surface capabilities (manual runner, Smart tests, Recorder); these are distinct feature rows and are not registered-executor tools. Their absence from the 169-row registry census is scope-correct, not a missing tool binding.",
+      "A metadata census cannot establish role availability, request-time filtering, permission decisions, browser behavior, or runtime health."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS_WITH_LIMITS",
+    "basis": "Counts and uniqueness claims reconcile with the embedded metadata; the raw evidence preserves the query and matching SHA-256, and records definitions, bindings, and both surface rows. Manual-only/registry-drift cases remain explicitly unresolved rather than being labeled defects. Active definition+binding count is 82 by ID intersection; the 2 inactive definition/binding pairs are capture_credential and evaluate_javascript.",
+    "concrete_discrepancies": [],
+    "limits": [
+      "The source host is asserted by the operator and the SQL result is supplied as evidence; this verifier did not independently connect to the database or validate host identity.",
+      "Reported source checkout SHAs are provenance statements, not independently re-fetched sibling-repository evidence.",
+      "No execution or product-health claim is supported by this report."
+    ]
+  }
+}
