@@ -6,6 +6,12 @@ The stabilization goal remains active. The canonical coverage ledger is `docs/st
 
 Root owns integration, inventory/defect transitions, Store follow-through, and the next execution decision. Continue from current inventory and defects. Preserve concurrent writers on shared `origin/main`: fetch/reconcile, commit exact paths, push, and record final workspace state in `docs/stabilization/reports/workspace-sync-guest-incident-20261003.json`. Do not end with a child or heavy job active. Source review and tests never substitute for installed UI and server behavior.
 
+## Current execution — October 4, 23:07 UTC
+
+Store refresh at23:00Z remains176published/205pending; no replacement. Current member Scrape diagnostic37241717888 is terminal failure with complete evidence75849614 and temporary credentials removed. Root verified all six hashes and read three raw journals. Member/auth/org pass; original exact SIDE_PANEL exists but is hidden despite focus; no viewport or Scrape cases passed. D133 is in-fix: root/member_panel_repair_recovery owns the native opening repair after the first Sol worker hit capacity. Require fresh peer plus one guarded retest of frozen244, not an unchanged retry. D132 is closed after this run physically exercised one CPU_PENDING spike followed by three healthy watches and CPU_RECOVERED; no historical unsafe record changed.
+
+Five Chrome-local procedures were expanded in d00c893a after source reviewfa4ea18d; runtime cells unchanged. Manual Catalog is not authorization/dispatcher/live-binding coverage. Concrete history/session fixtures and unambiguous cleanup scheduling still need resolution before execution. No further procedure-polish loop was launched. Root owns current workspace ledger and final synchronization; no worker/native job may be left running at turn end.
+
 ## Store and public guest Chat
 
 Latest authenticated primary Store Package refresh remains **0.2.205 Pending review**, **0.2.176 Published**, with uploads disabled. Check timestamp and exact submitted package provenance are in `.research/guest-402-release-preparation.json`; automatic publication was enabled at submission. Preserve this submission while pending. Publisher access works; no human sign-in action is currently required. Refresh the dashboard before a new status claim or Store action.
