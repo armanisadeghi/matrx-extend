@@ -1262,7 +1262,8 @@
         }
       },
       "readiness_gaps": [
-        "Concrete procedure and evidence required before executing each control."
+        "Concrete procedure and evidence required before executing each control.",
+        "EXT-D-0136: actual CPU integration CI failed parsing incomplete JSON; repair and independent retest pending."
       ]
     },
     {

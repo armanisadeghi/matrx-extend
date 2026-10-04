@@ -1,0 +1,30 @@
+{
+  "id": "EXT-D-0136",
+  "feature_id": "EXT-F-0002",
+  "surface": "Testing infrastructure",
+  "auth_mode": "all (auth-independent)",
+  "title": "CPU integration test reads incomplete JSON during active journal write",
+  "reproduction": [
+    "Run CI resource-guard-integration CPU confirmation and native action boundary step; failure observed in run37245082188 job111561549168.",
+    "Inspect runScenario at scripts/test-stabilization-resource-cpu-integration.mjs:154: JSON.parse throws Unexpected end of JSON input while test is running.",
+    "Exact causal trigger and deterministic reproduction are assigned to implementation lane; preserve this observed failure."
+  ],
+  "expected": "Resource integration test reads complete evidence and determines the actual guard outcome.",
+  "actual": "Integration test aborts with SyntaxError before an outcome can be verified.",
+  "severity": "S2: verification infrastructure failure; no product failure established",
+  "priority": "P1: restore green release verification",
+  "state": "open",
+  "owner": "root/cpu_journal_parse_repair",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37245082188",
+    ".research/cpu-journal-parse-repair.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T23:53:16.168144+00:00",
+      "to": "open",
+      "reason": "Observed raw CI job log; causal race remains to be verified.",
+      "from": null
+    }
+  ]
+}
