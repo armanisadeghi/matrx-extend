@@ -13,11 +13,14 @@
   "actual": "Fixture source replacement stops before target safety behavior; CI also reports three formatting errors requiring exact-path correction.",
   "severity": "S2: red integration gate, not a native product failure",
   "priority": "P1: restore green trunk before next native launch",
-  "state": "in-fix",
+  "state": "closed",
   "owner": "root/startup_ci_repair",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/37231230338",
-    ".research/startup-ci-repair.json"
+    ".research/startup-ci-repair.json",
+    ".research/ci130-fresh-peer.json",
+    ".research/ci130-bootstrap-fresh-peer.json",
+    ".research/ci130-hosted-retest.json"
   ],
   "transition_history": [
     {
@@ -37,7 +40,26 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Assigned source repair preserving original safety assertion and exact formatting checks."
+    },
+    {
+      "at": "2026-10-04T20:27:04.942391+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Firstrepair fixes stale CPUcall; actualhostedretest exposed missing scratchimport. Secondrepair copiesdependencyclosure and adds disk-independent bootstrap regression. Freshpeer7733c85b accepts source/quality; actual safetyintegration awaits CI37232097255."
+    },
+    {
+      "at": "2026-10-04T20:31:16.910647+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent sourcepeer7733c85b plus actualhostedCI37232097255 allgreen; four resourceintegrationcasespassed zero skipped includingoriginalmarker/retainedlease assertions."
+    },
+    {
+      "at": "2026-10-04T20:31:16.910647+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original CI regression and siblingdiskfixture verified; fulltype/lint/unit/resource/build CI passed. No nativeproducthealth inferred."
     }
   ],
-  "next_action": "Fresh independent original-reproduction and safety assertion checks, then automatic CI confirmation."
+  "next_action": "No further fixture repair required. Native resource cause and product acceptance remain separate open work.",
+  "fix_commits": ["dd742c4c", "3ffd7ba5"]
 }

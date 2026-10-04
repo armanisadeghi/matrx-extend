@@ -1,0 +1,33 @@
+{
+  "defect_id": "EXT-D-0130",
+  "observed_at": "2026-10-04T20:31:16.910647+00:00",
+  "run_id": 37232097255,
+  "source_sha": "7733c85bc285cbdab7cf30df5331e2f3940f47c2",
+  "resource_job_id": 111523988002,
+  "resource_job_conclusion": "success",
+  "tests": [
+    {
+      "case": "scratch guard local dependency bootstrap",
+      "verdict": "pass"
+    },
+    {
+      "case": "marker write failure invalidates and retains ownership",
+      "verdict": "pass"
+    },
+    {
+      "case": "low system disk refuses despite other healthy volumes",
+      "verdict": "pass"
+    },
+    {
+      "case": "lease disk drop stops owned workload",
+      "verdict": "pass"
+    }
+  ],
+  "passed": 4,
+  "failed": 0,
+  "skipped": 0,
+  "source": "Authenticated GitHub Actions completed job logs; not inferred from green job alone.",
+  "full_ci_status": "completed",
+  "limits": "Resource integration verification only; no native product acceptance.",
+  "full_ci_conclusion": "success"
+}
