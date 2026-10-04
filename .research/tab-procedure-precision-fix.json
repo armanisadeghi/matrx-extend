@@ -49,6 +49,37 @@
     "Only EXT-F-4071 through EXT-F-4086 inventory objects were edited."
   ],
   "blob_shas": {
-    "docs/stabilization/inventory.json": "86b8ee3b1b51196b2fdc89e4da42facd074f287f"
-  }
+    "docs/stabilization/inventory.json": "4b224849eade525ebd672982bcd14e794b9ba083"
+  },
+  "follow_up_repairs": [
+    {
+      "source_review": ".research/tab-procedures-final-peer.json",
+      "source_commit": "125c5f592983192e8eabcee897ea6e231d5bd18d",
+      "findings_addressed": [
+        {
+          "case": "EXT-F-4078-T01",
+          "variant": "Omit tab_id for go_back after restoring the fixture history and activating that owned tab; expected URL moves from two to one."
+        },
+        {
+          "case": "EXT-F-4079-T01",
+          "variant": "Omit tab_id for go_forward after resetting history and activating that owned tab; expected URL moves from one to two."
+        },
+        {
+          "case": "EXT-F-4080-T01",
+          "variant": "Omit tab_id for set_tab_zoom on the active owned fixture; expect 150% and existing cleanup resets to 1."
+        },
+        {
+          "case": "EXT-F-4082-T01",
+          "variant": "Omit tab_id for resize_window on the active owned fixture; expect the disposable window to report 900x650 and existing cleanup restores original dimensions."
+        }
+      ],
+      "limits": "Manual Tools runner uses assignedTabId:null and resolves the active tab in the current window. These variants do not establish agent assigned-tab behavior. Other optional/default combinations remain explicitly non-exhaustive; all outcomes remain unverified.",
+      "files": ["docs/stabilization/inventory.json", ".research/tab-procedure-precision-fix.json"],
+      "evidence": [
+        "Relevant handler schemas in src/lib/tools/handlers/tabs.ts",
+        "Manual runner context in src/features/tools/ToolsView.tsx supplies assignedTabId:null",
+        "Active-tab fallback in src/lib/tools/handlers/_active-tab.ts"
+      ]
+    }
+  ]
 }

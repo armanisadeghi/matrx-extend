@@ -52475,7 +52475,8 @@
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
         "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
-        "Confirm current catalog against imported source registry before source inventory signoff"
+        "Confirm current catalog against imported source registry before source inventory signoff",
+        "Optional `tab_id` omitted/manual active-tab fallback is covered by the added variant; assigned-agent tab pinning remains unverified, and other optional/default combinations are not exhaustive."
       ],
       "applicability": {
         "guest": {
@@ -52517,12 +52518,14 @@
             "Valid input: `{\"tab_id\":$TAB_ID}`.",
             "Observe: The tool completes with `{\"ok\":true}` and the fixture tab URL changes from `...=two` to `...=one`; the other active tab does not navigate. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the turn\u2019s assigned tab, not the newly active tab; the manual Tools runner has no assignment and uses the explicit id in this procedure.",
             "Run the schema-negative input `{\"tab_id\":\"not-an-integer\"}`. Expect the runner to show `Schema mismatch` and make no browser-state change.",
-            "Cleanup: Close both fixture tabs, then the disposable window."
+            "Cleanup: Close both fixture tabs, then the disposable window.",
+            "Manual omitted-tab variant: restore history in the owned fixture tab by navigating it to `https://example.com/?ext-f-4078=two`, then activate `$TAB_ID` with `switch_to_tab`; run `go_back` with `{}`. The manual runner has `assignedTabId:null`, so the fallback resolves to the active tab in the current window. Expect `{\"ok\":true}` and the fixture URL to change from `...=two` to `...=one`; the other owned tab remains unchanged. The agent assigned-tab fallback is not exercised by this manual variant."
           ],
           "expected": [
             "The tool completes with `{\"ok\":true}` and the fixture tab URL changes from `...=two` to `...=one`; the other active tab does not navigate. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the turn\u2019s assigned tab, not the newly active tab; the manual Tools runner has no assignment and uses the explicit id in this procedure.",
             "The invalid input is refused with a visible `Schema mismatch` before the handler runs; the fixture remains in its pre-negative-test state.",
-            "Cleanup leaves no test-owned tab, window, or tab group."
+            "Cleanup leaves no test-owned tab, window, or tab group.",
+            "Expected for omitted-tab variant: `{\"ok\":true}`; the active owned history tab moves from `...=two` back to `...=one`, and the second owned tab stays unchanged. Existing cleanup closes both owned fixture tabs and the disposable window."
           ],
           "dimensions": [
             "valid-input",
@@ -52604,7 +52607,8 @@
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
         "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
-        "Confirm current catalog against imported source registry before source inventory signoff"
+        "Confirm current catalog against imported source registry before source inventory signoff",
+        "Optional `tab_id` omitted/manual active-tab fallback is covered by the added variant; assigned-agent tab pinning remains unverified, and other optional/default combinations are not exhaustive."
       ],
       "applicability": {
         "guest": {
@@ -52646,12 +52650,14 @@
             "Valid input: `{\"tab_id\":$TAB_ID}`.",
             "Observe: The tool completes with `{\"ok\":true}` and the fixture URL changes from `...=one` to `...=two`; the other active tab does not navigate. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the turn\u2019s assigned tab; the manual Tools runner has no assignment and uses the explicit id here.",
             "Run the schema-negative input `{\"tab_id\":\"not-an-integer\"}`. Expect the runner to show `Schema mismatch` and make no browser-state change.",
-            "Cleanup: Close both fixture tabs and disposable window."
+            "Cleanup: Close both fixture tabs and disposable window.",
+            "Manual omitted-tab variant: reset history by using Chrome Back in the owned fixture tab so it is at `https://example.com/?ext-f-4079=one`, then activate `$TAB_ID` with `switch_to_tab`; run `go_forward` with `{}`. The manual runner has `assignedTabId:null`, so the fallback resolves to the active tab in the current window. Expect `{\"ok\":true}` and the fixture URL to change from `...=one` to `...=two`; the other owned tab remains unchanged. The agent assigned-tab fallback is not exercised by this manual variant."
           ],
           "expected": [
             "The tool completes with `{\"ok\":true}` and the fixture URL changes from `...=one` to `...=two`; the other active tab does not navigate. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the turn\u2019s assigned tab; the manual Tools runner has no assignment and uses the explicit id here.",
             "The invalid input is refused with a visible `Schema mismatch` before the handler runs; the fixture remains in its pre-negative-test state.",
-            "Cleanup leaves no test-owned tab, window, or tab group."
+            "Cleanup leaves no test-owned tab, window, or tab group.",
+            "Expected for omitted-tab variant: `{\"ok\":true}`; the active owned history tab moves from `...=one` forward to `...=two`, and the second owned tab stays unchanged. Existing cleanup closes both owned fixture tabs and the disposable window."
           ],
           "dimensions": [
             "valid-input",
@@ -52740,7 +52746,8 @@
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
         "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
-        "Confirm current catalog against imported source registry before source inventory signoff"
+        "Confirm current catalog against imported source registry before source inventory signoff",
+        "Optional `tab_id` omitted/manual active-tab fallback is covered by the added variant; assigned-agent tab pinning remains unverified, and other optional/default combinations are not exhaustive."
       ],
       "applicability": {
         "guest": {
@@ -52782,12 +52789,14 @@
             "Valid input: `{\"tab_id\":$TAB_ID,\"zoom_factor\":1.25}`.",
             "Observe: The result is `{\"ok\":true,\"zoom_factor\":1.25}` and Chrome\u2019s page-zoom indicator shows 125% for the fixture. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the assigned tab; manual Tools Run has no assignment and this case names the id explicitly.",
             "Run the schema-negative input `{\"tab_id\":$TAB_ID,\"zoom_factor\":6}`. Expect the runner to show `Schema mismatch` and make no browser-state change.",
-            "Cleanup: Set the fixture zoom back to `1` with `set_tab_zoom`, then close it and the disposable window."
+            "Cleanup: Set the fixture zoom back to `1` with `set_tab_zoom`, then close it and the disposable window.",
+            "Manual omitted-tab variant: activate the owned fixture tab `$TAB_ID` with `switch_to_tab`, then run `set_tab_zoom` with `{\"zoom_factor\":1.5}` (omit `tab_id`). The manual runner has `assignedTabId:null`, so the fallback resolves to the active tab in the current window. Expect `{\"ok\":true,\"zoom_factor\":1.5}` and the fixture page zoom to show 150%; this is the manual active-tab fallback only, not assigned-agent coverage."
           ],
           "expected": [
             "The result is `{\"ok\":true,\"zoom_factor\":1.25}` and Chrome\u2019s page-zoom indicator shows 125% for the fixture. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the assigned tab; manual Tools Run has no assignment and this case names the id explicitly.",
             "The invalid input is refused with a visible `Schema mismatch` before the handler runs; the fixture remains in its pre-negative-test state.",
-            "Cleanup leaves no test-owned tab, window, or tab group."
+            "Cleanup leaves no test-owned tab, window, or tab group.",
+            "Expected for omitted-tab variant: `{\"ok\":true,\"zoom_factor\":1.5}` and the active owned fixture shows 150% zoom. Existing cleanup resets the fixture zoom to 1, closes it, and closes the disposable window."
           ],
           "dimensions": [
             "valid-input",
@@ -53027,7 +53036,8 @@
       "readiness_gaps": [
         "Agent-dispatch Ask/Act confirmation and missing-permission runtime refusal remain unverified; the manual Tools runner bypasses the dispatcher gate.",
         "Live tool.binding advertisement and member/admin role availability remain unverified; the manual Tools runner does not establish either.",
-        "Confirm current catalog against imported source registry before source inventory signoff"
+        "Confirm current catalog against imported source registry before source inventory signoff",
+        "Optional `tab_id` omitted/manual active-tab fallback is covered by the added variant; assigned-agent tab pinning remains unverified, and other optional/default combinations are not exhaustive."
       ],
       "applicability": {
         "guest": {
@@ -53069,12 +53079,14 @@
             "Valid input: `{\"tab_id\":$TAB_ID,\"width\":800,\"height\":600}`.",
             "Observe: The result reports `ok:true`, the fixture\u2019s window id, width `800` and height `600`; the dedicated window visibly resizes. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the assigned tab\u2019s window; manual Tools Run has no assignment and uses this explicit id.",
             "Run the schema-negative input `{\"tab_id\":$TAB_ID,\"width\":0,\"height\":600}`. Expect the runner to show `Schema mismatch` and make no browser-state change.",
-            "Cleanup: Restore the recorded original width/height with the same tool, close the fixture, then close the disposable window."
+            "Cleanup: Restore the recorded original width/height with the same tool, close the fixture, then close the disposable window.",
+            "Manual omitted-tab variant: after the explicit-id resize check, activate the owned fixture tab `$TAB_ID` with `switch_to_tab`, then run `resize_window` with `{\"width\":900,\"height\":650}` (omit `tab_id`). The manual runner has `assignedTabId:null`, so the fallback resolves to the active tab in the current window; the handler resizes that tab\u2019s window. Expect `ok:true`, the same disposable `window_id`, width `900`, and height `650`. This is the manual active-tab fallback only, not assigned-agent coverage."
           ],
           "expected": [
             "The result reports `ok:true`, the fixture\u2019s window id, width `800` and height `600`; the dedicated window visibly resizes. In a dispatched-agent run with `tab_id` omitted, the optional fallback targets the assigned tab\u2019s window; manual Tools Run has no assignment and uses this explicit id.",
             "The invalid input is refused with a visible `Schema mismatch` before the handler runs; the fixture remains in its pre-negative-test state.",
-            "Cleanup leaves no test-owned tab, window, or tab group."
+            "Cleanup leaves no test-owned tab, window, or tab group.",
+            "Expected for omitted-tab variant: the result reports `ok:true`, the fixture\u2019s disposable `window_id`, width `900`, and height `650`. Existing cleanup restores the recorded original dimensions, closes the fixture, then closes the disposable window."
           ],
           "dimensions": [
             "valid-input",
