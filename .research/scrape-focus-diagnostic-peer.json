@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task": "scrape-focus-diagnostic-peer-review",
+  "reviewed_commit": "eb856fea39c1eb2e8aff9b5b3efea658a8742a58",
+  "verdict_a": {
+    "status": "PARTIAL",
+    "diagnostic_sufficiency": "The new diagnostic can tell whether the owned root fixture survives, whether the original panel session reports visible/focused, and whether its original target remains the unique exact-URL target. It does not inspect sidePanelContexts, so the previously named missing-side-panel-context cause is not distinguished. The recorded next step correctly keeps that possibility open.",
+    "privacy": "PASS. The new report field contains booleans, nulls, and a locator count only. Page URL is reduced to an owned-root boolean; target ID and URL are compared in memory and not serialized. No credential, account identity, organization identifier, page text, or screenshot enters this diagnostic. Existing authentication receipt fields are outside the added diagnostic."
+  },
+  "verdict_b": {
+    "status": "PASS_WITH_OBSERVATION",
+    "quality": "The observations are narrow and tied to the failing boundary. Individual probe failures become null/partial evidence rather than replacing the acceptance error. The catch rethrows the original waitFor error, and the visibility, identity, artifact, and resource gates remain in place. No product or pass/fail behavior changed.",
+    "observation": "Payload size is bounded, but the probe calls have no explicit aggregate time budget. If CDP or Playwright calls stall, diagnostic collection could delay the normal failure receipt. This is not a gate bypass; runtime impact is unverified."
+  },
+  "evidence": {
+    "syntax": "PASS: node --check tests/browser/scrape-guest-native-acceptance.mjs",
+    "format": "PASS: pnpm exec biome check tests/browser/scrape-guest-native-acceptance.mjs",
+    "source_review": "Inspected the changed helper and catch site, waitFor implementation, harness Target.activateTarget wiring and panel target discovery, and final report serialization.",
+    "native_runtime": "UNVERIFIED: no authenticated native acceptance run was performed in this review lane."
+  },
+  "reviewer_note": "The diagnostic is useful and privacy-preserving for hidden versus replaced original targets. A future discriminator for the explicitly identified missing-context branch should inspect the context boundary; no fix is requested in this review-only report."
+}
