@@ -1,6 +1,16 @@
 # Matrx Extend stabilization: resume here
 
-## Active checkpoint — member verified, admin observer repaired; resource refusal
+## Active checkpoint — observer verified, Billing and existing-row acceptance in repair
+
+Previous goal turn: progress. This continuation also has concrete progress: independent admin06 admitted safely on frozen189, recognized existing Profile correctly, passed warm Back/SaveDiscard/read-error Retry, and restored original Preferred value. Root matched rawf6a069e4/journalf0be5267; report `.research/profile-admin-resource-retest.json`,9a5a1edb. D109 closed for observer classification with surrounding warm proof, not full Profile. Billing reexpand failed T22warm before fields/reload; D110 captures it. No heavy run active and no row deletion/firstsave fixture.
+
+Sol source Billing correction f10a5c73 reuses shared stable/hit-tested pointer driver; actual moving-target guard red→green. Native06 inner exception was discarded, so historical driver/product cause remains unproven until native retest. Fresh `profile_billing_contacts_peer` owns separate A/B source review for Billing and contact procedures. D111 records explicit existing-row field skip: no ownedJournal, so admin Identity/Employment cannot run. Sol medium `profile_existing_row_journal` owns version-aware existing-state journal and exact restoration, preserving all untouched data and prohibiting deletion authority; budget60calls/twelve minutes. Do not launch a full admin field run until combined source is reviewed.
+
+Phone/email procedures T07..10 are source-only c722d017, peer533e57dd required restoration/failure/discard corrections, fixed39c88f6f. Eight role/lifecycle rows remain unverified. Fresh peer also checks correction; readback/method review uses standingauthorization, not new human permission. Existing-data requirements remain in full scope. Root owns inventory/results and final sync.
+
+Frozen target189/sourceb4b9f0c4/CI37164174445/artifact11288542496. Recipe `.research/profile-reload-hydration.json`. Published176/pending181 last authenticated Store refresh04:44UTC October4; preserve pending. Goal remains active; no overallhealth claim.
+
+## Previous checkpoint — member verified, admin observer repaired; resource refusal
 
 This turn is **progress**, not a blocked goal turn. Unbudgeted stabilization goal remains active. No heavy/browser job remains. Member frozen189 Identity fields, Employment fields and all eight section expanders passed both warm/full reload with original-state restoration; D104/D105/D106 closed through independent native retest. Evidence d26c16a1 / `.research/profile-fields-reload-fixed-native.json`; root matched raw/journal hashes. Full Profile remains incomplete.
 

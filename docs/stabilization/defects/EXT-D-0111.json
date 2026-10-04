@@ -1,0 +1,45 @@
+{
+  "id": "EXT-D-0111",
+  "feature_id": "EXT-F-1004",
+  "case_ids": ["EXT-F-1004-T06", "EXT-F-1004-T18"],
+  "surface": "Profile existing-row field acceptance restoration",
+  "auth_mode": "admin; any member with existing Profile",
+  "title": "Extended field acceptance cannot exercise an existing Profile without durable restoration journal",
+  "reproduction": [
+    "Use a verified authenticated account with an existing Profile row, as established in admin native06.",
+    "Current runner only creates ownedJournal inside its absent-row firstsave fixture branch.",
+    "After expander case, runExtendedCases emits unverified/preexisting_row_lacks_durable_conditional_full_field_restoration for Identity and Employment on this existing-row setup."
+  ],
+  "expected": "Authorized existing-row field tests preserve exact original fields and untouched data, use durable write intent/version checks, and verify restoration without granting row deletion authority.",
+  "actual": "Existing-row field cases are deliberately skipped; product behavior unverified. Source-defined prerequisite, not a product runtime defect.",
+  "severity": "S2 required coverage blocked; no product failure established",
+  "priority": "P1 complete contained Profile acceptance",
+  "state": "in-fix",
+  "owner": "profile_existing_row_journal",
+  "evidence": [
+    ".research/profile-admin-resource-retest.json",
+    ".research/profile-billing-expander-fix.json",
+    "tests/browser/profile-native-acceptance.mjs"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T05:09:56.514006+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Actual admin06 setup has existingrow; current runner only journals newly-created rows."
+    },
+    {
+      "at": "2026-10-04T05:09:56.514006+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source explicitly emits unverified prerequisite; changing pointer driver alone would not allow required field cells."
+    },
+    {
+      "at": "2026-10-04T05:09:56.514006+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol medium owns existing-row journal/restoration and actual caller guards; no deletion or bypass to force tests."
+    }
+  ],
+  "closure_requirement": "Connected existing-row lifecycle guard red\u2192green, peer review, actual admin field writes/reload/restoration pass with original owner/org/untouched fields preserved; no deletion of existing Profile."
+}
