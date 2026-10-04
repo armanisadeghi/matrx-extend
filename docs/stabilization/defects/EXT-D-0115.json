@@ -14,7 +14,7 @@
   "actual": "Store205 source and pre-fix main called setLoading(true) then setError(null); shared setError unconditionally reset loading false before awaited capture/scroll work. Source12300b97 preserves loading when clearing an error; non-null errors still stop loading. Independently reviewed92334b68, native new-artifact retest pending.",
   "severity": "S2: capture progress/disabled state absent during real work",
   "priority": "P1: restore reliable native acceptance before promoting capture cases",
-  "state": "fixed",
+  "state": "retest-pass",
   "owner": "scrape_loading_native_retest",
   "evidence": [
     ".research/guest-scrape-hosted-native.json",
@@ -38,7 +38,8 @@
     ".research/scrape-loading-product-peer.json",
     ".research/scrape-development-route.json",
     ".research/scrape-development-route-peer.json",
-    ".research/scrape-loading-fixed-native.json"
+    ".research/scrape-loading-fixed-native.json",
+    ".research/scrape-guarded-development-native.json"
   ],
   "transition_history": [
     {
@@ -82,9 +83,15 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Real hook/store pending fast and deep tests failedbefore12300b97 and passafter; independent92334b68 confirms sourcecause/callercensus/typecheck. No nativepasspromoted."
+    },
+    {
+      "at": "2026-10-04T09:48:14.955157+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent healthy-resource development native37192733619 reproduces original fast/deep actions with disabled Capturing/Scrolling now observed, real fast article and deep lazy content. Root checked receipt hash, resource journals and screenshot. Bounded defect retest only; reload/layout tracked separately and full feature cases remain partial."
     }
   ],
   "closure_requirement": "Independent source review, causal RED/GREEN guard, and original fast/deep native busy reproduction plus surrounding cases on an exact artifact containing12300b97. ImmutableStore205 remains a demonstrated failing pre-fix build; never relabel it passing. Development acceptance is explicitly bounded and futureStorepackage/retest must carry the fix.",
-  "next_action": "Native37191118595 on fixed development artifact observed fast/deep busy, but subsequent unsafeCPU sample and reload target failure prevent clean acceptance. Resolve reload driver and resource chronology, independently review, then repeat one guarded normal-speed run. Keep fixed; do not promote retest-pass from contaminated or incompletely timestamped evidence.",
+  "next_action": "Carry12300b97 into next eligible Store package after pending205 resolves; verify exact Store payload and installed update before closing shipment. Store205 predates this capture fix. D118 layout and D120 reload remain separate unresolved cases.",
   "root_cause": "src/state/scrape.ts setError(null) unconditionally set loading:false, overwriting captureActiveTab startup. Prior observer blind spots were separately repaired and do not explain the actual product state reset."
 }

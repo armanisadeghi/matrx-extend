@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T09:00:33.979189+00:00",
+  "updated_at": "2026-10-04T09:48:47.331380+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -16945,22 +16945,22 @@
           ],
           "results": {
             "guest": {
-                "status": "partial",
-                "run_id": "hosted-guest-37188132857-1",
-                "evidence": ".research/guest-scrape-context-native.json",
-                "detail": "Exact Store205 hosted37188132857 produced the expected fast article without scrolling or lazy content; root viewed retained result screenshot. Busy observer failed (4 samples, zero disabled); busy behavior, recovery and reload remain unverified.",
-                "historical_result": {
-                  "status": "unverified",
-                  "run_id": "render-retest-001",
-                  "evidence": "docs/stabilization/runs/render-retest-001.json",
-                  "verified_substeps": [
-                    "Capture produced a 16-word article and result tabs were visible."
-                  ],
-                  "remaining_criteria": [
-                    "Observe busy-button disable/progress while capture runs and exercise error recovery actions."
-                  ]
-                }
+              "status": "partial",
+              "run_id": "37192733619",
+              "evidence": ".research/scrape-guarded-development-native.json",
+              "detail": "Healthy development native37192733619 on source494cdf6c containing12300b97 observed disabled Capturing (5 samples,1 disabled), real article and no lazy content. Full-duration busy and extension reload remain unverified. ExactStore205 remains pre-fix.",
+              "historical_result": {
+                "status": "unverified",
+                "run_id": "render-retest-001",
+                "evidence": "docs/stabilization/runs/render-retest-001.json",
+                "verified_substeps": [
+                  "Capture produced a 16-word article and result tabs were visible."
+                ],
+                "remaining_criteria": [
+                  "Observe busy-button disable/progress while capture runs and exercise error recovery actions."
+                ]
               }
+            }
           }
         },
         {
@@ -16990,9 +16990,9 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "hosted-guest-37190128778-1",
-              "evidence": ".research/guest-scrape-cpu-native.json",
-              "detail": "ExactStore205 deep result wait and lazy-text assertion completed before busy assertion failed. Retained screenshot shows28words vs17fast. Busy values not retained; progress, recovery and reload remain unverified.",
+              "run_id": "37192733619",
+              "evidence": ".research/scrape-guarded-development-native.json",
+              "detail": "Healthy development native37192733619 observed disabled Scrolling (11 samples,7 disabled), lazy text in real page and capture. Deep retry and full reload remain unverified; layout drift separatelyD118.",
               "historical_result": {
                 "status": "unverified",
                 "run_id": "render-retest-001",
@@ -17183,9 +17183,9 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "hosted-guest-37190128778-1",
-              "evidence": ".research/guest-scrape-cpu-native.json",
-              "detail": "All6tabs selected; Article/Links/SEO/Schema content matched. Images/Video matching content or empty states and reload remain unverified. Root saw left-edge clipping in retained deep screenshot after tab sequence; D118 open."
+              "run_id": "37192733619",
+              "evidence": ".research/scrape-guarded-development-native.json",
+              "detail": "Healthy development native37192733619 selected all6resulttabs; Article/Links/SEO/Schema content matched. Images/video matching or empty state unverified; document31px horizontal drift confirmedD118."
             }
           }
         },
@@ -17337,7 +17337,15 @@
           "dimensions": [
             "warm",
             "reload"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "partial",
+              "evidence": ".research/scrape-guarded-development-native.json",
+              "run_id": "37192733619",
+              "detail": "Healthy development native37192733619 observed restrictedchrome://settings without recovery actions and Dismiss. RecoverableReload/Tryagain/deepretry unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1007-T15",
@@ -17491,9 +17499,9 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "hosted-guest-37188132857-1",
-              "evidence": ".research/guest-scrape-context-native.json",
-              "detail": "Exact Store205 hosted37188132857 verified signed-out storage and initial Scrape empty state. Navigation and reload lifecycle not reached; no full case pass.",
+              "run_id": "37192733619",
+              "evidence": ".research/scrape-guarded-development-native.json",
+              "detail": "Healthy development native37192733619 observed guestemptyinitial and navigationclearsoldcontent. Full extensionreload remainsunverified: workerretirementproofmissingD120.",
               "historical_result": {
                 "status": "partial",
                 "run_id": "37185080238",
@@ -17970,21 +17978,23 @@
       ],
       "cells": {
         "guest": {
-          "test_status": "unverified",
+          "test_status": "partial",
           "defect_ids": [
             "EXT-D-0001",
             "EXT-D-0018",
             "EXT-D-0059",
-            "EXT-D-0115", "EXT-D-0118"
+            "EXT-D-0115",
+            "EXT-D-0118"
           ],
           "run_ids": [
             "guest-local-001",
             "render-retest-001",
             "svg-caption-native-001",
             "svg-caption-native-002",
-            "svg-caption-native-003"
+            "svg-caption-native-003",
+            "37192733619"
           ],
-          "retest_status": "not-run"
+          "retest_status": "partial: D115 original busy reproduction retest-pass on development37192733619; D118 layout and D120 reload unresolved; no full feature or Store acceptance"
         },
         "member": {
           "test_status": "unverified",

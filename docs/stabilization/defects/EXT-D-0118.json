@@ -11,16 +11,17 @@
     "Inspect retained scrape-deep-article.png: first navigation icon and beginning of title text are clipped at left edge, unlike earlier fast screenshot."
   ],
   "expected": "Selecting result tabs keeps panel navigation, title and capture controls inside the visible viewport.",
-  "actual": "Root observed the same left-edge clipping in retained Store205 and fixed development213 deep screenshots. Whole-panel displacement is visible; scrolling ancestor and cause remain unverified.",
+  "actual": "At360px viewport, document/body/Scrape pane scrollWidth391px and result-tab right390.77px; Links/SEO/Schema selection scrolls document31px and clips panel left. Reproduced in development213 after earlier Store205 evidence.",
   "severity": "S3: narrow-panel content/navigation visibility",
   "priority": "P1: contained Scrape layout",
-  "state": "open",
+  "state": "triaged",
   "owner": "unassigned_scrape_layout",
   "evidence": [
     ".research/guest-scrape-cpu-native.json",
     "docs/stabilization/evidence/scrape205/tab-strip-left-clipping.png",
     ".research/scrape-clipping-diagnosis.json",
-    ".research/scrape-loading-fixed-native.json"
+    ".research/scrape-loading-fixed-native.json",
+    ".research/scrape-guarded-development-native.json"
   ],
   "transition_history": [
     {
@@ -28,8 +29,14 @@
       "from": null,
       "to": "open",
       "reason": "Root inspected retained native screenshot; causal/layout reproduction pending."
+    },
+    {
+      "at": "2026-10-04T09:48:14.955157+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Independent healthy native37192733619 reproduces document scrollLeft31 at360px viewport with391px scrollWidth after Links/SEO/Schema; root inspected retained screenshot. Source overflow cause still to localize."
     }
   ],
   "closure_requirement": "Independently reproduce and repair confirmed clipping class, then verify normal/narrow panel tab selection and deep capture without horizontal displacement.",
-  "next_action": "Add timestamped document/panel scrollLeft and scrollWidth/clientWidth, viewport dimensions and key-element rectangles before/after each result-tab click in next native diagnostic. Source owner /root/scrape_reload_diagnose may include it with reload diagnostics. Do not guess CSS fix."
+  "next_action": "Trace result-tab container and ancestor sizing against receipt horizontal_geometry; implement only proven overflow cause, peer review, then normal/narrow native tab and deep capture verification. Do not hide tabs or crop symptoms."
 }

@@ -9,14 +9,15 @@
     "Run guest-scrape-development with CI37190768893 artifact11298687631 as acceptance37191118595. After capture and navigation checks, extension_reload fails with unique visible pointer target. Inspect terminal receipt."
   ],
   "expected": "Reload acceptance either reaches the intended visible control or preserves safe count/visibility and exact operation metadata sufficient to diagnose why it could not.",
-  "actual": "Receipt contains only extension_reload and generic target error; no returned reload result or target counts. Product cause remains unknown; same run also contains unsafe CPU evidence.",
+  "actual": "Receipt contains only extension_reload and generic target error; no returned reload result or target counts. Product cause remains unknown; same run also contains unsafe CPU evidence. Latest healthy development native37192733619 stopped earlier at native_extension_worker_retirement_unverified: old worker/panel absent and replacement present/created, but no old-worker destroyed event. It did not reach replacement-panel pointer lookup, so original pointer counts remain unknown.",
   "severity": "S2: acceptance reliability; no proven product failure",
   "priority": "P1: prerequisite for trusted native acceptance",
   "state": "open",
   "owner": "root",
   "evidence": [
     ".research/scrape-loading-fixed-native.json",
-    ".research/scrape-reload-diagnosis.json"
+    ".research/scrape-reload-diagnosis.json",
+    ".research/scrape-guarded-development-native.json"
   ],
   "transition_history": [
     {
@@ -26,5 +27,6 @@
       "reason": "Exact native receipt and source inspection."
     }
   ],
-  "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations."
+  "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
+  "next_action": "Diagnose shared native reload lifecycle retirement observation with exact receipt; distinguish missing event proof from actual retained old worker. Preserve lifecycle rigor; no blind retry or product fault inference."
 }
