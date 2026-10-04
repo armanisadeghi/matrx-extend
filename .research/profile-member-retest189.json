@@ -95,9 +95,10 @@
     "worker_replaced": true,
     "panel_replaced": true,
     "reload_mode_cases_recorded": false,
-    "failure_stage": "restore_original_absence",
     "execution_failure_code": "unique visible pointer target",
-    "overall_acceptance": "failed; do not promote reload-mode cases"
+    "overall_acceptance": "failed; do not promote reload-mode cases",
+    "last_reported_stage": "restore_original_absence",
+    "failure_callsite": "unobserved: report stage was overwritten by restoration; failure occurred after verified extension reload and before any reload-mode case record"
   },
   "cleanup": {
     "original_absence_restored": true,

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T00:25:20.572040+00:00",
+  "updated_at": "2026-10-04T00:35:54.125394+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -1080,13 +1080,22 @@
           ],
           "results": {
             "member": {
+              "status": "partial",
+              "run_id": "profile-member-retest-189-01",
+              "evidence": ".research/profile-member-retest189.json",
+              "detail": "Realownedrow cleanup restoredoriginalabsence afterwarmwrites andpostfullreloaddriverfailure. Remainingfailurevariants notallnativelytested; sourceguards independentlycoveredstrictprogress/concurrentrefusal."
+            }
+          },
+          "previous_results": [
+            {
+              "mode": "member",
               "status": "fail",
               "evidence": ".research/profile-member-native-next.json; .research/profile-cleanup-final-review.json",
               "remaining_criteria": [
                 "Fix and independently verify failure-path restoration."
               ]
             }
-          }
+          ]
         }
       ],
       "cells": {
@@ -9529,6 +9538,23 @@
           "results": {
             "member": {
               "status": "partial",
+              "run_id": "profile-member-retest-189-01",
+              "build_variant": "receipt-bound development0.2.189; CI37164174445/artifact11288542496/sourceb4b9f0c4",
+              "verified_substeps": [
+                "Warm member Back discarded the draft and reopening returned the test baseline."
+              ],
+              "remaining_criteria": [
+                "Reload-mode Profile cases remain unverified: genuineextensionreloadpassed butsubsequentdriverclickfailed.",
+                "All other unverified execution-matrix branches remain required."
+              ],
+              "evidence": ".research/profile-member-retest189.json",
+              "verified_at": "2026-10-04T00:35:54.125394+00:00"
+            }
+          },
+          "previous_results": [
+            {
+              "mode": "member",
+              "status": "partial",
               "run_id": "profile-member-native-next-04",
               "build_variant": "receipt-bound development 0.2.184; CI37159097093/artifact11286822448/source9dfb5911",
               "verified_substeps": [
@@ -9541,7 +9567,7 @@
               "evidence": ".research/profile-member-bounded-owner-verification.json",
               "verified_at": "2026-10-03T23:14:01.024268+00:00"
             }
-          }
+          ]
         },
         {
           "id": "EXT-F-1004-T02",
@@ -9742,6 +9768,23 @@
           "results": {
             "member": {
               "status": "partial",
+              "run_id": "profile-member-retest-189-01",
+              "build_variant": "receipt-bound development0.2.189; CI37164174445/artifact11288542496/sourceb4b9f0c4",
+              "verified_substeps": [
+                "Warm member Discard restored the baseline; Save persisted after reopen and the baseline was restored."
+              ],
+              "remaining_criteria": [
+                "Reload-mode Profile cases remain unverified: genuineextensionreloadpassed butsubsequentdriverclickfailed.",
+                "All other unverified execution-matrix branches remain required."
+              ],
+              "evidence": ".research/profile-member-retest189.json",
+              "verified_at": "2026-10-04T00:35:54.125394+00:00"
+            }
+          },
+          "previous_results": [
+            {
+              "mode": "member",
+              "status": "partial",
               "run_id": "profile-member-native-next-04",
               "build_variant": "receipt-bound development 0.2.184; CI37159097093/artifact11286822448/source9dfb5911",
               "verified_substeps": [
@@ -9754,7 +9797,7 @@
               "evidence": ".research/profile-member-bounded-owner-verification.json",
               "verified_at": "2026-10-03T23:14:01.024268+00:00"
             }
-          }
+          ]
         },
         {
           "id": "EXT-F-1004-T04",
@@ -11802,6 +11845,23 @@
             },
             "member": {
               "status": "partial",
+              "run_id": "profile-member-retest-189-01",
+              "build_variant": "receipt-bound development0.2.189; CI37164174445/artifact11288542496/sourceb4b9f0c4",
+              "verified_substeps": [
+                "Warm member denied owner-row GETs showed zero editors and disabled Save; Retry completed owner GET 200 and restored the baseline."
+              ],
+              "remaining_criteria": [
+                "Reload-mode Profile cases remain unverified: genuineextensionreloadpassed butsubsequentdriverclickfailed.",
+                "All other unverified execution-matrix branches remain required."
+              ],
+              "evidence": ".research/profile-member-retest189.json",
+              "verified_at": "2026-10-04T00:35:54.125394+00:00"
+            }
+          },
+          "previous_results": [
+            {
+              "mode": "member",
+              "status": "partial",
               "run_id": "profile-member-native-next-04",
               "build_variant": "receipt-bound development 0.2.184; CI37159097093/artifact11286822448/source9dfb5911",
               "verified_substeps": [
@@ -11814,7 +11874,7 @@
               "evidence": ".research/profile-member-bounded-owner-verification.json",
               "verified_at": "2026-10-03T23:14:01.024268+00:00"
             }
-          }
+          ]
         },
         {
           "id": "EXT-F-1004-T26",
@@ -12343,6 +12403,23 @@
           "results": {
             "member": {
               "status": "partial",
+              "run_id": "profile-member-retest-189-01",
+              "build_variant": "receipt-bound development0.2.189; CI37164174445/artifact11288542496/sourceb4b9f0c4",
+              "verified_substeps": [
+                "Real member first Save created its owner row with the selected device organization. Original absence was later restored through verified guarded conditional owner cleanup."
+              ],
+              "remaining_criteria": [
+                "Reload-mode Profile cases remain unverified: genuineextensionreloadpassed butsubsequentdriverclickfailed.",
+                "All other unverified execution-matrix branches remain required."
+              ],
+              "evidence": ".research/profile-member-retest189.json",
+              "verified_at": "2026-10-04T00:35:54.125394+00:00"
+            }
+          },
+          "previous_results": [
+            {
+              "mode": "member",
+              "status": "partial",
               "run_id": "profile-member-native-next-04",
               "build_variant": "receipt-bound development 0.2.184; CI37159097093/artifact11286822448/source9dfb5911",
               "verified_substeps": [
@@ -12355,7 +12432,7 @@
               "evidence": ".research/profile-member-bounded-owner-verification.json",
               "verified_at": "2026-10-03T23:14:01.024268+00:00"
             }
-          }
+          ]
         }
       ],
       "cells": {
