@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "review": "Independent source-only review of EXT-F-4071 through EXT-F-4086 procedures",
+  "target_commit": "6af72aea",
+  "reviewed_current_head": "b486dc64bdd053463c28e91dab60dde0effbb270",
+  "scope": {
+    "included": [
+      "All 16 procedure records and their owned fixture setup, expected observations, negative inputs, and cleanup",
+      "Current local handler schemas and behavior in src/lib/tools/handlers/tabs.ts",
+      "Current local tool catalog, manual Tools runner, dispatcher tier gates, required permissions, and stabilization resource/build/reload constraints"
+    ],
+    "excluded": ["Browser execution, builds, database reads, product changes, inventory changes"],
+    "product_result": "unverified"
+  },
+  "verdicts": {
+    "A_procedure_and_surface_coverage": {
+      "verdict": "PARTIAL",
+      "supported": "All 16 records have one case each with a valid action input, a schema-negative input, an observable state/result, cleanup, member/admin intended modes, required-permission checks, and an owned disposable-window fixture. The action names, valid and invalid input shapes, and stated results match the current local Zod handlers. The fixtures use unique example.com query markers and target owned tab/group IDs. Guest is correctly marked inapplicable for the signed-in Tools use case.",
+      "findings": [
+        {
+          "severity": "important",
+          "targets": "EXT-F-4071 through EXT-F-4086",
+          "finding": "The modes array names member and admin, but it does not establish actual agent-call availability for either role. The current local catalog marks these entries admin_only=false and bundles them for Pilot surfaces; local source cannot prove live tool.binding advertisement or its role gates. Inventory live_binding remains null and source-listed-pending-reconciliation. The manual Tools Run path directly invokes the handler with permissionMode act, so it does not exercise dispatcher Ask/Act confirmation or prove the dispatched tool is available to those roles.",
+          "evidence": [
+            "types/tool-catalog.json: all 16 entries have admin_only=false and surface_bundles pilot/pilot+privileged",
+            "src/features/tools/ToolsView.tsx: manual Run validates argsSchema then directly calls handler.run",
+            "src/lib/tools/dispatch.ts: action calls use the dispatcher confirmation branch in Ask mode",
+            "docs/stabilization/inventory.json: each target retains live_binding=null and source-listed-pending-reconciliation"
+          ],
+          "limit": "No database read was authorized or performed; actual live binding and role availability remain unverified."
+        },
+        {
+          "severity": "minor",
+          "targets": "EXT-F-4071, EXT-F-4072, EXT-F-4077, EXT-F-4081, EXT-F-4083",
+          "finding": "Valid cases do not exercise every declared input form or optional field: open_new_tab omits optional window_id and index; close_tab uses the scalar tab_ids form only, not the array form; reload_tab uses explicit tab_id with bypass_cache=true, not its omitted-tab assignment fallback/default; move_tab omits destination window_id; create_tab_group omits window_id. The procedures cover the main control behavior but should not be treated as exhaustive schema-field coverage.",
+          "evidence": "Current Zod schemas in src/lib/tools/handlers/tabs.ts and matching input_schema properties in types/tool-catalog.json."
+        },
+        {
+          "severity": "minor",
+          "targets": "EXT-F-4071 through EXT-F-4086; especially multi-tab setup in 4073, 4078, 4079, 4081, 4083–4086",
+          "finding": "The shared precondition says to pass window_id:$WINDOW_ID on every later setup tab, but the per-case open_new_tab examples omit that field and the procedures do not consistently say to check each returned window_id. The broad instruction is present, but the concrete setup recipes can be followed without enforcing the intended same-window fixture invariant.",
+          "evidence": "Target procedure preconditions and case-specific setup recipes in docs/stabilization/inventory.json; open_new_tab supports window_id and returns window_id in src/lib/tools/handlers/tabs.ts."
+        },
+        {
+          "severity": "minor",
+          "targets": "EXT-F-4078 and EXT-F-4079",
+          "finding": "Each case requires a second disposable tab to remain active to distinguish explicit-tab targeting, but the setup does not give a concrete action to create that second tab. The main history fixture is otherwise reproducible.",
+          "evidence": "Case setup preconditions for EXT-F-4078-T01 and EXT-F-4079-T01."
+        }
+      ],
+      "runtime_outcome": "No case was run; every test_status remains preserved-unverified and procedure design_status is procedure-ready-unverified."
+    },
+    "B_constraints_and_evidence_quality": {
+      "verdict": "PASS",
+      "findings": [],
+      "evidence": [
+        "Every case requires a fresh hosted TEST resource permit and a completed run journal; local pnpm dev, local build, and local browser execution are prohibited when admission is refused.",
+        "Every case requires a current build receipt and the proper reload sequence, including reopening the side panel and reloading fixture tabs; HMR alone is explicitly insufficient.",
+        "The manual-run procedures explicitly exclude dispatcher Ask/Act and missing-permission refusal from their coverage. Inventory readiness_gaps preserve these as unresolved, and results remain unverified.",
+        "The inventory continues to leave actual tool.binding availability unresolved and preserves source-reconciliation status. The procedures make no product-health or successful-runtime claim.",
+        "Required tabs/tabGroups permissions match wxt.config.ts and the local catalog; the group procedures accurately identify Chrome-specific APIs."
+      ],
+      "census_note": "The target commit’s census hashes match its committed blobs. Current HEAD moved after that commit; the current generated catalog differs in generated_at, and inventory changed in unrelated stabilization records. The 16 target procedure rows and tab handler source remain unchanged in the current checkout."
+    }
+  },
+  "changes_made": "Review report only; no source, inventory, or procedure edits."
+}
