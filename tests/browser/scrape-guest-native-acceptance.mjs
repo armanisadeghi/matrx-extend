@@ -8,6 +8,7 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { armBusyExpression, readBusyExpression } from './scrape-busy-observer.mjs';
 import { diagnosticCpuRate, runSupplementalCpuDiagnostic } from './scrape-page-cpu-diagnostic.mjs';
+import { recordReloadMilestone } from './scrape-reload-milestones.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
@@ -46,7 +47,7 @@ const report = {
   original_busy_failure: null,
   cpu_diagnostic: null,
   horizontal_geometry: [],
-  reload_step: null,
+  reload_milestones: [],
   reload_lifecycle: null,
   driver_failure: null,
 };
@@ -468,7 +469,7 @@ try {
       assert.equal(beforeReload.title, 'Research brief: product discovery');
       t20.evidence.reload_origin_url = page.url();
       t20.evidence.previous_content_cleared_before_reload = true;
-      report.reload_step = { name: 'reload_extension', at: new Date().toISOString() };
+      recordReloadMilestone(report, 'reload_extension');
       const replacement = await reloadExtension();
       report.reload_lifecycle = {
         observed_at: new Date().toISOString(),
@@ -480,12 +481,9 @@ try {
       };
       try {
         await page.goto(`${origin}/referrals`);
-        report.reload_step = {
-          name: 'open_scrape_in_replacement_panel',
-          at: new Date().toISOString(),
-        };
+        recordReloadMilestone(report, 'open_scrape_in_replacement_panel');
         await click(replacement.panel, 'title', 'Scrape');
-        report.reload_step = { name: 'observe_replacement_scrape', at: new Date().toISOString() };
+        recordReloadMilestone(report, 'observe_replacement_scrape');
         const after = await waitFor(
           'scrape_reload_empty',
           () => scrapeState(replacement.panel),
@@ -506,7 +504,7 @@ try {
           report.cases.find((c) => c.id === id).evidence.extension_reload_empty = true;
         report.cases.find((c) => c.id === 'EXT-F-1007-T20').status = 'passed';
         report.cases.find((c) => c.id === 'EXT-F-1007-T20').remaining = [];
-        report.reload_step = { name: 'replacement_scrape_observed', at: new Date().toISOString() };
+        recordReloadMilestone(report, 'replacement_scrape_observed');
       } finally {
         await replacement.panel.detach();
       }

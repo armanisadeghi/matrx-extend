@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "scope": "Reload milestone receipt retention in guest Scrape native acceptance",
+  "finding": "A single reload_step object was overwritten at each boundary, losing the pre-reload wall-clock anchor.",
+  "repair": "The receipt now appends four ordered, bounded milestone names with wall-clock timestamps. A failure retains every completed boundary and records no later phase.",
+  "privacy": "Milestones contain only fixed phase names and timestamps; no page text, URL, credential, or arbitrary error content.",
+  "verification": {
+    "focused_test": "node --test tests/browser/scrape-reload-milestones.test.mjs passed: 2 tests",
+    "mutation": "Scratch-copy overwrite mutant failed both focused tests as expected; working source was untouched.",
+    "syntax": "node --check tests/browser/scrape-guest-native-acceptance.mjs passed",
+    "format": "Focused Biome check passed for driver, helper, and test",
+    "native": "Not run in this repair lane; no native acceptance result claimed."
+  }
+}
