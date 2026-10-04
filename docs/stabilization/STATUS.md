@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-04 20:31 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T18:49:15.756937+00:00. 205 features · 762 cases · 1333 controls · 130 linked defect records.
+Generated 2026-10-04 20:41 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T18:49:15.756937+00:00. 205 features · 762 cases · 1333 controls · 131 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -24,7 +24,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 6 pass · 5 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 6, partial 5, fail 0, unverified 77, n/a 0 | 5 |
+| [Scrape](#scrape) | 1 | 6 pass · 5 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 6, partial 5, fail 0, unverified 77, n/a 0 | 6 |
 | [SEO](#seo) | 1 | 0 pass · 5 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 5, fail 0, unverified 37, n/a 0 | 0 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
@@ -809,9 +809,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 31. **Controls:** 33.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0127, EXT-D-0128
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0127, EXT-D-0128, EXT-D-0131
 
-**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0115](defects/EXT-D-0115.json) (retest-pass), [EXT-D-0118](defects/EXT-D-0118.json) (fixed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0123](defects/EXT-D-0123.json) (retest-pass), [EXT-D-0124](defects/EXT-D-0124.json) (closed), [EXT-D-0125](defects/EXT-D-0125.json) (closed), [EXT-D-0126](defects/EXT-D-0126.json) (closed), [EXT-D-0127](defects/EXT-D-0127.json) (fixed), [EXT-D-0128](defects/EXT-D-0128.json) (fixed), [EXT-D-0129](defects/EXT-D-0129.json) (closed), [EXT-D-0130](defects/EXT-D-0130.json) (closed)
+**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0115](defects/EXT-D-0115.json) (retest-pass), [EXT-D-0118](defects/EXT-D-0118.json) (fixed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0123](defects/EXT-D-0123.json) (retest-pass), [EXT-D-0124](defects/EXT-D-0124.json) (closed), [EXT-D-0125](defects/EXT-D-0125.json) (closed), [EXT-D-0126](defects/EXT-D-0126.json) (closed), [EXT-D-0127](defects/EXT-D-0127.json) (fixed), [EXT-D-0128](defects/EXT-D-0128.json) (fixed), [EXT-D-0129](defects/EXT-D-0129.json) (closed), [EXT-D-0130](defects/EXT-D-0130.json) (closed), [EXT-D-0131](defects/EXT-D-0131.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -2502,7 +2502,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4061-T01 Controlled manual execution: press_keys | N/A | Unverified | Unverified | EXT-F-4061-C01 |
 
-**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; No checked-in/named owned local HTTP fixture was found; stage the per-case fixture before any browser execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
 
 
 ### hover_element (EXT-F-4062)
@@ -2515,7 +2515,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4062-T01 Controlled manual execution: hover_element | N/A | Unverified | Unverified | EXT-F-4062-C01 |
 
-**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; No checked-in/named owned local HTTP fixture was found; stage the per-case fixture before any browser execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
 
 
 ### focus_element (EXT-F-4063)
@@ -2528,7 +2528,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4063-T01 Controlled manual execution: focus_element | N/A | Unverified | Unverified | EXT-F-4063-C01 |
 
-**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; No checked-in/named owned local HTTP fixture was found; stage the per-case fixture before any browser execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
 
 
 ### blur_element (EXT-F-4064)
@@ -2541,7 +2541,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4064-T01 Controlled manual execution: blur_element | N/A | Unverified | Unverified | EXT-F-4064-C01 |
 
-**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; No checked-in/named owned local HTTP fixture was found; stage the per-case fixture before any browser execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
 
 
 ### right_click_element (EXT-F-4065)
@@ -2554,7 +2554,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4065-T01 Controlled manual execution: right_click_element | N/A | Unverified | Unverified | EXT-F-4065-C01 |
 
-**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; No checked-in/named owned local HTTP fixture was found; stage the per-case fixture before any browser execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
 
 
 ### select_dropdown_option (EXT-F-4066)
@@ -2567,7 +2567,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4066-T01 Controlled manual execution: select_dropdown_option | N/A | Unverified | Unverified | EXT-F-4066-C01 |
 
-**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; No checked-in/named owned local HTTP fixture was found; stage the per-case fixture before any browser execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
 
 
 ### set_checkbox (EXT-F-4067)
@@ -2580,7 +2580,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4067-T01 Controlled manual execution: set_checkbox | N/A | Unverified | Unverified | EXT-F-4067-C01 |
 
-**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; No checked-in/named owned local HTTP fixture was found; stage the per-case fixture before any browser execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
 
 
 ### set_radio (EXT-F-4068)
@@ -2593,7 +2593,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4068-T01 Controlled manual execution: set_radio | N/A | Unverified | Unverified | EXT-F-4068-C01 |
 
-**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; No checked-in/named owned local HTTP fixture was found; stage the per-case fixture before any browser execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
 
 
 ### submit_form (EXT-F-4069)
@@ -2606,7 +2606,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 | --- | --- | --- | --- | --- |
 | EXT-F-4069-T01 Controlled manual execution: submit_form | N/A | Unverified | Unverified | EXT-F-4069-C01 |
 
-**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; No checked-in/named owned local HTTP fixture was found; stage the per-case fixture before any browser execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
+**Other remaining work:** Confirm current catalog against imported source registry before source inventory signoff; Native runner route gap: the checked-in owned fixture is source-checked, but `/form-controls` is only served on the test’s ephemeral server. Register it in the owning native runner through `ownedPages`, then record the actual URL and verify served-byte SHA-256 before execution.; Agent-dispatch Ask/Act confirmation and missing-permission refusal remain unverified; manual Tools Run bypasses dispatcher gate.; Live tool.binding advertisement and actual request-time member/admin availability remain unresolved by the local runner.
 
 
 ### file_upload (EXT-F-4070)
