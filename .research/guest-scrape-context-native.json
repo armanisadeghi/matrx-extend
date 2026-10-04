@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "status": "unverified",
+  "changed": [],
+  "run": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_name": "Hosted guest side-panel acceptance",
+    "run_id": "37188132857",
+    "conclusion": "failure",
+    "actual_workflow_head_sha": "d08038e5d83cfda1b9baef30961dbe7e8057bb45",
+    "approved_D117_instrumentation_commit": "81fb09a839e7d0bfb3b6f1d6d3e2980cc12a83f1",
+    "D117_independent_peer_commit": "480041bdd9aa4601ebd67e8f68f37d6d0c3dbddd",
+    "release_run_id": "37180303468",
+    "release_artifact_id": "11294843385",
+    "acceptance_artifact_id": "11297898237",
+    "acceptance_artifact_name": "hosted-guest-37188132857-1"
+  },
+  "artifact_provenance": {
+    "kind": "native_store_zip_candidate_key_adapted",
+    "version": "0.2.205",
+    "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "adapted_runtime_tree_sha256": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+    "expected_store_zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "store_zip_hash_source": ".research/hosted-store-artifact-peer.json; receipt retains candidate kind and runtime tree, not the Store ZIP hash field"
+  },
+  "case_observations": {
+    "EXT-F-1007-T20": {
+      "status": "partial",
+      "observed": "Guest account observed; fresh Scrape empty state was true at http://localhost:49205/intake. Access token and user profile storage were absent.",
+      "remaining": "Navigation and extension reload lifecycle were not exercised."
+    },
+    "EXT-F-1007-T01": {
+      "status": "partial",
+      "observed": "Fast-result wait completed with the expected article selected and visible, expected article text present, lazy text absent, and fast action re-enabled. The fixture had not scrolled. The fast busy observer then failed: observed=false, samples=4, matchingButtons=1, buttonReplacements=0, disabledSamples=0, text=null.",
+      "retained_evidence": "Fast article screenshot is present in the downloaded acceptance artifact and shows the captured Harbor Dental intake article in Article view.",
+      "limits": "Receipt failed before the T01 partial mark/result-tab roster assertion. Busy-state behavior remains unresolved; no T01 pass is claimed."
+    },
+    "EXT-F-1007-T02": { "status": "unverified", "observed": "Not reached." },
+    "EXT-F-1007-T08": { "status": "unverified", "observed": "Not reached." },
+    "EXT-F-1007-T14": { "status": "unverified", "observed": "Not reached." }
+  },
+  "diagnostics": {
+    "failure_stage": "fast_capture",
+    "failure_code": "scrape_fast_busy_not_observed",
+    "resource_refusal": false,
+    "receipt_present": true,
+    "browser_startup_failure": "Not emitted; browser/CDP startup and side-panel panel-context setup completed before fast capture.",
+    "panel_context_failure": "BROWSER_PANEL_CONTEXT_FAILURE not emitted; D117 exact-context check passed.",
+    "D107_startup_metrics": "Not emitted; no CDP startup timeout occurred in this run."
+  },
+  "resource_journals": {
+    "hosted-package-37188132857-1": {
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "sha256": "e1abb2e2354d1f9c1ddeeb57beeb8965ac32b6918f88fe0cde94b6e34df5a71b"
+    },
+    "hosted-browser-37188132857-1": {
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "sha256": "c5edd669e5294a3fb06df87ba2b25ba0b281306bc2ea6267c33abf31ed573925"
+    },
+    "hosted-guest-37188132857-1": {
+      "decision": "child_failed",
+      "exit_code": 1,
+      "resource_invalid": false,
+      "sha256": "abaf250753d283f2019f3c94c10aff8102e58edc1f1b122e60e125494060a17f"
+    }
+  },
+  "evidence": {
+    "receipt": {
+      "file": "test-results/hosted-scrape-37188132857/test-results/scrape-guest-native-1816b9e5-a1ae-4dd4-8087-edf218b3ee3d.json",
+      "sha256": "6ed4eaceeb813f32d4ad66a8f927a9110549efc4332c465f5e5cb56d2179ea6a"
+    },
+    "screenshots": [
+      {
+        "file": "test-results/hosted-scrape-37188132857/test-results/native-sidepanel-qa-RBA6YF/native-side-panel.png",
+        "sha256": "2cfda86f86cad54e4a73aa3480585a0e0ab5d74b20da4921a35999d22e3c462f"
+      },
+      {
+        "file": "test-results/hosted-scrape-37188132857/test-results/native-sidepanel-qa-RBA6YF/normal-target-after-open.png",
+        "sha256": "60d95c01c8bf5fa8f0807e1aed08d2adb43b4a5532190ae0eadd54c5e3aef79c"
+      },
+      {
+        "file": "test-results/hosted-scrape-37188132857/test-results/native-sidepanel-qa-RBA6YF/scrape-fast-article.png",
+        "sha256": "01fa995ab65a48acd31e11091565cd9aa47b1c7b22783d42dcac24fa3c37f18c"
+      }
+    ],
+    "artifact_note": "Exact acceptance artifact 11297898237 was downloaded. It also included older resource journals; only the three current run-ID journals above were used."
+  },
+  "open_questions": [
+    "Why did the observer collect four samples for one matching button without a disabled sample during fast capture?",
+    "Was a disabled Capturing state absent, or did the brief state occur outside the observer's four retained samples?",
+    "T01 remains partial and T02/T08/T14 plus T20 lifecycle remain unverified; no full guest Scrape pass is claimed."
+  ]
+}
