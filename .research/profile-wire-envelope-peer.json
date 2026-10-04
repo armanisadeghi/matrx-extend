@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0109 independent source review",
+  "reviewed_commit": "af3c463cb29648d5fcf77ca7e982ee1db5f853ca",
+  "verdict_a_acceptance": {
+    "status": "PARTIAL",
+    "supported": [
+      "The real fetchUserFormProfile query uses maybeSingle; installed postgrest-js 2.117.2 sends a list request and unwraps [] to null or [row] to row after the wire response. The frozen 0.2.189 globals-D-mDsyNJ.js contains the same list cardinality handling.",
+      "The repaired observer classifies [] absent and [row] present. Null, empty object, invalid user_id, and multiple rows remain unknown; initial readiness requires a non-null classification.",
+      "A newly appeared owner row is refused by readProfileOwnerRow and first_save_row_appeared_before_write before receipt, fill, or Save. With no pending marker, the failure report says mutation was not attempted and restoration was not verified."
+    ],
+    "finding": "The observer calls a singleton with any syntactically valid user_id present, without checking that the ID equals the queried owner. A wrong-owner raw response is malformed for this owner query yet is accepted as present. The new guard uses the same owner ID in every valid singleton case, so it does not catch this.",
+    "native_limit": "No native rerun; the historical raw body was not retained. This source review cannot prove the original row was absent or that native first-save now succeeds."
+  },
+  "verdict_b_quality": {
+    "status": "IMPORTANT_FINDING",
+    "finding": "The classification is a single observer path, but the row identity check is incomplete. Extend the observer's request metadata with the requested user_id, classify a singleton with a mismatched ID as unknown, and guard that case through the actual client/callback seam.",
+    "test_assessment": "The new test executes the extracted app query chain through the installed Supabase client and delivers the raw response to the actual observer callback. It tests plain and base64 bodies, empty and singleton lists, malformed shapes, and cardinality. Its source extraction is coupled to exact string boundaries, and it does not prove the full UI or native run. Reported RED/GREEN and mutation claims in the escalation file were not independently rerun in this source-only review.",
+    "protection_impact": "The proposed identity check only changes observer classification. The pre-write owner read, conditional owned-row deletion, journal, and no-readback failure reporting are outside the reviewed diff and remain unchanged."
+  },
+  "evidence": [
+    "src/lib/supabase/user-profile.ts:96-102",
+    "node_modules/.pnpm/@supabase+postgrest-js@2.117.2/node_modules/@supabase/postgrest-js/src/PostgrestTransformBuilder.ts:737-743",
+    "node_modules/.pnpm/@supabase+postgrest-js@2.117.2/node_modules/@supabase/postgrest-js/src/PostgrestBuilder.ts:421-443",
+    "test-results/ci-artifacts/b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced/37164174445-1/chrome-mv3/chunks/globals-D-mDsyNJ.js",
+    "tests/browser/profile-native-acceptance.mjs:271-354,897-955,1133-1174",
+    "tests/browser/profile-observer-row-envelope.test.mjs:1-105",
+    ".research/profile-admin-causal-native.json"
+  ],
+  "limits": [
+    "Read-only source inspection; no browser, database, auth, build, release, or test run.",
+    "Native closure and current persisted owner-row state remain unverified."
+  ]
+}
