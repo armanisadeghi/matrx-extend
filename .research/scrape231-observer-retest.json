@@ -9,7 +9,11 @@
     "head_sha": "b2580c0592f7c82e9e44b4edab3baea0172611c8",
     "head_branch": "main",
     "conclusion": "failure",
-    "runner": { "label": "macos-15", "runner_arch": "ARM64", "machine": "arm64" },
+    "runner": {
+      "label": "macos-15",
+      "runner_arch": "ARM64",
+      "machine": "arm64"
+    },
     "inputs": {
       "acceptance_case": "guest-scrape-development",
       "development_run_id": 37217066948,
@@ -54,7 +58,8 @@
     "warm_media_or_full_reload": "Not reached; reload_milestones empty and reload_lifecycle null.",
     "screenshots": [],
     "product_verdict": "No product failure established. The failure is at native browser extension-context setup, before product controls or observer assertions.",
-    "no_retry": true
+    "no_retry": true,
+    "related_existing_defect": "EXT-D-0117 has the same panel-context symptom; this run supplies no product verdict and no new defect was created."
   },
   "evidence_directory": "docs/stabilization/evidence/scrape231/run37220067899",
   "files_sha256": {
