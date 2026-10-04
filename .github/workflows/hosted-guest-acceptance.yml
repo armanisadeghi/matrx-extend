@@ -27,6 +27,7 @@ on:
         type: choice
         options:
           - guest-chat
+          - guest-scrape
           - settings-controls
           - settings-persistence
           - settings-persistence-admin
@@ -98,7 +99,7 @@ jobs:
           ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
         run: |
           set -euo pipefail
-          if [[ "$ACCEPTANCE_CASE" == member-chat ]]; then
+          if [[ "$ACCEPTANCE_CASE" == member-chat || "$ACCEPTANCE_CASE" == guest-scrape ]]; then
             [[ -n "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
           if [[ "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == desktop-settings-guest || "$ACCEPTANCE_CASE" == desktop-settings-member || "$ACCEPTANCE_CASE" == desktop-settings-admin || "$ACCEPTANCE_CASE" == audit-key-admin || "$ACCEPTANCE_CASE" == profile-admin || "$ACCEPTANCE_CASE" == profile-member ]]; then
@@ -194,6 +195,7 @@ jobs:
           path: |
             docs/stabilization/resource-journals/hosted-*.jsonl
             test-results/guest-chat-store-*.json
+            test-results/scrape-guest-native-*.json
             test-results/settings-local-controls-acceptance.json
             test-results/settings-d87-native-*.json
             test-results/settings-desktop-native-*.json

@@ -673,6 +673,7 @@ export async function runNativeSidepanelQa({
   expectedExtensionId = EXPECTED_EXTENSION_ID,
   artifactRoot = join(REPO, 'test-results'),
   publicDemoUrl,
+  ownedPages,
   exercisePanel,
   onStage = () => {},
 } = {}) {
@@ -782,10 +783,16 @@ export async function runNativeSidepanelQa({
     verified = true;
 
     onStage('local_server');
-    server = createServer((_request, response) => {
+    server = createServer((request, response) => {
+      const pathname = new URL(request.url ?? '/', 'http://localhost').pathname;
+      const ownedPage = pathname === '/' ? null : ownedPages?.[pathname];
+      if (pathname !== '/' && !ownedPage) {
+        response.writeHead(404).end();
+        return;
+      }
       response
         .writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' })
-        .end(testPage(expectedExtensionId));
+        .end(ownedPage ?? testPage(expectedExtensionId));
     });
     await new Promise((resolve, reject) =>
       server.listen(0, '127.0.0.1', (error) => (error ? reject(error) : resolve())),

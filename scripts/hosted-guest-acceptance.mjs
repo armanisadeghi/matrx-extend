@@ -323,6 +323,7 @@ async function run(prepared) {
   assert.ok(
     [
       'guest-chat',
+      'guest-scrape',
       'settings-controls',
       'settings-persistence',
       'settings-persistence-admin',
@@ -351,6 +352,12 @@ async function run(prepared) {
     assert.equal(kind, 'ci_development_test', 'Audit key requires CI development receipt');
   if (acceptanceCase === 'member-chat')
     assert.equal(kind, 'published_release', 'Member Chat requires exact published release receipt');
+  if (acceptanceCase === 'guest-scrape')
+    assert.equal(
+      kind,
+      'published_release',
+      'Guest Scrape requires exact published release receipt',
+    );
   if (acceptanceCase === 'prepare-stale-results')
     assert.equal(kind, 'ci_development_test', 'Prepare requires exact CI development receipt');
   if (acceptanceCase === 'profile-admin' || acceptanceCase === 'profile-member') {
@@ -392,6 +399,8 @@ async function run(prepared) {
     // Acceptance must consume the same runtime this wrapper just verified.
     MATRX_PLAYWRIGHT_MODULE: join(packageDir, 'index.mjs'),
     MATRX_GUEST_CHAT_EXTENSION_DIR: extensionDir,
+    MATRX_SCRAPE_EXTENSION_DIR: extensionDir,
+    MATRX_SCRAPE_RECEIPT: relocatedReceipt,
     MATRX_REVIEWER_EXTENSION_DIR: extensionDir,
     MATRX_REVIEWER_RELEASE_RECEIPT: relocatedReceipt,
     ...(acceptanceCase.startsWith('settings-persistence')
@@ -452,17 +461,19 @@ async function run(prepared) {
           repo,
           acceptanceCase === 'settings-controls'
             ? 'tests/browser/settings-local-controls-acceptance.mjs'
-            : acceptanceCase.startsWith('desktop-settings-')
-              ? 'tests/browser/settings-desktop-native-acceptance.mjs'
-              : acceptanceCase === 'audit-key-admin'
-                ? 'tests/browser/audit-key-native-acceptance.mjs'
-                : acceptanceCase.startsWith('settings-persistence')
-                  ? 'tests/browser/settings-d87-native-acceptance.mjs'
-                  : acceptanceCase === 'prepare-stale-results'
-                    ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
-                    : acceptanceCase === 'member-chat'
-                      ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
-                      : 'tests/browser/guest-chat-store-acceptance.mjs',
+            : acceptanceCase === 'guest-scrape'
+              ? 'tests/browser/scrape-guest-native-acceptance.mjs'
+              : acceptanceCase.startsWith('desktop-settings-')
+                ? 'tests/browser/settings-desktop-native-acceptance.mjs'
+                : acceptanceCase === 'audit-key-admin'
+                  ? 'tests/browser/audit-key-native-acceptance.mjs'
+                  : acceptanceCase.startsWith('settings-persistence')
+                    ? 'tests/browser/settings-d87-native-acceptance.mjs'
+                    : acceptanceCase === 'prepare-stale-results'
+                      ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
+                      : acceptanceCase === 'member-chat'
+                        ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
+                        : 'tests/browser/guest-chat-store-acceptance.mjs',
         ),
       ],
       {

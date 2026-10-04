@@ -152,6 +152,16 @@ export async function click(panel, kind, label) {
     }
     else if (kind === 'button-text') candidates = [...document.querySelectorAll('button')]
       .filter((el) => el.textContent.trim() === label);
+    else if (kind === 'scrape-result-tab') {
+      const pane = ${activeTabPanelExpression('Scrape')};
+      candidates = [...(pane?.querySelectorAll('[role="tablist"] [role="tab"]') ?? [])]
+        .filter((el) => el.firstChild?.textContent?.trim() === label);
+    }
+    else if (kind === 'scrape-dismiss') {
+      const pane = ${activeTabPanelExpression('Scrape')};
+      candidates = [...(pane?.querySelectorAll('button[aria-label="Dismiss"]') ?? [])]
+        .filter((el) => label === 'Dismiss');
+    }
     else if (kind === 'section') candidates = [...document.querySelectorAll('button[aria-expanded]')]
       .filter((el) => el.textContent.trim() === label);
     else if (kind === 'theme') candidates = [...document.querySelectorAll('span')]
