@@ -10,6 +10,7 @@ import {
   captureFailure,
   captureManagement,
 } from './profile-reload-capture.mjs';
+import { observeGuestPaneTransition } from './profile-reload-input-smoke.mjs';
 
 const OUTPUT_DIR = process.env.PROFILE_OUTPUT_DIR;
 const RUN_ID = process.env.PROFILE_RUN_ID;
@@ -62,10 +63,14 @@ try {
     onStage: (stage) => {
       report.stage = stage;
     },
-    exercisePanel: async ({ page, panel, panelTarget, reloadExtension, transportFailureClass }) => {
-      // One trusted, read-only input on the owned local page before extension reload.
-      await page.locator('#open-panel').click();
-      report.input_smoke = 'owned_open_panel_clicked';
+    exercisePanel: async ({
+      panel,
+      activatePanel,
+      panelTarget,
+      reloadExtension,
+      transportFailureClass,
+    }) => {
+      report.input_smoke = await observeGuestPaneTransition(panel, activatePanel);
       report.stage = 'extension_reload';
       const lifecycle = {
         reload_attempted: true,

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0106 independent reload readiness verification",
+  "status": "DONE_WITH_CONCERNS",
+  "checked_commits": [
+    "2806c48fc5838aafb1a6439384627e843290ea55",
+    "9eecf01c656c0d816c2c2fcaed018d3f2df5acf2"
+  ],
+  "verdict_a_native_acceptance": {
+    "verdict": "PASS_GUEST_LIFECYCLE_ONLY",
+    "evidence": "One guarded read-only frozen development 0.2.189 guest run reload-readiness-peer-189-01: valid resource exit 0; owned pane selected Chat then trusted CDP pointer click selected Scrape before reload; old worker and panel retired; new worker and panel observed; exact replacement SIDE_PANEL context appeared on first query at 1 ms; extension remained enabled with zero runtime and manifest errors.",
+    "limitation": "This native run did not exercise delayed second-query acceptance. The prior frozen-189 boundary capture observed the exact replacement context at 115 ms after an initial wrong identity, but the old immediate verdict failed. Current main source fix is not in the frozen 189 extension. Original member full-fields, reload, and automatic-restoration acceptance remains open."
+  },
+  "verdict_b_source_quality": {
+    "verdict": "PASS",
+    "evidence": "Reviewed exact worker commits and the production helper. The 9eecf01c change consults the observer's exact URL/type/tab identity verdict after the unchanged 150-attempt, 100-ms bound. Tests pass for delayed exact context, persistent absence, wrong identity, context-query failure, retirement, and disabled extension. Worker recorded boundary red before fix, green after fix, and a restored first-sample mutation red; independent rerun of harness and capture guards was green. New smoke check rejects no transition and an already-selected target."
+  },
+  "artifact": {
+    "source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "ci_run_id": 37164174445,
+    "artifact_id": 11288542496,
+    "tree_sha256": "494646f6dd65399e0e7eee65fd1d9bd00ef97d173c5ceb9674de276ca12dc23a"
+  },
+  "evidence": {
+    "report_path": "/Volumes/Samsung2TB/code/.stabilization-scratch/reload-readiness-peer-189-01/evidence/profile-reload-readonly-reload-readiness-peer-189-01.json",
+    "report_sha256": "d1b9c09ce003d6dbccc7d01ba3b2bcff054de86ae80cde84088eb70b4ff01621",
+    "journal_path": "docs/stabilization/resource-journals/reload-readiness-peer-189-01.jsonl",
+    "journal_sha256": "f39e333b31e56391081ec57e2bca3959b9320fce6e2f29e3abb3a5a57d97b780"
+  },
+  "scope": "Verifier-owned read-only smoke and evidence only; no product/helper fix, authentication, Profile, database, build, release, or second native run."
+}
