@@ -2739,7 +2739,10 @@
   ]
  },
  "/files/{file_id}/versions": {
-  "get": []
+  "get": [],
+  "post": [
+   "multipart/form-data"
+  ]
  },
  "/files/{file_id}/versions/{version_number}": {
   "get": []
