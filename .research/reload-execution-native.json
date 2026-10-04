@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "case": "EXT-D-0120 native reload execution acceptance",
+  "status": "NATIVE_UNVERIFIED_RESOURCE_REFUSAL",
+  "decision": "The single authorized hosted run passed setup and resource readiness, then the acceptance child stopped after a fresh CPU watch sample reached 1.0. The native receipt refused at inputs before guest identity, media/capture, or reload lifecycle assertions. This is not a product or reload failure verdict; no retry was performed.",
+  "workflow": {
+    "run_id": 37203147962,
+    "job_id": 111438767960,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37203147962",
+    "event": "workflow_dispatch",
+    "head_branch": "main",
+    "head_sha": "ea0ec41d72e7c596ac75ab1fa00ee766847d1e8d",
+    "started_at": "2026-10-04T12:44:35Z",
+    "completed_at": "2026-10-04T12:50:59Z",
+    "status": "completed",
+    "conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "uploaded_artifact_id": 11303209840,
+    "uploaded_artifact_name": "hosted-guest-37203147962-1",
+    "acceptance_case": "guest-scrape-development",
+    "inputs": {
+      "development_run_id": 37193761291,
+      "development_artifact_id": 11299613935,
+      "release_run_id": null,
+      "published_store_crx": false,
+      "scrape_diagnostic_cpu_rate": null
+    }
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.215",
+    "source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+    "tree_sha256": "ab62d0755d03e8a7f2ca0cb99e0b5037f39e75d756b14a3e2d3ad6d8cc096d08",
+    "development_run_id": 37193761291,
+    "development_artifact_id": 11299613935,
+    "artifact_expired_before_dispatch": false
+  },
+  "native_measurement": {
+    "status": "REFUSED_BEFORE_ACCEPTANCE",
+    "receipt_status": "unverified",
+    "receipt_stage": "inputs",
+    "native_stage": "exercise_panel",
+    "failure_code": "NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample",
+    "guest_account_observed": false,
+    "media_outcome": "not_observed",
+    "capture_outcome": "not_observed",
+    "rendered_pane_outcome": "not_observed",
+    "reload_lifecycle": {
+      "evaluated": false,
+      "execution_retired": null,
+      "old_worker_destroyed_event": null,
+      "old_panel_destroyed_event": null,
+      "old_worker_absent": null,
+      "old_panel_absent": null,
+      "replacement_worker_created_event": null,
+      "replacement_worker_present": null,
+      "old_version_id": null,
+      "old_version_status": null,
+      "old_version_running_status": null,
+      "old_version_latest_event_with_target_id_omitted": null,
+      "old_version_running_status_observations": [],
+      "replacement_context": null,
+      "management_diagnostic": null,
+      "errors": null,
+      "interpretation": "Reload was not reached. Null values mean unobserved; they do not mean false."
+    },
+    "cases": []
+  },
+  "resources": {
+    "guard_policy_unchanged": true,
+    "package": {
+      "path": "docs/stabilization/evidence/scrape215/run37203147962/package-resource.jsonl",
+      "sha256": "a4ac4be1f96c8e2eee61a4e1f7217b8ca3f4b5fade4d96e4840cabc11409b554",
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid",
+      "exit_code": 0,
+      "admission_at": "2026-10-04T12:46:31.671Z",
+      "cpu_busy_fraction": 0.012857142857142857,
+      "unsafe_reasons": []
+    },
+    "browser": {
+      "path": "docs/stabilization/evidence/scrape215/run37203147962/browser-resource.jsonl",
+      "sha256": "75b6418a7ce1d98949d21cf5c2c76bc0af966b543fe70c2e9ad5b130daaf5e51",
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid",
+      "exit_code": 0,
+      "admission_at": "2026-10-04T12:48:27.873Z",
+      "cpu_busy_fraction": 0.012857142857142857,
+      "unsafe_reasons": []
+    },
+    "guest": {
+      "path": "docs/stabilization/evidence/scrape215/run37203147962/guest-resource.jsonl",
+      "sha256": "71545c0a3b2ec89ae3248e092264f672b23e3c259834f9ada43fbd402bf93b39",
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "child_failed",
+      "exit_code": 1,
+      "admission_at": "2026-10-04T12:50:24.001Z",
+      "admission_cpu_busy_fraction": 0.02285714285714286,
+      "watch_at": "2026-10-04T12:50:40.149Z",
+      "watch_cpu_busy_fraction": 1,
+      "watch_unsafe_reasons": ["RESOURCE_CPU_BUSY"],
+      "final_decision_at": "2026-10-04T12:50:44.771Z"
+    }
+  },
+  "evidence": {
+    "receipt_path": "docs/stabilization/evidence/scrape215/run37203147962/receipt.json.txt",
+    "receipt_sha256": "c250c24bc937c23ab1c776cf772c6e078f7b4d0ca815b285cf92bfddcc5a23c3",
+    "artifact_id": 11303209840,
+    "resource_journals": {
+      "package": "docs/stabilization/evidence/scrape215/run37203147962/package-resource.jsonl",
+      "browser": "docs/stabilization/evidence/scrape215/run37203147962/browser-resource.jsonl",
+      "guest": "docs/stabilization/evidence/scrape215/run37203147962/guest-resource.jsonl"
+    },
+    "limits": [
+      "The exact frozen development artifact provenance was accepted and imported.",
+      "The CPU watch refusal happened after initial guest admission; the journal final decision is child_failed with resource_invalid=false.",
+      "No guest identity, rendered pane, capture, media, extension reload, worker version, target lifecycle, replacement context, management state, or product error was observed.",
+      "No second native run or source change was made."
+    ]
+  }
+}
