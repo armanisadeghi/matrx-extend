@@ -1,14 +1,14 @@
 {
   "id": "EXT-D-0112",
   "feature_id": "EXT-F-2013",
-  "case_ids": ["EXT-F-2013-T10"],
+  "case_ids": ["EXT-F-2013-T12"],
   "surface": "Guest Chat when the platform refuses a request at its usage limit",
   "auth_mode": "guest fingerprint",
   "title": "HTTP 402 guest usage refusal appears as a generic retryable chat failure",
   "reproduction": [
     "On the Store-installed 0.2.176 guest profile, two requests completed and a later new-chat send immediately showed generic service-error copy with Retry.",
     "The corresponding live POST returned HTTP 402 while the guest's enforced usage state was over limit. Deployed aidream source maps UsageLimitReachedError for guest to the flat guest_ai_allowance_used error; audit logs did not retain this response body.",
-    "The extension classifier recognized this exact structured code only for HTTP 403, so the observed 402 followed the generic HTTP failure path."
+    "Published0.2.176 predates allowance-specific HTTP handling. Pending0.2.181 and pre-fix current-main source classify the exact structured guest code only at HTTP403; both miss the deployed402 contract."
   ],
   "expected": "For the exact structured guest_ai_allowance_used refusal, both documented HTTP 402 and 403 forms show the fixed free-signup remedy without Retry; unrelated 402 and 403 responses retain their existing generic behavior. The usage limit remains enforced.",
   "actual": "The source classifier now recognizes the exact structured code on HTTP 402 or 403. A real streamFetch-to-presentChatStreamError test failed on the pre-fix 402 path and passes after the change; documented in-stream code forms also pass. The old Store binary and the exact live response body were not directly instrumented by this source lane.",
@@ -46,7 +46,7 @@
       "at": "2026-10-04T05:31:54Z",
       "from": "in-fix",
       "to": "fixed",
-      "reason": "Guarded HTTP 402 regression was red before the source change and the targeted HTTP 402/403, unrelated 402, and stream-event tests are green after it. Independent source review and published installed-build acceptance remain pending."
+      "reason": "HTTP 402 regression was red before the source change and the targeted HTTP 402/403, unrelated 402, and stream-event tests are green after it. Independent source review and published installed-build acceptance remain pending."
     }
   ],
   "closure_requirement": "Independent review of the exact fix and validation on an accepted current extension artifact against a guest whose live usage refusal returns HTTP 402; verify the specific remedy and no Retry. Keep this distinct from D97's former HTTP 403 request-allowance case and do not change server usage policy."

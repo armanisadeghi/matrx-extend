@@ -34469,6 +34469,42 @@
           ],
           "verification_status": "D96 guest owner-read repair has bounded native guest verification on development artifact 0.2.178; signed-in member positive read remains unverified. This does not verify receipt-block parity or persisted delivered text; exact text viewer wire gap EXT-D-0075 remains.",
           "results": {}
+        },
+        {
+          "id": "EXT-F-2013-T12",
+          "title": "Returning guest at the live usage limit receives free-account remedy without futile Retry",
+          "modes": [
+            "guest"
+          ],
+          "control_ids": [
+            "EXT-F-2013-C08",
+            "EXT-F-2013-C10",
+            "EXT-F-2013-C03"
+          ],
+          "preconditions": [
+            "Record exact installed or immutable CI artifact version and live backend SHA; use an owned persistent signed-out guest whose live allowance is exhausted. Do not clear guest data or change usage policy."
+          ],
+          "steps": [
+            "Open Chat and send a short message; correlate the first server response and rendered result.",
+            "Close and reopen the panel, start a new conversation and send again with the same guest identity.",
+            "For a current HTTP 402 guest_ai_allowance_used response, check the free-account explanation and absence of Retry.",
+            "Separately verify a fresh eligible guest receives a real answer and a non-admin signed-in user can chat."
+          ],
+          "expected": [
+            "A real allowance refusal names the free-account remedy without a generic service/access error or futile Retry. Fresh guest and member paths retain their correct behavior."
+          ],
+          "defect_ids": [
+            "EXT-D-0097",
+            "EXT-D-0112"
+          ],
+          "results": {
+            "guest": {
+              "status": "fail",
+              "run_id": "urgent-live-guest-20261004-01",
+              "evidence": ".research/urgent-live-guest-20261004.json",
+              "detail": "Actual Store-installed0.2.176 returning guest new-chat send failed immediately with generic service error and Retry at05:29:10UTC; correlated live HTTP402. Two prior same-profile turns passed. Source repair33301689 awaits independent artifact/native verification; no published-fix claim."
+            }
+          }
         }
       ],
       "cells": {
@@ -34479,14 +34515,16 @@
             "EXT-D-0074",
             "EXT-D-0075",
             "EXT-D-0088",
-            "EXT-D-0096"
+            "EXT-D-0096",
+            "EXT-D-0097",
+            "EXT-D-0112"
           ],
           "run_ids": [
             "guest-grounding-peer-native-20261001-001",
             "hosted-guest-controlled-20261003",
             "urgent-context-rules-fixed-ci-01"
           ],
-          "retest_status": "Development175 and bounded development0.2.178 guest reply+reload passed; D96 guest owner-read fix is verified only after observer attachment. Store0.2.176 still has the old request path; member positive read, broader Chat, and full feature acceptance remain unverified. Cell remains partial."
+          "retest_status": "Actual published176 returning-guest HTTP402 failure reproduced October4 05:29UTC. D112 source repair33301689; independent artifact/native and publication pending. Broader Chat remains incomplete."
         },
         "member": {
           "test_status": "unverified",
