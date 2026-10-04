@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "case": "EXT-D-0120 same-run hosted startup CPU attribution independent peer review",
+  "reviewed_commit": "e2a7cb96ec381418d1af607c693c4c7f59677e98",
+  "authorship": "Independent review only; no production or test source edits.",
+  "verdict_A_evidence_behavior": {
+    "status": "FAIL_SOURCE_NOT_READY",
+    "finding": "The new process-attribution event is durable but its diagnostic payload is not. The guard emits processes or unavailable, while openResourceJournal.write filters both fields out through JOURNAL_FIELDS. The completed same-commit macOS CI integration test failed because the published journal event had no processes array. Thus a same-run journal cannot identify the startup CPU consumers as required.",
+    "safety_preserved": "The unsafe watch event is emitted and fsynced before process inspection starts. The native action boundary rejects any own-run unsafe event, and the integration test reached and passed that refusal before its attribution assertion failed. The diff leaves admission thresholds, unsafe history, two-sample stop, and watch cadence unchanged. Process inspection uses the existing 5-second/32-MiB bounded execFile runner and does not block the watch loop; final publication waits after owned-process cleanup.",
+    "fix_required": "Carry a validated, bounded process-attribution payload through the canonical resource journal and assert its durable content in the macOS integration test. Preserve the journal allowlist and do not switch to args or command output.",
+    "cannot_verify": "The hosted native acceptance and product receipt were not run or reviewed in this lane. The exact-commit CI source-ready artifact was not produced."
+  },
+  "verdict_B_doctrine_quality": {
+    "status": "FAIL_PERSISTENCE_CONTRACT_WITH_FIDELITY_LIMIT",
+    "finding": "The guard and journal form one persistence boundary, but the new event schema was changed only at the caller. This is a silent diagnostic drop. The integration test correctly detects it on macOS, while the unit test only checks parser output and cannot exercise persistence.",
+    "positive": "The implementation reuses the command bound and the existing native resource boundary; it records no raw argv, environment, process rows, or exception text. A failed snapshot is reduced to unavailable:true at the emitter. The macOS integration test uses the real copied guard and asserts refusal before any native action.",
+    "fidelity_limits": "On this macOS host, ps ucomm is an accounting name and may be truncated (observed Google Chrome fo); it cannot distinguish every Chrome helper role. The ps manual describes %cpu as a decaying average over up to one minute, while the guard's iostat reading is an interval sample. Treat the sorted rows as likely consumers, not proof of the preceding interval's exact CPU ownership. Retain these limits in any source-ready claim."
+  },
+  "verification": {
+    "local_focused": "node --test scripts/test-stabilization-resource-safety.mjs tests/browser/native-resource-boundary.test.mjs: 6 passed, 0 failed",
+    "local_ps": "/bin/ps -A -o pid=,ppid=,%cpu=,ucomm= produced parseable macOS rows; observed truncated executable accounting names.",
+    "exact_commit_ci": {
+      "run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37204481673",
+      "status": "completed failure",
+      "macos_resource_integration": "Disk admission and watchdog guard decisions ran, passed its admission-refusal case, then failed at scripts/test-stabilization-resource-disk-integration.mjs:244: assert(Array.isArray(attribution.processes)). It was not skipped.",
+      "checks": "Typecheck failed on ScrapeView.media-controls.test.tsx lines 172, 189, 192, 215, and 219 from preceding commit 4540020c. Subsequent checks and keyed artifact build were skipped. This is separate from the attribution defect."
+    }
+  },
+  "scope_limits": [
+    "No build, release, native browser run, heavy guard run, or CI rerun was launched by this peer.",
+    "The local system volume is below the unchanged 20 GiB admission floor; the macOS integration evidence comes from the exact-commit hosted CI run."
+  ]
+}
