@@ -1,0 +1,19 @@
+{
+  "task": "Hosted native Profile acceptance path for existing rows",
+  "status": "source_prepared_not_executed",
+  "route": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "adapter": "scripts/hosted-guest-acceptance.mjs",
+    "driver": "tests/browser/profile-native-acceptance.mjs",
+    "cases": ["profile-admin", "profile-member"],
+    "artifact": "exact successful CI main-push development artifact, verified by existing importer and Profile driver",
+    "acceptance": "extended Profile census, pre-existing owner row, and verified restoration required for a passing hosted job"
+  },
+  "private_inputs": "Existing named admin credential or member one-time-link secret is checked before browser setup, staged to exclusive mode-0600 files, removed from the child environment, and unlinked after execution. The tracked production Supabase config is checked against the workflow values without replacement. The Profile ownership receipt is removed only after a passing restoration verdict and is never uploaded.",
+  "checks": {
+    "focused_test": "node --test scripts/hosted-profile-route.test.mjs",
+    "mutation": "Changing PROFILE_EXTENDED_CASES from 1 to 0 made the route test fail; original restored",
+    "syntax": "node --check scripts/hosted-guest-acceptance.mjs",
+    "remote_native": "not run in this lane"
+  }
+}

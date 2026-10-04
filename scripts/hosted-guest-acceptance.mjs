@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { access, mkdir, readFile, readdir, unlink, writeFile } from 'node:fs/promises';
+import { homedir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { matchingCrx3RsaKey } from './crx3-identity.mjs';
@@ -11,6 +12,7 @@ import {
   selectOrImportNativeTarget,
   verifyImportedNativeEvidence,
 } from './current-test-artifact.mjs';
+import { hostedProfileRoute, requireHostedAcceptanceCredential } from './hosted-profile-route.mjs';
 import { hashReleaseTree } from './sync-unpacked-release.mjs';
 
 const repo = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -115,7 +117,113 @@ async function prepareDevelopment(runId, artifactId) {
   assert.equal(evidence.runId, Number(runId));
   assert.equal(evidence.artifactId, Number(artifactId));
   process.stdout.write(`PREPARED_DEVELOPMENT ${evidence.sourceSha} ${evidence.treeSha256}\n`);
-  return { extensionDir, relocatedReceipt, kind: 'ci_development_test' };
+  return {
+    extensionDir,
+    relocatedReceipt,
+    kind: 'ci_development_test',
+    sourceSha,
+    runId: Number(runId),
+    artifactId: Number(artifactId),
+  };
+}
+
+async function runProfile(prepared, acceptanceCase) {
+  assert.equal(process.env.GITHUB_ACTIONS, 'true', 'hosted_profile_runner_required');
+  assert.equal(process.env.RUNNER_ENVIRONMENT, 'github-hosted', 'hosted_profile_vm_required');
+  const outputDir = join(repo, 'test-results');
+  const runId = `hosted-profile-${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_ATTEMPT}`;
+  const route = hostedProfileRoute(acceptanceCase, prepared, outputDir, runId);
+  const profileEnvPath = join(repo, '.env.production');
+  const adminEnvPath = join(homedir(), 'code/aidream/.env');
+  const memberLinkPath = join(
+    dirname(prepared.relocatedReceipt),
+    'profile-member-link-private.json',
+  );
+  const created = [];
+  let passed = false;
+  try {
+    await mkdir(outputDir, { recursive: true, mode: 0o700 });
+    const url = process.env.WXT_SUPABASE_URL;
+    const key = process.env.WXT_SUPABASE_PUBLISHABLE_KEY;
+    assert.equal(url, 'https://db.matrxserver.com', 'hosted_profile_public_url_refused');
+    assert.match(key ?? '', /^sb_publishable_[A-Za-z0-9_-]+$/, 'hosted_profile_public_key_refused');
+    const profileEnv = await readFile(profileEnvPath, 'utf8');
+    const profileValue = (name) =>
+      profileEnv
+        .split(/\r?\n/)
+        .find((line) => line.startsWith(`${name}=`))
+        ?.slice(name.length + 1)
+        .trim()
+        .replace(/^["']|["']$/g, '');
+    assert.equal(profileValue('WXT_SUPABASE_URL'), url, 'hosted_profile_public_url_mismatch');
+    assert.equal(
+      profileValue('WXT_SUPABASE_PUBLISHABLE_KEY'),
+      key,
+      'hosted_profile_public_key_mismatch',
+    );
+    const childEnv = {
+      ...process.env,
+      MATRX_PLAYWRIGHT_MODULE: join(packageDir, 'index.mjs'),
+      ...route.env,
+    };
+    if (acceptanceCase === 'profile-admin') {
+      const raw = process.env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON;
+      assert.ok(raw, 'hosted_profile_admin_secret_required');
+      const credentials = JSON.parse(raw);
+      assert.equal(credentials.email, 'admin@admin.com', 'hosted_profile_admin_identity_refused');
+      assert.ok(
+        typeof credentials.password === 'string' && credentials.password,
+        'hosted_profile_admin_password_required',
+      );
+      assert.ok(!/[\r\n]/.test(credentials.password), 'hosted_profile_admin_password_line_refused');
+      assert.equal(
+        credentials.password.trim().replace(/^["']|["']$/g, ''),
+        credentials.password,
+        'hosted_profile_admin_password_file_roundtrip_refused',
+      );
+      await mkdir(dirname(adminEnvPath), { recursive: true, mode: 0o700 });
+      await writeFile(
+        adminEnvPath,
+        `AI_ADMIN_USERNAME=admin@admin.com\nAI_ADMIN_PASSWORD=${credentials.password}\n`,
+        { flag: 'wx', mode: 0o600 },
+      );
+      created.push(adminEnvPath);
+    } else {
+      assert.ok(process.env.MATRX_HOSTED_MEMBER_LINK_JSON, 'hosted_profile_member_link_required');
+      await writeFile(memberLinkPath, process.env.MATRX_HOSTED_MEMBER_LINK_JSON, {
+        flag: 'wx',
+        mode: 0o600,
+      });
+      created.push(memberLinkPath);
+      childEnv.MATRX_REVIEWER_MAGIC_LINK_FILE = memberLinkPath;
+    }
+    childEnv.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON = undefined;
+    childEnv.MATRX_HOSTED_MEMBER_LINK_JSON = undefined;
+    const result = await ownedProcess(process.execPath, [join(repo, route.driver)], {
+      cwd: repo,
+      env: childEnv,
+    });
+    assert.equal(
+      result.code,
+      0,
+      `Profile native acceptance exited ${result.code ?? result.signal}`,
+    );
+    const report = JSON.parse(
+      await readFile(join(outputDir, `profile-native-${runId}.json`), 'utf8'),
+    );
+    assert.equal(report.status, 'passed', 'hosted_profile_report_not_passed');
+    assert.equal(report.profile_row_existed_before, true, 'hosted_profile_existing_row_required');
+    assert.equal(
+      report.extended_census?.complete,
+      true,
+      'hosted_profile_extended_cases_incomplete',
+    );
+    assert.equal(report.restoration?.verified, true, 'hosted_profile_restoration_unverified');
+    passed = true;
+  } finally {
+    for (const path of created.reverse()) await unlink(path);
+    if (passed) await unlink(route.env.PROFILE_PRIVATE_OWNERSHIP_RECEIPT);
+  }
 }
 
 async function preparePublishedStoreCrx(outputDir) {
@@ -201,7 +309,8 @@ async function preparePublishedStoreCrx(outputDir) {
   return { extensionDir, relocatedReceipt, kind: receipt.kind };
 }
 
-async function run({ extensionDir, relocatedReceipt, kind }) {
+async function run(prepared) {
+  const { extensionDir, relocatedReceipt, kind } = prepared;
   const acceptanceCase = process.env.MATRX_HOSTED_ACCEPTANCE_CASE ?? 'guest-chat';
   assert.ok(
     [
@@ -216,6 +325,8 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
       'audit-key-admin',
       'member-chat',
       'prepare-stale-results',
+      'profile-admin',
+      'profile-member',
     ].includes(acceptanceCase),
   );
   if (acceptanceCase === 'settings-controls')
@@ -234,6 +345,10 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
     assert.equal(kind, 'published_release', 'Member Chat requires exact published release receipt');
   if (acceptanceCase === 'prepare-stale-results')
     assert.equal(kind, 'ci_development_test', 'Prepare requires exact CI development receipt');
+  if (acceptanceCase === 'profile-admin' || acceptanceCase === 'profile-member') {
+    await runProfile(prepared, acceptanceCase);
+    return;
+  }
   const memberLinkPath = join(dirname(relocatedReceipt), 'member-magic-link-private.json');
   const adminCredentialsPath = join(runtimeDir, 'prepare-admin-credentials-private.json');
   let adminCredentialsCreated = false;
@@ -371,7 +486,21 @@ async function run({ extensionDir, relocatedReceipt, kind }) {
 // Each phase runs under its own fresh resource admission on the same host.
 // Setup has no product verdict, and acceptance never installs dependencies.
 const phase = process.env.MATRX_HOSTED_PHASE ?? 'acceptance';
-assert.ok(['package', 'browser', 'acceptance'].includes(phase), 'invalid hosted phase');
+assert.ok(
+  ['preflight', 'package', 'browser', 'acceptance'].includes(phase),
+  'invalid hosted phase',
+);
+if (phase === 'preflight') {
+  assert.equal(process.env.GITHUB_ACTIONS, 'true', 'hosted_preflight_runner_required');
+  requireHostedAcceptanceCredential(process.env.MATRX_HOSTED_ACCEPTANCE_CASE, process.env);
+  console.log('HOSTED_CREDENTIAL_PREFLIGHT_READY');
+  process.exit(0);
+}
+if (phase === 'acceptance')
+  requireHostedAcceptanceCredential(
+    process.env.MATRX_HOSTED_ACCEPTANCE_CASE ?? 'guest-chat',
+    process.env,
+  );
 assert.ok(process.env.MATRX_RESOURCE_OWNER, 'hosted phase requires owned resource permit');
 const runtimeDir = resolve(process.env.MATRX_HOSTED_BROWSER_RUNTIME_DIR ?? '');
 assert.ok(process.env.MATRX_HOSTED_BROWSER_RUNTIME_DIR && process.env.PLAYWRIGHT_BROWSERS_PATH);

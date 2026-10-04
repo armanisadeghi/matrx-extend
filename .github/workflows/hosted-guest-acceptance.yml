@@ -37,6 +37,8 @@ on:
           - audit-key-admin
           - member-chat
           - prepare-stale-results
+          - profile-admin
+          - profile-member
 
 permissions:
   actions: read
@@ -99,7 +101,7 @@ jobs:
           if [[ "$ACCEPTANCE_CASE" == member-chat ]]; then
             [[ -n "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
-          if [[ "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == desktop-settings-guest || "$ACCEPTANCE_CASE" == desktop-settings-member || "$ACCEPTANCE_CASE" == desktop-settings-admin || "$ACCEPTANCE_CASE" == audit-key-admin ]]; then
+          if [[ "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == desktop-settings-guest || "$ACCEPTANCE_CASE" == desktop-settings-member || "$ACCEPTANCE_CASE" == desktop-settings-admin || "$ACCEPTANCE_CASE" == audit-key-admin || "$ACCEPTANCE_CASE" == profile-admin || "$ACCEPTANCE_CASE" == profile-member ]]; then
             [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
           if [[ "$ACCEPTANCE_CASE" == prepare-stale-results ]]; then
@@ -112,6 +114,14 @@ jobs:
           else
             [[ "$DEVELOPMENT_RUN_ID" =~ ^[1-9][0-9]*$ && "$DEVELOPMENT_ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]] || exit 1
           fi
+
+      - name: Require selected authentication before browser setup
+        env:
+          MATRX_HOSTED_PHASE: preflight
+          MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
+          MATRX_HOSTED_MEMBER_LINK_JSON: ${{ secrets.MATRX_REVIEWER_MAGIC_LINK_JSON }}
+          MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: ${{ secrets.MATRX_PREPARE_ADMIN_CREDENTIALS_JSON }}
+        run: node scripts/hosted-guest-acceptance.mjs
 
       - name: Disable indexing on the disposable hosted VM
         shell: bash
@@ -165,6 +175,8 @@ jobs:
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           MATRX_HOSTED_MEMBER_LINK_JSON: ${{ secrets.MATRX_REVIEWER_MAGIC_LINK_JSON }}
           MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: ${{ secrets.MATRX_PREPARE_ADMIN_CREDENTIALS_JSON }}
+          WXT_SUPABASE_URL: ${{ secrets.WXT_SUPABASE_URL }}
+          WXT_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.WXT_SUPABASE_PUBLISHABLE_KEY }}
         run: |
           mkdir -p "$RUNNER_TEMP/guest-resource-profile"
           node scripts/stabilization-resource.mjs run --run-id "hosted-guest-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
@@ -184,4 +196,5 @@ jobs:
             test-results/audit-key-native-*.json
             test-results/reviewer-chat-store-*.json
             test-results/prepare-stale-result-native-*.json
+            test-results/profile-native-hosted-profile-*.json
             test-results/native-sidepanel-qa-*/*.png
