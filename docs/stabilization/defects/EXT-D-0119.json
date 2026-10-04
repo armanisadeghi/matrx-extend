@@ -6,14 +6,15 @@
   "auth_mode": "guest",
   "title": "Native Scrape actions lack a fresh resource-health boundary check",
   "reproduction": [
-    "Inspect run37191118595 guest resource journal: admitted09:14:06.168UTC, unsafeCPU09:14:22.237, childexit09:14:32.478; no intervening healthy sample. Compare the Scrape driver UI action path with the required fresh-health-before-UI-batch contract."
+    "Inspect run37191118595 guest resource journal: admitted09:14:06.168UTC, unsafeCPU09:14:22.237, childexit09:14:32.478; no intervening healthy sample. Compare the Scrape driver UI action path with the required fresh-health-before-UI-batch contract.",
+    "At driver commit2a0b2e41, inspect enterMediaField: click and Input.insertText run outside resourceAction. In exerciseMediaControls, cause resourceAction to throw NATIVE_RESOURCE_BOUNDARY_REFUSED during video open or copy: the broad catches turn it into a limitation instead of aborting. Independent review7cf6ee9a identifies exact paths before any native launch."
   ],
   "expected": "Each UI batch requires recent healthy admission/watchdog evidence; unsafe or stale evidence refuses the next batch without changing configured resource thresholds.",
-  "actual": "Scrape driver has no per-batch health check or stop-marker read. Wrapper retains sustained-stop policy, but receipt cannot prove UI observation chronology relative to unsafe sample.",
+  "actual": "Original per-batch repair was independently verified and closed. New media procedure2a0b2e41 reintroduced unguarded form input and swallowed resource refusals; fresh peer7cf6ee9a blocked its first native run.",
   "severity": "S2: acceptance reliability; no proven product failure",
   "priority": "P1: prerequisite for trusted native acceptance",
-  "state": "closed",
-  "owner": "/root/scrape_resource_boundary",
+  "state": "in-fix",
+  "owner": "/root/scrape_native_guard_fix",
   "evidence": [
     ".research/scrape-loading-fixed-native.json",
     ".research/scrape-reload-diagnosis.json",
@@ -21,7 +22,8 @@
     ".research/scrape-boundary-final-peer.json",
     ".research/scrape-guarded-development-native.json",
     ".research/reload-lifetime-native.json",
-    ".research/scrape-replacement-fixed-native.json"
+    ".research/scrape-replacement-fixed-native.json",
+    ".research/scrape-native-controls-peer.json"
   ],
   "transition_history": [
     {
@@ -59,6 +61,24 @@
       "from": "retest-pass",
       "to": "closed",
       "reason": "Original missing fresh-health action boundary is verified repaired. One unsafe sample refuses next exercise despite outer resourceInvalid=false/two-sample stop policy; no unsafe product observation promoted to acceptance. Scope is native-test guard only, not Scrape health or unknown CPU-spike cause."
+    },
+    {
+      "at": "2026-10-04T14:04:16.556359+00:00",
+      "from": "closed",
+      "to": "open",
+      "reason": "New media driver introduces same boundary regression, caught before native execution by fresh peer."
+    },
+    {
+      "at": "2026-10-04T14:04:16.556359+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Direct input and broad catches confirmed in immutable2a0b2e41 diff; original historical closure evidence remains valid for that earlier driver."
+    },
+    {
+      "at": "2026-10-04T14:04:16.556359+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Fresh Sol scrape_native_guard_fix owns existing-primitive repair with action-wiring refusal checks; native execution blocked pending fresh review."
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
