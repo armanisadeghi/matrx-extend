@@ -1,0 +1,30 @@
+{
+  "scope": "EXT-F-1007-T14/T15 peer review of 9bac4c81 and scrape-error-controls-test.json",
+  "verdict_A_source_acceptance": {
+    "result": "accepted for component UI wiring; classification and native behavior remain unverified",
+    "evidence": [
+      "ScrapeView wires Reload page to reloadActiveTab, Try again to captureActiveTab with activeMode/lastModeRef fallback, and Dismiss to clearError.",
+      "CaptureErrorCard renders only actions supplied by the error and gates structured diagnostics on the real auth store isAdmin flag.",
+      "The component suite passes 3/3 and pnpm compile passes."
+    ],
+    "limits": [
+      "The test injects a manually constructed CaptureError, so it does not exercise buildCaptureError or buildCaptureErrorFromResult classification or their integration with useScrape.",
+      "reloadActiveTab and captureActiveTab are mocked hook outputs; Chrome native reload, content script recovery, and hosted capture are outside this lane.",
+      "The auth test verifies client rendering for isAdmin true/false, not server authorization."
+    ]
+  },
+  "verdict_B_doctrine_quality": {
+    "result": "not accepted as a complete forcing-test proof",
+    "findings": [
+      "The evidence records two targeted mutation checks, but no executed return-expected/constant-result gut check required by forcing-function-tests section 3 and its review sequence.",
+      "The first test combines three behaviors in one case; split reload, selected-mode retry, and dismissal so each has a named break and independent red proof.",
+      "The restricted-url case is supplied directly as a fixture; add focused classifier inputs with different expected classes/actions if classification is claimed as covered."
+    ],
+    "required_follow_up": "Run and record an executed constant-result gut check against the SUT in a scratch copy or in-memory injection, then add classifier coverage or narrow the claim explicitly."
+  },
+  "checks_run_by_peer": [
+    "pnpm test src/features/scrape/ScrapeView.error-controls.test.tsx: PASS (3 tests)",
+    "pnpm compile: PASS"
+  ],
+  "product_source_edits": false
+}
