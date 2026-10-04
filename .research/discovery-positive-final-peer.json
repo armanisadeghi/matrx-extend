@@ -1,0 +1,44 @@
+{
+  "report_type": "discovery_positive_final_peer_verification",
+  "status": "DONE_SOURCE_ONLY",
+  "reviewed_path": ".research/discovery-case-procedures.json",
+  "reviewed_commit": "a5b82a1550fe255b8d28472497451b77a771b47a",
+  "findings": [
+    {
+      "id": "P1",
+      "status": "ADDRESSED",
+      "evidence": "Procedures select All handlers for noncanonical discovery rows; the root list_chrome_categories row is canonically surfaced. Inventory/source mode coverage is retained."
+    },
+    {
+      "id": "P2",
+      "status": "ADDRESSED",
+      "evidence": "The three inventory admin-only rows EXT-F-4007, EXT-F-4013, EXT-F-4014 have admin-only manual-run cells; member denial is assigned to the owning UI-visibility procedure. Manual execution is correctly distinguished from dispatcher authorization."
+    },
+    {
+      "id": "P3",
+      "status": "ADDRESSED",
+      "evidence": "Root predicate compares total_categories with categories.length; category predicate compares result.count with result.tools.length, matching discover.ts return shapes."
+    },
+    {
+      "id": "Q1",
+      "status": "ADDRESSED",
+      "evidence": "All 37 valid-input cells and all 37 reload cells require the structural result. Visible errors or absent/malformed structure fail; environmental refusal preventing invocation is unverified and never pass. Recovery errors are scoped separately."
+    }
+  ],
+  "coverage_verdict_A": {
+    "status": "ADEQUATE_SOURCE_COVERAGE",
+    "evidence": "All 20 targeted inventory features appear exactly once. The 17 general rows have member and admin cells; the three admin-only rows have admin cells only (37 total mode cells). Each has valid-input, invalid-input, permissions, and reload dimensions (148 total). Distinct {}, malformed JSON, and JSON null fixtures remain. Handler and dispatcher paths are preserved."
+  },
+  "quality_verdict_B": {
+    "status": "PASS_WITH_RUNTIME_UNVERIFIED",
+    "evidence": "The source-backed procedures distinguish manual-run permission bypass from dispatcher behavior, qualify live descriptions, and use the correct root/category result predicates. Q1 false-pass path is closed consistently in every positive valid/reload cell."
+  },
+  "source_evidence": [
+    "docs/stabilization/inventory.json",
+    "src/features/tools/ToolsView.tsx",
+    "src/lib/tools/categories.ts",
+    "src/lib/tools/handlers/discover.ts",
+    "src/lib/tools/dispatch.ts"
+  ],
+  "runtime_state": "Unverified; source-only review. No browser, build, database query, or runtime invocation performed."
+}
