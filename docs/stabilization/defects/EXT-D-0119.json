@@ -13,7 +13,7 @@
   "actual": "Original per-batch repair was independently verified and closed. New media procedure2a0b2e41 reintroduced unguarded form input and swallowed resource refusals; fresh peer7cf6ee9a blocked its first native run.",
   "severity": "S2: acceptance reliability; no proven product failure",
   "priority": "P1: prerequisite for trusted native acceptance",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "/root/scrape_native_guard_fix",
   "evidence": [
     ".research/scrape-loading-fixed-native.json",
@@ -23,7 +23,10 @@
     ".research/scrape-guarded-development-native.json",
     ".research/reload-lifetime-native.json",
     ".research/scrape-replacement-fixed-native.json",
-    ".research/scrape-native-controls-peer.json"
+    ".research/scrape-native-controls-peer.json",
+    ".research/scrape-native-guard-fix.json",
+    ".research/scrape-native-guard-final-peer.json",
+    ".research/scrape-link-observation-fix.json"
   ],
   "transition_history": [
     {
@@ -79,6 +82,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Fresh Sol scrape_native_guard_fix owns existing-primitive repair with action-wiring refusal checks; native execution blocked pending fresh review."
+    },
+    {
+      "at": "2026-10-04T14:15:00.898833+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "b89c725c gates field click and insertion and propagates resource failures; 4aa99248 fixes observable wrong-URL timeout classification after fresh peer570c4829. Executed causal RED/GREEN,16 focused checks and compile pass; final peer/native pending."
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
