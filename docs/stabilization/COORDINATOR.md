@@ -1,6 +1,15 @@
 # Matrx Extend stabilization: resume here
 
-## Active checkpoint — independent member reload acceptance passed
+## Active lanes — remaining Profile fields and guest popup
+
+Previous turn classification: **progress** — independently verified member warm/reload cases, closed D101/D102 for their reproduced failures, and reconciled/pushed all managed repositories. Baseline for this turn was copied from the final workspace ledger before refreshing remotes.
+
+- `profile_identity_employment_cases` (Sol medium, source only): executable Identity, Employment and section-expander cases T05/T06/T17/T18/T21/T22 across warm/reload, preserving strict private per-write ownership and original restoration. Owns new case modules and narrow runner integration; no native/DB/build/release. Fifteen-minute bound, fresh source review before native.
+- `popup_guest_native_census` (Luna medium): sole guarded heavy owner for local/unpacked guest popup T01/T04 warm/reload and Options only if its procedure is straightforward. Exact frozen b4/189 artifact. Real toolbar entrypoint required; direct popup URL is not acceptance. Ten-minute/two-attempt bound; no sign-in or database writes.
+
+Root owns tracking, review routing and synchronization. Preserve pending Store181; no new dashboard poll needed immediately after the previous 01:33UTC check.
+
+## Previous checkpoint — independent member reload acceptance passed
 
 Independent Luna run `profile-member-final-189-05` passed on frozen development 0.2.189 / source `b4b9f0c4` / CI37164174445 / artifact11288542496 using reviewed runner `b83c2af0`. Member Back and Save/Discard pass both warm and strict full extension reload; denied owner-read/Retry passes both, and failed-write/draft-retention/Retry passes warm. First-party identity, canonical HTTP200/zero admin rows, and device organization match were verified. Original Profile-row absence was restored and authenticated-read verified. Evidence `.research/profile-member-final-189-native.json`, commit `ce5d1c56`; root directly matched raw SHA `7011bf997e26f1266a05ea2f3483b3326e3069e1caf87b79e6afb5aca4c05b9e` and resource-journal SHA `f5b6cb79e33e1eca8218c2236157bd050afe93e5957116daa27014480dc27d91`. Resource admission valid, no invalidation, exit0; used link removed, private receipt0600. No heavy job remains.
 
