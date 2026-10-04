@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0120",
   "feature_id": "EXT-F-0001",
-  "case_ids": [
-    "EXT-F-0001-T02"
-  ],
+  "case_ids": ["EXT-F-0001-T02"],
   "surface": "Native extension reload acceptance",
   "auth_mode": "guest",
   "title": "Scrape reload acceptance loses unique visible target and omits diagnostic metadata",
