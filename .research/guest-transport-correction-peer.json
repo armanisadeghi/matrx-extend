@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0134",
+  "reviewed_commit": "a0f6cd5087178161c843110cf1334dd2b1a4da0f",
+  "status": "DONE_WITH_LIVE_LIMIT",
+  "verdict_a_capture_readiness": {
+    "result": "READY_LIVE_UNVERIFIED",
+    "reason": "The observer enables Network before resuming a new offscreen target, buffers classified first-POST metadata when its initial URL is empty, and admits that metadata only after targetInfoChanged confirms the exact offscreen URL. The acceptance script arms before the first submit and requires status-bearing observations for both the opening and post-reload sends before claiming transport proof. This lane did not run a native browser or hosted acceptance, so the reporter's first live guest HTTP status and response code remain unverified."
+  },
+  "verdict_b_privacy_cleanup_quality": {
+    "result": "PASS_WITH_LIVE_LIMIT",
+    "privacy": "Persisted observer records contain only attempt, UTC timestamp, browser-local CDP request ID, numeric HTTP status, and a syntax-restricted structured error code. The observer does not retain URL, headers, request body, or response body. This finding does not assess pre-existing report diagnostics.",
+    "cleanup": "Stop resumes tracked paused targets, disables auto-attach, removes listeners, waits for pending optional body reads, and verifies detach of an existing target. Cleanup failures are recorded separately; the earlier acceptance error is rethrown first. Native cleanup remains unverified.",
+    "quality": "Only a matching Network.getResponseBody -32000 protocol response is nonfatal to the owned CDP connection; unrelated protocol errors remain fatal. The focused behavioral tests exercise late URL confirmation, first POST capture, later sends after unavailable body, existing target detach failure, and the connector's strict error path. The sequence test also checks acceptance source order; it is not live behavioral proof. CI invokes both focused test commands."
+  },
+  "previous_findings": [
+    {
+      "title": "Late offscreen URL classification",
+      "disposition": "ADDRESSED",
+      "evidence": "Candidate sessions buffer classified POST metadata until exact offscreen URL confirmation; late URL regression passes."
+    },
+    {
+      "title": "Optional response body poisons shared CDP",
+      "disposition": "ADDRESSED",
+      "evidence": "The connector rejects only matching Network.getResponseBody -32000 as nonfatal; later command and unrelated fatal-error regressions pass."
+    },
+    {
+      "title": "Existing-target detach failure hidden",
+      "disposition": "ADDRESSED",
+      "evidence": "The harness exposes detachVerified and observer.stop records its rejection; detach failure regression passes."
+    }
+  ],
+  "checks": {
+    "focused_observer_and_sequence": "8/8 passed: node --test tests/browser/guest-chat-transport-observer.test.mjs tests/browser/guest-chat-store-sequence.test.mjs",
+    "owned_cdp_connector": "passed: node tests/browser/vault-owned-cdp.test.cjs",
+    "ci_hook": ".github/workflows/ci.yml runs both commands in Guest transport observer regression",
+    "native_browser": "UNVERIFIED per review lane scope"
+  },
+  "open_items": [
+    "Run the hosted native acceptance once and inspect the opening guest HTTP status and bounded error code, plus cleanup result."
+  ]
+}
