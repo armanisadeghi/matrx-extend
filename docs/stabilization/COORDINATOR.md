@@ -1,6 +1,18 @@
 # Matrx Extend stabilization: resume here
 
-## Active checkpoint — member field acceptance verified, admin next
+## Active checkpoint — member verified, admin observer repaired; resource refusal
+
+This turn is **progress**, not a blocked goal turn. Unbudgeted stabilization goal remains active. No heavy/browser job remains. Member frozen189 Identity fields, Employment fields and all eight section expanders passed both warm/full reload with original-state restoration; D104/D105/D106 closed through independent native retest. Evidence d26c16a1 / `.research/profile-fields-reload-fixed-native.json`; root matched raw/journal hashes. Full Profile remains incomplete.
+
+Admin runs02/03 inferred absence using a broken observer; those reports now carry explicit corrections. Causal admin04 showed exact first_save_row_appeared_before_write refusal before any mutation (raw0720cbe8/journal8699be4f independently matched). D109 source cause is confirmed: maybeSingle unwraps raw list only inside the client, but observer expected an object. Raw-envelope repair af3c463c and current-owner/request binding a99f101a passed fresh peer58119ce4; actual callback guards fail old code. Source-only diagnostics adeae263 also distinguish phases without raw sensitive output. D109 is fixed, not closed. Minor duplicate-query-filter test gap is recorded; source rejects it.
+
+Independent admin05 was **refused before launch** for RESOURCE_PRESSURE_UNSAFE + RESOURCE_SWAP_GROWTH. Journal43f049a9, `.research/profile-admin-wirefix-native.json`,1726baef. No browser/auth/DB/UI write/fixture occurred. No native verdict from this refusal. Next: one guarded admin existing-row run after safe preflight with unchanged reviewed runner; preserve existing Profile values. T06/T18/T22 six warm/reload cells plus T02/T04/T25 required. T26admin remains applicable/unimplemented. D108 original member-only gate is source-fixed, but actual absent-admin firstsave remains unverified; never delete real existing Profile to force it. D107 prior startup refusal remains triaged/causeunknown; it did not recur in later admitted runs.
+
+Store refreshed authenticated dashboard at04:44UTC October4: published0.2.176, pending0.2.181, upload disabled. Preserve pending submission. Latest recorded guest opening/reload/followup replies passed bounded unpacked176/live-server check; separate D96 owner-table401 remained. Candidate181 has bounded guest three-answer/fourth-allowance/free-account and real nonadmin evidence. Neither proves actual Store-installed181 or whole health.
+
+Inventory remains205features/761cases/1333controls:76pass,65partial,4fail,1063unverified,1N/A;0/394full feature-role pairs. Discovery20features/37modecells/148procedures integrated; runtime unverified. No local builds/releases/version bumps; CI artifacts only. All worker lanes terminal at checkpoint; root final all-repository ledger records any fresh-active-edit exception. Continue contained surfaces after admin acceptance; Chat/Pilot systematic testing deferred except urgent public incidents.
+
+## Previous checkpoint — member field acceptance verified, admin diagnosis
 
 Previous turn classification: progress — shared reload readiness race repaired and independently checked. This turn root matched native member08 raw90c2e27e and journale20fe07c hashes: six T05/T17/T21 warm/reload cells pass; Identity seven fields and Employment two fields survived strict full reload, all eight section expanders passed, normal UI restoration and exact original row absence verified. Surrounding T01/T03/T25 warm/reload and T26 failed-write/retry pass within their recorded scope. First-party member identity, HTTP200 zero-admin-row check and device organization verified. Evidence `.research/profile-fields-reload-fixed-native.json`, d26c16a1. D104/D105/D106 closed through retest-pass at ab3dc705. Original run07 discarded inner exception remains unknowable; closure does not invent its cause. Full Profile remains incomplete.
 

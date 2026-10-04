@@ -14,7 +14,7 @@
   "actual": "Member-only runner prerequisite blocks admin before any write or six extended acceptance cells. Product write behavior untested, not a product failure.",
   "severity": "S2 admin testing blocked; product impact not established",
   "priority": "P1 contained Profile acceptance prerequisite",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "admin_firstsave_diagnose_escalation",
   "evidence": [
     ".research/profile-admin-fields-second-native.json",
@@ -23,7 +23,8 @@
     ".research/admin-first-save-peer.json",
     ".research/profile-admin-final-native.json",
     ".research/admin-firstsave-escalation.json",
-    ".research/admin-diagnostic-fresh-review.json"
+    ".research/admin-diagnostic-fresh-review.json",
+    ".research/profile-admin-causal-native.json"
   ],
   "transition_history": [
     {
@@ -61,8 +62,14 @@
       "from": "retest-fail",
       "to": "in-fix",
       "reason": "Fresh Astra medium source diagnosis after repeated opaque pre-firstsave failures. No further native launch before actual boundary diagnosis/capture and fresh review."
+    },
+    {
+      "at": "2026-10-04T04:54:30.035916+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Original member-only first-save gate remains repaired5e82b422/source-revieweddb0d0779. Causal admin04 refusal is separately tracked observer defectD109; actual absent-admin firstsave branch remains unverified and must not delete existing real Profile to force it."
     }
   ],
   "closure_requirement": "Actual first-save guard red/green with mismatched identity/role/org rejection, independent source review, and designated-admin native original scenario plus surrounding fields/reload/exact restoration pass.",
-  "next_action": "One guarded causal admin04 run under fresh independent native agent. Diagnostic correction adeae263 reviewed0d91330c separates firstsave operations and fixed owner-request failure phases; original historical cause not reconstructable. D108 remains in-fix until actual cause and verified repair."
+  "next_action": "Retest genuine absent-admin first-save only when a safe authorized fixture exists. Existing admin Profile must be preserved. D109 existing-row acceptance goes first; no native first-save closure claimed."
 }

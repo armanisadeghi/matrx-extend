@@ -22,7 +22,8 @@
     "docs/stabilization/resource-journals/profile-admin-fields-189-04.jsonl",
     ".research/profile-wire-envelope-peer.json",
     ".research/profile-observer-owner-fix.json",
-    ".research/profile-owner-final-peer.json"
+    ".research/profile-owner-final-peer.json",
+    ".research/profile-admin-wirefix-native.json"
   ],
   "transition_history": [
     {
@@ -51,5 +52,5 @@
     }
   ],
   "closure_requirement": "Actual raw-wire callback red\u2192green with existing/absent/malformed payloads, strict race refusal preserved, fresh review and actual admin scenario passes with original values restored.",
-  "next_action": "Independent sole guarded admin05 native retest on frozen189. Existing row preservation required; no deletion to force first-save. Duplicate-filter source refusal lacks focused test and is deferred narrow test gap, not native acceptance evidence."
+  "next_action": "Native admin05 refused before launch for pressure/swap growth. No product verdict. Resume one guarded existing-row admin acceptance after safe preflight under standing authorization; no threshold relaxation. Source fix remains fixed pending native. Minor source-reviewed duplicate-query-filter test gap remains."
 }
