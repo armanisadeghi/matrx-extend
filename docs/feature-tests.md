@@ -301,7 +301,7 @@ Every entry follows this shape:
   3. Send a follow-up in that conversation, then open Scrape, Data, SEO, and Settings.
   4. Reload the side panel while still signed out.
   5. Open the Values chip, turn a value off, send another turn, and confirm the choice stays local to this guest session.
-  6. After using all guest AI actions allowed by the current platform setting, send one more message.
+  6. For an already-used guest profile, send one message after its current platform-configured points usage is over the enforced allowance. Do not assume a fixed number of requests; the platform setting and accumulated usage determine when the refusal occurs.
   7. Sign in, leave an account draft and selected Agent, sign out, then reopen Chat.
 - **Expected:** The guest can send and receive both turns without signing in or
   choosing an organization. Chat remains in navigation after reload. Account-only
@@ -310,11 +310,14 @@ Every entry follows this shape:
   guest send uses the platform chat Mandate. Guest sends and Values opens do not
   attempt to read the signed-in person's owner-only context settings table. Once
   the guest allowance is used, Chat says to sign up free and offers no futile Retry;
-  the existing guest banner provides the sign-up action.
+  this includes the current structured HTTP 402 guest-usage refusal as well as the
+  previously documented 403 form. The existing guest banner provides the sign-up action.
 - **Covered by:** `tests/unit/sidepanel-visibility.test.ts`,
   `tests/unit/chat-guest-boundary.test.ts`,
   `src/state/context-rules.guest.test.ts`; browser send and
   response require a live guest run.
+- **Verification status:** the 402 classification has focused source tests; native
+  verification on an artifact containing the fix remains pending.
 
 ### Chat stream failure recovery
 - **What it does:** Keeps backend diagnostics in the Debug log while Chat shows
