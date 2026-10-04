@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
-  "state": "candidate_verified_bounded_guest_member_and_returning_acceptance_pending",
+  "state": "submitted_pending_review",
   "defect_id": "EXT-D-0112",
   "classification": "routine bug fix; approved manifest policy surface unchanged",
   "published_version": "0.2.176",
-  "pending_version": "0.2.181",
-  "pending_candidate_defect": "403-only guest allowance HTTP classifier misses current live HTTP402. Replacement justified by reproduced defect, not higher version alone.",
+  "pending_version": "0.2.205",
+  "pending_candidate_defect": "0.2.181 review cancelled only after its 403-only guest allowance classifier was shown to miss the deployed HTTP 402 refusal; version size was not a reason.",
   "candidate": {
     "version": "0.2.205",
     "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
@@ -22,7 +22,27 @@
     "journal_sha256": "f60d82246f7c6dc798b167fa5e6462459ce6c2e9b36546d7fd2f24f3ac86fe2d",
     "root_matched": true,
     "observed": "Four real signed-out answers, fifthactualoffscreenHTTP402 with flatguest_ai_allowance_used, correctfreeaccountcopy,noRetry",
-    "limits": "Owned unpackedStorepayload with onlymanifestpublickeyadapted; notactualStoreinstallation. Returningpanel/newchatstepstillpending."
+    "limits": "Exact hosted-release Store payload loaded unpacked with only its public manifest key adapted. Fresh same-conversation acceptance passed; returning panel/new-chat acceptance passed independently. No Store-installed verification."
   },
-  "submission": "Not changed; replacement held for full scoped native gates. Cancel review action located in listing More menu, no cancellation performed."
+  "submission": {
+    "observed_at_utc": "2026-10-04T05:57:00Z",
+    "status": "success; Pending review",
+    "submitted_version": "0.2.205",
+    "published_version": "0.2.176",
+    "automatic_publication": true,
+    "evidence": "docs/stabilization/evidence/release205/store-pending-review.png",
+    "candidate_store_zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "limit": "Publication and actual Store-installed 0.2.205 acceptance remain pending."
+  },
+  "replaced_pending_version": "0.2.181",
+  "returning_guest_native": {
+    "verdict": "PASS",
+    "evidence": ".research/guest-returning-final-acceptance.json",
+    "observed": "After panel reload and New chat in the same exhausted guest profile, a second distinct live HTTP 402 guest_ai_allowance_used showed the free-account remedy with no Retry."
+  },
+  "signed_in_nonadmin_chat": {
+    "verdict": "PASS",
+    "evidence": ".research/guest-402-native-acceptance.json",
+    "limit": "activeOrganizationPresent string-only probe returned false on current object-valued storage key; organization persistence remains unverified; not a product org defect."
+  }
 }

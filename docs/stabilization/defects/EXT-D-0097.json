@@ -11,7 +11,7 @@
     "The aidream HTTP contract returns error guest_ai_allowance_used for this boundary. The extension's streamFetch mapped every HTTP 403 to the same generic access message and presentChatStreamError offered Retry for every failure."
   ],
   "expected": "The configured guest allowance remains enforced. Once used, Chat accurately explains the limit and points to free signup without offering a retry that must fail again.",
-  "actual": "Source repair b54877e7 recognizes the exact structured 403 and the documented stream error code, shows a fixed safe allowance message, and suppresses Retry. Other 403 failures keep their generic behavior. Exact Store ZIP candidate 0.2.181 passed bounded native retest; Google publication and installed-build verification remain pending.",
+  "actual": "Source repair b54877e7 recognizes the exact structured 403 and the documented stream error code, shows a fixed safe allowance message, and suppresses Retry. Other 403 failures keep their generic behavior. Exact Store ZIP candidate 0.2.205 passed fresh and returning exhausted-guest native retests with live HTTP 402 and correct remedy; Google publication and installed-build verification remain pending.",
   "severity": "S2: guest Chat visibly stops with a misleading access error after the configured allowance",
   "priority": "P1: correct a reproducible installed guest failure and its recovery path",
   "state": "retest-pass",
@@ -22,7 +22,8 @@
     "Guarded RED urgent-guest-quota-red-01 and urgent-guest-quota-stream-red-01 demonstrated generic HTTP 403, unclassified stream refusal, and Retry. Guarded GREEN urgent-guest-quota-green-01 passed 13 targeted tests; urgent-guest-quota-compile-02 passed TypeScript. Exact Biome check passed.",
     "Hosted strict release run 37155938434 produced Store ZIP 0.2.181 SHA-256 b816f01b1f2bbc3c5dae378415c701f2e73233e18998af6adc72fa2b87ab987c from source bcf1d1615e90f873cada20209eae7ddce742ecf4; .research/store181-candidate-provenance.json.",
     "Bounded exact-Store-ZIP unpacked native retest .research/guest-store-native-escalation.json: three live guest answers, fourth-turn allowance/free-account explanation, no generic access denial or Retry; original ZIP and tree verified, only manifest public key adapted for extension identity. Independent test review .research/guest-driver-final-peer.json passed bounded runtime proof with limitations. This does not prove Store-installed behavior or offscreen HTTP status.",
-    "Primary Store dashboard confirmed submitted/Pending review, Draft 0.2.181, Published 0.2.176 at approximately 22:29 UTC on October 3; automatic publication enabled."
+    "Primary Store dashboard confirmed submitted/Pending review, Draft 0.2.181, Published 0.2.176 at approximately 22:29 UTC on October 3; automatic publication enabled.",
+    "Replacement 0.2.205 was submitted for review at 2026-10-04T05:57Z with automatic publication enabled; published 0.2.176 remains defective. 0.2.181 review was cancelled solely for its reproduced HTTP 402 classifier defect. .research/guest-402-release-preparation.json; .research/guest-returning-final-acceptance.json; docs/stabilization/evidence/release205/store-pending-review.png."
   ],
   "transition_history": [
     {
@@ -32,6 +33,6 @@
       "reason": "Exact 0.2.181 Store ZIP candidate passed bounded native guest allowance retest and independent evidence review; Google accepted submission and shows Pending review. Published 0.2.176 remains the defective package."
     }
   ],
-  "current_work": "Bounded candidate retest passed and exact 0.2.181 package is Pending review with automatic publication enabled. Keep installed-product acceptance open until Google publishes 0.2.181 and the actual Store-installed extension passes the allowance boundary. Exact equivalence to the user's original unspecified error text remains unestablished.",
-  "closure_requirement": "After Google publishes 0.2.181, verify the actual Store-installed build: a fresh guest can chat and an allowance-used guest sees the specific free-signup remedy with no Retry. Preserve configured allowance and guest profile data."
+  "current_work": "Exact 0.2.205 candidate passed fresh and returning exhausted-guest acceptance, including a second live HTTP 402 after panel reload and New chat. It is Pending review with automatic publication enabled; 0.2.176 remains Published. Verify the actual Store-installed 0.2.205 after publication before closure. The user’s original unspecified error text remains unestablished.",
+  "closure_requirement": "After Google publishes 0.2.205, verify the actual Store-installed build: a fresh guest can chat and an allowance-used returning guest sees the specific free-signup remedy with no Retry. Preserve configured allowance and guest profile data."
 }

@@ -1,6 +1,14 @@
 # Matrx Extend stabilization: resume here
 
-## Active checkpoint — urgent public guest Chat incident
+## Active checkpoint — guest repair 0.2.205 submitted for review
+
+At 05:57 UTC October 4, the authenticated primary Store dashboard confirmed submission success with automatic publication enabled: 0.2.205 Pending review, 0.2.176 Published. The exact submitted ZIP is the hosted strict-release Store artifact from source 2f68bc4f, SHA-256 6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26. The prior 0.2.181 review was cancelled only after its HTTP 403-only classifier was shown to miss the deployed HTTP 402 guest refusal; its larger replacement version was not itself a reason. Store evidence: `docs/stabilization/evidence/release205/store-pending-review.png` and `.research/guest-402-release-preparation.json`.
+
+Independent exact-205 unpacked Store-payload acceptance passed four real fresh-guest answers, the fifth live HTTP 402 `guest_ai_allowance_used` remedy without Retry, and the returning exhausted-guest path after panel reload and New chat with a second distinct live HTTP 402. A real signed-in non-admin user also received a Chat answer. Evidence: `.research/guest-402-native-acceptance.json` and `.research/guest-returning-final-acceptance.json`. Only the public manifest key was adapted for unpacked testing. EXT-D-0112 is retest-pass pending publication and actual Store-installed 0.2.205 acceptance; EXT-D-0097 remains retest-pass with the same Store gate. EXT-D-0096 remains fixed but not closed; signed-in owner-table HTTP 200 proof and Store-installed verification are missing. This is scoped candidate evidence, not whole extension health.
+
+The non-admin runner's `activeOrganizationPresent` probe expects a string, while the current `matrx.org.active` storage value is an object. Its false result is tracked as harness defect EXT-D-0113, now in-fix; it does not establish a product organization bug or verify persistence. The runner observed a selected organization in the UI, but exact storage readback is still needed. Resume the broader stabilization goal after the Store-installed guest acceptance; no broad Chat/Pilot certification is claimed.
+
+## Previous checkpoint — urgent public guest Chat incident
 
 Owner reports current Store-installed signed-out Chat immediately errors. This public blocker now takes precedence over Profile and remaining contained-surface testing. No overall health claim is justified. Root refreshed authenticated primary Store Package page at approximately 05:23 UTC October 4: published 0.2.176, pending 0.2.181, upload disabled. Preserve pending package unless current incident establishes it is defective; a larger version alone is not reason to replace it.
 

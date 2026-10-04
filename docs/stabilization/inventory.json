@@ -34502,7 +34502,17 @@
               "status": "fail",
               "run_id": "urgent-live-guest-20261004-01",
               "evidence": ".research/urgent-live-guest-20261004.json",
-              "detail": "Actual Store-installed0.2.176 returning guest new-chat send failed immediately with generic service error and Retry at05:29:10UTC; correlated live HTTP402. Two prior same-profile turns passed. Source repair33301689 awaits independent artifact/native verification; no published-fix claim."
+              "detail": "Published Store-installed 0.2.176 failed with generic service error and Retry at 05:29:10 UTC October 4, correlated with live HTTP 402. Exact hosted-release 0.2.205 candidate passed four fresh guest answers, first 402 remedy/no Retry, and returning exhausted-guest panel reload/New chat with second distinct live 402 and same remedy. Candidate submitted Pending review at 05:57 UTC with automatic publication; actual Store-installed 0.2.205 acceptance remains open.",
+              "candidate_result": {
+                "version": "0.2.205",
+                "status": "pass",
+                "evidence": [
+                  ".research/guest-402-native-acceptance.json",
+                  ".research/guest-returning-final-acceptance.json",
+                  ".research/guest-402-release-preparation.json"
+                ],
+                "scope": "Exact Store ZIP loaded unpacked with only public manifest key adapted; fresh and returning exhausted-guest live HTTP 402 paths passed. Published and Store-installed verification pending."
+              }
             }
           }
         }
@@ -34524,13 +34534,14 @@
             "hosted-guest-controlled-20261003",
             "urgent-context-rules-fixed-ci-01"
           ],
-          "retest_status": "Actual published176 returning-guest HTTP402 failure reproduced October4 05:29UTC. D112 source repair33301689; independent artifact/native and publication pending. Broader Chat remains incomplete."
+          "retest_status": "Published 0.2.176 returning-guest HTTP 402 failure remains. Exact candidate 0.2.205 passed fresh and returning exhausted-guest native acceptance, including a second live HTTP 402 after panel reload and New chat; submitted Pending review at 05:57 UTC October 4 with automatic publication. Actual Store-installed acceptance and broader Chat remain open."
         },
         "member": {
           "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0074",
-            "EXT-D-0075"
+            "EXT-D-0075",
+            "EXT-D-0113"
           ],
           "run_ids": [],
           "retest_status": "not-run"

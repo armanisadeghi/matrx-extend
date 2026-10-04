@@ -11,17 +11,22 @@
     "Published0.2.176 predates allowance-specific HTTP handling. Pending0.2.181 and pre-fix current-main source classify the exact structured guest code only at HTTP403; both miss the deployed402 contract."
   ],
   "expected": "For the exact structured guest_ai_allowance_used refusal, both documented HTTP 402 and 403 forms show the fixed free-signup remedy without Retry; unrelated 402 and 403 responses retain their existing generic behavior. The usage limit remains enforced.",
-  "actual": "The source classifier now recognizes the exact structured code on HTTP 402 or 403. A real streamFetch-to-presentChatStreamError test failed on the pre-fix 402 path and passes after the change; documented in-stream code forms also pass. The old Store binary and the exact live response body were not directly instrumented by this source lane.",
+  "actual": "The exact 0.2.205 Store ZIP candidate passed independent unpacked native acceptance: four real fresh-guest answers, a fifth live HTTP 402 guest_ai_allowance_used with the free-account remedy and no Retry, and a second live HTTP 402 after panel reload and New chat in the same exhausted guest profile. Published 0.2.176 still shows the generic retryable failure; actual Store-installed 0.2.205 is pending publication.",
   "severity": "S2: guest Chat misrepresents a usage refusal as a retryable service error",
   "priority": "P1: keep the client aligned with the deployed usage-refusal contract",
-  "state": "fixed",
+  "state": "retest-pass",
   "owner": "extension_chat_stream_error",
   "evidence": [
     ".research/urgent-guest-server-20261004.json",
     ".research/urgent-live-guest-20261004.json",
     ".research/guest-402-contract-fix.json",
     "tests/unit/api-stream.test.ts",
-    "src/lib/api/stream.ts"
+    "src/lib/api/stream.ts",
+    ".research/guest-402-independent-review.json",
+    ".research/guest-402-native-acceptance.json",
+    ".research/guest-returning-final-acceptance.json",
+    ".research/guest-402-release-preparation.json",
+    "docs/stabilization/evidence/release205/store-pending-review.png"
   ],
   "transition_history": [
     {
@@ -47,7 +52,13 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "HTTP 402 regression was red before the source change and the targeted HTTP 402/403, unrelated 402, and stream-event tests are green after it. Independent source review and published installed-build acceptance remain pending."
+    },
+    {
+      "at": "2026-10-04T05:53:13Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent exact 0.2.205 Store-payload native acceptance captured live HTTP 402 flat code and remedy without Retry, including panel reload and New chat. Fresh guest answers and real non-admin Chat passed. Actual Store publication and installation remain pending."
     }
   ],
-  "closure_requirement": "Independent review of the exact fix and validation on an accepted current extension artifact against a guest whose live usage refusal returns HTTP 402; verify the specific remedy and no Retry. Keep this distinct from D97's former HTTP 403 request-allowance case and do not change server usage policy."
+  "closure_requirement": "After 0.2.205 is published, verify the actual Store-installed fresh guest answer and returning exhausted-guest HTTP 402 remedy without Retry. Candidate proof is bounded; no whole-product health claim."
 }
