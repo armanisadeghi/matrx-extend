@@ -232,7 +232,9 @@ check "failed second candidate exits nonzero"         '[[ -f "$SANDBOX/race-fail
 check "foreign branch commit survived"                'git cat-file -e origin/main:race-failed.txt'
 check "failed second candidate did not publish a tag" '! git ls-remote --tags origin | grep -q "refs/tags/v0.1.2$"'
 check "failed second candidate kept remote version"   'git show origin/main:package.json | grep -q "\"version\": \"0.1.0\""'
-rm "$SANDBOX/fail-tests"
+# The hook creates fail-tests only if it ran; a release that stopped before the
+# hook must still reach the diagnostic dump below instead of dying here (set -e).
+rm -f "$SANDBOX/fail-tests"
 
 # Pass: remote race forces a new candidate and a second complete validation.
 PKG_CALLS_BEFORE_RACE="$(grep -c 'check:matrx-packages' "$SANDBOX/pnpm-calls" || true)"
@@ -379,7 +381,7 @@ if [[ $FAILED -ne 0 ]]; then
   echo "--- ship output ---"; tail -30 "$SANDBOX/ship-out" 2>/dev/null
   echo "--- failed release output ---"; tail -30 "$SANDBOX/failed-out"
   echo "--- passed release output ---"; tail -30 "$SANDBOX/passed-out"
-  echo "--- failed second candidate output ---"; tail -20 "$SANDBOX/race-failed-out" 2>/dev/null
+  echo "--- failed second candidate output ---"; grep -E "^(RELEASE STOPPED|gate=|ERROR )" "$SANDBOX/race-failed-out" 2>/dev/null; tail -20 "$SANDBOX/race-failed-out" 2>/dev/null
   echo "--- tag race output ---"; tail -20 "$SANDBOX/tag-race-out" 2>/dev/null
   echo "--- merge conflict output ---"; tail -20 "$SANDBOX/conflict-out" 2>/dev/null
   exit 1
