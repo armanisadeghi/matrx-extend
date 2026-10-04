@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0115",
+  "reviewed_commit": "122504b8",
+  "reviewed_report": ".research/scrape-busy-escalation.json",
+  "independent_verdict": {
+    "A_source_readiness_native_limits": "pass_source_ready_native_busy_unverified",
+    "B_observer_quality": "pass_for_current_owned_visible_dom_observation"
+  },
+  "basis": [
+    "The observer's observed=true assignment occurs only inside one current DOM sample where the requested button is uniquely found in the active Scrape pane, passes visibility checks, is disabled, and contains the mode-specific busy label.",
+    "Mutation records only increment a diagnostic count; no historical disabled/text replay can set observed=true.",
+    "A same-turn disabled Capturing transition that ends before callback delivery remains observed=false and text=null, even when mutation records exist.",
+    "Foreign-pane, inline-hidden, stylesheet-hidden, and hidden or transparent ancestor busy transitions do not create a positive verdict after the button returns idle and visible.",
+    "A current, visible, disabled Scrolling button passes in an independent deep-mode probe; Capturing on that button or Scrolling without disabled remains false."
+  ],
+  "focused_verification": {
+    "command": "node --test tests/browser/scrape-busy-observer.test.mjs",
+    "result": "13 passed, 0 failed against commit 122504b8",
+    "independent_probe": "Three happy-dom deep-mode cases: live disabled Scrolling=true; disabled Capturing=false; enabled Scrolling=false."
+  },
+  "native_limit": "No browser or hosted native acceptance was run in this peer lane. Direct DOM sampling does not prove a painted frame. The exact original Store 0.2.205 run observed no disabled busy sample; product cause and original unthrottled acceptance remain unresolved. The proposed constrained-CPU diagnostic is only a handoff, not implementation or native evidence.",
+  "scope": "Independent review and lightweight tests only; no product, observer, acceptance, or guard changes."
+}
