@@ -71,10 +71,7 @@
       "available_memory_gib": 5.74,
       "system_free_gib": 43.37657928466797,
       "swap_used_mib": 0,
-      "reasons": [
-        "RESOURCE_CPU_BUSY",
-        "RESOURCE_CPU_HIGH_LOAD_BUSY"
-      ],
+      "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
       "seconds_after_admission": 16.211
     },
     "bracket": {

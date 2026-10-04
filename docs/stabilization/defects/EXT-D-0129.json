@@ -59,7 +59,5 @@
     }
   ],
   "next_action": "No further serializer repair required. Next guarded run must still verify its resulting journal; resource cause and product acceptance remain open.",
-  "fix_commits": [
-    "694d4e6a"
-  ]
+  "fix_commits": ["694d4e6a"]
 }
