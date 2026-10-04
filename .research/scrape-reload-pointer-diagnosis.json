@@ -26,7 +26,7 @@
     "green": "node --test tests/browser/scrape-replacement-tab.test.mjs tests/browser/scrape-reload-milestones.test.mjs",
     "constant_return_mutation": "forcing-function-tests/plant.py replaced the helper with a constant ready result; the focused suite rejected it and plant.py restored identical source"
   },
-  "next_native_verification": "Build an exact fresh artifact from the repaired source and run the existing Scrape guest native acceptance once. Require a healthy replacement lifecycle, a recorded scrape_tab_boundary with last.matched=1 and last.visible=1, successful strict trusted click, then replacement empty-state/T20 assertions and resource-health checks. If readiness times out, inspect its last DOM count as a product-render investigation; do not bypass the click guard.",
+  "next_native_verification": "Run the hosted Scrape guest native acceptance with the latest workflow head containing this test-driver repair, reusing the frozen product 215 CI artifact from run 37193761291 (artifact 11299613935). Require a healthy replacement lifecycle, a recorded scrape_tab_boundary with last.matched=1 and last.visible=1, successful strict trusted click, then replacement empty-state/T20 assertions and resource-health checks. If readiness times out, investigate persistent product rendering; do not bypass the click guard or change the artifact during this comparison.",
   "remaining": [
     "Native Chrome verification of this repair is pending the owner-run acceptance.",
     "The earlier missing-destroyed-event native run 371927 is a separate unresolved reload-lifecycle failure."
