@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "task": "profile-member-final-189-native",
+  "status": "passed",
+  "run_id": "profile-member-final-189-05",
+  "artifact": {
+    "source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "ci_run_id": 37164174445,
+    "artifact_id": 11288542496,
+    "version": "0.2.189",
+    "tree_sha256": "494646f6dd65399e0e7eee65fd1d9bd00ef97d173c5ceb9674de276ca12dc23a"
+  },
+  "runner_source_commit": "b83c2af0",
+  "resource": {
+    "decision": "valid",
+    "admitted": true,
+    "resource_invalid": false,
+    "child_exit_code": 0,
+    "final_exit_code": 0,
+    "reasons": []
+  },
+  "cases": [
+    {
+      "id": "EXT-F-1004-T01",
+      "dimension": "warm",
+      "branch": "default",
+      "status": "passed"
+    },
+    {
+      "id": "EXT-F-1004-T03",
+      "dimension": "warm",
+      "branch": "discard-draft",
+      "status": "passed"
+    },
+    {
+      "id": "EXT-F-1004-T03",
+      "dimension": "warm",
+      "branch": "save-draft",
+      "status": "passed"
+    },
+    {
+      "id": "EXT-F-1004-T25",
+      "dimension": "warm",
+      "branch": "denied-owner-read-retry",
+      "status": "passed"
+    },
+    {
+      "id": "EXT-F-1004-T26",
+      "dimension": "warm",
+      "branch": "profile-write-failure-then-retry",
+      "status": "passed"
+    },
+    {
+      "id": "EXT-F-1004-T01",
+      "dimension": "reload",
+      "branch": "default",
+      "status": "passed"
+    },
+    {
+      "id": "EXT-F-1004-T03",
+      "dimension": "reload",
+      "branch": "discard-draft",
+      "status": "passed"
+    },
+    {
+      "id": "EXT-F-1004-T03",
+      "dimension": "reload",
+      "branch": "save-draft",
+      "status": "passed"
+    },
+    {
+      "id": "EXT-F-1004-T25",
+      "dimension": "reload",
+      "branch": "denied-owner-read-retry",
+      "status": "passed"
+    }
+  ],
+  "identity": {
+    "mode": "member",
+    "first_party_verified": true,
+    "extension_identity_match": true,
+    "canonical_admin_http_status": 200,
+    "canonical_admin_rows": 0,
+    "device_organization_present": true,
+    "selected_organization_verified": true
+  },
+  "reload": {
+    "status": "ready_after_wait",
+    "before": {
+      "document_complete": true,
+      "signed_in_account_count": 0,
+      "guest_account_count": 1,
+      "active_chat_tab": true,
+      "auth_error_visible": false,
+      "persisted_identity_matches": true,
+      "persisted_organization_matches": true,
+      "access_token_present": true
+    },
+    "after": {
+      "document_complete": true,
+      "signed_in_account_count": 1,
+      "guest_account_count": 0,
+      "active_chat_tab": true,
+      "auth_error_visible": false,
+      "persisted_identity_matches": true,
+      "persisted_organization_matches": true,
+      "access_token_present": true
+    }
+  },
+  "persistence": {
+    "first_save": {
+      "case_id": "EXT-F-1004-T28",
+      "branch": "new-row-with-device-organization",
+      "status": "bounded_pass",
+      "row_created_by_ui": true,
+      "organization_matches_device": true,
+      "owner_matches_verified_member": true,
+      "original_absence_restoration_pending": false,
+      "scope": "bounded branch only; not full T28 acceptance"
+    },
+    "restoration_verified": true,
+    "original_absence_restored": true
+  },
+  "raw_report": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-member-final-189-05/evidence/profile-native-profile-member-final-189-05.json",
+    "sha256": "7011bf997e26f1266a05ea2f3483b3326e3069e1caf87b79e6afb5aca4c05b9e"
+  },
+  "resource_journal": {
+    "path": "docs/stabilization/resource-journals/profile-member-final-189-05.jsonl",
+    "sha256": "f5b6cb79e33e1eca8218c2236157bd050afe93e5957116daa27014480dc27d91"
+  },
+  "receipt": {
+    "path": "test-results/ci-artifacts/b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced/37164174445-1/local-dev-receipt.json",
+    "sha256": "59508f1709b214b329ee2b59456322177e7a1d5862680e685872e6122a5b4ecb",
+    "mode": "0600"
+  },
+  "private_ownership_receipt": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-member-final-189-05/evidence/owned-profile-private.json",
+    "mode": "0600"
+  },
+  "single_use_magic_link": {
+    "removed": true
+  },
+  "limits": [
+    "Native evidence covers the listed T01/T03/T25/T26 dimensions and bounded T28 first-save branch only.",
+    "No product source was changed."
+  ]
+}
