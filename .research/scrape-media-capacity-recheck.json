@@ -40,7 +40,8 @@
     "browser_owned_permit": "admitted; child exit 0; resourceInvalid false",
     "acceptance_readiness": "passed; 3 healthy samples",
     "guest_owned_permit": "admitted; no RESOURCE_WATCH_UNSAFE; resourceInvalid false; child exit 1 after native assertion",
-    "first_boundary": "native product assertion after guest and extension load, not resource refusal"
+    "first_boundary": "native product assertion after guest and extension load, not resource refusal",
+    "measurement_limit": "Guest child exited14.921seconds after admission, before first15second watch interval: zero periodic WATCH samples. Admission/readiness passed; no unsafe sample was recorded, but runtime/startup CPU health was not measured by a watch sample. This is not a sampled-healthy comparator."
   },
   "driver": {
     "driver_failure": null,

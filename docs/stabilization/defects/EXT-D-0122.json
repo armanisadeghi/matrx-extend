@@ -56,5 +56,6 @@
       "evidence": ".research/scrape-media-repaired-native.json",
       "root_verification": "Receipt and all3journal hashes independently matched; guest journal one RESOURCE_WATCH_UNSAFE CPU0.77, finalchild_failed/exit1/resourceInvalidfalse, nativeinputs refused with cases[]. No product or assertion verdict; state remains fixed."
     }
-  ]
+  ],
+  "evidence_limits": "Run37209834721 passed admission/readiness and had no recorded unsafe sample, but exited14.921seconds after admission before first15second periodic watch. Earlier descriptions of a healthy run mean admission passed, not sampled healthy startup. Raw receipt remains unchanged."
 }
