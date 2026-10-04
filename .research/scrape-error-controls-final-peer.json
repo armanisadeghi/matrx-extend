@@ -1,0 +1,22 @@
+{
+  "scope": "Independent final peer review of 60c2d356 for EXT-F-1007-T14/T15",
+  "verdict_A_component_wiring": "Accepted. ScrapeView supplies Reload, selected-mode retry, and Dismiss callbacks; CaptureErrorCard gates diagnostics on the client auth store isAdmin flag. This is component UI wiring evidence only.",
+  "verdict_B_test_quality": "Accepted for the narrowed component claim. The previously missing executed constant no-op gut check makes the Reload callback test red; separately named tests and recorded mutations isolate Reload, retry mode, Dismiss, and diagnostics gating.",
+  "original_findings": [
+    "Executed constant-result gut check: addressed for the Reload action by replacing its SUT callback with void 0 and observing the named test fail.",
+    "Combined recovery test: addressed with independent Reload, selected-mode retry, and Dismiss tests and separate recorded red mutations.",
+    "Classification overclaim: addressed by explicitly narrowing the suite to injected CaptureError fixtures and component rendering.",
+    "Contradictory signed-out member description: addressed as user=null and isAdmin=false in the client auth store."
+  ],
+  "independent_checks": [
+    "pnpm test src/features/scrape/ScrapeView.error-controls.test.tsx: PASS, 5 tests",
+    "pnpm compile: PASS",
+    "Reviewed 60c2d356 diff, the five test cases, the source callbacks, and both remediation reports."
+  ],
+  "open_limits": [
+    "buildCaptureError/buildCaptureErrorFromResult classification and useScrape integration remain unverified by this suite.",
+    "Chrome native reload, content script recovery, and hosted capture remain unverified here.",
+    "The client isAdmin rendering test does not establish authenticated member behavior or backend authorization."
+  ],
+  "actions_required_in_this_scope": []
+}
