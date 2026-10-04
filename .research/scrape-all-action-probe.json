@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "task": "scrape-all-action-probe",
+  "defect": "EXT-D-0123",
+  "status": "source_ready_native_cause_unverified",
+  "evidence": "Hosted run 37214124282 recorded three successful warm image removals. A later zero-match pointer failure occurred with Article selected; the previous trace did not identify the intervening action.",
+  "change": "The existing native acceptance driver now records sanitized action identities and selected pane/image state before and after every warm and reload image, video, and link control action. Field clicks and Input.insertText have separate boundaries. Video/link open and copy helpers pass through the same observation callback. A continuous per-phase trace captures trusted pointer and tab changes, including gaps between actions, plus tab/pane connectivity.",
+  "bounds": {
+    "shared_events_per_phase": 256,
+    "events_per_action": 32,
+    "truncation": "Each action and shared trace explicitly reports eventsDropped and truncated. A truncated trace cannot support a complete timeline claim.",
+    "identity_scope": "Fixed fixture paths, tab/control labels, field names, event type/trust/coordinates, and bounded driver diagnostics only; no entered text or arbitrary page content."
+  },
+  "behavior": "The original click, text insertion, resource gates, pointer refusal, and scrape flow are unchanged. The probe does not reselect a pane or retry a failed action.",
+  "verification": {
+    "syntax": "node --check on both changed driver modules passed",
+    "focused_tests": "node --test tests/browser/scrape-native-media-actions.test.mjs passed",
+    "compile": "pnpm compile passed",
+    "native": "not run in this source-only task"
+  },
+  "next_step": "One independent source review, then one guarded hosted native diagnostic can locate the first selected-pane switch and exact failing action. Product cause remains unknown."
+}

@@ -1,9 +1,21 @@
 import assert from 'node:assert/strict';
 
 const diagnostic = (error) => String(error?.message ?? error).slice(0, 120);
-export async function enterMediaField({ panel, field, value, resourceAction, click }) {
-  await resourceAction(() => click(panel, 'scrape-media-form-field', field));
-  await resourceAction(() => panel.send('Input.insertText', { text: value }));
+export async function enterMediaField({
+  panel,
+  field,
+  value,
+  resourceAction,
+  click,
+  observeAction,
+}) {
+  const run = observeAction ?? ((_kind, _target, action) => action());
+  await run('scrape-media-form-field', field, () =>
+    resourceAction(() => click(panel, 'scrape-media-form-field', field)),
+  );
+  await run('scrape-media-field-insert', field, () =>
+    resourceAction(() => panel.send('Input.insertText', { text: value })),
+  );
 }
 
 async function observeOpenedAndCopiedLinks({
@@ -14,13 +26,17 @@ async function observeOpenedAndCopiedLinks({
   click,
   evaluate,
   kind,
+  observeAction,
 }) {
+  const run = observeAction ?? ((_kind, _target, action) => action());
   const result = { opened_url: null, clipboard_url: null, limitations: [], failures: [] };
   const newTab = page
     .context()
     .waitForEvent('page', { timeout: 5000 })
     .catch((error) => error);
-  await resourceAction(() => click(panel, 'scrape-media-open', urls[0]));
+  await run('scrape-media-open', urls[0], () =>
+    resourceAction(() => click(panel, 'scrape-media-open', urls[0])),
+  );
   try {
     const opened = await newTab;
     if (opened instanceof Error) throw opened;
@@ -44,7 +60,9 @@ async function observeOpenedAndCopiedLinks({
   } catch (error) {
     result.limitations.push(`open_unavailable:${diagnostic(error)}`);
   }
-  await resourceAction(() => click(panel, 'scrape-media-copy', urls[1]));
+  await run('scrape-media-copy', urls[1], () =>
+    resourceAction(() => click(panel, 'scrape-media-copy', urls[1])),
+  );
   try {
     result.clipboard_url = await evaluate(panel, 'navigator.clipboard.readText()');
     assert.equal(typeof result.clipboard_url, 'string', `${kind}_clipboard_unavailable`);

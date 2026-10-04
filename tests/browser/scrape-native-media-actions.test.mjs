@@ -55,6 +55,24 @@ test('media click and text insertion each require a fresh resource gate', async 
   ]);
 });
 
+test('the action probe receives field and open/copy boundaries without replacing resource gates', async () => {
+  const deps = controls();
+  const observed = [];
+  const observeAction = async (kind, target, action) => {
+    observed.push([kind, target]);
+    return action();
+  };
+  await enterMediaField({ ...deps, field: 'src', value: openUrl, observeAction });
+  await observeVideoLinks({ ...deps, urls: [openUrl, copyUrl], observeAction });
+  assert.deepEqual(observed, [
+    ['scrape-media-form-field', 'src'],
+    ['scrape-media-field-insert', 'src'],
+    ['scrape-media-open', openUrl],
+    ['scrape-media-copy', copyUrl],
+  ]);
+  assert.equal(deps.actions.filter(([kind]) => kind === 'gate').length, 4);
+});
+
 test('video open and copy refuse the native run when resource health fails', async () => {
   for (const failGateAt of [1, 2]) {
     const deps = controls({ failGateAt });
