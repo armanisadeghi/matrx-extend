@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "task": "resource-guard-semantics",
+  "status": "SUPPORTED_TEMPORAL_SEMANTICS_DEFECT_REPAIR_PROPOSED_NOT_IMPLEMENTED",
+  "scope": "Fresh independent read-only source/evidence review and in-memory boundary replay; only this report changed. No native launch, build, policy edit, resource-floor change, process termination or product acceptance.",
+  "A_appropriateness_user_goal": {
+    "decision": "Keep the one-heavy-job cap and conservative resource admission. Repair the mismatch between sustained watchdog policy and permanent single-sample native refusal before spending another native run. No exact added capacity requirement is established.",
+    "owner_requirement": "Enforce a hard concurrency cap on simultaneous test runs, with a pre-flight resource check and a watchdog that refuses new launches above threshold rather than merely alerting. Resource exhaustion produces failures indistinguishable from product defects; prefer an overly conservative cap.",
+    "authority": "The owner requirement establishes safety and conservatism, not these fixed numeric CPU limits. PLAN.md section 3 explicitly calls numeric limits adjustable documented operational defaults and specifies two consecutive unsafe watches. Policy numeric settings trace to commit 76ba1292; reports/resource-review.json and resource-admission.json document agent review and implementation. No owner statement fixing these numeric values was found. Keep all numbers unchanged for the proposed repair."
+  },
+  "B_implementation_quality": {
+    "decision": "The native boundary bypasses the guard temporal decision with its own permanent any-unsafe rule. This is a reproducible false-positive class relative to the stated sustained/two-consecutive policy, even though the latest physical CPU spike cannot be proven benign.",
+    "sampling": "cpuBusyFraction reads the second iostat row: a one-second busy interval. Preflight averages seven such intervals distributed across about 60 seconds, not continuous CPU measurement. Watch evaluates a single one-second interval about every 16 seconds (15-second wait plus sampling). Two snapshots are only an operational persistence proxy, not proof of continuous overload.",
+    "current_transitions": "reasons() compares each watch directly to >=.75 busy, or >=.60 busy plus load/logicalCPUs >=.75. The wrapper emits RESOURCE_WATCH_UNSAFE immediately; only two consecutive bad samples create hold/stop and set resourceInvalid. Native requireNativeResourceHealth rejects any historical RESOURCE_WATCH_UNSAFE regardless of current health or streak; awaitNativeResourceHealth waits only on stale_health. Thus CPU confirmation never occurs when the child exits at its next native boundary.",
+    "origin": "12f43b3e introduced the native any-unsafe scan for EXT-D-0119. Its report says numeric policy unchanged, but the effective native temporal policy became stricter than PLAN.md and wrapper. Rejecting new actions while uncertain is correct; making a one-second CPU observation irrecoverably equivalent to sustained overload is the defect.",
+    "verdict_gap": "Latest wrapper final child_failed/resourceInvalid=false follows implementation: child exited before watchdog confirmation. It must not be read as resource-valid. A future unresolved CPU candidate or any confirmed unsafe run must finalize invalid-resource rather than child_failed or valid."
+  },
+  "actual_evidence": {
+    "run_id": 37234434600,
+    "admission": "21:08:08.202Z: busy .11 averaged samples [.13,.21,.17,.23,.01,.01,.01], load1.1/3CPUs, memory5.81GiB.",
+    "watch_1": "21:08:24.364Z: healthy busy.52, load1.3/3, memory5.81GiB.",
+    "watch_2": "21:08:40.513Z: CPU-only unsafe busy.88, load1.29/3, memory5.74GiB, pressure1, swap0, four disk readings43.36GiB.",
+    "exit": "21:08:49.352Z child1; 21:08:49.473Z child_failed/resourceInvalid=false. No second unsafe or recovered watch observed. Native receipt organization_selection/unsafe_sample, zero cases.",
+    "limits": "Raw pending journals were not uploaded; preserved log extracts are incomplete substitutes. No exact causality from post-sample process percentages. Healthy default renderer diagnostic is neither member/auth acceptance nor reliable capacity. Earlier load8.61/busy.61 and load3.94/busy.87 observations stay unsafe; this report does not exonerate them."
+  },
+  "executed_read_only_replay": {
+    "sut": "Real exported requireNativeResourceHealth, current source; injected readEvidence supplies captured journal prefix, actual policy, matching review-only owner. Existing stat calls target a unique absent temporary path. No files or lease created; no child browser/test runner.",
+    "results": {
+      "captured_healthy_prefix": "permitted, RESOURCE_WATCH_HEALTHY age636ms",
+      "captured_first_cpu_spike": "NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample",
+      "counterfactual_appended_healthy_watch": "NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample"
+    },
+    "qualification": "The appended recovery uses the previous real healthy sample with a later synthetic timestamp. It proves code semantics, not an observed recovery of run37234434600. This is a diagnostic seam replay, not product closure or a complete regression suite."
+  },
+  "minimal_coherent_future_repair": [
+    "Guard owns CPU temporal classification once. On first CPU-only threshold crossing, persist a distinct CPU_PENDING event containing the unchanged measured sample/reasons before allowing consumers to proceed. Do not emit legacy RESOURCE_WATCH_UNSAFE for an unconfirmed CPU-only candidate. Never rename, delete, reinterpret or clear already recorded RESOURCE_WATCH_UNSAFE, including old journals.",
+    "While CPU_PENDING, keep the sole permit, block all new native action batches and acceptance observations, and continue guard measurement. No new launch is possible through the held permit. Boundary awaits a guard-owned terminal decision; it must not calculate CPU thresholds or independently waive the candidate. Missing/malformed/stale evidence, owner mismatch, stop, hold, unknown state or journal failure stays fail closed.",
+    "Two consecutive CPU-unsafe samples under existing unsafeSamplesToStop confirm unsafe: emit irreversible RESOURCE_WATCH_UNSAFE, persist existing hold and stop markers, set resourceInvalid=true, and use existing owned cleanup. Any non-CPU failure is never a recoverable CPU candidate: retain its immediate unsafe event/native refusal, set invalid-resource, and preserve existing watchdog stop cadence or fail sooner; do not relax memory, pressure, disk, swap or missing-measurement behavior.",
+    "Recommend resolving an isolated CPU candidate only after existing healthySamplesToResume (three) consecutive fully healthy watches. A new bad reading resets recovery; two consecutive bad confirms unsafe. Persist a distinct guard-owned CPU_RECOVERED event; boundary requires that explicit resolution plus the latest fresh healthy sample and unchanged identity/hold/stop checks. No action executes merely because one later event is healthy. This is a future policy clarification, not current behavior or proof the old run was safe.",
+    "Bound the whole CPU-pending episode with a monotonic deadline derived from existing knobs, e.g. (unsafeSamplesToStop + healthySamplesToResume) * watchIntervalSeconds. Current values give75seconds, enough for three normal ~16second recovery watches. Do not reset deadline on repeated spikes, stale refreshes or clock rollback. Expiry/missing confirmation invalidates and stops; use existing bounded measurement commands and owned-group grace/kill paths. Do not invent an unbounded wait or relaunch retry.",
+    "Child exit/operator stop while pending or confirmed unsafe must set resourceInvalid=true and final invalid even if child exits zero. A recovered candidate may finalize valid only with clean child outcome, proven owned cleanup, and successful journal close. A write/close or safety-marker failure retains fail-closed evidence/permit behavior. Keep every candidate/recovery/unsafe event in finalized journals; no acceptance promotion from pending files or log extracts.",
+    "Preserve the exact atomic permit, legacy-state refusal, ownership-token census, group cleanup, all preflight thresholds and sampling, and prior unsafe recovery/re-admission. No browser/GPU flags or runner migration. Document the clarified future CPU state contract and require independent review before a native run."
+  ],
+  "consumer_census": {
+    "writer_and_terminal_verdict": [
+      "scripts/stabilization-resource.mjs",
+      "scripts/stabilization-resource-verdict.mjs"
+    ],
+    "journal_serializer": "scripts/stabilization-resource-journal.mjs allowlists fields; any new state fields must survive strict serialization and validation.",
+    "native_consumer": [
+      "tests/browser/native-resource-boundary.mjs",
+      "tests/browser/native-sidepanel-qa-harness.mjs",
+      "tests/browser/scrape-guest-native-acceptance.mjs"
+    ],
+    "history": "The literal RESOURCE_WATCH_UNSAFE production scan found in tests/browser/native-resource-boundary.mjs stays irreversible for old and future confirmed events. New pending/resolved events require explicit validated ordering, not ignoring unknown events.",
+    "evidence_recorder": "scripts/record-stabilization-evidence.mjs guardSummary checks selected terminal failures and child exit, but explicitly reports wrapper_completion=unverified_from_guard_log and overall_acceptance=not_adjudicated. Do not promote it to a resource validator. Any acceptance collector must consume completed journal/final verdict and reject unresolved CPU state; retain historical unsafe scans in manual collectors.",
+    "tests": [
+      "tests/browser/native-resource-boundary.test.mjs",
+      "scripts/test-stabilization-resource-disk-integration.mjs",
+      "scripts/test-stabilization-resource-safety-integration.mjs",
+      "scripts/test-stabilization-resource-journal.mjs",
+      "tests/unit/stabilization-resource-verdict.test.ts"
+    ]
+  },
+  "executable_next_step": {
+    "assignment": "Implement the guard-owned state transition and boundary consumer together, then independently review it. No threshold changes or native launch in this report.",
+    "red_first": "Add a lightweight real guard/state-to-journal-to-boundary regression using the captured latest CPU-only sample and actual healthy watch values. Current code must fail the expected pending/three-healthy recovery path for unsafe_sample. External measurement/clock/filesystem seams may be controlled; do not stub the temporal decisions, journal serializer or boundary.",
+    "matrix": [
+      "healthy -> CPU-only spike -> three healthy: zero actions while pending, exactly one only after explicit recovered+fresh evidence; all records retained",
+      "healthy -> spike -> spike: no action, invalid-resource, stop+hold, owned cleanup; later healthy never erases confirmed unsafe",
+      "spike -> intermittent healthy/spike: finite monotonic expiry, no action, invalid-resource",
+      "pending -> child0 or child1/operator stop: final invalid; ordinary healthy child1 remains child_failed",
+      "pending -> memory/disk/swap/pressure/missing measurement: immediate native refusal, invalid-resource; no CPU recovery path",
+      "old RESOURCE_WATCH_UNSAFE -> any healthy/recovered: still refuse",
+      "wrong owner/stale/malformed/missing journal/stop/hold/write failure: refuse; cleanup failure retains permit",
+      "second process attempts launch while pending: atomic heavy permit refusal"
+    ],
+    "quality": "Execute constant-healthy and constant-refusal controls plus mutations skipping second-bad stop, allowing action during pending, accepting child0 while pending, and erasing historical unsafe. Both recovered transient and sustained overload outcomes must be forced by real decisions. Preserve existing disk and ownership integration tests. Native confirmation remains required after reviewed source passes; this report authorizes no rerun."
+  },
+  "source_sha256": {
+    "scripts/stabilization-resource.mjs": "efb97e3cd51253eea24caa750c44efd761f6a2626408c237f2af611b25a16fae",
+    "scripts/stabilization-resource-safety.mjs": "6ff3ed89b22689b031209efaefaf5c101c7c9a93a83366758b8176a06d8bde2c",
+    "tests/browser/native-resource-boundary.mjs": "2e42ddf7c497bb17dbbb969c2bbc7597c22835c749557dc824f6b0242b270887",
+    "docs/stabilization/resource-policy.json": "371fe9832cfebad3ee00268e0c85f34d76c85b89db0a688abe83fe3721e0f008",
+    "docs/stabilization/evidence/scrape-member/run37234434600/resource-journals/hosted-guest-37234434600-1.log-extract.jsonl": "7ac1dc0e5d62d523bcedef46c23bc224cee1506eacd84a30cc66945854228a2c"
+  },
+  "verification": "Source/evidence review and lightweight in-memory real-boundary replay only. JSON syntax, format and exact-path diff checked before commit. No policy or production implementation changed."
+}
