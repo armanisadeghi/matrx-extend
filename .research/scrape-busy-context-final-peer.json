@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0115",
+  "role": "independent_source_peer_review",
+  "reviewed_implementation_sha": "fcbc22f7",
+  "reviewed_causal_receipt": ".research/scrape-fast-busy-causal.json",
+  "verdicts": {
+    "A_source_readiness": "not_ready_for_trustworthy_native_acceptance",
+    "A_native_runtime": "not_run_in_this_lane; product busy state remains unverified",
+    "B_observer_quality": "fail_false_positive_for_stylesheet_hidden_busy_state"
+  },
+  "findings": {
+    "prior_foreign_pane_and_inline_hidden_reproductions": "fixed: the new ambiguous ownership guard rejects both prior same-turn false positives",
+    "remaining_blocker": {
+      "severity": "blocking_for_oracle_trust",
+      "summary": "A same-turn stylesheet change can hide the owned button during disabled Capturing, then restore it before MutationObserver delivery. The observer replays disabled and label records as a visible busy state because style text mutations do not mark ownership or visibility ambiguous.",
+      "minimal_reproduction": [
+        "Arm the observer on the unique visible Capture button in the active Scrape pane, with an empty style element in the document.",
+        "Set the style element text to #p button { display:none }; getComputedStyle(button).display is now none.",
+        "While hidden, set disabled=true and text=Capturing…, then disabled=false and text=Re-capture.",
+        "Clear the style text before MutationObserver delivery.",
+        "Read state: observed=true, text=Capturing…, overlappingMutationState=true, disabledSamples=0, ambiguousOwnershipBatches=0. No visible disabled busy overlap occurred."
+      ],
+      "source": "tests/browser/scrape-busy-observer.mjs: ownershipChanged checks childList added/removed nodes only for button ancestry, so childList mutations inside a style element are ignored even when they change button visibility.",
+      "repair_direction": "Treat stylesheet mutation within a replay batch as ambiguous visibility, or establish ordered visibility evidence for every busy overlap. Keep the requirement for the same owned visible button to be simultaneously disabled with the correct busy label."
+    }
+  },
+  "checks": {
+    "focused_tests": "node --test tests/browser/scrape-busy-observer.test.mjs: 7 passed, 0 failed; includes active owned same-turn positive, nonoverlap negative, foreign pane and inline hidden negatives",
+    "independent_dom_probe": "Inline happy-dom probe against fcbc22f7 returned a false-positive observed=true while getComputedStyle(button).display was none during disabled Capturing.",
+    "product_change": "None in reviewed commit; observer and focused tests only.",
+    "native_browser_release": "Not run by this source-only peer lane."
+  },
+  "limits": [
+    "This is an observer oracle defect, not evidence that the product did or did not render a busy state in a real browser.",
+    "The hosted run in the causal receipt predates this observer and cannot validate native behavior."
+  ]
+}
