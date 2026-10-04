@@ -16,6 +16,8 @@ D103 sourcefix76d6832e reproduced and removed the undeclared-origin failure with
 
 Fresh peer9675f002 accepted the field persistence/census repair and D103 startup source but found ambiguous extended-case failure attribution (actual boundary reproduction). D101 reopened only for this new integration gap; `profile_fields_reload_fix` owns a short20call/4minute fixed caseID+dimension correction. Full native grant remains held until fresh review; no browser active.
 
+Fresh final peer635283fb passed the diagnostic correction2318bbac and surrounding25focusedchecks. Rootgrants soleheavy run to `profile_fields_member_native` (Luna medium), run `profile-fields-member-189-01` with PROFILE_EXTENDED_CASES=1 on frozenb4/189. Uses unmodified correctedharness76d6832e, no ambientglobalworkaround. Identity/Employment must persist acrossactualreload beforeedits; strictoriginalabsence restoration and exactextendedcensus required. Tester has50calls/10minutes and oneattempt, no source/productrepair; rootroutesanyfailure.
+
 Root owns tracking, review routing and synchronization. Preserve pending Store181; no new dashboard poll needed immediately after the previous 01:33UTC check.
 
 ## Previous checkpoint — independent member reload acceptance passed

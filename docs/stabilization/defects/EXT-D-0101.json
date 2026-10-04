@@ -14,7 +14,7 @@
   "actual": "Report cannot locate the failing control or distinguish readiness/ambiguity; cleanup overwritesstage so it cannot identify originalfailure.",
   "severity": "S3: diagnosticloss delays reliabletesting; no productuserimpact demonstrated.",
   "priority": "P1: blocks currentProfile reloadacceptance diagnosis.",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "profile_fields_reload_fix",
   "evidence": [
     ".research/profile-member-retest189.json",
@@ -27,7 +27,8 @@
     ".research/profile-report-boundary-escalation.json",
     ".research/profile-member-final-189-native.json",
     ".research/profile-escalated-boundary-peer.json",
-    ".research/profile-fields-final-source-peer.json"
+    ".research/profile-fields-final-source-peer.json",
+    ".research/profile-fields-diagnostic-final-peer.json"
   ],
   "transition_history": [
     {
@@ -107,11 +108,17 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Short original fixer round adds stable caseID/dimension operations before extended cases, held verification and restoration; no privacy relaxation."
+    },
+    {
+      "at": "2026-10-04T02:04:22.739995+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "2318bbac records per-case/dimension phase, freshpeer635283fb verifies realfailureboundary with25focusedchecks. Independentextendednativepending."
     }
   ],
   "closure_requirement": "Meaningfulfailurecaptureguard and independentreview, then actualguardedfailure or equivalentverifiednativeobservation preservingoriginaloperation/stage withoutprivatecontent. UnderlyingProfile targetfailure handledseparately.",
-  "fix_commits": ["aa7df0d2", "c77982ec", "85a95c40", "5f417356", "b83c2af0"],
-  "known_remaining": "New extended Identity/Employment cases introduced ambiguous generic operations; freshpeer9675f002 reproduced identical safe diagnostics for distinct case failures. Original closed reproduction remains verified, but new case attribution needs fixed caseID/dimension before native extended acceptance.",
+  "fix_commits": ["aa7df0d2", "c77982ec", "85a95c40", "5f417356", "b83c2af0", "2318bbac"],
+  "known_remaining": "Final independent member extended native run pending. Fresh peer verifies new case attribution and surrounding source guards; preexisting/admin field coverage remains separate unverified work.",
   "closure_evidence": {
     "run_id": "profile-member-final-189-05",
     "raw_sha256": "7011bf997e26f1266a05ea2f3483b3326e3069e1caf87b79e6afb5aca4c05b9e",
