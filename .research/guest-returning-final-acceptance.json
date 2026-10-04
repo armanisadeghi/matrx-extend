@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "verifier": "independent fresh seat; zero authorship of source change",
+  "source_change": {
+    "commit": "f7381878b4bb5938521ae6dc0833b8218ca8d57b",
+    "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "source_report": ".research/guest-returning-driver-change.json",
+    "node_check": "PASS",
+    "biome_check": "PASS"
+  },
+  "verdict_a_acceptance": {
+    "verdict": "PASS",
+    "artifact": {
+      "version": "0.2.205",
+      "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+      "store_zip": "test-results/guest-402-release-37180303468/.output/matrx-extend-0.2.205-store.zip",
+      "store_zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+      "unadapted_store_tree_sha256": "b9084adcc8990ec1eef784b64b70aeaf6232709f11fec790a23152cfb68d7d0d",
+      "adapted_tree_sha256": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+      "adaptation": "Only manifest.json received the public key from the matching-version local ZIP; ZIP bytes unchanged."
+    },
+    "observed": {
+      "owned_fresh_signed_out_guest": true,
+      "real_answers_before_exhaustion": 4,
+      "first_refusal_turn": 5,
+      "first_live_http_status": 402,
+      "first_flat_error_code": "guest_ai_allowance_used",
+      "panel_reloaded": true,
+      "guest_identity_persisted_after_reload": true,
+      "new_chat_clicked_with_trusted_pointer": true,
+      "second_distinct_live_http_402": true,
+      "second_flat_error_code": "guest_ai_allowance_used",
+      "correct_free_account_remedy_visible": true,
+      "retry_action_absent": true,
+      "owner_only_table_gets": 0
+    },
+    "receipt": {
+      "path": "test-results/guest-allowance-native-94decc1a-69e0-484e-b538-18b5e940cc6e.json",
+      "sha256": "88eeb6e8d85e0399fc18478f5134b3b79aab5de440d0bd6719ebe10907686bac"
+    },
+    "resource_journal": {
+      "path": "docs/stabilization/resource-journals/guest-returning-final-20261004-01.jsonl",
+      "sha256": "947d31f77bcbb5bcb24bd6e7f3a1e00061d252cc923ece123d18d48c0640cc5d",
+      "final_decision": "valid"
+    },
+    "screenshot": {
+      "path": "test-results/native-sidepanel-qa-db0lrq/returning-guest-allowance-remedy.png",
+      "sha256": "4af05eb41f723b929ba47d558e4e74679e424dff6d57a36119dc7032f886c339",
+      "dimensions": "328x77",
+      "visual_review": "Only the assistant's allowance remedy is visible; no history or profile data."
+    }
+  },
+  "verdict_b_quality": {
+    "verdict": "PASS",
+    "findings": [],
+    "basis": [
+      "The acceptance requires a second actual 402 response with exact flat error code after reload and New chat, and independently checks remedy copy and Retry absence.",
+      "The report records booleans and artifact hashes, not raw guest answers, credentials, or response bodies.",
+      "node --check and Biome both pass on the immutable source change."
+    ]
+  },
+  "limitations": [
+    "This verifies the candidate Store payload loaded unpacked after the documented public-key adaptation; it was not installed from or published to the Chrome Web Store.",
+    "The unrelated pre-existing modification docs/stabilization/reports/workspace-sync-guest-incident-20261003.json was left untouched."
+  ]
+}
