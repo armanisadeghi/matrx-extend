@@ -1,0 +1,39 @@
+{
+  "reviewed_commit": "21af0218",
+  "reviewed_paths": [
+    ".research/scrape-links-controls-test.json",
+    "src/features/scrape/ScrapeView.link-controls.test.tsx"
+  ],
+  "verdict_a": {
+    "status": "PARTIAL",
+    "against": "EXT-F-1007-T13 / EXT-F-1007-C13",
+    "evidence": [
+      "The focused component suite passed (4 tests). It renders actual ScrapeView, CopyButton, AddItemRow behavior, and Zustand scrape store; link add/remove are real store actions.",
+      "It verifies link href/target attributes, exact URL delivery to the mocked clipboard boundary, selected-row removal with survivor/count, blank href refusal, href+text insertion, and href-only insertion.",
+      "EXT-F-1007-T13 requires guest/member/admin and warm/reload dimensions. The suite uses one mocked identity/auth context and one in-memory render; it does not cover those mode/dimension combinations.",
+      "Open is evidenced by anchor href and target=_blank only; there is no click/native browser-tab observation. Clipboard evidence stops at the mocked boundary. These are supporting component results, not native acceptance."
+    ],
+    "limitations": [
+      "Actual browser tab opening and OS clipboard change remain unverified; no native/browser launch was performed per lane scope.",
+      "No role matrix or warm/reload run was performed."
+    ]
+  },
+  "verdict_b": {
+    "status": "FAIL",
+    "evidence": [
+      "The remove-all mutation was run through forcing-function plant.py: the survivor assertion failed with an empty link list; src/state/scrape.ts was restored byte-identically (sha 4861b5edb1dc).",
+      "A constant-add mutation was run through plant.py: the second, different href-only input failed on its exact expected href/text; src/state/scrape.ts was restored byte-identically (sha 4861b5edb1dc).",
+      "Focused suite passed independently; pnpm compile passed. The tests force meaningful add/remove behavior across distinct expected outputs and use the actual store.",
+      "The fixture uses .example hostnames, explicitly banned by forcing-function-tests §5a. Replace with realistic non-customer URLs before treating fixture quality as passing."
+    ],
+    "limitations": [
+      "The suite does not execute a browser-open effect or a real clipboard write, by design of the supporting component lane."
+    ]
+  },
+  "commands": {
+    "focused_test": "pnpm exec vitest run src/features/scrape/ScrapeView.link-controls.test.tsx --maxWorkers=1 --reporter=dot — PASS, 4 tests",
+    "compile": "pnpm compile — PASS",
+    "remove_all_mutation": "plant.py removeLink -> links: [] — expected RED at exact survivor assertion",
+    "constant_add_mutation": "plant.py addLink ignores input and inserts one fixed pair — expected RED on href-only watering case"
+  }
+}
