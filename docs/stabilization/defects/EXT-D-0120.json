@@ -35,7 +35,8 @@
     ".research/reload-causal-escalation.json",
     ".research/reload-execution-peer.json",
     ".research/reload-execution-fix.json",
-    ".research/reload-execution-final-peer.json"
+    ".research/reload-execution-final-peer.json",
+    ".research/reload-execution-native.json"
   ],
   "transition_history": [
     {
@@ -82,15 +83,14 @@
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
-  "next_action": "Collect one guarded native guest Scrape run with reviewed execution-retirement driver and frozen development215. Require exact old stopped/redundant plus distinct running/activated replacement, actual replacement panel rendering, valid resource journals and downstream assertions. No whole-product or Store claim.",
+  "next_action": "Investigate repeated browser-startup CPU refusal in37203147962 and37198730857 against healthy37199709918 before another launch. Determine whether startup readiness can be measured within existing policy budget before the first UI action while preserving unsafe/stale refusal and watchdog cancellation. Keep thresholds unchanged; no blind retry. After independently reviewed correction or evidenced environment recovery, run one guarded exact-artifact native retest of the source-fixed execution-retirement oracle.",
   "current_native_evidence": {
-    "run_id": "37200570100",
-    "status": "retest-fail_after_media_checks",
-    "driver_sha": "f405e156579dee028c91bc66bbfa10745f25fa56",
-    "artifact": "same frozen development215 CI37193761291 artifact11299613935",
-    "verified": "Rootmatchedreceipt ccac4c5e602e3054d5418b5a83c1d1627002451dd2c2b220b27ff63c600af17b and3healthyjournals. Chrome141.0.7390.37; oldversion0 correlated beforeclick to13CCF66B639A035D8EA322ABDC27BDA0. Version0 stopping/redundant at12:10:52.543UTC thenexplicitstopped/redundant at12:10:52.638UTC withtargetIdomitted; preclickversionidentityretained. IndependentgetTargetInfo oldhostpresent attached=false atfailure; neitherobserver sawoldworkerdestruction, oldworker/panelabsent, replacementcreated/present soleliveworker andversion1running/activated. Managementenabledzeroerrors, timeline0drops.",
-    "native_branch": "Old execution stopped + debugger host exists is now established. Exact retaining owner and causal repair are NOT established; attached=false does not identify Playwright as owner.",
-    "limitations": "Strictgatefailed before replacementcontext/mediareload. No threshold/predicate changes; no wholeproductpass. Reportcorrectiond62e8480 retains exactstopped event after omittedtargetId; originalreport had selected earlierstoppingevent."
+    "run_id": "37203147962",
+    "status": "native-unverified_resource-refusal",
+    "driver_sha": "ea0ec41d72e7c596ac75ab1fa00ee766847d1e8d",
+    "artifact": "frozen development215 CI37193761291 artifact11299613935",
+    "verified": "Root matched receipt SHA c250c24bc937c23ab1c776cf772c6e078f7b4d0ca815b285cf92bfddcc5a23c3 and all three journal hashes. Receipt stage inputs refused NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample; guest identity unobserved, cases empty, reload lifecycle null. Single CPU busy1.0 sample at12:50:40.149UTC; guest child_failed exit1 with outer resourceInvalid=false. Package/browser valid.",
+    "limitations": "No verdict on oracle repair or product; no retry. All source workers and native collector terminal."
   },
   "previous_passing_native_evidence": {
     "run_id": "37199709918",
@@ -106,5 +106,14 @@
     "finding": "Chrome execution retirement is distinct from debugger host destruction. Correlated stopped/redundant old version and running/activated replacement provide the new proof, but legacy TargetDestroyed OR branch bypasses it. Peer demonstrated acceptance of restartable stopped/activated old version with missing replacement version proof.",
     "owner": "/root/reload_execution_native",
     "required": "Remove false-green bypass and independently retest actual harness refusals before native acceptance."
+  },
+  "last_discriminating_native_evidence": {
+    "run_id": "37200570100",
+    "status": "retest-fail_after_media_checks",
+    "driver_sha": "f405e156579dee028c91bc66bbfa10745f25fa56",
+    "artifact": "same frozen development215 CI37193761291 artifact11299613935",
+    "verified": "Rootmatchedreceipt ccac4c5e602e3054d5418b5a83c1d1627002451dd2c2b220b27ff63c600af17b and3healthyjournals. Chrome141.0.7390.37; oldversion0 correlated beforeclick to13CCF66B639A035D8EA322ABDC27BDA0. Version0 stopping/redundant at12:10:52.543UTC thenexplicitstopped/redundant at12:10:52.638UTC withtargetIdomitted; preclickversionidentityretained. IndependentgetTargetInfo oldhostpresent attached=false atfailure; neitherobserver sawoldworkerdestruction, oldworker/panelabsent, replacementcreated/present soleliveworker andversion1running/activated. Managementenabledzeroerrors, timeline0drops.",
+    "native_branch": "Old execution stopped + debugger host exists is now established. Exact retaining owner and causal repair are NOT established; attached=false does not identify Playwright as owner.",
+    "limitations": "Strictgatefailed before replacementcontext/mediareload. No threshold/predicate changes; no wholeproductpass. Reportcorrectiond62e8480 retains exactstopped event after omittedtargetId; originalreport had selected earlierstoppingevent."
   }
 }
