@@ -297,12 +297,18 @@ console.log('PASS native endpoint timeout emits bounded numeric polling evidence
 // target lifecycle proof, and refusal when Chrome disables the extension.
 // Browser UI and CDP are external dependencies; their state follows UI actions.
 const { reloadOwnedExtension } = await import('./native-sidepanel-qa-harness.mjs');
-async function reloadCase({ initiallyEnabled, disabledAfter = false, contextResults }) {
+async function reloadCase({
+  initiallyEnabled,
+  disabledAfter = false,
+  contextResults,
+  retireBeforeClick = false,
+}) {
   let developerMode = initiallyEnabled;
   let reloaded = false;
   let opened = false;
   let toggles = 0;
   let contextReads = 0;
+  let targetReads = 0;
   const events = new Map();
   const panelUrl = `chrome-extension://${extensionId}/sidepanel.html`;
   const oldWorker = {
@@ -340,6 +346,7 @@ async function reloadCase({ initiallyEnabled, disabledAfter = false, contextResu
             'native reload must enable Developer mode before reload',
           );
           reloaded = true;
+          events.get('Target.targetInfoChanged')({ targetInfo: oldWorker });
           events.get('Target.targetDestroyed')({ targetId: oldWorker.targetId });
           events.get('Target.targetCreated')({ targetInfo: worker });
         },
@@ -352,7 +359,11 @@ async function reloadCase({ initiallyEnabled, disabledAfter = false, contextResu
     async send(method) {
       if (method === 'Target.getTargets')
         return {
-          targetInfos: reloaded ? [worker, ...(opened ? [panel] : [])] : [oldWorker, oldPanel],
+          targetInfos: reloaded
+            ? [worker, ...(opened ? [panel] : [])]
+            : retireBeforeClick && ++targetReads >= 2
+              ? [oldPanel]
+              : [oldWorker, oldPanel],
         };
       if (method === 'Target.attachToTarget') return { sessionId: 'owned-session' };
       if (method === 'Runtime.evaluate')
@@ -383,6 +394,25 @@ async function reloadCase({ initiallyEnabled, disabledAfter = false, contextResu
   assert.equal(result.old_targets_retired, true);
   assert.equal(result.worker_replaced, true);
   assert.equal(result.panel_replaced, true);
+  const timeline = result.retirement_evidence.timeline;
+  assert.equal(timeline.old_worker_id, oldWorker.targetId);
+  assert.equal(timeline.replacement_worker_id, worker.targetId);
+  assert.equal(timeline.pre_click_old_worker_present, true);
+  assert.equal(timeline.final_predicate, true);
+  assert.deepEqual(timeline.final_snapshot, [
+    { target_id: worker.targetId, type: 'service_worker', kind: 'worker' },
+  ]);
+  const phases = timeline.entries.map((entry) => entry.phase);
+  assert.ok(phases.indexOf('discovery_enabled') < phases.indexOf('listeners_registered'));
+  assert.ok(phases.indexOf('listeners_registered') < phases.indexOf('pre_click_snapshot'));
+  assert.ok(phases.indexOf('pre_click_snapshot') < phases.indexOf('click_started'));
+  assert.ok(phases.indexOf('click_started') < phases.indexOf('target_info_changed'));
+  assert.ok(phases.indexOf('target_destroyed') < phases.indexOf('target_created'));
+  assert.ok(phases.indexOf('target_created') < phases.indexOf('click_resolved'));
+  assert.ok(timeline.entries.every((entry) => /^\d{4}-/.test(entry.at)));
+  assert.ok(
+    timeline.entries.every((entry) => !JSON.stringify(entry).includes('chrome-extension://')),
+  );
   if (contextResults) assert.equal(result.context_boundary.attempts, contextResults.length);
   assert.equal(
     toggles,
@@ -393,6 +423,16 @@ async function reloadCase({ initiallyEnabled, disabledAfter = false, contextResu
 }
 await reloadCase({ initiallyEnabled: false });
 await reloadCase({ initiallyEnabled: true });
+await assert.rejects(
+  reloadCase({ initiallyEnabled: true, retireBeforeClick: true }),
+  (error) =>
+    error.message === 'native_extension_old_worker_retired_before_reload' &&
+    error.lifecycleEvidence.timeline.pre_click_old_worker_present === false &&
+    error.lifecycleEvidence.timeline.entries.some(
+      (entry) => entry.phase === 'listeners_registered',
+    ) &&
+    error.lifecycleEvidence.timeline.entries.every((entry) => entry.phase !== 'click_started'),
+);
 const wrongContextResult = {
   result: {
     value: [{ contextType: 'SIDE_PANEL', documentUrl: `${expectedPanelUrl}?foreign`, tabId: -1 }],

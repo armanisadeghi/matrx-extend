@@ -71,6 +71,61 @@ export function captureLifecycleEvidence(value) {
   for (const key of BOOL_KEYS) evidence[key] = typeof value[key] === 'boolean' ? value[key] : null;
   evidence.observed_worker_count = safeCount(value.observed_worker_count);
   evidence.management = captureManagement(value.management);
+  if (value.timeline && typeof value.timeline === 'object') {
+    const safeId = (id) => (typeof id === 'string' && /^[A-Za-z0-9-]{1,128}$/.test(id) ? id : null);
+    const safeTarget = (target) => {
+      if (!target || !['worker', 'panel', 'extension_other'].includes(target.kind)) return null;
+      const target_id = safeId(target.target_id);
+      if (!target_id || typeof target.type !== 'string' || !/^[a-z_]{1,40}$/.test(target.type))
+        return null;
+      return { target_id, type: target.type, kind: target.kind };
+    };
+    const safeTime = (at) =>
+      typeof at === 'string' && /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(at) ? at : null;
+    const safeEntry = (entry) => {
+      if (
+        !entry ||
+        ![
+          'discovery_enabled',
+          'initial_snapshot',
+          'listeners_registered',
+          'pre_click_snapshot',
+          'click_started',
+          'click_resolved',
+          'poll_transition',
+          'target_created',
+          'target_destroyed',
+          'target_info_changed',
+        ].includes(entry.phase)
+      )
+        return null;
+      const at = safeTime(entry.at);
+      if (!at) return null;
+      if (Array.isArray(entry.targets))
+        return {
+          at,
+          phase: entry.phase,
+          targets: entry.targets.slice(0, 16).map(safeTarget).filter(Boolean),
+        };
+      if (entry.target) return { at, phase: entry.phase, target: safeTarget(entry.target) };
+      return { at, phase: entry.phase };
+    };
+    const timeline = value.timeline;
+    evidence.timeline = {
+      old_worker_id: safeId(timeline.old_worker_id),
+      old_panel_id: safeId(timeline.old_panel_id),
+      replacement_worker_id: safeId(timeline.replacement_worker_id),
+      pre_click_old_worker_present: timeline.pre_click_old_worker_present === true,
+      entries: Array.isArray(timeline.entries)
+        ? timeline.entries.slice(0, 80).map(safeEntry).filter(Boolean)
+        : [],
+      dropped_entries: safeCount(timeline.dropped_entries),
+      final_snapshot: Array.isArray(timeline.final_snapshot)
+        ? timeline.final_snapshot.slice(0, 16).map(safeTarget).filter(Boolean)
+        : [],
+      final_predicate: timeline.final_predicate === true,
+    };
+  }
   return evidence;
 }
 

@@ -6,6 +6,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { captureLifecycleEvidence } from './profile-reload-capture.mjs';
 import { armBusyExpression, readBusyExpression } from './scrape-busy-observer.mjs';
 import { scrapeLayoutFailure } from './scrape-layout-guard.mjs';
 import { diagnosticCpuRate, runSupplementalCpuDiagnostic } from './scrape-page-cpu-diagnostic.mjs';
@@ -522,6 +523,7 @@ try {
         old_targets_retired: replacement.old_targets_retired,
         worker_replaced: replacement.worker_replaced,
         panel_replaced: replacement.panel_replaced,
+        retirement_evidence: captureLifecycleEvidence(replacement.retirement_evidence),
         context_boundary: replacement.context_boundary,
       };
       try {
@@ -576,7 +578,8 @@ try {
   report.status = 'unverified';
   report.failure = { stage: report.stage, code: String(error?.message ?? error).slice(0, 300) };
   if (error?.driverFailure) report.driver_failure = error.driverFailure;
-  if (error?.lifecycleEvidence) report.reload_lifecycle_failure = error.lifecycleEvidence;
+  if (error?.lifecycleEvidence)
+    report.reload_lifecycle_failure = captureLifecycleEvidence(error.lifecycleEvidence);
   if (error?.contextBoundary) report.reload_context_failure = error.contextBoundary;
   process.exitCode = 1;
 }

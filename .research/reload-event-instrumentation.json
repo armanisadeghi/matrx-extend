@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "case": "D120 native extension reload event ordering",
+  "status": "instrumented_pending_owned_native_rerun",
+  "source_diagnosis": ".research/reload-lifecycle-diagnosis.json",
+  "source_run_id": "37192733619",
+  "measurement": {
+    "boundary": "tests/browser/native-sidepanel-qa-harness.mjs:reloadOwnedExtension",
+    "receipt": "The guest Scrape run persists the sanitized lifecycle evidence on both successful reload and reload failure.",
+    "records": [
+      "discovery enablement, initial snapshot, listener registration, pre-click snapshot, click start and resolution",
+      "owned target created, changed and destroyed events with target ID, type and wall-clock time",
+      "changed poll snapshots, final snapshot and unchanged acceptance predicate"
+    ],
+    "bounds": "At most 80 timeline entries; snapshots and capture output contain at most 16 owned targets each. No target URL, title or page content is emitted.",
+    "interpretation": "A missing old-worker destroyed event remains unverified. Pre-click disappearance is reported separately from post-click event absence."
+  },
+  "verification": {
+    "native_browser_run": "not_run_in_instrumentation_lane",
+    "acceptance_predicate_changed": false,
+    "focused_node_tests": "passed: native-sidepanel-qa-harness.test.mjs and profile-reload-capture.test.mjs",
+    "biome": "passed for five owned files"
+  }
+}

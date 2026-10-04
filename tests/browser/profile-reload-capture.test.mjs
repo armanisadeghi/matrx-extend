@@ -3,8 +3,53 @@ import test from 'node:test';
 import {
   captureContextBoundary,
   captureFailure,
+  captureLifecycleEvidence,
   captureManagement,
 } from './profile-reload-capture.mjs';
+
+test('reload capture preserves owned target order while excluding arbitrary target data', () => {
+  const captured = captureLifecycleEvidence({
+    timeline: {
+      old_worker_id: 'old-worker',
+      old_panel_id: 'old-panel',
+      replacement_worker_id: 'new-worker',
+      pre_click_old_worker_present: true,
+      final_predicate: false,
+      dropped_entries: 0,
+      entries: [
+        {
+          at: '2026-10-04T09:43:44.790Z',
+          phase: 'pre_click_snapshot',
+          targets: [
+            { target_id: 'old-worker', type: 'service_worker', kind: 'worker', url: 'private URL' },
+          ],
+        },
+        { at: '2026-10-04T09:43:44.791Z', phase: 'click_started', title: 'private title' },
+        {
+          at: '2026-10-04T09:43:44.792Z',
+          phase: 'target_created',
+          target: {
+            target_id: 'new-worker',
+            type: 'service_worker',
+            kind: 'worker',
+            content: 'private content',
+          },
+        },
+      ],
+      final_snapshot: [
+        { target_id: 'new-worker', type: 'service_worker', kind: 'worker', url: 'private URL' },
+      ],
+    },
+  }).timeline;
+  assert.deepEqual(
+    captured.entries.map((item) => item.phase),
+    ['pre_click_snapshot', 'click_started', 'target_created'],
+  );
+  assert.equal(captured.entries[0].targets[0].target_id, 'old-worker');
+  assert.equal(captured.final_snapshot[0].target_id, 'new-worker');
+  assert.equal(captured.final_predicate, false);
+  assert.doesNotMatch(JSON.stringify(captured), /private/);
+});
 
 test('context boundary capture keeps only counts and elapsed time', () => {
   const captured = captureContextBoundary({
