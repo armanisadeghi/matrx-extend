@@ -17273,6 +17273,20 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "supporting_evidence": [
+            {
+              "level": "source/component; guest auth is mocked, not native authentication",
+              "report": ".research/scrape-media-controls-test.json",
+              "independent_review": ".research/scrape-media-controls-peer.json",
+              "commits": [
+                "dfa74dc0",
+                "4540020c",
+                "e1539f56"
+              ],
+              "result": "7 scoped tests pass across real ScrapeView and real media store; selective removal/exact survivors/count, blank/valid/cancel forms, video link target and copy request; no actual tab or clipboard access claimed.",
+              "limits": "Native guest/member/admin interactions and reload remain unverified. No mode cell promoted from component tests."
+            }
           ]
         },
         {
@@ -17298,6 +17312,20 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "supporting_evidence": [
+            {
+              "level": "source/component; guest auth is mocked, not native authentication",
+              "report": ".research/scrape-media-controls-test.json",
+              "independent_review": ".research/scrape-media-controls-peer.json",
+              "commits": [
+                "dfa74dc0",
+                "4540020c",
+                "e1539f56"
+              ],
+              "result": "7 scoped tests pass across real ScrapeView and real media store; selective removal/exact survivors/count, blank/valid/cancel forms, video link target and copy request; no actual tab or clipboard access claimed.",
+              "limits": "Native guest/member/admin interactions and reload remain unverified. No mode cell promoted from component tests."
+            }
           ]
         },
         {
@@ -17323,6 +17351,20 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "supporting_evidence": [
+            {
+              "level": "source/component; guest auth is mocked, not native authentication",
+              "report": ".research/scrape-media-controls-test.json",
+              "independent_review": ".research/scrape-media-controls-peer.json",
+              "commits": [
+                "dfa74dc0",
+                "4540020c",
+                "e1539f56"
+              ],
+              "result": "7 scoped tests pass across real ScrapeView and real media store; selective removal/exact survivors/count, blank/valid/cancel forms, video link target and copy request; no actual tab or clipboard access claimed.",
+              "limits": "Native guest/member/admin interactions and reload remain unverified. No mode cell promoted from component tests."
+            }
           ]
         },
         {
