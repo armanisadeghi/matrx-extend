@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "review_type": "independent scoped source reverify; zero implementation authorship",
+  "reviewed_commit": "2318bbacd8d281553eb8756edaa9041a8d3ecab3",
+  "baseline": ".research/profile-fields-final-source-peer.json",
+  "A_live_acceptance_and_readiness": {
+    "verdict": "SOURCE_READY_FOR_ONE_BOUNDED_MEMBER_NATIVE_EXTENDED_RUN; LIVE_ACCEPTANCE_UNVERIFIED",
+    "basis": "The prior source review passed reload, census, owned restoration and native-origin guards. This change preserves those paths; focused checks remain green. No browser, database, live native run or release was performed in this peer review.",
+    "next_step": "One independent member native extended run against a source-bound build, with an absent preexisting member profile row, private ownership receipt and approved device organization. Inspect the six member cells and exact restoration evidence. Admin saved-field acceptance remains separately unverified."
+  },
+  "B_quality": {
+    "verdict": "PASS_SCOPED_SOURCE_REVERIFY",
+    "B3": {
+      "status": "addressed",
+      "evidence": "runExtendedCases sets a fixed case ID and dimension before each expander or Identity/Employment case. Held reload verify and restore set the receipt ID plus extension_reload before awaiting. runProfileExecutionBoundary captures that operation before cleanup can change the stage, and the safe report omits the mismatch message.",
+      "negative_guard": "The actual reload-loop source executed through runProfileExecutionBoundary gives Identity EXT-F-1004-T05:extension_reload:verify and Employment EXT-F-1004-T17:extension_reload:verify for distinct thrown mismatches after simulated cleanup. Both retain profile_unclassified_failure and omit private mismatch text."
+    },
+    "surrounding_guards": "Saved-field loss on reload still rejects before restoration or another edit; extended census remains partial for a missing or unverified cell; journal rejects a changed intended-field successor; native origin startup works without ambient WEB_ORIGIN.",
+    "new_actual_acceptance_gap": "none found in this source delta"
+  },
+  "checks": {
+    "node_tests": "25 passed: native failure boundary, owned write journal, reload/census orchestration and native origin",
+    "node_syntax": "passed for changed runner and orchestration test",
+    "biome_focused": "passed for changed runner, orchestration test and prior reload report"
+  },
+  "limits": [
+    "Source checks do not establish live Chrome date-input behavior, auth and role, server persistence, native startup or conditional restoration.",
+    "No browser, database, heavy build, release or implementation edit was performed.",
+    "This report contains no private profile values, credentials or raw browser errors."
+  ]
+}
