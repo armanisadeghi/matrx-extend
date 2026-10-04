@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "task": "native-capacity-causal-audit",
+  "status": "NO_PROVEN_ENVIRONMENTAL_CORRECTION",
+  "scope": "Read-only comparison of completed hosted ARM Scrape attempts and current resource runner. No native dispatch, test launch, product edit, credential access, threshold change, or process termination.",
+  "failed_attempt": {
+    "run_id": 37227042493,
+    "runner": "macos-15 ARM64",
+    "requested_case": "member Scrape at emulated normal width 600 px",
+    "artifact": "development 0.2.240, source 18d6f48c3769e9e52c021e29a2b219adc602e98d",
+    "guest_admission_at": "2026-10-04T19:13:01.370Z",
+    "admission": {
+      "cpu_busy_fraction": 0.12285714285714286,
+      "one_minute_load": 1.85,
+      "logical_cpus": 3,
+      "available_memory_gib": 6.02,
+      "system_free_gib": 43.033348083496094
+    },
+    "first_watch_at": "2026-10-04T19:13:17.534Z",
+    "first_watch": {
+      "event": "RESOURCE_WATCH_UNSAFE",
+      "reason": "RESOURCE_CPU_HIGH_LOAD_BUSY",
+      "cpu_busy_fraction": 0.61,
+      "one_minute_load": 8.61,
+      "load_per_logical_cpu": 2.87,
+      "available_memory_gib": 5.88,
+      "system_free_gib": 42.95815658569336
+    },
+    "attribution_snapshot_after_watch": [
+      { "executable": "Chromium Helper", "cpu_percent": 30.4 },
+      { "executable": "provjobd31720568", "cpu_percent": 22.7 },
+      { "executable": "Chromium", "cpu_percent": 15.9 }
+    ],
+    "outcome": "The native boundary refused retained unsafe history before member authentication, viewport assertion, or any Scrape case. The receipt has zero cases and status unverified. Final child_failed/resourceInvalid=false reflects child exit before a second unsafe watchdog sample, not a safe native run.",
+    "evidence": [
+      "docs/stabilization/evidence/scrape-member/run37227042493/docs/stabilization/resource-journals/hosted-guest-37227042493-1.jsonl",
+      "docs/stabilization/evidence/scrape-member/run37227042493/acceptance-receipt.json",
+      ".research/scrape-member-normal-native.json"
+    ]
+  },
+  "successful_comparator": {
+    "run_id": 37225191131,
+    "runner": "macos-15 ARM64",
+    "case": "guest Scrape at narrow width",
+    "artifact": "development 0.2.231, source 723433a7628b32fb610d3a7f36ca6b8dd5fd2b72",
+    "admission": {
+      "cpu_busy_fraction": 0.07285714285714287,
+      "one_minute_load": 1.88,
+      "logical_cpus": 3,
+      "available_memory_gib": 5.88,
+      "system_free_gib": 43.030364990234375
+    },
+    "watches": [
+      { "cpu_busy_fraction": 0.27, "one_minute_load": 1.23 },
+      { "cpu_busy_fraction": 0.19, "one_minute_load": 1.24 }
+    ],
+    "outcome": "Guarded child exited 0 with a valid resource journal and bounded guest Scrape observations. Different artifact and identity mode prevent treating this as a one-variable experiment for the later refusal.",
+    "evidence": [
+      "docs/stabilization/evidence/scrape231/run37225191131/guest-resource.jsonl",
+      ".research/clipboard126-native.json"
+    ]
+  },
+  "runner_contract": {
+    "policy": "On this three-CPU runner, high-load refusal requires load/cpu >= 0.75 and busy >= 0.60; the failed watch measured 2.87 and 0.61. Memory stayed above the 4 GiB floor, swap remained zero, and disk stayed above the 20 GiB floor.",
+    "watch_and_refusal": "The guard records the first unsafe watch; two consecutive unsafe samples control owned-process stopping. The native action boundary independently refuses any unsafe event in its own journal, so a later child_failed final decision cannot certify it.",
+    "readiness": "Workflow runs measured readiness before each owned package, browser, and acceptance phase, with one hosted-guest-side-panel concurrency group. The failed spike arose after acceptance admission and readiness, during browser startup.",
+    "attribution_limit": "The attribution is one ps %CPU snapshot about 0.2 seconds after the unsafe iostat interval. It shows both owned Chromium and host provisioner activity but does not measure each process's contribution over that same one-second interval. The separate existing hosted-resource-diagnostic workflow runs on Intel without Chromium and cannot resolve this ARM startup event.",
+    "source": [
+      "docs/stabilization/resource-policy.json",
+      "scripts/stabilization-resource.mjs",
+      "scripts/stabilization-resource-safety.mjs",
+      "scripts/hosted-resource-readiness.mjs",
+      "tests/browser/native-resource-boundary.mjs",
+      "tests/browser/native-sidepanel-qa-harness.mjs",
+      ".github/workflows/hosted-guest-acceptance.yml",
+      ".github/workflows/hosted-resource-diagnostic.yml"
+    ]
+  },
+  "causal_conclusion": "The measured CPU/load threshold crossing caused the native refusal. Evidence does not distinguish owned Chromium startup from runner provisioner activity as the cause of that interval, or prove that changing startup staging, runner choice, or a delay would yield safe sustained capacity. The earlier successful ARM run proves feasibility for one different case and artifact, not reliable capacity for the pending member/normal case.",
+  "next_action": {
+    "decision": "Do not spend another authenticated acceptance token or alter environmental controls on this evidence.",
+    "smallest_observation_only_experiment": "In a separately reviewed diagnostic lane, add one bounded startup-only route to the existing configured macos-15 workflow and same concurrency group: use the existing guard and owned Chromium startup against a frozen development artifact, collect per-process cumulative CPU-time deltas for owned Chromium descendants and host provisioner over the guard's actual one-second CPU sampling interval, record ownership and timestamps without arguments or environment, then close the owned browser before authentication or Scrape actions. No member/admin secret is required for that route. Keep the admission, CPU/memory/disk floors, one-heavy permit, watchdog, and native unsafe-history refusal unchanged; preserve every journal. Compare the interval contributions with the aggregate unsafe sample. If the platform cannot capture matching interval accounting safely, record that precise measurement gap and do not infer a correction.",
+    "status": "PROPOSED_ONLY_NOT_IMPLEMENTED_OR_LAUNCHED",
+    "acceptance_limit": "A diagnostic run, even healthy, is not member/normal or admin product acceptance. A later real run still needs a clean current-run journal and actual role/width receipt."
+  },
+  "verification": "Read original own-run guest journals and failed receipt, current guard/readiness/native-boundary and workflow source; compared admission/watch values arithmetically. No heavy local verification was launched because the local system disk remains below the unchanged 20 GiB floor."
+}
