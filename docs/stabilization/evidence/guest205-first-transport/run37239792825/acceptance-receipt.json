@@ -1,0 +1,211 @@
+{
+  "schema_version": 1,
+  "scope": "fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat answer and post-reload guest follow-up",
+  "context_rule_read_observation_scope": "CDP observer attaches after panel load and runs through Values chip open, both guest sends, and panel reload; it cannot establish requests before attachment",
+  "status": "unverified",
+  "build": {
+    "version": "0.2.205",
+    "tree_sha256": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+    "receipt_kind": "native_store_zip_candidate_key_adapted"
+  },
+  "guest": {
+    "fresh": true,
+    "chat_visible": true,
+    "after_reload": false,
+    "fixture_reinstalled_before_first_send": false
+  },
+  "chat": null,
+  "screenshot": null,
+  "followup_screenshot": null,
+  "failure_stage": "real_guest_answer",
+  "failure_code": "opening_guest_ai_transport_unobserved",
+  "failure_reason": "opening_guest_ai_transport_unobserved",
+  "stage_progress": [
+    "owned_profile",
+    "fresh_guest",
+    "owned_article_page",
+    "page_specific_fixture",
+    "guest_chat_open",
+    "guest_values_chip_open",
+    "guest_question",
+    "real_guest_answer"
+  ],
+  "guest_ai_requests": [],
+  "guest_ai_transport_proven": false,
+  "context_rule_reads": [],
+  "grounding_diagnostics": {
+    "before_first_send": {
+      "readableMarkerPresent": true,
+      "pageUrlMatches": true,
+      "activeTabMatchesFixture": true,
+      "activeUrlMatchesFixture": true,
+      "assignedTabMatchesFixture": null
+    },
+    "opening": {
+      "toolEvents": [
+        {
+          "name": "context",
+          "phase": "tool_started",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "context",
+          "phase": "tool_completed",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": true,
+          "resultContainsFollowupCode": true,
+          "resultContainsFixtureHeading": true
+        }
+      ],
+      "toolBoundaryChecks": [
+        {
+          "eventIndex": 1,
+          "toolName": "context",
+          "phase": "tool_started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 2,
+          "toolName": "context",
+          "phase": "tool_completed",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        }
+      ],
+      "terminal": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": true
+      }
+    }
+  },
+  "opening_turn_verdict": "terminal_answer",
+  "opening_turn_timeline": [
+    {
+      "verdict": "in_progress",
+      "runCount": 0,
+      "replyCount": 0,
+      "streaming": true
+    },
+    {
+      "verdict": "in_progress",
+      "runCount": 1,
+      "replyCount": 0,
+      "streaming": true
+    },
+    {
+      "verdict": "terminal_answer",
+      "runCount": 1,
+      "replyCount": 1,
+      "streaming": false
+    }
+  ],
+  "failure_observation": {
+    "guestAccount": true,
+    "accessTokenAbsent": true,
+    "profileAbsent": true,
+    "organizationAbsent": true,
+    "chatVisible": true,
+    "chatSelected": true,
+    "paneVisible": true,
+    "composerVisible": true,
+    "composerLength": 0,
+    "sendEnabled": false,
+    "streaming": false,
+    "replyCount": 1,
+    "answerContainsNonce": true,
+    "answerContainsFixtureHeading": false,
+    "answerMatchesPublicStages": true,
+    "answerStagesInOrder": true,
+    "answerIsRefusal": false,
+    "terminalAnswerError": false,
+    "interruptionNotice": false,
+    "errorNotice": false,
+    "latestAssistantReply": "Reasoning\nOpening check code: [opening-code]\n\nThree workflow stages, in order:\n\nCapture\nUnderstand\nUse",
+    "visibleAlerts": [],
+    "streamTrace": {
+      "runs": [
+        {
+          "ordinal": 1,
+          "done": true,
+          "delegated": false,
+          "error": false,
+          "errorCode": null,
+          "errorStatus": null,
+          "endReason": "complete",
+          "userRequestOutcome": "success",
+          "textChunks": 12,
+          "startReplyCount": 0,
+          "doneAt": 1791152941996
+        }
+      ],
+      "continuations": 0,
+      "events": [
+        {
+          "kind": "opened",
+          "run": 1
+        },
+        {
+          "kind": "tool_started",
+          "run": 1
+        },
+        {
+          "kind": "tool_completed",
+          "run": 1
+        },
+        {
+          "kind": "user_request_success",
+          "run": 1
+        },
+        {
+          "kind": "user_request_success",
+          "run": 1
+        },
+        {
+          "kind": "end",
+          "run": 1,
+          "reason": "complete"
+        },
+        {
+          "kind": "done",
+          "run": 1
+        }
+      ],
+      "toolEvents": [
+        {
+          "name": "context",
+          "phase": "tool_started",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "context",
+          "phase": "tool_completed",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": true,
+          "resultContainsFollowupCode": true,
+          "resultContainsFixtureHeading": true
+        }
+      ]
+    }
+  },
+  "failure_screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-UQ2kls/guest-chat-failure.png"
+}

@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "task": "guest205-first-transport-native",
+  "observed_at_utc": "2026-10-04T22:31:13.678895+00:00",
+  "scope": "One hosted macos-15 ARM native signed-out guest Chat acceptance of frozen pending Store 0.2.205 ZIP, unpacked with public manifest key adaptation.",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 37239792825,
+    "run_attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37239792825",
+    "head_sha": "5f3589d47cb554a3e2230606be83262f62ce405d",
+    "runner_label": "macos-15",
+    "acceptance_case": "guest-chat",
+    "status": "completed",
+    "conclusion": "failure",
+    "artifact_id": 11317605865,
+    "artifact_name": "hosted-guest-37239792825-1",
+    "artifact_digest": "sha256:8746d64d5b0cc5e612c59cecd13d0f5003d8f2952c7d5cfa07851424bef13ba1",
+    "attempts": 1
+  },
+  "frozen_product": {
+    "release_run_id": 37180303468,
+    "release_artifact_id": 11294843385,
+    "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "store_zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "manifest_version": "0.2.205",
+    "manifest_version_observed_from_zip": true,
+    "zip_digest_observed_from_download": true,
+    "loaded_tree_sha256": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+    "load_kind": "native_store_zip_candidate_key_adapted",
+    "actual_store_installation": false
+  },
+  "pre_dispatch": {
+    "observer_peer_report": ".research/guest-transport-correction-peer.json",
+    "observer_peer_status": "DONE_WITH_LIVE_LIMIT",
+    "focused_observer_sequence_tests": "8 passed",
+    "owned_cdp_connector_test": "passed",
+    "no_other_hosted_run_queued_or_running": true,
+    "backend_health_version_sha": "60081efa8181e700443cbfe53bcf3b984e2a2af0"
+  },
+  "post_run_backend_health_version_sha": "60081efa8181e700443cbfe53bcf3b984e2a2af0",
+  "native_outcome": {
+    "receipt_status": "unverified",
+    "first_failure_stage": "real_guest_answer",
+    "first_failure_code": "opening_guest_ai_transport_unobserved",
+    "guest_ai_requests": [],
+    "guest_ai_transport_proven": false,
+    "opening_turn_verdict": "terminal_answer",
+    "opening_answer_contains_unpredictable_page_code": true,
+    "opening_answer_matches_ordered_page_stages": true,
+    "opening_answer_is_refusal": false,
+    "opening_answer_error_visible": false,
+    "followup_executed": false,
+    "opening_http_status": null,
+    "opening_response_code": null,
+    "followup_http_status": null,
+    "followup_response_code": null,
+    "interpretation": "The UI completed one page-grounded opening answer, but the passive CDP observer captured no matching AI POST; HTTP status and response code are unverified. The transport assertion stopped acceptance before follow-up. This is an observation/proof failure, not evidence that the backend returned an error."
+  },
+  "resource_guard": {
+    "package_final": "valid",
+    "browser_final": "valid",
+    "guest_final": "child_failed",
+    "guest_resource_invalid": false,
+    "guest_watch": "RESOURCE_WATCH_HEALTHY",
+    "unsafe_events_in_current_run": 0,
+    "all_three_raw_journals_preserved": true,
+    "older_37105304739_journals_excluded_from_current_run_evidence": true
+  },
+  "cleanup": {
+    "workflow_terminal": true,
+    "upload_artifact_step": "success",
+    "receipt_cleanup_failure_codes_present": false,
+    "observer_stop_and_web_close_awaited_by_source": true,
+    "independent_target_detach_telemetry": false,
+    "interpretation": "No cleanup failure was recorded; source awaits observer stop and owned browser close before writing the receipt. A separate native detach event is not persisted, so no stronger detach claim is made."
+  },
+  "evidence_files": [
+    {
+      "path": "docs/stabilization/evidence/guest205-first-transport/run37239792825/acceptance-receipt.json",
+      "sha256": "52b22e1ce23aa5b40bff6293b63d453278d700cc5b2cd22f5426d2f41ce4f0c9",
+      "bytes": 6147
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-first-transport/run37239792825/resource-journals/hosted-browser-37239792825-1.jsonl",
+      "sha256": "69be92cd7268fb89d02ee1b7f19dc521a30a3c17d873a3e05f0428d7554003f6",
+      "bytes": 988
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-first-transport/run37239792825/resource-journals/hosted-guest-37239792825-1.jsonl",
+      "sha256": "248387b4a4ac1477f65045ad5bb928b553467c969408dd04e9ea9c63d2f997f6",
+      "bytes": 1401
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-first-transport/run37239792825/resource-journals/hosted-package-37239792825-1.jsonl",
+      "sha256": "c96ad39a5ce981a85b0bde19c15403fd6f94c1624d4552a8271b5711f42151f8",
+      "bytes": 972
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-first-transport/run37239792825/screenshots/guest-chat-failure.png",
+      "sha256": "f38a40325ec7f6d3c2513e70abc965bbd6da1eae1847a40e431033e68d1e08de",
+      "bytes": 21932
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-first-transport/run37239792825/screenshots/native-side-panel.png",
+      "sha256": "9520c564b67fe4bfdf8ddfb40f20bb6adb313aba47d79dbc79cbfe4a2b216a56",
+      "bytes": 25863
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-first-transport/run37239792825/screenshots/normal-target-after-open.png",
+      "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+      "bytes": 25156
+    }
+  ],
+  "artifact_inventory": {
+    "downloaded_total_files": 10,
+    "current_run_raw_journals": 3,
+    "current_run_receipts": 1,
+    "current_run_screenshots": 3,
+    "older_journals_excluded": 3,
+    "archive_prefix": "matrx-extend/matrx-extend/"
+  },
+  "limits": [
+    "One heavy test cap spent; no retry.",
+    "Pending Store 205 remains pending and untouched.",
+    "This candidate was loaded unpacked with only a public manifest key adaptation; it is not actual Store-installed acceptance.",
+    "No whole Chat, guest allowance, backend, or extension health claim follows from this bounded failure."
+  ]
+}
