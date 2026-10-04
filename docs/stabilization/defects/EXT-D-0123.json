@@ -6,12 +6,12 @@
   "auth_mode": "guest",
   "title": "Unexpected Article selection during native media controls; later action cannot be targeted",
   "reproduction": [
-    "Use frozen development215 CI37193761291 artifact11299613935 source3536b5cb with reviewed driver222aaa2b; hosted guest-scrape-development run37214124282 has one healthyCPU0.13watch and no unsafe samples.",
-    "Capture owned intake fixture. On Images, remove medium, icon and large in sequence. All3exactpre/post identities and Images retention succeeded; trace has trustedpointerevents and connectedtabs/pane.",
-    "Continue unchanged warm_media_controls through form and later media actions. Later pointer lookup fails with0matches; screenshot shows Article selected and Imagescount1. The trace onlywrappedremovals, so the precise later Add/field/Cancel/open/copy boundary is notidentified."
+    "Use frozen development215 CI37193761291 artifact11299613935 source3536b5cb with reviewed all-action driver504fcdf5; hosted run37215748629 admitted all guards and had one healthy watch, zero unsafe samples.",
+    "Capture owned intake fixture; complete three selective image removals, blank/valid Add and Cancel. All succeed; added /followup-card.svg accounts for remaining count1. Select Video.",
+    "Click Open /intake-walkthrough.mp4. Complete trace records trusted click at8695ms, tabs disconnected at8743ms, first Article remount at9094ms during subsequent Copy /referral-walkthrough.mp4; Copy fails with zero targets. Trace46events, no drops/truncation."
   ],
   "expected": "Each media action targets its intended control and keeps or explicitly accounts for the selected pane and external-tab lifecycle. Failures identify exact action and observed transition.",
-  "actual": "Three image removals succeeded. Later pointer lookup fails with Article selected. Initial count1-based third-removal attribution was refuted; app reset versus legitimate tab lifecycle versus driver failure remains unresolved.",
+  "actual": "Video Open precedes tabs disconnection and Article remount; subsequent video Copy cannot target its control. Exact action chronology proven; causal product versus driver lifecycle boundary remains under investigation.",
   "severity": "S2: media acceptance is blocked; user-facing pane-reset defect not yet proven",
   "priority": "P1: identify transition before further media acceptance",
   "state": "triaged",
@@ -23,7 +23,9 @@
     "docs/stabilization/evidence/scrape215/run37212405505/scrape-warm-media-failure.png",
     ".research/scrape-transition-native-diagnostic.json",
     ".research/scrape-all-action-probe.json",
-    ".research/scrape-all-action-probe-peer.json"
+    ".research/scrape-all-action-probe-peer.json",
+    ".research/scrape-complete-trace-native.json",
+    "docs/stabilization/evidence/scrape215/run37215748629/receipt.json.txt"
   ],
   "transition_history": [
     {
@@ -39,7 +41,7 @@
       "reason": "Independent frozen-source diagnosis identifies third removal boundary; causal pane-switch origin unresolved. Minimal pre/post/event probe delegated, not a speculative product patch."
     }
   ],
-  "next_action": "All-action probe504fcdf5 passed freshpeer53715d48 (11focusedtests+compile; nativeDOMobserver unverified). Run exactly one guarded frozen215 diagnostic with current reviewed driver. Inspect first unexpected tabchange/lastaction and preserve raw; no blindretry or productpatch without causal evidence.",
+  "next_action": "Diagnose source/driver external-tab lifecycle at observed Open\u2192disconnect\u2192Article boundary. Root independently verified all8hashes, raw trace and screenshot. No retry or speculative pane reselection; bounded source diagnosis delegated.",
   "diagnostic_correction": {
     "at": "2026-10-04T15:57:43.076775+00:00",
     "reason": "Run37214124282 native trace refutes earlier third-removal inference. All3removals succeed; count1 can reflect a subsequently added image. Raw receipts unchanged."
