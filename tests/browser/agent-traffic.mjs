@@ -16,5 +16,7 @@ export function agentTrafficHeaders(tool) {
 
 /** Label every page of a browser context as ours: the first-party cookie, set for `origin`. */
 export async function markBrowserAgentTraffic(context, tool, origin) {
-  await context.addCookies([{ name: MATRX_AGENT_TRAFFIC.cookie, value: String(tool), url: origin }]);
+  await context.addCookies([
+    { name: MATRX_AGENT_TRAFFIC.cookie, value: String(tool), url: origin },
+  ]);
 }

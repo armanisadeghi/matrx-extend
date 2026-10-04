@@ -711,7 +711,11 @@ export async function runNativeSidepanelQa({
     const context = playwrightBrowser.contexts()[0];
     // Every drive of our app/server from this owned browser is ours, not a visitor's.
     await markBrowserAgentTraffic(context, 'native-sidepanel-qa-harness', WEB_ORIGIN);
-    await markBrowserAgentTraffic(context, 'native-sidepanel-qa-harness', 'https://server.app.matrxserver.com');
+    await markBrowserAgentTraffic(
+      context,
+      'native-sidepanel-qa-harness',
+      'https://server.app.matrxserver.com',
+    );
     const page = await context.newPage();
     onStage('local_page_navigation');
     await page.goto(`http://localhost:${serverPort}/`);
