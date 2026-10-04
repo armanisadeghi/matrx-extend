@@ -39,6 +39,7 @@ export async function runProfileSaveFailureCase({
     branch: 'profile-write-failure-then-retry',
     status: 'unverified',
     observed: {},
+    original_absence_verified: false,
   };
   let fault = null;
   let wroteDraft = false;
@@ -46,7 +47,13 @@ export async function runProfileSaveFailureCase({
   try {
     assert.ok((await state(panel)).preferred === original, 'profile_initial_value_changed');
     await fillPreferred(panel, draft);
-    fault = await armOneProfileUpsertFailure(panel, origin);
+    const owner = (await journal.reconcile()).owned;
+    assert.ok(owner.userId && owner.organizationId, 'profile_fault_owner_unverified');
+    fault = await armOneProfileUpsertFailure(panel, origin, {
+      userId: owner.userId,
+      organizationId: owner.organizationId,
+      preferredName: draft,
+    });
     await clickProfileHeader(panel, 'Save');
     await waitFor(
       'profile_write_fault_observed',
@@ -127,6 +134,7 @@ export async function runProfileSaveFailureCase({
         (s) => s.preferredMatchesExpected && !s.dirty && !s.errorPresent,
         30000,
       );
+      receipt.observed.owned_row_value_restored = true;
     } else {
       const current = await state(panel);
       if (current.back && current.preferred !== original) {
@@ -138,40 +146,55 @@ export async function runProfileSaveFailureCase({
           10000,
         );
       }
+      receipt.observed.owned_row_unchanged_verified = true;
+      receipt.observed.local_draft_discarded = current.back && current.preferred !== original;
     }
-    receipt.observed.original_restored = true;
   } catch (error) {
     restorationError = error;
-    receipt.observed.original_restored = false;
   }
   if (restorationError) throw restorationError;
   if (primaryError) throw primaryError;
   assert.equal(receipt.observed.retry_persisted_after_reopen, true);
-  assert.equal(receipt.observed.original_restored, true);
-  receipt.status = 'passed';
+  assert.equal(receipt.observed.owned_row_value_restored, true);
+  receipt.status = 'provisional_until_runner_row_absence_verified';
   return receipt;
 }
 
 // Request-stage failure prevents the upsert from reaching Supabase. Exact
 // origin, route and method keep owner-row reads and unrelated traffic live.
-async function armOneProfileUpsertFailure(panel, origin) {
+async function armOneProfileUpsertFailure(panel, origin, expected) {
   let attempted = 0;
   let failed = 0;
   let error = null;
+  let passThrough = false;
   const pending = new Set();
   const off = panel.on('Fetch.requestPaused', (event) => {
     let target = false;
     try {
       const url = new URL(event.request.url);
+      const headers = Object.fromEntries(
+        Object.entries(event.request.headers ?? {}).map(([key, value]) => [
+          key.toLowerCase(),
+          value,
+        ]),
+      );
+      const body = JSON.parse(event.request.postData ?? 'null');
       target =
+        !passThrough &&
         url.origin === origin &&
         url.pathname === '/rest/v1/user_form_profile' &&
-        event.request.method === 'POST';
+        event.request.method === 'POST' &&
+        headers['content-profile'] === 'users' &&
+        body &&
+        !Array.isArray(body) &&
+        body.user_id === expected.userId &&
+        body.organization_id === expected.organizationId &&
+        body.preferred_name === expected.preferredName;
     } catch {
-      // A malformed intercepted URL must still be resumed by CDP.
+      // Malformed or unrelated traffic must still be resumed by CDP.
     }
     if (target) attempted++;
-    const command = target ? 'Fetch.failRequest' : 'Fetch.continueRequest';
+    const command = target && attempted === 1 ? 'Fetch.failRequest' : 'Fetch.continueRequest';
     const operation = panel
       .send(
         command,
@@ -181,7 +204,7 @@ async function armOneProfileUpsertFailure(panel, origin) {
       )
       .then(() => {
         if (target) {
-          failed++;
+          if (command === 'Fetch.failRequest') failed++;
           if (attempted !== 1) error = 'profile_fault_multiple_upserts';
         }
       })
@@ -195,22 +218,31 @@ async function armOneProfileUpsertFailure(panel, origin) {
     await panel.send('Fetch.enable', {
       patterns: [{ urlPattern: `${origin}/rest/v1/user_form_profile*`, requestStage: 'Request' }],
     });
-  } catch (error) {
-    off();
-    throw error;
+  } catch {
+    passThrough = true;
+    try {
+      await panel.send('Fetch.disable');
+      off();
+    } catch {
+      // Keep the continuation handler attached if interception remains armed.
+    }
+    throw new Error('profile_fault_enable_failed');
   }
-  let stopped = false;
+  let disabled = false;
   return {
     snapshot: () => ({ attempted, failed, error }),
     stop: async () => {
-      if (stopped) return;
-      stopped = true;
+      if (disabled) return;
+      passThrough = true;
       try {
         await Promise.allSettled([...pending]);
         await panel.send('Fetch.disable');
-      } finally {
-        off();
+      } catch {
+        // Continue every later paused request until a later disable succeeds.
+        throw new Error('profile_fault_disable_failed');
       }
+      disabled = true;
+      off();
       assert.equal(failed, 1, 'profile_fault_not_exercised_exactly_once');
       assert.equal(attempted, 1, 'profile_fault_multiple_upserts');
       assert.equal(error, null, 'profile_fault_interception_failed');
