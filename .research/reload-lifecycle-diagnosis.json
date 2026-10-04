@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "case": "D120 native extension reload",
+  "status": "cause_unverified_no_harness_repair",
+  "source_run": {
+    "workflow_run_id": "37192733619",
+    "artifact_receipt": "/tmp/scrape-guarded-37192733619/test-results/scrape-guest-native-cee18b6c-a7bf-4e05-950f-f6860a5a13b4.json",
+    "artifact_receipt_sha256": "a4281e2bb563fc5b3ce1c15bd8f945f18ce5d4f7b723739dea1a0d449cffd2fa",
+    "failure_stage": "extension_reload",
+    "failure_code": "native_extension_worker_retirement_unverified",
+    "reload_started_at": "2026-10-04T09:43:44.790Z"
+  },
+  "observed": {
+    "old_worker_destroyed_event": false,
+    "old_worker_absent": true,
+    "old_panel_absent": true,
+    "replacement_worker_present": true,
+    "replacement_worker_created_event": true,
+    "observed_worker_count": 1,
+    "management_state": "ENABLED",
+    "runtime_error_count": 0,
+    "manifest_error_count": 0,
+    "resource_invalid": false,
+    "unsafe_resource_event": false
+  },
+  "code_boundary": {
+    "helper": "tests/browser/native-sidepanel-qa-harness.mjs:reloadOwnedExtension",
+    "sequence": [
+      "Enable Target discovery and confirm exactly one current extension worker plus the old panel.",
+      "Subscribe to Target.targetDestroyed and Target.targetCreated.",
+      "Confirm the old worker still appears in Target.getTargets immediately before the management UI click.",
+      "Click the native extension reload button, then poll Target.getTargets until old worker and panel disappear and a created replacement worker appears.",
+      "Also require an old-worker Target.targetDestroyed event before proceeding."
+    ],
+    "receipt_limit": "The receipt stores booleans from the final poll. It does not store raw CDP event order, target IDs, event timestamps, interim target snapshots, or a browser process trace."
+  },
+  "reasoning": {
+    "established": "The reload helper timed out because it did not observe Target.targetDestroyed for the old worker, although its final target snapshot no longer contained that worker or panel and a different worker had a Target.targetCreated event.",
+    "not_established": "The artifact cannot distinguish an omitted CDP destruction event, a listener or session delivery problem, an event before the final snapshot that was filtered or misidentified, or another target lifecycle sequence. A missing event alone does not prove a product failure or a safe replacement proof.",
+    "previous_run_boundary": "Run 37191118595 reached a later pointer lookup and then a CPU unsafe condition. It cannot certify the retirement event behavior or this run's reload lifecycle."
+  },
+  "next_measurement": {
+    "capture": "In one owned native rerun, record bounded, timestamped Target.targetCreated, Target.targetDestroyed, and Target.targetInfoChanged events with targetId, type, and extension URL classification; record the old and replacement target IDs, immediately-before-click and each transition snapshot, and the exact subscription and click timestamps.",
+    "decision": "If Chrome omits old-worker destruction while the same session receives creation and repeated snapshots prove old target absence, investigate an independent lifecycle signal before changing the predicate. If destruction arrived under another ID or before subscription, fix that confirmed harness ordering or identity error with a red-first test. If the old target persists or the replacement vanishes, keep the failure as a real lifecycle failure.",
+    "current_limit": "No local native browser, build, or release was run in this diagnosis lane. Reload completion and product acceptance remain unverified."
+  }
+}
