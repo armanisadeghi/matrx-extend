@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "status": "OBSERVED_NATIVE_ASSERTION_FAILURE_CAUSE_UNRESOLVED",
+  "run": {
+    "workflow_run_id": 37209834721,
+    "workflow": "Hosted guest side-panel acceptance",
+    "acceptance_case": "guest-scrape-development",
+    "status": "completed",
+    "conclusion": "failure",
+    "job_id": 111458586152,
+    "head_sha": "2145f33ba78fac0a76b8b96c4b29816680a9102b",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37209834721",
+    "started_at": "2026-10-04T14:35:50Z",
+    "completed_at": "2026-10-04T14:41:54Z"
+  },
+  "frozen_development_artifact": {
+    "version": "0.2.215",
+    "source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+    "tree_sha256": "ab62d0755d03e8a7f2ca0cb99e0b5037f39e75d756b14a3e2d3ad6d8cc096d08",
+    "ci_run_id": 37193761291,
+    "artifact_id": 11299613935,
+    "expired_before_dispatch": false
+  },
+  "drivers": {
+    "reviewed_commits": [
+      "2a0b2e4121cc2f01bae438c4b650e49a4f28d613",
+      "b89c725ceea9532e2537a1065200d13d91bdd882",
+      "4aa99248a8bb42ba21e7bef0980673be7f44d58"
+    ],
+    "reviewed_driver_diff_from_4aa_to_run_head": "empty",
+    "scrape_guest_native_acceptance_sha256": "b2bb3ca73adfd13f5ee383543340a6426ed4307da162dcaa3bac3d7f8856635f",
+    "scrape_native_media_actions_sha256": "2a9d4a3783a8ce53d2749f534de5d98c37cbdf387f00d8780f391095f28e5a37",
+    "hosted_guest_acceptance_sha256": "d5c95c633d4be54d9a5cd704655fab91798828a9a4aa9eac2e4abf3c5396e18d"
+  },
+  "resource_boundary": {
+    "preflight": "passed",
+    "package_readiness": "passed; 3 healthy samples",
+    "package_owned_permit": "admitted; child exit 0; resourceInvalid false",
+    "browser_readiness": "passed; 3 healthy samples",
+    "browser_owned_permit": "admitted; child exit 0; resourceInvalid false",
+    "acceptance_readiness": "passed; 3 healthy samples",
+    "guest_owned_permit": "admitted; no RESOURCE_WATCH_UNSAFE; resourceInvalid false; child exit 1 after native assertion",
+    "first_boundary": "native product assertion after guest and extension load, not resource refusal"
+  },
+  "driver": {
+    "driver_failure": null,
+    "hosted_browser_ready": true,
+    "development_artifact_import": "exact pushed commit only; passed"
+  },
+  "native_receipt": {
+    "status": "unverified",
+    "guest_account_observed": true,
+    "native_stage": "exercise_panel",
+    "failure_stage": "warm_media_controls",
+    "failure_code": "warm_image_size_groups_missing",
+    "assertion": "selected Images pane resultText did not include `1 image \u00b7 1 small \u00b7 1 icon`",
+    "root_cause": "unresolved; observed UI assertion failure, not yet a confirmed product defect or harness mismatch",
+    "original_busy_failure": null
+  },
+  "case_outcomes": [
+    {
+      "id": "EXT-F-1007-T20",
+      "status": "partial",
+      "evidence": "initial empty state observed; initial URL was owned intake fixture"
+    },
+    {
+      "id": "EXT-F-1007-T01",
+      "status": "partial",
+      "evidence": "capture showed expected article title; lazy content absent; expected result tabs appeared"
+    },
+    {
+      "id": "EXT-F-1007-T08",
+      "status": "partial",
+      "evidence": "expected article, 3 images, 2 videos, links, SEO, schema observed; images had natural sizes 640x480, 96x96, 32x32"
+    },
+    {
+      "id": "EXT-F-1007-T10",
+      "status": "not reached",
+      "evidence": "warm media-controls assertion interrupted before case mark"
+    },
+    {
+      "id": "EXT-F-1007-T11",
+      "status": "not reached",
+      "evidence": "warm media-controls assertion interrupted before case mark"
+    },
+    {
+      "id": "EXT-F-1007-T12",
+      "status": "not reached",
+      "evidence": "no reload milestones"
+    }
+  ],
+  "screenshot_observation": {
+    "visible_excerpt": "Images 3",
+    "screenshot": "docs/stabilization/evidence/scrape215/run37209834721/scrape-fast-article.png",
+    "selected_pane": "Article",
+    "limitation": "No uploaded screenshot captures the Images pane at the assertion; the safe excerpt is only the visible tab count, not a visible size-group summary."
+  },
+  "hosted_artifact": {
+    "id": 11306216775,
+    "name": "hosted-guest-37209834721-1",
+    "zip_sha256": "9a7af460a4c1d95b373eb505cdd48606067294d31e139e9827c4fd9f61315599",
+    "zip_integrity": "unzip -t passed"
+  },
+  "evidence": {
+    "directory": "docs/stabilization/evidence/scrape215/run37209834721",
+    "receipt_sha256": "2485458b9155960a195c04dd56c500e088490d0e312f010695710c9dcff94446",
+    "journals_sha256": {
+      "package-resource.jsonl": "27781e7d29429498dc2bddb787911b00fa6a9ac0d6f2994e2fc832a58be4c635",
+      "browser-resource.jsonl": "feb65e71ba056bf8f2e87089ee55d3e387ec4219e2b2410cf6ad6a9cd51eed41",
+      "guest-resource.jsonl": "bf9433b63a6ef9dbe9b32fb4b29c95daef07baf670bf7f9e9561e19274533bd2"
+    },
+    "screenshots_sha256": {
+      "native-side-panel.png": "2cfda86f86cad54e4a73aa3480585a0e0ab5d74b20da4921a35999d22e3c462f",
+      "normal-target-after-open.png": "60d95c01c8bf5fa8f0807e1aed08d2adb43b4a5532190ae0eadd54c5e3aef79c",
+      "scrape-fast-article.png": "43f6401fd90ea56e50c94c137ef0f464a3b9a39cd74242da49cc6c76e4b587db"
+    }
+  },
+  "limits": "One authorized capacity recheck only. No retry, source edit, product fix, or full health claim."
+}
