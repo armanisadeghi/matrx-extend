@@ -1,6 +1,6 @@
 {
-  "observed_at": "2026-10-04T20:12:25.924588+00:00",
-  "last_all_remotes_fetched": "2026-10-04T20:12:25.924588+00:00",
+  "observed_at": "2026-10-04T20:31:27.720593+00:00",
+  "last_all_remotes_fetched": "2026-10-04T20:31:27.720593+00:00",
   "baseline_verified_from": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-turn-ledger-baseline.json",
   "repositories": [
     {
@@ -25,11 +25,11 @@
     },
     {
       "repo": "aidream",
-      "prior_origin_main": "e92228857bfcf18e3bbc014d5a711ea191aeeb69",
-      "origin_main": "1c781c5581e5c110afd62f3455f9dbedac9f39c4",
-      "last_update": "2026-10-04T13:12:16-07:00",
-      "files_modified_since_prior_ledger": 35,
-      "pushed_to_main": "2026-10-04T13:12:16-07:00",
+      "prior_origin_main": "1c781c5581e5c110afd62f3455f9dbedac9f39c4",
+      "origin_main": "7007fa378779ada13fb6c6e88f0ae53f4b2e532b",
+      "last_update": "2026-10-04T13:30:50-07:00",
+      "files_modified_since_prior_ledger": 23,
+      "pushed_to_main": "2026-10-04T13:30:50-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -39,17 +39,17 @@
       ],
       "unmerged_remote_branches": [],
       "worktrees": [
-        "worktree /Volumes/Samsung2TB/code/aidream\nHEAD 1c781c5581e5c110afd62f3455f9dbedac9f39c4\nbranch refs/heads/main"
+        "worktree /Volumes/Samsung2TB/code/aidream\nHEAD 7007fa378779ada13fb6c6e88f0ae53f4b2e532b\nbranch refs/heads/main"
       ],
       "exception": "None"
     },
     {
       "repo": "ai-matrx",
-      "prior_origin_main": "0196bc5881f3ab589f5627de77ce4e0f10237874",
-      "origin_main": "49458dd46223f7c7c6e52182063348e79b831de0",
-      "last_update": "2026-10-04T13:07:46-07:00",
-      "files_modified_since_prior_ledger": 111,
-      "pushed_to_main": "2026-10-04T13:07:46-07:00",
+      "prior_origin_main": "49458dd46223f7c7c6e52182063348e79b831de0",
+      "origin_main": "66d84ae9af4accd419bee96dffbd69f9a1bd1993",
+      "last_update": "2026-10-04T13:27:43-07:00",
+      "files_modified_since_prior_ledger": 19,
+      "pushed_to_main": "2026-10-04T13:27:43-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -59,17 +59,17 @@
       ],
       "unmerged_remote_branches": [],
       "worktrees": [
-        "worktree /Volumes/Samsung2TB/code/ai-matrx\nHEAD 49458dd46223f7c7c6e52182063348e79b831de0\nbranch refs/heads/main"
+        "worktree /Volumes/Samsung2TB/code/ai-matrx\nHEAD 66d84ae9af4accd419bee96dffbd69f9a1bd1993\nbranch refs/heads/main"
       ],
       "exception": "None"
     },
     {
       "repo": "matrx-extend",
-      "prior_origin_main": "c09f4566e21b8dcac94af97f1e056cf37ca4508c",
-      "origin_main": "c6622e4cdd8db367673809c0caeb97cc8bd3ea9b",
-      "last_update": "2026-10-04T13:12:16-07:00",
-      "files_modified_since_prior_ledger": 36,
-      "pushed_to_main": "2026-10-04T13:12:16-07:00",
+      "prior_origin_main": "c6622e4cdd8db367673809c0caeb97cc8bd3ea9b",
+      "origin_main": "6a2b7d8f0c1752805b6f6bf36679bec9c0983292",
+      "last_update": "2026-10-04T13:31:18-07:00",
+      "files_modified_since_prior_ledger": 27,
+      "pushed_to_main": "2026-10-04T13:31:18-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -79,17 +79,17 @@
       ],
       "unmerged_remote_branches": [],
       "worktrees": [
-        "worktree /Volumes/Samsung2TB/code/matrx-extend\nHEAD c6622e4cdd8db367673809c0caeb97cc8bd3ea9b\nbranch refs/heads/main"
+        "worktree /Volumes/Samsung2TB/code/matrx-extend\nHEAD 6a2b7d8f0c1752805b6f6bf36679bec9c0983292\nbranch refs/heads/main"
       ],
       "exception": "None"
     },
     {
       "repo": "matrx-local",
-      "prior_origin_main": "5337422f04018c526c4f515df0bc14497ad2a6be",
+      "prior_origin_main": "2a5e69703c702e5fd17ae2de9dafd096503345d7",
       "origin_main": "2a5e69703c702e5fd17ae2de9dafd096503345d7",
       "last_update": "2026-10-04T13:04:39-07:00",
-      "files_modified_since_prior_ledger": 7,
-      "pushed_to_main": "2026-10-04T13:04:39-07:00",
+      "files_modified_since_prior_ledger": 0,
+      "pushed_to_main": "\u2014",
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -165,11 +165,11 @@
     },
     {
       "repo": "matrx-common-docs",
-      "prior_origin_main": "3ad542ed4b542b77285153602c2675e252f21600",
-      "origin_main": "7adc84cdf048215c33368abe4322e0756a5380e1",
-      "last_update": "2026-10-04T13:07:01-07:00",
-      "files_modified_since_prior_ledger": 9,
-      "pushed_to_main": "2026-10-04T13:07:01-07:00",
+      "prior_origin_main": "7adc84cdf048215c33368abe4322e0756a5380e1",
+      "origin_main": "d936d7a1d10acda06c4a06ba73fb6c7c46fb7ac2",
+      "last_update": "2026-10-04T13:25:11-07:00",
+      "files_modified_since_prior_ledger": 3,
+      "pushed_to_main": "2026-10-04T13:25:11-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -179,7 +179,7 @@
       ],
       "unmerged_remote_branches": [],
       "worktrees": [
-        "worktree /Volumes/Samsung2TB/code/matrx-common-docs\nHEAD 7adc84cdf048215c33368abe4322e0756a5380e1\nbranch refs/heads/main"
+        "worktree /Volumes/Samsung2TB/code/matrx-common-docs\nHEAD d936d7a1d10acda06c4a06ba73fb6c7c46fb7ac2\nbranch refs/heads/main"
       ],
       "exception": "None"
     },
@@ -204,6 +204,6 @@
       "exception": "None"
     }
   ],
-  "snapshot_note": "Snapshot immediately before this ledger commit; final ledger commit excluded from its own SHA. Post-push cleanliness and 0/0 divergence checked separately.",
-  "turn_result": "PROGRESS: reviewed native startup diagnostic executed once, reproduced resource refusal, salvaged real interval evidence; EXT-D-0129 durable serialization fixed and independently replayed/closed. No product acceptance promotion. Store205 still pending. All children and native jobs terminal; next bounded capacity diagnosis escalates before any acceptance retry."
+  "snapshot_note": "Snapshot immediately before this ledger commit; own final commit excluded from SHA. Post-push cleanliness and 0/0 divergence separately checked.",
+  "turn_result": "PROGRESS: D130 closed after actual hosted four-case zero-skip resource integration and full CI37232097255 at7733c85b. Nine form procedures independently source-reviewed with runtime/status/bindings preserved. Astra established source-supported Graphite/Metal hypothesis and bounded observation plan; no new native dispatch. Later synchronized contributor changes are not covered by that exact CI SHA. All children terminal; full product goal remains active."
 }
