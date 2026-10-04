@@ -1,12 +1,12 @@
 # Extension stabilization status
 
-Generated 2026-10-03 23:55 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-03T23:53:50.847870+00:00. 205 features · 760 cases · 1332 controls · 99 linked defect records.
+Generated 2026-10-04 00:00 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T00:00:08.158195+00:00. 205 features · 760 cases · 1332 controls · 99 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1207** — Pass: 69 · Partial: 63 · Fail: 6 · Unverified: 1068 · N/A: 1.
+Applicable case-by-role slots: **1207** — Pass: 69 · Partial: 64 · Fail: 5 · Unverified: 1068 · N/A: 1.
 Unverified splits into **121 explicitly marked unverified** and **947 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 148 cases without steps, 147 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
@@ -15,7 +15,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 
 | Tab or surface | Features | Guest cases | Member cases | Admin cases | All-role case slots | Active defects |
 | --- | ---: | --- | --- | --- | --- | ---: |
-| [Development installation](#development-installation) | 1 | 0 pass · 0 partial · 2 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 1 fail · 6 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 1 fail · 4 unverified · 0 deferred; 0/1 full | pass 1, partial 1, fail 4, unverified 15, n/a 0 | 3 |
+| [Development installation](#development-installation) | 1 | 0 pass · 1 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 1 fail · 6 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 1 fail · 4 unverified · 0 deferred; 0/1 full | pass 1, partial 2, fail 3, unverified 15, n/a 0 | 2 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 2 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 7, partial 1, fail 2, unverified 15, n/a 0 | 4 |
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
@@ -68,14 +68,14 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: Fail · member: Fail · admin: Fail. **Cases:** 7. **Controls:** 7.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0077, EXT-D-0090, EXT-D-0099
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0077, EXT-D-0090
 
-**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed), [EXT-D-0080](defects/EXT-D-0080.json) (closed), [EXT-D-0090](defects/EXT-D-0090.json) (fixed), [EXT-D-0099](defects/EXT-D-0099.json) (fixed)
+**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed), [EXT-D-0080](defects/EXT-D-0080.json) (closed), [EXT-D-0090](defects/EXT-D-0090.json) (fixed), [EXT-D-0099](defects/EXT-D-0099.json) (retest-pass)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-0001-T01 Fresh development build and unpacked identity | Unverified | Unverified | Unverified | EXT-F-0001-C01 |
-| EXT-F-0001-T02 Extension reload and sidepanel recovery | Fail | Unverified | Pass | EXT-F-0001-C02 |
+| EXT-F-0001-T02 Extension reload and sidepanel recovery | Partial | Unverified | Pass | EXT-F-0001-C02 |
 | EXT-F-0001-T03 Content-script page reload | Unverified | Unverified | Unverified | EXT-F-0001-C03 |
 | EXT-F-0001-T04 Service-worker and offscreen restart | Unverified | Unverified | Unverified | EXT-F-0001-C04 |
 | EXT-F-0001-T05 Development identity auth redirect | Unverified | Unverified | Unverified | EXT-F-0001-C05 |
@@ -86,8 +86,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 - EXT-F-0001-T01 · guest: Unverified.
   Evidence / build / date recorded: baseline-build-001, docs/stabilization/runs/baseline-build-001.json
-- EXT-F-0001-T02 · guest: Fail. Current isolated development184 profile disables unpacked extension on full Reload because Developer mode is off. Builder repair passed once; independent final verification pending. Historical product passes preserved.
-  Evidence / build / date recorded: reload-escalation-01, .research/reload-lifecycle-escalation.json
+- EXT-F-0001-T02 · guest: Partial. Independent frozen184 guest fullReload lifecycle passed including enabledDeveloperMode, strictoldtargetretirement, newworker/panel andnativecontext. Runtimeerrorcount1 stillunclassified; no cleanruntime or currentmainclaim.
+  Evidence / build / date recorded: reload-final-peer-20261003-01, .research/reload-final-peer.json
 - EXT-F-0001-T02 · admin: Pass. Final shipped0.2.56 full extension Reload,30s before opening actual sidepanel: admin/ADMIN restored; selected org visible about5s later. Original development30s-settle proof retained in permissions-auth-native-sol.
   Evidence / build / date recorded: release-native-verification, docs/stabilization/runs/release-native-verification.json
 - EXT-F-0001-T06 · guest: Unverified. Implementation active after independent contract review; actual artifact/import/native evidence pending.

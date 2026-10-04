@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-03T23:53:50.847870+00:00",
+  "updated_at": "2026-10-04T00:00:08.158195+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -158,10 +158,10 @@
           ],
           "results": {
             "guest": {
-              "status": "fail",
-              "run_id": "reload-escalation-01",
-              "detail": "Current isolated development184 profile disables unpacked extension on full Reload because Developer mode is off. Builder repair passed once; independent final verification pending. Historical product passes preserved.",
-              "evidence": ".research/reload-lifecycle-escalation.json"
+              "status": "partial",
+              "run_id": "reload-final-peer-20261003-01",
+              "detail": "Independent frozen184 guest fullReload lifecycle passed including enabledDeveloperMode, strictoldtargetretirement, newworker/panel andnativecontext. Runtimeerrorcount1 stillunclassified; no cleanruntime or currentmainclaim.",
+              "evidence": ".research/reload-final-peer.json"
             },
             "member": {
               "status": "unverified",
@@ -195,6 +195,13 @@
               "run_id": "render-retest-001",
               "detail": "Candidate identity was verified after reload and actual sidepanel opened twice; guest session only.",
               "evidence": "docs/stabilization/runs/render-retest-001.json"
+            },
+            {
+              "mode": "guest",
+              "status": "fail",
+              "run_id": "reload-escalation-01",
+              "detail": "Current isolated development184 profile disables unpacked extension on full Reload because Developer mode is off. Builder repair passed once; independent final verification pending. Historical product passes preserved.",
+              "evidence": ".research/reload-lifecycle-escalation.json"
             }
           ],
           "defect_ids": [
@@ -425,7 +432,7 @@
             "integrated-regression-001",
             "dev-auth-readiness-001"
           ],
-          "retest_status": "pending"
+          "retest_status": "partial"
         },
         "member": {
           "test_status": "unverified",
