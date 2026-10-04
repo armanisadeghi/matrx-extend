@@ -8,6 +8,10 @@ Previous turn classification: **progress** — independently verified member war
 - `popup_guest_native_census` (Luna medium) is terminal at b08421ef: valid scratch preflight only, no owned browser launched. CUA selected existing shared CFT; no input sent. All guest popup cases remain unverified.
 - `popup_owned_toolbar_smoke` (Sol medium) now owns sole guarded heavy slot: launch generic native harness in an unmistakably owned profile/window, prove one actual toolbar action, then bounded guest T01/T04 warm/reload if supported. Sixty-tool-call/ten-minute bound, two environment failures then handoff. No member login, DB writes, or product edits.
 
+`profile_identity_employment_cases` completed source0534a562/report352cdf4d. Fresh peerc741c667 found saved-field persistence was not held across full reload. `profile_fields_reload_fix` (fresh Sol medium, 80calls/12minutes) now owns carry-across-reload oracle and explicit extended-case completeness. Base-only runs remain valid for their bounded scope; no historical full-Profile claim is implied. Native field grant held.
+
+`popup_owned_toolbar_smoke` is terminal: adapted owned browser setup completed and cleaned up, resource-valid; CUA could not safely address its toolbar, so no popup input/case pass. Report8303a177 was corrected byf0fd2a2c to disclose ambient WEB_ORIGIN workaround and distinguish inferred from observed failure. EXT-D-0103 tracks undeclared origin in shared native harness; `native_harness_origin_fix` (Sol low,30calls/6minutes) owns its actual red-green guard and small repair. No heavy job currently active. Next native launch must use the unmodified corrected harness.
+
 Root owns tracking, review routing and synchronization. Preserve pending Store181; no new dashboard poll needed immediately after the previous 01:33UTC check.
 
 ## Previous checkpoint — independent member reload acceptance passed

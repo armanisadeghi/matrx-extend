@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0103",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T08"],
+  "surface": "Native test harness startup",
+  "auth_mode": "all modes using shared native harness",
+  "title": "Agent-traffic marking references undefined WEB_ORIGIN during native browser setup",
+  "reproduction": [
+    "Use current native-sidepanel-qa-harness.mjs without defining an ambient global WEB_ORIGIN.",
+    "Launch the exact receipt-bound owned native browser under the resource guard and reach page_create.",
+    "The first markBrowserAgentTraffic call references WEB_ORIGIN, which has no declaration or import in the module."
+  ],
+  "expected": "Owned browser setup marks test traffic using an explicitly resolved origin and continues without an ambient global workaround.",
+  "actual": "Source-confirmed undeclared WEB_ORIGIN would prevent normal startup unless an ambient global exists; unmodified runtime failure has not yet been observed. Popup scratch driver supplied that global, so adapted setup evidence cannot establish unmodified startup.",
+  "severity": "S2 test infrastructure: blocks native acceptance; no product-user failure demonstrated.",
+  "priority": "P1 next native launch prerequisite",
+  "state": "in-fix",
+  "owner": "native_harness_origin_fix",
+  "evidence": [
+    "tests/browser/native-sidepanel-qa-harness.mjs:713",
+    ".research/popup-owned-toolbar-smoke.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T01:51:02.098859+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Popup tester reported ambient global workaround for undeclared origin."
+    },
+    {
+      "at": "2026-10-04T01:51:02.098859+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Root source census found use but no declaration/import. Unmodified execution guard and repair required."
+    },
+    {
+      "at": "2026-10-04T01:51:54.387515+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Small Sol low lane owns actual startup guard and canonical origin repair; no native launch until reviewed."
+    }
+  ],
+  "closure_requirement": "Meaningful actual startup/marking red-green guard, independent review and unmodified guarded native launch; no ambient global injection."
+}
