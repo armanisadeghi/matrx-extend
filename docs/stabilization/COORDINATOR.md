@@ -14,6 +14,8 @@ Previous turn classification: **progress** — independently verified member war
 
 D103 sourcefix76d6832e reproduced and removed the undeclared-origin failure with an actual startup-marker guard. Field correction81eb4444 now holds saved Identity/Employment through full reload and requires exact extended case/dimension census;14 checks passed. Fresh lane `profile_fields_final_source_peer` reviews both changes (60calls/8minutes) before root grants one member extended native run. No heavy job active.
 
+Fresh peer9675f002 accepted the field persistence/census repair and D103 startup source but found ambiguous extended-case failure attribution (actual boundary reproduction). D101 reopened only for this new integration gap; `profile_fields_reload_fix` owns a short20call/4minute fixed caseID+dimension correction. Full native grant remains held until fresh review; no browser active.
+
 Root owns tracking, review routing and synchronization. Preserve pending Store181; no new dashboard poll needed immediately after the previous 01:33UTC check.
 
 ## Previous checkpoint — independent member reload acceptance passed
