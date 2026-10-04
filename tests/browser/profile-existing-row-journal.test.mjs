@@ -2,8 +2,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import {
-  createExistingProfileWriteJournal,
   PROFILE_TESTED_COLUMNS,
+  createExistingProfileWriteJournal,
 } from './profile-existing-row-journal.mjs';
 import { safeProfileFailureCode } from './profile-native-failure.mjs';
 

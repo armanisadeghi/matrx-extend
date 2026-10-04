@@ -14,6 +14,7 @@ import {
   assertFirstSaveOwnedRow,
   ownedDeleteUrl,
 } from './profile-empty-row-restoration.mjs';
+import { createExistingProfileWriteJournal } from './profile-existing-row-journal.mjs';
 import { extendedCaseCensus } from './profile-extended-census.mjs';
 import {
   runProfileExpandersCase,
@@ -27,7 +28,6 @@ import {
   safeProfileFailureCode,
 } from './profile-native-failure.mjs';
 import { createOwnedWriteJournal } from './profile-owned-write-journal.mjs';
-import { createExistingProfileWriteJournal } from './profile-existing-row-journal.mjs';
 import { observeReloadAccountReady } from './profile-reload-account.mjs';
 import { runProfileSaveFailureCase } from './profile-save-failure-case.mjs';
 import { panelIdentity } from './settings-native-auth-driver.mjs';
