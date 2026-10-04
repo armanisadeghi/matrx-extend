@@ -3,7 +3,7 @@
   "issue": "EXT-D-0116",
   "role": "fresh independent verifier",
   "reviewed_commits": ["edaf85c3", "45947648"],
-  "cross_repo_correction": "common-docs bd7586ae3 was named in the review brief; that commit is not present in this checkout and was not independently diff-reviewed here.",
+  "cross_repo_correction": "Reviewed matrx-common-docs bd7586ae3: its CHROME-WEB-STORE paragraph now identifies hosted member run 37182939504 as a 0.2.205 local development ZIP check, limits D113 closure to that development probe, and explicitly says the run does not verify the distinct Store ZIP. The adjacent paragraph retains the separate exact Store payload native acceptance claim and its direct evidence. This wording matches the corrected provenance and does not invalidate the earlier direct Store checks.",
   "verdict_a_readiness": {
     "status": "PARTIAL_RUNTIME_PENDING",
     "source_ready": true,
