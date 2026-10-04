@@ -13,11 +13,12 @@
   "actual": "Diagnostic uses shared CDP send path whose timeout invalidates entire connection, so observation can create a false native failure.",
   "severity": "S2: diagnostic can invalidate browser control; not a proven product failure",
   "priority": "P1: fix before renderer baseline launch",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/startup_renderer_observation",
   "evidence": [
     ".research/renderer-observation-fresh-peer.json",
-    ".research/startup-renderer-observation.json"
+    ".research/startup-renderer-observation.json",
+    ".research/renderer131-fresh-reverify.json"
   ],
   "transition_history": [
     {
@@ -37,7 +38,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Assigned isolation repair preserving ordinary deadline behavior, no new startup wait."
+    },
+    {
+      "at": "2026-10-04T20:47:10.359967+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent peer6999f407 verified actual separate ownedtransport positive control, optionaltimeout isolation, requiredtimeout fatal semantics, boundedcleanup. Native default-renderer diagnostic37233387364 pending."
     }
   ],
-  "next_action": "Fresh independent actual transport refusal/positive control and persisted UNKNOWN verification before hosted baseline."
+  "next_action": "Fresh independent actual transport refusal/positive control and persisted UNKNOWN verification before hosted baseline.",
+  "fix_commits": ["d7f41f37"]
 }
