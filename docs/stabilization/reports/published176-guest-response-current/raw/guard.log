@@ -1,0 +1,40 @@
+{"schema":1,"at":"2026-10-04T02:43:23.857Z","runId":"published176-guest-current-20261003-02","path":"/Volumes/Samsung2TB/code/matrx-extend/docs/stabilization/resource-journals/published176-guest-current-20261003-02.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-04T02:44:31.103Z","runId":"published176-guest-current-20261003-02","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":11.36,"requiredMemoryGiB":4,"oneMinuteLoad":3.49,"logicalCpus":10,"cpuBusyFraction":0.29000000000000004,"swapUsedMiB":3859.5,"repoFreeGiB":1688.2027740478516,"profileFreeGiB":1688.2027740478516,"safetyFreeGiB":25.998886108398438,"systemFreeGiB":25.998886108398438},"cpuBusySamples":[0.35,0.37,0.33,0.22,0.23,0.3,0.23],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+HOSTED_BROWSER_READY 1194 acceptance
+PREPARED 0.2.176 3fe608d949a06aa10bfea57b43c9b05638386bc1 755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272
+STAGE owned_profile
+STAGE fresh_guest
+STAGE owned_article_page
+STAGE page_specific_fixture
+STAGE guest_chat_open
+STAGE guest_values_chip_open
+STAGE guest_question
+STAGE real_guest_answer
+STAGE real_panel_reload
+STAGE guest_followup_composer
+STAGE guest_followup_question
+STAGE real_guest_followup_answer
+UNVERIFIED guest_chat_store /Volumes/Samsung2TB/code/matrx-extend/test-results/guest-chat-store-4c8a8fce-1f89-42e5-adf4-0e4c3169e71f.json
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: native side-panel acceptance exited 1
+
+1 !== 0
+
+    at run (file:///Volumes/Samsung2TB/code/matrx-extend/scripts/hosted-guest-acceptance.mjs:355:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async file:///Volumes/Samsung2TB/code/matrx-extend/scripts/hosted-guest-acceptance.mjs:438:1 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.6.0
+{"schema":1,"at":"2026-10-04T02:44:47.141Z","runId":"published176-guest-current-20261003-02","reasons":[],"sample":{"pressureLevel":1,"availableMemoryGiB":11.2,"requiredMemoryGiB":4,"oneMinuteLoad":2.32,"logicalCpus":10,"cpuBusyFraction":0.3,"swapUsedMiB":3859.5,"repoFreeGiB":1688.1291732788086,"profileFreeGiB":1688.1291732788086,"safetyFreeGiB":25.995349884033203,"systemFreeGiB":25.995349884033203},"code":"RESOURCE_WATCH_HEALTHY"}
+{"schema":1,"at":"2026-10-04T02:44:47.148Z","runId":"published176-guest-current-20261003-02","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-04T02:44:47.225Z","runId":"published176-guest-current-20261003-02","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}

@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "status": "FAIL",
+  "scope": "One fresh native Chromium signed-out guest Chat run using frozen published 0.2.176 against the live backend. Chat substeps are reported separately from the final owner-table GET gate.",
+  "backend": {
+    "health_url": "https://server.app.matrxserver.com/health/version",
+    "before": {
+      "git_sha": "9b3483e7cf868d5f2e04e30d9e36b4f7502c0250",
+      "built_at": "2026-10-04T02:12:02Z",
+      "captured_at": "2026-10-04T02:43:00Z"
+    },
+    "after": {
+      "git_sha": "9b3483e7cf868d5f2e04e30d9e36b4f7502c0250",
+      "built_at": "2026-10-04T02:12:02Z",
+      "captured_at": "2026-10-04T02:45:09Z"
+    }
+  },
+  "release_artifact": {
+    "release_run_id": 37105966615,
+    "github_artifact_id": 11267544261,
+    "version": "0.2.176",
+    "embedded_release_source_sha": "3fe608d949a06aa10bfea57b43c9b05638386bc1",
+    "local_zip_sha256": "2bb4ddc89f113897829271d5125e46b438a625c60cf28017dd1c6f35838cbb93",
+    "store_zip_sha256": "813715b8dcd6421d4ee001c04e99c3729f6dad439064f8bf5922e6fb38ce09f8",
+    "keyed_tree_sha256": "755c43f69d4dc5bdc080194f131cd3d062f337240260afecda35401c67d31272",
+    "input_artifact_unchanged": true,
+    "receipt_kind": "Published release local ZIP unpacked for native loading; Chrome Web Store installed lifecycle not exercised"
+  },
+  "chat_subresults": {
+    "fresh_signed_out_guest": true,
+    "opening_terminal_answer": true,
+    "opening_answer_grounded_in_unpredictable_page_code_and_ordered_stages": true,
+    "real_side_panel_reload": true,
+    "guest_visible_and_session_absent_after_reload": true,
+    "followup_terminal_answer": true,
+    "followup_grounded_in_distinct_code_and_fixture_heading": true,
+    "login_paywall_or_chat_error": false,
+    "guest_ai_requests": 0
+  },
+  "owner_table_gate": {
+    "verdict": "FAIL",
+    "assertion": "Guest panel/chat must not issue an owner-table GET",
+    "observed_gets": [
+      {
+        "stage": "chip_open",
+        "schema": "users",
+        "authorization_header_present": true,
+        "http_status": 401
+      },
+      {
+        "stage": "opening_send",
+        "schema": "users",
+        "authorization_header_present": true,
+        "http_status": 401
+      },
+      {
+        "stage": "post_reload_send",
+        "schema": "users",
+        "authorization_header_present": true,
+        "http_status": 401
+      }
+    ]
+  },
+  "runner": {
+    "command": "node scripts/hosted-guest-acceptance.mjs",
+    "run_id": "published176-guest-current-20261003-02",
+    "resource_decision": "child_failed; admitted=true; resourceInvalid=false",
+    "child_exit_code": 1,
+    "resource_journal": "docs/stabilization/resource-journals/published176-guest-current-20261003-02.jsonl",
+    "resource_journal_sha256": "7dfe8239fdc3670fcad17831d2d77976169fe0867c518cb795919775060131ec",
+    "raw_evidence_root": "docs/stabilization/reports/published176-guest-response-current/raw"
+  },
+  "raw_files": {
+    "backend-before.json": "ffa5595a8977a90dd2ee2d8dcfaea4c3147435b395d025ddba2c1329e1585502",
+    "backend-after.json": "ffa5595a8977a90dd2ee2d8dcfaea4c3147435b395d025ddba2c1329e1585502",
+    "guard.log": "dd2ba90d231b692899ac6394642d8554876f8af4d8810207fcc27fce2b42e1ac",
+    "guest-chat.receipt.json": "094ca9d2b6da49acd53a80b1b762d3608b73a6a09ba972b8af86a0b8746c25ee",
+    "guest-chat-real-answer.png": "fc65c2b04374e97785ee9e79ed140a33e8045c1855d22f6a422e71e0b34431dd",
+    "guest-chat-real-followup-answer.png": "c78d323be837a374db55b5858a4ff9a0db497b6518dd71e06cd798eedcb06d07",
+    "guest-chat-failure.png": "c78d323be837a374db55b5858a4ff9a0db497b6518dd71e06cd798eedcb06d07",
+    "resource-journal.jsonl": "7dfe8239fdc3670fcad17831d2d77976169fe0867c518cb795919775060131ec"
+  },
+  "cleanup": {
+    "heavy_lease_present": false,
+    "unsafe_hold_present": false,
+    "owned_runner_or_pinned_browser_processes_remaining": 0
+  },
+  "limits": [
+    "Overall acceptance remains failed by authenticated users-schema owner-table GETs returning 401 even though both Chat turns completed.",
+    "No source edit, build, newer candidate, authentication, database write, or second browser run was used."
+  ]
+}
