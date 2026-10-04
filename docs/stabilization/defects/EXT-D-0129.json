@@ -13,11 +13,12 @@
   "actual": "JOURNAL_FIELDS omits bracket and silently drops the complete measurement. Console event retained enough evidence to recover this run.",
   "severity": "S2: loss of diagnostic evidence; not a product failure",
   "priority": "P1: repair before another diagnostic run",
-  "state": "in-fix",
+  "state": "closed",
   "owner": "root/startup_interval_diagnostic",
   "evidence": [
     ".research/startup-diagnostic-run.json",
-    ".research/startup-interval-diagnostic.json"
+    ".research/startup-interval-diagnostic.json",
+    ".research/journal129-fresh-peer.json"
   ],
   "transition_history": [
     {
@@ -37,7 +38,28 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Assigned bounded serializer repair with actual writer/readback regression."
+    },
+    {
+      "at": "2026-10-04T20:12:16.723498+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "694d4e6a preserves strictly sanitized bracket through actual writer."
+    },
+    {
+      "at": "2026-10-04T20:12:16.723498+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh peerfc6344c3 reproduced loss using parent actual writer and captured real-run event, then proved corrected full persistence and neighboring sanitization/refusal checks."
+    },
+    {
+      "at": "2026-10-04T20:12:16.723498+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Harness serialization defect resolved by independent filesystem writer/replay proof. Historical journal stays immutable; no product/native acceptance inferred."
     }
   ],
-  "next_action": "Independent real-journal reproduction and neighboring sanitization checks before closure; native product acceptance remains unverified."
+  "next_action": "No further serializer repair required. Next guarded run must still verify its resulting journal; resource cause and product acceptance remain open.",
+  "fix_commits": [
+    "694d4e6a"
+  ]
 }
