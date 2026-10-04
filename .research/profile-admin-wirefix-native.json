@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0109 / EXT-F-1004 independent native admin retest",
+  "run_id": "profile-admin-fields-189-05",
+  "status": "resource_guard_refused_before_browser_launch",
+  "source_repair": {
+    "original_fix": "af3c463cb29648d5fcf77ca7e982ee1db5f853ca",
+    "peer_review": "peer58119ce4",
+    "reviewed_commit": "a99f101ae2ba6e1cba61ceac5f857c4023a5e88e",
+    "native_verdict": "pending"
+  },
+  "scope": {
+    "run_count": 1,
+    "auth_mode": "admin",
+    "extended_cases_enabled": true,
+    "runner_changed": false,
+    "browser_launched": false,
+    "retry_performed": false,
+    "build_release_or_version_change": false,
+    "database_or_auth_mutation": "none; resource guard refused before runner launch"
+  },
+  "artifact": {
+    "source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "ci_run_id": 37164174445,
+    "artifact_id": 11288542496,
+    "version": "0.2.189",
+    "receipt": "test-results/ci-artifacts/b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced/37164174445-1/local-dev-receipt.json"
+  },
+  "resource_guard": {
+    "decision": "refused",
+    "admitted": false,
+    "resource_invalid": false,
+    "exit_code": 2,
+    "reasons": ["RESOURCE_PRESSURE_UNSAFE", "RESOURCE_SWAP_GROWTH"],
+    "sample": {
+      "pressure_level": 1,
+      "available_memory_gib": 11.2,
+      "required_memory_gib": 4,
+      "one_minute_load": 9.4,
+      "logical_cpus": 10,
+      "cpu_busy_fraction": 0.3885714285714286,
+      "swap_used_mib": 5859.94,
+      "safety_free_gib": 23.66671371459961,
+      "cpu_busy_samples": [0.82, 0.64, 0.37, 0.16, 0.16, 0.39, 0.18]
+    },
+    "journal": "docs/stabilization/resource-journals/profile-admin-fields-189-05.jsonl",
+    "journal_sha256": "43f049a9a48a506840267dc17d4a6e30784def3641ac6eeb025ec6449315ca5f"
+  },
+  "profile_observation": {
+    "initial_row_classification": "not_observed; browser was not launched",
+    "owner_row_existed_before": "unknown",
+    "profile_ui_or_owner_request": "not reached",
+    "field_mutations": 0,
+    "private_ownership_receipt": "absent",
+    "restoration": "not applicable; no fixture or UI write was created"
+  },
+  "acceptance": {
+    "EXT-F-1004-T06": { "warm": "unverified", "extension_reload": "unverified" },
+    "EXT-F-1004-T18": { "warm": "unverified", "extension_reload": "unverified" },
+    "EXT-F-1004-T22": { "warm": "unverified", "extension_reload": "unverified" },
+    "T02": "unverified",
+    "T04": "unverified",
+    "T25": "unverified",
+    "T26_admin": "unverified; admin behavior remains unimplemented in this runner",
+    "T28_first_save": "unverified; absent-admin branch was not exercised"
+  },
+  "recovery_need": "Wait for a safe resource window, then arrange a newly authorized guarded native run; this run must not be retried or bypassed.",
+  "limits": [
+    "This is resource-guard evidence only and contains no native Profile, database, or authentication observation.",
+    "No conclusion about existing Profile row state, first-save behavior, Profile acceptance, or Store health is supported."
+  ]
+}
