@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "case": "EXT-D-0120 reload lifetime native measurement",
+  "status": "NATIVE_BRANCH_UNAVAILABLE",
+  "decision": "The single authorized hosted run reached native browser and side-panel setup, then stopped at the existing guest resource guard before the guest Scrape exercise or reload began. No D120 lifetime branch was observed; keep the retirement predicate unchanged.",
+  "workflow": {
+    "run_id": 37198730857,
+    "job_id": 111425843322,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37198730857",
+    "event": "workflow_dispatch",
+    "driver_sha": "c540f36a41ea4b13ca0c3dc38b8f00ff1c46d730",
+    "head_contains": [
+      "9149625b06b53008e300e6a520def84f2d08e2d2",
+      "c540f36a41ea4b13ca0c3dc38b8f00ff1c46d730",
+      "78ac468db29c959e75134b19150ff21e3b84b1ce"
+    ],
+    "acceptance_case": "guest-scrape-development",
+    "conclusion": "failure",
+    "artifact_id": 11302017377,
+    "artifact_name": "hosted-guest-37198730857-1"
+  },
+  "inputs": {
+    "development_run_id": 37193761291,
+    "development_artifact_id": 11299613935,
+    "release_run_id": null,
+    "published_store_crx": false,
+    "scrape_diagnostic_cpu_rate": null
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.215",
+    "source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+    "tree_sha256": "ab62d0755d03e8a7f2ca0cb99e0b5037f39e75d756b14a3e2d3ad6d8cc096d08",
+    "development_run_id": 37193761291,
+    "development_artifact_id": 11299613935,
+    "artifact_expired_before_dispatch": false,
+    "artifact_expires_at": "2027-01-02T09:56:45Z"
+  },
+  "preflight": {
+    "queued_or_running_competing_hosted_acceptance": false,
+    "existing_concurrency_guard": "hosted-guest-side-panel; cancel-in-progress=false",
+    "resource_policy_changed": false,
+    "workflow_auth_and_provenance_preflight": "passed",
+    "package_and_browser_resource_permits": "valid"
+  },
+  "native_measurement": {
+    "status": "SCRAPE_EXERCISE_NOT_REACHED",
+    "receipt_status": "unverified",
+    "guest_account_observed": false,
+    "browser_harness_progress": {
+      "native_stage": "exercise_panel",
+      "panel_screenshots_present": true,
+      "browser_started_and_panel_opened": true,
+      "actual_browser_version": null,
+      "version_limit": "The receipt and hosted run logs do not record Browser.getVersion; 141.0.7390.37 is only the expected revision from the pinned Playwright 1.56.1 mapping, not a measured version for this run."
+    },
+    "timeline": [
+      {
+        "at": "2026-10-04T11:32:10.989Z",
+        "event": "Guest child admitted by resource guard with healthy sample."
+      },
+      {
+        "at": null,
+        "event": "The harness started Chromium, opened the side panel, and captured its screenshots; it reached native_stage exercise_panel. Exact stage timestamp and Browser.getVersion were not persisted."
+      },
+      {
+        "at": "2026-10-04T11:32:27.434Z",
+        "event": "Watch sample became unsafe: CPU busy 0.86 and load 12.44 on four logical CPUs."
+      },
+      {
+        "at": "2026-10-04T11:32:29.343Z",
+        "event": "Owned guest child exited with code 1 after the resource boundary refused the callback."
+      }
+    ],
+    "first_ui_boundary": {
+      "location": "First line of scrape exercisePanel callback: await requireResourceHealth(), before fixture navigation, guest-account verification, or any Scrape click.",
+      "result": "Refused unsafe_sample; no intake navigation or Scrape interaction occurred."
+    },
+    "failure": {
+      "stage": "inputs",
+      "native_stage": "exercise_panel",
+      "code": "NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample"
+    },
+    "reload_milestones": [],
+    "browser_version": null,
+    "pre_click_old_worker_target_mapping": null,
+    "old_and_replacement_host_probes": null,
+    "independent_destroyed_events": null,
+    "owned_destroyed_events": null,
+    "d120_branch": null
+  },
+  "original_predicate": {
+    "evaluated": false,
+    "required": [
+      "old Target.targetDestroyed event",
+      "old worker absent",
+      "old panel absent",
+      "replacement worker present",
+      "replacement-created event"
+    ],
+    "later_gates": ["replacement context", "management checks"],
+    "decision": "Preserved and not relaxed; the harness did not reach reload."
+  },
+  "current_run_resources": {
+    "package": {
+      "path": "docs/stabilization/evidence/scrape215/run37198730857/package-resource.jsonl",
+      "sha256": "f103fe51ebaff40594134dd4555a982caf654999b00e5f23815496e3cb81aeaf",
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "browser": {
+      "path": "docs/stabilization/evidence/scrape215/run37198730857/browser-resource.jsonl",
+      "sha256": "520671522fa12874d53cd1f1709412897a913ae4c1b63d6447eb4d557ed0ab25",
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "guest": {
+      "path": "docs/stabilization/evidence/scrape215/run37198730857/guest-resource.jsonl",
+      "sha256": "f5c7c0c90502c8d6493d5748fa028eff2bb5006f5039b14c68d65d4ffca1c3ab",
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "exit_code": 1,
+      "final_sample_reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+      "final_sample": {
+        "pressure_level": 1,
+        "available_memory_gib": 12.46,
+        "required_memory_gib": 4,
+        "one_minute_load": 12.44,
+        "logical_cpus": 4,
+        "cpu_busy_fraction": 0.86,
+        "swap_used_mib": 0
+      },
+      "prior_guest_sample_reasons": [],
+      "cpu_diagnostic": null
+    }
+  },
+  "resource_policy_thresholds": {
+    "watch_interval_seconds": 15,
+    "maximum_one_minute_load_per_logical_cpu": 0.75,
+    "maximum_sustained_cpu_busy_fraction": 0.75,
+    "maximum_busy_fraction_at_high_load": 0.6,
+    "unsafe_samples_to_stop": 2,
+    "interpretation": "The child boundary refuses immediately when any RESOURCE_WATCH_UNSAFE event is present; this run's sample exceeded both sustained busy thresholds and had normalized load 3.11 per CPU. It did not wait for the two-sample process-stop threshold."
+  },
+  "resource_change": {
+    "admission_sample_at": "2026-10-04T11:32:10.989Z",
+    "admission_cpu_busy_fraction": 0.03,
+    "admission_one_minute_load": 1.93,
+    "admission_logical_cpus": 4,
+    "admission_reasons": [],
+    "assessment": "The admission sample was healthy; the unsafe reading appeared 16.445 seconds later. The evidence does not identify whether the spike came from hosted-runner contention, harness/Chromium startup, or their interaction."
+  },
+  "receipt": {
+    "path": "docs/stabilization/evidence/scrape215/run37198730857/receipt.json.txt",
+    "sha256": "c250c24bc937c23ab1c776cf772c6e078f7b4d0ca815b285cf92bfddcc5a23c3",
+    "secrets_review": "No credential values, authorization material, token-like fields, or secret-pattern matches found before retaining the raw receipt."
+  },
+  "limitations": [
+    "This run supplies no native Chromium lifecycle evidence and selects none of the D120 native branches.",
+    "The actual browser version, target correlation, probes, and destroyed-event comparison are unavailable because the resource boundary refused the Scrape exercise callback before fixture navigation.",
+    "No retry, manual build, release, version change, or CPU diagnostic was run."
+  ]
+}
