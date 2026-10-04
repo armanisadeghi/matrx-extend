@@ -50,16 +50,22 @@
       "horizontal_overflow_or_shift": "None observed at captured boundaries; geometry remained stable through fast/deep capture and all tab selection."
     },
     "scrape_content": {
-      "fast": "Observed disabled Capturing… state (5 samples, one disabled sample), Harbor Dental intake guide content, and lazy content absent from the fast capture.",
-      "deep": "Observed disabled Scrolling… state (11 samples, seven disabled samples); lazy content was present in the browser and deep capture."
+      "fast": "Observed disabled Capturing\u2026 state (5 samples, one disabled sample), Harbor Dental intake guide content, and lazy content absent from the fast capture.",
+      "deep": "Observed disabled Scrolling\u2026 state (11 samples, seven disabled samples); lazy content was present in the browser and deep capture."
     },
     "reload_timeline": {
       "management_reload_clicked": true,
       "old_worker_and_panel_retired": true,
       "replacement_worker_and_panel_present": true,
       "reload_milestones": [
-        { "name": "reload_extension", "at": "2026-10-04T10:44:59.691Z" },
-        { "name": "open_scrape_in_replacement_panel", "at": "2026-10-04T10:45:01.443Z" }
+        {
+          "name": "reload_extension",
+          "at": "2026-10-04T10:44:59.691Z"
+        },
+        {
+          "name": "open_scrape_in_replacement_panel",
+          "at": "2026-10-04T10:45:01.443Z"
+        }
       ],
       "diagnosis": "Reload lifecycle and replacement-panel context boundary were observed. The run then failed in the extension_reload stage on a pointer target with zero visible matches; the intended post-reload interaction was not verified."
     }
@@ -80,5 +86,11 @@
     "No overall native acceptance pass: receipt status is unverified and final stage failed.",
     "Image/video content assertions and intended post-reload interaction remain incomplete.",
     "Normal-width and Chrome Web Store acceptance remain unverified."
-  ]
+  ],
+  "durable_raw_evidence": {
+    "directory": "docs/stabilization/evidence/scrape215/run37195986118",
+    "receipt": "receipt.json.txt",
+    "receipt_sha256": "117f55f180096488b7a1364237a3c4e21d6ce9135b2264178e1e683c4f4f8d21",
+    "note": "Immutable JSON bytes use .txt to avoid formatter mutations; journals preserve exact current-run records. Guest-only controlled fixture, no credential values."
+  }
 }
