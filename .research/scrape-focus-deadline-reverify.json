@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task": "scrape-focus-deadline-reverify",
+  "reviewed_commit": "427e75a4ba188028b25be9672cdeec687d738d8a",
+  "verdict_a": {
+    "status": "PASS_SOURCE_ONLY",
+    "diagnostics": "Owned root URL classification, panel visibility/focus, original target presence/exclusivity, and exact SIDE_PANEL context counts discriminate the relevant failure branches. No raw URL, IDs, context records, credentials, identity, or page text enter the receipt.",
+    "native_cause": "UNVERIFIED"
+  },
+  "verdict_b": {
+    "status": "PASS_SOURCE_ONLY",
+    "quality_policy_cleanup": "The diagnostic uses browserSession.timeoutMs, sourced from the owned CDP transport configuration; it adds no independent hardcoded deadline. On throw, panel detach is attempted, then harness finally detaches the CDP transport (rejecting pending sends), stops only its owned child, and removes its temp root. Thus outstanding probes are exposed and cleanup is bounded by the same configured transport deadline.",
+    "gates": "Original failure is rethrown; role, resource, artifact, and acceptance gates remain in place."
+  },
+  "prior_findings": {
+    "context_discriminator": "ADDRESSED",
+    "diagnostic_await_bound": "ADDRESSED",
+    "unsettled_probe_cleanup": "ADDRESSED_BY_OWNED_TRANSPORT_AND_HARNESS_FINALLY",
+    "native_cause_and_repair": "NOT_ADDRESSED"
+  },
+  "checks": "node --check passed for both touched JS files. Biome check had no errors; one existing useDefaultParameterLast warning at vault-owned-cdp.cjs:251.",
+  "native_run": "Not performed by review assignment; no product-cause claim."
+}
