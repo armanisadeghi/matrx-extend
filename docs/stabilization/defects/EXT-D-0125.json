@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0125",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T02", "EXT-F-1007-T03"],
+  "surface": "Scrape native recapture dialog acceptance",
+  "auth_mode": "guest",
+  "title": "Native deep-capture procedure omits unsaved-edits confirmation",
+  "reproduction": [
+    "Use native hosted run37221586281 with frozen development231 source723433a7628b32fb610d3a7f36ca6b8dd5fd2b72, CI37217066948/artifact11308203507 and driver ee6a023e on guarded ARM macos-15.",
+    "Open owned intake fixture in actual side panel, complete fast capture, warm image/video/link controls as retained in raw receipt.",
+    "Click Scroll & capture and wait for the deep-capture expected result; native receipt exits at deep_capture with scrape_deep_result_not_observed."
+  ],
+  "expected": "After edited media, native procedure must observe the unsaved-edits dialog, verify Cancel preserves edits, then explicitly confirm recapture before expecting the selected deep capture result.",
+  "actual": "Warm media/link mutations set edited=true. Product correctly opens Discard unsaved edits? and defers capture; native driver waits for deep result without confirmation. Sol actual-component causal reproduction verifies capture starts only on explicit confirmation. No product repair indicated.",
+  "severity": "S2: acceptance blocked by driver omission; product unsaved-edit protection works in causal reproduction",
+  "priority": "P1: blocks remaining contained Scrape lifecycle acceptance",
+  "state": "in-fix",
+  "owner": "root/scrape125_fix",
+  "evidence": [
+    "docs/stabilization/evidence/scrape231/run37221586281/receipt.json.txt",
+    ".research/scrape231-context-diagnostic-native.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T17:53:54.215389+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Native run reached deep capture after warm media with four healthy resource watches; diagnosis required before classifying product versus fixture/oracle."
+    },
+    {
+      "at": "2026-10-04T17:57:13.713844+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Root independently matched all seven evidence hashes/read raw result and journals; bounded Sol causal diagnosis assigned."
+    },
+    {
+      "at": "2026-10-04T17:58:22.993008+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol reproduced edited-state confirmation boundary on actual component; repairing native procedure, not disabling product protection."
+    }
+  ],
+  "next_action": "Bounded causal source/evidence diagnosis; no blind native retry. Clipboard observation limitation stays separate."
+}

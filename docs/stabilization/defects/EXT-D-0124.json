@@ -21,7 +21,8 @@
     "docs/stabilization/evidence/scrape231/run37218903375/scrape-warm-media-failure.png",
     ".research/scrape231-arm-native.json",
     ".research/scrape-video-observer-fix.json",
-    ".research/scrape-video-observer-peer.json"
+    ".research/scrape-video-observer-peer.json",
+    ".research/scrape231-context-diagnostic-native.json"
   ],
   "transition_history": [
     {
@@ -49,5 +50,12 @@
       "reason": "3d96bc71 shared row observer recognizes title/data-matrx-title, proven RED\u2192GREEN on actual component DOM. Fresh peere4f855f4 validates serialized native use and exactidentity/count checks;6component+8assertiontests+compile pass."
     }
   ],
-  "next_action": "One frozen231 ARM native full media/link/reload retest after observer repair; owner root/scrape231_observer_retest. No closure from component tests."
+  "next_action": "Resolve D125 then finish exact-artifact full reload and clipboard/surrounding acceptance.",
+  "native_retest": {
+    "status": "partial",
+    "run_id": 37221586281,
+    "artifact": "development231 source723433a7",
+    "verified": "Warm Open-return pane retention and exact video/link survivor identities/counts; image/video/link forms exercised.",
+    "remaining": "OS clipboard observation unavailable; full reload not reached because D125 deep-capture assertion failed. No closure or whole-case claim."
+  }
 }

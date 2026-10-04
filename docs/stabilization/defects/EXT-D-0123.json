@@ -30,7 +30,8 @@
     ".research/scrape-pane-retention-fix.json",
     ".research/scrape-pane-retention-peer.json",
     ".research/scrape-pane-retention-native.json",
-    ".research/scrape231-arm-native.json"
+    ".research/scrape231-arm-native.json",
+    ".research/scrape231-context-diagnostic-native.json"
   ],
   "transition_history": [
     {
@@ -58,15 +59,16 @@
       "reason": "c2186f64 controls pane selection outside identity-gated Tabs, scoped to original capture; real guard RED\u2192GREEN5/5, compile and fresh peer0da1d574 pass. Native rebuilt-product retest outstanding."
     }
   ],
-  "next_action": "Resolve D124 oracle then rerun original media sequence on exact repaired artifact; preserve original-return pass as bounded evidence, not whole-case closure.",
+  "next_action": "Resolve D125 then finish exact-artifact full reload and clipboard/surrounding acceptance.",
   "diagnostic_correction": {
     "at": "2026-10-04T15:57:43.076775+00:00",
     "reason": "Run37214124282 native trace refutes earlier third-removal inference. All3removals succeed; count1 can reflect a subsequently added image. Raw receipts unchanged."
   },
   "native_retest": {
-    "run_id": "37218903375",
     "status": "partial",
-    "observed": "Healthy ARM exact231 trace returns to Video after external Open; subsequent Copy receives trusted click with no pointer failure. Root inspected raw chronology and screenshot.",
-    "remaining": "Surrounding media sequence stops at D124 observation mismatch; full reload and other modes unverified. Keep fixed, not closed."
+    "run_id": 37221586281,
+    "artifact": "development231 source723433a7",
+    "verified": "Warm Open-return pane retention and exact video/link survivor identities/counts; image/video/link forms exercised.",
+    "remaining": "OS clipboard observation unavailable; full reload not reached because D125 deep-capture assertion failed. No closure or whole-case claim."
   }
 }
