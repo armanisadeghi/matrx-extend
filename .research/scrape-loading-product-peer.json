@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "defect": "D115",
+  "reviewed_commit": "12300b97d146f5f796e0f1421bfe5b3cf6204442",
+  "reviewed_commit_on_origin_main": true,
+  "review_scope": "Independent source and focused test review; no native Chrome run or release artifact was exercised.",
+  "verdict_a_source_readiness": "pass_native_unknown",
+  "verdict_b_quality": "pass_with_test_coverage_gaps",
+  "findings": [
+    {
+      "severity": "none",
+      "finding": "The D115 source cause is exact: at 2f68bc4, captureActiveTab set loading true and then cleared the old error; the store's setError(null) immediately wrote loading false before the pending fast capture or deep scroll. Both main buttons derive disabled from loading, and their Capturing/Scrolling labels require loading plus activeMode. Commit 12300b97 changes null error clearing to preserve loading."
+    },
+    {
+      "severity": "none",
+      "finding": "The scrape-store setError(null) call-site census is capture start, reload success, and clearError. All now preserve an active capture. setCurrent clears only error. A non-null capture error still writes loading false; captureActiveTab also clears loading, activeMode, and progress in finally. The page-identity effect clears loading on page change. No unintended state-field change appears in the target diff."
+    },
+    {
+      "severity": "test_gap",
+      "finding": "The added real-hook test holds captureWithFallback pending in both modes and verifies loading true, activeMode, eventual loading false, and the captured result. The trace records red assertions on the unfixed source. The test does not render the actual disabled buttons, hold the deep scroll pending, exercise an error result, or assert that clearError during a pending capture preserves loading. Those paths are supported by source inspection, not independently guarded by this test."
+    },
+    {
+      "severity": "native_pending",
+      "finding": "The Store 0.2.205 observer failure remains a failure: four samples per fast and rate-4 run found zero disabled samples, and deep busy assertion failed. This commit explains that evidence but does not turn it into a native pass. A newly built exact artifact must demonstrate disabled Capturing/Scrolling while capture is pending, recovery, and freshness-bound throttled recapture."
+    }
+  ],
+  "verification": {
+    "focused_test": "pnpm exec vitest run tests/unit/scrape-document-identity.test.tsx --maxWorkers=1: 3 passed",
+    "compile": "pnpm compile: passed",
+    "source_diff": "git diff 12300b97..494cdf6c for reviewed source and test files: empty",
+    "red_proof": "Builder trace reports both new tests failed loading false versus true on the unfixed source; this reviewer did not rerun a mutation."
+  },
+  "handoff": "Source fix is ready for exact-artifact native verification. Keep D115 native status pending and preserve the Store 0.2.205 failure as evidence."
+}
