@@ -1,0 +1,38 @@
+{
+  "scope": "Bounded peer-review repair for EXT-F-1007-T14/T15 test evidence",
+  "peer_findings": [
+    {
+      "finding": "No executed constant-result gut check was recorded.",
+      "disposition": "Addressed. plant.py replaced the Reload callback with a constant no-op (void 0); the independently named Reload test went RED because reloadActiveTab was called zero times. plant.py restored ScrapeView.tsx byte-identically."
+    },
+    {
+      "finding": "Reload, selected-mode retry, and Dismiss shared one test, obscuring which behavior failed.",
+      "disposition": "Addressed. Each now has an independent named component test. Separate plant.py mutations produced RED in each named test: Reload no-op, retry fallback forced to fast, and Dismiss click forced to no-op. Each source mutation restored byte-identically."
+    },
+    {
+      "finding": "Restricted-URL fixture could be mistaken for classification coverage.",
+      "disposition": "Narrowed. Tests inject CaptureError objects directly and claim only component UI wiring/rendering. buildCaptureError and buildCaptureErrorFromResult classification are explicitly outside coverage."
+    },
+    {
+      "finding": "'signed-out non-admin member' combined contradictory identity descriptions.",
+      "disposition": "Corrected. The test state is described precisely as user=null and isAdmin=false in the client auth store. It does not establish behavior in an authenticated member session."
+    }
+  ],
+  "checks": [
+    {
+      "command": "pnpm test src/features/scrape/ScrapeView.error-controls.test.tsx",
+      "result": "PASS; 5 tests"
+    },
+    {
+      "command": "pnpm compile",
+      "result": "PASS"
+    }
+  ],
+  "limits": [
+    "The suite verifies ScrapeView callback wiring and diagnostics rendering with CaptureError fixtures; it does not test error classification or useScrape integration.",
+    "Reload/capture hook callbacks are mocked; Chrome native reload, content-script recovery, and hosted capture remain unverified.",
+    "Admin diagnostics verifies the real client auth store flag only. It does not establish backend authentication or authorization.",
+    "The separate hosted native run was not started, inspected, or claimed by this lane."
+  ],
+  "product_source_changes": false
+}

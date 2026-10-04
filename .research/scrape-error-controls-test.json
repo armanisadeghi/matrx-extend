@@ -1,32 +1,39 @@
 {
-  "scope": "EXT-F-1007-T14 Capture error recovery and T15 Admin diagnostics gate",
-  "evidence_level": "source/component only",
+  "scope": "EXT-F-1007-T14/T15 Capture error UI wiring and diagnostics rendering",
+  "evidence_level": "component UI wiring only",
   "files": [
     "src/features/scrape/ScrapeView.error-controls.test.tsx",
-    "src/features/scrape/ScrapeView.tsx",
-    "src/lib/scrape/capture-error.ts"
+    "src/features/scrape/ScrapeView.tsx"
   ],
   "covered_behaviors": {
     "recoverable_error": [
-      "Reload page invokes the reload callback",
-      "Try again replays the selected deep capture mode after activeMode is null",
-      "Dismiss invokes clearError"
+      "Reload page invokes the reload callback (independently named test)",
+      "Try again replays the selected deep capture mode after activeMode is null (independently named test)",
+      "Dismiss invokes clearError (independently named test)"
     ],
     "nonrecoverable_error": "A restricted-URL error with no recovery actions displays dismissal and no Reload page or Try again controls.",
-    "admin_diagnostics": "Structured error details render for an admin and remain absent for a signed-out non-admin member state."
+    "admin_diagnostics": "Structured error details render when the real client auth store has isAdmin=true and remain absent when its test state has user=null and isAdmin=false. This does not establish member-session behavior or backend authorization."
   },
   "checks": [
     {
       "command": "pnpm test src/features/scrape/ScrapeView.error-controls.test.tsx",
-      "result": "PASS; 3 tests"
+      "result": "PASS; 5 tests after bounded peer-review revision"
+    },
+    {
+      "command": "plant.py mutation: replace the Reload callback with void 0 as a constant no-op; run the focused test file",
+      "result": "RED only in the independently named Reload test because reloadActiveTab was not called; restored byte-identically"
     },
     {
       "command": "plant.py mutation: replace activeMode ?? lastModeRef.current ?? 'fast' with activeMode ?? 'fast'; run the focused test file",
-      "result": "RED at the selected-mode retry assertion; restored byte-identically"
+      "result": "RED only in the independently named selected-mode retry test; restored byte-identically"
+    },
+    {
+      "command": "plant.py mutation: replace the Dismiss onClick callback with a constant no-op; run the focused test file",
+      "result": "RED only in the independently named Dismiss test because clearError was not called; restored byte-identically"
     },
     {
       "command": "plant.py mutation: replace {isAdmin && ( with {true && (; run the focused test file",
-      "result": "RED at the non-admin diagnostics-absence assertion; restored byte-identically"
+      "result": "RED at the client-store diagnostics-absence assertion; restored byte-identically"
     },
     {
       "command": "pnpm compile",
@@ -34,6 +41,7 @@
     }
   ],
   "open_limits": [
+    "Fixtures inject CaptureError objects directly; buildCaptureError and buildCaptureErrorFromResult classification are outside coverage.",
     "Does not establish behavior against Chrome native tab reload, content-script availability, or the hosted capture path.",
     "Uses the real auth store's admin flag with a non-admin state; does not establish backend authentication or server-side authorization.",
     "One separate hosted native run is active; this lane did not start or inspect it."

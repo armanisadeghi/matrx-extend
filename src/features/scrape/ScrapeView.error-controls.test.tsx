@@ -100,17 +100,23 @@ beforeEach(() => {
 afterEach(() => cleanup());
 
 describe('ScrapeView capture error recovery', () => {
-  it('exposes reload, retries the selected deep mode, and dismisses a recoverable error', async () => {
+  it('reloads the active tab when Reload page is selected', async () => {
     render(<ScrapeView />);
-
-    await userEvent.click(screen.getByRole('button', { name: 'Scroll & capture' }));
-    expect(mocks.captureActiveTab).toHaveBeenNthCalledWith(1, { mode: 'deep' });
 
     await userEvent.click(screen.getByRole('button', { name: 'Reload page' }));
     expect(mocks.reloadActiveTab).toHaveBeenCalledTimes(1);
+  });
 
+  it('retries with the previously selected deep mode when activeMode is empty', async () => {
+    render(<ScrapeView />);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Scroll & capture' }));
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
-    expect(mocks.captureActiveTab).toHaveBeenNthCalledWith(2, { mode: 'deep' });
+    expect(mocks.captureActiveTab).toHaveBeenLastCalledWith({ mode: 'deep' });
+  });
+
+  it('clears the error when Dismiss is selected', () => {
+    render(<ScrapeView />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Dismiss' }));
     expect(mocks.clearError).toHaveBeenCalledTimes(1);
@@ -132,7 +138,7 @@ describe('ScrapeView capture error recovery', () => {
     expect(screen.getByRole('button', { name: 'Dismiss' })).toBeTruthy();
   });
 
-  it('renders structured error details for admins only', () => {
+  it('renders structured error details only when the client auth store marks the user admin', () => {
     useAuthStore.getState().setIsAdmin(true);
     const { unmount } = render(<ScrapeView />);
     expect(screen.getByText('Diagnostics (admin)')).toBeTruthy();
