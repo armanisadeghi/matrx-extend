@@ -22,6 +22,8 @@ The next contained native target is combined D110/D111 admin **existing-row** ac
 
 ## Current Scrape work and next action
 
+Active lanes: `/root/startup_resource_diagnosis` owns bounded source diagnosis of startup CPU refusals; `/root/scrape_media_controls_test` owns lightweight source/component tests for existing guest T10/T11/T12 media-edit controls. Neither may launch native/heavy jobs. Root owns integration and native acceptance. Latest local internal disk observation is1.2GiB, so local heavy work remains refused.
+
 
 Latest attempt **37203147962** is terminal resource refusal, not a product failure. Actual driver `ea0ec41d`, artifact **11303209840**, frozen product215. Receipt stopped at inputs with `NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample`; no guest identity, cases or reload lifecycle observed. Root matched receipt and three journals from `.research/reload-execution-native.json`, commit `4b60be8f`. One post-launch CPU sample was1.0; outer journal ended child_failed with resourceInvalid=false because the persistent-stop threshold was not reached. No retry. All children and native jobs are terminal.
 
