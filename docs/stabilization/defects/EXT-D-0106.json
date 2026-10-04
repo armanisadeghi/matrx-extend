@@ -20,7 +20,8 @@
     ".research/profile-fields-clean-save-native.json",
     ".research/profile-owned-row-recovery-189-07.json",
     ".research/profile-reload-failure-source.json",
-    "docs/stabilization/resource-journals/profile-fields-clean-save-189-07.jsonl"
+    "docs/stabilization/resource-journals/profile-fields-clean-save-189-07.jsonl",
+    ".research/reload106-causal-capture.json"
   ],
   "transition_history": [
     {
@@ -36,6 +37,6 @@
       "reason": "Fresh source/evidence diagnosis confirms missing lifecycle cause; previous184 worker-retirement failure is not proof for189. Ownedrow recovered under exact state and independently read absent."
     }
   ],
-  "next_action": "Capture allowlisted reload lifecycle code, safe context counts/booleans and transport class at actual callback; one guarded exact-artifact read-only causal run before product or timing changes.",
+  "next_action": "Fresh single guarded guest observation distinguishes immediate missing SIDE_PANEL context from later registration within the existing readiness bound. Original member failure remains unidentified; no speculative timing fix.",
   "closure_requirement": "Prove reload cause, fix and independently verify actual reload plus saved-field and automatic original-state restoration. Recovery SQL alone does not close it."
 }
