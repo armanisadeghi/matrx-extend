@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "artifact_type": "procedure-proposal-correction",
+  "task_id": "procedure-gap-batch-chrome-local-data",
+  "corrected_proposal": ".research/procedure-gap-batch.json",
+  "scope": "Source-only correction of five proposed manual Chrome-local cases. No inventory, capability audience, case status, mode, live binding, product code, browser state, or artifact was changed or executed.",
+  "findings": [
+    {
+      "issue": "Catalog surface reachability",
+      "original_error": "The shared instructions left Agent surface selected for all five cases.",
+      "verified_source": [
+        "src/features/tools/ToolsView.tsx:121-152,198-212",
+        "src/lib/tools/categories.ts:461-560"
+      ],
+      "correction": "list_recent_history, list_downloads, and list_recently_closed require the manual Catalog selector All handlers; chrome_history and chrome_recently_closed remain visible on the default Agent surface. This Catalog choice does not change agent advertisement or tool binding."
+    },
+    {
+      "issue": "Chrome sessions permission",
+      "original_error": "The recently-closed cases instructed a Settings grant of an optional sessions permission.",
+      "reviewer_error": "The peer review also called sessions optional and suggested a missing Settings toggle as a product issue.",
+      "verified_source": [
+        "wxt.config.ts:66-84",
+        "wxt.config.ts:129",
+        "src/lib/tools/handlers/optional-perms.ts:166-212",
+        "src/lib/tools/handlers/canonical-mergers.ts:442-453"
+      ],
+      "correction": "For Chrome, sessions is a required manifest permission. Preflight its presence in the exact loaded artifact and disposable profile; stop unverified if absent. No optional grant, Settings toggle, or product change is proposed. The handlers' required_optional_permissions metadata does not alter the manifest declaration."
+    },
+    {
+      "issue": "Owned download fixture",
+      "original_error": "The procedure could read as ready before an owned completed-download fixture existed.",
+      "verified_source": [
+        ".research/procedure-gap-batch.json",
+        "src/lib/tools/handlers/browser-data.ts:163-201"
+      ],
+      "correction": "The download case is marked fixture-pending-unverified. It may be executed only after a real owned fixture is completed in the disposable profile and its filename recorded."
+    }
+  ],
+  "case_disposition": {
+    "EXT-F-4042-T01": "Source-supported manual delegate procedure; use All handlers; execution pending.",
+    "EXT-F-4043-T01": "Source-supported conditional manual delegate procedure; owned fixture pending; use All handlers.",
+    "EXT-F-4094-T01": "Source-supported manual delegate procedure; use All handlers and loaded-artifact sessions preflight; execution pending.",
+    "EXT-F-4165-T01": "Source-supported canonical procedure on Agent surface; execution pending.",
+    "EXT-F-4166-T01": "Source-supported canonical procedure on Agent surface; loaded-artifact sessions preflight and controlled restore still pending."
+  },
+  "remaining_limits": [
+    "No browser, loaded manifest, permission state, controlled history/session data, or owned download fixture was observed in this source-only lane.",
+    "The five procedures test direct manual handler calls. They do not establish dispatcher permission enforcement, Ask/Act behavior, live agent reachability, or the inventory's negative/gated coverage.",
+    "Independent fresh review and coordinator integration remain necessary before any proposed case text enters docs/stabilization/inventory.json."
+  ]
+}

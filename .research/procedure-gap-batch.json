@@ -16,7 +16,9 @@
       "src/lib/tools/handlers/optional-perms.ts",
       "src/lib/tools/handlers/canonical-mergers.ts",
       "src/lib/tools/dispatch.ts",
-      ".research/tool-binding-readonly-census.json"
+      ".research/tool-binding-readonly-census.json",
+      "src/lib/tools/categories.ts",
+      "wxt.config.ts"
     ]
   },
   "selectedFeatureIDs": ["EXT-F-4042", "EXT-F-4043", "EXT-F-4094", "EXT-F-4165", "EXT-F-4166"],
@@ -27,13 +29,13 @@
       "After the warm pass, repeat the applicable case after the source-relevant extension reload, side-panel reopen, and fixture-tab reload described in PLAN.md. A source-only procedure does not count as execution evidence."
     ],
     "manual_surface": [
-      "In the signed-in side panel, open Tools \u2192 Catalog, leave the surface selector at Agent surface, search for the exact tool name, expand its row, enter the listed JSON in the test runner, select Run, and inspect the inline result. ToolsView runs local handlers directly and skips the dispatcher permission gate; these cases cover that user-initiated manual path only, not agent advertisement, Ask/Act gating, or dispatcher permission enforcement.",
+      "In the signed-in side panel, open Tools → Catalog. For list_recent_history, list_downloads, and list_recently_closed, change the surface selector from its Agent surface default to All handlers, then search for the exact delegate name. For chrome_history and chrome_recently_closed, keep Agent surface and search for the exact canonical name. Expand the matching row, enter the listed JSON, select Run, and inspect the inline result. ToolsView runs local handlers directly and skips the dispatcher permission gate; these cases cover that user-initiated manual path only, not agent advertisement, Ask/Act gating, or dispatcher permission enforcement.",
       "Use a dedicated disposable Chrome profile containing only synthetic/public test browsing data. Do not run these history/download/session reads in a personal profile or include unrelated returned records in evidence. Keep evidence limited to the known synthetic fixture and aggregate count where possible."
     ],
     "fixtures_and_permissions": [
       "Before history procedures, visit two public pages in the disposable profile and record their exact URLs and visit time in the run receipt. If these controlled visits are absent from history, stop and leave the case unverified.",
-      "Before the download procedure, create one completed download from an owned test fixture with a distinctive synthetic filename. The current source does not establish that this fixture exists; if no safe owned fixture is available, leave the case unverified rather than using a real or personal download.",
-      "Before recently-closed procedures, open a disposable tab to a public test page and close only that tab, preserving the fixture URL/title for comparison. Grant the optional sessions permission through the product's authorized Settings path before invoking the handler; do not remove permissions to create a denial. If permission or the fixture is unavailable, leave the relevant case unverified."
+      "The owned completed-download fixture is pending. Establish a safe owned fixture source, complete one download with a distinctive synthetic filename in the disposable profile, and record it before running the download case. Until the fixture exists, leave that case unverified rather than using a real or personal download.",
+      "Before recently-closed procedures, verify the exact loaded Chrome artifact declares sessions in its required permissions and that the disposable profile has the permission; source declaration alone does not verify the loaded artifact. Then open a disposable tab to a public test page and close only that tab, preserving the fixture URL/title for comparison. There is no sessions Settings grant step: if the loaded permission or fixture is unavailable, stop and leave the relevant case unverified."
     ]
   },
   "case_updates": {
@@ -46,7 +48,7 @@
       "preconditions": [
         "Complete shared receipt-bound build/profile/reload setup.",
         "Complete shared history fixture preparation in the disposable profile; the two fixture visits must be within the selected lookback window.",
-        "The Tools manual runner directly invokes this handler; this procedure does not establish dispatcher permission behavior."
+        "Select All handlers in the Tools Catalog surface selector so the internal list_recent_history delegate is visible. The manual runner directly invokes this handler; this procedure does not establish dispatcher permission behavior."
       ],
       "steps": [
         "Warm run: open list_recent_history and run with {\"minutes\":60,\"max_results\":50} immediately after the controlled fixture visits.",
@@ -63,7 +65,8 @@
       "source_evidence": [
         "src/lib/tools/handlers/browser-data.ts:138-168",
         "src/features/tools/ToolsView.tsx:1-12",
-        "src/features/tools/ToolsView.tsx:420-477"
+        "src/features/tools/ToolsView.tsx:121-152,198-212,390-477",
+        "src/lib/tools/categories.ts:461-560"
       ],
       "uncertainty": [
         "No history query was executed. A dedicated disposable profile and matching Chrome history permission are prerequisites, not confirmed available fixtures.",
@@ -75,11 +78,11 @@
       "title": "Find a controlled completed download",
       "control_ids": ["EXT-F-4043-C01"],
       "modes": ["member", "admin"],
-      "design_status": "procedure-ready-unverified",
+      "design_status": "fixture-pending-unverified",
       "preconditions": [
         "Complete shared receipt-bound build/profile/reload setup.",
-        "Complete the shared owned-download fixture preparation and record its exact synthetic filename; do not use an existing personal download.",
-        "The extension manifest must provide the downloads API permission in the tested artifact."
+        "The owned completed-download fixture is pending. Establish it in the disposable profile and record its exact synthetic filename before running; do not use an existing personal download.",
+        "Confirm the loaded Chrome artifact has the required downloads API permission, and select All handlers in Tools Catalog so the internal list_downloads delegate is visible."
       ],
       "steps": [
         "Warm run: open list_downloads and run with {\"query\":\"<exact synthetic fixture filename>\",\"state\":\"complete\",\"limit\":10}, substituting only the recorded fixture name.",
@@ -96,10 +99,12 @@
       "source_evidence": [
         "src/lib/tools/handlers/browser-data.ts:173-204",
         "src/lib/tools/catalog.ts:87-88",
-        "src/features/tools/ToolsView.tsx:420-477"
+        "src/features/tools/ToolsView.tsx:121-152,198-212,390-477",
+        "src/lib/tools/categories.ts:461-560",
+        "wxt.config.ts:66-84"
       ],
       "uncertainty": [
-        "The repository source does not provide or confirm an owned completed-download fixture; safe fixture availability must be established before execution.",
+        "An owned completed-download fixture has not been created or verified. This case is conditional and cannot be executed until the actual fixture and loaded-artifact preflight exist.",
         "Manual Run skips dispatcher authorization. This procedure does not assess dispatcher enforcement, live binding, or account-level data exposure."
       ]
     },
@@ -111,7 +116,7 @@
       "design_status": "procedure-ready-unverified",
       "preconditions": [
         "Complete shared receipt-bound build/profile/reload setup and recently-closed fixture preparation.",
-        "Grant sessions permission through the extension's authorized Settings path; confirm it is granted before running. Missing permission is a prerequisite gap, not a product result.",
+        "Confirm sessions is present among required permissions in the loaded Chrome artifact and granted in this disposable profile before running. Select All handlers in Tools Catalog so the internal list_recently_closed delegate is visible. Missing permission is a prerequisite gap, not a product result.",
         "Only the dedicated test tab is closed; do not close or restore personal tabs/windows."
       ],
       "steps": [
@@ -123,7 +128,7 @@
       "expected": [
         "The result reports ok=true, count, and entries; the controlled recently closed tab appears with the recorded URL/title when Chrome retains the session.",
         "Returned entries do not exceed max_results. Exact count/order can change due to browser activity and are not fixed assertions.",
-        "If sessions API is absent or permission was not granted, retain the refusal/error and leave behavior unverified rather than treating it as a successful empty result."
+        "If the loaded artifact lacks sessions or the sessions API is unavailable, stop and leave behavior unverified rather than treating an empty result as success."
       ],
       "dimensions": [
         "valid-input",
@@ -133,12 +138,13 @@
         "reload"
       ],
       "source_evidence": [
-        "src/lib/tools/handlers/optional-perms.ts:166-194",
-        "src/lib/tools/dispatch.ts:779-799",
-        "src/features/tools/ToolsView.tsx:420-477"
+        "src/lib/tools/handlers/optional-perms.ts:166-192",
+        "wxt.config.ts:66-84",
+        "src/features/tools/ToolsView.tsx:121-152,198-212,390-477",
+        "src/lib/tools/categories.ts:461-560"
       ],
       "uncertainty": [
-        "Chrome's retained session entry and the sessions permission are runtime prerequisites and were not inspected or exercised.",
+        "Chrome's retained session entry and the loaded artifact's required sessions permission are runtime prerequisites and were not inspected or exercised.",
         "Manual Run bypasses the dispatcher gate described in dispatch.ts; only the direct handler path is covered."
       ]
     },
@@ -150,7 +156,7 @@
       "design_status": "procedure-ready-unverified",
       "preconditions": [
         "Complete shared receipt-bound build/profile/reload setup and controlled history fixture preparation.",
-        "The Tools catalog row's schema must load from the current handler source; if it does not, stop and preserve the schema error as an unresolved prerequisite."
+        "Keep the Tools Catalog surface selector at Agent surface for canonical chrome_history. Its schema must load from the current handler source; if it does not, stop and preserve the schema error as an unresolved prerequisite."
       ],
       "steps": [
         "Warm recent branch: open chrome_history and run with {\"action\":\"recent\",\"minutes\":60,\"limit\":50}; compare only the recorded fixture URLs and verify recent ordering.",
@@ -173,10 +179,11 @@
       "source_evidence": [
         "src/lib/tools/handlers/canonical-mergers.ts:407-435",
         "src/lib/tools/handlers/browser-data.ts:138-168",
-        "src/features/tools/ToolsView.tsx:420-477"
+        "src/features/tools/ToolsView.tsx:121-152,198-212,390-477",
+        "src/lib/tools/categories.ts:461-560"
       ],
       "uncertainty": [
-        "No browser calls were executed; visibility of this tool in the current DB-driven canonical surface is not established by source or the inventory's live-binding census.",
+        "No browser calls were executed. The local Catalog includes chrome_history on its Agent surface by source, but a live agent request's advertisement and dispatch are not established by that fact or the inventory's binding census.",
         "Manual Tools Run invokes the local handler without dispatcher authorization; the procedure does not resolve binding or Ask/Act behavior."
       ]
     },
@@ -188,7 +195,7 @@
       "design_status": "procedure-ready-unverified",
       "preconditions": [
         "Complete shared receipt-bound build/profile/reload setup and recently-closed fixture preparation.",
-        "Grant sessions permission through the extension's authorized Settings path. Confirm the permission and the exact disposable fixture tab before running.",
+        "Confirm sessions is present among required permissions in the loaded Chrome artifact and granted in this disposable profile. Keep Tools Catalog at Agent surface for canonical chrome_recently_closed; confirm the exact disposable fixture tab before running.",
         "Restore affects only the deliberately closed disposable test tab; do not use an unknown session ID or restore a real user tab."
       ],
       "steps": [
@@ -201,7 +208,7 @@
       "expected": [
         "The list action returns the controlled closed tab with its session ID, URL, and title when Chrome retains the session.",
         "The restore action returns ok=true and Chrome reopens the controlled test URL/title; the subsequent list no longer presents that restored entry as closed.",
-        "If the fixture row, sessions API, or permission is missing, do not try an arbitrary session ID; stop and leave the affected procedure unverified."
+        "If the fixture row, loaded sessions permission, or sessions API is missing, do not try an arbitrary session ID; stop and leave the affected procedure unverified."
       ],
       "dimensions": [
         "list-branch",
@@ -212,18 +219,22 @@
       ],
       "source_evidence": [
         "src/lib/tools/handlers/canonical-mergers.ts:442-453",
-        "src/lib/tools/handlers/optional-perms.ts:166-214",
-        "src/features/tools/ToolsView.tsx:420-477"
+        "src/lib/tools/handlers/optional-perms.ts:166-212",
+        "wxt.config.ts:66-84",
+        "src/features/tools/ToolsView.tsx:121-152,198-212,390-477",
+        "src/lib/tools/categories.ts:461-560"
       ],
       "uncertainty": [
         "This action mutates the disposable browser session by reopening a tab; the controlled test profile and fixture must be confirmed before execution.",
-        "No session permission, UI reachability, tool binding, or restored-tab outcome was verified in this source-only lane."
+        "No loaded-artifact session permission, UI execution, tool binding, or restored-tab outcome was verified in this source-only lane."
       ]
     }
   },
   "review_notes": [
     "The selected cases are one cohesive Chrome-local browser-data family and exclude Chat/Pilot-specific acceptance, form cases 4061-4069, and the broad downloads mutation surface EXT-F-4154.",
     "All proposed updates are procedure design only. Existing applicability, control IDs, status/result fields, live_binding metadata, and inventory contents remain untouched.",
+    "All handlers is a manual Catalog view choice for the three internal delegates; it does not change their agent audience. Canonical chrome_history and chrome_recently_closed remain on Agent surface.",
+    "Source review confirms sessions is required in Chrome (wxt.config.ts:66-84), not optional_permissions (wxt.config.ts:129). Handler required_optional_permissions metadata does not make a Settings grant step valid.",
     "Fresh independent review is required before applying any proposed case update to docs/stabilization/inventory.json."
   ]
 }
