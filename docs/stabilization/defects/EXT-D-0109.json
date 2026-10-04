@@ -14,12 +14,15 @@
   "actual": "Existing row response array is mislabeled absent; admin acceptance aborts before writes. Native04 captured exact boundary.",
   "severity": "S2 acceptance blocked and misleading evidence; no product failure established",
   "priority": "P1 unblock contained Profile verification",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "admin_firstsave_diagnose_escalation",
   "evidence": [
     ".research/profile-admin-causal-native.json",
     ".research/admin-firstsave-escalation.json",
-    "docs/stabilization/resource-journals/profile-admin-fields-189-04.jsonl"
+    "docs/stabilization/resource-journals/profile-admin-fields-189-04.jsonl",
+    ".research/profile-wire-envelope-peer.json",
+    ".research/profile-observer-owner-fix.json",
+    ".research/profile-owner-final-peer.json"
   ],
   "transition_history": [
     {
@@ -39,7 +42,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Repair actual observer callback with connected client response guards, followed by fresh peer and native acceptance."
+    },
+    {
+      "at": "2026-10-04T04:50:46.528112+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Raw-wire repair af3c463c plus owner-binding correction a99f101a accepted by fresh peer58119ce4;40focused checks. Native retest still pending."
     }
   ],
-  "closure_requirement": "Actual raw-wire callback red\u2192green with existing/absent/malformed payloads, strict race refusal preserved, fresh review and actual admin scenario passes with original values restored."
+  "closure_requirement": "Actual raw-wire callback red\u2192green with existing/absent/malformed payloads, strict race refusal preserved, fresh review and actual admin scenario passes with original values restored.",
+  "next_action": "Independent sole guarded admin05 native retest on frozen189. Existing row preservation required; no deletion to force first-save. Duplicate-filter source refusal lacks focused test and is deferred narrow test gap, not native acceptance evidence."
 }
