@@ -6,13 +6,13 @@
   "auth_mode": "member reproduced; authenticated runner",
   "title": "Native Profile runner clicks account menu before authentication hydration finishes",
   "reproduction": [
-    "Use exactdevelopment189/sourceb4b9f0c4 withrunnerbeforeb7f63d0c, existingmemberfirstpartysignin andguardedProfileprocedure recorded in .research/profile-member-retest189-next.json.",
-    "Complete nativeextensionReload; runnerverifiesnewworker/panel/runtimecontext andstoredidentity, thenimmediatelyclicksexpectedaccounttitle.",
-    "Observe0matchingaccountcontrols andpointerfailure. Underconditionobservation, persistedidentity/token/orgremainpresent whileguestAccount1 becomesexactauthenticatedaccount1 withoutanotherlogin."
+    "Use exact development 0.2.189 / source b4b9f0c4 with the runner before b7f63d0c, the existing member first-party sign-in, and the guarded Profile procedure recorded in .research/profile-member-retest189-next.json.",
+    "Complete native extension Reload. The runner verifies the new worker, panel, runtime context and stored identity, then immediately clicks the expected account title.",
+    "Observe zero matching account controls and a pointer failure. Under condition observation, persisted identity, token and organization remain present while the guest Account control becomes the exact authenticated account control without another login."
   ],
-  "expected": "WaitforconcreteauthenticatedUIreadiness afterreload withinexistingbound; failwithsafeobservations ifidentityneverrenders. Do not equate storedsession orSIDE_PANEL context withrenderedaccountcontrol.",
-  "actual": "Immediateclick racesuseAuth hydration andclassifiesnormalstartup asmissingtarget.",
-  "severity": "S3: false testfailure blocks coverage; no productsessionloss demonstrated.",
+  "expected": "Wait for concrete authenticated UI readiness after reload within the existing bound. Fail with safe observations if the identity never renders. A stored session or SIDE_PANEL context alone does not prove that the account control has rendered.",
+  "actual": "The immediate click races useAuth hydration and reports normal startup as a missing target.",
+  "severity": "S3: false test failure blocks coverage; no product session loss demonstrated.",
   "priority": "P1: blocks Profile reload acceptance.",
   "state": "fixed",
   "owner": "profile_reload_target_repair",
@@ -26,26 +26,26 @@
       "at": "2026-10-04T01:04:06.442420+00:00",
       "from": null,
       "to": "open",
-      "reason": "Real189-02 controlfailure observed immediatelyafterfullreload."
+      "reason": "The real 189-02 run observed the control failure immediately after full reload."
     },
     {
       "at": "2026-10-04T01:04:06.442420+00:00",
       "from": "open",
       "to": "triaged",
-      "reason": "Causal189-04 observation provespersistedidentityunchanged whileguestAccounttransitions toauthenticatedmenu."
+      "reason": "Causal run 189-04 shows persisted identity unchanged while the guest Account control transitions to the authenticated menu."
     },
     {
       "at": "2026-10-04T01:04:06.442420+00:00",
       "from": "triaged",
       "to": "in-fix",
-      "reason": "Conditionreadinesswaitwithinexistingbound pluscontent-freebefore/afterobservations."
+      "reason": "Added a condition readiness wait within the existing bound and content-free before/after observations."
     },
     {
       "at": "2026-10-04T01:04:06.442420+00:00",
       "from": "in-fix",
       "to": "fixed",
-      "reason": "Sourceb7f63d0c andnativeevidence919b0be5 passedreloadT01/T03/T25 andrestoredoriginalabsence. Freshsourcepeer/finalindependentnative stillpending."
+      "reason": "Source b7f63d0c and native evidence 919b0be5 passed reload T01/T03/T25 and restored original absence. Fresh source review and independent final native retest remain pending."
     }
   ],
-  "closure_requirement": "Freshindependentsource review ofcondition/oracle andguardedexactartifact memberretest, preservingstrictreloadproof, failurebound andoriginalstatecleanup. No currentmain/fullProfileclaim."
+  "closure_requirement": "Fresh independent source review of the condition and oracle, then a guarded exact-artifact member retest preserving strict reload proof, the failure bound and original-state cleanup. No current-main or full-Profile claim."
 }
