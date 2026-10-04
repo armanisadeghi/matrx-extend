@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0115",
+  "status": "source_repaired_native_retest_pending",
+  "implementation_sha": "fcbc22f7",
+  "reviewed_baseline_sha": "72c955fc",
+  "independent_finding": ".research/scrape-busy-mutation-peer.json",
+  "failure_class": "A final visible button does not prove it was owned and visible when earlier mutation records showed disabled and Capturing.",
+  "red_reproductions": [
+    {
+      "scenario": "Move the Capture button into a foreign pane, run disabled Capturing then idle, and move it back before MutationObserver delivery.",
+      "baseline_result": "Observed true despite no busy state in the active Scrape pane."
+    },
+    {
+      "scenario": "Hide the Capture button, run disabled Capturing then idle, and reveal it before MutationObserver delivery.",
+      "baseline_result": "Observed true despite no visible busy state."
+    }
+  ],
+  "repair": {
+    "record_only_verdict": "Refused when the callback batch includes a button move or style, class, hidden, inert, aria-hidden, or data-state change on the button, its ancestors, or the active Scrape trigger.",
+    "current_state_verdict": "Still requires one visible button in the active Scrape pane simultaneously disabled and displaying the correct busy label.",
+    "visibility": "Checks bounding rectangle, computed display and visibility, and inert ancestry.",
+    "diagnostic": "ambiguousOwnershipBatches counts refused mutation batches without converting them to passes.",
+    "criterion": "No skip, timing extension, fallback pass, or product code change."
+  },
+  "verification": {
+    "command": "node --test tests/browser/scrape-busy-observer.test.mjs",
+    "baseline": "Two added ownership/visibility tests failed true !== false.",
+    "repaired": "Seven tests passed, including same-turn busy positive, nonoverlap negative, foreign pane negative, and hidden negative.",
+    "biome": "passed",
+    "diff_check": "passed",
+    "native": "not_run_by_this_lane"
+  },
+  "remaining": "The exact 0.2.205 hosted run has not exercised this repaired oracle. Product busy behavior and guest Scrape inventory coverage remain unverified pending root-owned native retest and fresh independent review."
+}
