@@ -98,6 +98,23 @@ test('native Scrape resource boundary permits fresh own-run health and refuses u
     },
   ]);
   await assert.rejects(check(), /unsafe_sample/);
+  await writeEvents([
+    admitted,
+    healthy,
+    {
+      ...healthy,
+      code: 'RESOURCE_WATCH_UNSAFE',
+      at: '2026-10-04T09:14:21.000Z',
+      reasons: ['RESOURCE_CPU_BUSY'],
+    },
+    { ...healthy, at: '2026-10-04T09:14:22.000Z' },
+  ]);
+  await assert.rejects(check(), /unsafe_sample/, 'legacy unsafe history cannot be cleared');
+  await writeEvents([
+    admitted,
+    healthy,
+    { ...healthy, code: 'RESOURCE_WATCH_UNSAFE', at: '2026-10-04T09:14:21.000Z', reasons: ['cpu'] },
+  ]);
   await assert.rejects(
     runNativeResourceAction(
       () => check(),

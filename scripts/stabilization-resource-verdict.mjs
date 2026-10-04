@@ -3,12 +3,13 @@
 export function resourceVerdict({
   admitted,
   resourceInvalid,
+  cpuPending = false,
   exitCode,
   childFinished,
   operatorStopped,
 }) {
   if (!admitted) return 'refused';
-  if (resourceInvalid) return 'invalid';
+  if (resourceInvalid || cpuPending) return 'invalid';
   if (exitCode === 0) return 'valid';
   if (childFinished) return 'child_failed';
   if (operatorStopped) return 'interrupted';

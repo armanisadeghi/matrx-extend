@@ -480,6 +480,7 @@ test('guard exits invalid and leaves no completed journal when close fails', asy
       'stabilization-resource-lease.mjs',
       'stabilization-resource-process.mjs',
       'stabilization-resource-verdict.mjs',
+      'stabilization-resource-cpu.mjs',
       'startup-interval-attribution.mjs',
     ])
       await copyFile(resolve(repo, 'scripts', name), resolve(scripts, name));

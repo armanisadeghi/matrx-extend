@@ -106,9 +106,45 @@ export async function requireNativeResourceHealth({
       event.reasons.length === 0,
   );
   if (!admitted) refuse('admission_missing');
+  let pending = false;
+  for (let index = admissionIndex + 1; index < events.length; index++) {
+    const event = events[index];
+    if (event.code === 'RESOURCE_CPU_PENDING') {
+      if (
+        !event.sample ||
+        !Array.isArray(event.reasons) ||
+        event.reasons.some(
+          (reason) => typeof reason !== 'string' || !reason.startsWith('RESOURCE_CPU_'),
+        ) ||
+        !Number.isFinite(Date.parse(event.at))
+      )
+        refuse('journal_invalid');
+      if (!pending && event.reasons.length === 0) refuse('journal_invalid');
+      pending = true;
+    } else if (event.code === 'RESOURCE_CPU_RECOVERED') {
+      if (
+        !pending ||
+        !Number.isFinite(Date.parse(event.at)) ||
+        !event.sample ||
+        !Array.isArray(event.reasons) ||
+        event.reasons.length
+      )
+        refuse('journal_invalid');
+      pending = false;
+    } else if (event.code === 'RESOURCE_WATCH_HEALTHY' && pending) {
+      refuse('journal_invalid');
+    } else if (event.code?.startsWith('RESOURCE_CPU_')) {
+      refuse('journal_invalid');
+    }
+  }
+  if (pending) refuse('cpu_pending');
   const latest = [...events]
     .reverse()
-    .find((event) => event.code === 'RESOURCE_WATCH_HEALTHY' || event.code === 'RESOURCE_ADMITTED');
+    .find((event) =>
+      ['RESOURCE_WATCH_HEALTHY', 'RESOURCE_CPU_RECOVERED', 'RESOURCE_ADMITTED'].includes(
+        event.code,
+      ),
+    );
   if (
     !latest ||
     !latest.sample ||
@@ -141,15 +177,29 @@ export async function awaitNativeResourceHealth({
 } = {}) {
   let deadline;
   let pollMs;
+  let pendingDeadline;
   while (true) {
-    if (deadline !== undefined && monotonicClock() > deadline) refuse('stale_health');
+    if (pendingDeadline !== undefined && monotonicClock() >= pendingDeadline)
+      refuse('cpu_pending_timeout');
+    if (pendingDeadline === undefined && deadline !== undefined && monotonicClock() > deadline)
+      refuse('stale_health');
     try {
       const health = await requireNativeResourceHealth({ repo, clock, readEvidence, ...options });
-      if (deadline !== undefined && monotonicClock() > deadline) refuse('stale_health');
+      if (pendingDeadline !== undefined && monotonicClock() >= pendingDeadline)
+        refuse('cpu_pending_timeout');
+      if (pendingDeadline === undefined && deadline !== undefined && monotonicClock() > deadline)
+        refuse('stale_health');
       return health;
     } catch (error) {
-      if (error.message !== 'NATIVE_RESOURCE_BOUNDARY_REFUSED:stale_health') throw error;
-      if (deadline === undefined) {
+      if (
+        error.message !== 'NATIVE_RESOURCE_BOUNDARY_REFUSED:stale_health' &&
+        error.message !== 'NATIVE_RESOURCE_BOUNDARY_REFUSED:cpu_pending'
+      )
+        throw error;
+      if (
+        deadline === undefined ||
+        (error.message.endsWith('cpu_pending') && pendingDeadline === undefined)
+      ) {
         let policy;
         try {
           policy = JSON.parse(
@@ -159,12 +209,21 @@ export async function awaitNativeResourceHealth({
           refuse('evidence_missing');
         }
         const intervalMs = policy.watchIntervalSeconds * 1000;
+        const cpuBudgetMs =
+          (policy.unsafeSamplesToStop + policy.healthySamplesToResume) * intervalMs;
         if (!Number.isFinite(intervalMs) || intervalMs <= 0) refuse('policy_invalid');
-        deadline = monotonicClock() + intervalMs;
+        if (
+          error.message.endsWith('cpu_pending') &&
+          (!Number.isFinite(cpuBudgetMs) || cpuBudgetMs <= 0)
+        )
+          refuse('policy_invalid');
+        if (error.message.endsWith('cpu_pending')) pendingDeadline = monotonicClock() + cpuBudgetMs;
+        else deadline = monotonicClock() + intervalMs;
         pollMs = Math.max(1, Math.floor(intervalMs / 10));
       }
-      const remainingMs = deadline - monotonicClock();
-      if (remainingMs <= 0) throw error;
+      const remainingMs = (pendingDeadline ?? deadline) - monotonicClock();
+      if (remainingMs <= 0)
+        refuse(error.message.endsWith('cpu_pending') ? 'cpu_pending_timeout' : 'stale_health');
       await wait(Math.min(pollMs, remainingMs));
     }
   }

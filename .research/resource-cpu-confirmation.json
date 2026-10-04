@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0132",
+  "status": "LOCAL_REPAIR_IMPLEMENTED_PENDING_INDEPENDENT_REVIEW_AND_NATIVE_CONFIRMATION",
+  "cause": "The native boundary permanently refused the first RESOURCE_WATCH_UNSAFE CPU event even though the guard required two consecutive bad watches to stop. A child that exited before confirmation finalized child_failed instead of resource-invalid.",
+  "contract": {
+    "first_cpu_only_bad": "The guard writes RESOURCE_CPU_PENDING with the measured sample and reasons. Every native action boundary blocks while that episode remains pending; the one-heavy permit stays owned.",
+    "recovery": "The guard writes one atomic RESOURCE_CPU_RECOVERED health event after three consecutive fully healthy watches. A later fresh boundary check may then allow a new action. Earlier unsafe history is never cleared.",
+    "confirmation": "Two consecutive CPU-bad watches write irreversible RESOURCE_WATCH_UNSAFE, hold and stop markers, and an invalid terminal verdict. Any non-CPU failure takes this immediate unsafe path.",
+    "bound": "The guard uses a monotonic episode deadline of (unsafeSamplesToStop + healthySamplesToResume) * watchIntervalSeconds; the boundary also has a monotonic wait bound derived from these knobs. Expiry and unresolved child or operator exit are invalid.",
+    "unchanged": "No numeric threshold, preflight admission rule, one-heavy cap, owner census, journal publication, or cleanup path changed. No prior journal gains retroactive validity."
+  },
+  "verification": {
+    "focused_tests": "node --test tests/browser/resource-cpu-confirmation.test.mjs tests/browser/native-resource-boundary.test.mjs scripts/test-stabilization-resource-journal.mjs scripts/test-stabilization-resource-process.mjs: 23 passed",
+    "mutation_pending_refusal": "plant.py replaced the pending refusal with a false branch; real journal-to-boundary test went RED because an action could start during pending. Mutation was restored byte-identically.",
+    "mutation_terminal_verdict": "plant.py removed cpuPending from resourceVerdict; the terminal regression went RED (valid instead of invalid). Mutation was restored byte-identically.",
+    "format": "Biome check on owned source and tests passed with four pre-existing style warnings in stabilization-resource.mjs.",
+    "scope_limit": "No native/browser launch, full build, workflow, release, or physical CPU recovery claim. Independent source review and a single guarded native confirmation remain with root."
+  }
+}

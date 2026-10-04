@@ -15,7 +15,9 @@ import { existsSync } from 'node:fs';
 import { mkdir, readFile, readdir, rename, rm, rmdir, stat, writeFile } from 'node:fs/promises';
 import { platform } from 'node:os';
 import { join, resolve } from 'node:path';
+import { performance } from 'node:perf_hooks';
 import { promisify } from 'node:util';
+import { cpuEpisode } from './stabilization-resource-cpu.mjs';
 import { openResourceJournal } from './stabilization-resource-journal.mjs';
 import {
   assertNoLegacyLease,
@@ -52,6 +54,7 @@ let safetyStateBroken = false;
 let admitted = false;
 let childFinished = false;
 let operatorStopped = false;
+let cpuPending = false;
 let startupBracket;
 const flags = new Map();
 let command = [];
@@ -639,6 +642,7 @@ async function main() {
   });
   let unsafe = 0;
   let healthy = 0;
+  const cpu = cpuEpisode(policy, () => performance.now());
   let attributionPending;
   let previous;
   let swapWindowAt = 0;
@@ -706,6 +710,7 @@ async function main() {
       ]);
       if (result?.stop) {
         operatorStopped = true;
+        if (cpu.pending) resourceInvalid = true;
         if (mode === 'browser') {
           emit('RESOURCE_BROWSER_STOP_CONFIRMED', { runId, resourceInvalid });
           process.exitCode = resourceInvalid ? 3 : 0;
@@ -717,6 +722,7 @@ async function main() {
         break;
       }
       if (result) {
+        if (cpu.pending) resourceInvalid = true;
         emit('RESOURCE_JOB_EXIT', { runId, ...result });
         childFinished = true;
         if (
@@ -743,6 +749,8 @@ async function main() {
         previous = current;
         swapWindowAt = Date.now();
       }
+      const cpuState = cpu.observe(bad);
+      cpuPending = cpu.pending;
       if (bad.length) {
         unsafe++;
         healthy = 0;
@@ -754,11 +762,20 @@ async function main() {
         const hold = JSON.parse(await readFile(holdPath, 'utf8'));
         await persistSafetyState(holdPath, { ...hold, healthySamples: 0 });
       }
-      emit(bad.length ? 'RESOURCE_WATCH_UNSAFE' : 'RESOURCE_WATCH_HEALTHY', {
-        runId,
-        reasons: bad,
-        sample: current,
-      });
+      emit(
+        cpuState === 'pending' || cpuState === 'pending_watch'
+          ? 'RESOURCE_CPU_PENDING'
+          : cpuState === 'unsafe' || cpuState === 'expired'
+            ? 'RESOURCE_WATCH_UNSAFE'
+            : cpuState === 'recovered'
+              ? 'RESOURCE_CPU_RECOVERED'
+              : 'RESOURCE_WATCH_HEALTHY',
+        {
+          runId,
+          reasons: cpuState === 'expired' ? ['RESOURCE_CPU_CONFIRMATION_EXPIRED'] : bad,
+          sample: current,
+        },
+      );
       if (process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC === '1')
         emit('RESOURCE_STARTUP_INTERVAL_BRACKET', {
           runId,
@@ -780,18 +797,19 @@ async function main() {
           .then((detail) => emit('RESOURCE_PROCESS_ATTRIBUTION', { runId, ...detail }));
         void attributionPending.catch(() => {});
       }
-      if (unsafe >= policy.unsafeSamplesToStop) {
+      if (cpuState === 'unsafe' || cpuState === 'expired') {
         const hold = {
           schema: 1,
           runId,
-          reason: bad,
+          reason: cpuState === 'expired' ? ['RESOURCE_CPU_CONFIRMATION_EXPIRED'] : bad,
           at: new Date().toISOString(),
           healthySamples: 0,
         };
         await persistSafetyState(holdPath, hold);
         await persistSafetyState(join(root, `stop-${owner.nonce}.json`), hold);
-        emit('RESOURCE_STOP_AT_SAFE_BOUNDARY', { runId, reasons: bad });
+        emit('RESOURCE_STOP_AT_SAFE_BOUNDARY', { runId, reasons: hold.reason });
         resourceInvalid = true;
+        cpuPending = false;
         process.exitCode = 3;
         unsafe = 0;
         if (mode === 'run') {
@@ -868,11 +886,12 @@ try {
       emit('RESOURCE_FINAL_DECISION', {
         runId: activeRunId,
         admitted,
-        resourceInvalid,
+        resourceInvalid: resourceInvalid || cpuPending,
         exitCode,
         decision: resourceVerdict({
           admitted,
           resourceInvalid,
+          cpuPending,
           exitCode,
           childFinished,
           operatorStopped,
