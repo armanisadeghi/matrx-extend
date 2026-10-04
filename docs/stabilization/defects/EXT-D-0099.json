@@ -14,14 +14,15 @@
   "actual": "Fresh Chrome profile allowed initial command-line load but disabled the unpacked extension on management Reload. The harness reported worker-retirement failure without capturing Chrome disable reason.",
   "severity": "S2: blocks reliable extension reload acceptance; isolated test-environment defect, not demonstrated Store product failure.",
   "priority": "P1: blocks remaining Profile reload acceptance.",
-  "state": "retest-pass",
+  "state": "closed",
   "owner": "reload_lifecycle_escalation",
   "evidence": [
     ".research/reload-lifecycle-repair.json",
     ".research/reload-lifecycle-escalation.json",
     "docs/stabilization/resource-journals/reload-escalation-01.jsonl",
     "docs/stabilization/resource-journals/reload-escalation-02.jsonl",
-    ".research/reload-final-peer.json"
+    ".research/reload-final-peer.json",
+    ".research/reload-runtime-error-diagnosis.json"
   ],
   "transition_history": [
     {
@@ -53,6 +54,12 @@
       "from": "fixed",
       "to": "retest-pass",
       "reason": "Independent finalsource guardedguest run verified enabledDeveloperMode, strict lifecycle and nativeSIDE_PANEL. Sourcepeer passed and meaningful mutation failed. Rootmatchedrawreporthash/resourceverdict. Runtimeerrorcount1 remains separatelyunderdiagnosis; no cleanruntimeclaim."
+    },
+    {
+      "at": "2026-10-04T00:04:21.423355+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original disabled-development-extension defect independentlyretested; unrelated contentlistener runtimeerror reproduced and separatelytrackedD100. No cleanruntime or fullfeatureclaim."
     }
   ],
   "closure_requirement": "Fresh independent source and guarded native verification of final setup, preserved strict target lifecycle and runtime predicates, and proven guard rejecting omitted developer-mode setup. No product feature blanket pass.",
