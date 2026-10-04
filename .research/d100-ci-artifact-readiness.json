@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "task": "d100-ci-artifact-readiness",
+  "status": "ready_for_guarded_native_acceptance",
+  "recorded_at_utc": "2026-10-04T00:14:00Z",
+  "product_fix_commit": "26005bd42fb85109e9f24af64d736f2b0359d186",
+  "source_peer_commit": "766c99ce7f6cffe9d90e794cbb917aac1775a2ce",
+  "source_peer_status": "independent credential reload review accepted",
+  "cancelled_exact_fix_ci": {
+    "run_id": 37164092910,
+    "source_sha": "26005bd42fb85109e9f24af64d736f2b0359d186",
+    "status": "cancelled",
+    "reason": "A newer main push superseded it before completion."
+  },
+  "successful_automatic_main_ci": {
+    "run_id": 37164174445,
+    "source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "event": "push",
+    "branch": "main",
+    "status": "completed",
+    "conclusion": "success",
+    "jobs": {
+      "checks": "success",
+      "resource-guard-integration": "success"
+    },
+    "strict_steps_verified": [
+      "Typecheck",
+      "Schema routing",
+      "Lint",
+      "Unit tests",
+      "Resource safety regression",
+      "Require approved public runtime configuration",
+      "Build keyed development test extension",
+      "Record development test provenance",
+      "Upload current-source development test artifact"
+    ]
+  },
+  "artifact": {
+    "artifact_id": 11288542496,
+    "name": "matrx-extend-development-test-b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced-37164174445-1",
+    "expired": false,
+    "imported_with": "node scripts/current-test-artifact.mjs import 37164174445 11288542496",
+    "import_path": "test-results/ci-artifacts/b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced/37164174445-1",
+    "import_claim": "exact_pushed_commit_only",
+    "development_version": "0.2.189",
+    "tree_sha256": "494646f6dd65399e0e7eee65fd1d9bd00ef97d173c5ceb9674de276ca12dc23a",
+    "receipt_sha256": "59508f1709b214b329ee2b59456322177e7a1d5862680e685872e6122a5b4ecb",
+    "import_status_sha256": "71aa1faf12a2a3317097a811a20402105a1808c8afae704a6c54f3f0eb7f07a1"
+  },
+  "source_relationship": {
+    "fix_commit_is_ancestor_of_artifact_source": true,
+    "intervening_runtime_changes_from_fix_to_artifact": "none in src/, tests/, package.json, or pnpm-lock.yaml",
+    "main_at_import": "766c99ce7f6cffe9d90e794cbb917aac1775a2ce",
+    "post_artifact_runtime_changes_on_main": "none in src/, tests/, package.json, or pnpm-lock.yaml; the 766c99ce commit adds review documentation only",
+    "tracked_unrelated_local_change_at_import": "docs/stabilization/reports/workspace-sync-guest-incident-20261003.json; preserved and not included in artifact claim"
+  },
+  "native_acceptance": "not started by this readiness record"
+}
