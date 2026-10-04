@@ -167,13 +167,14 @@
       "mapping_status": "active_definition_and_executor_binding"
     }
   ],
-  "fixture_gap": "No checked-in or named owned HTTP fixture was found in the inspected stabilization sources. Each case now specifies the local-only markup/event oracle to stage; execution must stop until that owned fixture is provisioned and its URL/hash recorded.",
+  "fixture_gap": "Owned fixture source is checked in at tests/browser/fixtures/form-controls.html (SHA-256 685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a). Its /form-controls route currently exists only on the unit test’s ephemeral server; native runner registration through ownedPages and a run-specific exact URL/served-byte hash are still required before browser interaction.",
   "remaining_gaps": [
-    "No browser execution was performed; all role cells remain unverified.",
+    "No native extension/browser execution was performed; all role cells remain unverified.",
     "Member/admin manual-run modes are intended repetitions, not proof of actual agent-call role access.",
     "Dispatcher Ask/Act confirmation, missing-permission refusal, and assigned-tab routing are outside this manual-run case and remain unverified.",
     "Eight exact-name definition/binding mappings are unresolved; submit_form has active metadata but request-time advertisement is unverified.",
-    "Current hosted resource permit/build receipt must be obtained before any browser action."
+    "Before browser interaction, the active owned run needs fresh admission and healthy resource samples; finish the run journal after cleanup.",
+    "Native runner must register the committed fixture at ownedPages[\"/form-controls\"] and record its exact run-specific URL and matching served-byte SHA-256."
   ],
   "files": ["docs/stabilization/inventory.json", ".research/form-control-procedures.json"],
   "source_hashes": {
@@ -210,6 +211,14 @@
       ]
     }
   ],
-  "corrected_inventory_sha256": "11e26abe7ac7e4c473cfd4458a170e042637f8a0b22353a58c9a59db799cc38d",
-  "peer_fixture_limit": "The peer confirms these are design procedures only until the specified owned HTTP fixture exists with exact markup, visible event oracles, and recorded URL/hash. No browser execution was performed."
+  "corrected_inventory_sha256": "393bc46206427abb5b9b0c4714088ca7ea6ec213074584b6d185b0c7bb1d06cd",
+  "peer_fixture_limit": "Fresh peer review confirms the markup matches all nine procedures. The route is not registered in the native runner: wire the committed page into that runner’s ownedPages as /form-controls, record the actual full URL and served-byte hash before execution, then perform native acceptance. No runtime result is claimed.",
+  "owned_fixture": {
+    "path": "tests/browser/fixtures/form-controls.html",
+    "route": "/form-controls",
+    "sha256": "685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a",
+    "source_route": "unit-test ephemeral server only",
+    "native_runner_registration": "required through ownedPages before execution",
+    "actual_native_url": "not yet available; record the exact URL including actual port before execution"
+  }
 }
