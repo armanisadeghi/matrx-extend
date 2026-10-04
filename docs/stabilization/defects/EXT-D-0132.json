@@ -1,0 +1,43 @@
+{
+  "id": "EXT-D-0132",
+  "feature_id": "EXT-F-1007",
+  "surface": "Native testing resource guard",
+  "auth_mode": "all (auth-independent harness)",
+  "title": "Native boundary permanently rejects first CPU watch before sustained watchdog confirmation",
+  "reproduction": [
+    "Use the real native boundary with healthy admission/watch records and a first CPU-only high sample from run37234434600.",
+    "Observe immediate unsafe_sample refusal despite wrapper requiring two consecutive unsafe samples before stopping.",
+    "Append a healthy watch in a controlled replay; native boundary still permanently refuses the single prior event."
+  ],
+  "expected": "Guard owns temporal CPU classification; hold new actions during uncertainty, confirm sustained overload or bounded conservative recovery. Memory, disk, swap, ownership and legacy unsafe refusals remain fail closed.",
+  "actual": "Native boundary treats the first one-second high CPU watch as irreversible; child exits before sustained confirmation and wrapper final reports child_failed/resourceInvalid=false. Actual physical spike may or may not have persisted.",
+  "severity": "S2: testing can stop on an unconfirmed CPU transient; no proven product defect",
+  "priority": "P1: restore trustworthy guarded native acceptance",
+  "state": "in-fix",
+  "owner": "root/resource_cpu_confirmation",
+  "evidence": [
+    ".research/resource-guard-semantics.json",
+    ".research/scrape-member-normal-resumption.json"
+  ],
+  "scope_ruling": "Adopt reviewed future CPU_PENDING \u2192 CPU_RECOVERED after three healthy watches or confirmed irreversible unsafe on two bad watches, bounded by existing policy knobs. No numeric threshold change, historical event reinterpretation or retroactive validity for prior runs. All non-CPU safeguards, one-heavy permit and cleanup remain. Independent review before native launch.",
+  "transition_history": [
+    {
+      "at": "2026-10-04T21:22:14.883136+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Fresh semantics review identified mismatch."
+    },
+    {
+      "at": "2026-10-04T21:22:14.883136+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Real exported boundary replay reproduces healthy pass, first CPU refusal, permanent refusal after counterfactual recovery; no claim real run recovered."
+    },
+    {
+      "at": "2026-10-04T21:22:14.883136+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded implementation authorized against reviewed contract; independent review and native confirmation required."
+    }
+  ]
+}
