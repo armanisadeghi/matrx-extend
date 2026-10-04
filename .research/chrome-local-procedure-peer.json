@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-procedure-completion-peer-review",
+  "task_id": "chrome-local-procedure-completion",
+  "reviewed_source": "0340e67b",
+  "review_scope": "Source and proposal only. No build, browser, fixture execution, UI, or live role test; no implementation changes.",
+  "overall": "PARTIAL: positive manual procedures and malformed-input assertions are source-supported; not complete role/security coverage and cleanup is overstated.",
+  "cases": {
+    "EXT-F-4042-T01": "PARTIAL — handler/schema and controlled-history assertions align; manual run cannot prove role authorization.",
+    "EXT-F-4043-T01": "PARTIAL — list_downloads schema and fixture source align; completed download unverified; profile retirement does not assure the downloaded file is deleted.",
+    "EXT-F-4094-T01": "PARTIAL — list_recently_closed schema, All-handlers route and required sessions preflight align; member/admin authorization remains untested.",
+    "EXT-F-4165-T01": "PARTIAL — canonical Agent-surface route and search/recent schemas align; manual run does not prove live binding or role enforcement.",
+    "EXT-F-4166-T01": "PARTIAL — canonical route, schemas and explicit fixture session ID guard align; restore is a real profile mutation, and cleanup/role limits apply."
+  },
+  "verified_source_facts": [
+    "ToolsView safeParse rejects each listed invalid argument before handler.run; its manual context sets permissionMode=act and bypasses dispatcher authorization.",
+    "The three internal delegates require All handlers; chrome_history and chrome_recently_closed are in CANONICAL_SURFACE / Agent filter.",
+    "Chrome manifest declares sessions required; wxt.config.ts excludes it from optional_permissions. Handler metadata alone does not make it optional.",
+    "The HTML/text download fixture is synthetic and self-contained; it has not been opened or downloaded."
+  ],
+  "blocking_gaps": [
+    "Shared setup requires separate member/admin profiles, but each procedure refers to one disposable profile. Define per-role profile/fixture lifecycle; do not count manual Catalog runs as role authorization, Ask/Act denial, or live agent-binding coverage.",
+    "Profile retirement does not guarantee deletion of the downloaded copy because Chrome may save it outside the profile directory. Explicitly remove only the known owned file or state that file cleanup is unverified."
+  ],
+  "false_coverage_boundary": "Keep all runtime cells unverified. A schema rejection is argument validation only; missing API/permission preflight is not a denial test. No role, dispatcher, live binding, completed download, or restored-tab outcome was observed.",
+  "runtime_unverified": true
+}
