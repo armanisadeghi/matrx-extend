@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "scope": "EXT-D-0115 guest Scrape fast busy observation after exact 0.2.205 hosted run",
+  "status": "harness_observer_repaired_native_cause_unconfirmed",
+  "implementation_sha": "72c955fc",
+  "hosted_evidence": {
+    "run_id": "37188132857",
+    "workflow_head_sha": "d08038e5d83cfda1b9baef30961dbe7e8057bb45",
+    "release_source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "candidate_kind": "native_store_zip_candidate_key_adapted",
+    "receipt": "test-results/hosted-scrape-37188132857/test-results/scrape-guest-native-1816b9e5-a1ae-4dd4-8087-edf218b3ee3d.json",
+    "fast_busy_observation": {
+      "observed": false,
+      "samples": 4,
+      "matchingButtons": 1,
+      "buttonReplacements": 0,
+      "disabledSamples": 0,
+      "text": null
+    },
+    "bounded_product_observation": "Guest Scrape was open and the fast article completed with lazy text absent. The retained fast article PNG shows the final re-enabled button. No in-flight frame was retained.",
+    "screenshot_retention": "Confirmed: all three PNGs, including scrape-fast-article.png, exist in downloaded acceptance artifact 11297898237."
+  },
+  "causal_local_reproduction": {
+    "old_observer_boundary": "MutationObserver callback queried only the button's final disabled/text state. A disabled Capturing DOM state that starts and ends in one JavaScript turn produces ordered mutation records but no disabled final-state sample.",
+    "red": "node --test tests/browser/scrape-busy-observer.test.mjs: new same-turn case failed false !== true against old observer.",
+    "recorded_sequence": "disabled attribute added; Capturing text added; disabled attribute removed; Re-capture text added; callback then sees enabled Re-capture.",
+    "green": "The repaired observer replays mutations in order, requires disabled and the busy label to overlap on the same active Scrape button, reconciles the reconstructed final state with the actual DOM, and preserves the observed label.",
+    "negative_guard": "A disabled state that ends before Capturing text appears remains unverified; the nonoverlap test passes.",
+    "test_result": "Five focused DOM observer tests pass, covering replacement, tooltip title movement, same-turn child-list and text-node changes, and nonoverlap."
+  },
+  "hypotheses": [
+    {
+      "cause": "Fast capture rendered a disabled busy state too briefly for final-state MutationObserver sampling.",
+      "status": "locally_reproduced_hosted_unconfirmed",
+      "next_run_prediction": "disabledMutationRecords and busyLabelMutationRecords are nonzero; overlappingMutationState is true if the UI actually rendered both together."
+    },
+    {
+      "cause": "React never committed a disabled busy state before the fast result.",
+      "status": "still_possible",
+      "next_run_prediction": "No disabled attribute mutation and no strict overlap; the busy assertion remains red and product behavior needs a separate diagnosis."
+    },
+    {
+      "cause": "The button was replaced or the tooltip moved its title during observation.",
+      "status": "not_supported_by_hosted_summary",
+      "evidence": "One button matched and buttonReplacements was zero in run 37188132857."
+    }
+  ],
+  "boundaries": {
+    "oracle": "The native driver still requires a disabled Capturing state for fast and disabled Scrolling state for deep; no skip, timeout increase, or fallback verdict was added.",
+    "product": "No production code was committed. A tentative flushSync experiment did not make a jsdom probe green and was reverted.",
+    "inventory": "Guest T01 remains partial; T02/T08/T14 and T20 lifecycle remain unverified.",
+    "next_gate": "Root-owned exact 0.2.205 hosted run and independent review. Use new mutation diagnostics to decide whether this harness repair covers the observed failure or the product itself omitted busy state."
+  },
+  "checks": {
+    "node_test": "5 passed",
+    "biome_changed_files": "passed",
+    "diff_check": "passed",
+    "local_or_hosted_browser": "not_run_by_this_lane"
+  }
+}
