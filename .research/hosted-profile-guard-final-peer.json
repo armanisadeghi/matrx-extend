@@ -1,0 +1,33 @@
+{
+  "task": "Independent source-only review of cd19fc26 hosted Profile fail-closed correction",
+  "reviewed_commit": "cd19fc26b9de7c45d57fa979dc0181772260e525",
+  "scope": "No hosted browser, workflow dispatch, data write, or implementation edit",
+  "verdict_a": {
+    "status": "partial",
+    "finding": "The normal hosted workflow runs preflight before package and browser steps, and both Profile cases are refused there even with valid authentication and approved organization inputs. Direct acceptance invocation is also refused before artifact import and the native driver. However, direct package and browser phase invocations skip the Profile guard; with an owned resource permit and runtime prerequisites, the browser phase can install or open Chromium. These phases do not invoke the Profile driver or mutate Profile data. The written fail-closed-before-browser contract is unmet for those direct entry points.",
+    "original_findings": {
+      "hosted_admin_organization_fixture_missing": "addressed in source: workflow wires a named secret; runProfile stages test-results/notes-private-config.json with exclusive mode 0600; native driver reads the same path. The guarded Profile path never reaches this staging in normal workflow operation.",
+      "interrupted_existing_row_unrecoverable": "unresolved: the existing-row receipt remains local to the disposable VM. The added preflight refusal prevents normal hosted Profile writes while durable outside-VM restoration is unavailable; it does not provide recovery."
+    },
+    "full_profile_acceptance": "unresolved",
+    "D114": "unresolved"
+  },
+  "verdict_b": {
+    "status": "fail",
+    "supported": [
+      "The seven focused route tests pass, including valid-input refusal in preflight and acceptance, exclusive private fixture staging, and unaffected guest-chat preflight.",
+      "The normal workflow's Profile preflight precedes package and browser preparation."
+    ],
+    "gap": {
+      "severity": "important",
+      "code": "profile_guard_skips_package_and_browser_phases",
+      "evidence": "scripts/hosted-guest-acceptance.mjs calls requireHostedAcceptanceCredential only for phase preflight and acceptance; package and browser continue to resource admission and Playwright/Chromium setup. Those workflow steps also omit MATRX_HOSTED_ACCEPTANCE_CASE, so a phase-local Profile refusal cannot occur there. scripts/hosted-profile-route.test.mjs tests only preflight and acceptance refusal."
+    },
+    "required_followup": "Guard Profile cases before every phase can prepare browser resources, and test valid admin/member inputs across all phase entry points. Keep Profile acceptance marked unresolved until durable private recovery and interruption verification exist."
+  },
+  "checks": {
+    "node_test": "node --test scripts/hosted-profile-route.test.mjs: 7 passed, 0 failed",
+    "source_review": "cd19fc26 diff; workflow phase order; adapter phase dispatch; route helper and tests; native Profile fixture path",
+    "hosted_execution": "not run"
+  }
+}
