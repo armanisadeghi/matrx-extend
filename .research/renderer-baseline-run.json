@@ -1,0 +1,237 @@
+{
+  "schema_version": 1,
+  "task": "renderer-baseline-run",
+  "status": "TERMINAL_DIAGNOSTIC_BASELINE_GRAPHITE_ACTIVE_NO_UNSAFE_HISTORY",
+  "scope": "One default-renderer startup-resource-diagnostic only. No product acceptance, renderer treatment, auth, threshold, build, or release claim.",
+  "provenance": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37233387364",
+    "run_id": 37233387364,
+    "attempt": 1,
+    "head_sha": "6999f407de281f0d56b3c63ed1e82db7bc63c32c",
+    "conclusion": "success",
+    "started_at": "2026-10-04T20:46:39Z",
+    "completed_at": "2026-10-04T20:53:30Z",
+    "runner_label": "macos-15",
+    "acceptance_case": "startup-resource-diagnostic",
+    "development_run_id": 37226671959,
+    "development_artifact_id": 11312153381,
+    "diagnostic_source_sha": "18d6f48c3769e9e52c021e29a2b219adc602e98d",
+    "workflow_artifact": {
+      "id": 11314569699,
+      "name": "hosted-guest-37233387364-1",
+      "size_bytes": 56773,
+      "sha256": "fe78d9921e19828e3bbfbc588ad20ac4c09467af8435864880776b6dc4309730"
+    },
+    "fresh_source_review": {
+      "report": ".research/renderer131-fresh-reverify.json",
+      "reviewed_source_sha": "d7f41f37",
+      "verdict": "SOURCE_READY_FOR_DIAGNOSTIC_LAUNCH_NATIVE_UNVERIFIED",
+      "quality_safety": "PASS_SCOPED"
+    }
+  },
+  "run_result": {
+    "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE",
+    "native_panel_stage": "exercise_panel",
+    "native_panel_ready_at": "2026-10-04T20:52:39.268Z",
+    "completed_at": "2026-10-04T20:53:19.932Z",
+    "diagnostic_stages": [
+      { "stage": "receipt", "at": "2026-10-04T20:52:26.869Z" },
+      { "stage": "artifact_verify", "at": "2026-10-04T20:52:26.869Z" },
+      { "stage": "browser_runtime", "at": "2026-10-04T20:52:26.927Z" },
+      { "stage": "profile_prepare", "at": "2026-10-04T20:52:26.932Z" },
+      { "stage": "browser_spawn", "at": "2026-10-04T20:52:26.933Z" },
+      { "stage": "cdp_connect", "at": "2026-10-04T20:52:26.939Z" },
+      { "stage": "endpoint_read", "at": "2026-10-04T20:52:30.497Z" },
+      { "stage": "command_line_query", "at": "2026-10-04T20:52:30.519Z" },
+      { "stage": "command_line_verify", "at": "2026-10-04T20:52:30.856Z" },
+      { "stage": "extension_worker", "at": "2026-10-04T20:52:30.856Z" },
+      { "stage": "spawn_owner", "at": "2026-10-04T20:52:31.122Z" },
+      { "stage": "local_server", "at": "2026-10-04T20:52:31.124Z" },
+      { "stage": "playwright_connect", "at": "2026-10-04T20:52:31.132Z" },
+      { "stage": "page_create", "at": "2026-10-04T20:52:31.920Z" },
+      { "stage": "local_page_navigation", "at": "2026-10-04T20:52:32.253Z" },
+      { "stage": "panel_open", "at": "2026-10-04T20:52:32.853Z" },
+      { "stage": "panel_reply", "at": "2026-10-04T20:52:36.351Z" },
+      { "stage": "panel_target", "at": "2026-10-04T20:52:36.355Z" },
+      { "stage": "panel_context", "at": "2026-10-04T20:52:36.361Z" },
+      { "stage": "panel_settle", "at": "2026-10-04T20:52:36.466Z" },
+      { "stage": "screenshot", "at": "2026-10-04T20:52:38.120Z" },
+      { "stage": "exercise_panel", "at": "2026-10-04T20:52:39.267Z" }
+    ],
+    "renderer": {
+      "observation_status": "RESOLVED",
+      "requested_at": "2026-10-04T20:52:31.123Z",
+      "resolved_at": "2026-10-04T20:52:31.399Z",
+      "skia_backend_type": "GraphiteDawnMetal",
+      "gl_renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Version 15.7.9 (Build 24G830))",
+      "feature_status": {
+        "gpu_compositing": "enabled",
+        "rasterization": "enabled",
+        "webgl": "enabled",
+        "webgl2": "enabled"
+      }
+    }
+  },
+  "resource_history": {
+    "current_run_journals": [
+      "docs/stabilization/evidence/renderer-baseline/run37233387364/resource-journals/hosted-package-37233387364-1.jsonl",
+      "docs/stabilization/evidence/renderer-baseline/run37233387364/resource-journals/hosted-browser-37233387364-1.jsonl",
+      "docs/stabilization/evidence/renderer-baseline/run37233387364/resource-journals/hosted-startup-37233387364-1.jsonl"
+    ],
+    "current_run_assessment": "All three journals end with RESOURCE_FINAL_DECISION decision=valid, admitted=true, resourceInvalid=false. No current-run unsafe event is recorded. The startup watch samples and all three CPU brackets are retained raw in the journals. Historical unsafe events remain in the prior run journals referenced by .research/native-capacity-escalation.json and were not cleared or copied into this run folder.",
+    "resource_samples": [
+      {
+        "journal": "package",
+        "at": "2026-10-04T20:48:28.210Z",
+        "available_memory_gib": 6.09,
+        "one_minute_load": 48.03999999999999,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.10571428571428572,
+        "swap_used_mib": 0,
+        "decision": "valid"
+      },
+      {
+        "journal": "browser",
+        "at": "2026-10-04T20:50:24.244Z",
+        "available_memory_gib": 6.09,
+        "one_minute_load": 7.72,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.08714285714285716,
+        "swap_used_mib": 0,
+        "decision": "valid"
+      },
+      {
+        "journal": "startup",
+        "at": "2026-10-04T20:52:20.647Z",
+        "available_memory_gib": 5.95,
+        "one_minute_load": 2.61,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.13285714285714287,
+        "swap_used_mib": 0,
+        "decision": "admitted"
+      },
+      {
+        "journal": "startup-watch",
+        "at": "2026-10-04T20:52:36.919Z",
+        "available_memory_gib": 5.88,
+        "one_minute_load": 1.82,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.56,
+        "swap_used_mib": 0,
+        "decision": "healthy"
+      },
+      {
+        "journal": "startup-watch",
+        "at": "2026-10-04T20:52:53.136Z",
+        "available_memory_gib": 5.88,
+        "one_minute_load": 1.79,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.01,
+        "swap_used_mib": 0,
+        "decision": "healthy"
+      },
+      {
+        "journal": "startup-watch",
+        "at": "2026-10-04T20:53:09.247Z",
+        "available_memory_gib": 5.88,
+        "one_minute_load": 1.83,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.2,
+        "swap_used_mib": 0,
+        "decision": "healthy"
+      }
+    ],
+    "native_renderer_bracket": {
+      "iostat_started_at": "2026-10-04T20:52:35.769Z",
+      "iostat_completed_at": "2026-10-04T20:52:36.886Z",
+      "process_before_started_at": "2026-10-04T20:52:35.744Z",
+      "process_before_completed_at": "2026-10-04T20:52:35.769Z",
+      "process_after_started_at": "2026-10-04T20:52:36.886Z",
+      "process_after_completed_at": "2026-10-04T20:52:36.916Z",
+      "category_totals_cpu_seconds": {
+        "owned_chromium": 0.44,
+        "owned_other": 0.03,
+        "host_provisioner": 0,
+        "other_host": 1.27
+      },
+      "named_compiler_processes": [
+        {
+          "pid": 6449,
+          "executable": "MTLCompilerServi",
+          "category": "otherHost",
+          "cpu_seconds_delta": 0.66
+        },
+        {
+          "pid": 6450,
+          "executable": "MTLCompilerServi",
+          "category": "otherHost",
+          "cpu_seconds_delta": 0.41
+        }
+      ],
+      "named_compiler_total_cpu_seconds": 1.07,
+      "other_host_observed_process_count": 491,
+      "unmatched_exited_or_unmatched_pids": [6488, 6722],
+      "appeared_pids": [6724, 6727],
+      "accounting_limit": "ps CPU time is in centiseconds. Process snapshots enclose but do not equal the iostat interval; exited, new, reparented, or PID-reused processes cannot be assigned exact interval CPU time. Positive otherHost deltas do not establish causal independence or Chromium ownership."
+    },
+    "other_startup_brackets": [
+      {
+        "iostat_started_at": "2026-10-04T20:52:51.986Z",
+        "iostat_completed_at": "2026-10-04T20:52:53.108Z",
+        "category_totals_cpu_seconds": {
+          "owned_chromium": 0,
+          "owned_other": 0,
+          "host_provisioner": 0.01,
+          "other_host": 0.01
+        },
+        "compiler_process_rows": []
+      },
+      {
+        "iostat_started_at": "2026-10-04T20:53:08.210Z",
+        "iostat_completed_at": "2026-10-04T20:53:09.224Z",
+        "category_totals_cpu_seconds": {
+          "owned_chromium": 0.01,
+          "owned_other": 0.01,
+          "host_provisioner": 0.01,
+          "other_host": 0.26
+        },
+        "compiler_process_rows": []
+      }
+    ],
+    "decision": "No conditional Graphite-off treatment: although the backend resolved as GraphiteDawnMetal and MTLCompilerServi reported 1.07 CPU-seconds in the first startup bracket, the baseline remained healthy with no unsafe bracket/history in this run. The escalation contract requires an unsafe bracket with material compiler CPU before treatment; its condition is not met."
+  },
+  "evidence_files": [
+    {
+      "path": "docs/stabilization/evidence/renderer-baseline/run37233387364/startup-interval-diagnostic.json",
+      "sha256": "c812fe9708a0ee88489a492ce8a8158b51c6e082a0e4a9cbe0a9173daa5070c6"
+    },
+    {
+      "path": "docs/stabilization/evidence/renderer-baseline/run37233387364/resource-journals/hosted-package-37233387364-1.jsonl",
+      "sha256": "55f6b64ceada0cfee6dbc54b1c09f89629d601037f5fb47e7e679f14e0fd5fda"
+    },
+    {
+      "path": "docs/stabilization/evidence/renderer-baseline/run37233387364/resource-journals/hosted-startup-37233387364-1.jsonl",
+      "sha256": "8c623e3c7399aa0ea211d1e7e99f1b83037f8787226c316c8919366f18c1d959"
+    },
+    {
+      "path": "docs/stabilization/evidence/renderer-baseline/run37233387364/resource-journals/hosted-browser-37233387364-1.jsonl",
+      "sha256": "6cf6a486d6fd825af23a78dd0f3c6b4df1562e4eb110a18a998a982da4dc57c7"
+    },
+    {
+      "path": "docs/stabilization/evidence/renderer-baseline/run37233387364/native-sidepanel-qa-bLA5tr/native-side-panel.png",
+      "sha256": "c287d11852ff644d06ed43d102c0131a490961c53d6a222ac7e78a83f2e10d12"
+    },
+    {
+      "path": "docs/stabilization/evidence/renderer-baseline/run37233387364/native-sidepanel-qa-bLA5tr/normal-target-after-open.png",
+      "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89"
+    }
+  ],
+  "artifact_scope_note": "The workflow artifact also contained journals hosted-package-37105304739-1.jsonl, hosted-browser-37105304739-1.jsonl, and hosted-guest-37105304739-1.jsonl. Those inherited prior-run files were excluded. Only the three current-run journals, current diagnostic JSON, and its two screenshots are included above.",
+  "interpretation_limits": [
+    "This is one hosted VM observation and cannot demonstrate repeatability or reliable capacity.",
+    "A successful diagnostic and healthy resource history are not product acceptance; no auth or product case was exercised.",
+    "Observed compiler process deltas overlap the native startup bracket but do not prove causal contribution or exact CPU time inside the iostat interval.",
+    "Historical unsafe resource events remain part of the broader record and are not erased by this healthy current run."
+  ]
+}

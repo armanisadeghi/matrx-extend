@@ -1,0 +1,115 @@
+{
+  "schema": 2,
+  "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE",
+  "sourceSha": "18d6f48c3769e9e52c021e29a2b219adc602e98d",
+  "runId": 37226671959,
+  "artifactId": 11312153381,
+  "startedAt": "2026-10-04T20:52:26.867Z",
+  "lastNativeStage": "exercise_panel",
+  "nativeStages": [
+    {
+      "stage": "receipt",
+      "at": "2026-10-04T20:52:26.869Z"
+    },
+    {
+      "stage": "artifact_verify",
+      "at": "2026-10-04T20:52:26.869Z"
+    },
+    {
+      "stage": "browser_runtime",
+      "at": "2026-10-04T20:52:26.927Z"
+    },
+    {
+      "stage": "profile_prepare",
+      "at": "2026-10-04T20:52:26.932Z"
+    },
+    {
+      "stage": "browser_spawn",
+      "at": "2026-10-04T20:52:26.933Z"
+    },
+    {
+      "stage": "cdp_connect",
+      "at": "2026-10-04T20:52:26.939Z"
+    },
+    {
+      "stage": "endpoint_read",
+      "at": "2026-10-04T20:52:30.497Z"
+    },
+    {
+      "stage": "command_line_query",
+      "at": "2026-10-04T20:52:30.519Z"
+    },
+    {
+      "stage": "command_line_verify",
+      "at": "2026-10-04T20:52:30.856Z"
+    },
+    {
+      "stage": "extension_worker",
+      "at": "2026-10-04T20:52:30.856Z"
+    },
+    {
+      "stage": "spawn_owner",
+      "at": "2026-10-04T20:52:31.122Z"
+    },
+    {
+      "stage": "local_server",
+      "at": "2026-10-04T20:52:31.124Z"
+    },
+    {
+      "stage": "playwright_connect",
+      "at": "2026-10-04T20:52:31.132Z"
+    },
+    {
+      "stage": "page_create",
+      "at": "2026-10-04T20:52:31.920Z"
+    },
+    {
+      "stage": "local_page_navigation",
+      "at": "2026-10-04T20:52:32.253Z"
+    },
+    {
+      "stage": "panel_open",
+      "at": "2026-10-04T20:52:32.853Z"
+    },
+    {
+      "stage": "panel_reply",
+      "at": "2026-10-04T20:52:36.351Z"
+    },
+    {
+      "stage": "panel_target",
+      "at": "2026-10-04T20:52:36.355Z"
+    },
+    {
+      "stage": "panel_context",
+      "at": "2026-10-04T20:52:36.361Z"
+    },
+    {
+      "stage": "panel_settle",
+      "at": "2026-10-04T20:52:36.466Z"
+    },
+    {
+      "stage": "screenshot",
+      "at": "2026-10-04T20:52:38.120Z"
+    },
+    {
+      "stage": "exercise_panel",
+      "at": "2026-10-04T20:52:39.267Z"
+    }
+  ],
+  "gpuObservation": {
+    "status": "RESOLVED",
+    "requestedAt": "2026-10-04T20:52:31.123Z",
+    "resolvedAt": "2026-10-04T20:52:31.399Z",
+    "skiaBackendType": "GraphiteDawnMetal",
+    "glRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Version 15.7.9 (Build 24G830))",
+    "featureStatus": {
+      "gpu_compositing": "enabled",
+      "rasterization": "enabled",
+      "webgl": "enabled",
+      "webgl2": "enabled"
+    }
+  },
+  "panelReadyAt": "2026-10-04T20:52:39.268Z",
+  "completedAt": "2026-10-04T20:53:19.932Z",
+  "guardJournal": "docs/stabilization/resource-journals/hosted-startup-37233387364-1.jsonl"
+}
