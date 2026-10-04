@@ -1,0 +1,114 @@
+{
+  "status": "procedure-ready-unverified",
+  "baseline_commit": "ee6a023e7cbb7a7b4890baa1eb2095c95aabd8cf",
+  "coveredIDs": [
+    "EXT-F-4071",
+    "EXT-F-4072",
+    "EXT-F-4073",
+    "EXT-F-4074",
+    "EXT-F-4075",
+    "EXT-F-4076",
+    "EXT-F-4077",
+    "EXT-F-4078",
+    "EXT-F-4079",
+    "EXT-F-4080",
+    "EXT-F-4081",
+    "EXT-F-4082",
+    "EXT-F-4083",
+    "EXT-F-4084",
+    "EXT-F-4085",
+    "EXT-F-4086"
+  ],
+  "sourceevidence": [
+    {
+      "claim": "All 16 control names and JSON schemas match the generated local catalog records; all have local handler implementations registered in the tab action handlers.",
+      "files": ["types/tool-catalog.json", "src/lib/tools/handlers/tabs.ts"],
+      "symbols": [
+        "tab_action_handlers",
+        "open_new_tab",
+        "close_tab",
+        "switch_to_tab",
+        "duplicate_tab",
+        "pin_tab",
+        "mute_tab",
+        "reload_tab",
+        "go_back",
+        "go_forward",
+        "set_tab_zoom",
+        "move_tab",
+        "resize_window",
+        "create_tab_group",
+        "add_tabs_to_group",
+        "remove_tabs_from_group",
+        "update_tab_group"
+      ]
+    },
+    {
+      "claim": "The Tools catalog Run parses JSON, validates against each handler argsSchema, then directly invokes handler.run; this user-initiated manual route bypasses dispatch permission confirmation.",
+      "files": ["src/features/tools/ToolsView.tsx:390-461"]
+    },
+    {
+      "claim": "Dispatched action-tier tools request confirmation in Ask mode; the Act-mode and external-invocation branches are distinct from manual Tools Run. Tab handlers with omitted tab_id resolve through getAssignedTabId(ctx), while explicit tab_id targets that id.",
+      "files": [
+        "src/lib/tools/dispatch.ts:809-832",
+        "src/lib/tools/dispatch.ts:1498-1508",
+        "src/lib/tools/handlers/tabs.ts:252-309",
+        "src/lib/tools/handlers/tabs.ts:432-452"
+      ]
+    },
+    {
+      "claim": "The manifest requires tabs and tabGroups; they are not optional runtime permissions. Group tools are Chrome-specific and return explicit group-unavailable results where coded.",
+      "files": ["wxt.config.ts:66-72", "src/lib/tools/handlers/tabs.ts:352-428"]
+    },
+    {
+      "claim": "The extension system state says tool.binding is the advertisement and must be confirmed separately from local source/catalog presence.",
+      "files": ["/Volumes/Samsung2TB/code/common-docs/systems/apps/extension/STATE.md:31-36"]
+    },
+    {
+      "claim": "Source comment typo only: comment lists singular remove_tab_from_group, but exported/registered handler and catalog name are remove_tabs_from_group.",
+      "files": [
+        "src/lib/tools/handlers/tabs.ts:6-9",
+        "src/lib/tools/handlers/tabs.ts:395-399",
+        "types/tool-catalog.json"
+      ]
+    },
+    {
+      "claim": "Every future build/browser launch follows the current resource admission and build/reload contract; current coordinator checkpoint refuses local heavy work and requires the authorized hosted TEST path.",
+      "files": [
+        "docs/stabilization/PLAN.md:24-34",
+        "docs/stabilization/PLAN.md:93-110",
+        "docs/stabilization/COORDINATOR.md:52-56",
+        "docs/stabilization/resource-policy.json"
+      ]
+    }
+  ],
+  "remaininggaps": [
+    "No live tool.binding database read was performed; advertised agent-call availability remains unresolved. Inventory parity readiness gap is preserved.",
+    "The AGENTS.md pointer /Users/armanisadeghi/code/common-docs/systems/clients/extension is absent in this workspace; available authoritative extension state and wire contract are under systems/apps/extension.",
+    "No browser execution was performed. Member/admin results remain unverified, as do dispatcher Ask/Act confirmation and missing-permission refusal paths; those are separate from the manual-run procedures."
+  ],
+  "files": ["docs/stabilization/inventory.json", ".research/tab-controls-procedure-census.json"],
+  "shas": {
+    "docs/stabilization/inventory.json": "c3073dd66e9493fcdb64a482db4315f4ad6e566ccab62003f74f02f65618d722",
+    "src/lib/tools/handlers/tabs.ts": "63e04599f686e12a91785b412b80103ed8ccd6154fe82abc6ede0b8ed2955bab",
+    "src/features/tools/ToolsView.tsx": "05242f54c731c609b0c792b3af8c0f4a7e67a8f765513512ba8101d4190f6551",
+    "src/lib/tools/dispatch.ts": "1bd6f79d6c4641665e5163f4bd5be242c37684e706e501f94058c63a6ebe8fa7",
+    "types/tool-catalog.json": "0c00e91fd89a3f1aca81fa5a757305477c841ab2ada2f12de6baed32c904f685",
+    "wxt.config.ts": "dfb7d6ac595d7170bea6e8fbd28f0f7f36bbeb3c2e2ad7e1dbdb4a8855d5380d",
+    "/Volumes/Samsung2TB/code/common-docs/systems/apps/extension/STATE.md": "5fe37f810706cedc7d58feea2627914f9206d008e868dff7f1ae797abd6d9eaf",
+    "/Volumes/Samsung2TB/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md": "e10af39f56c7e4d1f6c05670731faa3624c1f2a0fef6954fbdb2382d7508e2a4",
+    "docs/stabilization/PLAN.md": "4f17ccc0cc2234affdefe99003b27ad379b31a474505ec02a5e2ee084750582a",
+    "docs/stabilization/COORDINATOR.md": "160c0e782672935f0ab9b2f5ead7112c1e4947bd472b4a6031a1b099560b07c8",
+    "docs/stabilization/resource-policy.json": "371fe9832cfebad3ee00268e0c85f34d76c85b89db0a688abe83fe3721e0f008"
+  },
+  "procedure_contract": {
+    "caseCount": 16,
+    "stepsPerCase": 5,
+    "expectedPerCase": 3,
+    "roles": ["member", "admin"],
+    "guest": "not-applicable",
+    "test_status": "preserved-unverified",
+    "design_status": "procedure-ready-unverified",
+    "preconditionsPerCase": 7
+  }
+}
