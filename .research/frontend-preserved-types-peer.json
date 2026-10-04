@@ -1,0 +1,25 @@
+{
+  "task": "Read-only verification of preserved ai-matrx generated type changes",
+  "frontend_repo": "/Volumes/Samsung2TB/code/ai-matrx",
+  "frontend_head": "8edfda44f1ccc5c5af9f61d15e206efdf409368c",
+  "frontend_origin_main_at_check": "8edfda44f1ccc5c5af9f61d15e206efdf409368c",
+  "stash": "054ccf4ea804ca831cf1d43eb9f9083b0bfb5d7c",
+  "stash_parent": "abbbe86808f9e5eb8fe20382d8bb87a91ae8b694",
+  "stash_changed_paths": {
+    "packages/chat/src/host/db-types.ts": {
+      "finding": "Adds translation_evidence_proven({ p_evidence: Json }): boolean and translation_rationale_code({ p_text: string }): string. Same changes exist in the current frontend working tree; both files parse as TypeScript with zero diagnostics. These edits are absent from origin/main."
+    },
+    "types/database.types.ts": {
+      "finding": "Adds the same two function signatures as the chat DB snapshot. Same changes exist in the current frontend working tree; this file parses as TypeScript with zero diagnostics. These edits are absent from origin/main."
+    },
+    "pnpm-lock.yaml": {
+      "finding": "Stash updates @ai-matrx/records-ui from 0.95.14 to 0.95.15. This content is already integrated in frontend origin/main; the stash-to-origin diff for this path is empty."
+    },
+    "scripts/schema-check/current-schema.json": {
+      "finding": "Only the generated_at value differs: stash has 2026-10-04T04:52:06.999557+00:00, while frontend origin/main has 2026-10-04T00:54:15.535356+00:00. The stash version is newer, but it is not integrated; no schema-content change was observed. Preserve/account for this generated snapshot timestamp before any stash disposal."
+    }
+  },
+  "validation": "Compared all four stash paths against frontend origin/main; parsed both changed TypeScript files via the installed TypeScript parser (0 diagnostics each). No build, tests, server, DB, or auth checks were run per task limits.",
+  "frontend_checkout_state_at_check": "main at origin/main with only the two generated type files dirty; stash remains present. No frontend files or Git state were modified by this verification.",
+  "conclusion": "The lockfile content is already integrated. Both generated type edits are preserved in the working tree but not main. The newer schema snapshot timestamp is unique to the stash and remains to be reconciled. The stash is not fully disposable based on this audit."
+}
