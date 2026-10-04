@@ -25,7 +25,8 @@
     ".research/panel117-diagnostic-peer.json",
     ".research/member-reopen-native-retest.json",
     ".research/panel-context-empty-diagnosis.json",
-    ".research/panel-empty-diagnostic-peer.json"
+    ".research/panel-empty-diagnostic-peer.json",
+    ".research/member-context-diagnostic-native.json"
   ],
   "transition_history": [
     {
@@ -42,7 +43,7 @@
     }
   ],
   "closure_requirement": "Demonstrate cause, independently verify repair and actual owned Store panel initialization; surrounding ownership checks must still reject foreign contexts.",
-  "next_action": "Diagnostic9c040f70 acceptedfreshpeer5eb92a04; one guarded changed-condition membernormal600 run37244226691 active withsamefrozen244. root/member_reopen_native_retest owns rawreceipt/boundedlogdiagnostic/3journals and exacttemporarysecretcleanup. Underlyingcause remainsunproven; originalexactcontextfailure preserved.",
+  "next_action": "New37244226691 initialexactcontextpasses naturally; failure-onlydocumentprobe notinvoked and D117cause stillunproven. Do notcloseintermittency fromone successfulinitialization. Reuse reviewed9c040f70 probe on next actualfailure; D133 escalation is active.",
   "latest_reproduction": {
     "run_id": 37243043772,
     "product_version": "0.2.244",
@@ -50,5 +51,11 @@
     "runner": "macos-15 ARM64",
     "boundary": "inputs/panel_context; one SIDE_PANEL/global context has empty documentUrl. Followup exact0 after107ms, query succeeds. No auth/viewport/cases.",
     "resource_verdict": "Three original journals finalized; package/browser valid, guest child_failed/resourceInvalidfalse. No periodic watch because children <15s. Root checked all5hashes and raw receipts/journals."
+  },
+  "hosted_ci": {
+    "run_id": 37244176377,
+    "head": "5eb92a0455a8b0b71ae43fd639550ed9a35e08c1",
+    "conclusion": "success",
+    "scope": "Includes9c040f70 diagnostic; no actualemptyURLnativeprobe in subsequentrun."
   }
 }

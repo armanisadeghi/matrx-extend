@@ -13,7 +13,7 @@
   "actual": "Run37241717888 reproduces same foreground failure after successful member identity/nonadmin/org checks. Original target is present and sole exact target, exact SIDE_PANEL context1, owned roottrue; visibilityhidden with hasFocustrue. Diagnostic completes. No viewport/case result.",
   "severity": "S2: authenticated Scrape coverage blocked; product failure not established",
   "priority": "P2: resume after urgent guest Chat verification",
-  "state": "fixed",
+  "state": "in-fix",
   "evidence": [
     ".research/scrape-member-guard132-native.json",
     ".research/scrape-auth-panel-focus.json",
@@ -24,7 +24,8 @@
     ".research/member-scrape-focus-native.json",
     ".research/member-panel-hidden-repair.json",
     ".research/member-panel-reopen-peer.json",
-    ".research/member-reopen-native-retest.json"
+    ".research/member-reopen-native-retest.json",
+    ".research/member-context-diagnostic-native.json"
   ],
   "transition_history": [
     {
@@ -50,10 +51,22 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source repair44005fb4 separately reopens through trusted ownedpage input; freshpeerda271ee2 accepts source and realpath mutation guards. ActualChrome visibility pending."
+    },
+    {
+      "at": "2026-10-04T23:44:57.381976+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Actual37244226691 reaches member/org/reopen, fresh opening callback returns, yet same originalexactpanel remains hiddenwithfocus; noviewport/cases. Root verified7hashes and3journals; no resourceunsafe."
+    },
+    {
+      "at": "2026-10-04T23:44:57.381976+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Escalated to separateAstra low after trusted-reopen sourcefix failed actualnative. Cause or oracle validity must be established before another fix/run."
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "Resolve D117 startup context observability, fresh review then one guarded changed-condition run; D133 remainsfixed notclosed and not retest-fail.",
+  "next_action": "root/panel_visibility_escalation owns boundedactualcause/oracle diagnosis; no unchanged rerun or acceptanceweakening. D117 independentintermittency remainsopen.",
   "fix_commits": ["44005fb4"],
   "hosted_ci": {
     "run_id": 37242845397,
@@ -62,9 +75,10 @@
     "verified": "Root read full success and actual checks job111554820121 log: native harness fresh trusted-open guard, full harness1pass0fail, guesttransport regression and resource safety pass. Native visibility pending."
   },
   "native_retest": {
-    "run_id": 37243043772,
-    "result": "not-exercised: initial D117 runtime context failure before auth/reopen; no D133 pass/fail conclusion",
-    "evidence_commit": "cfda5653",
-    "cleanup": "collector verified consumed secret and private link absent"
+    "run_id": 37244226691,
+    "result": "D133 retest-fail: repaired reopening did not restore observedvisibility; originalsoleexacttarget/contextpresent. No nativecases/width.",
+    "evidence_commit": "8a5c0ffd",
+    "cleanup": "temporary consumedsecret/link absentverified",
+    "root_verification": "Sevenhashes, actualreceipt andthreecurrentjournals; twohealthywatches no unsafe; initialguest screenshots do notshowpostauthfailure."
   }
 }
