@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "review": "Independent scoped procedure re-review of EXT-F-4071 through EXT-F-4086",
+  "target_commit": "14cc03467000614953107cfc56b5480c017c25ee",
+  "prior_commit": "6af72aea",
+  "reviewed_head": "14cc03467000614953107cfc56b5480c017c25ee",
+  "scope": {
+    "included": [
+      "The 16 named inventory cases and their setup, valid and negative inputs, expected observations, variants, cleanup, readiness gaps, and verification status",
+      "Relevant handler schemas and behavior in src/lib/tools/handlers/tabs.ts and active-tab fallback in src/lib/tools/handlers/_active-tab.ts",
+      "The stated manual Tools runner boundary and same-window fixture instructions"
+    ],
+    "excluded": [
+      "Browser execution, build or reload, product and inventory changes, database reads, agent dispatch and live binding validation, and sibling stabilization records"
+    ],
+    "runtime_result": "unverified"
+  },
+  "verdicts": {
+    "A_procedure_correctness_and_coverage": {
+      "verdict": "PARTIAL",
+      "addressed": [
+        {
+          "finding": "Same-window setup and returned window-id checks were implicit in concrete setup recipes.",
+          "evidence": "All 16 cases now identify WINDOW_ID from the active tab in the dedicated window, prescribe window_id on disposable open_new_tab calls, and require returned window-id matching. Cases 4073, 4078, 4079, 4081, and 4083-4086 show explicit checks in setup examples. Remaining recipes defer to the universal precondition, which still makes the invariant explicit."
+        },
+        {
+          "finding": "History procedures did not create a second active owned tab.",
+          "evidence": "4078 and 4079 create the history tab and a second same-window tab with explicit window_id, verify the second returned window id, and make it active before targeting the history tab by id."
+        },
+        {
+          "finding": "Several important optional and union forms lacked reproducible variants.",
+          "evidence": "4071 exercises index and window_id; 4072 exercises scalar and array close_tab forms; 4077 exercises omitted tab_id with active-tab fallback and distinguishes assigned-agent behavior; 4081 exercises destination window_id; 4083 exercises create_tab_group window_id. Each form matches the source schema."
+        }
+      ],
+      "not_addressed": [
+        {
+          "finding": "The 16 procedures are not exhaustive coverage of optional schema variants.",
+          "evidence": "Handler source declares tab_id optional for go_back and go_forward (4078-4079), set_tab_zoom (4080), and resize_window (4082), but each valid manual-run input supplies tab_id. The procedures discuss assigned-tab fallback, yet do not include an omitted-tab manual-run variant for these four controls. Some optional defaults also are not independently varied."
+        }
+      ],
+      "limits": "The repair adds useful reproducible variants but does not establish exhaustive coverage of every optional field/default or union form across all 16 schemas. Procedures describe manual Tools execution; no agent-call availability or dispatcher behavior is established here."
+    },
+    "B_safety_quality_and_evidence": {
+      "verdict": "PASS",
+      "findings": [],
+      "evidence": [
+        "All 16 cases remain procedure-ready-unverified; no runtime result was promoted or asserted.",
+        "Member/admin execution, hosted build receipt, resource admission, reload requirements, negative-input checks, and cleanup remain stated in the procedures.",
+        "Every target feature retains explicit live tool.binding and member/admin role availability gaps; the manual runner is identified as bypassing the dispatcher Ask/Act gate.",
+        "Source schemas confirm the added scalar/array and optional-field examples. No browser, build, runtime, or database action was performed."
+      ],
+      "limits": "This is a source and procedure review, not evidence that any procedure has passed in the product."
+    }
+  },
+  "verification": {
+    "target_case_count": 16,
+    "target_ids": [
+      "EXT-F-4071-T01",
+      "EXT-F-4072-T01",
+      "EXT-F-4073-T01",
+      "EXT-F-4074-T01",
+      "EXT-F-4075-T01",
+      "EXT-F-4076-T01",
+      "EXT-F-4077-T01",
+      "EXT-F-4078-T01",
+      "EXT-F-4079-T01",
+      "EXT-F-4080-T01",
+      "EXT-F-4081-T01",
+      "EXT-F-4082-T01",
+      "EXT-F-4083-T01",
+      "EXT-F-4084-T01",
+      "EXT-F-4085-T01",
+      "EXT-F-4086-T01"
+    ],
+    "design_status": "procedure-ready-unverified",
+    "runtime_status": "unverified",
+    "checks": [
+      "Parsed docs/stabilization/inventory.json and confirmed exactly the 16 target cases are present with procedure-ready-unverified status.",
+      "Inspected relevant tabs handler schemas and active-tab fallback behavior.",
+      "Biome check, JSON parse, and git diff --check passed for this report."
+    ]
+  },
+  "files": [".research/tab-procedures-final-peer.json"]
+}
