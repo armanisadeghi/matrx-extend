@@ -32,7 +32,7 @@
   ],
   "causal_boundary": {
     "established": "The member run's native boundary correctly refused its current-run RESOURCE_WATCH_UNSAFE sample at CPU busy fraction 0.88. Prior unsafe events remain historical and were not cleared.",
-    "unresolved": "The nearby Chromium Helper, WeatherWidget, and provisioner process percentages are snapshots with different accounting windows. They do not assign the unsafe interval to a process or prove host noise, renderer work, or a member-flow regression. Raw current-run resource journals were absent from the uploaded artifact; log extracts are incomplete.",
+    "unresolved": "The nearby Chromium Helper, WeatherWidget, and provisioner process percentages are snapshots with different accounting windows. They do not assign the unsafe interval to a process or prove host noise, renderer work, or a member-flow regression. Finalized raw current-run journals were present under a doubled archive prefix; collection corrected3238b8c4, root verified9 evidence hashes. The same unsafe event is confirmed.",
     "renderer_treatment": "The prior Graphite-off experiment required an unsafe diagnostic baseline with material compiler CPU. Baseline 37233387364 was healthy, so that condition was not met. A renderer switch would be a new hypothesis, not an acceptance route.",
     "repeat_classification": "Another member/normal run on either unchanged standard runner would sample a fresh VM, but no correction or controlled change makes it an evidence-backed attempt. A lucky admission alone would not establish reliable capacity."
   },
@@ -46,5 +46,6 @@
     "evidence_needed_before_launch": "Identify the specific changed condition and its read-only proof; confirm the exact eligible artifact and required member/admin fixture/role/organization inputs; then use the existing guarded workflow with fresh package, browser, and acceptance admissions, full current-run raw journals, and no inherited unsafe-history reset.",
     "acceptance_evidence_needed": "Actual native receipt must report verified identity/role, selected organization, observed 600px width where required, requested case assertions, reload behavior, and a clean current-run resource history. Diagnostic success or control-flow inference cannot promote product cells."
   },
-  "scope": "Read-only diagnosis and this report only. No browser, test/build, workflow dispatch, release, product, inventory, credential, account, process, resource-policy, or disk-state change."
+  "scope": "Read-only diagnosis and this report only. No browser, test/build, workflow dispatch, release, product, inventory, credential, account, process, resource-policy, or disk-state change.",
+  "later_guard_review": "Independent semantics review9f014e2d reproduced a temporal policy mismatch (D132). Repair da9669c9 plus real-wrapper regression e2d06172/CI2fed8191 is a changed implementation, awaiting fresh peer/native verification; this report rejected unchanged reruns, not a reviewed defect correction."
 }

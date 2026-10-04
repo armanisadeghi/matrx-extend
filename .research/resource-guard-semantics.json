@@ -21,7 +21,7 @@
     "watch_1": "21:08:24.364Z: healthy busy.52, load1.3/3, memory5.81GiB.",
     "watch_2": "21:08:40.513Z: CPU-only unsafe busy.88, load1.29/3, memory5.74GiB, pressure1, swap0, four disk readings43.36GiB.",
     "exit": "21:08:49.352Z child1; 21:08:49.473Z child_failed/resourceInvalid=false. No second unsafe or recovered watch observed. Native receipt organization_selection/unsafe_sample, zero cases.",
-    "limits": "Raw pending journals were not uploaded; preserved log extracts are incomplete substitutes. No exact causality from post-sample process percentages. Healthy default renderer diagnostic is neither member/auth acceptance nor reliable capacity. Earlier load8.61/busy.61 and load3.94/busy.87 observations stay unsafe; this report does not exonerate them."
+    "limits": "Correction: finalized raw journals were uploaded; the first collector missed the doubled archive prefix. Correction3238b8c4 retains all three current-run journals; root verified all9 evidence hashes and raw event sequences. They confirm the same unsafe sample/final child_failed result. No exact causality from post-sample process percentages. Healthy default renderer diagnostic is neither member/auth acceptance nor reliable capacity. Earlier load8.61/busy.61 and load3.94/busy.87 observations stay unsafe; this report does not exonerate them."
   },
   "executed_read_only_replay": {
     "sut": "Real exported requireNativeResourceHealth, current source; injected readEvidence supplies captured journal prefix, actual policy, matching review-only owner. Existing stat calls target a unique absent temporary path. No files or lease created; no child browser/test runner.",
