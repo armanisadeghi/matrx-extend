@@ -49,17 +49,32 @@ async function connectOwnedCdp({
     throw new Error('owned_cdp_configuration_refused');
   const profile = preparedProfile.profile;
   const deadline = Date.now() + timeoutMs;
+  const waitStartedAt = performance.now();
+  let endpointPolls = 0;
+  let longestReadMs = 0;
   let raw;
   while (Date.now() < deadline) {
+    const readStartedAt = performance.now();
     try {
+      endpointPolls += 1;
       raw = await fileSystem.readFile(path.join(profile, 'DevToolsActivePort'), 'utf8');
       break;
     } catch (error) {
       if (error?.code !== 'ENOENT') throw endpointRefusal('read_failed');
+    } finally {
+      longestReadMs = Math.max(longestReadMs, performance.now() - readStartedAt);
     }
     await new Promise((resolve) => setTimeout(resolve, 25));
   }
-  if (typeof raw !== 'string') throw new Error('owned_cdp_endpoint_timeout');
+  if (typeof raw !== 'string') {
+    const error = new Error('owned_cdp_endpoint_timeout');
+    error.endpointWaitDiagnostic = Object.freeze({
+      polls: endpointPolls,
+      elapsedMs: Math.round(performance.now() - waitStartedAt),
+      longestReadMs: Math.round(longestReadMs),
+    });
+    throw error;
+  }
   const lines = raw.split(/\r?\n/);
   if (lines.length === 3 && lines[2] === '') lines.pop();
   const shape = {

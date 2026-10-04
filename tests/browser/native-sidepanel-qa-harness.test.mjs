@@ -199,7 +199,7 @@ assert.doesNotMatch(source, /9222/);
 assert.doesNotMatch(source, /Browser\.close\(/);
 console.log('PASS native sidepanel harness refuses foreign CDP/browser identities');
 
-const { safeStartupFailureCode, safeEndpointDiagnostic } = await import(
+const { safeStartupFailureCode, safeEndpointDiagnostic, safeEndpointWaitDiagnostic } = await import(
   './native-sidepanel-qa-harness.mjs'
 );
 assert.equal(
@@ -248,6 +248,22 @@ endpointError.endpointDiagnostic.shape.lineCount = 'private endpoint value';
 assert.equal(safeEndpointDiagnostic(endpointError), null);
 assert.equal(safeEndpointDiagnostic(new Error('owned_cdp_endpoint_timeout')), null);
 console.log('PASS native startup endpoint diagnostic emits only fixed branch and shape fields');
+const timeoutError = new Error('owned_cdp_endpoint_timeout');
+timeoutError.endpointWaitDiagnostic = {
+  polls: 180,
+  elapsedMs: 5037,
+  longestReadMs: 2,
+  privatePath: '/private/profile',
+};
+assert.deepEqual(safeEndpointWaitDiagnostic(timeoutError), {
+  polls: 180,
+  elapsedMs: 5037,
+  longestReadMs: 2,
+});
+timeoutError.endpointWaitDiagnostic.polls = 'private value';
+assert.equal(safeEndpointWaitDiagnostic(timeoutError), null);
+assert.equal(safeEndpointWaitDiagnostic(new Error('owned_cdp_open_timeout')), null);
+console.log('PASS native endpoint timeout emits bounded numeric polling evidence');
 
 // SUT: reloadOwnedExtension owns Developer mode setup, the native reload,
 // target lifecycle proof, and refusal when Chrome disables the extension.

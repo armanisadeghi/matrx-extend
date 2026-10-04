@@ -663,6 +663,25 @@ function safeEndpointDiagnostic(error) {
   };
 }
 
+function safeEndpointWaitDiagnostic(error) {
+  if (safeStartupFailureCode(error) !== 'owned_cdp_endpoint_timeout') return null;
+  const diagnostic = error.endpointWaitDiagnostic;
+  if (
+    !Number.isSafeInteger(diagnostic?.polls) ||
+    diagnostic.polls < 0 ||
+    !Number.isSafeInteger(diagnostic.elapsedMs) ||
+    diagnostic.elapsedMs < 0 ||
+    !Number.isSafeInteger(diagnostic.longestReadMs) ||
+    diagnostic.longestReadMs < 0
+  )
+    return null;
+  return {
+    polls: diagnostic.polls,
+    elapsedMs: diagnostic.elapsedMs,
+    longestReadMs: diagnostic.longestReadMs,
+  };
+}
+
 export async function runNativeSidepanelQa({
   headed = false,
   extensionDir,
@@ -735,6 +754,10 @@ export async function runNativeSidepanelQa({
       { stdio: ['ignore', 'ignore', 'pipe'] },
     );
     let chromeStderr = '';
+    let spawnObserved = false;
+    child.once('spawn', () => {
+      spawnObserved = true;
+    });
     child.stderr.on('data', (chunk) => {
       chromeStderr = (chromeStderr + String(chunk)).slice(-2000);
     });
@@ -748,14 +771,17 @@ export async function runNativeSidepanelQa({
       if (launchError) throw launchError;
     } catch (error) {
       const endpointDiagnostic = safeEndpointDiagnostic(error);
+      const endpointWaitDiagnostic = safeEndpointWaitDiagnostic(error);
       const startupDiagnostic = {
         failureCode: safeStartupFailureCode(error),
         elapsedMs: Math.max(0, Math.round(performance.now() - startupStartedAt)),
         exitCode: child.exitCode,
         signalCode: child.signalCode,
         launchFailed: Boolean(launchError),
+        spawnObserved,
         stderrFlags: browserDiagnosticFlags(chromeStderr),
         ...(endpointDiagnostic && { endpointDiagnostic }),
+        ...(endpointWaitDiagnostic && { endpointWaitDiagnostic }),
       };
       // Guest result summaries truncate errors; preserve bounded startup evidence
       // in the runner log before forwarding the unchanged failure.
@@ -932,4 +958,5 @@ export {
   verifyReleasedArtifact,
   safeStartupFailureCode,
   safeEndpointDiagnostic,
+  safeEndpointWaitDiagnostic,
 };

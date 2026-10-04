@@ -69,6 +69,26 @@ class ThrowingWS {
   await c.send('Browser.getVersion');
   await c.detach();
   assert.equal(c.ownerVerified, true);
+  files.delete('/p/DevToolsActivePort');
+  await assert.rejects(
+    () =>
+      connectOwnedCdp({
+        preparedProfile: p,
+        chromeExecutable:
+          '/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+        fileSystem: fs,
+        WebSocketCtor: WS,
+        timeoutMs: 40,
+      }),
+    (error) => {
+      assert.equal(error.message, 'owned_cdp_endpoint_timeout');
+      assert.ok(error.endpointWaitDiagnostic.polls >= 1);
+      assert.ok(error.endpointWaitDiagnostic.elapsedMs >= 0);
+      assert.ok(error.endpointWaitDiagnostic.longestReadMs >= 0);
+      return true;
+    },
+  );
+  files.set('/p/DevToolsActivePort', '9222\n/devtools/browser/a-b');
   await assert.rejects(
     () =>
       connectOwnedCdp({

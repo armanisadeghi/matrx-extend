@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "issue": "EXT-D-0107",
+  "status": "CAUSE_UNCONFIRMED_INSTRUMENTED",
+  "scope": "Hosted guest Scrape native startup in run 37186201850; no product UI reached and no hosted rerun performed in this lane.",
+  "observed": {
+    "workflow_run_id": 37186201850,
+    "workflow_head_sha": "0be37bef30bf483e2888718980c685db4b956151",
+    "artifact": "hosted-guest-37186201850-1",
+    "browser_runtime": "HOSTED_BROWSER_READY 1194 acceptance",
+    "first_failure": "BROWSER_STARTUP_FAILURE: owned_cdp_endpoint_timeout after 5037 ms; child exitCode and signalCode null; launchFailed false; no stderr, code signature, dynamic loader, permission, sandbox, crash, or DevTools-listening flags",
+    "resource_verdict": "Resource admission was valid with 12.6 GiB available and 0.051 CPU busy fraction; journal ended child_failed, resourceInvalid false. The resource journal gives no evidence of an unsafe resource stop.",
+    "receipt": "test-results/hosted-scrape-37186201850/test-results/scrape-guest-native-a4639327-5de9-41c7-97b3-340795ea9c87.json: stage inputs/native_stage cdp_connect, zero cases and no guest account observed",
+    "successful_sibling_limit": "Earlier run 37185080238 reached the native panel with browser build 1194, then failed later. It does not establish the same browser binary bytes or explain this startup failure."
+  },
+  "source_boundary": {
+    "helper": "tests/browser/vault-owned-cdp.cjs: connectOwnedCdp polls the owned profile's DevToolsActivePort for 5000 ms, then throws owned_cdp_endpoint_timeout if every read returned ENOENT.",
+    "inference": "The endpoint file was absent throughout this helper's polling window. Chrome startup cause is not established by the current logs; an increased deadline or retry would be speculative.",
+    "remaining_alternatives": [
+      "Chrome process spawn event was delayed or never observed",
+      "The JavaScript polling loop was delayed despite the wall clock reaching the deadline",
+      "Chrome process was alive and polling continued normally, but Chrome did not publish its endpoint within the current deadline"
+    ]
+  },
+  "instrumentation": {
+    "change": "On endpoint timeout, count actual file polls and record monotonic elapsed and longest file read duration. Startup log also records whether the owned child emitted its spawn event. The sink validates and emits only nonnegative integers and a boolean; no endpoint, port, path, process arguments, stderr text, or credential value is logged.",
+    "behavior_unchanged": "The endpoint deadline, polling interval, ownership verification, resource guard, and browser shutdown behavior are unchanged.",
+    "interpretation_next_run": "spawnObserved false points to spawn scheduling; low polls or a long read points to polling delay; normal poll count with spawnObserved true points to Chrome failing to publish the endpoint within the unchanged deadline. None alone proves why Chrome is slow."
+  },
+  "verification": {
+    "focused": "node tests/browser/vault-owned-cdp.test.cjs passed; node tests/browser/native-sidepanel-qa-harness.test.mjs passed",
+    "syntax": "node --check passed for both changed runtime files",
+    "format": "pnpm exec biome format --write completed for four changed runtime/test files",
+    "diff": "git diff --check passed",
+    "native_browser": "not run; requires root's one controlled resource-admitted hosted retest"
+  },
+  "next_action": "Root may run one controlled hosted guest Scrape retest with this instrumentation and the unchanged resource guard. Preserve the BROWSER_STARTUP_FAILURE line and current-run journal, then classify the endpoint wait by spawnObserved, polls, elapsedMs, and longestReadMs before choosing a repair. Native Scrape behavior remains unverified until UI and cases are actually exercised."
+}
