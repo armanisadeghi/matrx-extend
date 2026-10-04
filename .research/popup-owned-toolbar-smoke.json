@@ -16,6 +16,24 @@
     "scratch_root": "/Volumes/Samsung2TB/code/.stabilization-scratch/popup-owned-toolbar-189-01",
     "evidence_and_permit_profile_mode": "0700, stat verified before launch",
     "harness": "tests/browser/native-sidepanel-qa-harness.mjs via a scratch-only headed driver",
+    "scratch_workaround": {
+      "code": "globalThis.WEB_ORIGIN = 'https://www.aimatrx.com' before importing the harness",
+      "reason": "The unmodified harness source references WEB_ORIGIN at page_create without a declaration or import. The scratch global supplied that name without editing repository code.",
+      "unmodified_harness_failure_observed": false,
+      "unmodified_harness_failure_limit": "The unmodified path was not executed to page_create in this run; ReferenceError is inferred from source inspection, not a recorded runtime failure.",
+      "claims_depending_on_workaround": [
+        "page creation and browser-agent traffic marking",
+        "local page navigation and native side-panel open",
+        "guest side-panel context, settled render, and screenshot",
+        "exercise callback readiness and popup-target observation"
+      ],
+      "claims_independent_of_workaround": [
+        "artifact and receipt verification",
+        "owned Chrome profile, command line, CDP, and extension worker checks",
+        "resource admission and valid release",
+        "owned child cleanup"
+      ]
+    },
     "owned_cdp_profile_extension_and_guest_side_panel_verified": true,
     "owned_browser_cleaned_up": true,
     "resource_guard_admitted": true,
