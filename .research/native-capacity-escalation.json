@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "task": "native-capacity-escalation",
+  "status": "BOUNDED_CAUSAL_EXPERIMENT_SUPPORTED_NOT_LAUNCHED",
+  "reviewed_at_utc": "2026-10-04T20:17:39.064380+00:00",
+  "scope": "Read-only investigation plus this report only. No browser, workflow dispatch, product edit, credentials, build, release, process termination, resource-policy change, or acceptance promotion.",
+  "current_truth": {
+    "native_acceptance": "UNVERIFIED; both 37227042493 and 37230193583 refused before authentication/product cases. D129 is already fixed and was not reopened.",
+    "cause": "CPU/load threshold crossing is established. The workload that caused it is not. Neither unrelated runner noise nor Chromium-triggered OS service work has been established.",
+    "latest_interval": "Owned Chromium 0.36 CPU-s, owned Node 0.03, provisioner 0, otherHost 1.69. Aggregate busy 0.87 on 3 CPUs. Process brackets enclose but do not exactly match the iostat interval; new/exited/reparented/PID-reused processes are incomplete.",
+    "post_interval": "Two MTLCompilerServi processes report 83.7% and 48.3% after the interval. These percentages are leads, not interval attribution."
+  },
+  "new_source_findings": [
+    {
+      "finding": "processTimeBracket computes individual deltas then filters all otherHost rows out of observed. That category means not in the retained owned descendant set and not provjobd, not causally unrelated to Chromium. Thus individual Metal compiler deltas cannot be recovered from the saved bracket.",
+      "source": "scripts/startup-interval-attribution.mjs"
+    },
+    {
+      "finding": "The installed package is pinned playwright-core@1.56.1. Its upstream browsers.json maps Chromium revision1194 to141.0.7390.37. The default harness uses full Chromium with --headless=new and no GPU/Skia override; each launch creates a fresh profile.",
+      "source": "scripts/hosted-guest-acceptance.mjs and tests/browser/native-sidepanel-qa-harness.mjs",
+      "upstream": "https://raw.githubusercontent.com/microsoft/playwright/v1.56.1/packages/playwright-core/browsers.json"
+    },
+    {
+      "finding": "Exact-version Chromium enables SkiaGraphite by default on macOS ARM64. It explicitly handles --disable-skia-graphite before other enablement checks. Dawn defaults to Metal on Apple. This supplies a narrower one-variable diagnostic than disabling GPU wholesale; actual VM backend remains unmeasured.",
+      "sources": [
+        "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/gpu/config/gpu_finch_features.cc",
+        "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/gpu/config/gpu_switches.cc",
+        "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/gpu/command_buffer/service/dawn_context_provider.cc"
+      ],
+      "retrieved_sha256": {
+        "gpu_finch_features.cc": "9a51f47dffd2dd4efd94384a0bc82aa381df59bb648d2b98a52433ce758064e7",
+        "gpu_switches.cc": "4a4002457507c3457d5095b7450d7db1de1bfb632a862ca5d497b3342a2610cb",
+        "dawn_context_provider.cc": "50e8e1172d84b917c1b2c1cb518bed1a0bc1ed15bbe6aa6a7c9d73b287cc54c0"
+      }
+    }
+  ],
+  "ranked_hypotheses": [
+    {
+      "rank": 1,
+      "if": "Default Graphite/Dawn rendering during fresh native-panel startup drives material Metal compilation and the unsafe CPU interval.",
+      "prediction": "A measured Graphite-enabled baseline has material matching compiler CPU deltas; changing only --disable-skia-graphite changes the observed backend and reduces that contribution enough to complete the unchanged diagnostic with clean current-run resource history.",
+      "falsifier": "Baseline reports Graphite inactive, or treatment confirms the alternate backend yet compiler contribution and unsafe verdict persist. A different unrelated bottleneck makes the verdict inconclusive, not proof against all graphics causes.",
+      "test": "Conditional baseline/treatment contrast below; no product acceptance inference."
+    },
+    {
+      "rank": 2,
+      "if": "Non-Graphite browser graphics work drives compiler CPU.",
+      "prediction": "Confirmed Graphite-off treatment retains material compiler CPU and the unsafe interval, whereas hypothesis1 predicts relief.",
+      "test": "Same single-variable contrast discriminates only Graphite-specific contribution; no additional rendering flag is stacked."
+    },
+    {
+      "rank": 3,
+      "if": "The dominant otherHost work is independent host activity.",
+      "prediction": "Named non-compiler deltas dominate the unsafe baseline/treatment intervals and changing the confirmed Skia backend does not remove the pressure.",
+      "test": "Retain individual matched non-owned process deltas and stage timestamps; parentage or post-sample percent alone cannot establish independence."
+    }
+  ],
+  "smallest_next_action": {
+    "decision": "Root can authorize a diagnostic-only observability change and independent source review, followed by at most one default baseline and one conditional treatment. No launch or correction is authorized/performed by this report.",
+    "measurement_changes": [
+      "Retain the already-computed individual otherHost rows (PID, executable basename, CPU-seconds delta), or at minimum every Metal compiler row plus the remaining named positive-delta rows, through the reviewed strict journal serializer. Do not relabel them as owned or change cleanup ownership. Preserve all unmatched PID lists and snapshot start/end timestamps. No arguments, environment, credentials, or higher polling rate.",
+      "Timestamp diagnostic native stages, especially browser_spawn, panel_open, panel_settle, screenshot, exercise_panel. Existing report retains only the last stage. This distinguishes which work overlaps the CPU bracket.",
+      "After existing browser command-line/profile/worker ownership verification and before local_server/page_create, issue one diagnostic-only SystemInfo.getInfo on that owned browser CDP session. Keep startup moving: do not await it as a new startup barrier. Bound it with the existing CDP deadline, record requested/resolved/failed times, and persist only gpu.auxAttributes.skiaBackendType, glRenderer and relevant featureStatus values. Drop the returned commandLine entirely. Missing/timeout data remains UNKNOWN."
+    ],
+    "backend_observation_source": {
+      "feasibility": "Exact-version SystemInfo.getInfo is browser-target-only and observes GpuDataManager info. GPUInfo enumerates skiaBackendType and glRenderer as auxiliary fields. The harness has a verified browser-target CDP connection before any fixture navigation, native-panel open, auth, or product case. This is source-supported feasibility, not runtime proof.",
+      "sources": [
+        "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/content/browser/devtools/protocol/system_info_handler.cc",
+        "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/gpu/config/gpu_info.cc"
+      ],
+      "observer_limit": "The request can wait for GPU info and adds small observation work. Both arms must contain identical instrumentation, and failures must remain visible. Do not introduce a GPU warm-up or wait before startup."
+    },
+    "baseline": "One startup-resource-diagnostic using the existing configured ARM workflow, frozen240 run37226671959/artifact11312153381, pinned1194 browser, same native harness, fresh profile, default rendering. Preserve every current-run journal; stop on existing boundary/watchdog rules. No auth secret or product case.",
+    "conditional_treatment": "Only if baseline actually reports Graphite active and confirms material compiler CPU during the unsafe bracket: one separately admitted diagnostic with identical code, artifact, workflow inputs, instrumentation and native path, changing only the explicit owned-browser launch argument --disable-skia-graphite. Keep ordinary acceptance defaults untouched. Verify the returned backend changed. If baseline is healthy, backend unknown/inactive, or compiler contribution absent/unassignable, do not launch this treatment on the theory.",
+    "interpretation": "A clean treatment with changed backend and substantially reduced compiler deltas supports Graphite contribution, not a proven root cause or reliable capacity. Different hosted VMs remain a confound; a single pair cannot demonstrate repeatability. Failure to reach the same native stage, unavailable backend data, or unmatched dominant compiler lifetimes yields INCONCLUSIVE. Preserve exact default and treatment provenance.",
+    "stop_rule": "No blind retry, additional graphics flags, cache priming, sleeps, changed deadlines, runner migration, altered sampling, resource-floor changes, unsafe-history clearing, or unrelated process termination. No further run after this bounded pair without an evidence-based ruling.",
+    "acceptance_path": "After diagnostic ruling, root must select a resource-admitted execution route and run the actual full requested member/normal, admin selected-org, D127 original/sibling, reload and surrounding acceptance cases on the exact eligible artifact. Graphite-off diagnostic is neither that acceptance nor approval for a permanent renderer default. Default-renderer behavior stays unverified even if an alternate backend later passes functional cases."
+  },
+  "external_requirement": "No unavoidable new paid runner or human-only requirement is established. The existing evidence is insufficient to assert that default native startup cannot run safely on configured capacity.",
+  "local_evidence_sha256": {
+    "docs/stabilization/evidence/startup-interval/run37230193583/startup-interval-bracket.stdout.json": "6dd22637d59b67edca4cb8d3b404e4c1f79dc017d911f50c4928ac1746c6bf17",
+    "scripts/startup-interval-attribution.mjs": "237fc01ed580e0754794fea702470ed61f4ff6e5432919a67dc195c64c749365",
+    "tests/browser/native-sidepanel-qa-harness.mjs": "95bc0bd020fa482a2dfe5adb50a19dda4d567fa0d5b10c10995f7209e1a6cb77",
+    "scripts/hosted-guest-acceptance.mjs": "e6c341c9d435f006010d64d1886332860a9b32c086e789a237c4f44890ada820"
+  },
+  "verification": "Read current COORDINATOR, diagnose skill, original reports and saved stdout bracket; inspected actual launch/attribution/CDP seams; read exact-version upstream primary sources. No heavy local test or native run. Only report JSON syntax/format/diff are checked; no product closure."
+}

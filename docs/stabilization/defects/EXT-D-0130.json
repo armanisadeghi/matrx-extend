@@ -1,0 +1,43 @@
+{
+  "id": "EXT-D-0130",
+  "feature_id": "EXT-F-1007",
+  "surface": "Resource guard CI integration",
+  "auth_mode": "all (auth-independent harness)",
+  "title": "Startup sampling change breaks safety integration measurement fixture",
+  "reproduction": [
+    "Inspect CI37231230338 at8b452acd resource-guard-integration job.",
+    "Run node --test scripts/test-stabilization-resource-safety-integration.mjs on the supported Darwin test environment.",
+    "Observe fixture fails before exercising safety-marker failure: missing unique host measurement cpuBusyFraction(output), because sampling now invokes cpuBusyFraction(cpuOutput)."
+  ],
+  "expected": "Safety-marker integration test reaches real owned guard behavior with controlled host measurements and verifies invalidation/retained lease on write failure.",
+  "actual": "Fixture source replacement stops before target safety behavior; CI also reports three formatting errors requiring exact-path correction.",
+  "severity": "S2: red integration gate, not a native product failure",
+  "priority": "P1: restore green trunk before next native launch",
+  "state": "in-fix",
+  "owner": "root/startup_ci_repair",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37231230338",
+    ".research/startup-ci-repair.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T20:16:52.913230+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Observed actual CI failure."
+    },
+    {
+      "at": "2026-10-04T20:16:52.913230+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Failure is stale fixture measurement seam after startup diagnostics change."
+    },
+    {
+      "at": "2026-10-04T20:16:52.913230+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Assigned source repair preserving original safety assertion and exact formatting checks."
+    }
+  ],
+  "next_action": "Fresh independent original-reproduction and safety assertion checks, then automatic CI confirmation."
+}

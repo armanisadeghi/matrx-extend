@@ -1,0 +1,121 @@
+{
+  "review_type": "fresh_source_only_peer_review",
+  "reviewed_commit": "1ce5942f",
+  "reviewed_artifacts": [
+    "docs/stabilization/inventory.json",
+    ".research/form-control-procedures.json"
+  ],
+  "scope": [
+    "EXT-F-4061",
+    "EXT-F-4062",
+    "EXT-F-4063",
+    "EXT-F-4064",
+    "EXT-F-4065",
+    "EXT-F-4066",
+    "EXT-F-4067",
+    "EXT-F-4068",
+    "EXT-F-4069"
+  ],
+  "A_executable_procedure_correctness": {
+    "verdict": "corrections_required_before_execution",
+    "findings": [
+      {
+        "ids": [
+          "EXT-F-4061",
+          "EXT-F-4062",
+          "EXT-F-4063",
+          "EXT-F-4064",
+          "EXT-F-4065",
+          "EXT-F-4066",
+          "EXT-F-4067",
+          "EXT-F-4068"
+        ],
+        "severity": "blocking_procedure_step",
+        "finding": "The cases say to search the exact handler name in Tools > Catalog, but the catalog defaults to Agent surface. These eight names are internal delegates, so the search returns no matching row under the default filter. Add a step to select Internal delegates or All handlers before searching; submit_form is on Agent surface.",
+        "source_proof": [
+          "src/features/tools/ToolsView.tsx:120-137",
+          "src/features/tools/ToolsView.tsx:199-212",
+          "src/lib/tools/categories.ts:461-475",
+          "src/lib/tools/categories.ts:560-561"
+        ]
+      },
+      {
+        "ids": ["EXT-F-4068"],
+        "severity": "wrong_oracle",
+        "finding": "The no-match negative follows a successful selection of B. The handler returns before calling target.click(), so B remains selected and the change count remains unchanged. Expected text currently says A remains selected; change that to B.",
+        "source_proof": ["src/lib/tools/handlers/forms.ts:324-349"]
+      },
+      {
+        "ids": ["EXT-F-4069"],
+        "severity": "incomplete_input",
+        "finding": "The no-form negative has no exact JSON, unlike the other cases. Specify {\"selector\":\"#missing-form\"} against an owned fixture with no matching element, then assert No form found and unchanged submit count.",
+        "source_proof": ["src/lib/tools/handlers/forms.ts:356-383"]
+      },
+      {
+        "ids": [
+          "EXT-F-4061",
+          "EXT-F-4062",
+          "EXT-F-4063",
+          "EXT-F-4064",
+          "EXT-F-4065",
+          "EXT-F-4066",
+          "EXT-F-4067",
+          "EXT-F-4068",
+          "EXT-F-4069"
+        ],
+        "severity": "fixture_limit",
+        "finding": "The page is described by control IDs, initial states, and event oracles, but no named owned HTTP fixture or exact markup is supplied. The precondition correctly stops browser execution until a fixture URL/hash and controlled event observables exist. These are design procedures, not currently runnable evidence.",
+        "source_proof": [
+          "docs/stabilization/inventory.json: case preconditions and steps for EXT-F-4061..4069",
+          ".research/form-control-procedures.json:187-190"
+        ]
+      }
+    ],
+    "source_consistent_cases_after_above_corrections": [
+      "EXT-F-4061",
+      "EXT-F-4062",
+      "EXT-F-4063",
+      "EXT-F-4064",
+      "EXT-F-4065",
+      "EXT-F-4066",
+      "EXT-F-4067",
+      "EXT-F-4068",
+      "EXT-F-4069"
+    ],
+    "verified_source_semantics": "The valid JSON, schema or handler-level negatives, and result shapes otherwise match keyboard.ts and forms.ts. Manual Tools Run uses Zod safeParse, calls the local handler with permissionMode act and assignedTabId null, and therefore checks the currently focused tab. It does not cover assigned agent tab, dispatcher Ask/Act, request-time advertisement, or native physical input. Guest is gated by AuthGate; member/admin runs are proposed repetitions, not role-access proof.",
+    "source_proof": [
+      "src/features/tools/ToolsView.tsx:390-461",
+      "src/lib/tools/handlers/_active-tab.ts:16-39",
+      "src/entrypoints/sidepanel/App.tsx:361-362",
+      "src/entrypoints/sidepanel/App.tsx:682-689",
+      "src/lib/tools/handlers/keyboard.ts:29-352",
+      "src/lib/tools/handlers/forms.ts:191-402"
+    ]
+  },
+  "B_artifact_quality_and_baseline_preservation": {
+    "verdict": "baseline_preserved_with_design_label_caveat",
+    "findings": [
+      {
+        "ids": [
+          "EXT-F-4061",
+          "EXT-F-4062",
+          "EXT-F-4063",
+          "EXT-F-4064",
+          "EXT-F-4065",
+          "EXT-F-4066",
+          "EXT-F-4067",
+          "EXT-F-4068",
+          "EXT-F-4069"
+        ],
+        "finding": "Compared with the parent of 1ce5942f, all nine inventory_status values remain source-listed-pending-reconciliation, all 27 guest/member/admin cells remain unverified, and all nine live_binding metadata states remain unchanged: absent for 4061-4068 and active for 4069. The new procedure-ready-unverified design label describes authored steps only; the missing fixture and corrections above prevent an execution-ready claim.",
+        "source_proof": [
+          "git show 1ce5942f^:docs/stabilization/inventory.json",
+          "docs/stabilization/inventory.json",
+          ".research/tool-binding-readonly-census.json",
+          ".research/form-control-procedures.json"
+        ]
+      }
+    ],
+    "native_and_runtime_limit": "No browser, native input, build, tests, or DB query was run for this peer review. The exact-name binding census is accepted as prior read-only evidence and does not prove request-time exposure or role access. No result cell was promoted."
+  }
+}

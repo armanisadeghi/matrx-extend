@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0130",
+  "ci_run_id": 37231230338,
+  "status": "scoped-repair-verified-locally-hosted-integration-pending",
+  "failures": [
+    {
+      "job": "resource-guard-integration",
+      "symptom": "missing unique host measurement: cpuBusyFraction(output),",
+      "cause": "The guard now calls cpuBusyFraction(cpuOutput) to bracket the hosted startup interval, while the scratch measurement helper still searched for the former call expression.",
+      "repair": "Match the current unique CPU sample expression in the scratch copy; retain the real guard policy and safety-marker assertions."
+    },
+    {
+      "job": "Lint",
+      "symptom": "Three Biome formatter errors in committed JSON evidence files.",
+      "paths": [
+        ".research/startup-diagnostic-run.json",
+        "docs/stabilization/defects/EXT-D-0129.json",
+        "docs/stabilization/evidence/startup-interval/run37230193583/startup-interval-bracket.stdout.json"
+      ],
+      "repair_commit": "f2da3bfc"
+    }
+  ],
+  "verification": {
+    "original_ci_failure": "GitHub Actions run 37231230338 showed assertion 1 !== 2 in setHealthyHostMeasurements before the integration test exercised the marker failure.",
+    "scratch_fixture": "Current guard CPU slot substituted exactly once in a disposable scratch copy; the old expression is absent after replacement.",
+    "focused_safety_tests": "Five passed, three integration tests skipped because this Mac's system volume has 7.62 GiB free, below the unchanged 20 GiB guard policy.",
+    "scoped_biome": "scripts/stabilization-resource-test-measurements.mjs passed Biome check.",
+    "full_biome": "Original three formatter errors removed by f2da3bfc; a new peer-owned .research/form-control-procedures.json formatter error appeared in commit 1ce5942f."
+  },
+  "remaining": "Hosted macOS integration must execute above the real disk threshold to confirm the marker-failure path and full lint must include the peer-owned formatting correction."
+}
