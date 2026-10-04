@@ -11,11 +11,11 @@
     "This reproduces a harness blind spot; whether replacement caused the hosted failure remains unverified until native diagnostics run."
   ],
   "expected": "Observe the active Scrape capture control through DOM replacement and tooltip title movement, while refusing success when no disabled busy state rendered.",
-  "actual": "Stale-node observer blind spot is source-fixed and independently reviewed. Native busy-state retest remains pending; original hosted failure used the local development ZIP, and the next acceptance targets exact205 Store payload.",
+  "actual": "Exact Store205 native37188132857 captured the real article but recorded no disabled busy sample. Historical replay candidates were rejected for false positives; reviewed122504b8 now uses current owned visible DOM observations only. Original product busy cause remains unknown; separately labeled timing diagnostic preparation is active.",
   "severity": "S3: false-negative acceptance risk; no product busy-state failure established",
   "priority": "P1: restore reliable native acceptance before promoting capture cases",
   "state": "in-fix",
-  "owner": "guest_scrape_native",
+  "owner": "scrape_timing_diagnostic",
   "evidence": [
     ".research/guest-scrape-hosted-native.json",
     ".research/guest-scrape-busy-repair.json",
