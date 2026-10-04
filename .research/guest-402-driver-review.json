@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "reviewed_implementation_commit": "7dc3e2041b96ce80549ba68616fdc1e157c50007",
+  "authorship": "fresh zero-authorship source review of the pushed native test driver; report only",
+  "verdict_a_source_acceptance": {
+    "result": "PASS",
+    "evidence": [
+      "The driver pins an exact receipt and source/artifact hash before launching one owned guest profile.",
+      "A pass requires at least one live guest arithmetic answer, the rendered free-account remedy, no visible Retry, and an offscreen Network HTTP 402 whose parsed top-level error is exactly guest_ai_allowance_used.",
+      "The seven-send default is a bounded diagnostic stop, not an assertion that the current points policy permits a fixed number of requests. The configured bound is validated from 2 through 7. Reaching it without the live refusal leaves the harness nonzero and acceptance unverified.",
+      "The offscreen listener attaches to the exact extension's offscreen.html target after the first completed answer and filters the real mandate endpoint."
+    ],
+    "missing": [],
+    "extra": [],
+    "misunderstood": []
+  },
+  "verdict_a_native_acceptance": {
+    "result": "UNVERIFIED",
+    "reason": "The exact receipt-bound native run had not completed when this source review was filed. A bounded run ending without HTTP 402 is missing live acceptance evidence, not a demonstrated product failure.",
+    "remaining": "Root owns the live receipt review and separate fresh guest/member proof. Source review cannot certify either."
+  },
+  "verdict_b_test_quality_privacy": {
+    "result": "PASS",
+    "evidence": [
+      "The driver observes real offscreen network traffic and real panel rendering; a mocked response cannot satisfy its native pass condition.",
+      "The pass assertion joins transport classification with the visible remedy and absence of Retry. A different HTTP status, different top-level code, generic denial, missing answer, or skipped send fails.",
+      "The receipt stores a fixed status, booleans, and the known literal code. Response body bytes, unknown response values, account identity, and credentials are not serialized.",
+      "The driver remains test-only and makes no allowance-policy write. Syntax, Biome formatting, and diff checks were reported passing by the implementer; this reviewer inspected the immutable pushed diff."
+    ],
+    "findings": [],
+    "limitations": [
+      "No native browser run or sabotage mutation was performed by this reviewer; runtime acceptance is a separate verdict.",
+      "The endpoint observation starts after the first successful answer, so the receipt proves the subsequent allowance response rather than the first request's HTTP status."
+    ]
+  }
+}
