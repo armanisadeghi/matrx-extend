@@ -42,23 +42,23 @@
   },
   "boundary_diagnosis": {
     "confirmed": "The installed side panel turns a legitimate guest allowance refusal into a generic retryable chat failure at the client HTTP-error presentation boundary.",
-    "source_contract_gap": "src/lib/api/stream.ts isGuestAllowanceUsed recognizes only status 403 with a top-level error field equal to guest_ai_allowance_used, while the live refusal for the reproduced send was status 402. streamErrorMessage has no 402 case and uses generic copy; src/lib/chat/stream-error.ts suppresses Retry only when code is guest_ai_allowance_used.",
-    "qualification": "The 0.2.176 Store binary predates this source checkout. The source contract matches the observed generic message and Retry behavior, but exact response-body shape and binary-level branch execution were not captured."
+    "source_contract_gap": "Frozen published 0.2.176 has no guest-allowance-specific HTTP classification: every HTTP 402 follows streamErrorMessage's generic default and the normal Retry interruption. The later pending 0.2.181/current-main source adds isGuestAllowanceUsed, but recognizes only status 403 with a top-level error field equal to guest_ai_allowance_used; the live refusal for the reproduced send was status 402.",
+    "qualification": "The frozen 0.2.176 source was verified at its published SHA. The later 403-only classifier is a separate candidate gap, not code running in the installed 0.2.176. Exact live 402 response-body shape was not captured."
   },
   "ranked_falsifiable_hypotheses": [
     {
       "rank": 1,
-      "cause": "Live allowance HTTP status moved to 402 while the installed client recognizes guest_ai_allowance_used only at 403",
-      "prediction": "A 402 response carrying error=guest_ai_allowance_used yields generic copy and Retry; accepting 402 at the shared classifier yields the free-tries remedy and no Retry",
-      "test": "Run the HTTP-error classifier against the captured 402 status with a representative refusal body, then verify actual Store candidate or newer client against an already-over guest identity",
-      "state": "Strongly supported by live status, UI behavior, and source; exact body still unobserved"
+      "cause": "Published 0.2.176 has no guest-allowance-specific HTTP handling and therefore presents the live 402 as a generic retryable error",
+      "prediction": "Any allowance HTTP 402 received by frozen 0.2.176 yields generic copy and Retry regardless of the refusal body's code",
+      "test": "Compare the frozen 0.2.176 HTTP-error branch with the reproduced Store UI and correlated 402 request",
+      "state": "Confirmed for the reproduced installed failure by live status, UI behavior, and frozen source"
     },
     {
       "rank": 2,
-      "cause": "The live 402 response body does not contain the field expected by the client",
-      "prediction": "Changing only accepted status leaves the classifier generic; a schema-aware classification test with the actual redacted body identifies the missing field",
-      "test": "Capture one private redacted 402 response shape or inspect the deployed server response constructor without exposing identity",
-      "state": "Open because audit logs do not retain response body"
+      "cause": "Pending 0.2.181/current-main handling accepts guest_ai_allowance_used at HTTP 403 only, leaving the live 402 generic after publication",
+      "prediction": "A 402 response carrying error=guest_ai_allowance_used remains generic in the pending candidate; accepting 402 at its classifier yields the free-tries remedy and no Retry",
+      "test": "Exercise the pending candidate HTTP-error classifier with a representative 402 refusal, then verify a newer client against an already-over guest identity",
+      "state": "Source-confirmed candidate risk; not the installed 0.2.176 execution path, and exact live body remains unobserved"
     },
     {
       "rank": 3,
