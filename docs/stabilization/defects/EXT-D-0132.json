@@ -13,11 +13,14 @@
   "actual": "Native boundary treats the first one-second high CPU watch as irreversible; child exits before sustained confirmation and wrapper final reports child_failed/resourceInvalid=false. Actual physical spike may or may not have persisted.",
   "severity": "S2: testing can stop on an unconfirmed CPU transient; no proven product defect",
   "priority": "P1: restore trustworthy guarded native acceptance",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/resource_cpu_confirmation",
   "evidence": [
     ".research/resource-guard-semantics.json",
-    ".research/scrape-member-normal-resumption.json"
+    ".research/scrape-member-normal-resumption.json",
+    ".research/resource-cpu-confirmation.json",
+    ".research/resource-cpu-fresh-peer.json",
+    ".research/resource-cpu-final-reverify.json"
   ],
   "scope_ruling": "Adopt reviewed future CPU_PENDING \u2192 CPU_RECOVERED after three healthy watches or confirmed irreversible unsafe on two bad watches, bounded by existing policy knobs. No numeric threshold change, historical event reinterpretation or retroactive validity for prior runs. All non-CPU safeguards, one-heavy permit and cleanup remain. Independent review before native launch.",
   "transition_history": [
@@ -38,6 +41,22 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Bounded implementation authorized against reviewed contract; independent review and native confirmation required."
+    },
+    {
+      "at": "2026-10-04T21:45:04.421540+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh independent4cc242d3 reproduced actualwrapper baseline GREEN/exactbad-event-label mutation RED plus23focusedpass. FullCI37237036998 at2fed8191 succeeded; root read actualwrapper joblog1pass0fail0skip. Native confirmation pending, no priorrun promoted."
     }
-  ]
+  ],
+  "fix_commits": ["da9669c9", "e2d06172", "2fed8191"],
+  "hosted_ci": {
+    "run_id": 37237036998,
+    "head": "2fed8191b89f6cb8a8d07ca599bc24ee74b36296",
+    "conclusion": "success",
+    "actual_wrapper_regression": "1pass/0fail/0skip; realpreflight/watch/journal/boundary/recovery/stop/finalverdict controlledtelemetry",
+    "root_checked": "2026-10-04T21:44Z",
+    "limits": "No physicalCPUrecovery or nativeproductclaim."
+  },
+  "next_action": "One guarded member/normal600 native run on same frozen b8158702 product artifact11315305224; root/member_scrape_guard132_native owns terminalrun/evidence/cleanup. No unchanged retry."
 }
