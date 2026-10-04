@@ -14,12 +14,14 @@
   "actual": "The focused actual page_create marker block reproduced ReferenceError: WEB_ORIGIN is not defined without an ambient global. Canonical origin declaration fixes it; full unmodified native startup is still awaiting independent acceptance.",
   "severity": "S2 test infrastructure: blocks native acceptance; no product-user failure demonstrated.",
   "priority": "P1 next native launch prerequisite",
-  "state": "fixed",
+  "state": "closed",
   "owner": "native_harness_origin_fix",
   "evidence": [
     "tests/browser/native-sidepanel-qa-harness.mjs:713",
     ".research/popup-owned-toolbar-smoke.json",
-    ".research/native-harness-origin-fix.json"
+    ".research/native-harness-origin-fix.json",
+    ".research/profile-fields-member-native.json",
+    ".research/profile-fields-diagnostic-final-peer.json"
   ],
   "transition_history": [
     {
@@ -45,6 +47,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "76d6832e actual marker-block RED ReferenceError to GREEN with web/server traffic origins verified; no ambient global. Fresh peer and native startup pending."
+    },
+    {
+      "at": "2026-10-04T02:09:46.544160+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent native run used unmodified corrected harness, no ambientglobal, reached real firstpartyauth/Profile and passed basewarmcases; resourcevalid. Separate Identitycasefailure is D104."
+    },
+    {
+      "at": "2026-10-04T02:09:46.544160+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original startup ReferenceError removed; actualstartup and surroundings verified. No fullrun/producthealth claim."
     }
   ],
   "closure_requirement": "Meaningful actual startup/marking red-green guard, independent review and unmodified guarded native launch; no ambient global injection.",
