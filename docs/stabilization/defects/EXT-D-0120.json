@@ -30,7 +30,8 @@
     ".research/reload-lifetime-measurement.json",
     ".research/reload-lifetime-peer.json",
     ".research/reload-lifetime-native.json",
-    ".research/reload-lifetime-fresh-native.json"
+    ".research/reload-lifetime-fresh-native.json",
+    ".research/scrape-media-native.json"
   ],
   "transition_history": [
     {
@@ -71,8 +72,17 @@
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
-  "next_action": "Continue meaningful Scrape coverage with current instrumentation retained; media T08 sourcecoverage is being repaired/reviewed before next guardednative run. Do not spend a run solely on an unexplained repeat. If strictretirementfails, classify actual independentobserver/hostprobe/correlatedversion evidence using escalation9a4150ee nativebranches. Priorresourcefailure37198730857 didnotrecur onhealthy37199709918; no thresholds changed. Keep D120 open until intermittentcause resolved.",
+  "next_action": "Fresh bounded Astra medium escalation is justified by repeated D120 failures after lower-tier instrumentation and now-discriminating native evidence. Compare failing37200570100 with healthy37199709918 and prior escalation9a4150ee sources. Identify exact retained-host ownership or the authoritative execution-retirement contract; propose/implement one narrowly owned causal diagnostic or repair with forcing checks and freshpeer before anothernative run. Do not infer session ownership from attached=false, clear foreignsessions, Browser.close, stopWorker/unregister, or relax an unexplained predicate to obtain green. No blind retries.",
   "current_native_evidence": {
+    "run_id": "37200570100",
+    "status": "retest-fail_after_media_checks",
+    "driver_sha": "f405e156579dee028c91bc66bbfa10745f25fa56",
+    "artifact": "same frozen development215 CI37193761291 artifact11299613935",
+    "verified": "Rootmatchedreceipt ccac4c5e602e3054d5418b5a83c1d1627002451dd2c2b220b27ff63c600af17b and3healthyjournals. Chrome141.0.7390.37; oldversion0 correlated beforeclick to13CCF66B639A035D8EA322ABDC27BDA0. Version0 stopping/redundant at12:10:52.543UTC thenexplicitstopped/redundant at12:10:52.638UTC withtargetIdomitted; preclickversionidentityretained. IndependentgetTargetInfo oldhostpresent attached=false atfailure; neitherobserver sawoldworkerdestruction, oldworker/panelabsent, replacementcreated/present soleliveworker andversion1running/activated. Managementenabledzeroerrors, timeline0drops.",
+    "native_branch": "Old execution stopped + debugger host exists is now established. Exact retaining owner and causal repair are NOT established; attached=false does not identify Playwright as owner.",
+    "limitations": "Strictgatefailed before replacementcontext/mediareload. No threshold/predicate changes; no wholeproductpass. Reportcorrectiond62e8480 retains exactstopped event after omittedtargetId; originalreport had selected earlierstoppingevent."
+  },
+  "previous_passing_native_evidence": {
     "run_id": "37199709918",
     "status": "partial_native_retest",
     "artifact": "development215 source3536b5cb0bea2fb33383f2b239b8602fafb79351 CI37193761291 artifact11299613935",
