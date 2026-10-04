@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "task": "D117 independent diagnostic review",
+  "reviewed_commit": "9c040f7006b09042efca805f3c6088aa312d4c3a",
+  "status": "accepted_diagnostic_only_native_cause_unverified",
+  "A_diagnostic_adequacy": {
+    "verdict": "adequate_bounded_discriminator",
+    "evidence": [
+      "The probe reads the discovered panel target's committed frame URL and navigation error shape, then evaluates document URL/readiness, runtime identity, and safe SIDE_PANEL context counts in that renderer.",
+      "It runs only after the original exact-context guard fails and between the initial and existing follow-up worker reads; the original failure remains fatal even if a later read sees an exact context.",
+      "The resulting observations distinguish an uncommitted/unavailable document, failed or wrong navigation, and a committed exact renderer whose runtime context URL remains empty, while correctly treating sequential reads as non-atomic."
+    ],
+    "native_cause": "unverified; the probe has not run on the pinned hosted Chromium binary, and its diagnostic can itself advance lifecycle."
+  },
+  "B_safety_and_probe": {
+    "verdict": "accepted_with_bounded_scope",
+    "evidence": [
+      "Source inspection confirms at most four additional CDP commands on the successful diagnostic path: attach, Page.getFrameTree, Runtime.evaluate, and detach. Each uses the existing CDP send path; no new wait, loop, retry, or timeout was added.",
+      "Failure cleanup detaches after attachment; the attach failure path has no session to detach. Probe errors return fixed stage labels without exposing exception text.",
+      "Output contains only booleans, readiness state, and counts; raw URLs, target/session/context identifiers, page content, and authentication data are not returned.",
+      "The exact imported diagnostic and generated Runtime.evaluate expression passed focused scenarios for loading/unavailable, complete renderer with empty runtime context URL, and interactive renderer with exact runtime context. Assertions covered four-command ordering, privacy, sample ordering, and continued rejection by the original exact-context guard."
+    ],
+    "acceptance_or_privacy_weakening": "none_found"
+  },
+  "verification": {
+    "focused_actual_function_check": "pass",
+    "node_syntax_checks": "pass",
+    "full_suite": "not completed in this review; it exceeded the bounded run window before reaching the new test cases and was stopped. The focused independent execution covered the changed functions and generated renderer expression."
+  },
+  "open_concerns": [
+    "Next native failure must capture the new document diagnostic before inferring whether target discovery preceded document commit or whether runtime metadata remained empty after commit.",
+    "The native run, not VM doubles or source inspection, must validate the renderer-side runtime.getContexts behavior on the pinned Chromium build."
+  ]
+}
