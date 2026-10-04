@@ -1,0 +1,39 @@
+{
+  "id": "EXT-D-0124",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T12", "EXT-F-1007-T13"],
+  "surface": "Scrape native media row observation",
+  "auth_mode": "guest",
+  "title": "Video row observer reports empty after rendered selective removal",
+  "reproduction": [
+    "Use frozen231 source723433a7, CI37217066948/artifact11308203507 and reviewed native driver on ARM macos-15; exact run37218903375 admitted all three phases and recorded healthy acceptance watches.",
+    "Capture owned intake fixture, complete image controls, select Video, Open intake video and return, Copy referral video, Remove intake video.",
+    "Observe failure warm_video_removed_not_observed. Failure screenshot and raw resultText show 1 VIDEO and surviving referral-walkthrough.mp4; media.videoItems is empty."
+  ],
+  "expected": "The native observer reports exact rendered remaining media identities and counts; a correct selective removal passes, a wrong or absent removal fails.",
+  "actual": "The assertion failed despite the panel showing the expected remaining video. No product removal failure is established; observer/parser cause being verified.",
+  "severity": "S2: acceptance blocked by inconsistent observation; product impact not established",
+  "priority": "P1: repair oracle before surrounding media acceptance",
+  "state": "triaged",
+  "owner": "root/scrape_video_observer_fix",
+  "evidence": [
+    "docs/stabilization/evidence/scrape231/run37218903375/receipt.json.txt",
+    "docs/stabilization/evidence/scrape231/run37218903375/scrape-warm-media-failure.png",
+    ".research/scrape231-arm-native.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T17:11:10.994826+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Healthy native assertion disagrees rendered one-video result."
+    },
+    {
+      "at": "2026-10-04T17:11:10.994826+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Root independently read full raw transition and viewed screenshot; bounded Sol oracle diagnosis assigned."
+    }
+  ],
+  "next_action": "Prove observer root cause against real component DOM, retain exact URL/count assertions, independent peer and original full native retest."
+}

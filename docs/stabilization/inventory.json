@@ -17337,7 +17337,7 @@
               "evidence": [
                 ".research/scrape-transition-native-diagnostic.json"
               ],
-              "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3\u21922\u21921\u2192empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
+              "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3→2→1→empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
             }
           }
         },
@@ -17378,7 +17378,15 @@
               "result": "7 scoped tests pass across real ScrapeView and real media store; selective removal/exact survivors/count, blank/valid/cancel forms, video link target and copy request; no actual tab or clipboard access claimed.",
               "limits": "Native guest/member/admin interactions and reload remain unverified. No mode cell promoted from component tests."
             }
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "partial",
+              "evidence": ".research/scrape231-arm-native.json",
+              "run_id": "37218903375",
+              "detail": "Healthy exact231 ARM warm Add image blank/valid+alt/Cancel sequence completed; full reload and other roles unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1007-T12",
@@ -17417,7 +17425,15 @@
               "result": "7 scoped tests pass across real ScrapeView and real media store; selective removal/exact survivors/count, blank/valid/cancel forms, video link target and copy request; no actual tab or clipboard access claimed.",
               "limits": "Native guest/member/admin interactions and reload remain unverified. No mode cell promoted from component tests."
             }
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "partial",
+              "evidence": ".research/scrape231-arm-native.json",
+              "run_id": "37218903375",
+              "detail": "Healthy exact231 ARM returns to Video after Open; Copy receives trusted click. Remove intake leaves visually correct referral row/count1, but structured observer empty causes D124 assertion failure. Clipboard/full video forms/reload unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1007-T13",
@@ -17500,7 +17516,12 @@
               "run_id": "37195986118",
               "detail": "Healthy exactdevelopment215 observed restrictedchrome://settings norecoveryactions andDismiss; recoverableReload/Tryagain/deepretryunverified."
             }
-          }
+          },
+          "component_evidence": [
+            ".research/scrape-error-controls-test.json",
+            ".research/scrape-error-controls-repair.json",
+            ".research/scrape-error-controls-final-peer.json"
+          ]
         },
         {
           "id": "EXT-F-1007-T15",
@@ -17525,6 +17546,11 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "component_evidence": [
+            ".research/scrape-error-controls-test.json",
+            ".research/scrape-error-controls-repair.json",
+            ".research/scrape-error-controls-final-peer.json"
           ]
         },
         {
@@ -18165,7 +18191,9 @@
             "EXT-D-0018",
             "EXT-D-0059",
             "EXT-D-0115",
-            "EXT-D-0118"
+            "EXT-D-0118",
+            "EXT-D-0123",
+            "EXT-D-0124"
           ],
           "run_ids": [
             "guest-local-001",
@@ -18173,9 +18201,10 @@
             "svg-caption-native-001",
             "svg-caption-native-002",
             "svg-caption-native-003",
-            "37192733619"
+            "37192733619",
+            "37218903375"
           ],
-          "retest_status": "partial: D115 original busy reproduction retest-pass on development37192733619; D118 layout and D120 reload unresolved; no full feature or Store acceptance"
+          "retest_status": "partial: D123 original Video-return targeting works on exact231 ARM; D124 observer blocks surrounding sequence. Full media/link/reload remains unverified."
         },
         "member": {
           "test_status": "unverified",
