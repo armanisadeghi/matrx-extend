@@ -10421,7 +10421,7 @@
             "Run independently as existing known admin; do not change role or account."
           ],
           "steps": [
-            "Execute shared preflight as member; only an exact persisted [] and matching UI empty state permit mutation. Run Discard and Back assertions before the committed phase.",
+            "Execute shared preflight as admin; only an exact persisted [] and matching UI empty state permit mutation. Run Discard and Back assertions before the committed phase.",
             "Use Add twice. Fill the two appended entries with distinct synthetic, non-routable test strings; edit first entry label, number, country code and SMS switch to the opposite of its observed initial/default state. Do not use a real person's number.",
             "Set the second new entry primary. Verify exactly that entry has the active primary star and the first does not. Remove the first new entry; verify it is absent while the second remains primary.",
             "Run shared full-list save, error, owner-scoped readback, Back/reopen and reload assertions for the surviving synthetic entry, including label/value/country_code/sms_capable/is_primary, then shared owned-fixture cleanup."
@@ -10693,7 +10693,7 @@
             "Run independently as existing known admin; do not change role or account."
           ],
           "steps": [
-            "Execute shared preflight as member; only an exact persisted [] and matching UI empty state permit mutation. Run Discard and Back assertions before the committed phase.",
+            "Execute shared preflight as admin; only an exact persisted [] and matching UI empty state permit mutation. Run Discard and Back assertions before the committed phase.",
             "Use Add twice. Enter distinct reserved example.test addresses (for example profile-run-<unique-token>-1@example.test and -2@example.test); edit the first label and address. Avoid real mailboxes.",
             "Set the second new entry primary. Verify its star is active and the first is inactive. Remove the first; verify it is absent and second remains primary.",
             "Run shared full-list save, error, owner-scoped readback, Back/reopen and reload assertions for the surviving synthetic entry, including label/value/is_primary, then shared owned-fixture cleanup."
