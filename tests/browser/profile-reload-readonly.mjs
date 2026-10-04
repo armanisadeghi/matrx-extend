@@ -5,6 +5,7 @@ import { resolve } from 'node:path';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { captureFailure, captureManagement } from './profile-reload-capture.mjs';
 
 const OUTPUT_DIR = process.env.PROFILE_OUTPUT_DIR;
 const RUN_ID = process.env.PROFILE_RUN_ID;
@@ -21,47 +22,6 @@ const report = {
   artifact: null,
   lifecycle: null,
 };
-
-const SAFE_ERRORS = new Set([
-  'native_extension_management_reload_unavailable',
-  'native_extension_developer_mode_unverified',
-  'native_extension_reload_disabled',
-  'native_extension_current_worker_unverified',
-  'native_extension_current_panel_unverified',
-  'native_extension_old_worker_retired_before_reload',
-  'native_extension_worker_retirement_unverified',
-  'native_extension_replacement_panel_unverified',
-  'native_sidepanel_runtime_context_missing',
-  'owned_cdp_transport_failed',
-]);
-const SAFE_TRANSPORT_CLASSES = new Set([
-  'none',
-  'protocol_shape',
-  'unknown_response',
-  'protocol_error',
-  'response_shape',
-  'listener',
-  'socket_error',
-  'unexpected_close',
-  'command_timeout',
-  'send_after_close',
-  'send_exception',
-  'close_failure',
-]);
-
-function safeFailureCode(error) {
-  const code = String(error?.message ?? '').split(':', 1)[0];
-  return SAFE_ERRORS.has(code) ? code : 'unclassified';
-}
-
-function safeTransportClass(readClass) {
-  try {
-    const value = readClass();
-    return SAFE_TRANSPORT_CLASSES.has(value) ? value : 'other';
-  } catch {
-    return 'unavailable';
-  }
-}
 
 try {
   if (!RUN_ID || !/^[A-Za-z0-9_-]+$/.test(RUN_ID)) throw new Error('run_id_required');
@@ -113,19 +73,16 @@ try {
       };
       try {
         const result = await reloadExtension();
-        lifecycle.management_before = result.management_before;
-        lifecycle.management_after = result.management_after;
+        lifecycle.management_before = captureManagement(result.management_before);
+        lifecycle.management_after = captureManagement(result.management_after);
         lifecycle.reload_returned = true;
         lifecycle.old_targets_retired = result.old_targets_retired === true;
         lifecycle.worker_replaced = result.worker_replaced === true;
         lifecycle.panel_replaced = result.panel_replaced === true;
         await result.panel.detach();
       } catch (error) {
-        lifecycle.failure_code = safeFailureCode(error);
+        Object.assign(lifecycle, captureFailure(error, transportFailureClass));
         lifecycle.failure_stage = report.stage;
-        lifecycle.transport_failure_class = safeTransportClass(transportFailureClass);
-        if (error.lifecycleEvidence)
-          lifecycle.retirement_evidence = error.lifecycleEvidence ?? null;
       }
       report.lifecycle = lifecycle;
       report.status = lifecycle.reload_returned ? 'reload_observed' : 'reload_failed_observed';
@@ -134,14 +91,13 @@ try {
     },
   });
   report.native = {
-    extension_id: native.extensionId,
     verified: native.verified,
     panel_target_observed: Boolean(native.panelTargetId),
     screenshots_captured: native.artifacts.length > 0,
   };
 } catch (error) {
   report.status = 'probe_failed';
-  report.failure_code = safeFailureCode(error);
+  report.failure_code = captureFailure(error, () => 'none').failure_code;
 } finally {
   report.finished_at = new Date().toISOString();
   await mkdir(OUTPUT_DIR ?? resolve('.'), { recursive: true, mode: 0o700 });

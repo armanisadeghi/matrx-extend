@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "task": "reload106-causal-capture",
+  "status": "exact_artifact_guest_reload_failure_captured_cause_unproven",
+  "scope": "One guarded read-only guest Chrome extension reload against frozen development 0.2.189; no Profile navigation, writes, auth injection, role change, or second native run.",
+  "artifact": {
+    "source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "ci_run_id": 37164174445,
+    "artifact_id": 11288542496,
+    "tree_sha256": "494646f6dd65399e0e7eee65fd1d9bd00ef97d173c5ceb9674de276ca12dc23a"
+  },
+  "runner": {
+    "run_id": "reload106-causal-189-01",
+    "input_smoke": "Invalid source identity refused before browser launch with probe_failed.",
+    "resource_decision": "valid_exit_0",
+    "report_status": "reload_failed_observed",
+    "report_path": "/Volumes/Samsung2TB/code/.stabilization-scratch/reload106-causal-189-01/evidence/profile-reload-readonly-reload106-causal-189-01.json",
+    "report_sha256": "d2617ecb4e1456e243b6364353dda6f853ad5d68a3e84723633d7989050479f7",
+    "journal_path": "docs/stabilization/resource-journals/reload106-causal-189-01.jsonl",
+    "journal_sha256": "dc57447bb82ff8c99e9f17789f54f06e6203c86beb51d2d28d8eb577a48207d4"
+  },
+  "captured_reload": {
+    "failure_code": "native_sidepanel_runtime_context_missing",
+    "transport_failure_class": "none",
+    "before_panel_target_observed": true,
+    "reload_attempted": true,
+    "reload_returned": false,
+    "retirement_evidence": null,
+    "post_reload_worker_or_panel_state": "unobserved, not false"
+  },
+  "boundary": "reloadOwnedExtension finds a replacement worker and panel target, then immediately checks chrome.runtime.getContexts from the replacement worker. requireSidePanelContext throws native_sidepanel_runtime_context_missing when the expected SIDE_PANEL context is absent. The retained report has no context count or later observation, so it does not distinguish delayed registration from persistent absence.",
+  "relation_to_original": "The original 0.2.189 failure was a member Profile run whose native reload exception was discarded at the Profile execution boundary. This new guest result proves a failure in the same helper and artifact, but cannot identify that original exception or establish the member failure's cause. A separate 0.2.189 member run previously completed reload after account hydration wait.",
+  "capture_change": "Read-only runner now retains only fixed reload codes, fixed transport classes, allowlisted lifecycle booleans and counts, and bounded extension management state; unknown fields are dropped. Extension target ID is excluded from the report.",
+  "capture_verification": "Two node:test cases passed; an in-memory mutation forcing every failure code to unclassified failed the native-code assertion. Biome checked all changed runner and capture files. No product source change was made because the cause was not proven.",
+  "next_boundary": "A fresh authorized run may capture only SIDE_PANEL context count and a bounded later count at the existing readiness limit, with worker/panel replacement evidence, to distinguish registration timing from absence. Do not infer the original member failure from this guest probe."
+}
