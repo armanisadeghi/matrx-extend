@@ -10,17 +10,18 @@
     "After real sign-in, canonical nonadmin check and organization selection, initial panel activation returns but visibility assertion fails before viewport measurement or Scrape cases."
   ],
   "expected": "Owned native side panel is visible and exact context verified before feature acceptance. Failure evidence distinguishes hidden versus replaced context.",
-  "actual": "scrape_authenticated_panel_foreground_not_observed:false; cases and viewports empty; original receipt lacks target/focus discriminator. Cause remains unproven.",
+  "actual": "Run37241717888 reproduces same foreground failure after successful member identity/nonadmin/org checks. Original target is present and sole exact target, exact SIDE_PANEL context1, owned roottrue; visibilityhidden with hasFocustrue. Diagnostic completes. No viewport/case result.",
   "severity": "S2: authenticated Scrape coverage blocked; product failure not established",
   "priority": "P2: resume after urgent guest Chat verification",
-  "state": "open",
+  "state": "in-fix",
   "evidence": [
     ".research/scrape-member-guard132-native.json",
     ".research/scrape-auth-panel-focus.json",
     "docs/stabilization/evidence/scrape-member/run37237361053/acceptance-receipt.json",
     ".research/scrape-focus-diagnostic-peer.json",
     ".research/scrape-focus-final-peer.json",
-    ".research/scrape-focus-deadline-reverify.json"
+    ".research/scrape-focus-deadline-reverify.json",
+    ".research/member-scrape-focus-native.json"
   ],
   "transition_history": [
     {
@@ -28,8 +29,20 @@
       "from": null,
       "to": "open",
       "reason": "Captured exact native failure; no inferred product diagnosis."
+    },
+    {
+      "at": "2026-10-04T23:05:25.027454+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "New native diagnostic resolves hidden versus replaced context: hidden original context; Target.activateTarget alone insufficient. Trigger hypothesis not yet proven."
+    },
+    {
+      "at": "2026-10-04T23:05:25.027454+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol coding lane repairs existing owned native-panel reopening primitive; source regression, fresh review, changed-condition native retest required."
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "Source diagnostic independently accepted by1f58cc3a; real focus cause remains open. Future one guarded member600 diagnostic run after urgent guest incident; no focus behavior patched or Scrape pass claimed."
+  "next_action": "root/member_panel_repair_recovery owns unfinished repair after original worker capacity failure. No blind native rerun; keep same frozen244 for causal retest."
 }

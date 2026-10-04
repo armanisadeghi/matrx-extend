@@ -13,7 +13,7 @@
   "actual": "Native boundary treats the first one-second high CPU watch as irreversible; child exits before sustained confirmation and wrapper final reports child_failed/resourceInvalid=false. Actual physical spike may or may not have persisted.",
   "severity": "S2: testing can stop on an unconfirmed CPU transient; no proven product defect",
   "priority": "P1: restore trustworthy guarded native acceptance",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/resource_cpu_confirmation",
   "evidence": [
     ".research/resource-guard-semantics.json",
@@ -21,7 +21,8 @@
     ".research/resource-cpu-confirmation.json",
     ".research/resource-cpu-fresh-peer.json",
     ".research/resource-cpu-final-reverify.json",
-    ".research/scrape-member-guard132-native.json"
+    ".research/scrape-member-guard132-native.json",
+    ".research/member-scrape-focus-native.json"
   ],
   "scope_ruling": "Adopt reviewed future CPU_PENDING \u2192 CPU_RECOVERED after three healthy watches or confirmed irreversible unsafe on two bad watches, bounded by existing policy knobs. No numeric threshold change, historical event reinterpretation or retroactive validity for prior runs. All non-CPU safeguards, one-heavy permit and cleanup remain. Independent review before native launch.",
   "transition_history": [
@@ -48,9 +49,25 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Fresh independent4cc242d3 reproduced actualwrapper baseline GREEN/exactbad-event-label mutation RED plus23focusedpass. FullCI37237036998 at2fed8191 succeeded; root read actualwrapper joblog1pass0fail0skip. Native confirmation pending, no priorrun promoted."
+    },
+    {
+      "at": "2026-10-04T23:05:25.027454+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Physical first-spike/recovery exercised in37241717888; independent collection75849614 and root raw-journal verification support bounded temporal guard repair alongside prior real-wrapper mutation regression."
+    },
+    {
+      "at": "2026-10-04T23:05:25.027454+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original first-spike permanent-refusal no longer reproduces; surrounding fail-closed cases passed prior fullCI37237036998. D133 product-test setup failure remains separately open."
     }
   ],
-  "fix_commits": ["da9669c9", "e2d06172", "2fed8191"],
+  "fix_commits": [
+    "da9669c9",
+    "e2d06172",
+    "2fed8191"
+  ],
   "hosted_ci": {
     "run_id": 37237036998,
     "head": "2fed8191b89f6cb8a8d07ca599bc24ee74b36296",
@@ -59,10 +76,10 @@
     "root_checked": "2026-10-04T21:44Z",
     "limits": "No physicalCPUrecovery or nativeproductclaim."
   },
-  "next_action": "Retain fixed state pending required temporal runtime confirmation; native healthy-path evidence does not promote prior unsafe run.",
+  "next_action": "Monitor for regressions; preserve old unsafe records and numeric safeguards.",
   "native_followup": {
-    "run_id": 37237361053,
-    "result": "Healthy resource observations; no CPU_PENDING/RECOVERED/UNSAFE. Child failed later on panel visibility.",
-    "limit": "No physical CPU recovery exercised and no Scrape case verified."
+    "run_id": 37241717888,
+    "result": "Raw physical CPU watch0.93 enters CPU_PENDING, then healthy0.20/0.02/0.39 yields CPU_RECOVERED; no confirmed unsafe. Package/browser valid, acceptance child_failed on separate D133 foreground assertion. Root matched all six evidence hashes and read original three journals.",
+    "limit": "This closes temporal guard reproduction only; no Scrape case passed and no old unsafe run reclassified."
   }
 }
