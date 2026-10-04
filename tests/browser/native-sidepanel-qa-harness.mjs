@@ -737,6 +737,9 @@ async function attachTargetSession(cdp, targetId) {
     async detach() {
       await cdp.send('Target.detachFromTarget', { sessionId }).catch(() => {});
     },
+    async detachVerified() {
+      await cdp.send('Target.detachFromTarget', { sessionId });
+    },
   });
 }
 

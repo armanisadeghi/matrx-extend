@@ -41,6 +41,34 @@ class WS {
     setImmediate(() => this.onclose());
   }
 }
+class BodyUnavailableWS extends WS {
+  send(raw) {
+    const m = JSON.parse(raw);
+    if (m.method !== 'Network.getResponseBody') return super.send(raw);
+    setImmediate(() =>
+      this.onmessage({
+        data: JSON.stringify({
+          id: m.id,
+          sessionId: m.sessionId,
+          error: { code: -32000, message: 'No resource with given identifier found' },
+        }),
+      }),
+    );
+  }
+}
+class OtherProtocolErrorWS extends WS {
+  send(raw) {
+    const m = JSON.parse(raw);
+    setImmediate(() =>
+      this.onmessage({
+        data: JSON.stringify({
+          id: m.id,
+          error: { code: -32000, message: 'Unrelated protocol failure' },
+        }),
+      }),
+    );
+  }
+}
 class NeverOpenWS {
   close() {
     setImmediate(() => this.onclose());
@@ -69,6 +97,40 @@ class ThrowingWS {
   await c.send('Browser.getVersion');
   await c.detach();
   assert.equal(c.ownerVerified, true);
+  const optional = await connectOwnedCdp({
+    preparedProfile: p,
+    chromeExecutable:
+      '/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+    fileSystem: fs,
+    WebSocketCtor: BodyUnavailableWS,
+    processInspector: async () => ({
+      executable:
+        '/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+      args: '\0--user-data-dir=/p\0--headless',
+    }),
+  });
+  await assert.rejects(
+    () => optional.send('Network.getResponseBody', { requestId: 'req-1' }, 'session-1'),
+    /owned_cdp_response_body_unavailable/,
+  );
+  assert.equal(optional.fatal, false);
+  await optional.send('Browser.getVersion');
+  await optional.detach();
+  const strict = await connectOwnedCdp({
+    preparedProfile: p,
+    chromeExecutable:
+      '/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+    fileSystem: fs,
+    WebSocketCtor: OtherProtocolErrorWS,
+    processInspector: async () => ({
+      executable:
+        '/Applications/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing',
+      args: '\0--user-data-dir=/p\0--headless',
+    }),
+  });
+  await assert.rejects(() => strict.send('Browser.getVersion'), /owned_cdp_transport_failed/);
+  assert.equal(strict.fatal, true);
+  await assert.rejects(() => strict.detach(), /owned_cdp_transport_failed/);
   files.delete('/p/DevToolsActivePort');
   await assert.rejects(
     () =>

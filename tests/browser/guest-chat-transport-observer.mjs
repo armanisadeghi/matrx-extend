@@ -19,39 +19,47 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
   const pendingCodes = new Set();
   const pausedSessions = new Set();
   const targetTasks = new Set();
+  const candidateSessions = new Set();
+  const confirmedSessions = new Set();
+  const sessionsByTarget = new Map();
   let armedLabel = null;
-  let activeSessionId = null;
   let existingOffscreen = null;
   let autoAttach = false;
   let observerFailure = null;
 
   const onRequest = ({ requestId, request }, sessionId) => {
-    if (sessionId !== activeSessionId || !armedLabel || request?.method !== 'POST') return;
+    if (
+      (!confirmedSessions.has(sessionId) && !candidateSessions.has(sessionId)) ||
+      !armedLabel ||
+      request?.method !== 'POST'
+    )
+      return;
     try {
       if (!new URL(request.url).pathname.endsWith(CHAT_PATH)) return;
       requests.set(`${sessionId}:${requestId}`, {
-        attempt: armedLabel,
-        request_at_utc: new Date().toISOString(),
-        cdp_request_id: requestId,
-        status: null,
-        code: null,
+        sessionId,
+        record: {
+          attempt: armedLabel,
+          request_at_utc: new Date().toISOString(),
+          cdp_request_id: requestId,
+          status: null,
+          code: null,
+        },
       });
     } catch {
       // Never retain unrelated URLs, headers, or request bodies.
     }
   };
   const onResponse = ({ requestId, response }, sessionId) => {
-    if (sessionId !== activeSessionId) return;
-    const request = requests.get(`${sessionId}:${requestId}`);
-    if (request) request.status = Number.isFinite(response?.status) ? response.status : null;
+    const entry = requests.get(`${sessionId}:${requestId}`);
+    if (entry) entry.record.status = Number.isFinite(response?.status) ? response.status : null;
   };
   const onFinished = (
     { requestId },
     sessionId,
     send = (method, params) => browserSession.send(method, params, sessionId),
   ) => {
-    if (sessionId !== activeSessionId) return;
-    const request = requests.get(`${sessionId}:${requestId}`);
+    const request = requests.get(`${sessionId}:${requestId}`)?.record;
     if (!request || request.status === null || request.status < 400) return;
     const pending = send('Network.getResponseBody', { requestId })
       .then(({ body, base64Encoded }) => {
@@ -62,12 +70,18 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
     void pending.finally(() => pendingCodes.delete(pending));
   };
   const onAttached = ({ sessionId, targetInfo, waitingForDebugger }) => {
+    const provisional = !targetInfo?.url || targetInfo.url === 'about:blank';
     if (waitingForDebugger) pausedSessions.add(sessionId);
+    if (targetInfo?.targetId) sessionsByTarget.set(targetInfo.targetId, sessionId);
+    if (provisional) candidateSessions.add(sessionId);
     const task = (async () => {
       try {
-        if (targetInfo?.url === offscreenUrl) {
+        // An empty initial URL can become offscreen.html only after resume.
+        // Enable Network first and buffer only classified POST metadata until
+        // Target.targetInfoChanged establishes the exact document identity.
+        if (targetInfo?.url === offscreenUrl || provisional) {
           await browserSession.send('Network.enable', {}, sessionId);
-          activeSessionId = sessionId;
+          if (targetInfo?.url === offscreenUrl) confirmedSessions.add(sessionId);
         }
       } catch {
         observerFailure = 'guest_offscreen_network_enable_failed';
@@ -85,11 +99,24 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
     targetTasks.add(task);
     void task.finally(() => targetTasks.delete(task));
   };
+  const onTargetInfoChanged = ({ targetInfo }) => {
+    const sessionId = sessionsByTarget.get(targetInfo?.targetId);
+    if (!sessionId || !targetInfo?.url || targetInfo.url === 'about:blank') return;
+    candidateSessions.delete(sessionId);
+    if (targetInfo.url === offscreenUrl) {
+      confirmedSessions.add(sessionId);
+    } else {
+      for (const [key, entry] of requests) {
+        if (entry.sessionId === sessionId) requests.delete(key);
+      }
+    }
+  };
 
   browserSession.on('Network.requestWillBeSent', onRequest);
   browserSession.on('Network.responseReceived', onResponse);
   browserSession.on('Network.loadingFinished', onFinished);
   browserSession.on('Target.attachedToTarget', onAttached);
+  browserSession.on('Target.targetInfoChanged', onTargetInfoChanged);
   try {
     try {
       existingOffscreen = await attachOffscreen();
@@ -108,7 +135,8 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
     browserSession.off('Network.responseReceived', onResponse);
     browserSession.off('Network.loadingFinished', onFinished);
     browserSession.off('Target.attachedToTarget', onAttached);
-    await existingOffscreen?.detach();
+    browserSession.off('Target.targetInfoChanged', onTargetInfoChanged);
+    await existingOffscreen?.detachVerified();
     throw error;
   }
 
@@ -121,14 +149,16 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
         ),
       ]
     : [];
-  if (existingOffscreen) activeSessionId = 'existing';
+  if (existingOffscreen) confirmedSessions.add('existing');
 
   return {
     arm(label) {
       armedLabel = label;
     },
     snapshot() {
-      return [...requests.values()].map((request) => ({ ...request }));
+      return [...requests.values()]
+        .filter((entry) => confirmedSessions.has(entry.sessionId))
+        .map((entry) => ({ ...entry.record }));
     },
     async settle() {
       await Promise.all([...pendingCodes]);
@@ -163,9 +193,10 @@ export async function watchGuestAiRequests({ browserSession, attachOffscreen, pa
       browserSession.off('Network.responseReceived', onResponse);
       browserSession.off('Network.loadingFinished', onFinished);
       browserSession.off('Target.attachedToTarget', onAttached);
+      browserSession.off('Target.targetInfoChanged', onTargetInfoChanged);
       await Promise.all([...pendingCodes]);
       try {
-        await existingOffscreen?.detach();
+        await existingOffscreen?.detachVerified();
       } catch {
         cleanupFailure = true;
       }

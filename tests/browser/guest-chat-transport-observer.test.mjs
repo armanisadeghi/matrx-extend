@@ -183,7 +183,7 @@ test('existing offscreen target is observed directly without changing target sta
         offscreenEvents.on(name, listener);
         return () => offscreenEvents.off(name, listener);
       },
-      async detach() {
+      async detachVerified() {
         detached = true;
       },
     }),
@@ -202,4 +202,150 @@ test('existing offscreen target is observed directly without changing target sta
   await watch.stop();
   assert.equal(detached, true);
   assert.equal(calls.includes('Target.setAutoAttach'), false);
+});
+
+test('offscreen target with initially empty URL still captures its first POST', async () => {
+  const events = new EventEmitter();
+  const calls = [];
+  let resumed;
+  const resumePromise = new Promise((resolve) => {
+    resumed = resolve;
+  });
+  const browserSession = {
+    on: events.on.bind(events),
+    off: events.off.bind(events),
+    async send(method, params, sessionId) {
+      calls.push({ method, params, sessionId });
+      if (method === 'Runtime.runIfWaitingForDebugger') resumed();
+      return {};
+    },
+  };
+  const watch = await watchGuestAiRequests({
+    browserSession,
+    panelTarget: { url: 'chrome-extension://abc/sidepanel.html' },
+    attachOffscreen: async () => {
+      throw new Error('native_sidepanel_offscreen_target_missing');
+    },
+  });
+  watch.arm('opening');
+  events.emit('Target.attachedToTarget', {
+    sessionId: 'late-url-session',
+    targetInfo: { targetId: 'late-url-target', url: '' },
+    waitingForDebugger: true,
+  });
+  await resumePromise;
+  events.emit(
+    'Network.requestWillBeSent',
+    {
+      requestId: 'late-first',
+      request: { method: 'POST', url: 'https://server.invalid/v2/ai/mandates/extend.browser_chat' },
+    },
+    'late-url-session',
+  );
+  events.emit(
+    'Network.responseReceived',
+    {
+      requestId: 'late-first',
+      response: { status: 402 },
+    },
+    'late-url-session',
+  );
+  events.emit('Target.targetInfoChanged', {
+    targetInfo: { targetId: 'late-url-target', url: 'chrome-extension://abc/offscreen.html' },
+  });
+  requireGuestTransport(watch.snapshot(), 'opening');
+  assert.ok(
+    calls.findIndex((call) => call.method === 'Network.enable') <
+      calls.findIndex((call) => call.method === 'Runtime.runIfWaitingForDebugger'),
+  );
+  await watch.stop();
+});
+
+test('unavailable error body preserves HTTP status and later observations', async () => {
+  const events = new EventEmitter();
+  const browserSession = {
+    on: events.on.bind(events),
+    off: events.off.bind(events),
+    async send(method) {
+      if (method === 'Network.getResponseBody') {
+        throw new Error('owned_cdp_response_body_unavailable');
+      }
+      return {};
+    },
+  };
+  const watch = await watchGuestAiRequests({
+    browserSession,
+    panelTarget: { url: 'chrome-extension://abc/sidepanel.html' },
+    attachOffscreen: async () => {
+      throw new Error('native_sidepanel_offscreen_target_missing');
+    },
+  });
+  watch.arm('opening');
+  events.emit('Target.attachedToTarget', {
+    sessionId: 'offscreen-session',
+    targetInfo: { targetId: 'offscreen-target', url: 'chrome-extension://abc/offscreen.html' },
+    waitingForDebugger: true,
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  events.emit(
+    'Network.requestWillBeSent',
+    {
+      requestId: 'first',
+      request: { method: 'POST', url: 'https://server.invalid/v2/ai/mandates/extend.browser_chat' },
+    },
+    'offscreen-session',
+  );
+  events.emit(
+    'Network.responseReceived',
+    {
+      requestId: 'first',
+      response: { status: 402 },
+    },
+    'offscreen-session',
+  );
+  events.emit('Network.loadingFinished', { requestId: 'first' }, 'offscreen-session');
+  await watch.settle();
+  assert.deepEqual(
+    watch.snapshot().map(({ status, code }) => ({ status, code })),
+    [{ status: 402, code: null }],
+  );
+  watch.arm('post_reload_new_conversation');
+  events.emit(
+    'Network.requestWillBeSent',
+    {
+      requestId: 'second',
+      request: { method: 'POST', url: 'https://server.invalid/v2/ai/mandates/extend.browser_chat' },
+    },
+    'offscreen-session',
+  );
+  events.emit(
+    'Network.responseReceived',
+    {
+      requestId: 'second',
+      response: { status: 200 },
+    },
+    'offscreen-session',
+  );
+  requireGuestTransport(watch.snapshot(), 'post_reload_new_conversation');
+  await watch.stop();
+});
+
+test('existing target detach failure is reported', async () => {
+  const events = new EventEmitter();
+  const watch = await watchGuestAiRequests({
+    browserSession: { on: events.on.bind(events), off: events.off.bind(events) },
+    panelTarget: { url: 'chrome-extension://abc/sidepanel.html' },
+    attachOffscreen: async () => ({
+      async send() {
+        return {};
+      },
+      on() {
+        return () => {};
+      },
+      async detachVerified() {
+        throw new Error('detach_failed');
+      },
+    }),
+  });
+  await assert.rejects(() => watch.stop(), /guest_transport_observer_cleanup_failed/);
 });

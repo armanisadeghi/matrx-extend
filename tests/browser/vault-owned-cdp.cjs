@@ -154,6 +154,20 @@ async function connectOwnedCdp({
       const entry = pending.get(message.id);
       if (!entry) return fail('unknown_response');
       const actual = Object.hasOwn(message, 'sessionId') ? message.sessionId : undefined;
+      // Chrome may evict an HTTP error body before this optional diagnostic
+      // read. That one known CDP response is not a broken socket or session.
+      if (
+        entry.method === 'Network.getResponseBody' &&
+        actual === entry.sessionId &&
+        !Object.hasOwn(message, 'result') &&
+        !Object.hasOwn(message, 'method') &&
+        message.error?.code === -32000
+      ) {
+        clearTimeout(entry.timer);
+        pending.delete(message.id);
+        entry.reject(new Error('owned_cdp_response_body_unavailable'));
+        return;
+      }
       if (
         actual !== entry.sessionId ||
         message.error ||
@@ -248,7 +262,7 @@ async function connectOwnedCdp({
     off(method, listener) {
       listeners.get(method)?.delete(listener);
     },
-    send(method, params = {}, sessionId) {
+    send(method, params, sessionId) {
       if (fatal || closing || nextId >= Number.MAX_SAFE_INTEGER) {
         fail('send_after_close');
         return Promise.reject(new Error('owned_cdp_transport_failed'));
@@ -260,11 +274,13 @@ async function connectOwnedCdp({
           fail('command_timeout');
           reject(new Error('owned_cdp_transport_failed'));
         }, timeoutMs);
-        pending.set(id, { resolve, reject, timer, sessionId });
+        pending.set(id, { resolve, reject, timer, sessionId, method });
         try {
           socket.send(
             JSON.stringify(
-              sessionId === undefined ? { id, method, params } : { id, method, params, sessionId },
+              sessionId === undefined
+                ? { id, method, params: params ?? {} }
+                : { id, method, params: params ?? {}, sessionId },
             ),
           );
         } catch {

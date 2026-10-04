@@ -612,6 +612,8 @@ try {
       const web = page;
       let fixture = null;
       let networkWatch = null;
+      let primaryError = null;
+      const cleanupErrors = [];
       try {
         markStage('owned_article_page');
         assert.equal(
@@ -819,6 +821,7 @@ try {
         );
         report.guest_ai_transport_proven = true;
       } catch (error) {
+        primaryError = error;
         report.failure_stage = stage;
         const failure = safeFailure(error);
         report.failure_code = failure.code;
@@ -840,13 +843,25 @@ try {
         } catch {
           report.failure_screenshot = 'capture_failed';
         }
-        throw error;
       } finally {
         report.context_rule_reads = contextReadWatch?.snapshot() ?? [];
         contextReadWatch?.stop();
-        await networkWatch?.stop();
-        await web.close();
+        try {
+          await networkWatch?.stop();
+        } catch (error) {
+          cleanupErrors.push(error);
+        }
+        try {
+          await web.close();
+        } catch (error) {
+          cleanupErrors.push(error);
+        }
+        if (cleanupErrors.length > 0) {
+          report.cleanup_failure_codes = cleanupErrors.map((error) => safeFailure(error).code);
+        }
       }
+      if (primaryError) throw primaryError;
+      if (cleanupErrors.length > 0) throw cleanupErrors[0];
     },
   });
   markStage('artifact_unchanged');
