@@ -1,0 +1,23 @@
+{
+  "scope": "EXT-F-1007-T13 native Scrape Links controls in the existing guest acceptance driver",
+  "status": "implemented_partial_pending_native_and_role_matrix",
+  "files": [
+    "tests/browser/scrape-guest-native-acceptance.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/browser/scrape-native-media-actions.mjs",
+    "tests/browser/scrape-native-media-actions.test.mjs",
+    "tests/browser/scrape-media-assertions.mjs",
+    "tests/browser/scrape-media-assertions.test.mjs"
+  ],
+  "evidence": {
+    "native_driver": "On the owned /intake page, the existing guest driver now observes actual rendered Links rows and counts, opens the first href in a browser tab, reads the copied second href from navigator.clipboard, removes only the first row, refuses blank Add, adds a valid href with text, and discards a later draft with Cancel. The same sequence runs after the driver's full extension reload and populated recapture. Every mutation goes through resourceAction; native resource refusal is not caught as an unavailable observation. Known wrong open and clipboard values become failed results.",
+    "red": "plant.py replaced the link identity assertion with an items-to-itself comparison. The focused assertion test failed at the expected link_identities exception and plant.py restored the original SHA byte-identically.",
+    "green": "node --test tests/browser/scrape-native-media-actions.test.mjs tests/browser/scrape-media-assertions.test.mjs: 18 pass; pnpm compile: pass; node --check native driver: pass; Biome check six touched driver/helper/test files: pass; git diff --check: pass.",
+    "native_run": "Not launched while the existing hosted media acceptance runs. Next native action: rerun the existing hosted Scrape route with the already frozen215 artifact 11299613935 and this reviewed driver, then inspect T13 warm/reload identities, counts, opened URL, clipboard URL, and resource journal. Product source is unchanged, so no new build is needed. This component/helper verification does not claim a native T13 pass."
+  },
+  "open_questions": [
+    "The current native acceptance authenticates and observes guest only; member and admin T13 cells remain unverified until their own native runs.",
+    "Open-tab and OS clipboard outcomes remain unverified until the frozen-artifact native driver executes."
+  ],
+  "own_shas": ["9515804d"]
+}
