@@ -1,0 +1,20 @@
+{
+  "boundary": "tests/browser/profile-report-boundary.test.mjs",
+  "failure_before": {
+    "command": "node --test tests/browser/profile-report-boundary.test.mjs",
+    "passed": 9,
+    "failed": 2,
+    "cause": "The extracted runner cleanup referenced heldFieldCases without the enclosing runner's declaration. The cleanup-only path replaced its intended Error with a ReferenceError; the execution-error path reported an unrelated cleanup failure code."
+  },
+  "repair": "Declare heldFieldCases in the extracted runner's lexical scope, matching the real runner's initial empty collection.",
+  "passing_after": {
+    "command": "node --test tests/browser/profile-report-boundary.test.mjs",
+    "passed": 11,
+    "failed": 0
+  },
+  "adversarial_checks_retained": [
+    "Seven backend diagnostic inputs include synthetic secret, email address, URL, object, null, and two allowlisted codes; the report must not serialize the secret or email address.",
+    "Execution failure plus cleanup and native teardown failures must preserve the original Error identity and record cleanup and teardown separately.",
+    "Cleanup-only failure must preserve that Error identity, and native panel detach must not replace a primary transport failure."
+  ]
+}

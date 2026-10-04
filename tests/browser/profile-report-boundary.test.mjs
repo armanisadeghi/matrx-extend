@@ -222,6 +222,7 @@ for (const executionFails of [true, false]) {
       ...Object.keys(dependencies),
       `
       let nativeExecutionError = null;
+      let heldFieldCases = [];
       try {
         try { ${cleanupBody} } ${harnessFinally}
       } ${catchBody}}
