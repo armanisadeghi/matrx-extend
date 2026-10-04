@@ -331,13 +331,19 @@ function requireReloadEnabled(state) {
 }
 
 async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelId }) {
-  const details = await context.newPage();
+  let details;
   const destroyedTargets = new Set();
   const createdWorkers = new Set();
   const workerUrlPrefix = `chrome-extension://${extensionId}/`;
   const timeline = [];
   let timelineDropped = 0;
   const knownTargets = new Map();
+  let oldWorkerId = null;
+  let replacementWorkerId = null;
+  let preClickOldWorkerPresent = false;
+  let lastOwned = [];
+  let finalPredicate = false;
+  let retirementEvidence;
   const record = (phase, data = {}) => {
     const entry = { at: new Date().toISOString(), phase, ...data };
     if (timeline.length < 80) timeline.push(entry);
@@ -357,6 +363,7 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
   };
   const snapshot = (phase, targets) => {
     const owned = targets.map(describe).filter(Boolean).slice(0, 16);
+    lastOwned = owned;
     record(phase, { targets: owned });
   };
   const onDestroyed = ({ targetId }) => {
@@ -375,6 +382,7 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
     if (identity) record('target_info_changed', { target: identity });
   };
   try {
+    details = await context.newPage();
     await details.goto(`chrome://extensions/?id=${extensionId}`, {
       waitUntil: 'domcontentloaded',
       timeout: 30000,
@@ -398,7 +406,7 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
       (target) => target.type === 'service_worker' && target.url.startsWith(workerUrlPrefix),
     );
     if (currentWorkers.length !== 1) throw new Error('native_extension_current_worker_unverified');
-    const oldWorkerId = currentWorkers[0].targetId;
+    oldWorkerId = currentWorkers[0].targetId;
     const panelUrl = `${workerUrlPrefix}sidepanel.html`;
     if (!before.some((target) => target.targetId === oldPanelId && target.url === panelUrl))
       throw new Error('native_extension_current_panel_unverified');
@@ -408,7 +416,10 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
     record('listeners_registered');
     const immediatelyBeforeReload = (await cdp.send('Target.getTargets')).targetInfos;
     snapshot('pre_click_snapshot', immediatelyBeforeReload);
-    if (!immediatelyBeforeReload.some((target) => target.targetId === oldWorkerId)) {
+    preClickOldWorkerPresent = immediatelyBeforeReload.some(
+      (target) => target.targetId === oldWorkerId,
+    );
+    if (!preClickOldWorkerPresent) {
       const error = new Error('native_extension_old_worker_retired_before_reload');
       error.lifecycleEvidence = {
         timeline: {
@@ -428,11 +439,11 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
     await reload.click(); // Chrome's own extension-management UI, using trusted input.
     record('click_resolved');
     let replacementWorker;
-    let retirementEvidence;
     let lastSnapshot = '';
     for (let attempt = 0; attempt < ATTEMPTS; attempt += 1) {
       const { targetInfos } = await cdp.send('Target.getTargets');
       const owned = targetInfos.map(describe).filter(Boolean);
+      lastOwned = owned.slice(0, 16);
       const signature = JSON.stringify(owned);
       if (signature !== lastSnapshot) {
         snapshot('poll_transition', targetInfos);
@@ -445,6 +456,7 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
           target.url.startsWith(workerUrlPrefix) &&
           target.targetId !== oldWorkerId,
       );
+      replacementWorkerId = replacementWorker?.targetId ?? null;
       retirementEvidence = {
         old_worker_destroyed_event: destroyedTargets.has(oldWorkerId),
         old_worker_absent: !ids.has(oldWorkerId),
@@ -464,13 +476,12 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
           replacementWorker &&
           createdWorkers.has(replacementWorker.targetId),
       );
+      finalPredicate = accepted;
       retirementEvidence.timeline = {
         old_worker_id: oldWorkerId,
         old_panel_id: oldPanelId,
-        replacement_worker_id: replacementWorker?.targetId ?? null,
-        pre_click_old_worker_present: immediatelyBeforeReload.some(
-          (target) => target.targetId === oldWorkerId,
-        ),
+        replacement_worker_id: replacementWorkerId,
+        pre_click_old_worker_present: preClickOldWorkerPresent,
         entries: timeline,
         dropped_entries: timelineDropped,
         final_snapshot: owned.slice(0, 16),
@@ -493,6 +504,13 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
     let replacementPanel;
     for (let attempt = 0; attempt < ATTEMPTS; attempt += 1) {
       const { targetInfos } = await cdp.send('Target.getTargets');
+      const owned = targetInfos.map(describe).filter(Boolean);
+      lastOwned = owned.slice(0, 16);
+      const signature = JSON.stringify(owned);
+      if (signature !== lastSnapshot) {
+        snapshot('poll_transition', targetInfos);
+        lastSnapshot = signature;
+      }
       replacementPanel = targetInfos.find(
         (target) =>
           target.type === 'page' && target.url === panelUrl && target.targetId !== oldPanelId,
@@ -514,6 +532,8 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
     }
     const managementAfter = await reloadManagementState(details, extensionId);
     requireReloadEnabled(managementAfter);
+    retirementEvidence.timeline.final_snapshot = lastOwned;
+    retirementEvidence.timeline.dropped_entries = timelineDropped;
     return {
       management_before: managementBefore,
       management_after: managementAfter,
@@ -525,11 +545,29 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
       context_boundary: contextBoundary,
       management_reload_clicked: true,
     };
+  } catch (error) {
+    if (error && typeof error === 'object') {
+      error.lifecycleEvidence = {
+        ...retirementEvidence,
+        ...error.lifecycleEvidence,
+        timeline: {
+          old_worker_id: oldWorkerId,
+          old_panel_id: oldPanelId,
+          replacement_worker_id: replacementWorkerId,
+          pre_click_old_worker_present: preClickOldWorkerPresent,
+          entries: timeline,
+          dropped_entries: timelineDropped,
+          final_snapshot: lastOwned,
+          final_predicate: finalPredicate,
+        },
+      };
+    }
+    throw error;
   } finally {
     cdp.off('Target.targetDestroyed', onDestroyed);
     cdp.off('Target.targetCreated', onCreated);
     cdp.off('Target.targetInfoChanged', onChanged);
-    await details.close().catch(() => {});
+    await details?.close().catch(() => {});
   }
 }
 

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "reviewer_lane": "fresh_independent_zero_authorship",
+  "review_scope": "Pre-fix review of bc6694f8 and 0eedda92 only. This reviewer subsequently authored a D120 repair and cannot independently approve it.",
+  "reviewed_commits": {
+    "product_fix": "b9d7acbc37bf6ee960208654b66199ce8a6a2834",
+    "prior_product_peer": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+    "layout_guard": "bc6694f8801bd72749880df19bdd0faabed0d4dc",
+    "reload_diagnostic": "0eedda9260acd5cb6d95b88cdac4aad7c56e9aba"
+  },
+  "verdict_a_acceptance": {
+    "status": "PARTIAL",
+    "native_status": "UNKNOWN",
+    "evidence": "The guard reads documentElement scrollWidth/clientWidth and scrollLeft/left from live DOM geometry. It rejects the recorded 391/360 overflow and 31/-31 shift, requires the six result-tab labels and in-viewport rectangles, and accepts a two-row contained fixture. The previous source review of the wrapping fix is plausible; no post-fix native receipt proves the panel layout or reload lifecycle."
+  },
+  "verdict_b_quality": {
+    "status": "FAIL",
+    "findings": [
+      {
+        "severity": "important",
+        "path": "tests/browser/native-sidepanel-qa-harness.mjs",
+        "finding": "The new reload timeline is not retained on every failure. reload.click(), poll Target.getTargets, replacement-panel lookup and later management or attach failures can throw without lifecycleEvidence, so the Scrape receipt writes no reload_lifecycle_failure. The prior D120 failure class has a timeline, but the success-and-failure diagnostic contract remains incomplete."
+      },
+      {
+        "severity": "minor",
+        "path": "tests/browser/scrape-layout-guard.mjs",
+        "finding": "The guard checks tab geometry and document displacement but does not assert measured title or capture-row visibility. The native click driver and screenshots still provide separate evidence for those controls."
+      }
+    ],
+    "positive_checks": [
+      "The 0eedda92 acceptance predicate still requires old-worker destroyed event, old-worker and panel absence, a replacement worker, and its created event.",
+      "The timeline records ordered timestamps and owned target IDs/types; captureLifecycleEvidence allowlists these fields and removes arbitrary URL, title and content keys. The producer's service_worker/page values and Chrome-like target IDs fit the sanitizer's accepted shape.",
+      "Timeline entries are capped at 80 and target lists at 16; the final snapshot survives separately."
+    ]
+  },
+  "lightweight_checks": [
+    "node --test tests/browser/scrape-layout-guard.test.mjs tests/browser/profile-reload-capture.test.mjs: 6 passed",
+    "node tests/browser/native-sidepanel-qa-harness.test.mjs: passed"
+  ],
+  "readiness": "The important finding was routed for repair. This report is historical pre-fix evidence; a fresh zero-authorship reviewer must decide readiness on the repair commit. No native browser, build or release was run in this lane."
+}

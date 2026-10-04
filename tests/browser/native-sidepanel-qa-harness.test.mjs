@@ -14,6 +14,7 @@ import {
   requireSpawnedProfileOwner,
   resolveExpectedRelease,
 } from './native-sidepanel-qa-harness.mjs';
+import { captureLifecycleEvidence } from './profile-reload-capture.mjs';
 
 const profile = '/private/tmp/owned-profile';
 const expectedExtensionDir = resolve(
@@ -302,6 +303,7 @@ async function reloadCase({
   disabledAfter = false,
   contextResults,
   retireBeforeClick = false,
+  clickFailure = false,
 }) {
   let developerMode = initiallyEnabled;
   let reloaded = false;
@@ -349,6 +351,7 @@ async function reloadCase({
           events.get('Target.targetInfoChanged')({ targetInfo: oldWorker });
           events.get('Target.targetDestroyed')({ targetId: oldWorker.targetId });
           events.get('Target.targetCreated')({ targetInfo: worker });
+          if (clickFailure) throw new Error('native_reload_click_interrupted');
         },
       };
     },
@@ -401,6 +404,7 @@ async function reloadCase({
   assert.equal(timeline.final_predicate, true);
   assert.deepEqual(timeline.final_snapshot, [
     { target_id: worker.targetId, type: 'service_worker', kind: 'worker' },
+    { target_id: panel.targetId, type: 'page', kind: 'panel' },
   ]);
   const phases = timeline.entries.map((entry) => entry.phase);
   assert.ok(phases.indexOf('discovery_enabled') < phases.indexOf('listeners_registered'));
@@ -423,6 +427,20 @@ async function reloadCase({
 }
 await reloadCase({ initiallyEnabled: false });
 await reloadCase({ initiallyEnabled: true });
+await assert.rejects(reloadCase({ initiallyEnabled: true, clickFailure: true }), (error) => {
+  const captured = captureLifecycleEvidence(error.lifecycleEvidence);
+  return (
+    error.message === 'native_reload_click_interrupted' &&
+    captured?.timeline?.old_worker_id === 'old-worker' &&
+    captured.timeline.pre_click_old_worker_present === true &&
+    captured.timeline.final_predicate === false &&
+    captured.timeline.entries.some((entry) => entry.phase === 'click_started') &&
+    captured.timeline.entries.some((entry) => entry.phase === 'target_destroyed') &&
+    captured.timeline.entries.every(
+      (entry) => !JSON.stringify(entry).includes('chrome-extension://'),
+    )
+  );
+});
 await assert.rejects(
   reloadCase({ initiallyEnabled: true, retireBeforeClick: true }),
   (error) =>
@@ -473,6 +491,12 @@ await assert.rejects(
 );
 await assert.rejects(
   reloadCase({ initiallyEnabled: false, disabledAfter: true }),
-  /native_extension_reload_disabled/,
+  (error) =>
+    error.message === 'native_extension_reload_disabled' &&
+    captureLifecycleEvidence(error.lifecycleEvidence)?.timeline?.final_predicate === true &&
+    error.lifecycleEvidence.timeline.final_snapshot.some(
+      (target) => target.target_id === 'new-panel',
+    ) &&
+    error.lifecycleEvidence.management.state === 'DISABLED',
 );
 console.log('PASS native reload enables Developer mode and refuses Chrome-disabled extensions');

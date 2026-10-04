@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "case": "D120 reload timeline failure retention",
+  "status": "source_repaired_native_unverified",
+  "finding": "The initial timeline implementation attached lifecycle evidence to selected failures only. A trusted click exception or later CDP/UI failure could leave the Scrape receipt without a reload timeline.",
+  "repair": "The reload helper now retains its latest owned-target snapshot and lifecycle state throughout the attempt. Its outer catch attaches the existing bounded timeline to any error lacking one, preserving an existing management diagnosis. Replacement-panel polling also updates the last snapshot. The retirement acceptance predicate is unchanged.",
+  "limits": "The repair reuses the existing 80-entry timeline and 16-target snapshot bounds. It does not add a new cap or truncate a previously uncapped diagnostic field.",
+  "verification": {
+    "red": "native-sidepanel-qa-harness.test.mjs failed with an assertion on missing lifecycleEvidence when the trusted reload click threw after target events",
+    "green": "native-sidepanel-qa-harness.test.mjs passed; the new failure check sanitizes the helper's actual produced evidence through captureLifecycleEvidence and verifies event order/identities without URLs",
+    "other": "profile-reload-capture.test.mjs and scrape-layout-guard.test.mjs: six passed; Biome check passed for both edited browser files",
+    "native": "not_run_in_repair_lane"
+  },
+  "remaining": "Fresh zero-authorship review and one guarded exact CI native run are required before acceptance."
+}
