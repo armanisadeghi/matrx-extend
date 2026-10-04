@@ -498,6 +498,10 @@ assert.ok(
   ['preflight', 'package', 'browser', 'acceptance'].includes(phase),
   'invalid hosted phase',
 );
+// Hosted Profile has no durable recovery outside this disposable runner.
+// Refuse every direct phase entry before credentials, runtime, or browser setup.
+if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE?.startsWith('profile-'))
+  throw new Error('hosted_profile_durable_recovery_unavailable');
 if (phase === 'preflight') {
   assert.equal(process.env.GITHUB_ACTIONS, 'true', 'hosted_preflight_runner_required');
   requireHostedAcceptanceCredential(process.env.MATRX_HOSTED_ACCEPTANCE_CASE, process.env);

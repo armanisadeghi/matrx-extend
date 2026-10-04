@@ -141,6 +141,7 @@ jobs:
       - name: Prepare pinned browser driver under an owned permit
         env:
           MATRX_HOSTED_PHASE: package
+          MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           MATRX_HOSTED_BROWSER_RUNTIME_DIR: ${{ runner.temp }}/browser-runtime
           PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
         run: |
@@ -153,6 +154,7 @@ jobs:
       - name: Prepare full Chromium under a fresh owned permit
         env:
           MATRX_HOSTED_PHASE: browser
+          MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           MATRX_HOSTED_BROWSER_RUNTIME_DIR: ${{ runner.temp }}/browser-runtime
           PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
         run: |

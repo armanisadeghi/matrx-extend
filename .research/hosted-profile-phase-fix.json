@@ -1,0 +1,11 @@
+{
+  "scope": "Direct hosted Profile phase entry guard and workflow case propagation",
+  "result": "Profile admin/member preflight, package, browser, and acceptance refuse unsupported durable recovery before runtime setup. Non-Profile package/browser retain resource admission.",
+  "tests": {
+    "command": "node --test scripts/hosted-profile-route.test.mjs",
+    "passed": 8,
+    "failed": 0,
+    "old_source_regression": "Direct profile-admin package and browser subprocesses using the prior source reached hosted phase requires owned resource permit instead of hosted_profile_durable_recovery_unavailable."
+  },
+  "limits": "No hosted browser or Profile data write was attempted. Full Profile acceptance remains unavailable; D114 is open."
+}

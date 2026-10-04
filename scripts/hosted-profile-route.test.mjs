@@ -64,7 +64,7 @@ test('Profile route refuses absent or wrong case and non-CI evidence', () => {
   );
 });
 
-test('hosted credential preflight refuses missing authenticated secret before runtime setup', () => {
+test('hosted Profile preflight refuses before credentials or runtime setup', () => {
   for (const acceptanceCase of ['profile-admin', 'profile-member']) {
     const result = spawnSync(process.execPath, ['scripts/hosted-guest-acceptance.mjs'], {
       env: {
@@ -75,12 +75,7 @@ test('hosted credential preflight refuses missing authenticated secret before ru
       encoding: 'utf8',
     });
     assert.notEqual(result.status, 0);
-    assert.match(
-      result.stderr,
-      acceptanceCase === 'profile-admin'
-        ? /hosted_admin_secret_required/
-        : /hosted_member_link_secret_required/,
-    );
+    assert.match(result.stderr, /hosted_profile_durable_recovery_unavailable/);
     assert.doesNotMatch(result.stderr, /hosted phase requires owned resource permit/);
   }
 });
@@ -113,22 +108,26 @@ test('hosted Profile stages an exclusive private organization fixture for the na
   }
 });
 
-test('hosted Profile preflight refuses all writes despite supplied auth and organization', () => {
-  for (const phase of ['preflight', 'acceptance']) {
-    const result = spawnSync(process.execPath, ['scripts/hosted-guest-acceptance.mjs'], {
-      env: {
-        GITHUB_ACTIONS: 'true',
-        MATRX_HOSTED_PHASE: phase,
-        MATRX_HOSTED_ACCEPTANCE_CASE: 'profile-admin',
-        MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: '{"email":"admin@admin.com","password":"opaque"}',
-        MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: '{"approved_organization_name":"Matrx Org"}',
-      },
-      encoding: 'utf8',
-    });
-    assert.notEqual(result.status, 0);
-    assert.match(result.stderr, /hosted_profile_durable_recovery_unavailable/);
-    assert.doesNotMatch(result.stderr, /hosted phase requires owned resource permit/);
-    assert.doesNotMatch(result.stderr, /Matrx Org|opaque/);
+test('every hosted Profile phase refuses before browser setup with valid private inputs', () => {
+  for (const acceptanceCase of ['profile-admin', 'profile-member']) {
+    for (const phase of ['preflight', 'package', 'browser', 'acceptance']) {
+      const result = spawnSync(process.execPath, ['scripts/hosted-guest-acceptance.mjs'], {
+        env: {
+          GITHUB_ACTIONS: 'true',
+          MATRX_HOSTED_PHASE: phase,
+          MATRX_HOSTED_ACCEPTANCE_CASE: acceptanceCase,
+          MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: '{"email":"admin@admin.com","password":"opaque"}',
+          MATRX_HOSTED_MEMBER_LINK_JSON: '{"url":"https://example.test/private-link"}',
+          MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: '{"approved_organization_name":"Matrx Org"}',
+        },
+        encoding: 'utf8',
+      });
+      assert.notEqual(result.status, 0);
+      assert.match(result.stderr, /hosted_profile_durable_recovery_unavailable/);
+      assert.doesNotMatch(result.stderr, /hosted phase requires owned resource permit/);
+      assert.doesNotMatch(result.stderr, /Matrx Org|opaque|private-link/);
+      assert.doesNotMatch(result.stdout, /HOSTED_(PACKAGE|BROWSER)_READY/);
+    }
   }
 });
 
@@ -143,4 +142,19 @@ test('other hosted acceptance still passes credential preflight without runtime 
   });
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /HOSTED_CREDENTIAL_PREFLIGHT_READY/);
+});
+
+test('non-Profile package and browser phases retain resource admission', () => {
+  for (const phase of ['package', 'browser']) {
+    const result = spawnSync(process.execPath, ['scripts/hosted-guest-acceptance.mjs'], {
+      env: {
+        MATRX_HOSTED_PHASE: phase,
+        MATRX_HOSTED_ACCEPTANCE_CASE: 'guest-chat',
+      },
+      encoding: 'utf8',
+    });
+    assert.notEqual(result.status, 0);
+    assert.match(result.stderr, /hosted phase requires owned resource permit/);
+    assert.doesNotMatch(result.stderr, /hosted_profile_durable_recovery_unavailable/);
+  }
 });
