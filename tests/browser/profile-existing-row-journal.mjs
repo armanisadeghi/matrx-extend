@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { isDeepStrictEqual } from 'node:util';
 import { createVersionedProfileWriteJournal } from './profile-versioned-write-journal.mjs';
 
 export const PROFILE_TESTED_COLUMNS = [
@@ -14,13 +15,12 @@ export const PROFILE_TESTED_COLUMNS = [
 ];
 
 export function existingProfilePatchUrl(baseUrl, original, current) {
-  assert.equal(current.user_id, original.user_id, 'profile_restore_owner_changed');
-  assert.equal(
-    current.organization_id,
-    original.organization_id,
+  assert.ok(current.user_id === original.user_id, 'profile_restore_owner_changed');
+  assert.ok(
+    current.organization_id === original.organization_id,
     'profile_restore_organization_changed',
   );
-  assert.equal(current.created_at, original.created_at, 'profile_restore_row_replaced');
+  assert.ok(current.created_at === original.created_at, 'profile_restore_row_replaced');
   assert.ok(
     Number.isSafeInteger(current.version) && current.version >= 1,
     'profile_restore_version_invalid',
@@ -61,10 +61,16 @@ export async function createExistingProfileWriteJournal({
     organization_id: original.organization_id,
     created_at: original.created_at,
   };
+  const untouched = Object.fromEntries(
+    Object.entries(structuredClone(original)).filter(
+      ([key]) => !PROFILE_TESTED_COLUMNS.includes(key) && key !== 'version' && key !== 'updated_at',
+    ),
+  );
   const record = ({ version, fields, pending }) => ({
     original_row_absent: false,
     ...identity,
     original_fields: baseline,
+    original_untouched: untouched,
     expected_version: version,
     current_fields: fields,
     pending_write: pending,
@@ -81,10 +87,12 @@ export async function createExistingProfileWriteJournal({
     validate(row, fields, version) {
       assert.ok(row, 'profile_existing_row_missing');
       for (const key of Object.keys(identity))
-        assert.equal(row[key], identity[key], `profile_existing_${key}_changed`);
+        assert.ok(row[key] === identity[key], `profile_existing_${key}_changed`);
       assert.equal(row.version, version, 'profile_existing_concurrent_change');
       for (const key of PROFILE_TESTED_COLUMNS)
-        assert.equal(row[key], fields[key], `profile_existing_${key}_unexpected_successor`);
+        assert.ok(row[key] === fields[key], `profile_existing_${key}_unexpected_successor`);
+      for (const [key, value] of Object.entries(untouched))
+        assert.ok(isDeepStrictEqual(row[key], value), `profile_existing_${key}_unexpected_change`);
     },
     result({ version, fields, row }) {
       return { version, fields, row };
