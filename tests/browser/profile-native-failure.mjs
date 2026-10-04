@@ -71,3 +71,21 @@ export async function captureProfileExecutionFailure(report, error, { operation,
   }
   report.execution_failure = failure;
 }
+
+// The acceptance runner uses this boundary around its real UI sequence. Returning
+// the primary error lets owned-row restoration run before the runner rethrows it.
+export async function runProfileExecutionBoundary(report, execute, { getOperation, readUiState }) {
+  try {
+    await execute();
+    return null;
+  } catch (error) {
+    report.execution_failure_code = String(error?.message ?? 'unknown')
+      .split(':', 1)[0]
+      .slice(0, 100);
+    await captureProfileExecutionFailure(report, error, {
+      operation: getOperation(),
+      readUiState,
+    });
+    return error;
+  }
+}

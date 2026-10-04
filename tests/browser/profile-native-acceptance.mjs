@@ -10,7 +10,7 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import { signInAdminSettings } from './admin-settings-signin.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { assertFirstSaveOwnedRow, ownedDeleteUrl } from './profile-empty-row-restoration.mjs';
-import { captureProfileExecutionFailure, runProfilePointer } from './profile-native-failure.mjs';
+import { runProfileExecutionBoundary, runProfilePointer } from './profile-native-failure.mjs';
 import { createOwnedWriteJournal } from './profile-owned-write-journal.mjs';
 import { panelIdentity } from './settings-native-auth-driver.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
@@ -800,126 +800,123 @@ try {
       let reloadedPanel = null;
       let reacquiredPanel = null;
       let reloadAttempted = false;
-      let executionError = null;
       let executionOperation = 'warm_profile';
-      try {
-        if (!initialRow.row_present) {
-          assert.equal(AUTH_MODE, 'member', 'first_save_requires_designated_member');
-          ownerConfig = { ...(await profileApiConfig()), organizationId: stored.organizationId };
-          assert.equal(
-            await readProfileOwnerRow(panel, ownerConfig, identity.userId),
-            null,
-            'first_save_row_appeared_before_write',
-          );
-          const marker = `Profile first save ${randomUUID()}`;
-          pendingMarker = marker;
-          await persistPrivateOwnership(
-            {
-              run_id: RUN_ID,
-              original_row_absent: true,
-              user_id: identity.userId,
-              organization_id: stored.organizationId,
-              marker,
-              created_at: null,
-              expected_version: null,
-              state: 'before_first_save',
-            },
-            true,
-          );
-          await fillPreferred(panel, marker);
-          await clickProfileHeader(panel, 'Save');
-          await waitFor(
-            'first_profile_save_settled',
-            () => state(panel),
-            (s) => s.preferred === marker && !s.dirty && !s.error,
-            30000,
-          );
-          const row = await readProfileOwnerRow(panel, ownerConfig, identity.userId);
-          owned = assertFirstSaveOwnedRow(row, {
-            userId: identity.userId,
-            organizationId: stored.organizationId,
-            marker,
-          });
-          await persistPrivateOwnership({
-            run_id: RUN_ID,
-            original_row_absent: true,
-            user_id: owned.userId,
-            organization_id: owned.organizationId,
-            marker: owned.marker,
-            created_at: owned.createdAt,
-            expected_version: 1,
-            state: 'first_save_verified',
-          });
-          ownedJournal = createOwnedWriteJournal({
-            owned,
-            baseUrl: ownerConfig.url,
-            read: () => readProfileOwnerRow(cleanupPanel, ownerConfig, identity.userId),
-            persist: (record) =>
-              persistPrivateOwnership({
+      const executionError = await runProfileExecutionBoundary(
+        report,
+        async () => {
+          if (!initialRow.row_present) {
+            assert.equal(AUTH_MODE, 'member', 'first_save_requires_designated_member');
+            ownerConfig = { ...(await profileApiConfig()), organizationId: stored.organizationId };
+            assert.equal(
+              await readProfileOwnerRow(panel, ownerConfig, identity.userId),
+              null,
+              'first_save_row_appeared_before_write',
+            );
+            const marker = `Profile first save ${randomUUID()}`;
+            pendingMarker = marker;
+            await persistPrivateOwnership(
+              {
                 run_id: RUN_ID,
                 original_row_absent: true,
-                ...record,
-              }),
-          });
-          original = marker;
-          report.first_save = {
-            case_id: 'EXT-F-1004-T28',
-            branch: 'new-row-with-device-organization',
-            status: 'provisional_until_original_absence_restored',
-            row_created_by_ui: true,
-            organization_matches_device: true,
-            owner_matches_verified_member: true,
-            original_absence_restoration_pending: true,
-            scope: 'bounded branch only; not full T28 acceptance',
+                user_id: identity.userId,
+                organization_id: stored.organizationId,
+                marker,
+                created_at: null,
+                expected_version: null,
+                state: 'before_first_save',
+              },
+              true,
+            );
+            await fillPreferred(panel, marker);
+            await clickProfileHeader(panel, 'Save');
+            await waitFor(
+              'first_profile_save_settled',
+              () => state(panel),
+              (s) => s.preferred === marker && !s.dirty && !s.error,
+              30000,
+            );
+            const row = await readProfileOwnerRow(panel, ownerConfig, identity.userId);
+            owned = assertFirstSaveOwnedRow(row, {
+              userId: identity.userId,
+              organizationId: stored.organizationId,
+              marker,
+            });
+            await persistPrivateOwnership({
+              run_id: RUN_ID,
+              original_row_absent: true,
+              user_id: owned.userId,
+              organization_id: owned.organizationId,
+              marker: owned.marker,
+              created_at: owned.createdAt,
+              expected_version: 1,
+              state: 'first_save_verified',
+            });
+            ownedJournal = createOwnedWriteJournal({
+              owned,
+              baseUrl: ownerConfig.url,
+              read: () => readProfileOwnerRow(cleanupPanel, ownerConfig, identity.userId),
+              persist: (record) =>
+                persistPrivateOwnership({
+                  run_id: RUN_ID,
+                  original_row_absent: true,
+                  ...record,
+                }),
+            });
+            original = marker;
+            report.first_save = {
+              case_id: 'EXT-F-1004-T28',
+              branch: 'new-row-with-device-organization',
+              status: 'provisional_until_original_absence_restored',
+              row_created_by_ui: true,
+              organization_matches_device: true,
+              owner_matches_verified_member: true,
+              original_absence_restoration_pending: true,
+              scope: 'bounded branch only; not full T28 acceptance',
+            };
+          }
+          await caseBack(panel, original, identity.email, AUTH_MODE, 'warm');
+          await caseSaveDiscard(panel, original, identity.email, AUTH_MODE, 'warm', ownedJournal);
+          await caseT25(panel, original, identity.email, AUTH_MODE, 'warm');
+          report.stage = 'extension_reload';
+          executionOperation = 'reload_extension';
+          reloadAttempted = true;
+          const reloaded = await reloadExtension();
+          reloadedPanel = reloaded.panel;
+          cleanupPanel = reloaded.panel;
+          report.extension_reload = {
+            management_reload_clicked: reloaded.management_reload_clicked,
+            old_targets_retired: reloaded.old_targets_retired,
+            worker_replaced: reloaded.worker_replaced,
+            panel_replaced: reloaded.panel_replaced,
           };
-        }
-        await caseBack(panel, original, identity.email, AUTH_MODE, 'warm');
-        await caseSaveDiscard(panel, original, identity.email, AUTH_MODE, 'warm', ownedJournal);
-        await caseT25(panel, original, identity.email, AUTH_MODE, 'warm');
-        report.stage = 'extension_reload';
-        executionOperation = 'reload_extension';
-        reloadAttempted = true;
-        const reloaded = await reloadExtension();
-        reloadedPanel = reloaded.panel;
-        cleanupPanel = reloaded.panel;
-        report.extension_reload = {
-          management_reload_clicked: reloaded.management_reload_clicked,
-          old_targets_retired: reloaded.old_targets_retired,
-          worker_replaced: reloaded.worker_replaced,
-          panel_replaced: reloaded.panel_replaced,
-        };
-        const after = await panelIdentity(reloaded.panel);
-        assert.equal(after.profileId, identity.userId, 'reload_profile_identity_changed');
-        assert.equal(after.isAdmin, AUTH_MODE === 'admin', 'reload_profile_role_changed');
-        assert.equal(after.organizationId, stored.organizationId, 'reload_organization_changed');
-        executionOperation = 'open_profile_after_reload';
-        await openProfile(reloaded.panel, identity.email);
-        executionOperation = 'case_back_after_reload';
-        await caseBack(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
-        executionOperation = 'case_save_discard_after_reload';
-        await caseSaveDiscard(
-          reloaded.panel,
-          original,
-          identity.email,
-          AUTH_MODE,
-          'reload',
-          ownedJournal,
-        );
-        executionOperation = 'case_owner_read_retry_after_reload';
-        await caseT25(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
-      } catch (error) {
-        executionError = error;
-        report.execution_failure_code = String(error?.message ?? 'unknown')
-          .split(':', 1)[0]
-          .slice(0, 100);
-        await captureProfileExecutionFailure(report, error, {
-          operation: executionOperation,
+          const after = await panelIdentity(reloaded.panel);
+          assert.equal(after.profileId, identity.userId, 'reload_profile_identity_changed');
+          assert.equal(after.isAdmin, AUTH_MODE === 'admin', 'reload_profile_role_changed');
+          assert.equal(after.organizationId, stored.organizationId, 'reload_organization_changed');
+          executionOperation = 'open_profile_after_reload';
+          await openProfile(reloaded.panel, identity.email);
+          executionOperation = 'case_back_after_reload';
+          await caseBack(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
+          executionOperation = 'case_save_discard_after_reload';
+          await caseSaveDiscard(
+            reloaded.panel,
+            original,
+            identity.email,
+            AUTH_MODE,
+            'reload',
+            ownedJournal,
+          );
+          executionOperation = 'case_owner_read_retry_after_reload';
+          await caseT25(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
+        },
+        {
+          getOperation: () => executionOperation,
           readUiState: () =>
             reloadedPanel
               ? reloadPointerState(reloadedPanel, identity.email)
               : Promise.resolve({ sample_unavailable: true }),
-        });
-      }
+        },
+      );
       let cleanupError = null;
       try {
         if (reloadAttempted && !reloadedPanel && (owned || pendingMarker)) {

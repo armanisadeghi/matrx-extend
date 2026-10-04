@@ -1,13 +1,15 @@
 {
   "schema_version": 1,
   "task": "profile-reload-target-repair",
-  "status": "diagnostic_added_root_cause_unverified",
+  "status": "diagnostic_guard_repaired_root_cause_unverified",
   "source_run": "profile-member-retest-189-01",
   "observed": "Warm member T01/T03/T25 and reload lifecycle passed; first reload case was not recorded; original absent row was restored.",
   "known_failure": "The trusted pointer driver found a non-unique visible target after reload, but the saved report discarded its candidate counts and exact call.",
   "diagnostic": "The next failure records the reload operation, exact named pointer call, candidate counts, active tab, and content-free visible UI counts before cleanup changes the stage.",
   "scope": "Acceptance runner diagnostics only; no product selector fallback, delay, or timeout change.",
-  "native_retest": "not_run_pending_root_grant",
+  "peer_review": "Fresh source peer found that the first tests missed the acceptance catch; a mutation removing its capture still passed.",
+  "guard_repair": "The acceptance runner now uses a shared execution boundary tested with a thrown pointer failure and cleanup stage change. A safe mutation removing boundary capture fails the behavioral assertion, and source was restored byte-identically.",
+  "native_retest": "not_run_pending_root_grant_and_new_peer_review",
   "privacy": "No account label, Profile field value, DOM text, screenshot, or credential is written to this report.",
   "acceptance": "Reload behavior remains unverified until a guarded native run produces the new evidence."
 }
