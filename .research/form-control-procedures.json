@@ -16,10 +16,7 @@
     "case_count": 9,
     "design_status": "procedure-ready-unverified",
     "test_status": "preserved-unverified",
-    "roles": [
-      "member",
-      "admin"
-    ],
+    "roles": ["member", "admin"],
     "guest": "not-applicable (Tools UI sign-in gate)"
   },
   "procedures": [
@@ -81,27 +78,19 @@
   "source_evidence": [
     {
       "claim": "Tools manual Run parses JSON, validates local handler argsSchema, then invokes local handler with permissionMode act and assignedTabId null; this is an active-tab manual route, not agent dispatcher coverage.",
-      "files": [
-        "src/features/tools/ToolsView.tsx:390-461"
-      ]
+      "files": ["src/features/tools/ToolsView.tsx:390-461"]
     },
     {
       "claim": "Keyboard/mouse handlers synthesize DOM events and return the documented result fields; blur accepts an optional selector and can return handler-level no-focused-element failure.",
-      "files": [
-        "src/lib/tools/handlers/keyboard.ts"
-      ]
+      "files": ["src/lib/tools/handlers/keyboard.ts"]
     },
     {
       "claim": "Form handlers implement select-by-value/label/index, checkbox checked state, radio selection, and button-click or requestSubmit; the procedures use an owned fixture with network/navigation suppression.",
-      "files": [
-        "src/lib/tools/handlers/forms.ts"
-      ]
+      "files": ["src/lib/tools/handlers/forms.ts"]
     },
     {
       "claim": "The exact-name metadata census leaves eight names absent and submit_form with active definition/binding; this does not establish request-time advertisement or actual role availability.",
-      "files": [
-        ".research/tool-binding-readonly-census.json"
-      ]
+      "files": [".research/tool-binding-readonly-census.json"]
     }
   ],
   "live_binding_snapshot": [
@@ -174,10 +163,7 @@
       "inventory_name": "submit_form",
       "has_active_definition": true,
       "has_active_chrome_extension_binding": true,
-      "direct_surface_default_inclusions": [
-        "chrome-extension/assistant",
-        "chrome-extension/pilot"
-      ],
+      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
       "mapping_status": "active_definition_and_executor_binding"
     }
   ],
@@ -189,10 +175,7 @@
     "Eight exact-name definition/binding mappings are unresolved; submit_form has active metadata but request-time advertisement is unverified.",
     "Current hosted resource permit/build receipt must be obtained before any browser action."
   ],
-  "files": [
-    "docs/stabilization/inventory.json",
-    ".research/form-control-procedures.json"
-  ],
+  "files": ["docs/stabilization/inventory.json", ".research/form-control-procedures.json"],
   "source_hashes": {
     "src/features/tools/ToolsView.tsx": "05242f54c731c609b0c792b3af8c0f4a7e67a8f765513512ba8101d4190f6551",
     "src/lib/tools/handlers/keyboard.ts": "97fb657d1d2aeb4b7a7de9a4fd92210533fb690726eff61e507689b42876c01e",
