@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "subject_commit": "df42d2f1",
+  "scope": "Independent source review of the EXT-D-0115 supplemental CPU diagnostic cleanup repair",
+  "verdict_a_readiness": "source_ready_for_parent_owned_native_run",
+  "verdict_a_native_limit": "No native browser or hosted guest-scrape run in this lane. Source review and focused tests cannot establish whether the side panel shows busy during real extraction, explain the timing failure, or close the original unthrottled D115 observation.",
+  "verdict_b_quality": "The prior cleanup blocker and arbitrary rate ceiling are repaired. No new blocking source finding in the reviewed scope.",
+  "confirmed": [
+    "The unthrottled fast result and busy observation are recorded as T01 before the supplemental capture. An original busy failure remains unverified and sets the final overall report to unverified with exit code 1, regardless of supplemental outcome.",
+    "A rate-1 restoration or CDP detach failure is recorded in diagnostic.cleanup and rethrown from runSupplementalCpuDiagnostic, stopping result tabs, deep capture, navigation, and reload. The outer catch marks the run unverified and exits nonzero.",
+    "A diagnostic capture failure with successful restoration and detach remains a separate supplemental error, after which original native assertions continue.",
+    "Workflow and helper accept any finite explicit rate greater than 1; the unsupported 20 ceiling is removed.",
+    "The exact localhost /intake URL, page target type, target URL, and target ID are checked before throttling. Existing artifact and resource admission guards remain in place."
+  ],
+  "focused_verification": "node --test tests/browser/scrape-page-cpu-diagnostic.test.mjs tests/browser/scrape-busy-observer.test.mjs scripts/hosted-profile-route.test.mjs: 27 passed, 0 failed. Source reviewed; no native or heavy run.",
+  "nonblocking_note": "If diagnostic capture and cleanup both fail, diagnostic.error and the outer failure code name the capture error while diagnostic.cleanup records the cleanup failure. The run still stops and exits nonzero.",
+  "next_gate": "Parent-owned exact-artifact hosted guest-scrape run with explicit diagnostic rate, preserving the original unthrottled verdict as independent evidence."
+}
