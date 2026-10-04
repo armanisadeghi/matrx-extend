@@ -29,7 +29,10 @@
     ".research/scrape-busy-ownership-repair.json",
     ".research/scrape-busy-context-final-peer.json",
     ".research/scrape-busy-escalation.json",
-    ".research/scrape-busy-observation-only-peer.json"
+    ".research/scrape-busy-observation-only-peer.json",
+    ".research/scrape-timing-diagnostic.json",
+    ".research/scrape-timing-peer.json",
+    ".research/scrape-timing-final-peer.json"
   ],
   "transition_history": [
     {
@@ -70,5 +73,5 @@
     }
   ],
   "closure_requirement": "Independent source review, causal RED/GREEN guard, and exact205 hosted native busy-state evidence without oracle weakening. Record any different runtime blocker separately; no full Scrape health claim.",
-  "next_action": "Source escalation122504b8 removed unsound history reconstruction; independentpeerd4a3df47 passed13focused guards and deep-mode probe. Current owned visible DOM alone counts. D115 stays in-fix: original native busy cause remains unknown. Prepare separately labeled bounded real-capture timing diagnostic, source-review it, then run under one hosted guard; preserve original unthrottled acceptance and keep supplemental evidence separate."
+  "next_action": "Supplemental timing diagnostic3a4ce4bd cleanuprepairdf42d2f1 independently reviewedb1a6dddf with27focusedpasses. One root-owned guarded hostedexactStore205 guest-scrape run at explicitpageCPUrate4 is authorized. Originalunthrottledresult stays separate, restoration/detachfailure aborts, diagnosticcannotcloseoriginalbusycriterion."
 }
