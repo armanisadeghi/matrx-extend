@@ -15,13 +15,15 @@
   "severity": "S2: media acceptance is blocked; user-facing pane-reset defect not yet proven",
   "priority": "P1: identify transition before further media acceptance",
   "state": "triaged",
-  "owner": "/root/scrape_all_action_probe",
+  "owner": "root",
   "evidence": [
     ".research/blank-startup-native-experiment.json",
     ".research/scrape-media-pointer-diagnosis.json",
     "docs/stabilization/evidence/scrape215/run37212405505/receipt.json.txt",
     "docs/stabilization/evidence/scrape215/run37212405505/scrape-warm-media-failure.png",
-    ".research/scrape-transition-native-diagnostic.json"
+    ".research/scrape-transition-native-diagnostic.json",
+    ".research/scrape-all-action-probe.json",
+    ".research/scrape-all-action-probe-peer.json"
   ],
   "transition_history": [
     {
@@ -37,7 +39,7 @@
       "reason": "Independent frozen-source diagnosis identifies third removal boundary; causal pane-switch origin unresolved. Minimal pre/post/event probe delegated, not a speculative product patch."
     }
   ],
-  "next_action": "Extend existing minimal trace to every form/field/open/copy/control action, preserve exact failing action and before/after pane without reselection/retry. Fresh independent review then one guarded diagnostic; do not narrow cause from screenshot count alone.",
+  "next_action": "All-action probe504fcdf5 passed freshpeer53715d48 (11focusedtests+compile; nativeDOMobserver unverified). Run exactly one guarded frozen215 diagnostic with current reviewed driver. Inspect first unexpected tabchange/lastaction and preserve raw; no blindretry or productpatch without causal evidence.",
   "diagnostic_correction": {
     "at": "2026-10-04T15:57:43.076775+00:00",
     "reason": "Run37214124282 native trace refutes earlier third-removal inference. All3removals succeed; count1 can reflect a subsequently added image. Raw receipts unchanged."
