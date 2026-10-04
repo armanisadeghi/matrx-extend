@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "task": "scrape-all-action-probe-peer",
+  "defect": "EXT-D-0123",
+  "reviewed_commit": "504fcdf56c4fda523e32cd785966e2d83f0cf4fd",
+  "verdict_a_diagnostic_readiness": {
+    "status": "pass_source_ready",
+    "evidence": [
+      "Every warm/reload image, video, and link control in the two exercise functions passes through observedMediaAction, including helper open/copy and separate field click and Input.insertText boundaries.",
+      "Action entries retain sanitized kind and fixture path or field identity, selected pane and image paths before and after, trusted pointer events, connectivity, pointer failure, and explicit event truncation.",
+      "The existing probe stays armed through each media or link phase, so tab and pointer events between actions can be correlated with the first unexpected Article selection; mutation observation follows pane replacement.",
+      "captureMediaFailure stores the shared trace on success or failure and rethrows the original action error; failed teardown is recorded as probeError. No pane reselection or failed-action retry was added."
+    ],
+    "limits": [
+      "Phase traces are separate; the interval between warm-media and warm-links, or reload-media and reload-links, is not observed.",
+      "The 256-event phase cap and 32-event action cap announce dropped events; a truncated trace cannot establish a complete causal timeline.",
+      "The probe itself has not yet been observed in a hosted native run; this is source readiness, not a product pass."
+    ]
+  },
+  "verdict_b_quality_resource_privacy": {
+    "status": "pass_with_limits",
+    "evidence": [
+      "The patch extends the existing mediaTransitionProbe and native action helpers instead of introducing a parallel observer framework.",
+      "ResourceAction still encloses each click and insert; the explicit pre-removal requireResourceHealth remains. The resource boundary implementation and policy were not changed.",
+      "New action identities and event targets use fixed fixture paths, labels, fields, and bounded diagnostics; entered text and arbitrary page content are not added to the trace.",
+      "The focused helper suite passed 11/11 tests and pnpm compile passed."
+    ],
+    "limits": [
+      "Focused tests verify callback and resource-gate wiring, but do not exercise the injected DOM observer or its truncation behavior; the guarded native run is needed to validate those.",
+      "A start-probe evaluation failure aborts the attempted action before its resource guard. This is observable as an unverified diagnostic, not a silent resource bypass."
+    ]
+  },
+  "recommendation": "Ready for exactly one guarded hosted native diagnostic using frozen product 0.2.215 and development run 37193761291 artifact 11299613935. Do not claim a native/product pass until that receipt is reviewed.",
+  "verification": {
+    "focused": "node --test tests/browser/scrape-native-media-actions.test.mjs: 11 passed",
+    "compile": "pnpm compile: passed",
+    "native": "not run by peer"
+  }
+}
