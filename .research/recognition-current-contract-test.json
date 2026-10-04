@@ -33,5 +33,9 @@
     "result": "PASS: 1 test file, 4 tests.",
     "limits": "Focused mocked query test only. Does not establish real Supabase RLS policy behavior or native browser UI acceptance."
   },
-  "canonical_source_limit": "The linked common-docs systems/clients/extension and access-ladder files named by repo instructions were not present at their configured /Users/armanisadeghi/code/common-docs paths in this checkout. Applied the explicit Sept. 30 user law supplied in the task instructions; no contrary canonical text was available locally."
+  "canonical_contract_review": {
+    "access_ladder": "/Volumes/Samsung2TB/code/common-docs/policies/access-ladder.md:190-210 explicitly says reads ignore the active organization and every write/server call carries explicit organization_id (active organization for new records, record organization when editing). This confirms the read/write distinction above.",
+    "extension_state": "/Volumes/Samsung2TB/code/common-docs/systems/apps/extension/STATE.md:46-50 summarizes organization identity/request rules and explicit organization_id on inserts; it contains no Source-recognition-specific selected-org read exception. Its resolver wording is a general identity summary, not authority to narrow reads contrary to the access-ladder law.",
+    "limit": "The initial /Users/armanisadeghi/code/common-docs paths were unavailable in this tool environment; the canonical documents were subsequently read from the /Volumes/Samsung2TB/code/common-docs checkout."
+  }
 }
