@@ -14,11 +14,13 @@
   "actual": "Member-only runner prerequisite blocks admin before any write or six extended acceptance cells. Product write behavior untested, not a product failure.",
   "severity": "S2 admin testing blocked; product impact not established",
   "priority": "P1 contained Profile acceptance prerequisite",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "profile_admin_first_save_fix",
   "evidence": [
     ".research/profile-admin-fields-second-native.json",
-    "docs/stabilization/resource-journals/profile-admin-fields-189-02.jsonl"
+    "docs/stabilization/resource-journals/profile-admin-fields-189-02.jsonl",
+    ".research/profile-admin-first-save-fix.json",
+    ".research/admin-first-save-peer.json"
   ],
   "transition_history": [
     {
@@ -38,7 +40,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol source repair owns designated verified account support with original strict journal/restoration retained; fresh source and native peer required."
+    },
+    {
+      "at": "2026-10-04T04:19:14.805258+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Actual firstsave boundary red\u2192green5e82b422 passes fresh source A/B reviewdb0d0779 and26checks; native admin originalscenario stillpending."
     }
   ],
-  "closure_requirement": "Actual first-save guard red/green with mismatched identity/role/org rejection, independent source review, and designated-admin native original scenario plus surrounding fields/reload/exact restoration pass."
+  "closure_requirement": "Actual first-save guard red/green with mismatched identity/role/org rejection, independent source review, and designated-admin native original scenario plus surrounding fields/reload/exact restoration pass.",
+  "next_action": "Fresh one guarded profile-admin-fields-189-03 with current reviewed runner; verify six admin field/sectioncells and originalabsence restoration. T26admin remainsunimplemented."
 }
