@@ -28,7 +28,8 @@
     ".research/publisher-session-restore.json",
     ".research/published176-guest-server-refresh.json",
     ".research/published176-guest-backend-6c7c5a09.json",
-    ".research/published176-guest-backend-82af43a3.json"
+    ".research/published176-guest-backend-82af43a3.json",
+    ".research/published176-guest-response-current.json"
   ],
   "severity": "S0: public core no-login Chat fails immediately",
   "priority": "P0: supersedes deferred Chat sequencing; restore live guest promise now",
@@ -75,15 +76,12 @@
   "deployed_server_sha": "9bd979a894ba71141d6548069d621aa59a526bde",
   "published_extension_version": "0.2.176",
   "bounded_retest": "Published130 functional guest initial/reload evidence retained with explicit Google metadata-only integrity distinction. Exact release176 guest37106907229 PASSED first/reload answers and unchangedtree; independent member37107947183 PASSED real web+extension auth, nonadmin authority, explicit org and real answer. Both resource-valid. Member tree checked before load only; guest separately rehashed identical release after interaction.",
-  "latest_verified_server_sha": "82af43a337e848da4d2ffebc7915fc76da8ea2b8",
+  "latest_verified_server_sha": "9b3483e7cf868d5f2e04e30d9e36b4f7502c0250",
   "latest_bounded_retest": {
-    "run_id": "published176-guest-backend-82af43a3",
-    "report": ".research/published176-guest-backend-82af43a3.json",
-    "commit": "14306f02",
-    "resource_exit": 0,
-    "resource_invalid": false,
-    "scope": "Exact published176 unpacked ZIP, native headless Chromium, guest first grounded answer and post-panel-reload grounded follow-up against live82af43a3 unchanged before/after at18:09UTC. Not installed Store lifecycle.",
-    "owner_verification": "Root independently matched all four raw hashes and opened guest follow-up screenshot."
+    "run_id": "published176-guest-current-20261003-02",
+    "report": ".research/published176-guest-response-current.json",
+    "scope": "Published176 unpacked release on stable live9b3483e7: actual guest opening and post-panel-reload grounded terminal replies passed. Overall run failed on separate knownD96 owner-table GET401; no overall health or installed Store lifecycle claim.",
+    "owner_verification": "Root read original receipt terminal_answer verdicts, exact grounding booleans and opened followup screenshot; final journal resource-valid child_failed."
   },
   "prior_bounded_retests": [
     {
