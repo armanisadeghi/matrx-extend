@@ -11,10 +11,10 @@
     "Compare local/store ZIP205: action, background, content_scripts, externally_connectable and key differ, alongside JavaScript payloads; they are not equivalent except manifest key."
   ],
   "expected": "A Store acceptance case uses the exact Store ZIP with only a declared identity adaptation, verifies its byte/source/tree provenance, and labels development-only evidence honestly.",
-  "actual": "Explicit Store selection independently reviewed; exact Store205 runs37186201850 and37187228871 bound the expected adapted tree but failed before product cases at CDP timeout and panel runtime context respectively. Native acceptance remains incomplete.",
+  "actual": "Exact Store205 hosted37188132857 exercised signed-out Scrape and fast article result with adapted Store runtime tree de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f. Artifact selection/evidence mismatch repaired. Separate D115busy, D107startup and D117context investigations remain open; no whole-case pass.",
   "severity": "S2: release evidence can misrepresent the package tested",
   "priority": "P1: correct selection and evidence before next hosted Store acceptance",
-  "state": "fixed",
+  "state": "closed",
   "owner": "hosted_store_artifact",
   "evidence": [
     "scripts/hosted-guest-acceptance.mjs",
@@ -25,7 +25,8 @@
     ".research/hosted-store-artifact-peer.json",
     ".research/hosted-artifact-scope-correction.json",
     ".research/guest-scrape-store-native.json",
-    ".research/guest-scrape-diagnostic-native.json"
+    ".research/guest-scrape-diagnostic-native.json",
+    ".research/guest-scrape-context-native.json"
   ],
   "transition_history": [
     {
@@ -51,6 +52,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "ExplicitStoreZIPselection, provenance receipt, wrongZIPguard and actual205hash preparation independently reviewed at a4f7cf44; records corrected45947648/bd7586ae3 and reviewed0be37bef. Native retest pending."
+    },
+    {
+      "at": "2026-10-04T08:23:38.114339+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent execution reached real guest Store205 UI and article result with exact source/runtime provenance; root inspected actual receipt and retained screenshot. Source selection/wrongZIP checks and current historical corrections previously independently reviewed."
+    },
+    {
+      "at": "2026-10-04T08:23:38.114339+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original incorrect developmentZIP selection no longer reproduces for Store acceptance; actual Store runtime verified. Closure is artifact selection only, not complete Scrape acceptance."
     }
   ],
   "closure_requirement": "Independent review plus actual hosted runtime bound to Store ZIP/source/key-only-adapted tree; current records corrected without rewriting original receipts."
