@@ -12,14 +12,16 @@
   "actual": "Scrape driver has no per-batch health check or stop-marker read. Wrapper retains sustained-stop policy, but receipt cannot prove UI observation chronology relative to unsafe sample.",
   "severity": "S2: acceptance reliability; no proven product failure",
   "priority": "P1: prerequisite for trusted native acceptance",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/scrape_resource_boundary",
   "evidence": [
     ".research/scrape-loading-fixed-native.json",
     ".research/scrape-reload-diagnosis.json",
     ".research/scrape-resource-boundary.json",
     ".research/scrape-boundary-final-peer.json",
-    ".research/scrape-guarded-development-native.json"
+    ".research/scrape-guarded-development-native.json",
+    ".research/reload-lifetime-native.json",
+    ".research/scrape-replacement-fixed-native.json"
   ],
   "transition_history": [
     {
@@ -45,8 +47,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "12f43b3e+a060c9fe+8e9522f3 reuse real guard evidence and fresh clock at action boundary; independent6ff6adea pass source, native unknown."
+    },
+    {
+      "at": "2026-10-04T11:40:45.919890+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent hosted37198730857 on exact frozen215 reached real panel then refused first Scrape callback on unsafe_sample before account probe/navigation/click; empty cases/geometry/reloadmilestones. Root matched raw receipt and3journal hashes and exactdriver first-boundary source. Healthy37196901889 is positive control:5cases/9geometry boundaries executed under same resource checks. Source causal negatives and independent6ff6adea already passed."
+    },
+    {
+      "at": "2026-10-04T11:40:45.919890+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original missing fresh-health action boundary is verified repaired. One unsafe sample refuses next exercise despite outer resourceInvalid=false/two-sample stop policy; no unsafe product observation promoted to acceptance. Scope is native-test guard only, not Scrape health or unknown CPU-spike cause."
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
-  "next_action": "Healthy native37192733619 exercised gated actions without false refusal; unit file-backed negative gates passed. Retain fixed until independent unsafe-boundary runtime proof or explicit scoped guard verification; no overall native pass implied."
+  "next_action": "No further work for original action-boundary defect. D120 measurement remains unavailable on unsafe37198730857; CPU spike cause is unknown. Never infer whole-product health from guard refusal."
 }
