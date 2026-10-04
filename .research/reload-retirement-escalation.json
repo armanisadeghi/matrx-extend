@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "case": "EXT-D-0120 native reload retirement intermittency",
+  "status": "HANDOFF",
+  "decision": "No causal repair justified. Keep the exact retirement predicate and existing native identity, context, and resource gates. Route the next measurement to a bounded instrumentation lane.",
+  "scope": {
+    "changed": "This diagnostic report only.",
+    "not_run": ["native browser", "build", "release", "database writes"],
+    "owner_coordination": "Root agreed to handoff instrumentation without a speculative fix."
+  },
+  "evidence": [
+    {
+      "run_id": "37196901889",
+      "path": "docs/stabilization/evidence/scrape215/run37196901889/receipt.json.txt",
+      "sha256": "12bd32847c901e1f9e7ab34d71efb6ce4c1b6c24008e248c700bb6960f48118a",
+      "verdict": "Strict retirement predicate false; no dropped timeline entries. Old worker present before click; old panel destroyed; replacement created and ultimately sole worker; old worker absent but destruction event absent.",
+      "worker_order": [
+        "replacement created 11:01:16.925Z",
+        "replacement info changed 11:01:16.930Z",
+        "old worker info changed 11:01:16.942Z",
+        "sole replacement snapshot 11:01:17.037Z"
+      ]
+    },
+    {
+      "run_id": "37195986118",
+      "path": "docs/stabilization/evidence/scrape215/run37195986118/receipt.json.txt",
+      "sha256": "117f55f180096488b7a1364237a3c4e21d6ce9135b2264178e1e683c4f4f8d21",
+      "verdict": "Strict retirement predicate true and replacement SIDE_PANEL context observed. Later pointer failure remains separate.",
+      "worker_order": [
+        "old worker info changed 10:45:00.925Z",
+        "replacement created 10:45:00.940Z",
+        "old worker destroyed 10:45:01.064Z"
+      ]
+    }
+  ],
+  "captured_red": {
+    "method": "Parsed both captured receipts, checked SHA256 and timeline predicates, then asserted the failed receipt old_worker_destroyed_event after establishing old_worker_absent and replacement_worker_created_event.",
+    "result": "Exit 1: CAPTURED_RED: old worker destruction absent despite replacement creation and old-worker snapshot absence.",
+    "limit": "Artifact replay confirms the reported symptom, not a fresh browser reproduction or causal forcing test."
+  },
+  "protocol_findings": {
+    "runtime": "scripts/hosted-guest-acceptance.mjs pins Playwright 1.56.1; its browsers.json maps Chromium revision 1194 to 141.0.7390.37. Native Browser.getVersion was not in the compared receipt, so actual executable revision must be captured next.",
+    "runtime_source": "https://raw.githubusercontent.com/microsoft/playwright/v1.56.1/packages/playwright-core/browsers.json",
+    "sources": [
+      {
+        "url": "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/content/browser/devtools/service_worker_devtools_manager.cc",
+        "sha256": "3e5d48fe051d4965a67158e61b1d5d48e7f0b09bef8a5e5213c3627205236f47",
+        "finding": "AddAllAgentHosts enumerates live_hosts_ and new_installing_hosts_, excluding stopped_hosts_. WorkerStopped removes the live host before notifying worker observers; a not-yet-doomed version is retained as a raw stopped-host pointer. WorkerVersionDoomed later dispatches WorkerDestroyed."
+      },
+      {
+        "url": "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/content/browser/devtools/devtools_agent_host_impl.cc",
+        "sha256": "93ffe280336b2ca214d923b1d0ed90f8e5c45f255949393e2ba004b690bd2b65",
+        "finding": "GetOrCreateAll uses the service-worker manager list. The DevToolsAgentHostImpl destructor calls NotifyDestroyed; GetForId instead looks up the instance registry."
+      },
+      {
+        "url": "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/content/browser/devtools/protocol/target_handler.cc",
+        "sha256": "ac4be199af07967a217b79afbd220e2116bef77e35d53b4aba964b2950d2ebfa",
+        "finding": "GetTargets enumerates GetOrCreateAll. GetTargetInfo uses GetForId. TargetDestroyed is delivered from the agent-host destruction observer. TargetHandler::Session retains a scoped_refptr to its agent host until detached."
+      },
+      {
+        "url": "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/content/browser/devtools/browser_devtools_agent_host.cc",
+        "sha256": "cd07c9c49505124d61415a88a74589165405e0fa31b752c30a14d44378960408",
+        "finding": "BrowserAutoAttacher subscribes to service-worker manager events and detaches on WorkerDestroyed; it is a distinct signal from worker execution stopping."
+      },
+      {
+        "url": "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/content/browser/devtools/service_worker_devtools_agent_host.cc",
+        "sha256": "8f62e780f368472a0ff3460e4b9e4e181f795ab52ac7a42ad045d57470a99244",
+        "finding": "WorkerStopped changes state to WORKER_TERMINATED, clears the renderer connection, and notifies attached inspectors. It does not directly destroy the agent host."
+      }
+    ],
+    "playwright_source": "https://raw.githubusercontent.com/microsoft/playwright/v1.56.1/packages/playwright-core/src/server/chromium/crBrowser.ts",
+    "playwright_finding": "The browser connection auto-attaches to service workers. Harness sidePanelContexts attaches and detaches its own worker session before exercise; Scrape itself does not call attachWorker. The independent Playwright connection can still own a worker session.",
+    "inference": "Snapshot absence is not equivalent to agent-host destruction. A stopped worker retained by a debugger session is a source-supported explanation; it is NOT established as this run\u2019s cause. An info-changed event alone is not proof of detachment: current sanitization drops attached and other changed fields."
+  },
+  "hypotheses": [
+    {
+      "rank": 1,
+      "cause": "Stopped old worker remains as a debugger host, potentially held by Playwright autoattachment or another owned debugger session.",
+      "falsifiable_prediction": "At failure, old version has emitted stopped while a separate getTargetInfo(oldId) still succeeds, often attached=true. If getTargetInfo reports target absent, this retention explanation is refuted at that instant.",
+      "one_variable_test": "Add the read-only version/host-lifetime measurement below; do not change sessions or predicate during the reload."
+    },
+    {
+      "rank": 2,
+      "cause": "The old host is destroyed, but its destruction notification is not delivered to the current observer or lost before the retained timeline.",
+      "falsifiable_prediction": "Independent discovery observer sees old destruction while owned observer does not, or old getTargetInfo returns target absent without either observer seeing destruction. A still-existing host refutes destruction-event delivery as the immediate missing boundary.",
+      "one_variable_test": "Add a browser-only independent observer on a public Playwright CDP session, initialized before click."
+    },
+    {
+      "rank": 3,
+      "cause": "Old worker has stopped but its version/registration retirement differs with replacement creation order; a legitimate retained version delays debugger-host destruction.",
+      "falsifiable_prediction": "The correlated old version reaches stopped but remains non-redundant when the strict gate fails; the successful lifecycle reaches redundant and destruction. Redundant old version plus host absence would refute this explanation.",
+      "one_variable_test": "Observe ServiceWorker version and registration changes before click, retaining identity across events without targetId."
+    }
+  ],
+  "next_measurement": {
+    "budget": "One instrumentation-only unit with focused behavior tests and independent review, then one existing resource-guarded native run. No retries or wider timeouts as a repair.",
+    "files": [
+      "tests/browser/native-sidepanel-qa-harness.mjs",
+      "tests/browser/native-sidepanel-qa-harness.test.mjs",
+      "tests/browser/profile-reload-capture.mjs and its tests, if required by the existing sanitizer"
+    ],
+    "capture": [
+      "Preserve targetInfo.attached as a boolean in existing sanitized target snapshots/events, including the initial discovery state; keep IDs/type/kind, never raw URLs or titles.",
+      "Create a public Playwright browser CDP session from the already-owned browser connection; subscribe to Target target-created/destroyed/info-changed before setDiscoverTargets. Use it only as an independent observer and for Browser.getVersion / Target.getTargetInfo, not worker attachment.",
+      "Create a public page CDP session for the owned local fixture page before reload. Subscribe to ServiceWorker.workerVersionUpdated and workerRegistrationUpdated, then ServiceWorker.enable. Filter script/scope to exact owned extension in memory and persist only versionId, registrationId, targetId when supplied, runningStatus, status, isDeleted, time. Require pre-click versionId-to-old-targetId correlation; missing mapping is unmeasured, never inferred from URL alone.",
+      "On strict retirement timeout, query old and replacement Target.getTargetInfo through the independent browser session; record returned IDs/type/kind/attached or a fixed target-absent code. Preserve the original failed predicate and original error.",
+      "Optionally record existing Playwright service-worker close events with in-memory object identity, mapping only when unambiguous; do not use an ambiguous URL-only worker list as proof."
+    ],
+    "service_worker_source": "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/content/browser/devtools/protocol/service_worker_handler.cc",
+    "service_worker_limit": "The page domain watches its storage partition. Establish old-target mapping before click; stopped-version events can omit targetId because their host is no longer in the live worker lookup. If extension storage partition is not visible from that page, report unavailable without adding a worker attachment that would alter retention.",
+    "unknown_target_handling": "The owned vault-owned-cdp transport treats any protocol error as fatal. Do NOT send speculative getTargetInfo(oldId) through it. Public Playwright CDPSession isolates expected Target.getTargetInfo unknown-target rejection. Classify only the known target-not-found protocol response as absent; disconnection/timeouts/other errors mean probe_failed. Never serialize raw errors.",
+    "cleanup": "Retain ownership of both new diagnostic sessions. In finally disable ServiceWorker on its page session when still live, remove only these listeners, and detach these diagnostic sessions. Never Browser.close, stopWorker, unregister, reload again, detach someone else\u2019s worker session, or modify global autoattach to manufacture destruction.",
+    "forcing_tests": "Use captured ordering in external CDP doubles around the real harness/sanitizer. Verify strict missing-destroyed still fails and evidence survives; a successful lifecycle still requires existing replacement/context gates. Different outcomes must defeat a constant result. Independently exercise target-absent vs probe_failed, versionId correlation after targetId omission, and cleanup after click/probe errors. Tests cannot prove Chromium lifecycle itself.",
+    "native_branches": [
+      "Old stopped + host exists: debugger-host retention established; identify exact owned session via a subsequent separately authorized one-variable experiment before repairing ownership. Do not treat this as product failure or success.",
+      "Old host absent + independent destruction event only: observer/transport delivery gap established; fix that event path with a forcing reproduction before rerun.",
+      "Old host absent + neither observer event: Chromium notification boundary still unproven; retain failure and inspect version-matched protocol trace rather than relax gate.",
+      "Old version still running, old target persists, replacement/context missing, management error, or resource invalid: preserve genuine lifecycle/resource failure; no diagnostic equivalence may pass it.",
+      "All existing predicates and context/resource gates pass: native reload passes for that attempt; intermittency is not closed unless the failing boundary has been causally addressed."
+    ]
+  },
+  "limits": [
+    "No actual Chrome event omission or Playwright leak proven.",
+    "No harness/product changes made; no mutation or native green claimed.",
+    "Replacement-created-before-old-update is a discriminating lead, not a demonstrated cause.",
+    "The two traces do not show all Chrome internal lifetime references."
+  ]
+}
