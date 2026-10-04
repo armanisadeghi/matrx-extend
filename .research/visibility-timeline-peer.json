@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "1379d875",
+  "verdict_a": {
+    "status": "PARTIAL",
+    "subject": "Does bounded phase evidence safely distinguish the first visibility transition without weakening native acceptance or leaking private data?",
+    "finding": "For an authenticated member run, the added checkpoints can localize the first measured document.visibilityState change among the sampled phases. The existing exact context, identity, organization, successful trusted reopen, and native visibility assertion remain in place, so diagnostic evidence cannot turn a hidden panel into acceptance.",
+    "evidence": [
+      "The diagnostic report records the prior run's valid member identity, canonical nonadmin and organization checks, successful trusted reopen, then hidden visibility; it records no pre-auth visibility reading.",
+      "The new phase sequence covers settled-before-capture, after capture, before and after authentication, after organization selection, before reopen, root foreground, trusted open, and target activation.",
+      "A direct lightweight run of exported activateOwnedSidePanel confirmed observation order around root foreground, trusted open, and target activation; a refused open produced no post-open phases and did not activate the target."
+    ],
+    "limits": [
+      "The result is document-level CDP visibility, not proof of physical native foreground; it cannot distinguish a hidden browser host from a hidden document or identify a cause inside a phase interval.",
+      "If the first settled measurement is already hidden, there is no observed visible-to-hidden transition to localize.",
+      "No fresh native run was performed; the guest Chat acceptance failure remains unverified."
+    ]
+  },
+  "verdict_b": {
+    "status": "PARTIAL",
+    "finding": "The instrumentation is bounded and opt-in: one Runtime.evaluate at each declared checkpoint, with no polling, wait, listener, retry, or new deadline. The recorded fields are fixed phase labels, visibility enum, booleans, and viewport dimensions; no URL, DOM text, identity, credentials, or target identifier is emitted. Existing acceptance gates remain authoritative.",
+    "evidence": [
+      "The exported trusted-reopen seam passed an independent lightweight ordered-phase exercise and refused-open exercise.",
+      "The committed test change only supplies a no-op observation callback; it does not assert timeline fields, measured=false behavior, or phase capture. Thus the existing regression test does not guard the new diagnostic contract."
+    ],
+    "concerns": [
+      "No change-detector guard covers privacy shape, measurement failure reporting, or the timeline checkpoints. This is a diagnostic-evidence gap, not a reason to alter the implementation in this verifier lane.",
+      "Viewport width and height are limited metadata but still disclose the browser viewport; current report schema permits these values."
+    ],
+    "scope": "No source, inventory, browser, build, or release work performed."
+  },
+  "validation": {
+    "command": "node --input-type=module -e '<direct activateOwnedSidePanel observation-sequence and refused-open assertions>'",
+    "result": "passed",
+    "native_browser": "not_run"
+  }
+}
