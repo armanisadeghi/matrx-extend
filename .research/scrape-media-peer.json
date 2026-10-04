@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "8c53f36cae54f8dd39a81e66b78ee886abbdce3d",
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_a": {
+    "result": "PARTIAL_SOURCE_BEHAVIOR_NATIVE_UNVERIFIED",
+    "evidence": [
+      "The acceptance driver derives expected image and video URLs from its owned intake page, selects each pane, and passes only observed pane DOM into assertMediaPane. The app capture path remains captureWithFallback -> live content-script SCRAPE_CAPTURE -> runScrape collectors -> useScrape.setCurrent; no expected fixture media is injected into app state.",
+      "The second owned page has no media. The driver first waits for its distinct title and article text, then selects Images and Video and expects zero items. The app renders no media tiles/rows for empty arrays while retaining the Add image URL/Add video URL controls.",
+      "The driver does not execute in this review lane, so neither the true active panes nor empty panes have native observations. The source report correctly leaves native_run null and T08 partial."
+    ],
+    "coverage": {
+      "tabs": "Source path clicks Article, Images, Video, Links, SEO and Schema; live selection is not verified here.",
+      "auth_modes": "Guest only in this driver. T08 inventory modes are guest, member and admin; member/admin remain unverified.",
+      "lifecycle": "Extension reload remains explicitly unverified.",
+      "other_media_controls": "T08 requires selected result panes and matching/empty capture data. Add/remove actions are outside this target; video playback is not required."
+    }
+  },
+  "verdict_b": {
+    "result": "IMPORTANT_GAP_REOPEN",
+    "findings": [
+      {
+        "severity": "IMPORTANT",
+        "finding": "The native fixture cannot serve the referenced media. native-sidepanel-qa-harness.mjs returns 404 for every path absent from ownedPages and serves owned paths as text/html (lines 962-971); the driver owns only /intake, /referrals, /forms and /appointments. Consequently /intake.png and /intake-walkthrough.mp4 return 404. scrapeState records an image anchor href and alt, but not img.src, naturalWidth, or successful loading (scrape-guest-native-acceptance.mjs lines 143-149). Its assertion can therefore accept a broken image tile and does not establish visible image content from real media bytes.",
+        "required_before_media_acceptance": "Serve a valid image fixture from the owned local server and assert its image element has the expected source and completed successful load (naturalWidth > 0) in the active Images pane. Keep video acceptance to its required visible URL row; no playback requirement is implied."
+      },
+      {
+        "severity": "LIMIT",
+        "finding": "The new helper's three passing tests use hand-constructed pane state and do not validate the native DOM selectors or content-script-to-pane integration. The recorded native_run is null, which is an honest limit rather than a pass."
+      }
+    ],
+    "positive_quality": [
+      "The assertion rejects wrong selected panes, missing media, swapped media, and false empty states by comparing observed item identities and the selected tab count.",
+      "The existing six-tab roster and Article/Links/SEO/Schema checks remain. Guest auth preflight confirms no access token or profile is stored.",
+      "Focused independent check: node --test tests/browser/scrape-media-assertions.test.mjs passed 3/3. This proves the helper checks its synthetic inputs only, not native behavior."
+    ]
+  },
+  "cannot_verify": [
+    "Run the amended exact-artifact native driver after the image fixture/load assertion is fixed; do not mark T08 media accepted before then.",
+    "Member/admin modes and extension reload dimensions remain required by the inventory and were not exercised in this lane."
+  ],
+  "source_checks": [
+    "Reviewed only commit 8c53f36cae54f8dd39a81e66b78ee886abbdce3d, not a moving BASE..HEAD range.",
+    "Traced collectors.ts, pipeline.ts, use-scrape.ts, ScrapeView.tsx, native-sidepanel-qa-harness.mjs, and the changed acceptance driver/helper/tests.",
+    "Ran node --test tests/browser/scrape-media-assertions.test.mjs: 3 passed, 0 failed. No browser, build, release, or source edit was performed."
+  ],
+  "overall": "REOPEN — source dataflow and empty-pane assertions are plausible, but the missing image bytes make visible image acceptance unprovable; repair the fixture/load proof before a native run."
+}
