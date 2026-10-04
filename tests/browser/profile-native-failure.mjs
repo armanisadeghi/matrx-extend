@@ -18,6 +18,14 @@ const POINTER_CALLS = new Set([
   'profile_menu_item_for_retry',
   'retry_owner_read',
 ]);
+const PROFILE_RESTORATION_STAGES = new Set([
+  'fault_teardown',
+  'journal_reconcile',
+  'restore_profile_ui',
+  'restore_owned_write',
+  'verify_restored_reopen',
+  'discard_local_draft',
+]);
 
 export async function runProfilePointer(click, panel, kind, label, call) {
   try {
@@ -35,6 +43,13 @@ export async function captureProfileExecutionFailure(report, error, { operation,
     operation: operation ?? 'unknown',
   };
   const driver = error?.driverFailure;
+  const restoration = error?.profileRestorationFailure;
+  if (restoration) {
+    failure.restoration = {
+      code: restoration.code === 'profile_case_restoration_failed' ? restoration.code : 'unknown',
+      stage: PROFILE_RESTORATION_STAGES.has(restoration.stage) ? restoration.stage : 'unknown',
+    };
+  }
   if (driver) {
     failure.pointer_call = POINTER_CALLS.has(error?.profilePointerCall)
       ? error.profilePointerCall

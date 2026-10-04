@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0101",
+  "status": "source_guarded_native_recheck_pending",
+  "scope": "Preserve the first T26 case failure when its restoration also fails, while recording a sanitized second failure through the existing native Profile error boundary.",
+  "behavior": {
+    "dual_failure": "The original primary Error object is rethrown. Its secondary restoration Error is retained in a nonenumerable diagnostic property; the report receives only allowlisted code profile_case_restoration_failed and an allowlisted restoration stage.",
+    "cleanup_only_failure": "A fixed-code Error is thrown with the original cleanup Error as its nonenumerable cause. The runner report records the fixed code and allowlisted stage.",
+    "success": "The real case still returns a provisional T26 receipt after restoring the owned row value; only the outer runner may confirm original row absence."
+  },
+  "source_files": [
+    "tests/browser/profile-save-failure-case.mjs",
+    "tests/browser/profile-native-failure.mjs",
+    "tests/browser/profile-save-failure-error-preservation.test.mjs"
+  ],
+  "verification": {
+    "boundary_test": "node --test tests/browser/profile-save-failure-error-preservation.test.mjs — 3 passed, covering dual failure, cleanup-only failure, and success through the actual case function; dual and cleanup-only failures also traverse runProfileExecutionBoundary.",
+    "biome": "targeted check passed",
+    "native_ui": "not_run_in_this_lane",
+    "database": "not_touched_in_this_lane"
+  },
+  "limits": [
+    "The boundary test substitutes native panel and journal dependencies. It guards orchestration and report sanitation, not live Profile behavior.",
+    "The existing native runner already calls captureProfileExecutionFailure through runProfileExecutionBoundary; no runner edit was required."
+  ]
+}

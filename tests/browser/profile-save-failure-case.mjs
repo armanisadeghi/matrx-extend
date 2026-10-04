@@ -28,6 +28,7 @@ export async function runProfileSaveFailureCase({
   fillPreferred,
   clickProfileHeader,
   openProfile,
+  goBack = (ownedPanel) => click(ownedPanel, 'title', 'Back'),
 }) {
   assert.ok(journal?.save && journal?.reconcile, 'profile_owned_journal_required');
   assert.equal(new URL(origin).origin, origin, 'profile_fault_origin_invalid');
@@ -94,7 +95,7 @@ export async function runProfileSaveFailureCase({
       );
     });
     wroteDraft = true;
-    await click(panel, 'title', 'Back');
+    await goBack(panel);
     await openProfile(panel, email);
     await waitFor(
       'profile_retry_persisted_after_reopen',
@@ -104,19 +105,26 @@ export async function runProfileSaveFailureCase({
     );
     receipt.observed.retry_persisted_after_reopen = true;
   } catch (error) {
-    primaryError = error;
+    primaryError =
+      error instanceof Error
+        ? error
+        : new Error('profile_case_primary_non_error', { cause: error });
   }
   let restorationError = null;
+  let restorationStage = 'fault_teardown';
   try {
     if (fault) await fault.stop();
     // If a response disappeared after a real write, reconcile refuses to
     // guess ownership. The runner's outer cleanup retains the durable intent.
+    restorationStage = 'journal_reconcile';
     const owned = await journal.reconcile();
     if (owned.owned.marker === draft) wroteDraft = true;
     if (wroteDraft) {
+      restorationStage = 'restore_profile_ui';
       const current = await state(panel);
       if (!current.back) await openProfile(panel, email);
       await fillPreferred(panel, original);
+      restorationStage = 'restore_owned_write';
       await journal.save(original, async () => {
         await clickProfileHeader(panel, 'Save');
         await waitFor(
@@ -126,7 +134,8 @@ export async function runProfileSaveFailureCase({
           30000,
         );
       });
-      await click(panel, 'title', 'Back');
+      restorationStage = 'verify_restored_reopen';
+      await goBack(panel);
       await openProfile(panel, email);
       await waitFor(
         'profile_original_persisted_after_reopen',
@@ -136,6 +145,7 @@ export async function runProfileSaveFailureCase({
       );
       receipt.observed.owned_row_value_restored = true;
     } else {
+      restorationStage = 'discard_local_draft';
       const current = await state(panel);
       if (current.back && current.preferred !== original) {
         await clickProfileHeader(panel, 'Discard');
@@ -152,7 +162,22 @@ export async function runProfileSaveFailureCase({
   } catch (error) {
     restorationError = error;
   }
-  if (restorationError) throw restorationError;
+  if (restorationError) {
+    const failure = { code: 'profile_case_restoration_failed', stage: restorationStage };
+    if (primaryError instanceof Error) {
+      Object.defineProperties(primaryError, {
+        profileRestorationFailure: { value: failure, enumerable: false },
+        profileRestorationError: { value: restorationError, enumerable: false },
+      });
+      throw primaryError;
+    }
+    const cleanupOnly = new Error('profile_case_restoration_failed', { cause: restorationError });
+    Object.defineProperty(cleanupOnly, 'profileRestorationFailure', {
+      value: failure,
+      enumerable: false,
+    });
+    throw cleanupOnly;
+  }
   if (primaryError) throw primaryError;
   assert.equal(receipt.observed.retry_persisted_after_reopen, true);
   assert.equal(receipt.observed.owned_row_value_restored, true);
