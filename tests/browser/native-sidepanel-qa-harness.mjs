@@ -724,10 +724,32 @@ async function acquireLiveExtensionPanel({ cdp, page, extensionId }) {
   throw new Error('native_extension_live_panel_unavailable_for_cleanup');
 }
 
-async function activateOwnedSidePanel({ cdp, panelTargetId, page }) {
+async function observePanelVisibility(panel) {
+  try {
+    const result = await panel.send('Runtime.evaluate', {
+      expression: `({
+        visibility: ['visible', 'hidden', 'prerender'].includes(document.visibilityState)
+          ? document.visibilityState : 'other',
+        hasFocus: document.hasFocus(),
+        ready: document.readyState === 'complete',
+        width: window.innerWidth,
+        height: window.innerHeight
+      })`,
+      returnByValue: true,
+    });
+    if (result.exceptionDetails || !result.result?.value) return { measured: false };
+    return { measured: true, ...result.result.value };
+  } catch {
+    return { measured: false };
+  }
+}
+
+async function activateOwnedSidePanel({ cdp, panelTargetId, page, observe = async () => {} }) {
   // Target activation can focus a hidden SIDE_PANEL without opening it. Use
   // the same trusted input / FRONTEND_RPC route as the initial native open.
+  await observe('before_reopen');
   await page.bringToFront();
+  await observe('after_root_foreground');
   const result = page.locator('#result');
   await result.evaluate((element) => {
     element.textContent = '';
@@ -737,7 +759,9 @@ async function activateOwnedSidePanel({ cdp, panelTargetId, page }) {
   const reply = JSON.parse((await result.textContent()) || '{}');
   if (reply?.ok !== true || reply?.result?.opened !== true)
     throw new Error(`native_sidepanel_open_refused:${JSON.stringify(reply)}`);
+  await observe('after_trusted_open');
   await cdp.send('Target.activateTarget', { targetId: panelTargetId });
+  await observe('after_target_activation');
 }
 
 async function sidePanelContexts(cdp, serviceWorkerTargetId) {
@@ -980,6 +1004,7 @@ export async function runNativeSidepanelQa({
   exercisePanel,
   onStage = () => {},
   onStartupGpuObservation,
+  onPanelVisibilityObservation,
 } = {}) {
   onStage('receipt');
   let receipt;
@@ -1167,6 +1192,11 @@ export async function runNativeSidepanelQa({
     }
     onStage('panel_settle');
     const readyPanel = await waitForSettledGuestPanel(cdp, panelTarget.targetId);
+    const observeVisibility = async (phase, session = readyPanel) => {
+      if (onPanelVisibilityObservation)
+        onPanelVisibilityObservation({ phase, ...(await observePanelVisibility(session)) });
+    };
+    await observeVisibility('initial_settled_before_screenshots');
 
     if (publicDemoUrl) {
       if (publicDemoUrl !== 'https://www.aimatrx.com/matrx-extend-demo')
@@ -1181,6 +1211,7 @@ export async function runNativeSidepanelQa({
     onStage('screenshot');
     await captureTarget(cdp, normalTarget.targetId, normalPng);
     await captureTarget(cdp, panelTarget.targetId, panelPng);
+    await observeVisibility('after_initial_screenshots');
     await readyPanel.detach();
     onStage('exercise_panel');
     if (exercisePanel) {
@@ -1194,7 +1225,13 @@ export async function runNativeSidepanelQa({
             activatePanel: () =>
               cdp.send('Target.activateTarget', { targetId: panelTarget.targetId }),
             reopenPanel: () =>
-              activateOwnedSidePanel({ cdp, panelTargetId: panelTarget.targetId, page }),
+              activateOwnedSidePanel({
+                cdp,
+                panelTargetId: panelTarget.targetId,
+                page,
+                observe: (phase) => observeVisibility(phase, panel),
+              }),
+            observePanelVisibility: (phase) => observeVisibility(phase, panel),
             transportFailureClass: () => cdp.failureClass,
             panelTarget,
             artifacts,

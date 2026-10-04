@@ -165,6 +165,7 @@ await exerciseSetup({
     throw new Error('focus-only activation cannot reopen hidden panel');
   },
   reopenPanel: async () => events.push('reopen'),
+  observePanelVisibility: async () => {},
   requireResourceHealth: async () => events.push('health'),
   resourceAction: async (action) => action(),
 });

@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "defect": "D133",
+  "status": "bounded_diagnostic_prepared_native_cause_unproven",
+  "evidence_run": 37244226691,
+  "evidence": ".research/member-context-diagnostic-native.json",
+  "confirmed": [
+    "Exact initial SIDE_PANEL context passed; original target remained sole exact target after failure.",
+    "Member identity, canonical nonadmin and organization checks passed. Trusted reopen returned successfully, followed by hidden visibility.",
+    "No pre-auth visibility reading exists in that run; the screenshots are pre-auth target captures, not native-window proof.",
+    "Pinned Playwright 1.56.1 initializes main-frame targets with Emulation.setFocusEmulationEnabled=true. hasFocus=true cannot independently prove native foreground."
+  ],
+  "primary_sources": [
+    {
+      "url": "https://raw.githubusercontent.com/microsoft/playwright/v1.56.1/packages/playwright-core/src/server/chromium/crPage.ts",
+      "finding": "line534 enables focus emulation; local scripts/hosted-guest-acceptance.mjs pins this exact version"
+    },
+    {
+      "url": "https://developer.chrome.com/docs/extensions/reference/api/sidePanel",
+      "finding": "Open targets a specified tab/window; tab availability can hide a panel. Open API success alone does not establish physical foreground."
+    },
+    {
+      "url": "https://chromium.googlesource.com/chromium/src/+/main/chrome/browser/ui/views/extensions/extension_view_views.cc",
+      "finding": "ExtensionViewViews::VisibilityChanged calls WasShown/WasHidden; source gives no basis to discard document visibility. Main source is explanatory, not proof of the frozen browser runtime."
+    }
+  ],
+  "ranked_hypotheses": [
+    {
+      "cause": "Panel already reports hidden before OAuth",
+      "prediction": "initial_settled_before_screenshots and before_authentication are hidden",
+      "decisive_next_step": "Exclude OAuth as origin; inspect native hosting/driver attachment with baseline established."
+    },
+    {
+      "cause": "Initial target screenshot capture or session detach changes visibility",
+      "prediction": "initial_settled_before_screenshots visible, after_initial_screenshots hidden",
+      "decisive_next_step": "Minimize the existing capture/session sequence on a fresh peer run."
+    },
+    {
+      "cause": "OAuth or organization interaction first hides panel",
+      "prediction": "before_authentication visible, after_authentication or after_organization_selection first hidden",
+      "decisive_next_step": "Inspect that exact transition, not authentication credentials or authorization."
+    },
+    {
+      "cause": "Target activation hides a successfully reopened panel",
+      "prediction": "after_trusted_open visible, after_target_activation hidden",
+      "decisive_next_step": "Remove only harmful activation after a real red reproduction and guard."
+    }
+  ],
+  "diagnostic": {
+    "report_field": "panel_visibility_timeline",
+    "phases": [
+      "initial_settled_before_screenshots",
+      "after_initial_screenshots",
+      "before_authentication",
+      "after_authentication",
+      "after_organization_selection",
+      "before_reopen",
+      "after_root_foreground",
+      "after_trusted_open",
+      "after_target_activation"
+    ],
+    "fields": ["phase", "measured", "visibility", "hasFocus", "ready", "width", "height"],
+    "privacy": "Only fixed phases, visibility enum, booleans and viewport numbers; no URLs, identity, DOM text, credentials or target identifiers. Failed probe reports measured=false.",
+    "bounds": "One Runtime.evaluate per phase using existing owned CDP command deadline. No listeners, polling, sleeps, retries or new timeouts. Opt-in callback; other callers do not execute probes.",
+    "oracle": "Existing native visibility assertion and exact context/auth/resource gates unchanged. No conclusion that document.visibilityState is invalid."
+  },
+  "verification": {
+    "syntax": "node --check passed for changed harness and Scrape driver",
+    "format": "pnpm exec biome format --write changed files passed",
+    "existing_regression": "node --test tests/browser/native-sidepanel-qa-harness.test.mjs passed: 1 suite, 0 failures, 137 seconds; trusted reopen/setup, D117 and reload guards retained. Setup double only supplies observation callback; its visibility answer is unchanged."
+  },
+  "limits": [
+    "No browser/native workflow, build, release, product, inventory or defect edits.",
+    "No independent peer or changed-condition native run in this lane; root owns them.",
+    "Snapshots localize observable transitions; if every phase remains hidden, they do not prove physical UI hidden or a Chrome bug.",
+    "D117 context failure diagnostic remains unchanged."
+  ]
+}

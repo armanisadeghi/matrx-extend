@@ -86,6 +86,7 @@ const report = {
   media_event_traces: [],
   authentication: null,
   panel_viewports: [],
+  panel_visibility_timeline: [],
 };
 let selection;
 let expectedIdentity;
@@ -924,6 +925,7 @@ try {
       '/referral-walkthrough.mp4': { contentType: 'video/mp4', body: walkthroughVideo },
       '/consultation.mp4': { contentType: 'video/mp4', body: walkthroughVideo },
     },
+    onPanelVisibilityObservation: (value) => report.panel_visibility_timeline.push(value),
     onStage: (value) => {
       report.native_stage = value;
     },
@@ -932,6 +934,7 @@ try {
       panel,
       browserSession,
       reopenPanel,
+      observePanelVisibility,
       panelTarget,
       inspectPanelContext,
       artifacts,
@@ -941,6 +944,7 @@ try {
     }) => {
       await requireResourceHealth();
       if (selection.mode !== 'guest') {
+        await observePanelVisibility('before_authentication');
         report.stage = 'authentication';
         const authentication = await resourceAction(() =>
           signInSettings({
@@ -955,6 +959,7 @@ try {
             },
           }),
         );
+        await observePanelVisibility('after_authentication');
         report.stage = 'organization_selection';
         const selectedOrganization = await resourceAction(() =>
           selectRequiredSettingsOrganization({
@@ -964,6 +969,7 @@ try {
             profileId: authentication.profileId,
           }),
         );
+        await observePanelVisibility('after_organization_selection');
         expectedIdentity = {
           profileId: authentication.profileId,
           email: authentication.email,
