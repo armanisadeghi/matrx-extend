@@ -2362,6 +2362,9 @@
  "/esign/envelopes/{envelope_id}/remind": {
   "post": []
  },
+ "/esign/envelopes/{envelope_id}/signed-copy": {
+  "post": []
+ },
  "/esign/envelopes/{envelope_id}/signers/{signer_id}/resend": {
   "post": [
    "application/json"
