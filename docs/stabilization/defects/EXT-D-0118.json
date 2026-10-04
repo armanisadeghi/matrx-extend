@@ -1,0 +1,32 @@
+{
+  "id": "EXT-D-0118",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T08"],
+  "surface": "Scrape narrow side-panel layout",
+  "auth_mode": "guest",
+  "title": "Retained narrow panel screenshot clips left edge after result-tab sequence",
+  "reproduction": [
+    "Use exact Store205 artifact/source described in .research/guest-scrape-cpu-native.json; hosted run37190128778.",
+    "At narrow native side-panel width, capture owned Harbor Dental intake fixture, select Article/Images/Video/Links/SEO/Schema in order, then Scroll and capture.",
+    "Inspect retained scrape-deep-article.png: first navigation icon and beginning of title text are clipped at left edge, unlike earlier fast screenshot."
+  ],
+  "expected": "Selecting result tabs keeps panel navigation, title and capture controls inside the visible viewport.",
+  "actual": "Root observed left-edge clipping in retained deep screenshot. Scroll offset/layout cause and independent reproduction remain unverified.",
+  "severity": "S3: narrow-panel content/navigation visibility",
+  "priority": "P1: contained Scrape layout",
+  "state": "open",
+  "owner": "unassigned_scrape_layout",
+  "evidence": [
+    ".research/guest-scrape-cpu-native.json",
+    "docs/stabilization/evidence/scrape205/tab-strip-left-clipping.png"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T09:00:33.992758+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Root inspected retained native screenshot; causal/layout reproduction pending."
+    }
+  ],
+  "closure_requirement": "Independently reproduce and repair confirmed clipping class, then verify normal/narrow panel tab selection and deep capture without horizontal displacement."
+}

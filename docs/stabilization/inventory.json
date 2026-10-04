@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T08:27:54.219850+00:00",
+  "updated_at": "2026-10-04T09:00:33.979189+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -16989,10 +16989,16 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "render-retest-001",
-              "detail": "unverified_short_static_fixture_identical_output_inconclusive",
-              "evidence": "docs/stabilization/runs/render-retest-001.json"
+              "status": "partial",
+              "run_id": "hosted-guest-37190128778-1",
+              "evidence": ".research/guest-scrape-cpu-native.json",
+              "detail": "ExactStore205 deep result wait and lazy-text assertion completed before busy assertion failed. Retained screenshot shows28words vs17fast. Busy values not retained; progress, recovery and reload remain unverified.",
+              "historical_result": {
+                "status": "unverified",
+                "run_id": "render-retest-001",
+                "detail": "unverified_short_static_fixture_identical_output_inconclusive",
+                "evidence": "docs/stabilization/runs/render-retest-001.json"
+              }
             }
           }
         },
@@ -17476,6 +17482,11 @@
           ],
           "results": {
             "guest": {
+              "status": "partial",
+              "run_id": "hosted-guest-37190128778-1",
+              "evidence": ".research/guest-scrape-cpu-native.json",
+              "detail": "All6tabs selected; Article/Links/SEO/Schema content matched. Images/Video matching content or empty states and reload remain unverified. Root saw left-edge clipping in retained deep screenshot after tab sequence; D118 open.",
+              "historical_result": {
                 "status": "partial",
                 "run_id": "hosted-guest-37188132857-1",
                 "evidence": ".research/guest-scrape-context-native.json",
@@ -17490,6 +17501,7 @@
                   ]
                 }
               }
+            }
           }
         },
         {
@@ -17961,7 +17973,7 @@
             "EXT-D-0001",
             "EXT-D-0018",
             "EXT-D-0059",
-            "EXT-D-0115"
+            "EXT-D-0115", "EXT-D-0118"
           ],
           "run_ids": [
             "guest-local-001",
