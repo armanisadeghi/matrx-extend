@@ -17,7 +17,11 @@
   "evidence": [
     ".research/scrape-loading-fixed-native.json",
     ".research/scrape-reload-diagnosis.json",
-    ".research/scrape-guarded-development-native.json"
+    ".research/scrape-guarded-development-native.json",
+    ".research/reload-lifecycle-diagnosis.json",
+    ".research/reload-event-instrumentation.json",
+    ".research/reload-event-retention-repair.json",
+    ".research/scrape-final-retention-peer.json"
   ],
   "transition_history": [
     {
@@ -28,5 +32,5 @@
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
-  "next_action": "Bounded source lane /root/reload_lifecycle_diagnose traces missing worker-retirement event using exact37192733619 lifecycle evidence; causal repair or precise next measurement only, no loosened predicate."
+  "next_action": "Capture exact reload target timeline with reviewed0eedda92+ca1fa506 in the next guarded native run. Actual missing destroyed-event and original pointer failure causes remain unknown; predicate unchanged."
 }

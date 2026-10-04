@@ -14,14 +14,17 @@
   "actual": "At360px viewport, document/body/Scrape pane scrollWidth391px and result-tab right390.77px; Links/SEO/Schema selection scrolls document31px and clips panel left. Reproduced in development213 after earlier Store205 evidence.",
   "severity": "S3: narrow-panel content/navigation visibility",
   "priority": "P1: contained Scrape layout",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "/root/scrape_layout_fix",
   "evidence": [
     ".research/guest-scrape-cpu-native.json",
     "docs/stabilization/evidence/scrape205/tab-strip-left-clipping.png",
     ".research/scrape-clipping-diagnosis.json",
     ".research/scrape-loading-fixed-native.json",
-    ".research/scrape-guarded-development-native.json"
+    ".research/scrape-guarded-development-native.json",
+    ".research/scrape-layout-fix.json",
+    ".research/scrape-layout-peer.json",
+    ".research/scrape-final-retention-peer.json"
   ],
   "transition_history": [
     {
@@ -41,8 +44,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Bounded source repair delegated from exact healthy native geometry; no root cropping or hidden controls permitted."
+    },
+    {
+      "at": "2026-10-04T10:17:22.224069+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Product b9d7acbc wraps the complete result strip within available width. Independent source3536b5cb and measured guard review992a556b passed their scoped checks. Exact CI215 native retest pending; no runtime pass claimed."
     }
   ],
   "closure_requirement": "Independently reproduce and repair confirmed clipping class, then verify normal/narrow panel tab selection and deep capture without horizontal displacement.",
-  "next_action": "Trace result-tab container and ancestor sizing against receipt horizontal_geometry; implement only proven overflow cause, peer review, then normal/narrow native tab and deep capture verification. Do not hide tabs or crop symptoms."
+  "next_action": "One guarded native guest-scrape-development run against CI37193761291 artifact11299613935; verify narrow layout and surrounding capture, retain normal-width gap unless separately tested."
 }
