@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "task": "D117 empty panel context bounded diagnosis",
+  "status": "diagnostic_ready_native_cause_unproven",
+  "observed": [
+    "Run 37243043772 stopped at initial panel_context before member authentication, D133 reopening, or cases; one SIDE_PANEL/global-tab context had documentUrl empty on both worker queries 107 ms apart.",
+    "The same frozen development 0.2.244 artifact was used; D133 source commit 44005fb4 is preserved.",
+    "Current harness discovers the exact sidepanel Target URL and immediately queries worker getContexts; renderer/document readiness is checked only after the exact-context guard passes."
+  ],
+  "upstream_source": {
+    "url": "https://chromium.googlesource.com/chromium/src/+/373a3042cb26d5e54795321c01007b3b526ecdbe/extensions/browser/api/runtime/runtime_api.cc",
+    "symbol": "RuntimeGetContextsFunction::GetFrameContexts",
+    "finding": "document_url is populated from the RenderFrameHost last committed URL; it is not populated from the CDP target URL.",
+    "limit": "Reviewed upstream source, not a source mapping of the pinned hosted Chromium binary."
+  },
+  "hypotheses": [
+    {
+      "rank": 1,
+      "cause": "Target discovery precedes panel document commit",
+      "falsifiable_prediction": "Frame URL is empty or renderer is unavailable/not at the exact URL; later worker read may acquire exact URL. A complete exact renderer and exact frame with persistently empty contexts contradict a simple precommit explanation.",
+      "one_variable_probe": "Observe the already discovered owned panel document between the existing two worker reads."
+    },
+    {
+      "rank": 2,
+      "cause": "Panel navigation failed or never reached extension document",
+      "falsifiable_prediction": "Page frame has unreachableUrl present or renderer document is not exact and runtime identity is absent; exact frame and complete owned renderer contradict this.",
+      "one_variable_probe": "Page.getFrameTree navigationError boolean; no raw unreachable URL retained."
+    },
+    {
+      "rank": 3,
+      "cause": "Browser runtime context metadata is empty despite a committed owned renderer",
+      "falsifiable_prediction": "Exact frame and renderer URL plus exact runtime identity, while renderer getContexts and subsequent worker getContexts retain an empty URL. Subsequent exact contexts contradict persistence.",
+      "one_variable_probe": "Execute the same SIDE_PANEL context query in the owned panel renderer, with safe exact/empty counts."
+    },
+    {
+      "rank": 4,
+      "cause": "Worker and panel observations disagree across contexts or lifecycle transition",
+      "falsifiable_prediction": "Renderer context count is exact while subsequent worker count remains empty; agreement contradicts this branch.",
+      "one_variable_probe": "Compare renderer safe counts with classified existing worker follow-up; samples are sequential, not atomic."
+    }
+  ],
+  "change": {
+    "files": [
+      "tests/browser/native-sidepanel-qa-harness.mjs",
+      "tests/browser/native-sidepanel-qa-harness.test.mjs"
+    ],
+    "behavior": "Failure-only attach to the already verified/discovered panel target, one Page.getFrameTree and one renderer Runtime.evaluate/getContexts, detach in finally, then the existing one worker follow-up. Preserve full URL-shape classification of follow-up and original exact-context failure.",
+    "privacy": "Only classifications, fixed stages/readiness state, counts and booleans; no raw URLs, target/document/context IDs, page content or authentication values.",
+    "bounds": "At most four additional owned CDP sends (attach, frame tree, renderer evaluate, detach), each using existing command deadline. No new sleep, polling loop, readiness timeout, browser launch, retry, or acceptance path. A timeout marks the owned transport fatal and subsequent sends reject."
+  },
+  "verification": {
+    "focused_diagnostic": "Extracted committed test cases executed against real imported diagnostic and actual Runtime expression in a VM with external document/runtime/CDP doubles; pass. Includes loading/complete/interactive states, API unavailable/empty/exact, per-stage failure cleanup, privacy and sample ordering.",
+    "red_proofs": "plant.py return-constant gut check, skipped frame-tree query, and inverted exact-context predicate all produced named ERR_ASSERTION failures and byte-identical restore; final extracted cases passed.",
+    "compile": "pnpm compile exit 0",
+    "syntax": "node --check both files exit 0",
+    "format": "pnpm exec biome check both files exit 0",
+    "full_suite": "node tests/browser/native-sidepanel-qa-harness.test.mjs exit 0, including new diagnostic cases and existing D133/reload guards.",
+    "native": "Not run in this bounded lane; root owns next native launch.",
+    "independent_review": "Ready for parent-owned independent review; not obtained in this lane."
+  },
+  "limits": [
+    "No product repair claimed; navigation timing is an inference until native lifecycle observation exists.",
+    "Diagnostic can itself advance lifecycle; sequential snapshots distinguish branches but do not establish atomic equivalence or exactly when commit happened.",
+    "Renderer query timeout identifies an unavailable/stalled probe, not navigation causation; failedStage distinguishes it.",
+    "Original first mismatch remains fatal even if diagnostic sees a later exact context. D133 source, resource/auth/acceptance policies unchanged."
+  ]
+}

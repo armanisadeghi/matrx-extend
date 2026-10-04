@@ -221,8 +221,68 @@ function panelContextDiagnostic(contexts, panelUrl) {
   };
 }
 
-async function panelContextFailureDiagnostic({ contexts, panelUrl, readContexts, waitBetween }) {
+async function panelDocumentDiagnostic({ cdp, panelTargetId, panelUrl }) {
+  let panel;
+  let stage = 'attach';
+  const observation = {};
+  try {
+    panel = await attachTargetSession(cdp, panelTargetId);
+    stage = 'frame_tree';
+    const { frameTree } = await panel.send('Page.getFrameTree');
+    const frame = frameTree?.frame;
+    observation.frame = {
+      present: Boolean(frame),
+      exactUrl: frame?.url === panelUrl,
+      emptyUrl: frame?.url === '',
+      loaderPresent: Boolean(frame?.loaderId),
+      navigationError: Boolean(frame?.unreachableUrl),
+    };
+    stage = 'renderer';
+    const result = await panel.send('Runtime.evaluate', {
+      expression: `(async () => {
+        const expectedUrl = ${JSON.stringify(panelUrl)};
+        const expectedId = new URL(expectedUrl).host;
+        const runtime = globalThis.chrome?.runtime;
+        const contexts = typeof runtime?.getContexts === 'function'
+          ? await runtime.getContexts({ contextTypes: ['SIDE_PANEL'] }) : null;
+        return {
+          exactUrl: document.URL === expectedUrl,
+          emptyUrl: document.URL === '',
+          readyState: document.readyState,
+          runtimeIdentityExact: runtime?.id === expectedId,
+          contextQueryAvailable: contexts !== null,
+          sidePanelCount: contexts?.length ?? null,
+          emptyContextUrlCount: contexts?.filter(entry => entry.documentUrl === '').length ?? null,
+          exactContextCount: contexts?.filter(entry => entry.contextType === 'SIDE_PANEL' &&
+            entry.documentUrl === expectedUrl && entry.tabId === -1).length ?? null,
+        };
+      })()`,
+      awaitPromise: true,
+      returnByValue: true,
+    });
+    if (result.exceptionDetails || !result.result?.value)
+      throw new Error('native_sidepanel_document_observation_failed');
+    observation.renderer = result.result.value;
+    return { ...observation, queryFailed: false };
+  } catch {
+    return { ...observation, queryFailed: true, failedStage: stage };
+  } finally {
+    await panel?.detach();
+  }
+}
+
+async function panelContextFailureDiagnostic({
+  contexts,
+  panelUrl,
+  readContexts,
+  waitBetween,
+  readDocument,
+}) {
   const initial = panelContextDiagnostic(contexts, panelUrl);
+  // Observe the discovered target once, between the original and follow-up
+  // worker reads. Target URL alone does not prove a committed document.
+  const document = readDocument ? await readDocument() : null;
+  let followUpShape = null;
   let firstRead = true;
   try {
     const boundary = await observeSidePanelContext({
@@ -231,16 +291,25 @@ async function panelContextFailureDiagnostic({ contexts, panelUrl, readContexts,
           firstRead = false;
           return contexts;
         }
-        return readContexts();
+        return readContexts().then((next) => {
+          followUpShape = panelContextDiagnostic(next, panelUrl);
+          return next;
+        });
       },
       panelUrl,
       attempts: 2,
       waitBetween,
     });
-    return { ...initial, followUp: boundary.last, followUpQueryFailed: false };
+    return {
+      ...initial,
+      document,
+      followUp: boundary.last,
+      followUpShape,
+      followUpQueryFailed: false,
+    };
   } catch {
     // This second read is diagnostic only; preserve the original exact-context failure.
-    return { ...initial, followUp: null, followUpQueryFailed: true };
+    return { ...initial, document, followUp: null, followUpShape, followUpQueryFailed: true };
   }
 }
 
@@ -1092,7 +1161,7 @@ export async function runNativeSidepanelQa({
       requireSidePanelContext(contexts, panelUrl);
     } catch (error) {
       process.stderr.write(
-        `BROWSER_PANEL_CONTEXT_FAILURE ${JSON.stringify(await panelContextFailureDiagnostic({ contexts, panelUrl, readContexts: () => sidePanelContexts(cdp, extensionWorker.targetId) }))}\n`,
+        `BROWSER_PANEL_CONTEXT_FAILURE ${JSON.stringify(await panelContextFailureDiagnostic({ contexts, panelUrl, readContexts: () => sidePanelContexts(cdp, extensionWorker.targetId), readDocument: () => panelDocumentDiagnostic({ cdp, panelTargetId: panelTarget.targetId, panelUrl }) }))}\n`,
       );
       throw error;
     }
@@ -1210,4 +1279,5 @@ export {
   safeEndpointWaitDiagnostic,
   panelContextDiagnostic,
   panelContextFailureDiagnostic,
+  panelDocumentDiagnostic,
 };

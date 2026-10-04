@@ -4,6 +4,7 @@ import { EventEmitter } from 'node:events';
 import { readFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { runInNewContext } from 'node:vm';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import {
   activateOwnedSidePanel,
@@ -11,6 +12,7 @@ import {
   observeSidePanelContext,
   panelContextDiagnostic,
   panelContextFailureDiagnostic,
+  panelDocumentDiagnostic,
   requireExpectedExtension,
   requireOwnedCommandLine,
   requireSidePanelContext,
@@ -387,6 +389,181 @@ const queryFailure = await panelContextFailureDiagnostic({
 });
 assert.equal(queryFailure.followUp, null);
 assert.equal(queryFailure.followUpQueryFailed, true);
+// Captured D117: both worker reads had one global SIDE_PANEL with an empty URL.
+// The SUT must distinguish an unfinished document from a loaded renderer whose
+// runtime context still has an empty URL, without returning any raw identifiers.
+const emptyPanelContext = { contextType: 'SIDE_PANEL', documentUrl: '', tabId: -1 };
+for (const [documentUrl, readyState, runtimeId, runtimeContexts, expected] of [
+  [
+    '',
+    'loading',
+    undefined,
+    null,
+    {
+      exactUrl: false,
+      emptyUrl: true,
+      readyState: 'loading',
+      runtimeIdentityExact: false,
+      contextQueryAvailable: false,
+      sidePanelCount: null,
+      emptyContextUrlCount: null,
+      exactContextCount: null,
+    },
+  ],
+  [
+    expectedPanelUrl,
+    'complete',
+    extensionId,
+    [emptyPanelContext],
+    {
+      exactUrl: true,
+      emptyUrl: false,
+      readyState: 'complete',
+      runtimeIdentityExact: true,
+      contextQueryAvailable: true,
+      sidePanelCount: 1,
+      emptyContextUrlCount: 1,
+      exactContextCount: 0,
+    },
+  ],
+  [
+    expectedPanelUrl,
+    'interactive',
+    extensionId,
+    [exactPanelContext, wrongPanelContext],
+    {
+      exactUrl: true,
+      emptyUrl: false,
+      readyState: 'interactive',
+      runtimeIdentityExact: true,
+      contextQueryAvailable: true,
+      sidePanelCount: 2,
+      emptyContextUrlCount: 0,
+      exactContextCount: 1,
+    },
+  ],
+]) {
+  const calls = [];
+  const cdp = {
+    async send(method, params, sessionId) {
+      calls.push(method);
+      if (method === 'Target.attachToTarget') {
+        assert.deepEqual(params, { targetId: 'owned-panel-target', flatten: true });
+        return { sessionId: 'owned-panel-session' };
+      }
+      if (method === 'Target.detachFromTarget') {
+        assert.deepEqual(params, { sessionId: 'owned-panel-session' });
+        return {};
+      }
+      assert.equal(sessionId, 'owned-panel-session');
+      if (method === 'Page.getFrameTree')
+        return {
+          frameTree: {
+            frame: {
+              url: documentUrl,
+              loaderId: documentUrl ? 'opaque-loader' : '',
+              unreachableUrl: documentUrl ? '' : 'private-navigation-error-url',
+            },
+          },
+        };
+      assert.equal(method, 'Runtime.evaluate');
+      assert.equal(params.awaitPromise, true);
+      let runtimeQueryCalls = 0;
+      const value = await runInNewContext(params.expression, {
+        URL,
+        document: { URL: documentUrl, readyState },
+        chrome:
+          runtimeContexts === null
+            ? undefined
+            : {
+                runtime: {
+                  id: runtimeId,
+                  async getContexts(filter) {
+                    runtimeQueryCalls += 1;
+                    assert.equal(JSON.stringify(filter), '{"contextTypes":["SIDE_PANEL"]}');
+                    return runtimeContexts;
+                  },
+                },
+              },
+      });
+      assert.equal(runtimeQueryCalls, runtimeContexts === null ? 0 : 1);
+      return { result: { value: JSON.parse(JSON.stringify(value)) } };
+    },
+  };
+  const observation = await panelDocumentDiagnostic({
+    cdp,
+    panelTargetId: 'owned-panel-target',
+    panelUrl: expectedPanelUrl,
+  });
+  assert.deepEqual(observation, {
+    frame: {
+      present: true,
+      exactUrl: documentUrl === expectedPanelUrl,
+      emptyUrl: documentUrl === '',
+      loaderPresent: Boolean(documentUrl),
+      navigationError: !documentUrl,
+    },
+    renderer: expected,
+    queryFailed: false,
+  });
+  assert.deepEqual(calls, [
+    'Target.attachToTarget',
+    'Page.getFrameTree',
+    'Runtime.evaluate',
+    'Target.detachFromTarget',
+  ]);
+  assert.equal(JSON.stringify(observation).includes('chrome-extension://'), false);
+  assert.equal(JSON.stringify(observation).includes('private-navigation-error-url'), false);
+}
+for (const failedMethod of ['Target.attachToTarget', 'Page.getFrameTree', 'Runtime.evaluate']) {
+  const calls = [];
+  const observation = await panelDocumentDiagnostic({
+    cdp: {
+      async send(method) {
+        calls.push(method);
+        if (method === failedMethod) throw new Error('private diagnostic detail');
+        if (method === 'Target.attachToTarget') return { sessionId: 'owned-session' };
+        return {};
+      },
+    },
+    panelTargetId: 'owned-panel-target',
+    panelUrl: expectedPanelUrl,
+  });
+  assert.equal(observation.queryFailed, true);
+  assert.equal(
+    observation.failedStage,
+    {
+      'Target.attachToTarget': 'attach',
+      'Page.getFrameTree': 'frame_tree',
+      'Runtime.evaluate': 'renderer',
+    }[failedMethod],
+  );
+  assert.equal(calls.includes('Target.detachFromTarget'), failedMethod !== 'Target.attachToTarget');
+  assert.equal(JSON.stringify(observation).includes('private'), false);
+}
+const diagnosticOrder = [];
+const documentBoundary = await panelContextFailureDiagnostic({
+  contexts: [emptyPanelContext],
+  panelUrl: expectedPanelUrl,
+  readDocument: async () => {
+    diagnosticOrder.push('document');
+    return { queryFailed: true };
+  },
+  readContexts: async () => {
+    diagnosticOrder.push('worker');
+    return [exactPanelContext];
+  },
+  waitBetween: async () => {},
+});
+assert.deepEqual(diagnosticOrder, ['document', 'worker']);
+assert.equal(documentBoundary.emptyDocumentUrlCount, 1);
+assert.equal(documentBoundary.document.queryFailed, true);
+assert.equal(documentBoundary.followUpShape.exactContextCount, 1);
+assert.equal(documentBoundary.followUpShape.emptyDocumentUrlCount, 0);
+assert.throws(
+  () => requireSidePanelContext([emptyPanelContext], expectedPanelUrl),
+  /native_sidepanel_runtime_context_missing/,
+);
 let contextReads = 0;
 const boundary = await observeSidePanelContext({
   readContexts: async () => (++contextReads === 1 ? [wrongPanelContext] : [exactPanelContext]),
