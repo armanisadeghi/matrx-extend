@@ -1,0 +1,45 @@
+{
+  "id": "EXT-D-0115",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T01", "EXT-F-1007-T02"],
+  "surface": "Guest Scrape native acceptance busy-state observation",
+  "auth_mode": "guest",
+  "title": "Busy observer loses replaced capture button and can report false failure",
+  "reproduction": [
+    "Run hosted guest-scrape acceptance against exact release205 via hosted release37180303468. Run37185080238 reached fast_capture then failed scrape_fast_busy_not_observed.",
+    "The observer attaches once to the original button. In a DOM reproduction, replace that button with a disabled Capturing button; the original observer records false despite the replacement busy state.",
+    "This reproduces a harness blind spot; whether replacement caused the hosted failure remains unverified until native diagnostics run."
+  ],
+  "expected": "Observe the active Scrape capture control through DOM replacement and tooltip title movement, while refusing success when no disabled busy state rendered.",
+  "actual": "Original observer reported false; native cause unresolved. Initial guest empty state observed, later cases not verified.",
+  "severity": "S3: false-negative acceptance risk; no product busy-state failure established",
+  "priority": "P1: restore reliable native acceptance before promoting capture cases",
+  "state": "in-fix",
+  "owner": "guest_scrape_native",
+  "evidence": [
+    ".research/guest-scrape-hosted-native.json",
+    ".research/guest-scrape-busy-repair.json",
+    "tests/browser/scrape-guest-native-acceptance.mjs"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T07:22:00.924732+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Hosted busy observation failed."
+    },
+    {
+      "at": "2026-10-04T07:22:00.924732+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Replaced-button DOM reproduction exposes stale-node observer blind spot; native causal attribution remains open."
+    },
+    {
+      "at": "2026-10-04T07:22:00.924732+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Scoped active-pane observer repair and causal guard delegated; repeat native required."
+    }
+  ],
+  "closure_requirement": "Independent source review, causal RED/GREEN guard, and exact205 hosted native busy-state evidence without oracle weakening. Record any different runtime blocker separately; no full Scrape health claim."
+}
