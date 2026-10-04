@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "state": "verified_native_hosted_guest_chat_pass",
+  "observed_at_utc": "2026-10-04T13:45:48Z",
+  "candidate": {
+    "version": "0.2.205",
+    "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "hosted_release_run_id": 37180303468,
+    "release_artifact_id": 11294843385,
+    "store_zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "pending_google_review": true
+  },
+  "hosted_acceptance": {
+    "run_id": 37206303244,
+    "workflow": "Hosted guest side-panel acceptance",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37206303244",
+    "started_at_utc": "2026-10-04T13:38:02Z",
+    "ended_at_utc": "2026-10-04T13:44:56Z",
+    "acceptance_step_started_at_utc": "2026-10-04T13:43:12Z",
+    "acceptance_step_ended_at_utc": "2026-10-04T13:44:51Z",
+    "result": "success",
+    "mode": "Exact release artifact Store ZIP, SHA checked by hosted workflow; native Chromium unpacked load with matching-version public manifest key added only.",
+    "runtime_tree_sha256": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+    "artifact_unchanged": true,
+    "resource_guard": "Package, browser, and guest phases all admitted and ended valid; no guard refusal.",
+    "result_artifact": {
+      "id": 11304851236,
+      "name": "hosted-guest-37206303244-1",
+      "github_artifact_digest": "sha256:7983d5a6cf540fdc550594c09a41da630c4ddc79d0002d336dcd29a287d9b55d"
+    }
+  },
+  "observations": {
+    "fresh_signed_out_guest_chat_visible": true,
+    "first_live_answer_completed": true,
+    "first_answer_grounded_in_unpredictable_page_code_and_stages": true,
+    "no_login_paywall_or_error": true,
+    "followup_after_panel_reload_completed": true,
+    "followup_grounded_in_unpredictable_page_code_and_heading": true
+  },
+  "actual_request_limit": {
+    "guest_ai_request_observations": [],
+    "actual_post_http_status": null,
+    "actual_post_response_code": null,
+    "explanation": "The acceptance receipt recorded zero matching /v2/ai/mandates/extend.browser_chat requests. It proves completed real UI answers but does not expose an actual POST status or response code."
+  },
+  "live_backend_health": [
+    {
+      "checked_at_utc": "2026-10-04T13:45:09Z",
+      "endpoint": "https://server.app.matrxserver.com/health",
+      "http_status": 200,
+      "status": "ok",
+      "service": "aidream-api"
+    },
+    {
+      "checked_at_utc": "2026-10-04T13:45:48Z",
+      "endpoint": "https://server.app.matrxserver.com/health/detailed",
+      "http_status": 200,
+      "status": "ok",
+      "service": "aidream-api",
+      "database": "ok",
+      "tool_system": "ok",
+      "tool_count": 596,
+      "environment": "ok"
+    }
+  ],
+  "limits": [
+    "This is exact Store ZIP payload exercised in hosted native Chromium with the documented manifest-key adaptation; it is not an installed Chrome Web Store build.",
+    "The pending 0.2.205 Store submission remains unpublished; no publication decision was changed.",
+    "Health endpoints report current service health but no backend build SHA; no server version attribution is claimed.",
+    "The test starts network observation after panel load and did not record a matching AI POST; actual HTTP status/code remain unverified."
+  ],
+  "evidence_sha256": {
+    "guest-chat-store-receipt.json": "4156ea41148691be2dad63a5730ab0aec4edb331e1efe51ca3e1193c4041cc24",
+    "hosted-package-37206303244-1.jsonl": "93b6772f2a6e3a987c25eb2f4a4d21a671115f665f3fd1d6ce75213a9a838c93",
+    "hosted-browser-37206303244-1.jsonl": "3bd6f5ea4e4b09e3c813ac940f1f6b7822ba26b6d7a368576593503a681d3059",
+    "hosted-guest-37206303244-1.jsonl": "805a3df7ac394d0aac854ece193fc9bc8bcae007aae9efcedd77a46970e9e74e",
+    "guest-chat-store-receipt-raw.json.txt": "f65b77d210b6c21d0d8268d9d4aa627ea9d01b9ec5941c1d3c7b30bd7b386762",
+    "screenshots/guest-chat-real-answer.png": "d9334c5e0c1875bccd8d6f7896246e20b7c15e753a2e4d0b2d58bc11e97821c8",
+    "screenshots/guest-chat-real-followup-answer.png": "9542989409e011b90bf36779fb3fc9dbbaa47488e803e9046754c19bf30183bd"
+  },
+  "evidence_notes": {
+    "raw_receipt": "Exact downloaded test-result bytes are preserved as guest-chat-store-receipt-raw.json.txt; its SHA-256 is recorded above.",
+    "sanitized_receipt": "guest-chat-store-receipt.json is a sanitized derivative that removes hosted runner absolute screenshot paths; its digest is recorded above."
+  }
+}
