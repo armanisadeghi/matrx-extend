@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0130",
+  "reviewed_correction": "3ffd7ba5 (merged by 26f26d28)",
+  "behavior_verdict": "PASS for the fixture bootstrap correction; hosted marker behavior remains unverified on this local host",
+  "quality_verdict": "PASS for this scoped change",
+  "findings": [
+    "Both safety and disk scratch fixtures call copyResourceGuardModules, which recursively copies the local static import graph from stabilization-resource.mjs. The current graph has the entrypoint plus journal, lease, process, safety, verdict, and startup-interval-attribution modules; no deeper local imports were found.",
+    "The disk-independent bootstrap test ran the copied guard and observed exit 2 with RESOURCE_ARGUMENT_INVALID. In the same fixture it removed startup-interval-attribution.mjs and observed exit 1 with ERR_MODULE_NOT_FOUND, reproducing the original missing-module failure.",
+    "The marker-failure assertions still require workload startup, no marker write error, exit 3, admitted and safety-write-failed journal events, invalid final verdict, retained owner and unsafe hold, terminated workload, and no private payload leak. The correction changes the copy setup and adds stderr to the startup assertion diagnostic; the behavioral assertions remain intact."
+  ],
+  "checks": {
+    "focused_bootstrap": "node --test --test-name-pattern='scratch guard loads' scripts/test-stabilization-resource-safety-integration.mjs: 1 passed",
+    "scoped_integrations": "node --test scripts/test-stabilization-resource-safety-integration.mjs scripts/test-stabilization-resource-disk-integration.mjs: 1 passed, 3 skipped, 0 failed",
+    "local_limit": "The macOS system volume had 7.54 GiB free, below the unchanged 20 GiB policy; the marker and both disk integrations skipped. Their skip is not evidence of passing behavior."
+  },
+  "hosted_ci": {
+    "run_id": 37232005409,
+    "head_sha": "286f7d435248b00bb07077df3347725f6273462b",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37232005409",
+    "observed_status": "pending",
+    "observed_jobs": "none assigned yet",
+    "limit": "This is the latest automatic CI run with the correction; no CI rerun was requested. Its resource-guard-integration result remains to be observed."
+  }
+}
