@@ -23,49 +23,49 @@
     {
       "id": "EXT-F-4061",
       "name": "press_keys",
-      "steps": 6,
+      "steps": 7,
       "expected": 3
     },
     {
       "id": "EXT-F-4062",
       "name": "hover_element",
-      "steps": 6,
+      "steps": 7,
       "expected": 3
     },
     {
       "id": "EXT-F-4063",
       "name": "focus_element",
-      "steps": 6,
+      "steps": 7,
       "expected": 3
     },
     {
       "id": "EXT-F-4064",
       "name": "blur_element",
-      "steps": 6,
+      "steps": 7,
       "expected": 3
     },
     {
       "id": "EXT-F-4065",
       "name": "right_click_element",
-      "steps": 6,
+      "steps": 7,
       "expected": 3
     },
     {
       "id": "EXT-F-4066",
       "name": "select_dropdown_option",
-      "steps": 6,
+      "steps": 7,
       "expected": 3
     },
     {
       "id": "EXT-F-4067",
       "name": "set_checkbox",
-      "steps": 6,
+      "steps": 7,
       "expected": 3
     },
     {
       "id": "EXT-F-4068",
       "name": "set_radio",
-      "steps": 6,
+      "steps": 7,
       "expected": 3
     },
     {
