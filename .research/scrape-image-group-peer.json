@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0122",
+  "reviewed_commit": "000fb2fcd942fd44d0573f0dc1ee14ca110b95c6",
+  "reviewed_failure": "docs/stabilization/evidence/scrape215/run37209834721/receipt.json.txt",
+  "independence": "Fresh source and evidence review; no browser, build, product source edit, or native rerun in this lane.",
+  "verdict_a_scope_source_readiness": {
+    "result": "READY_FOR_ONE_GUARDED_NATIVE_RERUN",
+    "evidence": [
+      "The failed 0.2.215 run reached warm_media_controls and reported warm_image_size_groups_missing. Its receipt records three successfully loaded image sizes, 640x480, 96x96, and 32x32, but no Images-pane toolbar observation or failure screenshot.",
+      "ScrapeView authors the image toolbar with lowercase counts and applies uppercase CSS. The old driver compared lowercase text to content.innerText, making an observation error plausible. This is an inference, not a demonstrated cause of the failed run.",
+      "The repair reads textContent from the active Images-pane toolbar and exact img.src URLs from the three rendered grid classes. It asserts large/intake.svg, medium/appointment-card.svg, and icon/clinic-icon.svg initially and the exact surviving URLs after each of three selective removals.",
+      "The driver continues to use owned-page capture and observed DOM; this diff adds no production state injection. Existing media add/remove, video, tab, reload, screenshot, exact-artifact, and resource-health paths remain present."
+    ]
+  },
+  "verdict_b_quality": {
+    "result": "READY_WITH_NATIVE_PROOF_PENDING",
+    "evidence": [
+      "The helper rejects wrong pane, hidden pane, swapped group URLs, stale membership after a removal, and an incorrect authored toolbar count. The existing assertMediaPane still checks exact visible links, loaded image dimensions, tab counts, and the absence of opposite-media rows.",
+      "Focused independent run: node --test tests/browser/scrape-media-assertions.test.mjs passed 7/7; pnpm compile passed. These synthetic helper checks do not prove that the native DOM selector sees the real pane.",
+      "Warm and reload media work are wrapped only to collect failure observations; the original error is rethrown and the outer catch retains its stage and failure code. The observation includes selected/visible state, at most 1200 characters of pane text, fixture-local media URLs, and a 0600 screenshot path or explicit capture errors. It is bounded for this controlled fixture, not a general-purpose redactor.",
+      "The three grid selectors depend on current UI class names, so a native run is required to validate that source reasoning against the browser. The failed run did not establish whether the grid classification itself was correct."
+    ],
+    "native_result": "UNVERIFIED"
+  },
+  "decision": "NOMINATE exactly one guarded native rerun of the repaired exact artifact. A pass must include actual initial and post-removal group observations in warm and reload phases plus the existing resource and media gates; a failure must retain the original code and the new pane observation/screenshot. Do not call the feature passed before that run."
+}
