@@ -7,9 +7,12 @@
   "case_reviews": [
     {
       "case_id": "EXT-F-4042-T01",
-      "verdict": "PASS",
-      "finding": "The manual Tools runner lists local registry handlers and calls handler.run directly. list_recent_history accepts minutes/max_results and returns count/items with URL, title, last_visit_ms, and visit_count; the source sorts descending by lastVisitTime. The proposed two controlled URL assertions are sound.",
-      "corrections": [],
+      "verdict": "FAIL",
+      "finding": "The handler schema/result/sort assertions match source, but the shared UI instruction leaves the selector at Agent surface. CANONICAL_SURFACE omits list_recent_history, so ToolsView filters it out and exact-name search cannot reach the handler.",
+      "corrections": [
+        "Set the Tools surface selector to All handlers before searching list_recent_history; then the local handler is reachable through the manual runner.",
+        "The handler accepts minutes/max_results and returns count/items with URL, title, last_visit_ms, and visit_count; it sorts descending by lastVisitTime. The controlled URL assertions are otherwise sound."
+      ],
       "limits": [
         "Requires the receipt-bound artifact to include the required history permission and the controlled visits to be present in its profile.",
         "Does not cover dispatcher permission enforcement or agent reachability, as the proposal correctly disclaims."
@@ -17,20 +20,21 @@
     },
     {
       "case_id": "EXT-F-4043-T01",
-      "verdict": "PARTIAL",
-      "finding": "The list_downloads schema accepts query/state/limit, delegates query as a Chrome search term, orders by descending startTime, and returns count/downloads with the fields the procedure compares. The procedure correctly avoids asserting an exact count or exposing unrelated rows.",
+      "verdict": "FAIL",
+      "finding": "The list_downloads schema/result/order assertions match source, but the shared UI instruction leaves the selector at Agent surface. CANONICAL_SURFACE includes the downloads router but omits list_downloads, so exact-name search cannot reach this handler.",
       "corrections": [
-        "No owned completed-download fixture is present or established by this review. Keep the case unverified until a disposable-profile fixture is actually available; do not describe the procedure as immediately executable.",
-        "The manifest currently declares downloads as a required permission, so phrase the preflight as confirmation in the loaded artifact rather than implying a runtime-grant path."
+        "Set the Tools surface selector to All handlers before searching list_downloads.",
+        "No owned completed-download fixture is present or established by this review. Keep the case unverified until a disposable-profile fixture is actually available.",
+        "The loaded Chrome manifest should be checked for its required downloads permission; the manifest declares it as required, not optional."
       ]
     },
     {
       "case_id": "EXT-F-4094-T01",
       "verdict": "FAIL",
-      "finding": "The list_recently_closed result shape and max_results behavior match the expected count/entries and controlled tab assertions. The stated permission acquisition step is not executable through the named product Settings path.",
+      "finding": "Two preconditions make the procedure inaccurate as written. Agent surface filters out list_recently_closed, and sessions is a required Chrome permission in the current manifest rather than an optional permission Settings can grant.",
       "corrections": [
-        "sessions is declared in wxt.config.ts optional_permissions and required by the handler, but it is absent from RuntimeOptionalPermission and OPTIONAL_PERMISSION_LABELS in src/lib/permissions/optional.ts. AdvancedAgentCapabilities builds its switches from declaredRuntimeOptionalPermissions(), so Settings → Advanced agent capabilities cannot grant sessions.",
-        "Replace 'Grant sessions permission through the extension's authorized Settings path' with a read-only preflight: confirm sessions is already granted in this exact test profile; if not, stop and leave unverified. Do not invent a Chrome UI or use an unimplemented request path. The currently proposed case cannot reach its positive assertion without that existing grant."
+        "Set the Tools surface selector to All handlers before searching list_recently_closed.",
+        "Check the loaded Chrome artifact manifest and installed extension permission state for required sessions access. Do not instruct the tester to grant it under Settings \u2192 Advanced agent capabilities: wxt.config.ts puts sessions in permissions (line 84), while optional_permissions excludes it (line 129). If the tested artifact lacks required sessions access, stop and leave unverified."
       ]
     },
     {
@@ -45,35 +49,36 @@
     {
       "case_id": "EXT-F-4166-T01",
       "verdict": "FAIL",
-      "finding": "The list/restore branches, session_id field, returned ok/restored shape, and controlled-tab safety assertions agree with current handlers. As with 4094, the stated way to grant sessions cannot be performed in the product UI.",
+      "finding": "The canonical wrapper is present on Agent surface and its list/restore branches and returned ok/restored shape match source. However, the procedure incorrectly calls sessions optional and directs the tester to grant it in Settings; the current Chrome manifest declares sessions as required.",
       "corrections": [
-        "Use the same existing-grant-only preflight as 4094 and halt if sessions is not already granted. This review did not verify that the disposable profile already has the grant, so the positive restore procedure is not presently executable as written.",
-        "Retain the procedure's explicit disposable-tab restriction; restore_recently_closed is an action and calls chrome.sessions.restore(session_id), so an arbitrary or omitted session ID would target the wrong state."
+        "Replace the optional-grant instruction with a loaded-artifact/install preflight confirming required sessions access. The current Settings optional-permission UI cannot grant a required permission; stop if the actual loaded artifact does not have it.",
+        "Retain the disposable-tab restriction; restore_recently_closed calls chrome.sessions.restore(session_id), so an arbitrary or omitted session ID can target the wrong state."
       ]
     }
   ],
   "source_and_procedure_quality": {
     "verdict": "PARTIAL",
     "strengths": [
-      "All five local tool names, argument schemas, branch routing, response fields, sort/count behavior, and manual-run bypass claims match the inspected source.",
-      "The procedures keep execution evidence separate from design, preserve member/admin result separation, use controlled data, require receipt-bound build/reload setup, and avoid claiming agent, Ask/Act, or dispatcher coverage."
+      "All five argument schemas, branch routing, response fields, sort/count behavior, and manual-run bypass claims match inspected source.",
+      "The procedures separate execution evidence from design, retain controlled-data boundaries, require receipt-bound build/reload setup, and disclaim agent, Ask/Act, and dispatcher coverage."
     ],
     "gaps": [
-      "The sessions permission Settings instruction is factually impossible for the current UI and blocks both positive recently-closed procedures unless the permission is already granted.",
-      "The source inventory readiness gaps explicitly request gated/negative permission coverage. These proposals intentionally test only the manual path and do not clear that broader readiness gap; preserve that limitation in any applied inventory update.",
-      "The download fixture is not available/verified in this source-only review; its conditional stop is safe, but it prevents an immediate reproducible run.",
-      "No Chrome execution, current profile permission state, or artifact receipt was inspected, so no runtime outcome or fixture availability is verified."
+      "The shared instruction to leave the Tools selector at Agent surface hides list_recent_history, list_downloads, and list_recently_closed because CANONICAL_SURFACE omits those exact handler names. Set All handlers for those three; chrome_history and chrome_recently_closed are canonical and reachable on Agent surface.",
+      "The sessions permission instruction is inaccurate: current Chrome wxt.config.ts declares sessions as a required permission at line 84; optional_permissions at line 129 contains only cookies, pageCapture, clipboardRead, and tabCapture. Use a loaded-manifest/install preflight, not an optional Settings grant.",
+      "The inventory readiness gaps ask for gated/negative permission coverage. These proposed procedures intentionally exercise the manual path and do not clear that broader gap; preserve the limitation if applying them.",
+      "The owned completed-download fixture is not established by this source-only review. Its stop condition is safe, but runtime reproducibility remains pending.",
+      "No Chrome execution, profile permission state, or artifact receipt was inspected; no runtime result or fixture availability is verified."
     ]
   },
-  "recommendation": "Accept the source-backed manual-path procedures for EXT-F-4042 and EXT-F-4165. Accept EXT-F-4043 only as a conditional procedure with its fixture pending. Do not apply EXT-F-4094 or EXT-F-4166 unchanged: correct the sessions preflight to require an already-granted permission and leave unverified otherwise. None of these updates should change status cells or imply the inventory's negative/gated coverage requirement is complete.",
+  "recommendation": "Correct the shared surface step to All handlers, or use the exact per-case surface: list_recent_history, list_downloads, and list_recently_closed require All handlers; chrome_history and chrome_recently_closed appear on Agent surface. Correct both sessions preflights to confirm required access in the exact loaded Chrome artifact and install state; do not grant it in the optional Settings UI. Keep the download fixture pending. Do not change status cells or imply gated/negative dispatcher coverage is complete.",
   "source_evidence": [
     "src/features/tools/ToolsView.tsx:1-12, 52-72, 121-145, 420-477",
     "src/lib/tools/handlers/browser-data.ts:96-168, 173-204",
     "src/lib/tools/handlers/optional-perms.ts:166-214",
     "src/lib/tools/handlers/canonical-mergers.ts:407-453",
-    "src/lib/permissions/optional.ts:17-50, 98-125",
-    "src/features/settings/AdvancedAgentCapabilities.tsx:17-56",
     "wxt.config.ts:84-112",
-    "docs/stabilization/PLAN.md:18-32, 99-107, 132"
+    "docs/stabilization/PLAN.md:18-32, 99-107, 132",
+    "src/lib/tools/categories.ts:461-560",
+    "wxt.config.ts:66-136"
   ]
 }
