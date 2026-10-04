@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "task": "profile-reload-failure-source",
+  "source_run": "profile-fields-clean-save-189-07",
+  "status": "primary_reload_cause_not_identifiable_from_retained_run_evidence",
+  "scope": "Read-only inspection of the exact run's sanitized report, owned evidence file inventory, resource journal, and relevant runner source; no browser, database, or Profile mutation.",
+  "observed": {
+    "warm_identity_and_employment": "saved_and_reopened_provisionally",
+    "primary_stage": "extension_reload",
+    "primary_operation": "reload_extension",
+    "primary_safe_code": "profile_unclassified_failure",
+    "reload_returned": false,
+    "cleanup_panel_reacquired_after_reload_failure": true,
+    "secondary_cleanup_code": "pointer_target_not_unique",
+    "resource_decision": "child_failed_with_healthy_resource_watch"
+  },
+  "evidence_boundary": {
+    "exact_run_report": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-fields-clean-save-189-07/evidence/profile-native-profile-fields-clean-save-189-07.json",
+    "report_execution_failure_keys": ["stage", "operation"],
+    "report_has_reload_exception_code": false,
+    "report_has_reload_stack": false,
+    "report_has_reload_lifecycle_evidence": false,
+    "owned_native_artifacts": "two screenshots only; no reload trace",
+    "source_path": "tests/browser/profile-native-acceptance.mjs",
+    "source_loss_point": "runProfileExecutionBoundary passes the thrown error to safeProfileFailureCode, whose allowlist excludes native_extension_* reload codes; captureProfileExecutionFailure retains only stage and operation for this error class",
+    "reload_helper_path": "tests/browser/native-sidepanel-qa-harness.mjs",
+    "reload_helper_note": "reloadOwnedExtension can throw fixed lifecycle codes and attaches structured lifecycleEvidence to two failure classes, but the exact run did not retain either. Its success booleans are returned only after full reload completion."
+  },
+  "related_prior_probe": {
+    "evidence": ".research/profile-reload-readonly.json",
+    "artifact_version": "0.2.184",
+    "fixed_code": "native_extension_worker_retirement_unverified",
+    "relation": "A real guest reload with an older artifact failed in the shared helper; this is a plausible sibling, not proof of the 0.2.189 member run's primary exception."
+  },
+  "narrow_next_seam": "In a fresh authorized read-only reload diagnostic against the exact 0.2.189 artifact, catch only reloadExtension at its callback boundary and record an allowlisted fixed native_extension_* code, allowlisted lifecycleEvidence booleans/counts, and CDP transport failure class. Keep the underlying message, stack, URLs, IDs, and page content out of the report. This distinguishes management gating, pre-click target checks, worker retirement, replacement panel, and transport failure without Profile writes.",
+  "product_cause_claimed": false,
+  "cleanup_ownership": "separate root recovery lane"
+}
