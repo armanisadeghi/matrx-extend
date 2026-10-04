@@ -1,0 +1,22 @@
+{
+  "review": "independent peer review",
+  "commit": "dc4881b81248a948e725d757839ec7a4444c043f",
+  "verdicts": {
+    "A_correct_contract": {
+      "result": "pass",
+      "evidence": "requireNativeResourceHealth refuses in order on stop file, unsafe-hold marker, then RESOURCE_WATCH_UNSAFE journal evidence. All three refusal reasons represent fail-closed states; the disk integration later independently asserts low-disk unsafe evidence, invalid terminal decision, persisted hold, terminated owned process, and that the native action did not run."
+    },
+    "B_no_false_green_gaps": {
+      "result": "pass",
+      "evidence": "Only the refusal matcher changed. The remaining causal and outcome assertions are unchanged; the async refusal is awaited, so its failure still fails the test. A stale/unrelated refusal alone cannot satisfy the later per-run journal and workload assertions."
+    }
+  },
+  "checks": [
+    "Inspected changed integration assertion and native-resource-boundary.mjs refusal order/behavior.",
+    "Inspected diff: all low-disk journal, invalid terminal, no-action, hold, and process-termination assertions remain intact.",
+    "No resource integration or local/native/build/workflow execution performed, per review constraint and host disk floor."
+  ],
+  "limitations": [
+    "Hosted CI rerun remains owned by the root task; this review does not claim hosted verification."
+  ]
+}
