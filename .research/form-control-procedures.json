@@ -16,7 +16,10 @@
     "case_count": 9,
     "design_status": "procedure-ready-unverified",
     "test_status": "preserved-unverified",
-    "roles": ["member", "admin"],
+    "roles": [
+      "member",
+      "admin"
+    ],
     "guest": "not-applicable (Tools UI sign-in gate)"
   },
   "procedures": [
@@ -78,19 +81,27 @@
   "source_evidence": [
     {
       "claim": "Tools manual Run parses JSON, validates local handler argsSchema, then invokes local handler with permissionMode act and assignedTabId null; this is an active-tab manual route, not agent dispatcher coverage.",
-      "files": ["src/features/tools/ToolsView.tsx:390-461"]
+      "files": [
+        "src/features/tools/ToolsView.tsx:390-461"
+      ]
     },
     {
       "claim": "Keyboard/mouse handlers synthesize DOM events and return the documented result fields; blur accepts an optional selector and can return handler-level no-focused-element failure.",
-      "files": ["src/lib/tools/handlers/keyboard.ts"]
+      "files": [
+        "src/lib/tools/handlers/keyboard.ts"
+      ]
     },
     {
       "claim": "Form handlers implement select-by-value/label/index, checkbox checked state, radio selection, and button-click or requestSubmit; the procedures use an owned fixture with network/navigation suppression.",
-      "files": ["src/lib/tools/handlers/forms.ts"]
+      "files": [
+        "src/lib/tools/handlers/forms.ts"
+      ]
     },
     {
       "claim": "The exact-name metadata census leaves eight names absent and submit_form with active definition/binding; this does not establish request-time advertisement or actual role availability.",
-      "files": [".research/tool-binding-readonly-census.json"]
+      "files": [
+        ".research/tool-binding-readonly-census.json"
+      ]
     }
   ],
   "live_binding_snapshot": [
@@ -163,7 +174,10 @@
       "inventory_name": "submit_form",
       "has_active_definition": true,
       "has_active_chrome_extension_binding": true,
-      "direct_surface_default_inclusions": ["chrome-extension/assistant", "chrome-extension/pilot"],
+      "direct_surface_default_inclusions": [
+        "chrome-extension/assistant",
+        "chrome-extension/pilot"
+      ],
       "mapping_status": "active_definition_and_executor_binding"
     }
   ],
@@ -175,12 +189,44 @@
     "Eight exact-name definition/binding mappings are unresolved; submit_form has active metadata but request-time advertisement is unverified.",
     "Current hosted resource permit/build receipt must be obtained before any browser action."
   ],
-  "files": ["docs/stabilization/inventory.json", ".research/form-control-procedures.json"],
+  "files": [
+    "docs/stabilization/inventory.json",
+    ".research/form-control-procedures.json"
+  ],
   "source_hashes": {
     "src/features/tools/ToolsView.tsx": "05242f54c731c609b0c792b3af8c0f4a7e67a8f765513512ba8101d4190f6551",
     "src/lib/tools/handlers/keyboard.ts": "97fb657d1d2aeb4b7a7de9a4fd92210533fb690726eff61e507689b42876c01e",
     "src/lib/tools/handlers/forms.ts": "84beca4334d114b429ff00a0f3d20be6fb783b90f794ff48fe6510fecc34ac49",
     "types/tool-catalog.json": "94654c3dcbba3b9b5153cd380f09fa510758b8e8575d23134065aa5496e0717c",
     ".research/tool-binding-readonly-census.json": "ab9316697e39820a3003202a4253815ef6c38cd51071c2cae4a654ef10078cf4"
-  }
+  },
+  "peer_corrections": [
+    {
+      "finding": "EXT-F-4061 through EXT-F-4068 are internal delegates hidden by the Tools catalog default Agent surface filter.",
+      "correction": "Each procedure now has a separate step to select Internal delegates (or All handlers) before searching the exact handler name.",
+      "source": [
+        "src/features/tools/ToolsView.tsx:125-143",
+        "src/features/tools/ToolsView.tsx:198-210",
+        ".research/form-control-procedures-peer.json"
+      ]
+    },
+    {
+      "finding": "EXT-F-4068 negative expected selected A although the preceding valid action selects B.",
+      "correction": "No-match radio input returns without clicking; expected state is B remains selected and change count is unchanged.",
+      "source": [
+        "src/lib/tools/handlers/forms.ts:324-349",
+        ".research/form-control-procedures-peer.json"
+      ]
+    },
+    {
+      "finding": "EXT-F-4069 no-form negative lacked exact JSON.",
+      "correction": "Negative input is `{\"selector\":\"#missing-form\"}` against the owned fixture, which has no such element.",
+      "source": [
+        "src/lib/tools/handlers/forms.ts:356-383",
+        ".research/form-control-procedures-peer.json"
+      ]
+    }
+  ],
+  "corrected_inventory_sha256": "11e26abe7ac7e4c473cfd4458a170e042637f8a0b22353a58c9a59db799cc38d",
+  "peer_fixture_limit": "The peer confirms these are design procedures only until the specified owned HTTP fixture exists with exact markup, visible event oracles, and recorded URL/hash. No browser execution was performed."
 }

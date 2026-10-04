@@ -51920,14 +51920,15 @@
             "Use a current authorized hosted build receipt with source/dirty-source, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, role/org state, permissions and timestamp. Install/reload per docs/stabilization/PLAN.md; reopen side panel and reload target tab, then verify runtime fingerprint. HMR alone is insufficient.",
             "Execute as signed-in ordinary member and repeat as admin; guest is inapplicable because the Tools UI requires sign-in. Confirm the active tab is the dedicated disposable fixture tab and loaded manifest grants activeTab+scripting. The manual runner calls the local handler directly with permissionMode act, bypassing dispatcher Ask/Act confirmation.",
             "Fixture availability gap: source review found no checked-in or named owned form/control HTTP fixture. Before execution, provision the exact per-case local-only page described below in a controlled HTTP test origin you own; keep event/value observables visible, prevent external requests and navigation, and record its fixture URL/hash. Do not substitute a public third-party page or personal tab.",
-            "In Tools → Catalog, search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
+            "In Tools → Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
             "The live binding census is independent from source availability: preserve the exact-name mapping findings in live_binding; do not infer role availability from member/admin manual-run modes.",
             "Target semantics: Tools → Catalog → Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent’s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
           ],
           "steps": [
             "Open the owned fixture page in the active tab and verify #keys reads `seed`; focus it using the page itself before opening Tools.",
             "Valid input: `{\"keys\":\"Q\",\"selector\":\"#keys\",\"delay_ms\":0}`.",
-            "In Tools → Catalog, search `press_keys`; paste valid input exactly and click Run.",
+            "In Tools → Catalog, set Surface to `Internal delegates` (or `All handlers`).",
+            "Search `press_keys`; paste the valid input exactly and click Run.",
             "Compare inline result, visible input value, and event counters with expected.",
             "Run the schema-negative input exactly; verify no page event or value change. Negative input: `{\"keys\":\"\"}`.",
             "Cleanup: Restore #keys value to `seed`, clear visible event counters, and close only the owned fixture tab/window."
@@ -52081,14 +52082,15 @@
             "Use a current authorized hosted build receipt with source/dirty-source, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, role/org state, permissions and timestamp. Install/reload per docs/stabilization/PLAN.md; reopen side panel and reload target tab, then verify runtime fingerprint. HMR alone is insufficient.",
             "Execute as signed-in ordinary member and repeat as admin; guest is inapplicable because the Tools UI requires sign-in. Confirm the active tab is the dedicated disposable fixture tab and loaded manifest grants activeTab+scripting. The manual runner calls the local handler directly with permissionMode act, bypassing dispatcher Ask/Act confirmation.",
             "Fixture availability gap: source review found no checked-in or named owned form/control HTTP fixture. Before execution, provision the exact per-case local-only page described below in a controlled HTTP test origin you own; keep event/value observables visible, prevent external requests and navigation, and record its fixture URL/hash. Do not substitute a public third-party page or personal tab.",
-            "In Tools → Catalog, search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
+            "In Tools → Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
             "The live binding census is independent from source availability: preserve the exact-name mapping findings in live_binding; do not infer role availability from member/admin manual-run modes.",
             "Target semantics: Tools → Catalog → Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent’s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
           ],
           "steps": [
             "Open the owned fixture and confirm the visible event counters are zero.",
             "Valid input: `{\"selector\":\"#hover-target\"}`.",
-            "Search `hover_element` in Tools → Catalog; run the exact valid input.",
+            "In Tools → Catalog, set Surface to `Internal delegates` (or `All handlers`).",
+            "Search `hover_element`; paste the valid input exactly and click Run.",
             "Observe inline result and the three event counters; this handler dispatches synthetic events and does not certify physical pointer hover or CSS :hover.",
             "Run the schema-negative input; verify no counters change. Negative input: `{}`.",
             "Cleanup: Reset the three fixture counters; close only the owned fixture tab/window."
@@ -52242,14 +52244,15 @@
             "Use a current authorized hosted build receipt with source/dirty-source, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, role/org state, permissions and timestamp. Install/reload per docs/stabilization/PLAN.md; reopen side panel and reload target tab, then verify runtime fingerprint. HMR alone is insufficient.",
             "Execute as signed-in ordinary member and repeat as admin; guest is inapplicable because the Tools UI requires sign-in. Confirm the active tab is the dedicated disposable fixture tab and loaded manifest grants activeTab+scripting. The manual runner calls the local handler directly with permissionMode act, bypassing dispatcher Ask/Act confirmation.",
             "Fixture availability gap: source review found no checked-in or named owned form/control HTTP fixture. Before execution, provision the exact per-case local-only page described below in a controlled HTTP test origin you own; keep event/value observables visible, prevent external requests and navigation, and record its fixture URL/hash. Do not substitute a public third-party page or personal tab.",
-            "In Tools → Catalog, search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
+            "In Tools → Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
             "The live binding census is independent from source availability: preserve the exact-name mapping findings in live_binding; do not infer role availability from member/admin manual-run modes.",
             "Target semantics: Tools → Catalog → Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent’s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
           ],
           "steps": [
             "Open the owned fixture and verify #other-focus is focused before the call.",
             "Valid input: `{\"selector\":\"#focus-target\"}`.",
-            "Search `focus_element` in Tools → Catalog and run the exact valid input.",
+            "In Tools → Catalog, set Surface to `Internal delegates` (or `All handlers`).",
+            "Search `focus_element`; paste the valid input exactly and click Run.",
             "Observe inline result and fixture active-element display.",
             "Run the schema-negative input; verify activeElement remains #focus-target. Negative input: `{}`.",
             "Cleanup: Focus #other-focus, clear fixture active-element display if desired, and close only the owned fixture tab/window."
@@ -52399,14 +52402,15 @@
             "Use a current authorized hosted build receipt with source/dirty-source, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, role/org state, permissions and timestamp. Install/reload per docs/stabilization/PLAN.md; reopen side panel and reload target tab, then verify runtime fingerprint. HMR alone is insufficient.",
             "Execute as signed-in ordinary member and repeat as admin; guest is inapplicable because the Tools UI requires sign-in. Confirm the active tab is the dedicated disposable fixture tab and loaded manifest grants activeTab+scripting. The manual runner calls the local handler directly with permissionMode act, bypassing dispatcher Ask/Act confirmation.",
             "Fixture availability gap: source review found no checked-in or named owned form/control HTTP fixture. Before execution, provision the exact per-case local-only page described below in a controlled HTTP test origin you own; keep event/value observables visible, prevent external requests and navigation, and record its fixture URL/hash. Do not substitute a public third-party page or personal tab.",
-            "In Tools → Catalog, search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
+            "In Tools → Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
             "The live binding census is independent from source availability: preserve the exact-name mapping findings in live_binding; do not infer role availability from member/admin manual-run modes.",
             "Target semantics: Tools → Catalog → Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent’s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
           ],
           "steps": [
             "Open the owned fixture and click #blur-target so it is active; verify fixture log says focused.",
             "Valid input: `{\"selector\":\"#blur-target\"}`.",
-            "Search `blur_element` in Tools → Catalog; run the exact valid input.",
+            "In Tools → Catalog, set Surface to `Internal delegates` (or `All handlers`).",
+            "Search `blur_element`; paste the valid input exactly and click Run.",
             "Observe `{ok:true}` and the fixture blur/active-element log.",
             "Run the handler-level negative input exactly; observe `ok:false` and no extra blur on fixture controls. Negative input: `{\"selector\":\"#missing-target\"}`.",
             "Cleanup: Refocus #blur-target, clear fixture log, then close only the owned fixture tab/window."
@@ -52560,14 +52564,15 @@
             "Use a current authorized hosted build receipt with source/dirty-source, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, role/org state, permissions and timestamp. Install/reload per docs/stabilization/PLAN.md; reopen side panel and reload target tab, then verify runtime fingerprint. HMR alone is insufficient.",
             "Execute as signed-in ordinary member and repeat as admin; guest is inapplicable because the Tools UI requires sign-in. Confirm the active tab is the dedicated disposable fixture tab and loaded manifest grants activeTab+scripting. The manual runner calls the local handler directly with permissionMode act, bypassing dispatcher Ask/Act confirmation.",
             "Fixture availability gap: source review found no checked-in or named owned form/control HTTP fixture. Before execution, provision the exact per-case local-only page described below in a controlled HTTP test origin you own; keep event/value observables visible, prevent external requests and navigation, and record its fixture URL/hash. Do not substitute a public third-party page or personal tab.",
-            "In Tools → Catalog, search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
+            "In Tools → Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
             "The live binding census is independent from source availability: preserve the exact-name mapping findings in live_binding; do not infer role availability from member/admin manual-run modes.",
             "Target semantics: Tools → Catalog → Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent’s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
           ],
           "steps": [
             "Open the owned fixture and verify contextmenu count is zero.",
             "Valid input: `{\"selector\":\"#context-target\"}`.",
-            "Search `right_click_element` in Tools → Catalog; run the exact valid input.",
+            "In Tools → Catalog, set Surface to `Internal delegates` (or `All handlers`).",
+            "Search `right_click_element`; paste the valid input exactly and click Run.",
             "Observe inline result and the fixture-recorded event/button values; do not treat a native menu as expected.",
             "Run schema-negative input; verify count does not change. Negative input: `{}`.",
             "Cleanup: Reset fixture contextmenu count and values; close only the owned fixture tab/window."
@@ -52731,14 +52736,15 @@
             "Use a current authorized hosted build receipt with source/dirty-source, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, role/org state, permissions and timestamp. Install/reload per docs/stabilization/PLAN.md; reopen side panel and reload target tab, then verify runtime fingerprint. HMR alone is insufficient.",
             "Execute as signed-in ordinary member and repeat as admin; guest is inapplicable because the Tools UI requires sign-in. Confirm the active tab is the dedicated disposable fixture tab and loaded manifest grants activeTab+scripting. The manual runner calls the local handler directly with permissionMode act, bypassing dispatcher Ask/Act confirmation.",
             "Fixture availability gap: source review found no checked-in or named owned form/control HTTP fixture. Before execution, provision the exact per-case local-only page described below in a controlled HTTP test origin you own; keep event/value observables visible, prevent external requests and navigation, and record its fixture URL/hash. Do not substitute a public third-party page or personal tab.",
-            "In Tools → Catalog, search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
+            "In Tools → Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
             "The live binding census is independent from source availability: preserve the exact-name mapping findings in live_binding; do not infer role availability from member/admin manual-run modes.",
             "Target semantics: Tools → Catalog → Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent’s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
           ],
           "steps": [
             "Open the owned fixture and verify Alpha is selected and counters are zero.",
             "Valid input: `{\"selector\":\"#choice\",\"value\":\"beta\"}`.",
-            "Search `select_dropdown_option` in Tools → Catalog; run the exact valid input.",
+            "In Tools → Catalog, set Surface to `Internal delegates` (or `All handlers`).",
+            "Search `select_dropdown_option`; paste the valid input exactly and click Run.",
             "Observe inline result, selected option, and input/change counters.",
             "Run the no-match handler-level negative; verify current selection remains Beta and counters do not change. Negative input: `{\"selector\":\"#choice\",\"value\":\"missing\"}`.",
             "Cleanup: Set #choice back to alpha using the fixture page, clear counters, then close only the owned fixture tab/window."
@@ -52898,14 +52904,15 @@
             "Use a current authorized hosted build receipt with source/dirty-source, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, role/org state, permissions and timestamp. Install/reload per docs/stabilization/PLAN.md; reopen side panel and reload target tab, then verify runtime fingerprint. HMR alone is insufficient.",
             "Execute as signed-in ordinary member and repeat as admin; guest is inapplicable because the Tools UI requires sign-in. Confirm the active tab is the dedicated disposable fixture tab and loaded manifest grants activeTab+scripting. The manual runner calls the local handler directly with permissionMode act, bypassing dispatcher Ask/Act confirmation.",
             "Fixture availability gap: source review found no checked-in or named owned form/control HTTP fixture. Before execution, provision the exact per-case local-only page described below in a controlled HTTP test origin you own; keep event/value observables visible, prevent external requests and navigation, and record its fixture URL/hash. Do not substitute a public third-party page or personal tab.",
-            "In Tools → Catalog, search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
+            "In Tools → Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
             "The live binding census is independent from source availability: preserve the exact-name mapping findings in live_binding; do not infer role availability from member/admin manual-run modes.",
             "Target semantics: Tools → Catalog → Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent’s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
           ],
           "steps": [
             "Open the owned fixture and verify #consent-test is unchecked.",
             "Valid input: `{\"selector\":\"#consent-test\",\"checked\":true}`.",
-            "Search `set_checkbox` in Tools → Catalog; run exact valid input.",
+            "In Tools → Catalog, set Surface to `Internal delegates` (or `All handlers`).",
+            "Search `set_checkbox`; paste the valid input exactly and click Run.",
             "Observe inline result, checked state, and fixture events.",
             "Run schema-negative input; verify checkbox stays checked and counters do not change. Negative input: `{\"selector\":\"#consent-test\"}`.",
             "Cleanup: Run `{\"selector\":\"#consent-test\",\"checked\":false}` and verify unchecked; clear counters; close only the owned fixture tab/window."
@@ -53069,21 +53076,22 @@
             "Use a current authorized hosted build receipt with source/dirty-source, lockfile/output hashes, WXT mode, extension runtime ID, Chrome version, profile, role/org state, permissions and timestamp. Install/reload per docs/stabilization/PLAN.md; reopen side panel and reload target tab, then verify runtime fingerprint. HMR alone is insufficient.",
             "Execute as signed-in ordinary member and repeat as admin; guest is inapplicable because the Tools UI requires sign-in. Confirm the active tab is the dedicated disposable fixture tab and loaded manifest grants activeTab+scripting. The manual runner calls the local handler directly with permissionMode act, bypassing dispatcher Ask/Act confirmation.",
             "Fixture availability gap: source review found no checked-in or named owned form/control HTTP fixture. Before execution, provision the exact per-case local-only page described below in a controlled HTTP test origin you own; keep event/value observables visible, prevent external requests and navigation, and record its fixture URL/hash. Do not substitute a public third-party page or personal tab.",
-            "In Tools → Catalog, search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
+            "In Tools → Catalog, select Internal delegates or All handlers, then search the exact handler name, expand its row, paste the exact JSON from the case steps into the runner, and click Run. Record inline output and fixture state. This manual result does not prove agent tool advertisement or dispatcher behavior.",
             "The live binding census is independent from source availability: preserve the exact-name mapping findings in live_binding; do not infer role availability from member/admin manual-run modes.",
             "Target semantics: Tools → Catalog → Run binds the handler context to the currently focused tab in the user window (assignedTabId is null for this manual path). For a separate dispatched agent acceptance, select/record the agent’s assigned tab and verify the handler acts on that same assigned tab; do not treat this manual case as assigned-tab coverage."
           ],
           "steps": [
             "Open the owned fixture and verify A selected and event count zero.",
             "Valid input: `{\"selector\":\"#radio-a\",\"value\":\"b\"}`.",
-            "Search `set_radio` in Tools → Catalog; run exact valid input.",
+            "In Tools → Catalog, set Surface to `Internal delegates` (or `All handlers`).",
+            "Search `set_radio`; paste the valid input exactly and click Run.",
             "Observe inline result, group selection, and fixture change count.",
-            "Run the no-match handler-level negative; verify B remains selected. Negative input: `{\"selector\":\"#radio-a\",\"value\":\"missing\"}`.",
+            "Run the no-match handler-level negative; verify the selected radio remains B. Negative input: `{\"selector\":\"#radio-a\",\"value\":\"missing\"}`.",
             "Cleanup: Run `{\"selector\":\"#radio-b\",\"value\":\"a\"}`; verify A checked; clear count and close only the owned fixture tab/window."
           ],
           "expected": [
             "Result `{ok:true,value:\"b\"}`; #radio-b becomes checked, #radio-a becomes unchecked, and fixture records change.",
-            "Handler returns `{ok:false,reason:\"No matching radio\",available:[...]}`; A remains selected.",
+            "Handler returns `{ok:false,reason:\"No matching radio\",available:[...]}`; B remains selected; the handler does not click a radio when no value matches, and the change count is unchanged.",
             "Run `{\"selector\":\"#radio-b\",\"value\":\"a\"}`; verify A checked; clear count and close only the owned fixture tab/window."
           ],
           "dimensions": [
@@ -53258,7 +53266,7 @@
             "Valid input: `{\"selector\":\"#submit-test\",\"via_button\":true}`.",
             "Search `submit_form` in Tools → Catalog; run exact valid input.",
             "Observe inline result, fixture submit count, submitter id, and payload; confirm page did not navigate or send a request.",
-            "Run no-form handler-level negative; verify count remains one.",
+            "Run no-form handler-level negative `{\"selector\":\"#missing-form\"}`; verify count remains one.",
             "Cleanup: Reload the owned fixture page to reset submit count (only after recording); close only the owned fixture tab/window."
           ],
           "expected": [
