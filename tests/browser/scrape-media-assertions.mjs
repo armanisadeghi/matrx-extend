@@ -1,5 +1,22 @@
 import assert from 'node:assert/strict';
 
+// Native Scrape labels use CSS text-transform, so innerText is a visual diagnostic;
+// textContent is the authored label whose counts the view controls.
+export function assertImageGroups(state, expected, boundary) {
+  assert.equal(state?.selected, 'Images', `${boundary}_wrong_pane`);
+  assert.equal(state?.visible, true, `${boundary}_pane_hidden`);
+  assert.deepEqual(state?.media?.imageGroups, expected, `${boundary}_image_group_membership`);
+  const { large, medium, icon } = expected;
+  const parts = [`${large.length} image${large.length === 1 ? '' : 's'}`];
+  if (medium.length) parts.push(`${medium.length} small`);
+  if (icon.length) parts.push(`${icon.length} icon${icon.length === 1 ? '' : 's'}`);
+  assert.equal(
+    state.media.imageToolbar,
+    large.length + medium.length + icon.length ? parts.join(' · ') : null,
+    `${boundary}_image_toolbar_count`,
+  );
+}
+
 // The native driver supplies only links rendered inside the selected, visible Scrape result pane.
 export function assertMediaPane(state, { label, items }) {
   assert.ok(label === 'Images' || label === 'Video', 'scrape_media_kind_invalid');

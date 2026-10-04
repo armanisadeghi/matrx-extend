@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { assertMediaPane } from './scrape-media-assertions.mjs';
+import { assertImageGroups, assertMediaPane } from './scrape-media-assertions.mjs';
 
 const image = {
   href: 'http://127.0.0.1:3150/intake.svg',
@@ -24,6 +24,66 @@ const pane = (label, items) => ({
     imageItems: label === 'Images' ? items : [],
     videoItems: label === 'Video' ? items : [],
   },
+});
+
+test('image size assertion reads authored toolbar label and exact rendered group identities', () => {
+  const large = image.src;
+  const medium = 'http://127.0.0.1:3150/appointment-card.svg';
+  const icon = 'http://127.0.0.1:3150/clinic-icon.svg';
+  const state = {
+    selected: 'Images',
+    visible: true,
+    // Chromium innerText reflects the toolbar's CSS uppercase styling.
+    resultText: '1 IMAGE · 1 SMALL · 1 ICON',
+    media: {
+      imageToolbar: '1 image · 1 small · 1 icon',
+      imageGroups: { large: [large], medium: [medium], icon: [icon] },
+    },
+  };
+  const expected = { large: [large], medium: [medium], icon: [icon] };
+  assert.doesNotThrow(() => assertImageGroups(state, expected, 'warm'));
+  assert.throws(
+    () =>
+      assertImageGroups(
+        {
+          ...state,
+          media: {
+            ...state.media,
+            imageGroups: { large: [large], medium: [icon], icon: [medium] },
+          },
+        },
+        expected,
+        'warm',
+      ),
+    /image_group_membership/,
+  );
+  assert.throws(
+    () =>
+      assertImageGroups(
+        { ...state, media: { ...state.media, imageToolbar: '3 images' } },
+        expected,
+        'warm',
+      ),
+    /image_toolbar_count/,
+  );
+  const remaining = { large: [large], medium: [], icon: [icon] };
+  assert.doesNotThrow(() =>
+    assertImageGroups(
+      {
+        ...state,
+        media: {
+          imageToolbar: '1 image · 1 icon',
+          imageGroups: remaining,
+        },
+      },
+      remaining,
+      'removed_medium',
+    ),
+  );
+  assert.throws(
+    () => assertImageGroups(state, remaining, 'removed_medium'),
+    /image_group_membership/,
+  );
 });
 
 test('active rendered Images and Video panes accept their distinct media', () => {

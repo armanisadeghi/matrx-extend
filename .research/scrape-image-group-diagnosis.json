@@ -1,0 +1,27 @@
+{
+  "defect_id": "EXT-D-0122",
+  "source_artifact": "0.2.215 / 3536b5cb0bea2fb33383f2b239b8602fafb79351",
+  "failed_run": "docs/stabilization/evidence/scrape215/run37209834721/receipt.json.txt",
+  "observed": {
+    "stage": "warm_media_controls",
+    "failure_code": "warm_image_size_groups_missing",
+    "images": [
+      { "path": "/intake.svg", "natural_size": [640, 480] },
+      { "path": "/appointment-card.svg", "natural_size": [96, 96] },
+      { "path": "/clinic-icon.svg", "natural_size": [32, 32] }
+    ],
+    "failure_pane_capture": false
+  },
+  "frozen_product_source": {
+    "classification": "src/lib/scrape/classify-images.ts: dimensions below 48px are icon, 48-159px medium, and 160px or more large",
+    "toolbar": "src/features/scrape/ScrapeView.tsx: the authored label for these counts is '1 image · 1 small · 1 icon' and ListToolbar renders it with Tailwind uppercase"
+  },
+  "causal_assessment": "Driver text comparison likely caused the false failure: it searched lowercase text in content.innerText while the rendered toolbar applies uppercase text-transform. The failed run did not capture the Images pane or its toolbar, so this is an inference from frozen source and the driver, not direct proof of what that run displayed.",
+  "driver_repair": "Observe the toolbar's authored textContent and each rendered size grid's exact image src. Assert all three group memberships and the count label after initial capture and each removal. On warm or reload media failure, record the selected pane's bounded state and a failure-pane screenshot or an explicit capture error.",
+  "verification": {
+    "focused_tests": "node --test tests/browser/scrape-media-assertions.test.mjs: 7 passed",
+    "compile": "pnpm compile: passed",
+    "biome": "pnpm exec biome check on the three touched test files: passed",
+    "native": "not rerun in this lane; warm and reload media actions remain unverified"
+  }
+}

@@ -9,7 +9,7 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { captureLifecycleEvidence } from './profile-reload-capture.mjs';
 import { armBusyExpression, readBusyExpression } from './scrape-busy-observer.mjs';
 import { scrapeLayoutFailure } from './scrape-layout-guard.mjs';
-import { assertMediaPane } from './scrape-media-assertions.mjs';
+import { assertImageGroups, assertMediaPane } from './scrape-media-assertions.mjs';
 import { intakeImage } from './scrape-media-fixture.mjs';
 import {
   enterMediaField,
@@ -81,6 +81,29 @@ async function screenshot(panel, artifacts, name) {
   const path = join(artifacts, name);
   await writeFile(path, Buffer.from(data, 'base64'), { mode: 0o600 });
   return path;
+}
+async function captureMediaFailure(panel, artifacts, phase, work) {
+  try {
+    return await work();
+  } catch (error) {
+    const observation = { phase, code: String(error?.message ?? error).slice(0, 300) };
+    try {
+      const state = await scrapeState(panel);
+      observation.selected = state.selected;
+      observation.visible = state.visible;
+      observation.resultText = state.resultText?.slice(0, 1200) ?? null;
+      observation.media = state.media;
+    } catch (captureError) {
+      observation.state_error = String(captureError?.message ?? captureError).slice(0, 200);
+    }
+    try {
+      observation.screenshot = await screenshot(panel, artifacts, `scrape-${phase}-failure.png`);
+    } catch (captureError) {
+      observation.screenshot_error = String(captureError?.message ?? captureError).slice(0, 200);
+    }
+    report.media_failure_observation = observation;
+    throw error;
+  }
 }
 async function armBusyObserver(panel, mode) {
   const title =
@@ -159,6 +182,12 @@ async function scrapeState(panel) {
       media: visible ? {
         tabCount: selected[0]?.querySelector('span')?.textContent?.trim() ?? null,
         formOpen: content.querySelector('input[placeholder="https://…"]') !== null,
+        imageToolbar: content.querySelector('span.uppercase')?.textContent?.trim() ?? null,
+        imageToolbarRendered: content.querySelector('span.uppercase')?.innerText?.trim() ?? null,
+        imageGroups: Object.fromEntries([['large','grid-cols-3'],['medium','grid-cols-5'],['icon','grid-cols-8']]
+          .map(([tier,gridClass])=>[tier,[...content.querySelectorAll('div.grid')]
+            .filter(node=>node.classList.contains(gridClass))
+            .flatMap(node=>[...node.querySelectorAll('a > img')].map(img=>img.src))])),
         imageItems: [...content.querySelectorAll('a')].filter(a=>a.querySelector('img'))
           .map(a=>({href:a.href,src:a.querySelector('img')?.src??null,
             alt:a.querySelector('img')?.getAttribute('alt')??null,
@@ -238,9 +267,14 @@ async function exerciseMediaControls({
   const videos = [video('/intake-walkthrough.mp4'), video('/referral-walkthrough.mp4')];
   await resourceAction(() => click(panel, 'scrape-result-tab', 'Images'));
   const beforeImages = await selectedMedia(panel, 'Images', images, `${phase}_three_images`);
-  assert.ok(
-    (await scrapeState(panel)).resultText.includes('1 image · 1 small · 1 icon'),
-    `${phase}_image_size_groups_missing`,
+  assertImageGroups(
+    await scrapeState(panel),
+    {
+      large: [images[0].src],
+      medium: [images[1].src],
+      icon: [images[2].src],
+    },
+    `${phase}_initial_image_groups`,
   );
   const removals = [];
   for (const [removed, survivors] of [
@@ -258,13 +292,15 @@ async function exerciseMediaControls({
         `${phase}_remove_${new URL(removed.href).pathname}`,
       ),
     );
-    const text = (await scrapeState(panel)).resultText;
-    if (removed === images[1])
-      assert.ok(text.includes('1 image · 1 icon'), `${phase}_medium_count_not_updated`);
-    if (removed === images[2])
-      assert.ok(text.includes('1 image'), `${phase}_icon_count_not_updated`);
-    if (removed === images[0])
-      assert.ok(!text.includes('1 image'), `${phase}_large_count_not_updated`);
+    assertImageGroups(
+      await scrapeState(panel),
+      {
+        large: survivors.filter((item) => item === images[0]).map((item) => item.src),
+        medium: survivors.filter((item) => item === images[1]).map((item) => item.src),
+        icon: survivors.filter((item) => item === images[2]).map((item) => item.src),
+      },
+      `${phase}_remove_${new URL(removed.href).pathname}`,
+    );
   }
   await resourceAction(() => click(panel, 'scrape-media-add-row', 'Add image URL'));
   await resourceAction(() => click(panel, 'scrape-media-form-action', 'Add'));
@@ -667,14 +703,16 @@ try {
       );
 
       report.stage = 'warm_media_controls';
-      const warmControls = await exerciseMediaControls({
-        panel,
-        page,
-        origin,
-        phase: 'warm',
-        resourceAction,
-        requireResourceHealth,
-      });
+      const warmControls = await captureMediaFailure(panel, artifacts, 'warm-media', () =>
+        exerciseMediaControls({
+          panel,
+          page,
+          origin,
+          phase: 'warm',
+          resourceAction,
+          requireResourceHealth,
+        }),
+      );
       report.media_controls = { warm: warmControls };
       mark('EXT-F-1007-T10', 'partial', { warm: warmControls.images }, [
         'Repeat controls after full extension reload.',
@@ -937,14 +975,20 @@ try {
           postReloadPanes[label.toLowerCase()] = pattern.test(state.resultText);
         }
         report.stage = 'post_reload_media_controls';
-        const reloadControls = await exerciseMediaControls({
-          panel: replacement.panel,
-          page,
-          origin,
-          phase: 'reload',
-          resourceAction,
-          requireResourceHealth,
-        });
+        const reloadControls = await captureMediaFailure(
+          replacement.panel,
+          artifacts,
+          'reload-media',
+          () =>
+            exerciseMediaControls({
+              panel: replacement.panel,
+              page,
+              origin,
+              phase: 'reload',
+              resourceAction,
+              requireResourceHealth,
+            }),
+        );
         report.media_controls.reload = reloadControls;
         postReloadPanes.images = reloadControls.images.before;
         postReloadPanes.video = reloadControls.videos.before;
