@@ -200,7 +200,8 @@ test(
                   nativeActionRan = true;
                 },
               ),
-              /NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample/,
+              // The watchdog may persist its hold/stop before this concurrent read.
+              /NATIVE_RESOURCE_BOUNDARY_REFUSED:(?:unsafe_sample|unsafe_hold|stop_requested)$/,
             );
           })();
           void refusalPromise.catch(() => {});

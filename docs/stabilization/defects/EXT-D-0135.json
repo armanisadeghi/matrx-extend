@@ -1,0 +1,41 @@
+{
+  "id": "EXT-D-0135",
+  "feature_id": "EXT-F-1007",
+  "surface": "Guard disk integration test",
+  "auth_mode": "all (harness)",
+  "title": "Disk guard test rejects equivalent unsafe-hold refusal during concurrent watchdog update",
+  "reproduction": [
+    "Run CI37238819180 resource-guard-integration job111543261387.",
+    "After RESOURCE_WATCH_UNSAFE, test reads guard boundary while watcher persists unsafe-hold.",
+    "Boundary correctly refuses unsafe_hold but test requires unsafe_sample and fails."
+  ],
+  "expected": "Assert work is refused plus exact low-disk unsafe evidence, invalid terminal verdict, retained hold and terminated owned workload; permit equivalent safe-refusal stage during concurrent update.",
+  "actual": "Observed unsafe_hold refusal causes false test failure; product resource protection remains active.",
+  "severity": "S3: false CI failure",
+  "priority": "P1: restore required verification gate",
+  "state": "in-fix",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37238819180",
+    "scripts/test-stabilization-resource-disk-integration.mjs"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T22:12:51.046636+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Captured exact CI assertion failure."
+    },
+    {
+      "at": "2026-10-04T22:12:51.046636+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Guard prioritizes stop/hold checks before journal; test performs concurrent read after unsafe event."
+    },
+    {
+      "at": "2026-10-04T22:12:51.046636+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Narrow assertion accepts only three fail-closed unsafe states; all causal evidence and no-action checks unchanged. Independent review and hosted rerun pending."
+    }
+  ]
+}
