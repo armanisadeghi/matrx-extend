@@ -1,0 +1,45 @@
+{
+  "task": "Independent source review of hosted native Profile acceptance",
+  "reviewed_commit": "ee2374f391575b62291700d3680c65daa91d289a",
+  "scope": "Source-only; no hosted browser or workflow dispatch",
+  "verdict_a": {
+    "status": "partial",
+    "supported": [
+      "Both profile-admin and profile-member route to the existing native Profile driver in extended mode with imported CI artifact identifiers.",
+      "The existing-row driver uses a versioned conditional restoration journal; its delete path is limited to a newly created row whose original absence and ownership were checked.",
+      "The native driver checks first-party identity, role and selected organization, then requires its extended census and restoration verdict for a passing hosted wrapper."
+    ],
+    "gaps": [
+      {
+        "severity": "blocking",
+        "code": "hosted_admin_organization_fixture_missing",
+        "evidence": "tests/browser/profile-native-acceptance.mjs selectApprovedOrganization() requires test-results/notes-private-config.json with approved_organization_name and mode 0600. The file is gitignored and untracked; .github/workflows/hosted-guest-acceptance.yml does not stage it. A fresh hosted VM therefore fails profile-admin at the organization selection step before Profile cases run."
+      },
+      {
+        "severity": "blocking",
+        "code": "interrupted_existing_row_unrecoverable",
+        "evidence": "The existing-row baseline and pending-write intent are persisted only to PROFILE_PRIVATE_OWNERSHIP_RECEIPT under local test-results. runProfile() retains that file on failed cleanup, but the workflow uploads only report JSON and screenshots, and the runner is disposable. If the job is interrupted after a UI save, the original field values and journal intent are lost with the VM, leaving no durable recovery input."
+      }
+    ]
+  },
+  "verdict_b": {
+    "status": "fail",
+    "supported": [
+      "The importer and native driver both verify CI artifact provenance and tree identity.",
+      "Profile credentials are written with exclusive mode-0600 files at acceptance and removed from the child environment; report errors are reduced to bounded codes.",
+      "Missing selected credential fails in workflow preflight before package and browser preparation."
+    ],
+    "gaps": [
+      {
+        "severity": "important",
+        "code": "route_tests_do_not_force_hosted_success_conditions",
+        "evidence": "scripts/hosted-profile-route.test.mjs asserts the route object's values and preflight response, but never exercises the workflow-to-driver organization fixture or verifies durable recovery after an interrupted existing-row write. The reported PROFILE_EXTENDED_CASES mutation tests a constant, not those hosted outcomes."
+      }
+    ]
+  },
+  "checks": {
+    "node_test": "node --test scripts/hosted-profile-route.test.mjs: 4 passed, 0 failed",
+    "hosted_execution": "not run by reviewer",
+    "source_review": "Commit diff, workflow, adapter, importer, native Profile driver, existing-row journal, auth driver, census, and test code"
+  }
+}
