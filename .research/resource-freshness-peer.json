@@ -1,0 +1,38 @@
+{
+  "reviewed_commit": "aaf60fc3c719faa141f3af843e609759ceaa926b",
+  "verdict_a": {
+    "status": "PARTIAL",
+    "native_status": "UNKNOWN",
+    "evidence": [
+      "D121 expects a bounded wait only when the otherwise strict current-run health check reports stale_health; unsafe, stopped, wrong-run, and unavailable evidence must refuse.",
+      "The driver supplies awaitNativeResourceHealth for explicit probes and resourceAction, whose runNativeResourceAction awaits health before invoking an action.",
+      "node --test tests/browser/native-resource-boundary.test.mjs passed (1 test): fresh health permits actions; stale timeout, unsafe evidence, wrong owner/run, stop, and missing evidence refuse. The test verifies action callbacks remain unstarted on refusal.",
+      "Protected mutation replaced the actual wait with immediate stale refusal; node --test failed at the delayed-refresh acceptance assertion with NATIVE_RESOURCE_BOUNDARY_REFUSED:stale_health (expected RED). plant.py restored source byte-identically.",
+      "The only cited hosted run is 37194883685, which refused before UI cases and recorded 0 cases. No native UI acceptance was executed for aaf60fc3."
+    ],
+    "cannot_verify": [
+      "A fresh guarded native guest run on the exact frozen development artifact, with actual Scrape cases, geometry, content, and reload observations."
+    ]
+  },
+  "verdict_b": {
+    "status": "PARTIAL",
+    "evidence": [
+      "The wait re-runs requireNativeResourceHealth after each poll, preserving existing owner, run, stop, unsafe, evidence, and freshness refusal paths; it catches only stale_health.",
+      "docs/stabilization/resource-policy.json and scripts/stabilization-resource.mjs are unchanged by the reviewed commit; the wait derives its 15-second bound and poll interval from the existing policy.",
+      "The driver routes both requireResourceHealth and resourceAction through awaitNativeResourceHealth, so native acceptance actually uses the waiter.",
+      "The guard test includes both a refreshed-health success and timeout/unsafe refusals; the protected no-wait mutant is detected as RED."
+    ],
+    "findings": [
+      {
+        "severity": "Important",
+        "finding": "The bounded deadline uses Date.now via the injected clock. Wall-clock rollback during the wait extends the deadline, and a clock that does not advance while wait resolves can loop indefinitely. The safety requirement promises at most one policy interval; a monotonic elapsed-time source should bound that duration, with a test that proves clock adjustment cannot extend it.",
+        "evidence": "tests/browser/native-resource-boundary.mjs: awaitNativeResourceHealth sets deadline = clock() + intervalMs and compares deadline - clock() after each await wait(...). Production defaults clock to Date.now."
+      }
+    ]
+  },
+  "checks": {
+    "boundary_test": "PASS: node --test tests/browser/native-resource-boundary.test.mjs",
+    "negative_guard": "RED as required: protected plant replaced await wait(...) with throw error; delayed-refresh action assertion failed with stale_health; source restored byte-identically.",
+    "native_run": "NOT RUN per assignment; previous cited run had zero UI cases."
+  }
+}
