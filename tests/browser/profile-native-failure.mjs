@@ -151,3 +151,11 @@ export async function runProfileExecutionBoundary(report, execute, { getOperatio
     return error;
   }
 }
+
+// Only these documented backend codes are useful in the public Profile report.
+// Syntax/length validation cannot distinguish a code from a credential.
+const PROFILE_BACKEND_CODES = new Set(['42501', '23505', 'PGRST116', 'PGRST301', 'PGRST302']);
+export function safeProfileBackendCode(code) {
+  if (code === undefined || code === null) return null;
+  return PROFILE_BACKEND_CODES.has(code) ? code : 'profile_backend_unclassified_error';
+}

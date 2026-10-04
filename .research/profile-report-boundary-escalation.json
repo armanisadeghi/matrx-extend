@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "task": "profile-report-boundary-escalation",
+  "defect_id": "EXT-D-0101",
+  "status": "source_repaired_fresh_peer_and_native_gate_held",
+  "confirmed": [
+    "The real observeProfileRequests function accepted arbitrary alphanumeric backend code; actual caseSaveDiscard placed that value into the serializable diagnostic report.",
+    "The real native harness finally awaits rm after exercisePanel rejects. An rm rejection replaced the execution Error at the runner outer catch. Executing the actual cleanup, harness finally and outer catch reproduced replacement."
+  ],
+  "repair": [
+    "A fixed backend code allowlist retains 42501, 23505, PGRST116, PGRST301, PGRST302. Missing codes remain null; every other value becomes profile_backend_unclassified_error.",
+    "The runner keeps the original execution Error across owned cleanup and native harness teardown. Cleanup-only failures also keep their identity. Outer teardown failures receive a separate fixed-stage safe-code entry."
+  ],
+  "refuted": {
+    "claim": "Native panel detach transport rejection masks execution failure",
+    "evidence": "The actual attachTargetSession returns a detach method that catches Target.detachFromTarget rejection. The guard executes that production function with rejecting transport and confirms detach resolves. No panel-detach redesign was made."
+  },
+  "census": [
+    "observeProfileRequests feeds save_discard_diagnostics.requests and bounded route/method/status assertions in initial read and T25; arbitrary backend code was the remaining response-content sink.",
+    "execution_failure_code, final failure_code, save/discard first_failure and cleanup_failure, restoration failure_code and mirrored cleanup_failure_code already use safeProfileFailureCode.",
+    "T26 restoration metadata uses fixed code/stage and keeps the secondary Error nonenumerable; existing actual-case tests remain green.",
+    "Network response messages/details and error messages are not copied by the changed report path; row presence remains boolean. UI diagnostic fields are booleans/counts and expected-value comparisons. Private ownership receipt is intentionally separate."
+  ],
+  "guards": {
+    "path": "tests/browser/profile-report-boundary.test.mjs",
+    "seam": "Read and execute actual production function/source blocks, not copied predicates. Browser transport/UI and owned persistence are replaced; observer, save/discard decisions, cleanup, native harness finally and final-report handler execute unchanged.",
+    "red_before_fix": "Tokenlike backend code serialized unchanged; outer catch recorded unclassified teardown failure instead of profile_initial_load_failed.",
+    "green": "11 boundary cases; 12 existing execution/T26 error-preservation cases.",
+    "mutations": [
+      "Backend sanitizer constant-return gut check: RED on known 42501/PGRST301; plant restored byte-identical.",
+      "Direct backend code copy: RED on synthetic token; plant restored byte-identical.",
+      "Outer final handler uses secondary Error: RED on execution and cleanup-only Error identity; plant restored byte-identical."
+    ]
+  },
+  "checks": [
+    "pnpm compile passed",
+    "Targeted Biome check passed",
+    "23 focused tests passed",
+    "git diff --check passed",
+    "pnpm -s lint failed on preexisting concurrent docs/stabilization/reports/workspace-sync-guest-incident-20261003.json formatting (one error); unrelated file preserved"
+  ],
+  "limits": "No browser, database, local build or release. These are deterministic regression guards, not native acceptance proof. Root owns independent peer and subsequent guarded member run. Error before the bounded Profile execution sequence and output filesystem write failure are outside the tested execution/owned-cleanup boundary."
+}
