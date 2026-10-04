@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-04 02:56 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T02:56:50.386861+00:00. 205 features · 761 cases · 1333 controls · 105 linked defect records.
+Generated 2026-10-04 03:04 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T02:56:50.386861+00:00. 205 features · 761 cases · 1333 controls · 105 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -562,7 +562,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0095, EXT-D-0104, EXT-D-0105
 
-**Linked defects:** [EXT-D-0094](defects/EXT-D-0094.json) (closed), [EXT-D-0095](defects/EXT-D-0095.json) (fixed), [EXT-D-0104](defects/EXT-D-0104.json) (fixed), [EXT-D-0105](defects/EXT-D-0105.json) (in-fix)
+**Linked defects:** [EXT-D-0094](defects/EXT-D-0094.json) (closed), [EXT-D-0095](defects/EXT-D-0095.json) (fixed), [EXT-D-0104](defects/EXT-D-0104.json) (fixed), [EXT-D-0105](defects/EXT-D-0105.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
