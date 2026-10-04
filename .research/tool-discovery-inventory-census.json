@@ -1,0 +1,1055 @@
+{
+  "schema_version": 1,
+  "purpose": "Source census for EXT-F-4001..EXT-F-4020 comparing inventory discovery rows with current source and advertised generated catalog. No runtime pass, N/A, retirement, or scope-removal claim.",
+  "captured_at_local": "2026-10-03 America/Los_Angeles",
+  "current_head": "8f5b9fb4dfb1ad5cbfd731c00d08098744d60fb9",
+  "source_sha256": {
+    "docs/stabilization/inventory.json": "ab18244e2ea2e53b562dc1697bed2c06c84ad79a44659c21779b642861ab11c5",
+    "src/lib/tools/categories.ts": "f4d7afda98d1295eb24a53c09d777fdd0d451a6a022458d542009f723f129abd",
+    "src/lib/tools/handlers/discover.ts": "9957598316de80e5cfacc85c974f4c88c6028e4787a5f06a1d6ae419c6c05caf",
+    "src/lib/tools/registry.ts": "ed76d3a726277e80dfd850a85749ac51252eff6a5e6054be458a5b7f49e573a0",
+    "types/tool-catalog.json": "489ce3138b79e1dab622eb844f419a664e6fd421b4e2d8daba38ae39f1d9f224",
+    "types/tool-catalog.md": "680ed5b2f22980e772b782c5e86909e68ae7427d179a78370acdf2ac2a3fbe15"
+  },
+  "authoritative_metadata_note": "Tool descriptions and tool.definition metadata are live database authority. No live DB query was performed; generated/source evidence cannot establish live database state.",
+  "status_vocabulary": {
+    "present": "Current source declaration/handler construction and generated catalog advertisement are both present.",
+    "renamed": "Only assigned when a replacement mapping is proved.",
+    "absent": "Only assigned when absence is established in both checked source declaration and generated catalog.",
+    "unknown": "Evidence insufficient or conflicting."
+  },
+  "summary": {
+    "inventory_rows": 20,
+    "present_source_and_catalog": 20,
+    "renamed": 0,
+    "absent": 0,
+    "unknown": 0,
+    "runtime_available_proven": 0
+  },
+  "machine_check": {
+    "reproducible_command": "python3 - <<'PY'\nimport json\np=json.load(open('.research/tool-discovery-inventory-census.json')); rows=p['rows']; ids=[r['inventory_id'] for r in rows]\nassert len(rows)==20 and len(set(ids))==20\nassert set(ids)=={f'EXT-F-{n}' for n in range(4001,4021)}\nassert all(r['status'] in {'present','renamed','absent','unknown'} for r in rows)\nassert all(r['runtime_availability']=='unknown' for r in rows)\nassert all(r['control_case_mapping']['control_id'] in r['control_case_mapping']['case_control_ids'] for r in rows)\nprint(p['summary'])\nPY"
+  },
+  "rows": [
+    {
+      "inventory_id": "EXT-F-4001",
+      "name": "list_chrome_categories",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4001-C01",
+        "control_label": "Invoke list_chrome_categories",
+        "case_id": "EXT-F-4001-T01",
+        "case_title": "Controlled manual execution: list_chrome_categories",
+        "case_control_ids": ["EXT-F-4001-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 35924,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 58,
+          "fact": "Explicit root index handler declaration; discover_handlers includes this handler at line 148.",
+          "additional_lines": [148]
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 58,
+          "additional_lines": [143, 149],
+          "fact": "Explicit index handler (58) or generic category handler builder (97) is present; categories are mapped to generated handlers at 143 and included in discover_handlers at 149."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 761,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 13,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4002",
+      "name": "list_core_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4002-C01",
+        "control_label": "Invoke list_core_tools",
+        "case_id": "EXT-F-4002-T01",
+        "case_title": "Controlled manual execution: list_core_tools",
+        "case_control_ids": ["EXT-F-4002-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 36039,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 98,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 786,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 28,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4003",
+      "name": "list_reading_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4003-C01",
+        "control_label": "Invoke list_reading_tools",
+        "case_id": "EXT-F-4003-T01",
+        "case_title": "Controlled manual execution: list_reading_tools",
+        "case_control_ids": ["EXT-F-4003-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 36147,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 105,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 811,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 43,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4004",
+      "name": "list_interaction_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4004-C01",
+        "control_label": "Invoke list_interaction_tools",
+        "case_id": "EXT-F-4004-T01",
+        "case_title": "Controlled manual execution: list_interaction_tools",
+        "case_control_ids": ["EXT-F-4004-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 36255,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 112,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 836,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 58,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4005",
+      "name": "list_tabs_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4005-C01",
+        "control_label": "Invoke list_tabs_tools",
+        "case_id": "EXT-F-4005-T01",
+        "case_title": "Controlled manual execution: list_tabs_tools",
+        "case_control_ids": ["EXT-F-4005-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 36363,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 119,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 861,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 73,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4006",
+      "name": "list_capture_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4006-C01",
+        "control_label": "Invoke list_capture_tools",
+        "case_id": "EXT-F-4006-T01",
+        "case_title": "Controlled manual execution: list_capture_tools",
+        "case_control_ids": ["EXT-F-4006-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 36471,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 126,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 886,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 88,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4007",
+      "name": "list_chrome_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4007-C01",
+        "control_label": "Invoke list_chrome_tools",
+        "case_id": "EXT-F-4007-T01",
+        "case_title": "Controlled manual execution: list_chrome_tools",
+        "case_control_ids": ["EXT-F-4007-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 36579,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 133,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 911,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 103,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4008",
+      "name": "list_human_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4008-C01",
+        "control_label": "Invoke list_human_tools",
+        "case_id": "EXT-F-4008-T01",
+        "case_title": "Controlled manual execution: list_human_tools",
+        "case_control_ids": ["EXT-F-4008-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 36686,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 141,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 936,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 118,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4009",
+      "name": "list_memory_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4009-C01",
+        "control_label": "Invoke list_memory_tools",
+        "case_id": "EXT-F-4009-T01",
+        "case_title": "Controlled manual execution: list_memory_tools",
+        "case_control_ids": ["EXT-F-4009-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 36794,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 148,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 961,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 133,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4010",
+      "name": "list_ai_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4010-C01",
+        "control_label": "Invoke list_ai_tools",
+        "case_id": "EXT-F-4010-T01",
+        "case_title": "Controlled manual execution: list_ai_tools",
+        "case_control_ids": ["EXT-F-4010-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 36902,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 155,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 986,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 148,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4011",
+      "name": "list_demos_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4011-C01",
+        "control_label": "Invoke list_demos_tools",
+        "case_id": "EXT-F-4011-T01",
+        "case_title": "Controlled manual execution: list_demos_tools",
+        "case_control_ids": ["EXT-F-4011-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 37010,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 162,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 1011,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 163,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4012",
+      "name": "list_guidance_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4012-C01",
+        "control_label": "Invoke list_guidance_tools",
+        "case_id": "EXT-F-4012-T01",
+        "case_title": "Controlled manual execution: list_guidance_tools",
+        "case_control_ids": ["EXT-F-4012-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 37118,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 169,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 1036,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 178,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4013",
+      "name": "list_devtools_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4013-C01",
+        "control_label": "Invoke list_devtools_tools",
+        "case_id": "EXT-F-4013-T01",
+        "case_title": "Controlled manual execution: list_devtools_tools",
+        "case_control_ids": ["EXT-F-4013-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 37226,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 176,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 1061,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 193,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4014",
+      "name": "list_webmcp_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4014-C01",
+        "control_label": "Invoke list_webmcp_tools",
+        "case_id": "EXT-F-4014-T01",
+        "case_title": "Controlled manual execution: list_webmcp_tools",
+        "case_control_ids": ["EXT-F-4014-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 37333,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 184,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 1086,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 208,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4015",
+      "name": "list_desktop_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4015-C01",
+        "control_label": "Invoke list_desktop_tools",
+        "case_id": "EXT-F-4015-T01",
+        "case_title": "Controlled manual execution: list_desktop_tools",
+        "case_control_ids": ["EXT-F-4015-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 37440,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 192,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 1111,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 223,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4016",
+      "name": "list_credentials_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4016-C01",
+        "control_label": "Invoke list_credentials_tools",
+        "case_id": "EXT-F-4016-T01",
+        "case_title": "Controlled manual execution: list_credentials_tools",
+        "case_control_ids": ["EXT-F-4016-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 37548,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 199,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 1136,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 238,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4017",
+      "name": "list_crm_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4017-C01",
+        "control_label": "Invoke list_crm_tools",
+        "case_id": "EXT-F-4017-T01",
+        "case_title": "Controlled manual execution: list_crm_tools",
+        "case_control_ids": ["EXT-F-4017-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 37656,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 206,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 1161,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 253,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4018",
+      "name": "list_education_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4018-C01",
+        "control_label": "Invoke list_education_tools",
+        "case_id": "EXT-F-4018-T01",
+        "case_title": "Controlled manual execution: list_education_tools",
+        "case_control_ids": ["EXT-F-4018-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 37764,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 213,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 1186,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 268,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4019",
+      "name": "list_productivity_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4019-C01",
+        "control_label": "Invoke list_productivity_tools",
+        "case_id": "EXT-F-4019-T01",
+        "case_title": "Controlled manual execution: list_productivity_tools",
+        "case_control_ids": ["EXT-F-4019-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 37872,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 220,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 1211,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 283,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    },
+    {
+      "inventory_id": "EXT-F-4020",
+      "name": "list_records_tools",
+      "status": "present",
+      "status_meaning": "Current source declaration/handler construction and generated catalog advertisement are both present; this is not an inventory runtime pass.",
+      "source_declared": true,
+      "advertised_in_generated_catalog": true,
+      "runtime_availability": "unknown",
+      "runtime_reason": "No runtime invocation was performed; source/generated catalog does not prove live tool.definition metadata, live description availability, or successful execution.",
+      "replacement_mapping": null,
+      "control_case_mapping": {
+        "control_id": "EXT-F-4020-C01",
+        "control_label": "Invoke list_records_tools",
+        "case_id": "EXT-F-4020-T01",
+        "case_title": "Controlled manual execution: list_records_tools",
+        "case_control_ids": ["EXT-F-4020-C01"]
+      },
+      "evidence": [
+        {
+          "path": "docs/stabilization/inventory.json",
+          "line": 37980,
+          "fact": "Inventory declares requested feature, control, and test case."
+        },
+        {
+          "path": "src/lib/tools/categories.ts",
+          "line": 227,
+          "fact": "Category registry maps this category to its list tool name."
+        },
+        {
+          "path": "src/lib/tools/handlers/discover.ts",
+          "line": 97,
+          "additional_lines": [143, 149],
+          "fact": "Generic category-list handler builder uses the registry list_tool_name as handler.name."
+        },
+        {
+          "path": "src/lib/tools/registry.ts",
+          "line": 187,
+          "fact": "coreToolNames advertises every category list_tool_name, subject to its admin visibility rule; this proves source-level intended advertisement, not runtime availability."
+        },
+        {
+          "path": "types/tool-catalog.json",
+          "line": 1236,
+          "fact": "Generated JSON catalog contains this advertised tool name."
+        },
+        {
+          "path": "types/tool-catalog.md",
+          "line": 298,
+          "fact": "Generated Markdown catalog documents this tool."
+        }
+      ]
+    }
+  ]
+}
