@@ -1,0 +1,35 @@
+{
+  "scope": "Focused ScrapeView coverage for EXT-F-1007-T13 link open/copy/remove and href/text add forms. No product code changed.",
+  "evidence_level": "Actual ScrapeView, CopyButton, and Zustand scrape store mounted in Vitest; only clipboard API and unrelated page/backend dependencies are stubbed. Anchor attributes and copy-boundary delivery are supporting component evidence, not proof that a browser tab opened or the OS clipboard changed.",
+  "cases": {
+    "open_and_copy": {
+      "status": "source/component pass with bounded open-link evidence",
+      "evidence": "The rendered anchor exposes the captured guide URL and target=_blank; CopyButton passes that exact URL to the mocked clipboard boundary; the real store remains unchanged. The test does not click the anchor or launch a browser tab."
+    },
+    "remove": {
+      "status": "source/component pass",
+      "evidence": "Removing the labeled seed guide leaves the exact unlabeled planting-calendar link including its rel value, changes the visible count from 2 links to 1 link, and removes only the selected row. A plant.py remove-all mutation failed this assertion with expected planting-calendar.pdf and received an empty list; plant.py restored src/state/scrape.ts byte-identically (sha 4861b5edb1dc)."
+    },
+    "add_href_and_text": {
+      "status": "source/component pass",
+      "evidence": "A blank href is refused while the draft stays available. A valid href plus anchor text creates the exact expected link in the real store and increments the visible count. Cancel discards a later draft; reopening starts blank and preserves the exact surviving link set."
+    },
+    "add_href_without_text": {
+      "status": "source/component pass",
+      "evidence": "A valid href without anchor text creates a link with empty text and null rel; the UI uses the href as its label and reports the updated count."
+    }
+  },
+  "verification": {
+    "commands": [
+      "pnpm exec vitest run src/features/scrape/ScrapeView.link-controls.test.tsx --maxWorkers=1 --reporter=dot",
+      "python3 .claude/skills/forcing-function-tests/plant.py --file src/state/scrape.ts --old 'links: s.current.links.filter((l) => linkKey(l.href, l.text) !== key)' --new 'links: []' --expect red --must-mention 'planting-calendar.pdf' --timeout 30 -- pnpm exec vitest run src/features/scrape/ScrapeView.link-controls.test.tsx --maxWorkers=1 --reporter=dot",
+      "pnpm compile",
+      "pnpm exec biome check src/features/scrape/ScrapeView.link-controls.test.tsx"
+    ],
+    "result": "4 focused tests passed; the realistic remove-all mutation failed at the exact survivor assertion and was restored byte-identically; compile and Biome passed."
+  },
+  "limitations": [
+    "No native browser run, real tab opening, or real system clipboard verification was performed.",
+    "The harness fakes page identity, recognition, organization resolution, and unrelated panels."
+  ]
+}
