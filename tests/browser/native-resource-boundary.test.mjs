@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import {
+  awaitNativeResourceHealth,
   requireNativeResourceHealth,
   runNativeResourceAction,
 } from './native-resource-boundary.mjs';
@@ -111,6 +112,68 @@ test('native Scrape resource boundary permits fresh own-run health and refuses u
   assert.equal(reloadStarted, false, 'refused reload must not record a start');
   await writeEvents([admitted, healthy]);
   await assert.rejects(check(Date.parse('2026-10-04T09:14:36.000Z')), /stale_health/);
+  let refreshClock = Date.parse('2026-10-04T09:14:36.000Z');
+  let refreshWaits = 0;
+  let publishRefresh = true;
+  let refreshedActionRan = false;
+  const awaitHealth = () =>
+    awaitNativeResourceHealth({
+      repo,
+      leaseRoot,
+      env,
+      clock: () => refreshClock,
+      wait: async (ms) => {
+        refreshClock += ms;
+        refreshWaits++;
+        if (publishRefresh && refreshWaits === 1)
+          await writeEvents([
+            admitted,
+            healthy,
+            { ...healthy, at: new Date(refreshClock).toISOString() },
+          ]);
+      },
+    });
+  assert.equal(
+    await runNativeResourceAction(awaitHealth, () => {
+      refreshedActionRan = true;
+      return 'fresh';
+    }),
+    'fresh',
+  );
+  assert.equal(refreshWaits, 1);
+  assert.equal(refreshedActionRan, true);
+  await writeEvents([admitted, healthy]);
+  refreshWaits = 0;
+  publishRefresh = false;
+  refreshedActionRan = false;
+  await assert.rejects(
+    runNativeResourceAction(awaitHealth, () => {
+      refreshedActionRan = true;
+    }),
+    /stale_health/,
+  );
+  assert.equal(refreshedActionRan, false, 'an expired wait cannot start a native action');
+  assert.ok(refreshWaits > 0, 'the wait must allow the guard a chance to publish health');
+  refreshClock = Date.parse('2026-10-04T09:14:36.000Z');
+  refreshWaits = 0;
+  await assert.rejects(
+    awaitNativeResourceHealth({
+      repo,
+      leaseRoot,
+      env,
+      clock: () => refreshClock,
+      wait: async (ms) => {
+        refreshClock += ms;
+        await writeEvents([
+          admitted,
+          healthy,
+          { ...healthy, code: 'RESOURCE_WATCH_UNSAFE', reasons: ['cpu'] },
+        ]);
+      },
+    }),
+    /unsafe_sample/,
+  );
+  await writeEvents([admitted, healthy]);
   let delayedClock = now;
   let delayedActionRan = false;
   await assert.rejects(

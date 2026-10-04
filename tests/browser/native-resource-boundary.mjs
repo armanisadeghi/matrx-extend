@@ -125,3 +125,42 @@ export async function runNativeResourceAction(requireHealth, action) {
   await requireHealth();
   return action();
 }
+
+// The watcher sleeps for one policy interval before sampling, so a healthy
+// event can briefly age out while its replacement is being measured. Hold the
+// action until that replacement is published; every probe repeats all strict
+// owner, stop, unsafe, and current-run checks.
+export async function awaitNativeResourceHealth({
+  repo,
+  clock = Date.now,
+  wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+  readEvidence = readFile,
+  ...options
+} = {}) {
+  let deadline;
+  let pollMs;
+  while (true) {
+    try {
+      return await requireNativeResourceHealth({ repo, clock, readEvidence, ...options });
+    } catch (error) {
+      if (error.message !== 'NATIVE_RESOURCE_BOUNDARY_REFUSED:stale_health') throw error;
+      if (deadline === undefined) {
+        let policy;
+        try {
+          policy = JSON.parse(
+            await readEvidence(join(repo, 'docs/stabilization/resource-policy.json'), 'utf8'),
+          );
+        } catch {
+          refuse('evidence_missing');
+        }
+        const intervalMs = policy.watchIntervalSeconds * 1000;
+        if (!Number.isFinite(intervalMs) || intervalMs <= 0) refuse('policy_invalid');
+        deadline = clock() + intervalMs;
+        pollMs = Math.max(1, Math.floor(intervalMs / 10));
+      }
+      const remainingMs = deadline - clock();
+      if (remainingMs <= 0) throw error;
+      await wait(Math.min(pollMs, remainingMs));
+    }
+  }
+}
