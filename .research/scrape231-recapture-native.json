@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "task": "scrape231-recapture-native",
+  "source_authorship": "none; bounded native retest only",
+  "pre_dispatch_verification": [
+    {
+      "command": "node tests/browser/scrape-native-recapture.test.mjs",
+      "exit_code": 0,
+      "result": "2 passed, 0 failed"
+    },
+    {
+      "command": "pnpm exec vitest run src/features/scrape/ScrapeView.error-controls.test.tsx",
+      "exit_code": 0,
+      "result": "1 file passed, 6 tests passed"
+    },
+    {
+      "repair_commit": "0600d571",
+      "fresh_independent_source_review": ".research/scrape125-fresh-peer.json",
+      "repair_is_ancestor_of_dispatch_head": true
+    }
+  ],
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 37222954472,
+    "job_id": 111496796190,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37222954472",
+    "head_branch": "main",
+    "head_sha": "5cfd955e26ad9184f5d4538e8abfc1a1ca171911",
+    "conclusion": "success",
+    "runner": {
+      "label": "macos-15",
+      "runner_arch": "ARM64",
+      "machine": "arm64"
+    },
+    "inputs": {
+      "acceptance_case": "guest-scrape-development",
+      "development_run_id": 37217066948,
+      "development_artifact_id": 11308203507
+    },
+    "readiness": {
+      "preflight": "passed",
+      "package": "valid/admitted/exit 0",
+      "browser": "valid/admitted/exit 0",
+      "acceptance": "passed; three healthy readiness samples",
+      "guest": "valid/admitted/resourceInvalid false/exit 0"
+    }
+  },
+  "frozen_product": {
+    "version": "0.2.231",
+    "source_sha": "723433a7628b32fb610d3a7f36ca6b8dd5fd2b72",
+    "tree_sha256": "ae9bfe3d831a7278f0b347c1c08b8d6cec6780790c1f14813369bcf015786833",
+    "development_run_id": 37217066948,
+    "development_artifact_id": 11308203507,
+    "import_verified": true,
+    "driver_repair_commit": "0600d571",
+    "provenance_limit": "The frozen tested product is 0.2.231; the native driver came from main at the workflow head and contains the separately reviewed repair."
+  },
+  "native_outcome": {
+    "status": "partial",
+    "stage_at_terminal": "post_reload_link_controls",
+    "native_stage": "exercise_panel",
+    "failure": null,
+    "driver_failure": null,
+    "guest_account_observed": true,
+    "recapture_dialog": {
+      "initial_dialog": "Observed exact \u201cDiscard unsaved edits?\u201d alert dialog with Cancel and Re-capture actions; helper required exactly one matching dialog and exact button labels before continuing.",
+      "cancel": "Clicked Cancel; helper waited for dialog count 0, edited marker retained, and deep capture idle/enabled.",
+      "confirm": "Repeated Scroll & capture; helper required dialog reopen with Re-capture, clicked it, then waited for dialog count 0.",
+      "deep_capture": "Completed: report advanced beyond deep_capture; Scrolling\u2026 observed in 21 samples; acceptance then continued to navigation, extension reload, and post-reload link controls. Deep-capture screenshot retained.",
+      "evidence_basis": "Receipt terminal stage is post_reload_link_controls with no failure; behavior is enforced by tests/browser/scrape-native-recapture.mjs and the run continued past its waits and deep result assertions."
+    },
+    "full_extension_reload": {
+      "management_reload_clicked": true,
+      "old_worker_retired": true,
+      "replacement_worker_present": true,
+      "replacement_panel_present": true,
+      "observed_worker_count": 1,
+      "final_predicate": true,
+      "milestones": [
+        {
+          "name": "reload_extension",
+          "at": "2026-10-04T18:10:41.035Z"
+        },
+        {
+          "name": "open_scrape_in_replacement_panel",
+          "at": "2026-10-04T18:10:42.991Z"
+        },
+        {
+          "name": "observe_replacement_scrape",
+          "at": "2026-10-04T18:10:43.182Z"
+        },
+        {
+          "name": "replacement_scrape_observed",
+          "at": "2026-10-04T18:10:43.507Z"
+        }
+      ],
+      "populated_panes_after_reload": {
+        "article": true,
+        "links": true,
+        "seo": true,
+        "schema": true,
+        "images": {
+          "pane": "Images",
+          "state": "matching_content",
+          "count": 3,
+          "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+          "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+          "natural_sizes": [[640, 480], [96, 96], [32, 32]]
+        },
+        "video": {
+          "pane": "Video",
+          "state": "matching_content",
+          "count": 2,
+          "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+        }
+      },
+      "case_record_limit": "EXT-F-1007-T01 remains partial with a stale remaining note that reload was not exercised; the separate reload_lifecycle and milestone fields record the reload. Case status was not promoted here."
+    },
+    "clipboard": {
+      "status": "unverified",
+      "warm_and_reload_copy_readback": "clipboard_url=null; copy_unavailable:panel_runtime_exception for video and links",
+      "failures": "No product failure recorded; this limitation is not a pass."
+    },
+    "case_statuses": [
+      {
+        "id": "EXT-F-1007-T20",
+        "status": "passed",
+        "remaining": []
+      },
+      {
+        "id": "EXT-F-1007-T01",
+        "status": "partial",
+        "remaining": ["Warm/full reload lifecycle not yet exercised."]
+      },
+      {
+        "id": "EXT-F-1007-T08",
+        "status": "partial",
+        "remaining": ["Member/admin modes and normal-width verification remain unverified."]
+      },
+      {
+        "id": "EXT-F-1007-T10",
+        "status": "passed",
+        "remaining": []
+      },
+      {
+        "id": "EXT-F-1007-T11",
+        "status": "passed",
+        "remaining": []
+      },
+      {
+        "id": "EXT-F-1007-T12",
+        "status": "partial",
+        "remaining": [
+          "copy_unavailable:panel_runtime_exception",
+          "copy_unavailable:panel_runtime_exception"
+        ]
+      },
+      {
+        "id": "EXT-F-1007-T13",
+        "status": "partial",
+        "remaining": [
+          "Member/admin modes remain unverified.",
+          "copy_unavailable:panel_runtime_exception",
+          "copy_unavailable:panel_runtime_exception"
+        ]
+      },
+      {
+        "id": "EXT-F-1007-T02",
+        "status": "partial",
+        "remaining": ["Deep failure retry mode and reload lifecycle remain unverified."]
+      },
+      {
+        "id": "EXT-F-1007-T14",
+        "status": "partial",
+        "remaining": [
+          "Recoverable Reload page and Try again, including deep retry mode, need a natural browser failure."
+        ]
+      }
+    ],
+    "product_verdict": "The bounded edited-result Cancel/confirm/deep-capture path and one full extension reload were observed. Workflow succeeded, while the acceptance receipt remains partial. Clipboard readback, deep-retry natural failure, member/admin, normal-width, and broader feature coverage remain unverified.",
+    "no_retry": true
+  },
+  "evidence_directory": "docs/stabilization/evidence/scrape231/run37222954472",
+  "files_sha256": {
+    "browser-resource.jsonl": "9991b931d791a015c0b09ec5a265a2637763b71298bb48952ffffe690c5b8586",
+    "guest-resource.jsonl": "f0a9ff75f69d6e1fdcdd6af7f4055bd46d379a48456fa605309c19a8090657bc",
+    "native-side-panel.png": "d28682def0240edfa8c5d8c8a48145908f37bdc6cb05e198bab360792c69ae53",
+    "normal-target-after-open.png": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+    "package-resource.jsonl": "b52cf2b856372c067c6374814beebafbb8df634e9fbc8dfda87c3cc1b6053842",
+    "receipt.json.txt": "c14781001094584e52da820598d0fb004f59f3b50b6f12b2cfab192b7027fd3d",
+    "scrape-deep-article.png": "aedae2162894ec93bf82a1c9295a4569c909cfee3c904c97849391cbf51af731",
+    "scrape-fast-article.png": "21ac8fb6d25454803d5bd5730bff6166d48d396f99e69a81f1e04489f17fbac1",
+    "scrape-restricted-error.png": "ce3d3bc200451f3e854508ad2ea40494e0d4a65ef2ee759fa02d9209bf4fd480"
+  },
+  "artifact_inventory": {
+    "retained": [
+      "browser-resource.jsonl",
+      "guest-resource.jsonl",
+      "native-side-panel.png",
+      "normal-target-after-open.png",
+      "package-resource.jsonl",
+      "receipt.json.txt",
+      "scrape-deep-article.png",
+      "scrape-fast-article.png",
+      "scrape-restricted-error.png"
+    ],
+    "excluded": ["Three stale nested resource journals for hosted run 37105304739"]
+  }
+}
