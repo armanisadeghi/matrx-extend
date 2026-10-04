@@ -1,0 +1,10 @@
+{
+  "defect": "EXT-D-0103",
+  "finding": "The native sidepanel harness used WEB_ORIGIN in the page_create traffic marker without declaring it. A popup scratch driver supplied an ambient global, masking the startup error.",
+  "fix": "Declare the canonical web origin in the harness before the traffic marker calls.",
+  "verification": {
+    "red": "node --test tests/browser/native-sidepanel-origin.test.mjs failed with ReferenceError: WEB_ORIGIN is not defined before the fix",
+    "green": "The same test passed after the fix and confirmed traffic labels for https://www.aimatrx.com and https://server.app.matrxserver.com",
+    "scope": "The focused page_create block was executed without ambient globals; the full native browser startup was not run in this lane."
+  }
+}

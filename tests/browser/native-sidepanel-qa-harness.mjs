@@ -34,6 +34,7 @@ const REPO = resolve(HERE, '..', '..');
 const RELEASED_EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3-dev');
 const RELEASE_RECEIPT = join(REPO, '.output', 'release-receipt.json');
 const EXPECTED_EXTENSION_ID = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
+const WEB_ORIGIN = 'https://www.aimatrx.com';
 const WAIT_MS = 100;
 const ATTEMPTS = 150;
 
