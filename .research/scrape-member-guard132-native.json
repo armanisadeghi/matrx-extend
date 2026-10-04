@@ -188,5 +188,15 @@
     "Foreground failure is a native acceptance observation; its root cause and product impact are unverified.",
     "No full feature or Store health claim."
   ],
-  "screenshots_observation": "Both screenshots are early-state captures (guest panel and target page), before the later successful member authentication recorded in the runtime receipt. They do not show the failed foreground boundary or prove 600px viewport."
+  "screenshots_observation": "Both screenshots are early-state captures (guest panel and target page), before the later successful member authentication recorded in the runtime receipt. They do not show the failed foreground boundary or prove 600px viewport.",
+  "frozen_artifact_verification": {
+    "artifact_id": 11315305224,
+    "artifact_digest": "sha256:a32cc1fe513326b3a185971cd0093f80d5eefa712873a517b2540be693be78ae",
+    "manifest_version": "0.2.244",
+    "ci_build_receipt_version": "0.2.244",
+    "ci_build_receipt_tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
+    "source_package_version": "0.2.244",
+    "prior_raw_receipt_version": "0.2.244",
+    "summary_correction": "The prior .research/scrape-member-normal-resumption.json reported 0.2.240; that conflicted with its raw receipt and the frozen artifact. Corrected the prior summary to 0.2.244. Both runs used the same artifact ID, source SHA, and tree hash."
+  }
 }

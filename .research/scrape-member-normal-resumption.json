@@ -31,14 +31,15 @@
   },
   "frozen_product": {
     "kind": "ci_development_test",
-    "version": "0.2.240",
+    "version": "0.2.244",
     "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
     "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
     "development_run_id": 37233480033,
     "development_artifact_id": 11315305224,
     "import_verified": true,
     "import_claim": "exact_pushed_commit_only",
-    "workflow_head_sha_differs_from_artifact_source": true
+    "workflow_head_sha_differs_from_artifact_source": true,
+    "version_correction": "Original raw run receipt, frozen artifact manifest, CI build receipt, and source package.json all say 0.2.244. The prior 0.2.240 summary was a transcription error; run validity remains unchanged."
   },
   "native_outcome": {
     "status": "unverified",
@@ -68,9 +69,18 @@
     "process_attribution": {
       "at": "2026-10-04T21:08:40.614Z",
       "notable_processes": [
-        { "executable": "Chromium Helper", "cpu_percent": 88.8 },
-        { "executable": "WeatherWidget", "cpu_percent": 60.2 },
-        { "executable": "provjobd44476608", "cpu_percent": 24.1 }
+        {
+          "executable": "Chromium Helper",
+          "cpu_percent": 88.8
+        },
+        {
+          "executable": "WeatherWidget",
+          "cpu_percent": 60.2
+        },
+        {
+          "executable": "provjobd44476608",
+          "cpu_percent": 24.1
+        }
       ],
       "causality": "Attribution is observational and does not prove exact CPU causality."
     },
