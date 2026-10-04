@@ -20,6 +20,7 @@ import {
 import { diagnosticCpuRate, runSupplementalCpuDiagnostic } from './scrape-page-cpu-diagnostic.mjs';
 import { recordReloadMilestone } from './scrape-reload-milestones.mjs';
 import { waitForReplacementScrapeTab } from './scrape-replacement-tab.mjs';
+import { observeScrapeRows } from './scrape-row-observer.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
@@ -203,18 +204,7 @@ async function scrapeState(panel) {
           .map(([tier,gridClass])=>[tier,[...content.querySelectorAll('div.grid')]
             .filter(node=>node.classList.contains(gridClass))
             .flatMap(node=>[...node.querySelectorAll('a > img')].map(img=>img.src))])),
-        imageItems: [...content.querySelectorAll('a')].filter(a=>a.querySelector('img'))
-          .map(a=>({href:a.href,src:a.querySelector('img')?.src??null,
-            alt:a.querySelector('img')?.getAttribute('alt')??null,
-            complete:a.querySelector('img')?.complete===true,
-            naturalWidth:a.querySelector('img')?.naturalWidth??0,
-            naturalHeight:a.querySelector('img')?.naturalHeight??0})),
-        videoItems: [...content.querySelectorAll('a')]
-          .filter(a=>a.parentElement?.querySelector('button[title="Remove video"]'))
-          .map(a=>({href:a.href,text:a.textContent?.trim()??''})),
-        linkItems: [...content.querySelectorAll('a')]
-          .filter(a=>a.parentElement?.querySelector('button[title="Remove link"]'))
-          .map(a=>({href:a.href,text:a.firstElementChild?.textContent?.trim()??''})),
+        ...(${observeScrapeRows.toString()})(content),
         linkToolbar: content.querySelector('span.uppercase')?.textContent?.trim()??null,
       } : null,
       error:buttons.some(n=>n.getAttribute('aria-label')==='Dismiss'),

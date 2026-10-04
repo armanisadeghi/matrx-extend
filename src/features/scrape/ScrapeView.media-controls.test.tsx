@@ -74,6 +74,7 @@ vi.mock('@/features/seo/SeoDetails', () => ({ SeoDetails: () => null }));
 
 import type { SoupResult } from '@/lib/scrape/pipeline';
 import { useScrapeStore } from '@/state/scrape';
+import { observeScrapeRows } from '../../../tests/browser/scrape-row-observer.mjs';
 import { ScrapeView } from './ScrapeView';
 
 const capture: SoupResult = {
@@ -172,6 +173,83 @@ const firstElement = (elements: HTMLElement[], description: string): HTMLElement
 };
 
 describe('ScrapeView media controls', () => {
+  it('observes exact surviving video, link, and image rows while remove tooltips are shown', async () => {
+    const observeAsNative = new Function(
+      'content',
+      `return (${observeScrapeRows.toString()})(content)`,
+    ) as typeof observeScrapeRows;
+    useScrapeStore.getState().setCurrent(
+      {
+        ...capture,
+        links: [
+          { href: 'https://fieldnotes.test/garden/calendar', text: 'Planting calendar', rel: null },
+        ],
+      },
+      'seed-page',
+    );
+    render(<ScrapeView />);
+    const selectedContent = () => {
+      const selected = document.querySelector(
+        '[role="tablist"] [role="tab"][aria-selected="true"]',
+      );
+      const content =
+        selected && document.getElementById(selected.getAttribute('aria-controls') ?? '');
+      if (!content) throw new Error('Selected result pane is missing');
+      return content;
+    };
+    const showTooltip = (title: string) => {
+      const button = selectedContent().querySelector(`button[title="${title}"]`);
+      if (!button) throw new Error(`Missing ${title} button`);
+      button.setAttribute('data-matrx-title', title);
+      button.removeAttribute('title');
+      return button;
+    };
+
+    await openTab('Video');
+    const firstRemove = showTooltip('Remove video');
+    expect(observeAsNative(selectedContent()).videoItems).toEqual([
+      { href: 'https://video.test/watch/seedlings', text: 'https://video.test/watch/seedlings' },
+      { href: 'https://video.test/watch/watering', text: 'https://video.test/watch/watering' },
+    ]);
+    fireEvent.click(firstRemove);
+    expect(observeAsNative(selectedContent()).videoItems).toEqual([
+      { href: 'https://video.test/watch/watering', text: 'https://video.test/watch/watering' },
+    ]);
+    expect(screen.getByRole('tab', { name: /Video 1/ })).toBeTruthy();
+
+    await userEvent.click(screen.getByRole('tab', { name: /Links/ }));
+    showTooltip('Remove link');
+    expect(observeAsNative(selectedContent()).linkItems).toEqual([
+      { href: 'https://fieldnotes.test/garden/calendar', text: 'Planting calendar' },
+    ]);
+    await openTab('Images');
+    expect(
+      observeAsNative(selectedContent()).imageItems.map(({ href, src, alt }) => ({
+        href,
+        src,
+        alt,
+      })),
+    ).toEqual([
+      {
+        href: 'https://fieldnotes.test/media/seed-tray.jpg',
+        src: 'https://fieldnotes.test/media/seed-tray.jpg',
+        alt: 'Seed tray',
+      },
+      {
+        href: 'https://fieldnotes.test/media/soil-chart.png',
+        src: 'https://fieldnotes.test/media/soil-chart.png',
+        alt: '',
+      },
+      {
+        href: 'https://fieldnotes.test/media/site-mark.svg',
+        src: 'https://fieldnotes.test/media/site-mark.svg',
+        alt: 'Fieldnotes',
+      },
+    ]);
+    expect(observeAsNative(selectedContent()).videoItems).toEqual([]);
+    expect(observeAsNative(selectedContent()).linkItems).toEqual([]);
+  });
+
   it('restores the selected pane only for the same capture after an active-tab round trip', async () => {
     const view = render(<ScrapeView />);
     await openTab('Video');

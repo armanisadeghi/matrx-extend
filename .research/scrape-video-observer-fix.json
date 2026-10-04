@@ -1,0 +1,10 @@
+{
+  "scope": "EXT-D-0124 native Scrape result observer only; product unchanged",
+  "cause": "The shared hover tooltip moves Remove video/link title to data-matrx-title, while scrapeState matched only title; the captured selected Video pane displayed the surviving URL and count 1.",
+  "source": "tests/browser/scrape-guest-native-acceptance.mjs now serializes the shared scrape-row-observer.mjs over the selected pane DOM.",
+  "red": "Real ScrapeView DOM with the tooltip title moved: video observer returned only the unhovered second URL; exact two-URL assertion failed.",
+  "green": "Real ScrapeView DOM: exact two videos, selected removal survivor, link with tooltip, image identities, and empty wrong-kind observations; 6/6 focused tests passed.",
+  "gut_check": "plant.py replaced observer output with empty arrays; exact video identity assertion failed and the file was restored byte-identically.",
+  "checks": "pnpm compile passed; Biome passed on changed source/tests; node --test scrape-media-assertions.test.mjs passed 8/8.",
+  "limits": "No native/browser retest in this lane; independent peer review was requested before the root-owned retest."
+}
