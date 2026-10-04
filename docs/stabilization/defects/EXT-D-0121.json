@@ -13,11 +13,14 @@
   "actual": "No UI cases ran. Initial boundary refused stale_health; healthy sample arrived16.202s after admission. Causal timing diagnosis underway; no product defect inferred.",
   "severity": "S2: blocks trusted acceptance, not demonstrated customer failure",
   "priority": "P1: unblock guarded native testing",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/resource_freshness_diagnosis",
   "evidence": [
     ".research/scrape-layout-fixed-native.json",
-    ".research/resource-freshness-diagnosis.json"
+    ".research/resource-freshness-diagnosis.json",
+    ".research/scrape-freshness-fixed-native.json",
+    ".research/resource-freshness-peer.json",
+    ".research/resource-freshness-final-peer.json"
   ],
   "transition_history": [
     {
@@ -43,8 +46,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Sourceaaf60fc3 adds policy-bounded fresh-health wait to native harness; file-backed RED/GREEN and constant-healthy mutant fail. Independent review pending; no native pass."
+    },
+    {
+      "at": "2026-10-04T10:48:00.644204+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent06b5d2e0 accepted monotonic repair6ae0a747 and negative guards; native37195986118 passed inputs and exercised cases with healthy current-run evidence, no stale/unsafe failure. Later pointer failure is separateD120."
+    },
+    {
+      "at": "2026-10-04T10:48:00.644204+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Guard scheduling source/negative checks and actual hosted integration meet scoped criteria; no product or Store health inferred."
     }
   ],
   "closure_requirement": "Causal guard-path RED/GREEN, independent source review, then exact guarded native run without stale action or weakened thresholds.",
-  "next_action": "Fresh independent /root/resource_freshness_peer source review, then exactly one guarded native run on frozen CI215. No weakened thresholds or stale evidence acceptance."
+  "next_action": "None for cadence defect; D120 still blocks full reload case. Keep proof-quality limitation documented in coordinator."
 }

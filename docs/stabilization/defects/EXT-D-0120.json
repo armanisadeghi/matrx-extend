@@ -9,11 +9,11 @@
     "Run guest-scrape-development with CI37190768893 artifact11298687631 as acceptance37191118595. After capture and navigation checks, extension_reload fails with unique visible pointer target. Inspect terminal receipt."
   ],
   "expected": "Reload acceptance either reaches the intended visible control or preserves safe count/visibility and exact operation metadata sufficient to diagnose why it could not.",
-  "actual": "Receipt contains only extension_reload and generic target error; no returned reload result or target counts. Product cause remains unknown; same run also contains unsafe CPU evidence. Latest healthy development native37192733619 stopped earlier at native_extension_worker_retirement_unverified: old worker/panel absent and replacement present/created, but no old-worker destroyed event. It did not reach replacement-panel pointer lookup, so original pointer counts remain unknown.",
+  "actual": "Receipt contains only extension_reload and generic target error; no returned reload result or target counts. Product cause remains unknown; same run also contains unsafe CPU evidence. Latest healthy development native37192733619 stopped earlier at native_extension_worker_retirement_unverified: old worker/panel absent and replacement present/created, but no old-worker destroyed event. It did not reach replacement-panel pointer lookup, so original pointer counts remain unknown. Healthy native37195986118 confirms complete strict retirement/replacement lifecycle with zero timeline drops, then pointer_target_not_unique at open_scrape_in_replacement_panel: matched0/visible0; target rendering/selection cause not yet known.",
   "severity": "S2: acceptance reliability; no proven product failure",
   "priority": "P1: prerequisite for trusted native acceptance",
   "state": "open",
-  "owner": "/root/reload_lifecycle_diagnose",
+  "owner": "/root/scrape_reload_pointer_diagnose",
   "evidence": [
     ".research/scrape-loading-fixed-native.json",
     ".research/scrape-reload-diagnosis.json",
@@ -21,7 +21,8 @@
     ".research/reload-lifecycle-diagnosis.json",
     ".research/reload-event-instrumentation.json",
     ".research/reload-event-retention-repair.json",
-    ".research/scrape-final-retention-peer.json"
+    ".research/scrape-final-retention-peer.json",
+    ".research/scrape-freshness-fixed-native.json"
   ],
   "transition_history": [
     {
@@ -32,5 +33,5 @@
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
-  "next_action": "Capture exact reload target timeline with reviewed0eedda92+ca1fa506 in the next guarded native run. Actual missing destroyed-event and original pointer failure causes remain unknown; predicate unchanged."
+  "next_action": "Bounded Sol source diagnosis against exact replacement target/context and pointer0 evidence; no acceptance predicate relaxation or blind retry."
 }

@@ -16976,9 +16976,9 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37192733619",
-              "evidence": ".research/scrape-guarded-development-native.json",
-              "detail": "Healthy development native37192733619 on source494cdf6c containing12300b97 observed disabled Capturing (5 samples,1 disabled), real article and no lazy content. Full-duration busy and extension reload remain unverified. ExactStore205 remains pre-fix.",
+              "run_id": "37195986118",
+              "evidence": ".research/scrape-freshness-fixed-native.json",
+              "detail": "Healthy exact development215 run observed disabled Capturing and real article/no lazy content; same original busy fix remains working. Full-duration/retry and replacement-panel recovery remain unverified. Store205 predates busy/layoutfixes.",
               "historical_result": {
                 "status": "unverified",
                 "run_id": "render-retest-001",
@@ -17020,9 +17020,9 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37192733619",
-              "evidence": ".research/scrape-guarded-development-native.json",
-              "detail": "Healthy development native37192733619 observed disabled Scrolling (11 samples,7 disabled), lazy text in real page and capture. Deep retry and full reload remain unverified; layout drift separatelyD118.",
+              "run_id": "37195986118",
+              "evidence": ".research/scrape-freshness-fixed-native.json",
+              "detail": "Healthy exact development215 run observed disabled Scrolling plus lazy content in real page/capture; narrow layoutcontained. Deepretry and replacement-panel recovery remainunverified.",
               "historical_result": {
                 "status": "unverified",
                 "run_id": "render-retest-001",
@@ -17213,9 +17213,9 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37192733619",
-              "evidence": ".research/scrape-guarded-development-native.json",
-              "detail": "Healthy development native37192733619 selected all6resulttabs; Article/Links/SEO/Schema content matched. Images/video matching or empty state unverified; document31px horizontal drift confirmedD118."
+              "run_id": "37195986118",
+              "evidence": ".research/scrape-freshness-fixed-native.json",
+              "detail": "Healthy exact development215 selectedall6tabs and matchedArticle/Links/SEO/Schema. All10geometryboundaries at360px showdocumentwidth360/scrollLeft0, strip336px; rootdeepPNGconfirmsno leftclip. Images/video content or empty state and normalwidth stillunverified."
             }
           }
         },
@@ -17371,9 +17371,9 @@
           "results": {
             "guest": {
               "status": "partial",
-              "evidence": ".research/scrape-guarded-development-native.json",
-              "run_id": "37192733619",
-              "detail": "Healthy development native37192733619 observed restrictedchrome://settings without recovery actions and Dismiss. RecoverableReload/Tryagain/deepretry unverified."
+              "evidence": ".research/scrape-freshness-fixed-native.json",
+              "run_id": "37195986118",
+              "detail": "Healthy exactdevelopment215 observed restrictedchrome://settings norecoveryactions andDismiss; recoverableReload/Tryagain/deepretryunverified."
             }
           }
         },
@@ -17520,7 +17520,7 @@
             "Open Scrape before capturing, then navigate active tab to another URL."
           ],
           "expected": [
-            "Empty state invites capture; previous page\u2019s content and Saved badge clear after navigation."
+            "Empty state invites capture; previous page’s content and Saved badge clear after navigation."
           ],
           "dimensions": [
             "warm",
@@ -17529,9 +17529,9 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37192733619",
-              "evidence": ".research/scrape-guarded-development-native.json",
-              "detail": "Healthy development native37192733619 observed guestemptyinitial and navigationclearsoldcontent. Full extensionreload remainsunverified: workerretirementproofmissingD120.",
+              "run_id": "37195986118",
+              "evidence": ".research/scrape-freshness-fixed-native.json",
+              "detail": "Healthy exactdevelopment215 initialguestempty and navigationclearsoldcontent; fullreloadretiredoldworker/panel andcreatedreplacement. Replacement Scrapecontrolmatched0 so intended postreloadview/recovery remainsunverifiedD120.",
               "historical_result": {
                 "status": "partial",
                 "run_id": "37185080238",

@@ -24,7 +24,8 @@
     ".research/scrape-guarded-development-native.json",
     ".research/scrape-layout-fix.json",
     ".research/scrape-layout-peer.json",
-    ".research/scrape-final-retention-peer.json"
+    ".research/scrape-final-retention-peer.json",
+    ".research/scrape-freshness-fixed-native.json"
   ],
   "transition_history": [
     {
@@ -53,5 +54,12 @@
     }
   ],
   "closure_requirement": "Independently reproduce and repair confirmed clipping class, then verify normal/narrow panel tab selection and deep capture without horizontal displacement.",
-  "next_action": "One guarded native guest-scrape-development run against CI37193761291 artifact11299613935; verify narrow layout and surrounding capture, retain normal-width gap unless separately tested."
+  "next_action": "Keep source-fixed with verified narrow repro and surrounding capture. Verify normal-width boundary and replacement-panel recovery before full closure; future Store package must contain b9d7acbc.",
+  "verification": {
+    "status": "partial_native_retest",
+    "run_id": "37195986118",
+    "verified": "All6tabsselected,10geometryboundaries at360px documentwidth360/scrollLeft0, resultstrip336px/title/capturerowcontained; rootinspecteddeepPNG. Fast/deepcapturestillworks.",
+    "remaining": "Normal-width not exercised; post-reload Scrape navigation failsD120; Store205 predatesfix.",
+    "screenshot": "docs/stabilization/evidence/scrape215/narrow-layout-fixed.png"
+  }
 }
