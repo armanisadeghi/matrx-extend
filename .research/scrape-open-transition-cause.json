@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "task": "scrape-open-transition-cause",
+  "defect": "EXT-D-0123",
+  "status": "product_transition_boundary_reproduced_native_activation_timestamps_missing",
+  "source_run": {
+    "workflow_run_id": 37215748629,
+    "workflow_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37215748629",
+    "frozen_product_version": "0.2.215",
+    "frozen_product_source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+    "raw_receipt": "docs/stabilization/evidence/scrape215/run37215748629/receipt.json.txt",
+    "trace": ".research/scrape-complete-trace-native.json",
+    "trace_completeness": "46 shared events, zero dropped, not truncated"
+  },
+  "verdict": "The observed Article reset and subsequent zero-match Copy are explained by the product's active-page identity lifecycle: opening the video in a new active tab temporarily makes the stored capture non-current, unmounting the result Tabs; closing the opened tab returns to the capture page, which makes the retained capture current and mounts Tabs at its default Article pane. The driver clicked the intended video URL and intentionally closed the opened page before continuing. The receipt does not directly timestamp browser active-tab identity changes or opened.close(), so that native event-to-transition attribution remains inferred from the exact source path and reproduced component boundary.",
+  "causal_chain": [
+    {
+      "step": 1,
+      "boundary": "Scrape media Open",
+      "source": "src/features/scrape/ScrapeView.tsx:596-603",
+      "fact": "The video URL is an anchor with target=_blank, which opens a separate active browser tab under ordinary browser behavior.",
+      "run_evidence": "At 8691-8695 ms, the trusted pointerdown/up/click target is open:/intake-walkthrough.mp4 while Video is selected. The recorded native trace then observes the tabs disconnected."
+    },
+    {
+      "step": 2,
+      "boundary": "Active page identity",
+      "source": "src/hooks/use-active-tab.ts:39-48,115-120",
+      "fact": "tabs.onActivated calls withhold(), which publishes a null pageKey and resolving identity before refreshing the active tab identity.",
+      "run_evidence": "The native observer sees selected=null and sameTabs=false at 8743 ms, 48 ms after the correct Open click. It does not record chrome.tabs.onActivated or the active tab id/pageKey directly."
+    },
+    {
+      "step": 3,
+      "boundary": "Capture identity gate and result Tabs lifecycle",
+      "source": "src/features/scrape/ScrapeView.tsx:90-93,418-425",
+      "fact": "The captured result is rendered only while its pageKey equals the ready active-page identity. While the identity is withheld or belongs to the video tab, current is null and the conditional Tabs subtree unmounts. The same subtree uses defaultValue=article when remounted.",
+      "run_evidence": "A plant-based temporary characterization test on the real ScrapeView and design-system Tabs reproduced Video selected -> active pageKey null and result tabs absent -> original capture pageKey restored and Article selected. The test passed and the tracked file was restored byte-identically."
+    },
+    {
+      "step": 4,
+      "boundary": "Native driver return to original page",
+      "source": "tests/browser/scrape-native-media-actions.mjs:33-65",
+      "fact": "The driver waits for the newly opened page, checks its URL, closes it in finally, then attempts Copy on the panel.",
+      "run_evidence": "At 9094 ms, the trace sees Article selected during the following Copy action; the driver reports zero matching Copy targets. The driver source shows opened.close() precedes Copy."
+    }
+  ],
+  "ranked_hypotheses": [
+    {
+      "rank": 1,
+      "hypothesis": "The correct target=_blank open and driver close activate away from, then back to, the captured page; identity-gated Tabs unmount and remount at Article.",
+      "falsifiable_prediction": "A real ScrapeView loses its selected Video tab when active page identity stops matching the capture and restores Article when that same capture identity returns.",
+      "test": "Temporary characterization inserted through forcing-function-tests/plant.py into src/features/scrape/ScrapeView.media-controls.test.tsx; Vitest selected test passed 1/1 and plant restored the file byte-identically.",
+      "result": "Supported at the product component lifecycle boundary. Native active-tab event time is not captured."
+    },
+    {
+      "rank": 2,
+      "hypothesis": "The driver clicked an unintended target or wrong media item, independently navigating the page or replacing the result panel.",
+      "falsifiable_prediction": "The trusted event target, newly opened URL, or configured click locator differs from /intake-walkthrough.mp4.",
+      "test": "Compare the exact native pointer target, per-action target, driver helper, and opened-page URL assertion.",
+      "result": "Contradicted: the native trusted event and driver action name the intended /intake-walkthrough.mp4 URL; the driver asserts the opened URL equals that target."
+    },
+    {
+      "rank": 3,
+      "hypothesis": "Image removal mutated capture data and caused the pane change.",
+      "falsifiable_prediction": "The failed action is an image removal or a removal's post-state has unexpected image identity/count.",
+      "test": "Read the complete chronological action trace and its per-removal pre/post identities.",
+      "result": "Contradicted: three removals and the later add all completed; the failing action is Copy video for /referral-walkthrough.mp4."
+    },
+    {
+      "rank": 4,
+      "hypothesis": "The result Tabs state is explicitly reset by a scrape-store edit or a changed current product implementation.",
+      "falsifiable_prediction": "The frozen product's relevant files differ from current or the trace shows a store replacement before Tabs remount.",
+      "test": "Compare frozen-source Git blob IDs against current for ScrapeView, active-tab identity, scrape store, and side-panel App; inspect transitions for capture replacement.",
+      "result": "Contradicted as a source-version difference: all four relevant product blobs are identical between frozen SHA 3536b5c and current HEAD. The trace retains the capture and shows no re-capture action."
+    }
+  ],
+  "frozen_215_vs_current": {
+    "comparison": "git diff --quiet 3536b5cb0bea2fb33383f2b239b8602fafb79351 HEAD -- src/features/scrape/ScrapeView.tsx src/hooks/use-active-tab.ts src/state/scrape.ts src/entrypoints/sidepanel/App.tsx",
+    "result": "No differences in the relevant product sources.",
+    "blob_ids": {
+      "ScrapeView.tsx": "972534508368d6b1e06e306e46b2dff9e2067285",
+      "use-active-tab.ts": "4d42db0e95395f6a139c027df9838ce54a25a3a1",
+      "scrape.ts": "7b1b844132fa25d86cc2bd1c3830cf5670529cef",
+      "App.tsx": "b32c109862b1ba0d312458a768c3e0db5858a183"
+    },
+    "interpretation": "The behavior is present in the frozen 0.2.215 artifact source and remains in current source; later probe/test changes do not explain or alter this transition."
+  },
+  "lightweight_reproduction": {
+    "seam": "Real ScrapeView, Zustand scrape store, and @ai-matrx/design-system Tabs; only useActiveTab is supplied by the existing component test boundary.",
+    "sequence": [
+      "Render a current capture and select Video.",
+      "Set the active page identity key to null and rerender; the result Tabs disappear because the capture no longer matches the active page.",
+      "Restore the capture's original identity key and rerender; the stored capture is current again and Tabs mount with Article selected."
+    ],
+    "command": "pnpm exec vitest run src/features/scrape/ScrapeView.media-controls.test.tsx -t 'active page identity loss' --reporter=dot (temporary characterization injected/restored by .claude/skills/forcing-function-tests/plant.py)",
+    "result": "1 passed, 4 skipped; temporary test source restored byte-identically."
+  },
+  "exact_remaining_evidence": [
+    "The native event recorder does not include chrome.tabs.onActivated timestamps or active tab id/pageKey values before and after the Open action.",
+    "The shared trace does not timestamp the Playwright opened.close() call. A Sol acceptance rerun can distinguish the inferred order by recording these two fixed lifecycle facts beside the existing tab connectivity events; no broad diagnostic framework is needed."
+  ],
+  "sol_handoff": "Fix or preserve the selected result pane at the same-page identity round trip boundary in ScrapeView, while retaining the existing capture identity gate for other pages. Guard the real behavior with the reproduced sequence; then exercise one native open-video, close-return, and copy flow. This lane made no product change.",
+  "product_changes": [],
+  "inventory_changes": [],
+  "reproducible_product_defects": []
+}
