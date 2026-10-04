@@ -180,6 +180,19 @@ function mountNestedOpenPassword(): HTMLInputElement {
 }
 
 describe('inline saved-login chooser', () => {
+  it('does not mount credential page listeners after runtime was invalidated during lazy load', async () => {
+    const add = vi.spyOn(document, 'addEventListener');
+    const chromeApi = globalThis.chrome as typeof chrome & { runtime?: typeof chrome.runtime };
+    Object.defineProperty(chromeApi, 'runtime', { configurable: true, value: undefined });
+    const { mountInlineCredentialSuggestions } = await import(
+      '@/lib/credentials/inline-suggestions'
+    );
+    unmount = mountInlineCredentialSuggestions();
+
+    expect(add).not.toHaveBeenCalledWith('pointerdown', expect.any(Function), true);
+    expect(() => trustedPointerDown(document.body)).not.toThrow();
+  });
+
   it('reports the mounted document’s current focused anchor before it asks the host for an offer', async () => {
     const { mountInlineCredentialSuggestions } = await import(
       '@/lib/credentials/inline-suggestions'
@@ -227,6 +240,45 @@ describe('inline saved-login chooser', () => {
     unmount = mountInlineCredentialSuggestions();
     trustedPointerDown(document.body);
     await vi.waitFor(() => expect(focusOwnerReports).toHaveLength(1));
+  });
+
+  it('retires credential document listeners when an extension reload invalidates runtime', async () => {
+    const chooser = await mountReadyChooser();
+    const remove = vi.spyOn(document, 'removeEventListener');
+    const chromeApi = globalThis.chrome as typeof chrome & { runtime?: typeof chrome.runtime };
+    Object.defineProperty(chromeApi, 'runtime', { configurable: true, value: undefined });
+
+    expect(() => trustedPointerDown(document.body)).not.toThrow();
+    expect(document.querySelector('#matrx-inline-login-suggestion')).toBeNull();
+    expect(remove).toHaveBeenCalledWith('pointerdown', expect.any(Function), true);
+    expect(remove).toHaveBeenCalledWith('focusin', expect.any(Function), true);
+    expect(() => nativeFocus(chooser.target)).not.toThrow();
+  });
+
+  it('retires credential focus listeners when Chrome throws synchronously after reload', async () => {
+    await mountReadyChooser();
+    const remove = vi.spyOn(window, 'removeEventListener');
+    vi.spyOn(chrome.runtime, 'sendMessage').mockImplementation(() => {
+      throw new Error('Extension context invalidated');
+    });
+
+    expect(() => trustedWindowFocus()).not.toThrow();
+    expect(document.querySelector('#matrx-inline-login-suggestion')).toBeNull();
+    expect(remove).toHaveBeenCalledWith('focus', expect.any(Function), true);
+  });
+
+  it('retires credential listeners when a pending Chrome message rejects after reload', async () => {
+    await mountReadyChooser();
+    const remove = vi.spyOn(document, 'removeEventListener');
+    vi.spyOn(chrome.runtime, 'sendMessage').mockRejectedValue(
+      new Error('Extension context invalidated'),
+    );
+
+    trustedPointerDown(document.body);
+    await vi.waitFor(() =>
+      expect(remove).toHaveBeenCalledWith('pointerdown', expect.any(Function), true),
+    );
+    expect(document.querySelector('#matrx-inline-login-suggestion')).toBeNull();
   });
 
   it('requeries a focused nested open-shadow password when opt-in changes to on-page', async () => {

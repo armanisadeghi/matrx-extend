@@ -408,6 +408,71 @@ describe('detector — snapshotLogin', () => {
     dispose();
   });
 
+  it('retires capture listeners before reading a password after runtime invalidation', async () => {
+    const { mountCaptureDetector } = await import('@/lib/credentials/capture-detector');
+    const listeners = new Map<string, EventListener>();
+    const add = document.addEventListener.bind(document);
+    vi.spyOn(document, 'addEventListener').mockImplementation((type, listener, options) => {
+      if (type === 'keydown') listeners.set(type, listener as EventListener);
+      return add(type, listener, options);
+    });
+    const remove = vi.spyOn(document, 'removeEventListener');
+    const doc = mount(`<form method="post"><input type="password" value="${SENTINEL}"></form>`);
+    const password = doc.querySelector('input') as HTMLInputElement;
+    password.getBoundingClientRect = () => ({ width: 100, height: 20 }) as DOMRect;
+    const readValue = vi.spyOn(password, 'value', 'get');
+    const dispose = mountCaptureDetector(document);
+    Object.assign(chrome, { runtime: undefined });
+
+    listeners.get('keydown')?.({
+      isTrusted: true,
+      key: 'Enter',
+      composedPath: () => [password, password.form, document, window],
+    } as unknown as Event);
+
+    expect(readValue).not.toHaveBeenCalled();
+    expect(remove).toHaveBeenCalledWith('keydown', expect.any(Function), true);
+    dispose();
+  });
+
+  it('retires capture after an in-flight message reports an invalidated context', async () => {
+    const { mountCaptureDetector } = await import('@/lib/credentials/capture-detector');
+    const listeners = new Map<string, EventListener>();
+    const add = document.addEventListener.bind(document);
+    vi.spyOn(document, 'addEventListener').mockImplementation((type, listener, options) => {
+      if (type === 'keydown') listeners.set(type, listener as EventListener);
+      return add(type, listener, options);
+    });
+    const remove = vi.spyOn(document, 'removeEventListener');
+    Object.assign(chrome, {
+      runtime: {
+        id: 'test-extension',
+        sendMessage: async () => {
+          throw new Error('Extension context invalidated');
+        },
+      },
+    });
+    const doc = mount(`<form method="post"><input type="password" value="${SENTINEL}"></form>`);
+    const password = doc.querySelector('input') as HTMLInputElement;
+    password.getBoundingClientRect = () => ({ width: 100, height: 20 }) as DOMRect;
+    const readValue = vi.spyOn(password, 'value', 'get');
+    const dispose = mountCaptureDetector(document);
+    const enter = {
+      isTrusted: true,
+      key: 'Enter',
+      composedPath: () => [password, password.form, document, window],
+    } as unknown as Event;
+
+    listeners.get('keydown')?.(enter);
+    await vi.waitFor(() =>
+      expect(remove).toHaveBeenCalledWith('keydown', expect.any(Function), true),
+    );
+    readValue.mockClear();
+    listeners.get('keydown')?.(enter);
+    expect(readValue).not.toHaveBeenCalled();
+    dispose();
+  });
+
   it.each(['Enter', 'click'] as const)(
     'routes a test-harness trusted composed gesture from two nested open roots to its coherent login only',
     async (gesture) => {

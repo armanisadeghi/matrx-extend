@@ -26,6 +26,8 @@ let focusEntry: { target: HTMLInputElement; listener: (event: KeyboardEvent) => 
 let focusSequence = 0;
 let lastFocusedTarget: HTMLInputElement | null = null;
 let lastFocusReport: Promise<void> | null = null;
+let retired = false;
+let mountedCleanup: (() => void) | null = null;
 
 function deepActive(root: Document | ShadowRoot = document): Element | null {
   let active: Element | null = root.activeElement;
@@ -61,7 +63,22 @@ function focusIsInChooser(): boolean {
   return document.activeElement === host;
 }
 function send(kind: string, payload: unknown): Promise<unknown> {
-  return chrome.runtime.sendMessage({ __matrx: true, kind, payload });
+  if (retired) return Promise.reject(new Error('Credential content context retired'));
+  try {
+    const runtime = globalThis.chrome?.runtime;
+    if (!runtime?.sendMessage) {
+      mountedCleanup?.();
+      return Promise.reject(new Error('Credential content context invalidated'));
+    }
+    const response = runtime.sendMessage({ __matrx: true, kind, payload });
+    void response.catch((error: unknown) => {
+      if ((error as Error)?.message?.includes('Extension context invalidated')) mountedCleanup?.();
+    });
+    return response;
+  } catch (error) {
+    if ((error as Error)?.message?.includes('Extension context invalidated')) mountedCleanup?.();
+    return Promise.reject(error);
+  }
 }
 function place(target: HTMLInputElement): void {
   if (!host) return;
@@ -95,6 +112,7 @@ function reportFocus(event?: Event, target?: HTMLInputElement): Promise<void> {
   return reported;
 }
 function requestFor(target: HTMLInputElement, reported?: Promise<void>): void {
+  if (retired) return;
   focused = target;
   dismiss();
   const ownerReport =
@@ -124,6 +142,7 @@ function render(
   requestUrl: string,
 ): void {
   if (
+    retired ||
     token !== generation ||
     focused !== target ||
     deepActive() !== target ||
@@ -240,12 +259,21 @@ function render(
 }
 
 export function mountInlineCredentialSuggestions(): () => void {
+  if (mountedCleanup) return mountedCleanup;
+  const runtime = globalThis.chrome?.runtime;
+  if (!runtime?.sendMessage || !runtime.onMessage) return () => undefined;
+  retired = false;
   const navigationApi = (globalThis as typeof globalThis & { navigation?: EventTarget }).navigation;
-  void readCredentialAssistancePresentation().then((value) => {
-    presentation = value;
-    const target = deepActive();
-    if (target instanceof HTMLInputElement && target !== focused) requestFor(target);
-  });
+  void readCredentialAssistancePresentation()
+    .then((value) => {
+      if (retired) return;
+      presentation = value;
+      const target = deepActive();
+      if (target instanceof HTMLInputElement && target !== focused) requestFor(target);
+    })
+    .catch((error: unknown) => {
+      if ((error as Error)?.message?.includes('Extension context invalidated')) mountedCleanup?.();
+    });
   const onFocusIn = (event: FocusEvent): void => {
     if (!event.isTrusted || !document.hasFocus()) return;
     const target = openComposedInput(event);
@@ -328,22 +356,38 @@ export function mountInlineCredentialSuggestions(): () => void {
   window.addEventListener('hashchange', invalidate);
   navigationApi?.addEventListener('currententrychange', invalidate);
   removalObserver.observe(document.documentElement, { childList: true, subtree: true });
-  chrome.runtime.onMessage.addListener(onContextChanged);
+  const onMessage = runtime.onMessage;
+  let contextInvalidated = false;
+  try {
+    onMessage.addListener(onContextChanged);
+  } catch {
+    contextInvalidated = true;
+  }
   const onStorageChanged = (
     changes: Record<string, chrome.storage.StorageChange>,
     area: string,
   ) => {
     if (area !== 'local' || !('matrx.settings.v1' in changes)) return;
-    void readCredentialAssistancePresentation().then((value) => {
-      presentation = value;
-      invalidate();
-      const target = deepActive();
-      if (target instanceof HTMLInputElement) requestFor(target);
-    });
+    void readCredentialAssistancePresentation()
+      .then((value) => {
+        if (retired) return;
+        presentation = value;
+        invalidate();
+        const target = deepActive();
+        if (target instanceof HTMLInputElement) requestFor(target);
+      })
+      .catch((error: unknown) => {
+        if ((error as Error)?.message?.includes('Extension context invalidated'))
+          mountedCleanup?.();
+      });
   };
-  chrome.storage?.onChanged?.addListener(onStorageChanged);
+  const storageChanged = chrome.storage?.onChanged;
+  storageChanged?.addListener(onStorageChanged);
 
-  return () => {
+  const cleanup = () => {
+    if (retired) return;
+    retired = true;
+    mountedCleanup = null;
     invalidate();
     lastFocusedTarget = null;
     lastFocusReport = null;
@@ -361,7 +405,18 @@ export function mountInlineCredentialSuggestions(): () => void {
     window.removeEventListener('hashchange', invalidate);
     navigationApi?.removeEventListener('currententrychange', invalidate);
     removalObserver.disconnect();
-    chrome.runtime.onMessage.removeListener(onContextChanged);
-    chrome.storage?.onChanged?.removeListener(onStorageChanged);
+    try {
+      onMessage.removeListener(onContextChanged);
+    } catch {
+      // Chrome can revoke listener APIs when it invalidates the old content realm.
+    }
+    try {
+      storageChanged?.removeListener(onStorageChanged);
+    } catch {
+      // The document listeners and chooser above still must be retired.
+    }
   };
+  mountedCleanup = cleanup;
+  if (contextInvalidated) cleanup();
+  return cleanup;
 }

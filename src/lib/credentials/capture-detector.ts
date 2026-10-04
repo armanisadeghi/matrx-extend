@@ -209,19 +209,28 @@ export function snapshotLogin(
 function postCandidate(
   candidate: CaptureCandidateWire,
   onReply: (reply: CaptureCandidateReply | null, transportFailure: boolean) => void,
+  onInvalidated: () => void,
 ): void {
   try {
-    if (!chrome.runtime?.id) return;
-    chrome.runtime
+    const runtime = globalThis.chrome?.runtime;
+    if (!runtime?.id || !runtime.sendMessage) {
+      onInvalidated();
+      return;
+    }
+    runtime
       .sendMessage({
         __matrx: true,
         kind: CHANNELS.CREDENTIAL_CAPTURE_CANDIDATE,
         payload: candidate,
       })
       .then((reply) => onReply(reply as CaptureCandidateReply, false))
-      .catch(() => onReply(null, true));
-  } catch {
-    onReply(null, true);
+      .catch((error: unknown) => {
+        if ((error as Error)?.message?.includes('Extension context invalidated')) onInvalidated();
+        else onReply(null, true);
+      });
+  } catch (error) {
+    if ((error as Error)?.message?.includes('Extension context invalidated')) onInvalidated();
+    else onReply(null, true);
   }
 }
 
@@ -253,6 +262,16 @@ export function mountCaptureDetector(doc: Document = document): () => void {
   let generation = 0;
 
   const consider = (anchor: Element | null, startsGesture: boolean) => {
+    if (disposed) return;
+    try {
+      if (!globalThis.chrome?.runtime?.id || !chrome.runtime.sendMessage) {
+        dispose();
+        return;
+      }
+    } catch {
+      dispose();
+      return;
+    }
     const group = coherentGroup(anchor);
     if (!group) return;
     const now = Date.now();
@@ -282,14 +301,18 @@ export function mountCaptureDetector(doc: Document = document): () => void {
         })
         .catch(() => undefined);
     };
-    postCandidate(snap, (reply, transportFailure) => {
-      if (!isCurrentSubmission()) return;
-      if (reply?.status === 'unavailable') {
-        renderUnavailable(reply.reason);
-      } else if (transportFailure) {
-        renderUnavailable('capture_unavailable', true);
-      }
-    });
+    postCandidate(
+      snap,
+      (reply, transportFailure) => {
+        if (!isCurrentSubmission()) return;
+        if (reply?.status === 'unavailable') {
+          renderUnavailable(reply.reason);
+        } else if (transportFailure) {
+          renderUnavailable('capture_unavailable', true);
+        }
+      },
+      dispose,
+    );
   };
 
   // Real form submission (capture phase so a handler that stops propagation or
@@ -329,11 +352,13 @@ export function mountCaptureDetector(doc: Document = document): () => void {
   doc.addEventListener('submit', onSubmit, true);
   doc.addEventListener('keydown', onKeyDown, true);
   doc.addEventListener('click', onClick, true);
-  return () => {
+  const dispose = () => {
+    if (disposed) return;
     disposed = true;
     generation++;
     doc.removeEventListener('submit', onSubmit, true);
     doc.removeEventListener('keydown', onKeyDown, true);
     doc.removeEventListener('click', onClick, true);
   };
+  return dispose;
 }
