@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "case": "EXT-F-1007 extension_reload",
+  "source_run": "37191118595",
+  "status": "diagnostic_handoff_no_causal_pointer_fix",
+  "established": [
+    "The receipt reports stage extension_reload and message unique visible pointer target. That exact message is emitted by settings-panel-driver.click for pointer_target_not_unique.",
+    "After entering extension_reload, the Scrape driver calls reloadOwnedExtension, navigates to /referrals, and then calls click on the replacement panel's Scrape tab. The reload helper uses native_extension_* failure messages; its return was discarded in the receipt. The pointer message therefore places the failure at the post-reload Scrape click, after the reload helper returned.",
+    "The old receipt stores neither matchedTargetCount nor visibleMatchCount, so it cannot distinguish zero matching buttons, duplicate buttons, or nonvisible matches. It also stores no native reload lifecycle result or wall-clock step boundaries.",
+    "The resource journal records admission at 2026-10-04T09:14:06.168Z, one RESOURCE_WATCH_UNSAFE CPU_BUSY sample at 09:14:22.237Z (busy fraction 0.86), child exit 1 at 09:14:32.478Z, and final child_failed/resourceInvalid false at 09:14:32.598Z. It records no healthy sample after the unsafe event. Browser performance timestamps in the receipt do not anchor those events to wall time."
+  ],
+  "unknowns": [
+    "Whether the pointer target count was zero, greater than one, or one matching button that failed visibility at the first sample.",
+    "Whether CPU pressure contributed to UI readiness at the failed pointer boundary.",
+    "Whether D118 left clipping came from document scroll, outer navigation scroll, result-tab scroll, or width growth."
+  ],
+  "driver_change": {
+    "file": "tests/browser/scrape-guest-native-acceptance.mjs",
+    "effect": "Future receipts store a wall-clock reload step before the helper, the returned lifecycle proof immediately afterward, and the driver's bounded pointerFailure object on failure. Read-only horizontal geometry is recorded after fast capture, each result-tab selection, returning to Article, and deep capture.",
+    "does_not_claim": "The change does not make pointer resolution pass and does not establish a product fault or a clean reload acceptance."
+  },
+  "resource_gate": {
+    "current": "The workflow calls hosted-resource-readiness before acceptance and wraps the child in stabilization-resource.mjs run. The wrapper samples during execution and stops the child after the policy's unsafeSamplesToStop count. The Scrape driver does not read a resource journal, unsafe-hold marker, or health state at UI batch boundaries.",
+    "next_integration_point": "An owner of the shared native harness should add a cooperative boundary at exercisePanel / trusted-input batches that checks the existing stabilization resource state before the next batch. Reuse the policy and journal semantics; do not invent a new threshold. This remains separate from this Scrape-specific diagnostic patch."
+  },
+  "verification": {
+    "source_syntax": "node --check tests/browser/scrape-guest-native-acceptance.mjs passed",
+    "native_rerun": "Not run in this bounded lane; the next native run must be diagnostic and resource-gated, not presented as a pass.",
+    "causal_red_green": "Unavailable from the old artifact: the first pointer sample and reload lifecycle were discarded. The source change captures the missing boundary on the next run; no pointer behavior was altered."
+  }
+}

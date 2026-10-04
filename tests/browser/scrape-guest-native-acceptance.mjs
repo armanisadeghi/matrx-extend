@@ -45,6 +45,10 @@ const report = {
   failure: null,
   original_busy_failure: null,
   cpu_diagnostic: null,
+  horizontal_geometry: [],
+  reload_step: null,
+  reload_lifecycle: null,
+  driver_failure: null,
 };
 const mark = (id, status, evidence, remaining = []) =>
   report.cases.push({ id, status, evidence, remaining });
@@ -65,6 +69,39 @@ async function armBusyObserver(panel, mode) {
 }
 async function busyObservation(panel) {
   return evaluate(panel, readBusyExpression);
+}
+
+async function horizontalGeometry(panel, boundary) {
+  const geometry = await evaluate(
+    panel,
+    `(() => {
+    const rect = (node) => {
+      if (!node) return null;
+      const r = node.getBoundingClientRect();
+      return { left: r.left, right: r.right, width: r.width,
+        scrollLeft: node.scrollLeft, scrollWidth: node.scrollWidth, clientWidth: node.clientWidth };
+    };
+    const outer = document.querySelector('button[role="tab"][title="Scrape"]');
+    const pane = outer?.getAttribute('aria-controls')
+      ? document.getElementById(outer.getAttribute('aria-controls')) : null;
+    const resultList = pane?.querySelector('[role="tablist"]');
+    const selected = resultList?.querySelector('[role="tab"][aria-selected="true"]');
+    const title = pane?.querySelector('.truncate.text-sm.font-medium');
+    const capture = [...(pane?.querySelectorAll('button') ?? [])]
+      .find((node) => (node.getAttribute('title') ?? node.getAttribute('data-matrx-title') ?? '')
+        .startsWith('Capture the page exactly'));
+    const ancestors = [];
+    for (let node = selected?.parentElement; node && ancestors.length < 8; node = node.parentElement) {
+      const style = getComputedStyle(node);
+      if (/(auto|scroll|hidden|clip)/.test(style.overflowX)) ancestors.push(rect(node));
+    }
+    return { viewportWidth: innerWidth, document: rect(document.documentElement), body: rect(document.body),
+      outerTabs: rect(outer?.closest('[role="tablist"]')), scrapePane: rect(pane),
+      resultTabs: rect(resultList), selectedTrigger: rect(selected), title: rect(title),
+      captureRow: rect(capture?.parentElement), selectedScrollableAncestors: ancestors };
+  })()`,
+  );
+  return { boundary, at: new Date().toISOString(), geometry };
 }
 
 async function scrapeState(panel) {
@@ -201,6 +238,7 @@ try {
       const fastBusy = await busyObservation(panel);
       report.fast_busy_observation = fastBusy;
       report.fast_screenshot = await screenshot(panel, artifacts, 'scrape-fast-article.png');
+      report.horizontal_geometry.push(await horizontalGeometry(panel, 'after_fast_capture'));
       try {
         assert.equal(fastBusy.observed, true, 'scrape_fast_busy_not_observed');
         assert.match(fastBusy.text ?? '', /Capturing/, 'scrape_fast_busy_label_not_observed');
@@ -304,6 +342,7 @@ try {
           (s) => s?.selected === label && s.visible && typeof s.resultText === 'string',
         );
         viewed[label] = state.resultText.slice(0, 300);
+        report.horizontal_geometry.push(await horizontalGeometry(panel, `after_${label}_tab`));
       }
       assert.match(viewed.Article, /Harbor Dental intake guide/);
       assert.match(viewed.Links, /Patient forms/);
@@ -328,6 +367,7 @@ try {
 
       report.stage = 'deep_capture';
       await click(panel, 'scrape-result-tab', 'Article');
+      report.horizontal_geometry.push(await horizontalGeometry(panel, 'after_return_to_Article'));
       await armBusyObserver(panel, 'deep');
       await click(
         panel,
@@ -348,6 +388,7 @@ try {
       const deepBusy = await busyObservation(panel);
       report.deep_busy_observation = deepBusy;
       report.deep_screenshot = await screenshot(panel, artifacts, 'scrape-deep-article.png');
+      report.horizontal_geometry.push(await horizontalGeometry(panel, 'after_deep_capture'));
       assert.equal(deepBusy.observed, true, 'scrape_deep_busy_not_observed');
       assert.match(deepBusy.text, /Scrolling/, 'scrape_deep_progress_not_observed');
       mark(
@@ -427,10 +468,24 @@ try {
       assert.equal(beforeReload.title, 'Research brief: product discovery');
       t20.evidence.reload_origin_url = page.url();
       t20.evidence.previous_content_cleared_before_reload = true;
+      report.reload_step = { name: 'reload_extension', at: new Date().toISOString() };
       const replacement = await reloadExtension();
+      report.reload_lifecycle = {
+        observed_at: new Date().toISOString(),
+        management_reload_clicked: replacement.management_reload_clicked,
+        old_targets_retired: replacement.old_targets_retired,
+        worker_replaced: replacement.worker_replaced,
+        panel_replaced: replacement.panel_replaced,
+        context_boundary: replacement.context_boundary,
+      };
       try {
         await page.goto(`${origin}/referrals`);
+        report.reload_step = {
+          name: 'open_scrape_in_replacement_panel',
+          at: new Date().toISOString(),
+        };
         await click(replacement.panel, 'title', 'Scrape');
+        report.reload_step = { name: 'observe_replacement_scrape', at: new Date().toISOString() };
         const after = await waitFor(
           'scrape_reload_empty',
           () => scrapeState(replacement.panel),
@@ -451,6 +506,7 @@ try {
           report.cases.find((c) => c.id === id).evidence.extension_reload_empty = true;
         report.cases.find((c) => c.id === 'EXT-F-1007-T20').status = 'passed';
         report.cases.find((c) => c.id === 'EXT-F-1007-T20').remaining = [];
+        report.reload_step = { name: 'replacement_scrape_observed', at: new Date().toISOString() };
       } finally {
         await replacement.panel.detach();
       }
@@ -473,6 +529,9 @@ try {
 } catch (error) {
   report.status = 'unverified';
   report.failure = { stage: report.stage, code: String(error?.message ?? error).slice(0, 300) };
+  if (error?.driverFailure) report.driver_failure = error.driverFailure;
+  if (error?.lifecycleEvidence) report.reload_lifecycle_failure = error.lifecycleEvidence;
+  if (error?.contextBoundary) report.reload_context_failure = error.contextBoundary;
   process.exitCode = 1;
 }
 await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
