@@ -97,3 +97,36 @@ test('same-turn text-node updates count only when disabled and busy overlap', as
   assert.equal(observed.text, 'Capturing…');
   assert.equal(observed.overlappingMutationState, true);
 });
+
+test('busy in a foreign pane cannot pass after button returns idle to Scrape', async () => {
+  const window = panel();
+  const title = 'Capture the page exactly as it is right now';
+  window.eval(armBusyExpression(title));
+  const button = window.document.querySelector('#scrape-pane button');
+  const foreign = window.document.createElement('section');
+  foreign.id = 'foreign-pane';
+  window.document.body.append(foreign);
+  foreign.append(button);
+  button.disabled = true;
+  button.textContent = 'Capturing…';
+  button.disabled = false;
+  button.textContent = 'Re-capture';
+  window.document.querySelector('#scrape-pane').append(button);
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(window.eval(readBusyExpression).observed, false);
+});
+
+test('busy while hidden cannot pass after button returns idle and visible', async () => {
+  const window = panel();
+  const title = 'Capture the page exactly as it is right now';
+  window.eval(armBusyExpression(title));
+  const button = window.document.querySelector('#scrape-pane button');
+  button.style.display = 'none';
+  button.disabled = true;
+  button.textContent = 'Capturing…';
+  button.disabled = false;
+  button.textContent = 'Re-capture';
+  button.style.display = 'block';
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(window.eval(readBusyExpression).observed, false);
+});

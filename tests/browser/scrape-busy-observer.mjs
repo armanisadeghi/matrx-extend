@@ -5,7 +5,7 @@ export function armBusyExpression(title) {
     const state = { observed:false, text:null, samples:0, matchingButtons:0,
       buttonReplacements:0, disabledSamples:0,
       disabledMutationRecords:0, busyLabelMutationRecords:0,
-      overlappingMutationState:false };
+      overlappingMutationState:false, ambiguousOwnershipBatches:0 };
     globalThis.__scrapeBusy = state;
     let previousButton = null;
     let previousDisabled = false;
@@ -18,7 +18,9 @@ export function armBusyExpression(title) {
       const buttons = pane?.matches('[role="tabpanel"][data-state="active"]')
         ? [...pane.querySelectorAll('button')].filter(n =>
             (n.getAttribute('title') ?? n.getAttribute('data-matrx-title')) === ${JSON.stringify(title)}
-            && n.getBoundingClientRect().width > 0 && n.getBoundingClientRect().height > 0)
+            && n.getBoundingClientRect().width > 0 && n.getBoundingClientRect().height > 0
+            && getComputedStyle(n).display !== 'none'
+            && getComputedStyle(n).visibility !== 'hidden' && !n.closest('[inert]'))
         : [];
       state.samples++;
       state.matchingButtons = buttons.length;
@@ -26,6 +28,18 @@ export function armBusyExpression(title) {
         state.buttonReplacements++;
       const button = buttons.length === 1 ? buttons[0] : null;
       if (button && button === previousButton) {
+        const ownershipChanged = records.some(record => {
+          if (record.type === 'childList')
+            return [...record.addedNodes, ...record.removedNodes].some(n =>
+              n === button || n.contains?.(button));
+          if (record.type !== 'attributes') return false;
+          if (!['style','class','hidden','inert','aria-hidden','data-state']
+              .includes(record.attributeName)) return false;
+          const target = record.target;
+          return target === button || target === outer[0] ||
+            target.contains?.(button) || button.contains(target);
+        });
+        if (ownershipChanged) state.ambiguousOwnershipBatches++;
         let disabled = previousDisabled;
         let busy = previousBusyLabel;
         let busyText = previousBusyText;
@@ -60,7 +74,7 @@ export function armBusyExpression(title) {
         }
         // A record-only verdict is valid only if the replayed transitions
         // reconcile with the current DOM; otherwise retain diagnostics.
-        if (overlap && disabled === button.disabled
+        if (!ownershipChanged && overlap && disabled === button.disabled
             && busy === button.textContent.includes(busyLabel)) {
           state.observed = true;
           state.text = overlapText;
@@ -92,5 +106,6 @@ export const readBusyExpression = `(() => {
   globalThis.__scrapeBusyObserver?.disconnect();
   return globalThis.__scrapeBusy ?? {observed:false,text:null,samples:0,
     matchingButtons:0,buttonReplacements:0,disabledSamples:0,
-    disabledMutationRecords:0,busyLabelMutationRecords:0,overlappingMutationState:false};
+    disabledMutationRecords:0,busyLabelMutationRecords:0,
+    overlappingMutationState:false,ambiguousOwnershipBatches:0};
 })()`;
