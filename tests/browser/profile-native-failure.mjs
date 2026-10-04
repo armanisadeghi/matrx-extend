@@ -126,6 +126,26 @@ export function safeProfileFailureCode(error) {
   const driverCode = error?.driverFailure?.code;
   if (POINTER_CODES.has(driverCode)) return driverCode;
   const candidate = typeof error?.message === 'string' ? error.message.split(/[:\n]/, 1)[0] : '';
+  if (/^profile_existing_[a-z_]+_unexpected_change$/.test(candidate))
+    return 'profile_existing_untouched_field_changed';
+  if (/^profile_existing_[a-z_]+_unexpected_successor$/.test(candidate))
+    return 'profile_existing_tested_field_mismatch';
+  if (/^profile_existing_[a-z_]+_changed$/.test(candidate))
+    return 'profile_existing_identity_changed';
+  if (/^profile_existing_[a-z_]+_missing$/.test(candidate))
+    return 'profile_existing_required_field_missing';
+  if (candidate === 'profile_existing_concurrent_change') return candidate;
+  if (candidate === 'profile_restore_conditional_patch_missed') return candidate;
+  if (
+    [
+      'profile_restore_owner_changed',
+      'profile_restore_organization_changed',
+      'profile_restore_row_replaced',
+      'profile_restore_version_invalid',
+      'profile_restore_wrong_owner',
+    ].includes(candidate)
+  )
+    return candidate;
   return PROFILE_FAILURE_CODES.has(candidate) ? candidate : 'profile_unclassified_failure';
 }
 

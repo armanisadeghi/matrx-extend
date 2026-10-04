@@ -5,6 +5,7 @@ import {
   PROFILE_TESTED_COLUMNS,
   createExistingProfileWriteJournal,
 } from './profile-existing-row-journal.mjs';
+import { safeProfileFailureCode } from './profile-native-failure.mjs';
 
 const original = {
   user_id: 'db4a31ad-6b18-4d33-a296-593f1e7288c9',
@@ -99,6 +100,17 @@ test('existing Profile journal refuses concurrent changes and does not patch the
   const journal = await s.journal();
   s.write({ legal_first_name: 'Other writer' });
   await assert.rejects(journal.restore(), /profile_existing_concurrent_change/);
+  assert.equal(s.patches.length, 0);
+});
+
+test('existing Profile journal catches structural changes to untouched private fields', async () => {
+  const s = setup();
+  const journal = await s.journal();
+  s.mutate({ phones: [{ number: '+14155550123', primary: false, hidden: false }] });
+  await assert.rejects(journal.restore(), (error) => {
+    assert.equal(safeProfileFailureCode(error), 'profile_existing_untouched_field_changed');
+    return true;
+  });
   assert.equal(s.patches.length, 0);
 });
 

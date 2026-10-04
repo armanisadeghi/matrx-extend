@@ -171,10 +171,7 @@ async function profileOwnerRequest(
 }
 async function readProfileOwnerRow(panel, config, userId) {
   const url = new URL('/rest/v1/user_form_profile', config.url);
-  url.searchParams.set(
-    'select',
-    'user_id,organization_id,preferred_name,legal_first_name,legal_middle_name,legal_last_name,name_suffix,pronouns,date_of_birth,company_name,job_title,created_at,version',
-  );
+  url.searchParams.set('select', '*');
   url.searchParams.set('user_id', `eq.${userId}`);
   const rows = await profileOwnerRequest(panel, config, url.href);
   assert.ok(rows.length <= 1, 'profile_owner_row_not_unique');
@@ -1046,9 +1043,8 @@ try {
             ownerConfig = { ...(await profileApiConfig()), organizationId: stored.organizationId };
             const existing = await readProfileOwnerRow(panel, ownerConfig, identity.userId);
             assert.ok(existing, 'existing_profile_row_disappeared');
-            assert.equal(
-              existing.preferred_name ?? '',
-              original,
+            assert.ok(
+              (existing.preferred_name ?? '') === original,
               'existing_profile_ui_owner_mismatch',
             );
             let baselineWritten = false;

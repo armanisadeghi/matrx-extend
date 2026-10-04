@@ -2,7 +2,7 @@
   "scope": "EXT-D-0111 existing Profile row restoration for EXT-F-1004 admin Identity T06 and Employment T18",
   "diagnosis": "The native runner created a durable journal only after it inserted an absent row; an existing admin row therefore sent T06/T18 through the unverified skip branch.",
   "write_shape": "Profile Save computes a changed-field patch; Supabase upsert sends user_id, that patch, and the existing row organization_id. The restoration request is a conditional PATCH containing only the nine tested Identity and Employment columns.",
-  "repair": "The runner privately persists the existing owner row identity, version and exact tested-field baseline before UI writes. A shared versioned intent journal verifies each successor. Cleanup restores only the tested baseline through an owner, organization, created_at, version and current-field conditional PATCH, with no delete authority. New-row conditional deletion remains separate.",
+  "repair": "The runner privately persists the full existing owner row and exact tested-field baseline before UI writes. A shared versioned intent journal verifies each successor, including structural equality of untouched fields. Cleanup restores only the tested baseline through an owner, organization, created_at, version and current-field conditional PATCH, with no delete authority. New-row conditional deletion remains separate.",
   "evidence": {
     "red": "Actual existing-row runner branch previously had no journal and recorded preexisting_row_lacks_durable_conditional_full_field_restoration for T06/T18.",
     "green": "Focused node --test suite covers baseline, runner branch, cleanup branch, null Preferred, exact restore, concurrent version, ambiguous successor and original new-row journal; 25 passed.",
