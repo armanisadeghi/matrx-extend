@@ -1,0 +1,4 @@
+AI Matrx Chrome local download fixture
+fixture_id=matrx-owned-chrome-download-fixture
+purpose=disposable-profile procedure preparation
+content=synthetic; contains no user data

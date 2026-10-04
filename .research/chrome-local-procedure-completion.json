@@ -1,0 +1,340 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-case-procedure-completion-proposal",
+  "task_id": "chrome-local-procedure-completion",
+  "source_proposal": ".research/procedure-gap-batch.json",
+  "prior_reviews": [
+    ".research/procedure-gap-batch-correction.json",
+    ".research/procedure-gap-final-fresh.json"
+  ],
+  "scope": "Five existing procedure proposals only. No inventory, defect, status, runtime result, account, browser state, system permission, or history data was changed or exercised.",
+  "fixture": {
+    "files": [
+      "tests/browser/fixtures/chrome-local-download.html",
+      "tests/browser/fixtures/chrome-local-download.txt"
+    ],
+    "purpose": "Owned synthetic deterministic download source. In the disposable profile, open the HTML fixture and click its download link; verify completed filename before the case. No file contents contain user data.",
+    "execution_state": "Source fixture created; browser download not run, so completed-download fixture remains runtime-unverified.",
+    "cleanup": "Retire/delete the dedicated disposable browser profile only after member/admin runs and sanitized evidence capture. That disposes fixture history/download/session records and the downloaded copy."
+  },
+  "coverage_boundary": {
+    "invalid_inputs": "Each proposed case now includes one schema-invalid argument set and expected pre-execution validation rejection, based on current Zod schemas.",
+    "permission_negative": "Explicitly not applicable/unreachable via manual Catalog Run, which bypasses dispatcher auth. Do not use an invented toggle or permission removal. A separate dispatcher/agent denial procedure is still required.",
+    "required_sessions": "Manifest-required Chrome permission. Loaded-artifact preflight only; no Settings optional grant. Missing permission/API is a stop or runtime unavailable response, not proof of authorization denial.",
+    "status": "All proposed text remains design only; no runtime pass claimed."
+  },
+  "case_updates": {
+    "EXT-F-4042-T01": {
+      "feature_id": "EXT-F-4042",
+      "title": "List recent controlled history entries",
+      "control_ids": ["EXT-F-4042-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "complete-procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared receipt-bound build/profile/reload setup.",
+        "Complete shared history fixture preparation in the disposable profile; the two fixture visits must be within the selected lookback window.",
+        "Select All handlers in the Tools Catalog surface selector so the internal list_recent_history delegate is visible. The manual runner directly invokes this handler; this procedure does not establish dispatcher permission behavior."
+      ],
+      "steps": [
+        "Warm run: open list_recent_history and run with {\"minutes\":60,\"max_results\":50} immediately after the controlled fixture visits.",
+        "Inspect the inline result's count and items. Find only the two recorded fixture URLs and compare their titles, visit timestamps, and visit counts with the browser actions; do not copy other result rows into evidence.",
+        "Run the same arguments once more and confirm the fixture entries remain present and ordered newest first by last_visit_ms.",
+        "With the same Tools row selected, run {\"minutes\":0,\"max_results\":50}; expect argument validation rejection before execution because minutes must be a positive integer (maximum 43,200). Do not interpret an empty result as the negative assertion.",
+        "After the required extension/panel/target-tab reload, rerun the same arguments and compare only the controlled fixture entries.",
+        "After capturing only the controlled fixture assertion, finish both role runs, close Chrome, and retire/delete the dedicated disposable profile. This removes its synthetic history, download record and file, closed-session entries, and restored fixture tab; do not reuse it. Preserve only sanitized build/run receipt and the specific assertion result."
+      ],
+      "expected": [
+        "The result has a count and items array; controlled pages visited within 60 minutes appear with their URL/title and visit metadata, subject to Chrome history API results.",
+        "Items are ordered by descending last_visit_ms when timestamps are present. Exact total count and visit_count may include browser-generated changes, so use the two known fixture URLs as the assertion boundary.",
+        "An unavailable API or surfaced error is recorded as unverified/failure evidence for review; an empty list does not prove the feature works when fixture visits are missing.",
+        "The malformed-schema input is rejected by the runner and makes no Chrome API call; record the validation error without promoting any runtime status."
+      ],
+      "dimensions": [
+        "valid-input",
+        "invalid-input",
+        "controlled-owned-fixture",
+        "warm",
+        "reload",
+        "permission-negative-not-applicable-manual-path"
+      ],
+      "source_evidence": [
+        "src/lib/tools/handlers/browser-data.ts:138-168",
+        "src/features/tools/ToolsView.tsx:1-12",
+        "src/features/tools/ToolsView.tsx:121-152,198-212,390-477",
+        "src/lib/tools/categories.ts:461-560",
+        "src/lib/tools/handlers/browser-data.ts:123-204",
+        "src/lib/tools/handlers/canonical-mergers.ts:394-453",
+        "src/lib/tools/handlers/optional-perms.ts:166-212",
+        "wxt.config.ts:66-84,129"
+      ],
+      "uncertainty": [
+        "No history query was executed. A dedicated disposable profile and matching Chrome history permission are prerequisites, not confirmed available fixtures.",
+        "Manual Run skips dispatcher permission checks; this is not evidence about registered tool binding or agent-call reachability."
+      ],
+      "procedure_gaps": [
+        "Direct Tools manual Run invokes the local handler without dispatcher authorization, so an authorization-denial / Ask-Act negative case is unreachable through this route. Separate dispatcher/agent coverage remains open.",
+        "Chrome sessions is a required manifest permission and these handlers only feature-detect API availability; there is no supported permission toggle in this procedure. Missing sessions in the exact loaded artifact is a preflight stop, not a permission-denial result.",
+        "This is source-derived procedure text only; all role results remain runtime-unverified until separately executed and reviewed."
+      ],
+      "permissions_and_reachability": {
+        "manual_permission_denial": "Not applicable / unreachable: ToolsView manual Run calls handler directly and bypasses dispatcher permission enforcement; no supported user action in this case can produce the dispatcher denial branch. Keep dispatcher/Ask-Act negative coverage as a separate unresolved case.",
+        "sessions_permission": "For EXT-F-4094/4166, sessions is declared required in wxt.config.ts, not optional. Preflight exact loaded artifact and stop if absent. Do not toggle or remove permissions. For other cases, verify required APIs in loaded artifact/profile; unavailable API result is distinct runtime behavior, not permission-denial evidence.",
+        "sources": [
+          "src/features/tools/ToolsView.tsx:390-477",
+          "wxt.config.ts:66-84,129",
+          "src/lib/tools/handlers/optional-perms.ts:166-212"
+        ]
+      }
+    },
+    "EXT-F-4043-T01": {
+      "feature_id": "EXT-F-4043",
+      "title": "Find a controlled completed download",
+      "control_ids": ["EXT-F-4043-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "complete-procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared receipt-bound build/profile/reload setup.",
+        "Open committed owned fixture page tests/browser/fixtures/chrome-local-download.html in the dedicated disposable profile, click its Download synthetic fixture link, confirm completed filename matrx-owned-chrome-download-fixture.txt in Chrome Downloads, and record only that filename. This fixture source exists; completion remains unverified until a browser run.",
+        "Confirm the loaded Chrome artifact has the required downloads API permission, and select All handlers in Tools Catalog so the internal list_downloads delegate is visible."
+      ],
+      "steps": [
+        "Warm run: open list_downloads and run with {\"query\":\"<exact synthetic fixture filename>\",\"state\":\"complete\",\"limit\":10}, substituting only the recorded fixture name.",
+        "Inspect the inline downloads array for the controlled fixture and compare filename, state, byte totals, and nonempty start_time with the known download. Avoid copying its URL or other download rows into the report.",
+        "Run with the same filename query and limit but omit state to confirm query matching still finds the fixture; compare by its synthetic filename only.",
+        "With the same Tools row selected, run {\"query\":\"matrx-owned-chrome-download-fixture.txt\",\"state\":\"paused\",\"limit\":10}; expect argument validation rejection before execution because state is limited to in_progress, interrupted, or complete.",
+        "After the required extension/panel reload, rerun the state-filtered query and confirm the same controlled record remains discoverable.",
+        "After capturing only the controlled fixture assertion, finish both role runs, close Chrome, and retire/delete the dedicated disposable profile. This removes its synthetic history, download record and file, closed-session entries, and restored fixture tab; do not reuse it. Preserve only sanitized build/run receipt and the specific assertion result."
+      ],
+      "expected": [
+        "The response has count and downloads; the controlled fixture appears in the complete-state query with state complete, a matching filename, and coherent bytes_received/total_bytes.",
+        "The unfiltered query also finds the fixture. Results are requested newest first; the procedure does not require an exact total count.",
+        "If the controlled download fixture or required API is absent, stop and record the case unverified; never infer success from unrelated profile data.",
+        "The malformed-schema input is rejected by the runner and makes no Chrome API call; record the validation error without promoting any runtime status."
+      ],
+      "dimensions": [
+        "valid-input",
+        "invalid-input",
+        "controlled-owned-fixture",
+        "warm",
+        "reload",
+        "permission-negative-not-applicable-manual-path"
+      ],
+      "source_evidence": [
+        "src/lib/tools/handlers/browser-data.ts:173-204",
+        "src/lib/tools/catalog.ts:87-88",
+        "src/features/tools/ToolsView.tsx:121-152,198-212,390-477",
+        "src/lib/tools/categories.ts:461-560",
+        "wxt.config.ts:66-84",
+        "src/lib/tools/handlers/browser-data.ts:123-204",
+        "src/lib/tools/handlers/canonical-mergers.ts:394-453",
+        "src/lib/tools/handlers/optional-perms.ts:166-212",
+        "wxt.config.ts:66-84,129"
+      ],
+      "uncertainty": [
+        "The owned source fixture is committed at tests/browser/fixtures/chrome-local-download.html and chrome-local-download.txt, but no download was performed here; completed-download state and filename still require browser confirmation.",
+        "Manual Run skips dispatcher authorization. This procedure does not assess dispatcher enforcement, live binding, or account-level data exposure."
+      ],
+      "procedure_gaps": [
+        "Direct Tools manual Run invokes the local handler without dispatcher authorization, so an authorization-denial / Ask-Act negative case is unreachable through this route. Separate dispatcher/agent coverage remains open.",
+        "Chrome sessions is a required manifest permission and these handlers only feature-detect API availability; there is no supported permission toggle in this procedure. Missing sessions in the exact loaded artifact is a preflight stop, not a permission-denial result.",
+        "This is source-derived procedure text only; all role results remain runtime-unverified until separately executed and reviewed."
+      ],
+      "permissions_and_reachability": {
+        "manual_permission_denial": "Not applicable / unreachable: ToolsView manual Run calls handler directly and bypasses dispatcher permission enforcement; no supported user action in this case can produce the dispatcher denial branch. Keep dispatcher/Ask-Act negative coverage as a separate unresolved case.",
+        "sessions_permission": "For EXT-F-4094/4166, sessions is declared required in wxt.config.ts, not optional. Preflight exact loaded artifact and stop if absent. Do not toggle or remove permissions. For other cases, verify required APIs in loaded artifact/profile; unavailable API result is distinct runtime behavior, not permission-denial evidence.",
+        "sources": [
+          "src/features/tools/ToolsView.tsx:390-477",
+          "wxt.config.ts:66-84,129",
+          "src/lib/tools/handlers/optional-perms.ts:166-212"
+        ]
+      }
+    },
+    "EXT-F-4094-T01": {
+      "feature_id": "EXT-F-4094",
+      "title": "List the controlled recently-closed tab",
+      "control_ids": ["EXT-F-4094-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "complete-procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared receipt-bound build/profile/reload setup and recently-closed fixture preparation.",
+        "Confirm sessions is present among required permissions in the loaded Chrome artifact and granted in this disposable profile before running. Select All handlers in Tools Catalog so the internal list_recently_closed delegate is visible. Missing permission is a prerequisite gap, not a product result.",
+        "Only the dedicated test tab is closed; do not close or restore personal tabs/windows."
+      ],
+      "steps": [
+        "Warm run: open list_recently_closed and run with {\"max_results\":10}.",
+        "Inspect entries for the exact controlled test tab URL/title and its tab session ID. Record only that matching row and whether a tab or window entry was returned.",
+        "Run a second time without changing browser state; confirm the controlled closed-tab entry remains listed and is within the requested maximum.",
+        "Run {\"max_results\":0}; expect argument validation rejection before execution because max_results must be a positive integer up to 25. This does not test missing sessions permission.",
+        "After extension/panel reload, run again and compare the controlled row. Do not restore it in this case; restoration is covered by EXT-F-4166-T01.",
+        "After capturing only the controlled fixture assertion, finish both role runs, close Chrome, and retire/delete the dedicated disposable profile. This removes its synthetic history, download record and file, closed-session entries, and restored fixture tab; do not reuse it. Preserve only sanitized build/run receipt and the specific assertion result."
+      ],
+      "expected": [
+        "The result reports ok=true, count, and entries; the controlled recently closed tab appears with the recorded URL/title when Chrome retains the session.",
+        "Returned entries do not exceed max_results. Exact count/order can change due to browser activity and are not fixed assertions.",
+        "If the loaded artifact lacks sessions or the sessions API is unavailable, stop and leave behavior unverified rather than treating an empty result as success.",
+        "The malformed-schema input is rejected by the runner and makes no Chrome API call; record the validation error without promoting any runtime status."
+      ],
+      "dimensions": [
+        "valid-input",
+        "invalid-input",
+        "controlled-owned-fixture",
+        "warm",
+        "reload",
+        "permission-negative-not-applicable-manual-path"
+      ],
+      "source_evidence": [
+        "src/lib/tools/handlers/optional-perms.ts:166-192",
+        "wxt.config.ts:66-84",
+        "src/features/tools/ToolsView.tsx:121-152,198-212,390-477",
+        "src/lib/tools/categories.ts:461-560",
+        "src/lib/tools/handlers/browser-data.ts:123-204",
+        "src/lib/tools/handlers/canonical-mergers.ts:394-453",
+        "src/lib/tools/handlers/optional-perms.ts:166-212",
+        "wxt.config.ts:66-84,129"
+      ],
+      "uncertainty": [
+        "Chrome's retained session entry and the loaded artifact's required sessions permission are runtime prerequisites and were not inspected or exercised.",
+        "Manual Run bypasses the dispatcher gate described in dispatch.ts; only the direct handler path is covered."
+      ],
+      "procedure_gaps": [
+        "Direct Tools manual Run invokes the local handler without dispatcher authorization, so an authorization-denial / Ask-Act negative case is unreachable through this route. Separate dispatcher/agent coverage remains open.",
+        "Chrome sessions is a required manifest permission and these handlers only feature-detect API availability; there is no supported permission toggle in this procedure. Missing sessions in the exact loaded artifact is a preflight stop, not a permission-denial result.",
+        "This is source-derived procedure text only; all role results remain runtime-unverified until separately executed and reviewed."
+      ],
+      "permissions_and_reachability": {
+        "manual_permission_denial": "Not applicable / unreachable: ToolsView manual Run calls handler directly and bypasses dispatcher permission enforcement; no supported user action in this case can produce the dispatcher denial branch. Keep dispatcher/Ask-Act negative coverage as a separate unresolved case.",
+        "sessions_permission": "For EXT-F-4094/4166, sessions is declared required in wxt.config.ts, not optional. Preflight exact loaded artifact and stop if absent. Do not toggle or remove permissions. For other cases, verify required APIs in loaded artifact/profile; unavailable API result is distinct runtime behavior, not permission-denial evidence.",
+        "sources": [
+          "src/features/tools/ToolsView.tsx:390-477",
+          "wxt.config.ts:66-84,129",
+          "src/lib/tools/handlers/optional-perms.ts:166-212"
+        ]
+      }
+    },
+    "EXT-F-4165-T01": {
+      "feature_id": "EXT-F-4165",
+      "title": "Search and list recent controlled history",
+      "control_ids": ["EXT-F-4165-C01", "EXT-F-4165-C02", "EXT-F-4165-C03"],
+      "modes": ["member", "admin"],
+      "design_status": "complete-procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared receipt-bound build/profile/reload setup and controlled history fixture preparation.",
+        "Keep the Tools Catalog surface selector at Agent surface for canonical chrome_history. Its schema must load from the current handler source; if it does not, stop and preserve the schema error as an unresolved prerequisite."
+      ],
+      "steps": [
+        "Warm recent branch: open chrome_history and run with {\"action\":\"recent\",\"minutes\":60,\"limit\":50}; compare only the recorded fixture URLs and verify recent ordering.",
+        "Search branch: run with {\"action\":\"search\",\"query\":\"<distinctive public hostname from controlled fixture>\",\"limit\":50}, replacing the placeholder with the hostname actually visited.",
+        "Check the search output for the controlled fixture URL/title and compare it with the recent result. Do not infer search support from recent-only success.",
+        "Run {\"action\":\"other\"}; expect argument validation rejection before execution because action is required and limited to search or recent. No history handler should run for this input.",
+        "After extension/panel/target-tab reload, repeat both action values and compare only the known fixture rows.",
+        "After capturing only the controlled fixture assertion, finish both role runs, close Chrome, and retire/delete the dedicated disposable profile. This removes its synthetic history, download record and file, closed-session entries, and restored fixture tab; do not reuse it. Preserve only sanitized build/run receipt and the specific assertion result."
+      ],
+      "expected": [
+        "The recent action delegates to the recent-history handler and returns the controlled entries visited in the configured window, ordered newest first where timestamps are present.",
+        "The search action delegates to history search and includes the controlled URL/title matching the supplied hostname query.",
+        "Exact count and timestamps are not fixed. Missing fixture entries, schema-loading errors, or API errors remain unverified evidence until reviewed.",
+        "The malformed-schema input is rejected by the runner and makes no Chrome API call; record the validation error without promoting any runtime status."
+      ],
+      "dimensions": [
+        "valid-input",
+        "invalid-input",
+        "controlled-owned-fixture",
+        "warm",
+        "reload",
+        "permission-negative-not-applicable-manual-path"
+      ],
+      "source_evidence": [
+        "src/lib/tools/handlers/canonical-mergers.ts:407-435",
+        "src/lib/tools/handlers/browser-data.ts:138-168",
+        "src/features/tools/ToolsView.tsx:121-152,198-212,390-477",
+        "src/lib/tools/categories.ts:461-560",
+        "src/lib/tools/handlers/browser-data.ts:123-204",
+        "src/lib/tools/handlers/canonical-mergers.ts:394-453",
+        "src/lib/tools/handlers/optional-perms.ts:166-212",
+        "wxt.config.ts:66-84,129"
+      ],
+      "uncertainty": [
+        "No browser calls were executed. The local Catalog includes chrome_history on its Agent surface by source, but a live agent request's advertisement and dispatch are not established by that fact or the inventory's binding census.",
+        "Manual Tools Run invokes the local handler without dispatcher authorization; the procedure does not resolve binding or Ask/Act behavior."
+      ],
+      "procedure_gaps": [
+        "Direct Tools manual Run invokes the local handler without dispatcher authorization, so an authorization-denial / Ask-Act negative case is unreachable through this route. Separate dispatcher/agent coverage remains open.",
+        "Chrome sessions is a required manifest permission and these handlers only feature-detect API availability; there is no supported permission toggle in this procedure. Missing sessions in the exact loaded artifact is a preflight stop, not a permission-denial result.",
+        "This is source-derived procedure text only; all role results remain runtime-unverified until separately executed and reviewed."
+      ],
+      "permissions_and_reachability": {
+        "manual_permission_denial": "Not applicable / unreachable: ToolsView manual Run calls handler directly and bypasses dispatcher permission enforcement; no supported user action in this case can produce the dispatcher denial branch. Keep dispatcher/Ask-Act negative coverage as a separate unresolved case.",
+        "sessions_permission": "For EXT-F-4094/4166, sessions is declared required in wxt.config.ts, not optional. Preflight exact loaded artifact and stop if absent. Do not toggle or remove permissions. For other cases, verify required APIs in loaded artifact/profile; unavailable API result is distinct runtime behavior, not permission-denial evidence.",
+        "sources": [
+          "src/features/tools/ToolsView.tsx:390-477",
+          "wxt.config.ts:66-84,129",
+          "src/lib/tools/handlers/optional-perms.ts:166-212"
+        ]
+      }
+    },
+    "EXT-F-4166-T01": {
+      "feature_id": "EXT-F-4166",
+      "title": "List and restore one controlled recently-closed tab",
+      "control_ids": ["EXT-F-4166-C01", "EXT-F-4166-C02", "EXT-F-4166-C03"],
+      "modes": ["member", "admin"],
+      "design_status": "complete-procedure-proposal-runtime-unverified",
+      "preconditions": [
+        "Complete shared receipt-bound build/profile/reload setup and recently-closed fixture preparation.",
+        "Confirm sessions is present among required permissions in the loaded Chrome artifact and granted in this disposable profile. Keep Tools Catalog at Agent surface for canonical chrome_recently_closed; confirm the exact disposable fixture tab before running.",
+        "Restore affects only the deliberately closed disposable test tab; do not use an unknown session ID or restore a real user tab."
+      ],
+      "steps": [
+        "Open chrome_recently_closed and run with {\"action\":\"list\"}; identify the single controlled fixture entry and copy its tab session ID into the run notes, not into shared evidence.",
+        "Run with {\"action\":\"restore\",\"session_id\":\"<fixture tab session ID>\"}, substituting only the ID just returned for that fixture.",
+        "Observe the inline restore result and browser tab strip; verify that the restored tab has the controlled fixture URL/title. Do not select restore without a session ID because it targets the most recent entry.",
+        "Run action=list again and verify the restored fixture is no longer offered as the same recently-closed entry. Record the result without retaining unrelated session rows.",
+        "Run {\"action\":\"other\"}; expect argument validation rejection before execution because action is required and limited to list or restore. No session restore should run for this input.",
+        "Repeat from a newly created and closed disposable fixture tab after the required extension/panel reload; do not reuse an already-restored session.",
+        "After capturing only the controlled fixture assertion, finish both role runs, close Chrome, and retire/delete the dedicated disposable profile. This removes its synthetic history, download record and file, closed-session entries, and restored fixture tab; do not reuse it. Preserve only sanitized build/run receipt and the specific assertion result."
+      ],
+      "expected": [
+        "The list action returns the controlled closed tab with its session ID, URL, and title when Chrome retains the session.",
+        "The restore action returns ok=true and Chrome reopens the controlled test URL/title; the subsequent list no longer presents that restored entry as closed.",
+        "If the fixture row, loaded sessions permission, or sessions API is missing, do not try an arbitrary session ID; stop and leave the affected procedure unverified.",
+        "The malformed-schema input is rejected by the runner and makes no Chrome API call; record the validation error without promoting any runtime status."
+      ],
+      "dimensions": [
+        "valid-input",
+        "invalid-input",
+        "controlled-owned-fixture",
+        "warm",
+        "reload",
+        "permission-negative-not-applicable-manual-path"
+      ],
+      "source_evidence": [
+        "src/lib/tools/handlers/canonical-mergers.ts:442-453",
+        "src/lib/tools/handlers/optional-perms.ts:166-212",
+        "wxt.config.ts:66-84",
+        "src/features/tools/ToolsView.tsx:121-152,198-212,390-477",
+        "src/lib/tools/categories.ts:461-560",
+        "src/lib/tools/handlers/browser-data.ts:123-204",
+        "src/lib/tools/handlers/canonical-mergers.ts:394-453",
+        "src/lib/tools/handlers/optional-perms.ts:166-212",
+        "wxt.config.ts:66-84,129"
+      ],
+      "uncertainty": [
+        "This action mutates the disposable browser session by reopening a tab; the controlled test profile and fixture must be confirmed before execution.",
+        "No loaded-artifact session permission, UI execution, tool binding, or restored-tab outcome was verified in this source-only lane."
+      ],
+      "procedure_gaps": [
+        "Direct Tools manual Run invokes the local handler without dispatcher authorization, so an authorization-denial / Ask-Act negative case is unreachable through this route. Separate dispatcher/agent coverage remains open.",
+        "Chrome sessions is a required manifest permission and these handlers only feature-detect API availability; there is no supported permission toggle in this procedure. Missing sessions in the exact loaded artifact is a preflight stop, not a permission-denial result.",
+        "This is source-derived procedure text only; all role results remain runtime-unverified until separately executed and reviewed."
+      ],
+      "permissions_and_reachability": {
+        "manual_permission_denial": "Not applicable / unreachable: ToolsView manual Run calls handler directly and bypasses dispatcher permission enforcement; no supported user action in this case can produce the dispatcher denial branch. Keep dispatcher/Ask-Act negative coverage as a separate unresolved case.",
+        "sessions_permission": "For EXT-F-4094/4166, sessions is declared required in wxt.config.ts, not optional. Preflight exact loaded artifact and stop if absent. Do not toggle or remove permissions. For other cases, verify required APIs in loaded artifact/profile; unavailable API result is distinct runtime behavior, not permission-denial evidence.",
+        "sources": [
+          "src/features/tools/ToolsView.tsx:390-477",
+          "wxt.config.ts:66-84,129",
+          "src/lib/tools/handlers/optional-perms.ts:166-212"
+        ]
+      }
+    }
+  }
+}
