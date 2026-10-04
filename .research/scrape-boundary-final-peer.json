@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "role": "fresh_independent_zero_authorship_review",
+  "reviewed_commits": {
+    "reload_timestamp": "32b0dcef4e2152d642b410ce7372347228abbb05",
+    "resource_boundary": [
+      "12f43b3e4c24b7f6ca6d2ced0d39d34d3d98f43f",
+      "a060c9fe498fb215c8280cd8fe9a17a73a658219",
+      "8e9522f3d1b76c53cbdcff6ced0a7ccc758ab81d"
+    ]
+  },
+  "reload_timestamp": {
+    "verdict_a": {
+      "status": "pass_source_scope",
+      "evidence": "The native Scrape driver appends four fixed, ordered reload phases. The pre-reload anchor survives success and interruption; the later phases are appended only when reached. The corrective resource action places reload_extension after health approval, so a guard refusal records no reload start."
+    },
+    "verdict_b": {
+      "status": "pass",
+      "evidence": "The new receipt fields contain only fixed phase names and ISO timestamps, without page text, URLs, credentials, or arbitrary errors. Focused tests distinguish complete and interrupted timelines; the builder recorded a scratch-copy overwrite mutant failure."
+    }
+  },
+  "resource_boundary": {
+    "verdict_a": {
+      "status": "pass_source_scope_native_unverified",
+      "evidence": "The shared harness supplies the native Scrape callback with a live guard health check and action wrapper. The driver checks before each logical UI action batch and again after long result waits before accepting observations. The reader uses the guard's actual pending journal, admitted and healthy event fields, owner nonce and run ID, stop marker, unsafe hold, and policy watch interval. It admits the guard's exact pre-admission recovery event format while requiring current run IDs on admission and health. Fresh healthy evidence passes; unsafe, stale, missing, wrong-run, stop, and delayed-read stale evidence refuse the next action."
+    },
+    "verdict_b": {
+      "status": "pass",
+      "evidence": "The change reuses guard-owned sampling and policy; no resource floors, watch interval, or sustained-stop threshold changed. The file-backed test exercises real reader decisions and action refusal, including recovery format and an I/O delay that advances the clock before action. Builder reports scratch-copy constant-health and early-clock mutants failed."
+    }
+  },
+  "findings": [],
+  "finding_severity": "none",
+  "diagnostic_native_run": "ready_from_source_review: one guarded diagnostic run on the exact CI artifact may proceed; any guard refusal leaves native acceptance unverified",
+  "native_unknown": "No browser or exact-artifact native run occurred in this review. Pointer cause, D118 clipping cause, reload behavior in Chromium, and product acceptance remain unverified.",
+  "reviewer_checks": "node --test tests/browser/native-resource-boundary.test.mjs tests/browser/scrape-reload-milestones.test.mjs: 3 passed; node --check passed for native resource reader, shared harness, and Scrape driver."
+}
