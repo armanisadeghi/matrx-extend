@@ -13,7 +13,7 @@
   "actual": "Run37241717888 reproduces same foreground failure after successful member identity/nonadmin/org checks. Original target is present and sole exact target, exact SIDE_PANEL context1, owned roottrue; visibilityhidden with hasFocustrue. Diagnostic completes. No viewport/case result.",
   "severity": "S2: authenticated Scrape coverage blocked; product failure not established",
   "priority": "P2: resume after urgent guest Chat verification",
-  "state": "in-fix",
+  "state": "fixed",
   "evidence": [
     ".research/scrape-member-guard132-native.json",
     ".research/scrape-auth-panel-focus.json",
@@ -21,7 +21,9 @@
     ".research/scrape-focus-diagnostic-peer.json",
     ".research/scrape-focus-final-peer.json",
     ".research/scrape-focus-deadline-reverify.json",
-    ".research/member-scrape-focus-native.json"
+    ".research/member-scrape-focus-native.json",
+    ".research/member-panel-hidden-repair.json",
+    ".research/member-panel-reopen-peer.json"
   ],
   "transition_history": [
     {
@@ -41,8 +43,15 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol coding lane repairs existing owned native-panel reopening primitive; source regression, fresh review, changed-condition native retest required."
+    },
+    {
+      "at": "2026-10-04T23:15:12.906484+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source repair44005fb4 separately reopens through trusted ownedpage input; freshpeerda271ee2 accepts source and realpath mutation guards. ActualChrome visibility pending."
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "root/member_panel_repair_recovery owns unfinished repair after original worker capacity failure. No blind native rerun; keep same frozen244 for causal retest."
+  "next_action": "ONE changed-condition native member normal600 run37243043772 active at da271ee2, same frozen244. root/member_reopen_native_retest owns terminalevidence and consumedsecretcleanup; no acceptance promotion before rawproof.",
+  "fix_commits": ["44005fb4"]
 }
