@@ -14,12 +14,14 @@
   "actual": "The assertion failed despite the panel showing the expected remaining video. No product removal failure is established; observer/parser cause being verified.",
   "severity": "S2: acceptance blocked by inconsistent observation; product impact not established",
   "priority": "P1: repair oracle before surrounding media acceptance",
-  "state": "triaged",
+  "state": "fixed",
   "owner": "root/scrape_video_observer_fix",
   "evidence": [
     "docs/stabilization/evidence/scrape231/run37218903375/receipt.json.txt",
     "docs/stabilization/evidence/scrape231/run37218903375/scrape-warm-media-failure.png",
-    ".research/scrape231-arm-native.json"
+    ".research/scrape231-arm-native.json",
+    ".research/scrape-video-observer-fix.json",
+    ".research/scrape-video-observer-peer.json"
   ],
   "transition_history": [
     {
@@ -33,7 +35,19 @@
       "from": "open",
       "to": "triaged",
       "reason": "Root independently read full raw transition and viewed screenshot; bounded Sol oracle diagnosis assigned."
+    },
+    {
+      "at": "2026-10-04T17:14:10.285870+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol reproduced old native observer dropping video row on actual ScrapeView DOM when hover tooltip moves title to data-matrx-title. Shared observer repair with exact identities under verification."
+    },
+    {
+      "at": "2026-10-04T17:18:50.836375+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "3d96bc71 shared row observer recognizes title/data-matrx-title, proven RED\u2192GREEN on actual component DOM. Fresh peere4f855f4 validates serialized native use and exactidentity/count checks;6component+8assertiontests+compile pass."
     }
   ],
-  "next_action": "Prove observer root cause against real component DOM, retain exact URL/count assertions, independent peer and original full native retest."
+  "next_action": "One frozen231 ARM native full media/link/reload retest after observer repair; owner root/scrape231_observer_retest. No closure from component tests."
 }
