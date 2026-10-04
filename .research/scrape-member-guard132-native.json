@@ -1,0 +1,192 @@
+{
+  "schema_version": 1,
+  "task": "scrape-member-guard132-native",
+  "scope": "One hosted ARM member Scrape attempt at normal 600px using frozen development artifact; no rerun.",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 37237361053,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37237361053",
+    "artifact_id": 11315937709,
+    "artifact_name": "hosted-guest-37237361053-1",
+    "head_branch": "main",
+    "head_sha": "103563625fcac987ab37e77be3f4a9e7cf740da8",
+    "runner_label": "macos-15",
+    "terminal_status": "completed",
+    "conclusion": "failure",
+    "case": "guest-scrape-development",
+    "auth_mode": "member",
+    "width_mode": "normal",
+    "requested_min_panel_width_px": 600,
+    "one_launch_no_retry": true,
+    "steps": {
+      "auth_preflight": "success",
+      "package_readiness": "success",
+      "package_prepare": "success",
+      "browser_readiness": "success",
+      "browser_prepare": "success",
+      "acceptance_readiness": "success",
+      "native_acceptance": "failure",
+      "artifact_upload": "success"
+    },
+    "artifact_digest": "sha256:12d647529f7f3d21255aecd4f2df89ca8d50a8dd8ea7b70b598336352d9096af"
+  },
+  "frozen_product": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
+    "run_id": 37233480033,
+    "artifact_id": 11315305224
+  },
+  "native_outcome": {
+    "status": "unverified",
+    "stage": "organization_selection",
+    "native_stage": "exercise_panel",
+    "failure_code": "scrape_authenticated_panel_foreground_not_observed:false",
+    "cases": [],
+    "panel_viewports": [],
+    "authentication": {
+      "mode": "member",
+      "web_signed_in": true,
+      "extension_signed_in": true,
+      "admin_role": false,
+      "canonical_nonadmin_check": {
+        "matched_current_extension_user": true,
+        "http_status": 200,
+        "returned_rows": 0
+      },
+      "organization_selected": true,
+      "selected_organization_verified": true,
+      "rendered_identity": {
+        "rendered_email_matches_first_party": true,
+        "rendered_role_matches_mode": true,
+        "profile_matches_first_party": true,
+        "selected_organization_matches_stored_uuid_and_name": true
+      }
+    },
+    "interpretation": "Runtime proves member web and extension sign-in, canonical non-admin zero-row response, selected organization and rendered identity. Foreground visibility check failed after organization selection and before viewport measurement or Scrape cases; 600px and Scrape behavior remain unverified."
+  },
+  "resource": {
+    "current_run_journals": {
+      "hosted-browser-37237361053-1": {
+        "records": 4,
+        "codes": [
+          "RESOURCE_JOURNAL_OPENED",
+          "RESOURCE_ADMITTED",
+          "RESOURCE_JOB_EXIT",
+          "RESOURCE_FINAL_DECISION"
+        ],
+        "final_decision": "valid",
+        "resource_invalid": false,
+        "exit_code": 0,
+        "watch_samples": []
+      },
+      "hosted-guest-37237361053-1": {
+        "records": 6,
+        "codes": [
+          "RESOURCE_JOURNAL_OPENED",
+          "RESOURCE_ADMITTED",
+          "RESOURCE_WATCH_HEALTHY",
+          "RESOURCE_WATCH_HEALTHY",
+          "RESOURCE_JOB_EXIT",
+          "RESOURCE_FINAL_DECISION"
+        ],
+        "final_decision": "child_failed",
+        "resource_invalid": false,
+        "exit_code": 1,
+        "watch_samples": [
+          {
+            "at": "2026-10-04T21:51:25.030Z",
+            "code": "RESOURCE_WATCH_HEALTHY",
+            "reasons": [],
+            "cpu_busy_fraction": 0.22,
+            "one_minute_load": 1.22,
+            "available_memory_gib": 5.74,
+            "swap_used_mib": 0
+          },
+          {
+            "at": "2026-10-04T21:51:41.095Z",
+            "code": "RESOURCE_WATCH_HEALTHY",
+            "reasons": [],
+            "cpu_busy_fraction": 0.73,
+            "one_minute_load": 1.4,
+            "available_memory_gib": 5.67,
+            "swap_used_mib": 0
+          }
+        ]
+      },
+      "hosted-package-37237361053-1": {
+        "records": 4,
+        "codes": [
+          "RESOURCE_JOURNAL_OPENED",
+          "RESOURCE_ADMITTED",
+          "RESOURCE_JOB_EXIT",
+          "RESOURCE_FINAL_DECISION"
+        ],
+        "final_decision": "valid",
+        "resource_invalid": false,
+        "exit_code": 0,
+        "watch_samples": []
+      }
+    },
+    "classification": "No CPU_PENDING, CPU_RECOVERED or RESOURCE_WATCH_UNSAFE occurred. Package and browser final decisions valid. Guest resourceInvalid=false but child exit 1/final decision child_failed, so no valid acceptance result. Historical unsafe records in prior run 37234434600 remain unchanged."
+  },
+  "artifact_inventory": [
+    "docs/stabilization/resource-journals/hosted-browser-37105304739-1.jsonl",
+    "docs/stabilization/resource-journals/hosted-browser-37237361053-1.jsonl",
+    "docs/stabilization/resource-journals/hosted-guest-37105304739-1.jsonl",
+    "docs/stabilization/resource-journals/hosted-guest-37237361053-1.jsonl",
+    "docs/stabilization/resource-journals/hosted-package-37105304739-1.jsonl",
+    "docs/stabilization/resource-journals/hosted-package-37237361053-1.jsonl",
+    "test-results/native-sidepanel-qa-SOlGEE/native-side-panel.png",
+    "test-results/native-sidepanel-qa-SOlGEE/normal-target-after-open.png",
+    "test-results/scrape-guest-native-5c668cb2-ae53-4d82-abed-50ff13e87391.json"
+  ],
+  "evidence_files": [
+    {
+      "path": "docs/stabilization/evidence/scrape-member/run37237361053/resource-journals/hosted-browser-37237361053-1.jsonl",
+      "sha256": "080188aea611b9127d619fc348c0ef677b8949b506a2a44a22c08265b1fcce37",
+      "bytes": 1002
+    },
+    {
+      "path": "docs/stabilization/evidence/scrape-member/run37237361053/resource-journals/hosted-guest-37237361053-1.jsonl",
+      "sha256": "4a95fa75a51d18232643809aa6bc84b9d936106d8c83cfc4913b7cd245e47348",
+      "bytes": 1822
+    },
+    {
+      "path": "docs/stabilization/evidence/scrape-member/run37237361053/resource-journals/hosted-package-37237361053-1.jsonl",
+      "sha256": "1a420665b17b7285caa5acba4d36c19dc63be3651419b95a7909222752c8c2d6",
+      "bytes": 992
+    },
+    {
+      "path": "docs/stabilization/evidence/scrape-member/run37237361053/screenshots/native-side-panel.png",
+      "sha256": "c0533711da45bce42705f1719265a5eb6c692220af7ac729e9b990bade97d34e",
+      "bytes": 25860
+    },
+    {
+      "path": "docs/stabilization/evidence/scrape-member/run37237361053/screenshots/normal-target-after-open.png",
+      "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+      "bytes": 25156
+    },
+    {
+      "path": "docs/stabilization/evidence/scrape-member/run37237361053/acceptance-receipt.json",
+      "sha256": "2d2f6c6a6a11190f8b96eaa4a9b825c2957b36c5ec8c154f928a76d3dcae647a",
+      "bytes": 1620
+    }
+  ],
+  "credential_cleanup": {
+    "temporary_github_secret_deleted": true,
+    "secret_list_confirmed_absent": true,
+    "local_single_use_link_deleted": true,
+    "identity_file_unchanged": true,
+    "no_auth_urls_or_identity_values_recorded": "No raw email, user ID, link, or token appears in this report; acceptance receipt retains approved stable fingerprint only."
+  },
+  "limits": [
+    "Only organization/identity runtime path passed; zero Scrape cases ran.",
+    "No 600px viewport measurement was recorded.",
+    "Foreground failure is a native acceptance observation; its root cause and product impact are unverified.",
+    "No full feature or Store health claim."
+  ],
+  "screenshots_observation": "Both screenshots are early-state captures (guest panel and target page), before the later successful member authentication recorded in the runtime receipt. They do not show the failed foreground boundary or prove 600px viewport."
+}
