@@ -1,0 +1,133 @@
+{
+  "scope": "Source-only executable-procedure audit for remaining EXT-F-1007 Scrape acceptance. No browser, test, build, or release run launched.",
+  "checkpoint": {
+    "coordinator": "docs/stabilization/COORDINATOR.md, Current Scrape work and next action",
+    "inventory": "docs/stabilization/inventory.json, EXT-F-1007",
+    "baseline": "Exact development 0.2.231 guest native run 37222954472; receipt partial. T10/T11/T12/T13 guest and T20 guest are bounded pass; do not rerun those guest cells. Guest T01/T02/T03/T08/T14 remain partial. Member/admin coverage remains unverified.",
+    "current_constraints": "Checkpoint says local heavy browser/build/release work refused by internal disk floor; hosted TEST is the authorized path, one guarded heavy run at a time, after current-run resource health. This audit does not launch it."
+  },
+  "source_grounded_contract": {
+    "capture_error": "ScrapeView error card shows Reload page and Try again only for recoverable errors; restricted URL has no recovery actions and Dismiss remains. Try again calls captureActiveTab with activeMode, then lastModeRef, then fast. lastModeRef is set before both Capture and Scroll & capture.",
+    "save": "A successful save lands a Source and opens the optional filing panel. A refused/unreachable save remains in chrome.storage.local; the Unsaved card owns Retry for a held canonical URL and suppresses the competing ordinary Save. Queue is removed only after confirmed landing.",
+    "recognition_role": "Guest short-circuits Source lookup (no DB lookup); T26 must be N/A for guest, contrary to its current modes [guest, member, admin]. Signed-in recognition reads all RLS-visible organizations independent of selected org; the explicitly selected organization remains the destination for writes.",
+    "filing": "FileSourcePanel appears only after landing; Close performs no attachment write. Library is a select including No Library; target chips are staged and removable; filing submits only when at least one target or Library is selected."
+  },
+  "executable_next_cases": [
+    {
+      "priority": 1,
+      "case_ids": [
+        "EXT-F-1007-T01",
+        "EXT-F-1007-T02",
+        "EXT-F-1007-T03",
+        "EXT-F-1007-T08",
+        "EXT-F-1007-T10",
+        "EXT-F-1007-T11",
+        "EXT-F-1007-T12",
+        "EXT-F-1007-T13"
+      ],
+      "modes": ["member", "admin"],
+      "procedure_quality": "Reachable from current UI and controlled pages already used by run 37222954472; inventory preconditions do not name fixture/page, auth check, dimensions to skip after guest proof, or minimum evidence. Reuse the existing owned fixtures and currently approved exact-build/native acceptance contract. Do not re-run the passed guest cells.",
+      "minimum_observations": [
+        "Record exact build/source receipt, extension ID, role and device-selected organization; before/after screenshots or equivalent DOM evidence for each control; assert page URL and selected pane.",
+        "T01: capture result and disabled/busy button while operation is live; T02: scrolling progress plus lazy fixture content in the result; T03: Cancel preserves exact edit then Confirm executes the requested mode; T08: each of six pane labels and matching populated/empty data; T10-T13: exact fixture identities/counts before and after action, form validation/cancel, and copy/open feedback as applicable.",
+        "After full extension reload, repeat only controls whose inventory contract includes reload; record the replacement extension/panel identity and whether capture state is expected to persist. Keep member and admin evidence separate."
+      ]
+    },
+    {
+      "priority": 2,
+      "case_ids": ["EXT-F-1007-T14", "EXT-F-1007-T02"],
+      "modes": ["guest", "member", "admin"],
+      "procedure_quality": "The current procedure is not yet executable for the missing natural branches: no reproducible stimulus or exact stale-tab setup is specified, and restricted-page evidence does not prove recoverable UI. Source supplies one real-browser recoverable path: an already-open HTTP(S) tab without the content script yields no-receiver; deep mode is retained for Try again.",
+      "procedure": [
+        "Use an owned ordinary HTTP(S) fixture, open it before reloading the exact unpacked extension so the tab lacks the newly loaded content script, then from Scrape request Scroll & capture. First assert a recoverable no-receiver card with Reload page, Try again, and Dismiss; capture the card, title/description, URL and error class from observed UI/diagnostic state.",
+        "In an independent fresh stale-tab setup, click Try again and observe Scrolling/progress, proving deep retry mode; expect the same no-receiver until page reload, then click Reload page in a separate setup, wait for completed navigation, manually retry deep capture, and assert lazy content. Dismiss in another fresh recoverable state and confirm card clears.",
+        "For the nonrecoverable branch, retain a restricted URL only as the already-covered Dismiss control check; assert no Reload page/Try again. Do not treat it as a recoverable failure."
+      ],
+      "role_applicability": "Capture failure mechanics are auth-independent, but the requested role cells still need at least one observed recovery/dismiss run per guest/member/admin unless the acceptance owner explicitly scopes one shared role-independent result. Keep mode evidence distinct.",
+      "limits": "This is a genuine Chrome content-script lifecycle failure induced by reloading the extension with the fixture tab left open, not a fabricated CaptureError. It does not cover no-host-permission or arbitrary pipeline failures."
+    },
+    {
+      "priority": 3,
+      "case_ids": [
+        "EXT-F-1007-T04",
+        "EXT-F-1007-T22",
+        "EXT-F-1007-T23",
+        "EXT-F-1007-T24",
+        "EXT-F-1007-T25",
+        "EXT-F-1007-T31"
+      ],
+      "modes": ["guest", "member", "admin"],
+      "procedure_quality": "Source save UI and device-local queue are reachable. Existing inventory cases lack an exact refusal fixture and safe cleanup/readback contract. Guest refusal is naturally reachable by signing out; signed-in refusal is naturally reachable with no device-selected organization, and retry after choosing an organization exercises recovery. T04 happy-path member/admin still needs an isolated owned capture and explicit organization.",
+      "procedure": [
+        "Guest: capture owned page, sign out, Save; assert truthful sign-in-required sentence, exactly one Unsaved card for the canonical URL, Retry and Discard, and no ordinary duplicate Save for that held URL. Sign in, Retry, verify one landed Source and queue removal only after confirmed landing.",
+        "Member/admin: capture an owned fixture with organization A selected; clear the device-selected organization and Save; assert visible choose-workspace refusal and retained card. Select A, retry; verify one server Source in A, saved/open action and notices, then queue removal. Preserve separate role receipts.",
+        "T23: with a queued item, cancel Discard and verify it remains; reopen, confirm, verify queue absence and permanent-removal message. Use only the test-owned queued capture.",
+        "T24: record original capture/markdown; edit a unique sentence and Apply; Save; inspect landed reader-facing Source for new sentence and absence of replaced sentence, and original JSON for untouched original article. Inventory currently assigns T24 only to member/admin.",
+        "T25: refuse save, close/reopen panel, assert same queue identity, URL and retry control; retry and verify landing/queue removal. Do not infer persistence from source/component tests.",
+        "T31: while URL is held, assert no banner/main Save competitor; make a local edit, use card Retry and verify newest edited capture landed. For a different held URL, retry while another page is active and verify the queued page payload wins. Assert one canonical queue item and one landed Source."
+      ],
+      "cleanup_and_evidence": "Use a unique owned fixture URL and unique Source title per role/run; record pre-run Source lookup and organization. Afterward verify queue contents empty for fixture URL and detach only the test Source if the campaign cleanup contract authorizes it; retain explicit ID and deletion/readback receipt. Never delete existing unrelated Sources. Save UI screenshots, source id, org id, canonical URL, sanitized request/result receipt, and before/after queue snapshot; no credentials."
+    },
+    {
+      "priority": 4,
+      "case_ids": ["EXT-F-1007-T26", "EXT-F-1007-T27"],
+      "modes": ["member", "admin"],
+      "procedure_quality": "T26 has a useful current procedure but requires an authorized two-organization principal, visible Source only in B, selected A and no-selected-org states, plus a controlled lookup failure/recovery. T27 needs a genuinely absent owned URL and current source build. Guest applicability is contradictory: source deliberately performs no guest lookup, so guest should be N/A, not an unverified test cell.",
+      "procedure": [
+        "With member/admin, record role and selected A; establish known Source in visible B and read-only evidence that it is RLS-visible. Assert saved recognition in B despite selected A. Clear selected org and assert recognition unchanged. Repeat inaccessible Source stays invisible only where an authorized fixture can demonstrate RLS exclusion.",
+        "Separately cause the lookup request to fail through a natural offline/service outage, assert explicit unknown/could-not-check state and Save remains available without a not-yet-saved claim; restore service and assert recognition refreshes. For guest, verify no lookup request and mark N/A."
+      ],
+      "blockers": [
+        "Current inventory does not provide approved two-organization fixture identifiers or an RLS visibility oracle; do not use an admin-only fixture to claim member RLS behavior.",
+        "No live non-mutating failure mechanism or concrete request/response observable is specified. A transient natural outage may be used only if it occurs in the guarded run; do not simulate a lookup failure in app state."
+      ],
+      "cleanup": "Create no Source for the lookup-only unknown/failure subcase. Any positive Source fixture must be owned, uniquely identified, and removed only under the test fixture cleanup procedure with post-delete readback."
+    },
+    {
+      "priority": 5,
+      "case_ids": ["EXT-F-1007-T29"],
+      "modes": ["member", "admin"],
+      "procedure_quality": "Current inventory procedure is executable after prerequisites; target selection UI is an association picker and target chips, while Library is a named select. Exact eligible owned target and Library fixtures are missing, so it is not ready to run without fixture preparation.",
+      "procedure": [
+        "Land a unique Source and first close the filing panel; reload Source associations and prove no write. On a second unique Source, select two owned registered targets, remove one chip, choose an owned Library, submit; verify server associations contain only remaining target and chosen Library. Repeat No Library and controlled filing refusal; verify landing persists and error notice does not claim filing."
+      ],
+      "cleanup": "Record Source and association IDs; remove only associations created by this run and verify they are absent; remove only test-owned Sources/Libraries/targets if permitted by the campaign fixture contract. Library choice is remembered per person, so record and restore the prior preference after the run."
+    },
+    {
+      "priority": 6,
+      "case_ids": ["EXT-F-1007-T30"],
+      "modes": ["member", "admin"],
+      "procedure_quality": "Inventory steps correctly name organization and capture switches but lack the controlled delayed-response mechanism and source-specific authoritative readback. Not executable until a safe owned backend delay/refusal fixture is identified.",
+      "required_prerequisites": [
+        "Two device-selectable organizations for the same principal, two unique owned page captures, and an authorized way to hold Source landing response after request dispatch without altering production data or credentials."
+      ],
+      "minimum_observations": [
+        "Record request's organization/canonical URL/capture identity, switch A→B and/or capture A→B before release, capture UI state and queue, then release response and verify only A's Source exists and B/current capture has no stale saved badge. Repeat delayed refusal and verify recovery queue."
+      ],
+      "cleanup": "Read back both organizations and both URLs, remove only the test-created Source if authorized, prove no duplicate/misfiled row, restore selected organization and all delay controls."
+    }
+  ],
+  "material_gaps_or_contradictions": [
+    "T26 currently lists guest/member/admin, but guest lookup is intentionally skipped by source; make guest N/A in inventory or explicitly define a no-request assertion, never manufacture a guest lookup outage.",
+    "T04's guest cell mixes successful landing (impossible while signed out) with refusal; split evidence by role/outcome: guest refusal/queue/retry after sign-in, member/admin successful landing/open.",
+    "T14/T02 do not specify a real failure trigger. Restricted URL is classified nonrecoverable, so it cannot prove Reload page/Try again; stale content-script lifecycle gives a source-supported real recovery path and deep-mode retry oracle.",
+    "T23-T25/T31 refer to unsaved queue states but do not specify reliable entry (natural guest refusal or no selected organization), per-URL queue identity evidence, or safe fixture cleanup.",
+    "T29 lacks exact owned targets/library and remember-choice restoration; T30 lacks a controlled delayed landing response. These are fixture/infrastructure prerequisites, not inferred product defects.",
+    "Checkpoint explicitly blocks local heavy work on disk capacity and directs authorized hosted TEST with one guarded run. No run was started in this lane."
+  ],
+  "not_claimed": [
+    "No UI, browser, source save, role, RLS, natural error, filing, or cleanup behavior was executed or verified by this source-only audit.",
+    "No product defect is inferred from the missing runtime evidence or fixture prerequisites."
+  ],
+  "source_refs": [
+    "docs/stabilization/COORDINATOR.md",
+    "docs/stabilization/inventory.json: EXT-F-1007",
+    "src/features/scrape/ScrapeView.tsx",
+    "src/features/scrape/UnsavedCapturesCard.tsx",
+    "src/features/scrape/FileSourcePanel.tsx",
+    "src/lib/scrape/capture-error.ts",
+    "src/lib/sources/save-capture.ts",
+    "tests/browser/scrape-guest-native-acceptance.mjs",
+    ".research/scrape231-recapture-native.json"
+  ]
+}
