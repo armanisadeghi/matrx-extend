@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "defect": "D133",
+  "status": "repair_prepared_native_acceptance_pending",
+  "captured_run": 37241717888,
+  "evidence": ".research/member-scrape-focus-native.json",
+  "observed_boundary": {
+    "member_authentication": "passed",
+    "organization_selection": "passed",
+    "original_exact_panel_target_count": 1,
+    "exact_SIDE_PANEL_context_count": 1,
+    "panel_visibility": "hidden",
+    "panel_has_focus": true,
+    "viewports_measured": 0,
+    "scrape_cases_executed": 0
+  },
+  "cause_scope": "Confirmed harness activation-only path never requested a native reopen. Why Chrome hid the panel after OAuth and whether reopening restores visibility remain unverified until native retest.",
+  "ranked_hypotheses": [
+    {
+      "cause": "Activation focuses but does not open a hidden native panel",
+      "prediction": "Trusted existing open RPC succeeds then unchanged native visibility check becomes true",
+      "test": "Prepared repair and behavioral path guard; native retest pending"
+    },
+    {
+      "cause": "Wrong or stale panel target",
+      "prediction": "Exact target or context absent/duplicated",
+      "test": "Contradicted by captured sole exact target and exact SIDE_PANEL context"
+    },
+    {
+      "cause": "Member login or organization failure",
+      "prediction": "Authentication or organization assertions fail first",
+      "test": "Contradicted by captured successful identity and organization assertions"
+    },
+    {
+      "cause": "Owned page is not foreground after OAuth",
+      "prediction": "Foregrounding alone restores panel visibility",
+      "test": "Unproven; bringToFront is a prerequisite for trusted click, not established root cause"
+    }
+  ],
+  "repair": "Distinct reopenPanel callback uses owned root page bringToFront, clears prior reply, trusted #open-panel click through existing FRONTEND_RPC, waits for nonempty visible #result, requires ok=true and opened=true, then activates original target. Scrape authenticated setup calls it before existing native visibility gate.",
+  "sibling_census": {
+    "command": "rg -n \"activatePanel|Target.activateTarget|#open-panel\" tests/browser -g \"*.mjs\"",
+    "activation_callers": "settings-d87-native-acceptance, settings-desktop-native-acceptance, audit-key-native-acceptance, profile-reload-input-smoke/profile-reload-readonly, scrape-guest-native-acceptance",
+    "finding": "Some callers navigate away from the owned root. Existing activatePanel remains CDP-only; only authenticated Scrape setup uses reopenPanel before its later page navigations. Member auth opens a separate web page and closes it; root owned page remains available. Initial open, reload and cleanup click paths are unchanged."
+  },
+  "guards": {
+    "original_red": "node tests/browser/native-sidepanel-qa-harness.test.mjs: trusted-click assertion 0 !== 1 on original activation-only helper",
+    "helper_cases": [
+      "successful fresh open",
+      "opened=false refusal",
+      "ok=false refusal",
+      "no new reply despite stale success"
+    ],
+    "actual_path": "Evaluates actual Scrape exercisePanel authenticated setup prefix with external auth/browser dependencies doubled; requires reopen before native visibility check",
+    "gut_check": "plant.py helper early return mutant RED; restored identical SHA",
+    "path_mutation": "plant.py restores activate-only callback and call in actual Scrape setup; RED with focus-only activation cannot reopen hidden panel; restored identical SHA",
+    "invalid_mutation_attempt": "Replacing call alone caused undefined symbol RED-BUT-UNNAMED; excluded as proof",
+    "ci": ".github/workflows/ci.yml existing regression step now runs node --test tests/browser/native-sidepanel-qa-harness.test.mjs"
+  },
+  "verification_commands": [
+    "node --test tests/browser/native-sidepanel-qa-harness.test.mjs",
+    "node --check tests/browser/native-sidepanel-qa-harness.mjs",
+    "node --check tests/browser/native-sidepanel-qa-harness.test.mjs",
+    "node --check tests/browser/scrape-guest-native-acceptance.mjs",
+    "pnpm exec biome check tests/browser/native-sidepanel-qa-harness.mjs tests/browser/native-sidepanel-qa-harness.test.mjs tests/browser/scrape-guest-native-acceptance.mjs"
+  ],
+  "limits": [
+    "Behavioral guards do not prove Chromium visibility",
+    "Fresh peer review and one root-owned native retest pending",
+    "CI execution pending push",
+    "No browser, workflow dispatch, release, Store, product code, inventory or defect state changes in this lane"
+  ]
+}

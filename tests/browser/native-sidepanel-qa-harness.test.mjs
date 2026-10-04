@@ -6,6 +6,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import {
+  activateOwnedSidePanel,
   isSettledGuestPanel,
   observeSidePanelContext,
   panelContextDiagnostic,
@@ -45,6 +46,128 @@ const localReceipt = {
   treeSha256: 'c'.repeat(64),
   extensionDir: productionBuildDir,
 };
+
+// Captured D133: target activation focused an existing hidden SIDE_PANEL;
+// only the trusted open RPC can request reopening it. Browser visibility is
+// still checked by the native acceptance driver, not supplied by this guard.
+for (const reply of [
+  { ok: true, result: { opened: true } },
+  { ok: true, result: { opened: false } },
+  { ok: false, result: { opened: true } },
+  null,
+]) {
+  let result = '{"ok":true,"result":{"opened":true}}'; // stale prior reply
+  const events = [];
+  const accepted = reply?.ok === true && reply?.result?.opened === true;
+  const page = {
+    bringToFront: async () => events.push('foreground'),
+    locator(selector) {
+      assert.ok(['#open-panel', '#result'].includes(selector));
+      const locator = {
+        evaluate: async (mutate) => {
+          assert.equal(selector, '#result');
+          const element = { textContent: result };
+          mutate(element);
+          result = element.textContent;
+          events.push('clear');
+        },
+        click: async () => {
+          assert.equal(selector, '#open-panel');
+          assert.deepEqual(events, ['foreground', 'clear']);
+          assert.equal(result, '', 'stale successful reply must be cleared before the open');
+          events.push('trusted-open');
+          if (reply !== null) result = JSON.stringify(reply);
+        },
+        filter: ({ hasText }) => {
+          assert.equal(hasText.test(''), false);
+          assert.equal(hasText.test('   '), false);
+          return locator;
+        },
+        waitFor: async () => {
+          assert.equal(selector, '#result');
+          events.push('fresh-reply');
+          if (!result.trim()) throw new Error('native_open_reply_not_observed');
+        },
+        textContent: async () => result,
+      };
+      return locator;
+    },
+  };
+  const activation = activateOwnedSidePanel({
+    page,
+    cdp: {
+      send: async (method, args) => {
+        assert.equal(method, 'Target.activateTarget');
+        assert.deepEqual(args, { targetId: 'owned-panel' });
+        assert.equal(accepted, true, 'refused or absent reply cannot activate the panel');
+        events.push('activate');
+      },
+    },
+    panelTargetId: 'owned-panel',
+  });
+  if (accepted) await activation;
+  else
+    await assert.rejects(
+      activation,
+      reply === null ? /native_open_reply_not_observed/ : /native_sidepanel_open_refused/,
+    );
+  assert.deepEqual(events, [
+    'foreground',
+    'clear',
+    'trusted-open',
+    'fresh-reply',
+    ...(accepted ? ['activate'] : []),
+  ]);
+}
+console.log('PASS owned side panel reopening requires a fresh trusted successful open reply');
+
+// Execute the actual authenticated Scrape setup prefix with external auth and
+// browser dependencies doubled. A focus-only callback cannot satisfy this path.
+const scrapeSource = await readFile(
+  new URL('./scrape-guest-native-acceptance.mjs', import.meta.url),
+  'utf8',
+);
+const setupStart = scrapeSource.indexOf('exercisePanel: async ({');
+const setupEnd = scrapeSource.indexOf('      report.panel_viewports.push({', setupStart);
+assert.ok(setupStart >= 0 && setupEnd > setupStart, 'authenticated Scrape setup seam missing');
+const setup = `${scrapeSource.slice(setupStart + 'exercisePanel: '.length, setupEnd)}\n}`;
+const events = [];
+const exerciseSetup = new Function(
+  'signInSettings',
+  'selectRequiredSettingsOrganization',
+  'selection',
+  'report',
+  'assert',
+  'REPO',
+  'waitFor',
+  'evaluate',
+  `let expectedIdentity; return (${setup});`,
+)(
+  async () => ({ mode: 'member' }),
+  async () => ({}),
+  { mode: 'member' },
+  {},
+  assert,
+  '',
+  async (boundary, read, accepts) => {
+    assert.equal(boundary, 'scrape_authenticated_panel_foreground');
+    assert.equal(accepts(await read()), true);
+    events.push('visible');
+  },
+  async () => events.includes('reopen'),
+);
+await exerciseSetup({
+  page: {},
+  panel: {},
+  activatePanel: async () => {
+    throw new Error('focus-only activation cannot reopen hidden panel');
+  },
+  reopenPanel: async () => events.push('reopen'),
+  requireResourceHealth: async () => events.push('health'),
+  resourceAction: async (action) => action(),
+});
+assert.deepEqual(events, ['health', 'reopen', 'visible', 'health']);
+console.log('PASS actual authenticated Scrape setup reopens before checking native visibility');
 
 // A normal `wxt build` must be eligible for owned-browser QA without copying
 // it onto the installed dev path. A sibling output directory must stay denied.

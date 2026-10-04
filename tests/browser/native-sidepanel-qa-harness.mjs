@@ -655,6 +655,22 @@ async function acquireLiveExtensionPanel({ cdp, page, extensionId }) {
   throw new Error('native_extension_live_panel_unavailable_for_cleanup');
 }
 
+async function activateOwnedSidePanel({ cdp, panelTargetId, page }) {
+  // Target activation can focus a hidden SIDE_PANEL without opening it. Use
+  // the same trusted input / FRONTEND_RPC route as the initial native open.
+  await page.bringToFront();
+  const result = page.locator('#result');
+  await result.evaluate((element) => {
+    element.textContent = '';
+  });
+  await page.locator('#open-panel').click();
+  await result.filter({ hasText: /\S/ }).waitFor({ state: 'visible' });
+  const reply = JSON.parse((await result.textContent()) || '{}');
+  if (reply?.ok !== true || reply?.result?.opened !== true)
+    throw new Error(`native_sidepanel_open_refused:${JSON.stringify(reply)}`);
+  await cdp.send('Target.activateTarget', { targetId: panelTargetId });
+}
+
 async function sidePanelContexts(cdp, serviceWorkerTargetId) {
   const worker = await attachTargetSession(cdp, serviceWorkerTargetId);
   try {
@@ -1108,6 +1124,8 @@ export async function runNativeSidepanelQa({
             browserSession: cdp,
             activatePanel: () =>
               cdp.send('Target.activateTarget', { targetId: panelTarget.targetId }),
+            reopenPanel: () =>
+              activateOwnedSidePanel({ cdp, panelTargetId: panelTarget.targetId, page }),
             transportFailureClass: () => cdp.failureClass,
             panelTarget,
             artifacts,
@@ -1175,6 +1193,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
 }
 
 export {
+  activateOwnedSidePanel,
   reloadOwnedExtension,
   isSettledGuestPanel,
   requireReleaseReceipt,

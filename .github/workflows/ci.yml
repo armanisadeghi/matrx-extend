@@ -154,6 +154,7 @@ jobs:
       - name: Guest transport observer regression
         run: |
           node --test tests/browser/guest-chat-transport-observer.test.mjs tests/browser/guest-chat-store-sequence.test.mjs
+          node --test tests/browser/native-sidepanel-qa-harness.test.mjs
           node tests/browser/vault-owned-cdp.test.cjs
 
       # The resource guard itself requires a healthy macOS host; its disk

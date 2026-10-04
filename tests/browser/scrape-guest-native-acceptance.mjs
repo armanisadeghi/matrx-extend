@@ -931,7 +931,7 @@ try {
       page,
       panel,
       browserSession,
-      activatePanel,
+      reopenPanel,
       panelTarget,
       inspectPanelContext,
       artifacts,
@@ -982,7 +982,7 @@ try {
           rendered_identity: selectedOrganization.renderedIdentity,
         };
         assert.equal(authentication.mode, selection.mode, 'scrape_authenticated_mode_mismatch');
-        await resourceAction(() => activatePanel());
+        await resourceAction(() => reopenPanel());
         try {
           await waitFor(
             'scrape_authenticated_panel_foreground',
