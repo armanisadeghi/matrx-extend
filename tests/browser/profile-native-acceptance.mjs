@@ -632,20 +632,24 @@ async function caseSaveDiscard(panel, original, email, mode, dimension, journal 
   });
 }
 
-async function runExtendedCases(panel, email, mode, dimension, ownedJournal, held = []) {
+async function runExtendedCases(panel, email, mode, dimension, ownedJournal, held, setOperation) {
   if (!EXTENDED_CASES) return [];
+  const expanderId = mode === 'member' ? 'EXT-F-1004-T21' : 'EXT-F-1004-T22';
+  setOperation(`${expanderId}:${dimension}:run`);
   report.cases.push(await runProfileExpandersCase({ panel, mode, dimension }));
   for (const section of ['Identity', 'Employment']) {
+    const id =
+      section === 'Identity'
+        ? mode === 'member'
+          ? 'EXT-F-1004-T05'
+          : 'EXT-F-1004-T06'
+        : mode === 'member'
+          ? 'EXT-F-1004-T17'
+          : 'EXT-F-1004-T18';
+    setOperation(`${id}:${dimension}:run`);
     if (!ownedJournal) {
       report.cases.push({
-        id:
-          section === 'Identity'
-            ? mode === 'member'
-              ? 'EXT-F-1004-T05'
-              : 'EXT-F-1004-T06'
-            : mode === 'member'
-              ? 'EXT-F-1004-T17'
-              : 'EXT-F-1004-T18',
+        id,
         mode,
         dimension,
         branch: 'default',
@@ -988,6 +992,9 @@ try {
             'warm',
             ownedJournal,
             heldFieldCases,
+            (operation) => {
+              executionOperation = operation;
+            },
           );
           report.stage = 'extension_reload';
           executionOperation = 'reload_extension';
@@ -1012,9 +1019,15 @@ try {
           executionOperation = 'open_profile_after_reload';
           await openProfile(reloaded.panel, identity.email);
           executionOperation = 'verify_saved_fields_after_extension_reload';
-          for (const held of heldFieldCases) await held.verifyReload(reloaded.panel);
+          for (const held of heldFieldCases) {
+            executionOperation = `${held.receipt.id}:extension_reload:verify`;
+            await held.verifyReload(reloaded.panel);
+          }
           executionOperation = 'restore_saved_fields_after_extension_reload';
-          for (const held of [...heldFieldCases].reverse()) await held.restore(reloaded.panel);
+          for (const held of [...heldFieldCases].reverse()) {
+            executionOperation = `${held.receipt.id}:extension_reload:restore`;
+            await held.restore(reloaded.panel);
+          }
           heldFieldCases = [];
           executionOperation = 'case_back_after_reload';
           await caseBack(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
@@ -1034,6 +1047,10 @@ try {
             AUTH_MODE,
             'extension_reload',
             ownedJournal,
+            [],
+            (operation) => {
+              executionOperation = operation;
+            },
           );
           executionOperation = 'case_owner_read_retry_after_reload';
           await caseT25(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');

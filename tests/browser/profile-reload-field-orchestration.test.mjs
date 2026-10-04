@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import { extendedCaseCensus } from './profile-extended-census.mjs';
+import { runProfileExecutionBoundary } from './profile-native-failure.mjs';
 
 const source = await readFile(new URL('./profile-native-acceptance.mjs', import.meta.url), 'utf8');
 const caseSource = await readFile(
@@ -47,6 +48,7 @@ test('runner rejects a saved field lost only during extension reload before rest
   );
   const heldFieldCases = [
     {
+      receipt: { id: 'EXT-F-1004-T05' },
       verifyReload,
       async restore() {
         steps.push('restore');
@@ -68,6 +70,40 @@ test('runner rejects a saved field lost only during extension reload before rest
   observed['First name'] = 'Marin';
   await run(heldFieldCases, { panel: {} }, steps);
   assert.deepEqual(steps.slice(1), ['reload_read', 'restore']);
+});
+
+test('failure boundary retains distinct extended case attribution after cleanup', async () => {
+  const run = new AsyncFunction(
+    'heldFieldCases',
+    'reloaded',
+    'runProfileExecutionBoundary',
+    'report',
+    `let executionOperation = 'open_profile_after_reload';
+     const failure = await runProfileExecutionBoundary(report, async () => {
+       ${section(source, "executionOperation = 'verify_saved_fields_after_extension_reload';", "executionOperation = 'case_back_after_reload';")}
+     }, { getOperation: () => executionOperation, readUiState: async () => null });
+     executionOperation = 'cleanup';
+     return failure;`,
+  );
+  for (const [id, message] of [
+    ['EXT-F-1004-T05', 'Identity_extension_reload_First name_mismatch'],
+    ['EXT-F-1004-T17', 'Employment_extension_reload_Company_mismatch'],
+  ]) {
+    const report = { stage: 'extension_reload' };
+    const held = [
+      {
+        receipt: { id },
+        verifyReload: async () => {
+          throw new Error(message);
+        },
+      },
+    ];
+    assert.ok(await run(held, { panel: {} }, runProfileExecutionBoundary, report));
+    assert.equal(report.execution_failure.operation, `${id}:extension_reload:verify`);
+    assert.equal(report.execution_failure_code, 'profile_unclassified_failure');
+    assert.deepEqual(Object.keys(report.execution_failure).sort(), ['operation', 'stage']);
+    assert.equal(JSON.stringify(report).includes(message), false);
+  }
 });
 
 test('actual runner verdict stays partial when an extended case dimension is missing', async () => {
