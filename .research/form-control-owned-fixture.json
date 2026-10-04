@@ -1,0 +1,21 @@
+{
+  "scope": "EXT-F-4061..EXT-F-4069",
+  "status": "owned_http_fixture_provisioned_source_checked_runtime_unverified",
+  "route": "/form-controls",
+  "fixture": "tests/browser/fixtures/form-controls.html",
+  "sha256": "685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a",
+  "server": "tests/browser/owned-fixture-server.mjs existing ownedPages route",
+  "selector_observable_map": {
+    "EXT-F-4061": "#keys seed value; keydown, keypress, keyup, input counters; reset-keys",
+    "EXT-F-4062": "#hover-target button; mouseover, mouseenter, mousemove counters",
+    "EXT-F-4063": "#other-focus initially active; #focus-target; activeElement readback",
+    "EXT-F-4064": "#blur-target; blur counter and activeElement readback; #missing-target absent",
+    "EXT-F-4065": "#context-target; contextmenu count and button/buttons readback",
+    "EXT-F-4066": "#choice alpha/beta; selected value and input/change counters; missing absent",
+    "EXT-F-4067": "#consent-test unchecked; checked state and click/change counters",
+    "EXT-F-4068": "#radio-a initially checked and #radio-b; selectedRadio and change counters; missing value absent",
+    "EXT-F-4069": "#submit-test; #submit-button; submit count, submitter ID, payload sample; #missing-form absent; submit preventDefault and form-action none"
+  },
+  "verification": "node --test tests/browser/form-control-owned-fixture.test.mjs passed; exact HTTP route, 404, all case selectors, observables and static submission guard checked",
+  "limits": "Fixture has not been exercised in native extension/browser acceptance. No inventory cells or runtime coverage promoted. Manual Tools runner and hosted resource/build gates remain separate."
+}

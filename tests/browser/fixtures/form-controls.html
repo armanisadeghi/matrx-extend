@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; form-action 'none'">
+  <title>Owned form controls</title>
+  <style>body{font:16px system-ui;max-width:50rem;margin:2rem auto}section{padding:1rem;border:1px solid #aaa;margin:1rem 0}output{white-space:pre-wrap;display:block}</style>
+</head>
+<body>
+  <h1>Owned form controls</h1>
+  <p>All counters begin at zero. Reset counters after each case; reload resets the page.</p>
+  <button id="reset-counters" type="button">Reset counters</button>
+  <output id="state" aria-live="polite"></output>
+  <section><label>Keys <input id="keys" value="seed"></label><button id="reset-keys" type="button">Restore keys</button></section>
+  <section><button id="hover-target" type="button">Hover target</button><button id="context-target" type="button">Context target</button></section>
+  <section><label>Other focus <input id="other-focus"></label><label>Focus target <input id="focus-target"></label><label>Blur target <input id="blur-target"></label></section>
+  <section><label>Choice <select id="choice"><option value="alpha">Alpha</option><option value="beta">Beta</option></select></label><button id="reset-choice" type="button">Restore choice</button></section>
+  <section><label><input id="consent-test" type="checkbox"> Consent</label></section>
+  <section><fieldset><legend>Radio choice</legend><label><input id="radio-a" name="radio-choice" type="radio" value="a" checked> A</label><label><input id="radio-b" name="radio-choice" type="radio" value="b"> B</label></fieldset></section>
+  <section><form id="submit-test" action="#blocked" method="post"><label>Payload <input name="payload" value="sample"></label><button id="submit-button" type="submit">Submit</button></form></section>
+  <script>
+    (() => {
+      const ids = ['keys', 'hover-target', 'context-target', 'other-focus', 'focus-target', 'blur-target', 'choice', 'consent-test', 'radio-a', 'radio-b', 'submit-test'];
+      const counters = Object.create(null);
+      const state = document.querySelector('#state');
+      let lastContext = null;
+      let lastSubmit = null;
+      const byId = (id) => document.getElementById(id);
+      const selectedRadio = () => document.querySelector('input[name="radio-choice"]:checked')?.id ?? null;
+      function render() {
+        state.textContent = JSON.stringify({
+          counters, keys: byId('keys').value, choice: byId('choice').value,
+          consent: byId('consent-test').checked, selectedRadio: selectedRadio(),
+          activeElement: document.activeElement?.id ?? null, lastContext, lastSubmit,
+        }, null, 2);
+      }
+      function count(id, event) { const key = `${id}.${event.type}`; counters[key] = (counters[key] ?? 0) + 1; render(); }
+      for (const id of ids) {
+        const element = byId(id);
+        for (const type of ['keydown', 'keypress', 'keyup', 'input', 'mouseover', 'mouseenter', 'mousemove', 'focus', 'blur', 'contextmenu', 'click', 'change']) {
+          element.addEventListener(type, (event) => {
+            if (type === 'contextmenu') {
+              event.preventDefault();
+              lastContext = { button: event.button, buttons: event.buttons };
+            }
+            count(id, event);
+          });
+        }
+      }
+      byId('submit-test').addEventListener('submit', (event) => {
+        event.preventDefault();
+        lastSubmit = { submitter: event.submitter?.id ?? null, payload: new FormData(event.currentTarget).get('payload') };
+        count('submit-test', event);
+      });
+      byId('reset-counters').addEventListener('click', () => { for (const key of Object.keys(counters)) delete counters[key]; lastContext = null; render(); });
+      byId('reset-keys').addEventListener('click', () => { byId('keys').value = 'seed'; render(); });
+      byId('reset-choice').addEventListener('click', () => { byId('choice').value = 'alpha'; render(); });
+      byId('other-focus').focus();
+      render();
+    })();
+  </script>
+</body>
+</html>
