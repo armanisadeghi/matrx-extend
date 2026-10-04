@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "status": "RESOURCE_REFUSED_NO_NATIVE_CASES",
+  "workflow": "run=37208889373; job=111455806442; https://github.com/armanisadeghi/matrx-extend/actions/runs/37208889373; failure; attempt=1; guest-scrape-development; workflow head=187b781df73706a7c6a6968065c95e75da0ffbf6",
+  "drivers": "reviewed commits=2a0b2e4121cc2f01bae438c4b650e49a4f28d613,b89c725ceea9532e2537a1065200d13d91bdd882,4aa99248a8bb42ba21e7bef0980673be7f44d58c; scrape_guest_native_acceptance.mjs sha256=b2bb3ca73adfd13f5ee383543340a6426ed4307da162dcaa3bac3d7f8856635f; scrape_native_media_actions.mjs sha256=2a9d4a3783a8ce53d2749f534de5d98c37cbdf387f00d8780f391095f28e5a37; hosted_guest_acceptance.mjs sha256=d5c95c633d4be54d9a5cd704655fab91798828a9a4aa9eac2e4abf3c5396e18d",
+  "product_artifact": "v0.2.215; source=3536b5cb0bea2fb33383f2b239b8602fafb79351; tree_sha256=ab62d0755d03e8a7f2ca0cb99e0b5037f39e75d756b14a3e2d3ad6d8cc096d08; CI run=37193761291; artifact=11299613935; unexpired before dispatch",
+  "hosted_artifact": "id=11305948333; hosted-guest-37208889373-1; ZIP sha256=98fed0d4267c7937adfd48ec3367edcf4af7c9ee0bab1a4c1a41cc88d0013af1",
+  "first_boundary": "receipt stage=inputs; native_stage=exercise_panel; NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample; RESOURCE_WATCH_UNSAFE/RESOURCE_CPU_BUSY, busy=1, load=1.8, 4 CPUs; guest_account_observed=false; cases=0; guarded environmental refusal, not product failure",
+  "case_results": "T08 recapture not reached; T10 warm not reached; T11 warm not reached; T12 warm/reload not reached; no reload milestones",
+  "receipt": "docs/stabilization/evidence/scrape215/run37208889373/receipt.json.txt; raw bytes copied; sha256=c250c24bc937c23ab1c776cf772c6e078f7b4d0ca815b285cf92bfddcc5a23c3",
+  "journals": "package sha256=f40f075bfb8109900d35c72d1a7541916e36fb0a0bcb079c590e0b8cdfb2c47e; browser sha256=f541c1813f1280e2841c7552de1760e4abb85fc13a9dbd13ed98078e9abdd0d0; guest sha256=c33c1aee7fb8f048fb750d6880fd95ce4151edc8723ef08627e9465e68d70d23",
+  "screenshots": "native-side-panel.png shows generic guest panel; normal-target-after-open.png shows owned research-brief fixture; no media-pane screenshots",
+  "evidence_dir": "docs/stabilization/evidence/scrape215/run37208889373",
+  "limitations": "Watchdog sampled unsafe CPU during setup; process attribution is retained in guest-resource.jsonl without raw arguments. No product behavior verdict is supported; no retry was made."
+}
