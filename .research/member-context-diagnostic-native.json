@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "task": "member-context-diagnostic-native",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 37244226691,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37244226691",
+    "head_sha": "5eb92a0455a8b0b71ae43fd639550ed9a35e08c1",
+    "terminal_status": "completed",
+    "conclusion": "failure",
+    "runner_label": "macos-15",
+    "case": "guest-scrape-development",
+    "auth_mode": "member",
+    "width_mode": "normal",
+    "requested_min_panel_width_px": 600,
+    "one_launch_no_retry": true,
+    "artifact_id": 11318965968,
+    "artifact_name": "hosted-guest-37244226691-1",
+    "artifact_digest": "sha256:0c67f48e093bb120cae3586cdbaf221e9fc42aa9edade786fbd981c8f4867aa3",
+    "downloaded_zip_sha256": "0c67f48e093bb120cae3586cdbaf221e9fc42aa9edade786fbd981c8f4867aa3",
+    "steps": {
+      "Set up job": "success",
+      "Run actions/checkout@v4": "success",
+      "Run actions/setup-node@v4": "success",
+      "Require a successful published release artifact": "skipped",
+      "Require exactly one artifact provenance mode": "success",
+      "Require selected authentication before browser setup": "success",
+      "Disable indexing on the disposable hosted VM": "success",
+      "Wait for measured package readiness": "success",
+      "Prepare pinned browser driver under an owned permit": "success",
+      "Wait for measured browser readiness": "success",
+      "Prepare full Chromium under a fresh owned permit": "success",
+      "Wait for measured acceptance readiness": "success",
+      "Exercise the selected Chrome side-panel case": "failure",
+      "Measure owned Chromium startup during the existing guard interval": "skipped",
+      "Upload browser result and native-panel screenshots": "success",
+      "Post Run actions/setup-node@v4": "skipped",
+      "Post Run actions/checkout@v4": "success",
+      "Complete job": "success"
+    }
+  },
+  "frozen_product": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
+    "run_id": 37233480033,
+    "artifact_id": 11315305224
+  },
+  "driver": {
+    "D133_repair_commit": "44005fb4b65dde448ccb6b86acc67e70130db703",
+    "D117_diagnostic_commit": "9c040f7006b09042efca805f3c6088aa312d4c3a",
+    "diagnostic_peer_commit": "5eb92a0455a8b0b71ae43fd639550ed9a35e08c1",
+    "diagnostic_and_peer_on_main_before_launch": true
+  },
+  "native_outcome": {
+    "status": "unverified",
+    "stage": "organization_selection",
+    "native_stage": "exercise_panel",
+    "failure": {
+      "stage": "organization_selection",
+      "code": "scrape_authenticated_panel_foreground_not_observed:false"
+    },
+    "authentication": {
+      "mode": "member",
+      "account_fingerprint": "3d6137db6c081c07",
+      "web_signed_in": true,
+      "extension_signed_in": true,
+      "admin_role": false,
+      "canonical_nonadmin_check": {
+        "matched_current_extension_user": true,
+        "http_status": 200,
+        "returned_rows": 0
+      },
+      "organization_selected": true,
+      "selected_organization_verified": true,
+      "rendered_identity": {
+        "rendered_email_matches_first_party": true,
+        "rendered_role_matches_mode": true,
+        "profile_matches_first_party": true,
+        "selected_organization_matches_stored_uuid_and_name": true
+      }
+    },
+    "initial_exact_panel_context": "passed",
+    "D117_failure_diagnostic_matching_lines": 0,
+    "D117_document_probe": "not_invoked_initial_guard_passed_no_empty_context_cause_inferred",
+    "D133_reopen_boundary_reached": true,
+    "D133_reopen_callback": "returned_without_refusal_before_foreground_gate",
+    "focus_validity": "failed_hidden_despite_focus",
+    "panel_foreground_diagnostic": {
+      "owned_root_page": true,
+      "panel_visibility": "hidden",
+      "panel_has_focus": true,
+      "original_panel_target_present": true,
+      "exact_panel_target_count": 1,
+      "original_is_only_exact_panel_target": true,
+      "side_panel_context": {
+        "contextCount": 1,
+        "sidePanelCount": 1,
+        "expectedExtensionCount": 1,
+        "exactUrlCount": 1,
+        "globalTabCount": 1,
+        "exactContextCount": 1,
+        "missingDocumentUrlCount": 0,
+        "emptyDocumentUrlCount": 0,
+        "otherExtensionUrlCount": 0,
+        "nonExtensionUrlCount": 0
+      },
+      "diagnostic_timed_out": false,
+      "outstanding_probes_after_deadline": false
+    },
+    "viewport_validity": "not_reached",
+    "cases": [],
+    "panel_viewports": [],
+    "classification": "authenticated_original_panel_remains_hidden_after_trusted_reopen",
+    "D133_verdict": "failed_changed_condition_foreground_gate"
+  },
+  "resources": {
+    "current_original_journals": [
+      {
+        "phase": "package",
+        "journal": "docs/stabilization/evidence/member-context-diagnostic/run37244226691/resource-journals/hosted-package-37244226691-1.jsonl",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-04T23:36:07.051Z",
+          "runId": "hosted-package-37244226691-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "event_counts": {
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_FINAL_DECISION": 1,
+          "RESOURCE_JOB_EXIT": 1,
+          "RESOURCE_JOURNAL_OPENED": 1
+        },
+        "unsafe_events": 0,
+        "child_duration_seconds": 1.059
+      },
+      {
+        "phase": "browser",
+        "journal": "docs/stabilization/evidence/member-context-diagnostic/run37244226691/resource-journals/hosted-browser-37244226691-1.jsonl",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-04T23:38:06.930Z",
+          "runId": "hosted-browser-37244226691-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "event_counts": {
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_FINAL_DECISION": 1,
+          "RESOURCE_JOB_EXIT": 1,
+          "RESOURCE_JOURNAL_OPENED": 1
+        },
+        "unsafe_events": 0,
+        "child_duration_seconds": 4.513
+      },
+      {
+        "phase": "guest",
+        "journal": "docs/stabilization/evidence/member-context-diagnostic/run37244226691/resource-journals/hosted-guest-37244226691-1.jsonl",
+        "final": {
+          "schema": 1,
+          "at": "2026-10-04T23:40:43.363Z",
+          "runId": "hosted-guest-37244226691-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 1,
+          "decision": "child_failed",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "event_counts": {
+          "RESOURCE_ADMITTED": 1,
+          "RESOURCE_FINAL_DECISION": 1,
+          "RESOURCE_JOB_EXIT": 1,
+          "RESOURCE_JOURNAL_OPENED": 1,
+          "RESOURCE_WATCH_HEALTHY": 2
+        },
+        "unsafe_events": 0,
+        "child_duration_seconds": 44.769
+      }
+    ],
+    "pending_current_journals": [],
+    "unsafe_current_events": 0,
+    "guard_final_decisions": "package_valid_browser_valid_guest_child_failed_all_resourceInvalid_false",
+    "artifact_historical_journals_excluded": [
+      "hosted-package-37105304739-1.jsonl",
+      "hosted-browser-37105304739-1.jsonl",
+      "hosted-guest-37105304739-1.jsonl"
+    ],
+    "watch_evidence": "Native acceptance has two RESOURCE_WATCH_HEALTHY events, no unsafe event, and finalized resourceInvalid=false. Package/browser children ran below the 15-second watch interval; their admission/final decisions are retained without claiming periodic watch evidence."
+  },
+  "evidence": {
+    "raw_receipt": "docs/stabilization/evidence/member-context-diagnostic/run37244226691/raw/scrape-guest-native-dfda9513-2c10-4cfc-9be6-fe3b4dd946a5.json",
+    "bounded_diagnostic_line_search": "docs/stabilization/evidence/member-context-diagnostic/run37244226691/raw/panel-context-diagnostic.json",
+    "screenshots": [
+      "docs/stabilization/evidence/member-context-diagnostic/run37244226691/screenshots/native-side-panel.png",
+      "docs/stabilization/evidence/member-context-diagnostic/run37244226691/screenshots/normal-target-after-open.png"
+    ],
+    "screenshots_scope": "two_initial_guest_panel_setup_screenshots_before_member_auth; no post-auth or failure screenshot uploaded",
+    "screenshots_privacy": "visually_checked_no_credentials_or_member_identity",
+    "hashes": [
+      {
+        "path": "docs/stabilization/evidence/member-context-diagnostic/run37244226691/raw/panel-context-diagnostic.json",
+        "sha256": "816840128d652b91be60fc70d8afe9f621527d78fdcc264b6d154799725ce693"
+      },
+      {
+        "path": "docs/stabilization/evidence/member-context-diagnostic/run37244226691/raw/scrape-guest-native-dfda9513-2c10-4cfc-9be6-fe3b4dd946a5.json",
+        "sha256": "095d5b7e0543cfdedf76b957e8071642a3c3846a68bf940b0b011532d919db25"
+      },
+      {
+        "path": "docs/stabilization/evidence/member-context-diagnostic/run37244226691/resource-journals/hosted-browser-37244226691-1.jsonl",
+        "sha256": "b9e8dd5d324a163687d3b7081cc65b21bb3fa3dddd4dbb86e200bb9eec5bb404"
+      },
+      {
+        "path": "docs/stabilization/evidence/member-context-diagnostic/run37244226691/resource-journals/hosted-guest-37244226691-1.jsonl",
+        "sha256": "0f6304066e44d9256baf49841059927af32556e4037fca1cf7ee3a72d3168aed"
+      },
+      {
+        "path": "docs/stabilization/evidence/member-context-diagnostic/run37244226691/resource-journals/hosted-package-37244226691-1.jsonl",
+        "sha256": "19702f1895dcb53f3a5bc6c95f40a3721756f6e5a692d6e6d3e82fe47e59079a"
+      },
+      {
+        "path": "docs/stabilization/evidence/member-context-diagnostic/run37244226691/screenshots/native-side-panel.png",
+        "sha256": "9b6a2a8f7271bb133a9ad3e83d6eb9187c87eccf4c707b421867a6c1f1b98be9"
+      },
+      {
+        "path": "docs/stabilization/evidence/member-context-diagnostic/run37244226691/screenshots/normal-target-after-open.png",
+        "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89"
+      }
+    ]
+  },
+  "credential_cleanup": {
+    "temporary_consumed_repository_secret": "MATRX_REVIEWER_MAGIC_LINK_JSON",
+    "temporary_github_secret_deleted": true,
+    "secret_list_confirmed_absent": true,
+    "local_link_file_deleted": true,
+    "local_link_file_absence_verified": true,
+    "identity_file_unchanged": true,
+    "no_credentials_auth_urls_identity_values_or_raw_logs_recorded": true
+  },
+  "limits": [
+    "One launch; no retry, local browser, build, release, manual version change or child agent.",
+    "No inventory or defect edits; root owns classification.",
+    "Frozen product manifest244/source/tree match prior runs; changed driver only.",
+    "No normal viewport, Scrape case, D117 failure-document cause or Store205 publication health established."
+  ]
+}
