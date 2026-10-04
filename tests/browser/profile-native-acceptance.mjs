@@ -10,6 +10,7 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import { signInAdminSettings } from './admin-settings-signin.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { assertFirstSaveOwnedRow, ownedDeleteUrl } from './profile-empty-row-restoration.mjs';
+import { captureProfileExecutionFailure, runProfilePointer } from './profile-native-failure.mjs';
 import { createOwnedWriteJournal } from './profile-owned-write-journal.mjs';
 import { panelIdentity } from './settings-native-auth-driver.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
@@ -301,8 +302,8 @@ function observeProfileRequests(panel) {
   };
 }
 async function openProfile(panel, email) {
-  await click(panel, 'title', email);
-  await click(panel, 'button-text', 'Profile');
+  await profilePointer(panel, 'title', email, 'account_menu');
+  await profilePointer(panel, 'button-text', 'Profile', 'profile_menu_item');
   const ready = await waitFor(
     'profile_ready',
     () => state(panel),
@@ -310,6 +311,34 @@ async function openProfile(panel, email) {
     30000,
   );
   assert.equal(Boolean(ready.error), false, 'profile_initial_load_failed');
+}
+async function profilePointer(panel, kind, label, call) {
+  return runProfilePointer(click, panel, kind, label, call);
+}
+async function reloadPointerState(panel, email) {
+  try {
+    return await evaluate(
+      panel,
+      `(() => {
+      const visible = el => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
+        return r.width > 0 && r.height > 0 && s.display !== 'none' &&
+          s.visibility !== 'hidden' && !el.closest('[inert]'); };
+      const buttons = [...document.querySelectorAll('button')].filter(visible);
+      const activeTabs = [...document.querySelectorAll('button[role="tab"][data-state="active"]')];
+      return {
+        active_settings_tab: activeTabs.length === 1 && activeTabs[0].title === 'Settings',
+        active_chat_tab: activeTabs.length === 1 && activeTabs[0].title === 'Chat',
+        active_tab_count: activeTabs.length,
+        account_button_count: buttons.filter(b => b.title === ${JSON.stringify(email)}).length,
+        profile_button_count: buttons.filter(b => b.textContent.trim() === 'Profile').length,
+        back_button_count: buttons.filter(b => b.title === 'Back').length,
+        menu_count: [...document.querySelectorAll('[role="menu"]')].filter(visible).length,
+      };
+    })()`,
+    );
+  } catch {
+    return { sample_unavailable: true };
+  }
 }
 async function clickProfileHeader(panel, label) {
   const target = await waitFor(
@@ -401,7 +430,7 @@ async function caseBack(panel, original, email, mode, dimension) {
   const startedAt = new Date().toISOString();
   await fillPreferred(panel, `Profile cancel ${randomUUID().slice(0, 8)}`);
   const draft = await state(panel);
-  await click(panel, 'title', 'Back');
+  await profilePointer(panel, 'title', 'Back', 'back_from_draft');
   const back = await waitFor(
     'chat_after_back',
     () => state(panel),
@@ -468,7 +497,7 @@ async function caseSaveDiscard(panel, original, email, mode, dimension, journal 
       );
     });
     await observe('save_settled', savedValue);
-    await click(panel, 'title', 'Back');
+    await profilePointer(panel, 'title', 'Back', 'back_after_save');
     await openProfile(panel, email);
     await waitFor(
       'profile_saved_after_reopen',
@@ -500,7 +529,7 @@ async function caseSaveDiscard(panel, original, email, mode, dimension, journal 
           );
         });
         await observe('cleanup_settled', original);
-        await click(panel, 'title', 'Back');
+        await profilePointer(panel, 'title', 'Back', 'back_after_restore');
         await openProfile(panel, email);
         await waitFor(
           'profile_restore_reopen',
@@ -566,7 +595,7 @@ async function caseT25(panel, original, email, mode, dimension) {
   const startedAt = new Date().toISOString();
   const fault = { matched: 0, refused: 0, failures: 0 };
   const network = observeProfileRequests(panel);
-  await click(panel, 'title', 'Back');
+  await profilePointer(panel, 'title', 'Back', 'back_before_owner_read_denial');
   await waitFor(
     'chat_before_denied_read',
     () => state(panel),
@@ -595,8 +624,8 @@ async function caseT25(panel, original, email, mode, dimension) {
   });
   let blocked;
   try {
-    await click(panel, 'title', email);
-    await click(panel, 'button-text', 'Profile');
+    await profilePointer(panel, 'title', email, 'account_menu_for_retry');
+    await profilePointer(panel, 'button-text', 'Profile', 'profile_menu_item_for_retry');
     blocked = await waitFor(
       'profile_owner_read_denied',
       () => state(panel),
@@ -613,7 +642,7 @@ async function caseT25(panel, original, email, mode, dimension) {
     await panel.send('Fetch.disable');
     offPaused();
   }
-  await click(panel, 'button-text', 'Retry loading profile');
+  await profilePointer(panel, 'button-text', 'Retry loading profile', 'retry_owner_read');
   const recovered = await waitFor(
     'profile_retry_restored_owner_read',
     () => state(panel),
@@ -772,6 +801,7 @@ try {
       let reacquiredPanel = null;
       let reloadAttempted = false;
       let executionError = null;
+      let executionOperation = 'warm_profile';
       try {
         if (!initialRow.row_present) {
           assert.equal(AUTH_MODE, 'member', 'first_save_requires_designated_member');
@@ -847,6 +877,7 @@ try {
         await caseSaveDiscard(panel, original, identity.email, AUTH_MODE, 'warm', ownedJournal);
         await caseT25(panel, original, identity.email, AUTH_MODE, 'warm');
         report.stage = 'extension_reload';
+        executionOperation = 'reload_extension';
         reloadAttempted = true;
         const reloaded = await reloadExtension();
         reloadedPanel = reloaded.panel;
@@ -861,8 +892,11 @@ try {
         assert.equal(after.profileId, identity.userId, 'reload_profile_identity_changed');
         assert.equal(after.isAdmin, AUTH_MODE === 'admin', 'reload_profile_role_changed');
         assert.equal(after.organizationId, stored.organizationId, 'reload_organization_changed');
+        executionOperation = 'open_profile_after_reload';
         await openProfile(reloaded.panel, identity.email);
+        executionOperation = 'case_back_after_reload';
         await caseBack(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
+        executionOperation = 'case_save_discard_after_reload';
         await caseSaveDiscard(
           reloaded.panel,
           original,
@@ -871,12 +905,20 @@ try {
           'reload',
           ownedJournal,
         );
+        executionOperation = 'case_owner_read_retry_after_reload';
         await caseT25(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
       } catch (error) {
         executionError = error;
         report.execution_failure_code = String(error?.message ?? 'unknown')
           .split(':', 1)[0]
           .slice(0, 100);
+        await captureProfileExecutionFailure(report, error, {
+          operation: executionOperation,
+          readUiState: () =>
+            reloadedPanel
+              ? reloadPointerState(reloadedPanel, identity.email)
+              : Promise.resolve({ sample_unavailable: true }),
+        });
       }
       let cleanupError = null;
       try {
