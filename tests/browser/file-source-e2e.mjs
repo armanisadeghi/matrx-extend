@@ -13,6 +13,7 @@
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { markBrowserAgentTraffic } from './agent-traffic.mjs';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -105,6 +106,7 @@ async function main() {
         `--load-extension=${EXTENSION_DIR}`,
       ],
     });
+    await markBrowserAgentTraffic(context, 'file-source-e2e', frontendUrl);
     let [worker] = context.serviceWorkers();
     if (!worker) worker = await context.waitForEvent('serviceworker', { timeout: 30_000 });
     const extensionId = new URL(worker.url()).host;

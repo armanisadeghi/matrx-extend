@@ -5,6 +5,7 @@ import { lstat, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
+import { agentTrafficHeaders } from '../agent-traffic.mjs';
 import { acquireVaultAcceptanceLease } from '../vault-acceptance-lease.cjs';
 import { EXPECTED_RUNTIME, createFirefoxSidebarAdapter } from './adapter.mjs';
 
@@ -925,7 +926,11 @@ const api = async (url, options = {}) => {
   const method = String(options.method || 'GET').toUpperCase();
   if (parsed.origin === API && parsed.pathname.startsWith('/api/vault/'))
     assert.equal(method, 'GET', 'node_vault_write_refused');
-  const headers = { ...(options.headers || {}), Authorization: `Bearer ${token}` };
+  const headers = {
+    ...(options.headers || {}),
+    Authorization: `Bearer ${token}`,
+    ...agentTrafficHeaders('firefox-vault-read-only-auth-driver'),
+  };
   if (organizationId) headers['X-Organization-Id'] = organizationId;
   const response = await fetch(url, { ...options, headers, signal: AbortSignal.timeout(30_000) });
   assert.ok(response.ok, `http_${response.status}_${options.label || 'request'}`);

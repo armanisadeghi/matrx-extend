@@ -23,6 +23,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { markBrowserAgentTraffic } from './agent-traffic.mjs';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
 
 const require = createRequire(import.meta.url);
@@ -708,6 +709,9 @@ export async function runNativeSidepanelQa({
     );
     onStage('page_create');
     const context = playwrightBrowser.contexts()[0];
+    // Every drive of our app/server from this owned browser is ours, not a visitor's.
+    await markBrowserAgentTraffic(context, 'native-sidepanel-qa-harness', WEB_ORIGIN);
+    await markBrowserAgentTraffic(context, 'native-sidepanel-qa-harness', 'https://server.app.matrxserver.com');
     const page = await context.newPage();
     onStage('local_page_navigation');
     await page.goto(`http://localhost:${serverPort}/`);

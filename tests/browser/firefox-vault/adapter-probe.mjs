@@ -1,3 +1,4 @@
+// matrx-agent-traffic: exempt fetches only its own 127.0.0.1 adapter server; aimatrx.com is just the add-on id
 import assert from 'node:assert/strict';
 import { execFile, spawn } from 'node:child_process';
 import { createHash, randomUUID } from 'node:crypto';

@@ -34,6 +34,7 @@
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { agentTrafficHeaders, markBrowserAgentTraffic } from './agent-traffic.mjs';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -121,6 +122,7 @@ async function api(path, { token, organizationId, method = 'GET', body } = {}) {
     headers: {
       Authorization: `Bearer ${token}`,
       'X-Organization-Id': organizationId,
+      ...agentTrafficHeaders('capture-ladder-capture'),
       ...(body ? { 'Content-Type': 'application/json' } : {}),
     },
     ...(body ? { body: JSON.stringify(body) } : {}),
@@ -162,7 +164,9 @@ async function main() {
   mkdirSync(SHOTS, { recursive: true });
 
   console.log('\n  rung 3, end to end\n  ' + '─'.repeat(58));
-  const health = await fetch(`${API}/health/version`).catch(() => null);
+  const health = await fetch(`${API}/health/version`, {
+    headers: agentTrafficHeaders('capture-ladder-capture'),
+  }).catch(() => null);
   if (!health || !health.ok) {
     fail(
       `no aidream answering at ${API}. This run needs one serving /capture — ` +
@@ -200,6 +204,9 @@ async function main() {
       `--load-extension=${EXTENSION_DIR}`,
     ],
   });
+
+  await markBrowserAgentTraffic(context, 'capture-ladder-capture', APP);
+  await markBrowserAgentTraffic(context, 'capture-ladder-capture', API);
 
   try {
     let [worker] = context.serviceWorkers();
