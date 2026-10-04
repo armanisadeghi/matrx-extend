@@ -1,0 +1,29 @@
+{
+  "id": "EXT-D-0121",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T02"],
+  "surface": "Native acceptance resource boundary",
+  "auth_mode": "guest",
+  "title": "Healthy runner cadence can leave initial UI boundary without a fresh health sample",
+  "reproduction": [
+    "Dispatch guest-scrape-development with CI37193761291/artifact11299613935 using driver844af90f, as hosted run37194883685.",
+    "Inspect its exact receipt and current-run guest journal: inputs boundary refuses stale_health before cases; admission10:23:19.776Z, next healthy10:23:35.978Z, child exit10:23:35.984Z."
+  ],
+  "expected": "No action executes on stale evidence. If only the sampling cadence is pending, bounded scheduling waits for fresh current-run healthy evidence; unsafe, stopped, wrong-run or unavailable evidence still refuses.",
+  "actual": "No UI cases ran. Initial boundary refused stale_health; healthy sample arrived16.202s after admission. Causal timing diagnosis underway; no product defect inferred.",
+  "severity": "S2: blocks trusted acceptance, not demonstrated customer failure",
+  "priority": "P1: unblock guarded native testing",
+  "state": "open",
+  "owner": "/root/resource_freshness_diagnosis",
+  "evidence": [".research/scrape-layout-fixed-native.json"],
+  "transition_history": [
+    {
+      "at": "2026-10-04T10:27:13.671015+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Root independently inspected exact receipt and current-run journal; delegated causal source diagnosis."
+    }
+  ],
+  "closure_requirement": "Causal guard-path RED/GREEN, independent source review, then exact guarded native run without stale action or weakened thresholds.",
+  "next_action": "Diagnose cadence and repair scheduling if proven, preserving currentrun identity and all resource refusal conditions."
+}
