@@ -19,7 +19,8 @@
   "evidence": [
     ".research/guest-scrape-diagnostic-native.json",
     ".research/hosted-panel-context-diagnosis.json",
-    ".research/hosted-panel-context-peer.json"
+    ".research/hosted-panel-context-peer.json",
+    ".research/scrape231-observer-retest.json"
   ],
   "transition_history": [
     {
@@ -36,5 +37,13 @@
     }
   ],
   "closure_requirement": "Demonstrate cause, independently verify repair and actual owned Store panel initialization; surrounding ownership checks must still reject foreign contexts.",
-  "next_action": "One guarded hosted exact Store205 run with reviewed count diagnostics; inspect actual mismatch before behavior changes. No startup or feature fix claimed."
+  "next_action": "Bounded causal diagnosis owned by root/panel_context117_bounded_diagnosis; no blind redispatch or weakened context ownership checks.",
+  "latest_reproduction": {
+    "run_id": 37220067899,
+    "product_version": "0.2.231",
+    "source": "723433a7628b32fb610d3a7f36ca6b8dd5fd2b72",
+    "runner": "macos-15 ARM64",
+    "boundary": "inputs/panel_context; contextCount=1 expectedExtensionCount=0 exactUrlCount=0; zero cases/media/reload",
+    "resource_verdict": "admitted, healthy watch, resourceInvalid=false, child_failed"
+  }
 }
