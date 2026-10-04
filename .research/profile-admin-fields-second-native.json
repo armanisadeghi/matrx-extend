@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0107 / EXT-F-1004 admin native Profile acceptance",
+  "run_id": "profile-admin-fields-189-02",
+  "status": "blocked_admin_profile_row_absent",
+  "execution": {
+    "resource_guard": "admitted; child exited 1 after profile preflight",
+    "browser_startup": "passed; no BROWSER_STARTUP_FAILURE emitted",
+    "endpoint_diagnostic": "not_applicable; owned CDP startup refusal did not recur",
+    "authentication": "first-party admin sign-in and extension identity match verified",
+    "device_organization": "present and selection verified",
+    "canonical_admin_server_check": "not emitted by the existing admin sign-in path; extension admin role assertion passed"
+  },
+  "failure": {
+    "cause": "The verified admin account has no Profile row. The unchanged runner only permits first-row creation for the designated member, so it stopped at first_save_requires_designated_member before any Profile write.",
+    "safe_report_code": "profile_unclassified_failure",
+    "raw_error_or_identity": "omitted"
+  },
+  "artifact": {
+    "source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "ci_run_id": 37164174445,
+    "artifact_id": 11288542496,
+    "version": "0.2.189",
+    "tree_sha256": "494646f6dd65399e0e7eee65fd1d9bd00ef97d173c5ceb9674de276ca12dc23a"
+  },
+  "inputs": {
+    "runner_sha256": "e427b00309ada3ba9d2e4b87047d572016f65e0237fa7ef16eaded53eec7633b",
+    "native_harness_sha256": "2e137d924b6a6502f4f44c7c3cba95011ff40abbb1b5b6ceff2a29f27918e9ef",
+    "owned_cdp_helper_sha256": "0f3d310be8eeb7850d8b3d62f55c1f14747ef6415151b8ba8ec877110386827a",
+    "reload_account_probe_sha256": "7b582c1033b3db54fe3c0d09a2068c5b9b826f80e898e307b5f3c4612922b4fa",
+    "reviewed_diagnostic_source": "4d54b6d9",
+    "independent_review": "4b163efa"
+  },
+  "acceptance": {
+    "extended_cells": [
+      { "id": "EXT-F-1004-T06", "dimension": "warm", "status": "missing" },
+      { "id": "EXT-F-1004-T06", "dimension": "extension_reload", "status": "missing" },
+      { "id": "EXT-F-1004-T18", "dimension": "warm", "status": "missing" },
+      { "id": "EXT-F-1004-T18", "dimension": "extension_reload", "status": "missing" },
+      { "id": "EXT-F-1004-T22", "dimension": "warm", "status": "missing" },
+      { "id": "EXT-F-1004-T22", "dimension": "extension_reload", "status": "missing" }
+    ],
+    "surrounding_cases": {
+      "T02": "not_reached",
+      "T04": "not_reached",
+      "T25": "not_reached",
+      "T26": "not_reached; member-only save-failure branch"
+    },
+    "original_row": "absent before the Profile cases and verified absent during runner cleanup; exact original row absence preserved",
+    "profile_field_values": "no Profile row existed; no field write or field mutation occurred",
+    "automatic_ui_restoration": "no Profile UI write began; no field restoration action was needed",
+    "final_readback": "row absence verified; no field-level readback or extension reload occurred"
+  },
+  "evidence": {
+    "raw_report": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-admin-fields-189-02/evidence/profile-native-profile-admin-fields-189-02.json",
+    "raw_report_sha256": "230f569348a9b983f1885589722bc5cd8c4ec23c33431d42c0654d59e0848f73",
+    "resource_journal": "docs/stabilization/resource-journals/profile-admin-fields-189-02.jsonl",
+    "resource_journal_sha256": "2e5f05633fe35e7bbb2b48d30262e8ce9d7ef9749c3cbe253eb1e7a76dfbe214",
+    "private_ownership_receipt": "not created; no row was created"
+  },
+  "scope": "One guarded admin run using the reviewed endpoint-diagnostic source. No source changes, member login, role change, build, release, or retry. No Profile values, credentials, or personal/row identifiers recorded."
+}
