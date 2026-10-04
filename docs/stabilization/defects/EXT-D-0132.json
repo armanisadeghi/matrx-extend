@@ -63,11 +63,7 @@
       "reason": "Original first-spike permanent-refusal no longer reproduces; surrounding fail-closed cases passed prior fullCI37237036998. D133 product-test setup failure remains separately open."
     }
   ],
-  "fix_commits": [
-    "da9669c9",
-    "e2d06172",
-    "2fed8191"
-  ],
+  "fix_commits": ["da9669c9", "e2d06172", "2fed8191"],
   "hosted_ci": {
     "run_id": 37237036998,
     "head": "2fed8191b89f6cb8a8d07ca599bc24ee74b36296",
