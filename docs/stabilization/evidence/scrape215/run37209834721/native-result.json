@@ -21,9 +21,7 @@
         "initial_empty": true,
         "initial_url": "http://localhost:49198/intake"
       },
-      "remaining": [
-        "Navigation and reload lifecycle remain to be exercised."
-      ]
+      "remaining": ["Navigation and reload lifecycle remain to be exercised."]
     },
     {
       "id": "EXT-F-1007-T01",
@@ -33,79 +31,37 @@
         "busy_disabled": true,
         "article_title": "Harbor Dental intake guide",
         "lazy_content_absent": true,
-        "result_tabs": [
-          "Article",
-          "Images",
-          "Video",
-          "Links",
-          "SEO",
-          "Schema"
-        ]
+        "result_tabs": ["Article", "Images", "Video", "Links", "SEO", "Schema"]
       },
-      "remaining": [
-        "Warm/full reload lifecycle not yet exercised."
-      ]
+      "remaining": ["Warm/full reload lifecycle not yet exercised."]
     },
     {
       "id": "EXT-F-1007-T08",
       "status": "partial",
       "evidence": {
-        "tabs_selected": [
-          "Article",
-          "Images",
-          "Video",
-          "Links",
-          "SEO",
-          "Schema"
-        ],
+        "tabs_selected": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
         "matching_content": {
           "article": true,
           "images": {
             "pane": "Images",
             "state": "matching_content",
             "count": 3,
-            "paths": [
-              "/intake.svg",
-              "/appointment-card.svg",
-              "/clinic-icon.svg"
-            ],
-            "alt": [
-              "New patient intake desk",
-              "Appointment card",
-              "Clinic icon"
-            ],
-            "natural_sizes": [
-              [
-                640,
-                480
-              ],
-              [
-                96,
-                96
-              ],
-              [
-                32,
-                32
-              ]
-            ]
+            "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+            "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+            "natural_sizes": [[640, 480], [96, 96], [32, 32]]
           },
           "video": {
             "pane": "Video",
             "state": "matching_content",
             "count": 2,
-            "paths": [
-              "/intake-walkthrough.mp4",
-              "/referral-walkthrough.mp4"
-            ]
+            "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
           },
           "links": true,
           "seo": true,
           "schema": true
         }
       },
-      "remaining": [
-        "Image and video empty states and reload lifecycle need full observation."
-      ]
+      "remaining": ["Image and video empty states and reload lifecycle need full observation."]
     }
   ],
   "stage": "warm_media_controls",
