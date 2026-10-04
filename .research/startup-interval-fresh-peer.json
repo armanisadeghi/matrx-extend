@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "reviewed_at_utc": "2026-10-04T19:49:03Z",
+  "reviewed_commit": "44c20ae4",
+  "status": "CHANGES_REQUESTED_NO_HOSTED_LAUNCH",
+  "scope": "Fresh independent source and scoped local review of only the startup diagnostic commit. No native browser, hosted workflow, build, release, credential access, or product acceptance was attempted.",
+  "A_measurement_route_verdict": {
+    "verdict": "PARTIAL_UNMET_COMPARABILITY",
+    "severity": "P1 for using this run to explain the refused native watch",
+    "finding": "The new route launches Chromium headless with the verified extension on about:blank and waits for DevToolsActivePort, but never opens the native side panel. The exact failed run 37227042493 recorded native_stage=exercise_panel at NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample. Its first unsafe watch was 16 seconds after admission. A healthy or unsafe startup-only bracket therefore measures a materially different workload and cannot allocate or correct the prior panel-stage CPU spike.",
+    "source_evidence": [
+      "scripts/hosted-startup-interval-diagnostic.mjs:40-84",
+      "tests/browser/native-sidepanel-qa-harness.mjs:1034-1048",
+      "docs/stabilization/evidence/scrape-member/run37227042493/acceptance-receipt.json",
+      "docs/stabilization/evidence/scrape-member/run37227042493/docs/stabilization/resource-journals/hosted-guest-37227042493-1.jsonl"
+    ],
+    "measurement_check": "Darwin ps fractional cumulative CPU time parses on the local Mac (694/694 rows); two focused process-bracket tests pass. The diagnostic brackets but cannot exactly coincide with iostat's one-second interval. New, exited, reparented, and reused PIDs remain uncertain, as its report states. The original guard still uses the second row of iostat -c 2 -w 1 -n 0.",
+    "route_check": "Workflow YAML parses; route requires macos-15 ARM64, exact CI development run and artifact, retains the existing hosted-guest-side-panel concurrency group, package/browser/acceptance readiness, resource permit, and guard floors. It skips credential preflight and normal native exercise, and labels its own report DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE.",
+    "required_correction": "Use the existing native harness startup and panel-opening path up to the pre-exercise boundary, without credentials or product assertions, then collect the guard interval and stop. Preserve the diagnostic-only verdict and full unsafe journal."
+  },
+  "B_quality_safety_verdict": {
+    "verdict": "QUALIFIED_WITH_CLEANUP_GAP",
+    "severity": "P2",
+    "finding": "After a one-second SIGTERM grace, the diagnostic sends SIGKILL but does not wait for child close before removing its temporary profile and writing a complete report. The outer guard's process-group and inherited-token cleanup still owns the child, so this is not a demonstrated ownership escape; it leaves report completion and profile cleanup timing ambiguous.",
+    "source_evidence": [
+      "scripts/hosted-startup-interval-diagnostic.mjs:78-95",
+      "scripts/stabilization-resource.mjs:698-714",
+      "scripts/stabilization-resource.mjs:807-835"
+    ],
+    "required_correction": "Await a bounded close after SIGKILL and make completion explicit only after the owned browser has closed. Let the outer guard retain the lease and fail if that cannot be confirmed.",
+    "preserved_controls": "No changed guard threshold, admission floor, unsafe-history decision, single-heavy permit, watchdog stop policy, credential flow, or product-pass route was found in the reviewed commit. The normal native resource boundary still refuses any RESOURCE_WATCH_UNSAFE in its current-run journal."
+  },
+  "scoped_checks": {
+    "pass": [
+      "node --test scripts/test-startup-interval-attribution.mjs: 2/2",
+      "node --test scripts/test-stabilization-resource-safety.mjs: 5/5",
+      "node --check on four changed JavaScript modules",
+      "Ruby YAML parse of hosted workflow: group hosted-guest-side-panel, 14 steps",
+      "Actual /bin/ps output parsed without process arguments or environment: 694 rows"
+    ],
+    "not_run": "Local system disk had 7 GiB available against the unchanged 20 GiB floor, so no native browser/build/release run. Hosted route was not dispatched. No runtime or product pass is claimed."
+  }
+}
