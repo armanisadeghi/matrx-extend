@@ -11,12 +11,17 @@
     "The existing-row full baseline and write-intent receipt are fsynced only on the disposable hosted VM, excluded from uploaded artifacts. Termination after a write would lose that recovery record. No hosted Profile mutation was attempted."
   ],
   "expected": "Before authenticated Profile writes, validate approved organization and preserve exact original state and durable write intent beyond loss of the hosted VM; retain secret/profile privacy and conditional restoration checks.",
-  "actual": "Independent source peer daf00ee8 found both gaps. Profile execution is held; implementation is adding fixture staging and a fail-closed preflight while durable external recovery remains unresolved. No product failure or native restoration pass is claimed.",
+  "actual": "Hosted Profile admin/member now refuse all phases before resource/runtime/browser/driver operations, independent of credentials. Organization fixture staging is implemented but unreachable until recovery is supported. Source guard passed independent peer5727afd5 and8focusedtests. A durable private original-row and per-write-intent recovery path outside the VM is still missing; full hosted Profile acceptance remains unavailable.",
   "severity": "S2: hosted testing could strand test-account edits after interruption",
   "priority": "P1: prerequisite for safely testing existing Profile remotely",
   "state": "in-fix",
   "owner": "hosted_profile_path",
-  "evidence": [".research/hosted-profile-path.json", ".research/hosted-profile-peer.json"],
+  "evidence": [
+    ".research/hosted-profile-path.json",
+    ".research/hosted-profile-peer.json",
+    ".research/hosted-profile-phase-fix.json",
+    ".research/hosted-profile-phase-final-peer.json"
+  ],
   "transition_history": [
     {
       "at": "2026-10-04T06:37:42.420425+00:00",
@@ -37,5 +42,11 @@
       "reason": "Repair source preflight to refuse all hosted Profile writes until restoration is durably recoverable; full native acceptance remains required."
     }
   ],
-  "closure_requirement": "Independent source guard and actual hosted interruption recovery with exact original data preserved, plus approved organization fixture and surrounding Profile acceptance. Refusal alone does not establish supported hosted Profile testing."
+  "closure_requirement": "Independent source guard and actual hosted interruption recovery with exact original data preserved, plus approved organization fixture and surrounding Profile acceptance. Refusal alone does not establish supported hosted Profile testing.",
+  "safety_containment": {
+    "state": "verified_source_only",
+    "commit": "d7622e51",
+    "peer": "5727afd5",
+    "limit": "No native Profile run. Refusal prevents unsafe execution but does not fulfill the full hosting/recovery contract."
+  }
 }
