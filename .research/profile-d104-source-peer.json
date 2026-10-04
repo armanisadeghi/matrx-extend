@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "7e3f0f4198d2bc374424ba9db2feda12c6086702",
+  "scope": "Fresh zero-authorship source review of EXT-D-0104 Profile acceptance-driver repair; no native browser run, database mutation, or product edit.",
+  "A_acceptance": {
+    "source_verdict": "PASS for the bounded source path",
+    "native_verdict": "PENDING",
+    "evidence": [
+      "ProfileView renders Birthday as an HTML date input; the driver now clicks near its leading segment and dispatches digit keyDown/keyUp events in month-day-year order, then waits for the exact ISO value. This is plausible for Chromium's segmented control, but source inspection cannot prove native interaction.",
+      "Identity compares all seven desired values in the draft, after save and reopen, and after extension reload. Employment compares Company and Title at the same points. Case IDs T05 and T17 remain distinct; T21 reload remains in the extended census.",
+      "The warm cases stay provisional until reload verification and restoration. Restoration compares every original field after reopen and reconciles the owned write journal; the runner then conditionally deletes the owned row and verifies original absence before a passing overall report.",
+      "A fill failure records a fixed phase, allowlisted field, and exact-match boolean. If restoration also fails, the original error remains primary and the separate restoration failure is attached; the runner captures the case operation before cleanup changes stage."
+    ],
+    "open_acceptance": "A fresh independent native extension run must drive T05/T17 warm and reload plus T21 reload on the repaired artifact, verify exact saved Identity and Employment values after reopen and extension reload, and prove original-row absence restored. The local Chromium probe and 13 source tests are not that evidence."
+  },
+  "B_quality": {
+    "verdict": "PARTIAL",
+    "finding": "The repair has no automated forcing guard at the Birthday interaction seam. The new test calls throwFieldCaseFailure and report capture with hand-built errors; it does not execute inputPoint/fill or a native date control. The reported local Chromium probe supports plausibility but is not a committed regression guard with a demonstrated defect-specific red. A regression back to center-click plus Input.insertText would leave the 13 focused tests green.",
+    "severity": "important for regression protection; does not by itself block a guarded native run",
+    "other_checks": "No product behavior or tool contract changed. The failure object serializes only fixed labels and booleans, preserving private values outside the report. The date control and source runner appear consistent."
+  },
+  "checks": {
+    "focused_tests": "node --test tests/browser/profile-native-failure.test.mjs tests/browser/profile-reload-field-orchestration.test.mjs: 13 passed, 0 failed",
+    "syntax_and_diff": "node --check on the two changed runtime modules and git diff --check for reviewed commit: passed",
+    "source_census": "Checked ProfileView date input, T05/T17/T21 runner paths, reload verification, restoration, final census, and primary-error capture."
+  },
+  "builder_report_role": "Read .research/profile-identity-native-diagnosis.json as a claim and compared it to the changed source; its Chromium probe is not native acceptance evidence."
+}
