@@ -7,6 +7,7 @@ import { access, mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { scrapeNativeSelection } from '../tests/browser/scrape-native-selection.mjs';
 import { matchingCrx3RsaKey } from './crx3-identity.mjs';
 import {
   selectOrImportNativeTarget,
@@ -313,6 +314,7 @@ async function run(prepared, artifactMode) {
       'Guest Chat release requires exact Store ZIP payload',
     );
   const scrapeRoute = requireHostedScrapeRoute(acceptanceCase, artifactMode, prepared);
+  const scrapeSelection = scrapeRoute ? scrapeNativeSelection(process.env) : null;
   if (acceptanceCase === 'prepare-stale-results')
     assert.equal(kind, 'ci_development_test', 'Prepare requires exact CI development receipt');
   if (acceptanceCase === 'profile-admin' || acceptanceCase === 'profile-member') {
@@ -324,6 +326,7 @@ async function run(prepared, artifactMode) {
   let adminCredentialsCreated = false;
   if (
     acceptanceCase === 'member-chat' ||
+    (scrapeRoute && scrapeSelection.mode === 'member') ||
     acceptanceCase === 'settings-persistence-member' ||
     acceptanceCase === 'desktop-settings-member'
   ) {
@@ -335,6 +338,7 @@ async function run(prepared, artifactMode) {
   }
   if (
     acceptanceCase === 'prepare-stale-results' ||
+    (scrapeRoute && scrapeSelection.mode === 'admin') ||
     acceptanceCase === 'settings-persistence-admin' ||
     acceptanceCase === 'audit-key-admin' ||
     acceptanceCase === 'desktop-settings-admin'
@@ -357,6 +361,8 @@ async function run(prepared, artifactMode) {
     MATRX_SCRAPE_EXTENSION_DIR: extensionDir,
     MATRX_SCRAPE_RECEIPT: relocatedReceipt,
     MATRX_SCRAPE_ARTIFACT_CHANNEL: scrapeRoute?.channel,
+    MATRX_SCRAPE_AUTH_MODE: scrapeSelection?.mode,
+    MATRX_SCRAPE_WIDTH_MODE: scrapeSelection?.widthMode,
     ...(scrapeRoute?.channel === 'development'
       ? {
           MATRX_SCRAPE_CI_SOURCE_SHA: prepared.sourceSha,
@@ -386,11 +392,13 @@ async function run(prepared, artifactMode) {
         }
       : {}),
     ...(acceptanceCase === 'member-chat' ||
+    (scrapeRoute && scrapeSelection.mode === 'member') ||
     acceptanceCase === 'settings-persistence-member' ||
     acceptanceCase === 'desktop-settings-member'
       ? { MATRX_REVIEWER_MAGIC_LINK_FILE: memberLinkPath }
       : {}),
     ...(acceptanceCase === 'prepare-stale-results' ||
+    (scrapeRoute && scrapeSelection.mode === 'admin') ||
     acceptanceCase === 'settings-persistence-admin' ||
     acceptanceCase === 'audit-key-admin' ||
     acceptanceCase === 'desktop-settings-admin'
@@ -457,6 +465,7 @@ async function run(prepared, artifactMode) {
   } finally {
     if (
       acceptanceCase === 'member-chat' ||
+      (scrapeRoute && scrapeSelection.mode === 'member') ||
       acceptanceCase === 'settings-persistence-member' ||
       acceptanceCase === 'desktop-settings-member'
     )
@@ -478,6 +487,8 @@ if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE?.startsWith('profile-'))
   throw new Error('hosted_profile_durable_recovery_unavailable');
 if (phase === 'preflight') {
   assert.equal(process.env.GITHUB_ACTIONS, 'true', 'hosted_preflight_runner_required');
+  if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE?.startsWith('guest-scrape'))
+    scrapeNativeSelection(process.env);
   requireHostedAcceptanceCredential(process.env.MATRX_HOSTED_ACCEPTANCE_CASE, process.env);
   console.log('HOSTED_CREDENTIAL_PREFLIGHT_READY');
   process.exit(0);

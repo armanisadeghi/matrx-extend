@@ -1,0 +1,26 @@
+{
+  "scope": "Scrape owned native acceptance source extension only; no product, Save, server, database, native browser, or release execution",
+  "selection": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "artifact_cases": ["guest-scrape", "guest-scrape-development"],
+    "auth_modes": ["guest", "member", "admin"],
+    "width_modes": ["narrow", "normal"],
+    "normal_width_mechanism": "CDP Emulation.setDeviceMetricsOverride on the owned SIDE_PANEL target, before warm controls and again on the replacement SIDE_PANEL after full extension reload",
+    "normal_width_limit": "Emulated panel viewport only; this does not verify Chrome's native divider resize behavior",
+    "normal_width_knob": "scrape_normal_width_px is mandatory in normal mode; observed innerWidth must meet it"
+  },
+  "authentication": {
+    "member_secret_name": "MATRX_REVIEWER_MAGIC_LINK_JSON",
+    "admin_secret_name": "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+    "public_connection_secret_names": ["WXT_SUPABASE_URL", "WXT_SUPABASE_PUBLISHABLE_KEY"],
+    "staging": "Existing hosted private files and settings-native-auth-driver real sign-in; member magic link and canonical non-admin query, admin sign-in, first-party and extension identity, rendered role and selected organization checks",
+    "reload": "Replacement panel must reproduce the selected role, profile ID and organization ID/name; guest storage remains empty",
+    "receipt": "Explicit selected auth mode, width mode, warm/reload observed viewport widths, sanitized authentication and reload checks, exact artifact provenance and existing lifecycle evidence"
+  },
+  "verification": {
+    "focused_node_tests": "10 passed across hosted Scrape route, selection, and existing Settings auth driver",
+    "format": "Biome check --write on owned source files; git diff --check clean",
+    "type_compile": "pnpm compile blocked by a concurrent unrelated untracked src/features/scrape/DiagnoseControls.test.tsx TS2352 at line 187",
+    "native_execution": "Not run in source-only lane; fresh guarded hosted acceptance required for each selected cell"
+  }
+}

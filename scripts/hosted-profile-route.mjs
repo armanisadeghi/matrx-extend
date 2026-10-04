@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { requireSettingsCredential } from '../tests/browser/settings-native-auth-driver.mjs';
 
 export function hostedProfileRoute(acceptanceCase, prepared, outputDir, runId) {
   assert.ok(
@@ -36,15 +37,21 @@ export function hostedProfileRoute(acceptanceCase, prepared, outputDir, runId) {
 
 export function requireHostedAcceptanceCredential(acceptanceCase, env) {
   assert.ok(acceptanceCase, 'hosted_acceptance_case_required');
+  const scrapeMode = acceptanceCase.startsWith('guest-scrape')
+    ? (env.MATRX_SCRAPE_AUTH_MODE ?? 'guest')
+    : null;
   if (
     [
       'member-chat',
       'settings-persistence-member',
       'desktop-settings-member',
       'profile-member',
-    ].includes(acceptanceCase)
+    ].includes(acceptanceCase) ||
+    scrapeMode === 'member'
   ) {
     assert.ok(env.MATRX_HOSTED_MEMBER_LINK_JSON, 'hosted_member_link_secret_required');
+    if (scrapeMode === 'member')
+      requireSettingsCredential('member', env.MATRX_HOSTED_MEMBER_LINK_JSON);
   }
   if (
     [
@@ -53,9 +60,12 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
       'desktop-settings-admin',
       'audit-key-admin',
       'profile-admin',
-    ].includes(acceptanceCase)
+    ].includes(acceptanceCase) ||
+    scrapeMode === 'admin'
   ) {
     assert.ok(env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON, 'hosted_admin_secret_required');
+    if (scrapeMode === 'admin')
+      requireSettingsCredential('admin', env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON);
   }
   if (acceptanceCase === 'profile-admin') profileOrganizationConfig(env);
   // The native journal is private and fsynced, but its hosted VM is disposable.

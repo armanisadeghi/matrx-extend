@@ -53,6 +53,27 @@ on:
         description: Optional owned intake-page CPU diagnostic rate for guest-scrape or guest-scrape-development (for example 4)
         required: false
         type: string
+      scrape_auth_mode:
+        description: Scrape identity to verify through real sign-in
+        required: false
+        default: guest
+        type: choice
+        options:
+          - guest
+          - member
+          - admin
+      scrape_width_mode:
+        description: Scrape side-panel viewport mode (normal uses CDP viewport emulation)
+        required: false
+        default: narrow
+        type: choice
+        options:
+          - narrow
+          - normal
+      scrape_normal_width_px:
+        description: Required observed side-panel viewport width in normal mode
+        required: false
+        type: string
 
 permissions:
   actions: read
@@ -111,6 +132,9 @@ jobs:
           PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx }}
           ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
+          SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
+          SCRAPE_WIDTH_MODE: ${{ inputs.scrape_width_mode }}
+          SCRAPE_NORMAL_WIDTH_PX: ${{ inputs.scrape_normal_width_px }}
           RUNNER_LABEL: ${{ inputs.runner_label }}
         run: |
           set -euo pipefail
@@ -124,6 +148,14 @@ jobs:
           if [[ -n "$SCRAPE_DIAGNOSTIC_CPU_RATE" ]]; then
             [[ "$ACCEPTANCE_CASE" == guest-scrape || "$ACCEPTANCE_CASE" == guest-scrape-development ]] || exit 1
             node -e 'const n=Number(process.argv[1]); if (!Number.isFinite(n)||n<=1) process.exit(1)' "$SCRAPE_DIAGNOSTIC_CPU_RATE"
+          fi
+          if [[ "$ACCEPTANCE_CASE" != guest-scrape && "$ACCEPTANCE_CASE" != guest-scrape-development ]]; then
+            [[ "$SCRAPE_AUTH_MODE" == guest && "$SCRAPE_WIDTH_MODE" == narrow && -z "$SCRAPE_NORMAL_WIDTH_PX" ]] || exit 1
+          fi
+          if [[ "$SCRAPE_WIDTH_MODE" == normal ]]; then
+            node -e 'const n=Number(process.argv[1]); if (!Number.isSafeInteger(n)||n<=360) process.exit(1)' "$SCRAPE_NORMAL_WIDTH_PX"
+          else
+            [[ -z "$SCRAPE_NORMAL_WIDTH_PX" ]] || exit 1
           fi
           if [[ "$ACCEPTANCE_CASE" == member-chat || "$ACCEPTANCE_CASE" == guest-scrape ]]; then
             [[ -n "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
@@ -150,6 +182,9 @@ jobs:
           MATRX_HOSTED_PHASE: preflight
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
+          MATRX_SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
+          MATRX_SCRAPE_WIDTH_MODE: ${{ inputs.scrape_width_mode }}
+          MATRX_SCRAPE_MIN_PANEL_WIDTH_PX: ${{ inputs.scrape_normal_width_px }}
           MATRX_HOSTED_MEMBER_LINK_JSON: ${{ secrets.MATRX_REVIEWER_MAGIC_LINK_JSON }}
           MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: ${{ secrets.MATRX_PREPARE_ADMIN_CREDENTIALS_JSON }}
           MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: ${{ secrets.MATRX_PROFILE_APPROVED_ORGANIZATION_JSON }}
@@ -208,6 +243,9 @@ jobs:
           MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.130' || '' }}
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
+          MATRX_SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
+          MATRX_SCRAPE_WIDTH_MODE: ${{ inputs.scrape_width_mode }}
+          MATRX_SCRAPE_MIN_PANEL_WIDTH_PX: ${{ inputs.scrape_normal_width_px }}
           MATRX_HOSTED_MEMBER_LINK_JSON: ${{ secrets.MATRX_REVIEWER_MAGIC_LINK_JSON }}
           MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: ${{ secrets.MATRX_PREPARE_ADMIN_CREDENTIALS_JSON }}
           MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: ${{ secrets.MATRX_PROFILE_APPROVED_ORGANIZATION_JSON }}

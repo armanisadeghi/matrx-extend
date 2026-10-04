@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
+import { requireHostedAcceptanceCredential } from './hosted-profile-route.mjs';
 import { requireHostedScrapeRoute } from './hosted-scrape-route.mjs';
 
 const development = { kind: 'ci_development_test', eligibleStore: false };
@@ -32,6 +33,50 @@ test('Store Scrape keeps its release ZIP restriction', () => {
     ['published-crx', store],
   ])
     assert.throws(() => requireHostedScrapeRoute('guest-scrape', mode, prepared));
+});
+
+test('Scrape auth mode requires matching staged credential before browser setup', () => {
+  for (const acceptanceCase of ['guest-scrape', 'guest-scrape-development']) {
+    requireHostedAcceptanceCredential(acceptanceCase, { MATRX_SCRAPE_AUTH_MODE: 'guest' });
+    assert.throws(
+      () => requireHostedAcceptanceCredential(acceptanceCase, { MATRX_SCRAPE_AUTH_MODE: 'member' }),
+      /hosted_member_link_secret_required/,
+    );
+    assert.throws(
+      () => requireHostedAcceptanceCredential(acceptanceCase, { MATRX_SCRAPE_AUTH_MODE: 'admin' }),
+      /hosted_admin_secret_required/,
+    );
+    assert.throws(
+      () =>
+        requireHostedAcceptanceCredential(acceptanceCase, {
+          MATRX_SCRAPE_AUTH_MODE: 'member',
+          MATRX_HOSTED_MEMBER_LINK_JSON: JSON.stringify({
+            email: 'admin@admin.com',
+            action_link:
+              'https://www.aimatrx.com/auth/confirm?type=magiclink&token_hash=wrong-role',
+          }),
+        }),
+      /d87_member_fingerprint_mismatch/,
+    );
+    requireHostedAcceptanceCredential(acceptanceCase, {
+      MATRX_SCRAPE_AUTH_MODE: 'admin',
+      MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: JSON.stringify({
+        email: 'admin@admin.com',
+        password: 'private',
+      }),
+    });
+    assert.throws(
+      () =>
+        requireHostedAcceptanceCredential(acceptanceCase, {
+          MATRX_SCRAPE_AUTH_MODE: 'admin',
+          MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: JSON.stringify({
+            email: 'wrong@invalid.test',
+            password: 'private',
+          }),
+        }),
+      /d87_admin_identity_required/,
+    );
+  }
 });
 
 test('workflow admits development Scrape only with one complete development selection', async () => {

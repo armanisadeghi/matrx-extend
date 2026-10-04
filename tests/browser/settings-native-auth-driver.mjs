@@ -17,6 +17,41 @@ function fingerprint(value) {
   return createHash('sha256').update(value.toLowerCase()).digest('hex').slice(0, 16);
 }
 
+export function requireSettingsCredential(mode, raw) {
+  assert.ok(['admin', 'member'].includes(mode), 'd87_auth_mode_invalid');
+  let secret;
+  try {
+    secret = JSON.parse(raw);
+  } catch {
+    throw new Error('d87_auth_secret_invalid');
+  }
+  if (mode === 'admin') {
+    assert.equal(secret?.email, 'admin@admin.com', 'd87_admin_identity_required');
+    assert.ok(
+      typeof secret.password === 'string' && secret.password,
+      'd87_admin_password_required',
+    );
+  } else {
+    assert.equal(
+      fingerprint(secret?.email ?? ''),
+      MEMBER_FINGERPRINT,
+      'd87_member_fingerprint_mismatch',
+    );
+    let link;
+    try {
+      link = new URL(secret.action_link);
+    } catch {
+      throw new Error('d87_member_link_invalid');
+    }
+    assert.equal(link.protocol, 'https:', 'd87_member_link_invalid');
+    assert.equal(link.origin, ORIGIN, 'd87_member_link_invalid');
+    assert.equal(link.pathname, '/auth/confirm', 'd87_member_link_invalid');
+    assert.equal(link.searchParams.get('type'), 'magiclink', 'd87_member_link_invalid');
+    assert.ok(link.searchParams.get('token_hash'), 'd87_member_link_invalid');
+  }
+  return secret;
+}
+
 export function settingsShellReady(state, mode) {
   return state?.settingsAvailable === true && state.guest === (mode === 'guest');
 }
@@ -187,12 +222,7 @@ export async function signInSettings({
       captureIdentity: true,
       readCredentials: async () => {
         const secret = await privateJson(adminCredentialsFile, 'd87_admin_credentials');
-        assert.equal(secret.email, 'admin@admin.com', 'd87_admin_identity_required');
-        assert.ok(
-          typeof secret.password === 'string' && secret.password,
-          'd87_admin_password_required',
-        );
-        return secret;
+        return requireSettingsCredential('admin', JSON.stringify(secret));
       },
     });
     const stored = await panelIdentity(panel);
@@ -222,18 +252,11 @@ export async function signInSettings({
   const web = await page.context().newPage();
   try {
     onStage('member_magic_link');
-    const secret = await privateJson(memberLinkFile, 'd87_member_link');
-    assert.equal(
-      fingerprint(secret.email ?? ''),
-      MEMBER_FINGERPRINT,
-      'd87_member_fingerprint_mismatch',
+    const secret = requireSettingsCredential(
+      'member',
+      JSON.stringify(await privateJson(memberLinkFile, 'd87_member_link')),
     );
     const link = new URL(secret.action_link);
-    assert.equal(link.protocol, 'https:', 'd87_member_link_invalid');
-    assert.equal(link.origin, ORIGIN, 'd87_member_link_invalid');
-    assert.equal(link.pathname, '/auth/confirm', 'd87_member_link_invalid');
-    assert.equal(link.searchParams.get('type'), 'magiclink', 'd87_member_link_invalid');
-    assert.ok(link.searchParams.get('token_hash'), 'd87_member_link_invalid');
     await web.goto(link.href, { waitUntil: 'domcontentloaded', timeout: 60_000 });
     const email = secret.email;
     onStage(`${mode}_web_identity`);

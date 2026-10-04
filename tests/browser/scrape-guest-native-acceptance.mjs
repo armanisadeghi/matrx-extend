@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Owned-page, trusted-input guest Scrape acceptance; unresolved cells stay unverified. */
+/** Owned-page, trusted-input Scrape acceptance; unresolved cells stay unverified. */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
@@ -18,10 +18,16 @@ import {
   videoLinksVerdict,
 } from './scrape-native-media-actions.mjs';
 import { confirmScrapeRecapture } from './scrape-native-recapture.mjs';
+import { scrapeNativeSelection, selectScrapePanelViewport } from './scrape-native-selection.mjs';
 import { diagnosticCpuRate, runSupplementalCpuDiagnostic } from './scrape-page-cpu-diagnostic.mjs';
 import { recordReloadMilestone } from './scrape-reload-milestones.mjs';
 import { waitForReplacementScrapeTab } from './scrape-replacement-tab.mjs';
 import { observeScrapeRows } from './scrape-row-observer.mjs';
+import {
+  panelIdentity,
+  signInSettings,
+  verifyCurrentSettingsIdentity,
+} from './settings-native-auth-driver.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
@@ -76,7 +82,13 @@ const report = {
   driver_failure: null,
   media_transitions: [],
   media_event_traces: [],
+  authentication: null,
+  panel_viewports: [],
 };
+let selection;
+let expectedIdentity;
+const otherRoleNote = () =>
+  `${['guest', 'member', 'admin'].filter((mode) => mode !== selection.mode).join('/')} modes remain unverified by this receipt.`;
 const mark = (id, status, evidence, remaining = []) =>
   report.cases.push({ id, status, evidence, remaining });
 async function screenshot(panel, artifacts, name) {
@@ -758,6 +770,9 @@ async function exerciseMediaControls({
 }
 
 try {
+  selection = scrapeNativeSelection(process.env);
+  report.mode = selection.mode;
+  report.width_mode = selection.widthMode;
   assert.ok(EXTENSION_DIR && RECEIPT, 'scrape_exact_artifact_inputs_required');
   assert.ok(['development', 'store'].includes(ARTIFACT_CHANNEL), 'scrape_channel_required');
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
@@ -818,6 +833,7 @@ try {
       page,
       panel,
       browserSession,
+      activatePanel,
       panelTarget,
       artifacts,
       reloadExtension,
@@ -825,29 +841,79 @@ try {
       resourceAction,
     }) => {
       await requireResourceHealth();
+      if (selection.mode !== 'guest') {
+        report.stage = 'authentication';
+        const authentication = await resourceAction(() =>
+          signInSettings({
+            mode: selection.mode,
+            page,
+            panel,
+            repo: REPO,
+            adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
+            memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
+            onStage: (value) => {
+              report.auth_stage = value;
+            },
+          }),
+        );
+        expectedIdentity = {
+          profileId: authentication.profileId,
+          email: authentication.email,
+          organizationId: authentication.organizationId,
+        };
+        const { profileId, email, organizationId, ...safeAuthentication } = authentication;
+        report.authentication = safeAuthentication;
+        assert.equal(authentication.mode, selection.mode, 'scrape_authenticated_mode_mismatch');
+        await resourceAction(() => activatePanel());
+        await waitFor(
+          'scrape_authenticated_panel_foreground',
+          () => evaluate(panel, 'document.visibilityState === "visible"'),
+          (visible) => visible === true,
+        );
+        await requireResourceHealth();
+      }
+      report.panel_viewports.push({
+        phase: 'warm',
+        ...(await selectScrapePanelViewport(panel, selection, evaluate)),
+      });
       report.stage = 'fixture_navigation';
-      const account = await evaluate(
-        panel,
-        `(() => ({guest:
+      if (selection.mode === 'guest') {
+        const account = await evaluate(
+          panel,
+          `(() => ({guest:
         document.querySelectorAll('button[title="Account"]').length === 1 &&
         document.querySelectorAll('button[title="admin@admin.com"]').length === 0}))()`,
-      );
-      assert.equal(account?.guest, true, 'scrape_guest_account_not_observed');
-      const auth = await evaluate(
-        panel,
-        `(async () => {
+        );
+        assert.equal(account?.guest, true, 'scrape_guest_account_not_observed');
+        const auth = await evaluate(
+          panel,
+          `(async () => {
         const stored = await chrome.storage.local.get(['matrx.auth.accessToken', 'matrx.user.profile']);
         return { hasAccessToken: typeof stored['matrx.auth.accessToken'] === 'string',
           hasUserProfile: stored['matrx.user.profile'] != null };
       })()`,
-      );
-      assert.deepEqual(
-        auth,
-        { hasAccessToken: false, hasUserProfile: false },
-        'scrape_guest_storage_not_empty',
-      );
-      report.guest_account_observed = true;
-      report.guest_auth_storage = auth;
+        );
+        assert.deepEqual(
+          auth,
+          { hasAccessToken: false, hasUserProfile: false },
+          'scrape_guest_storage_not_empty',
+        );
+        report.guest_account_observed = true;
+        report.guest_auth_storage = auth;
+      } else {
+        const identity = await panelIdentity(panel);
+        assert.equal(
+          identity.profileId,
+          expectedIdentity.profileId,
+          'scrape_profile_identity_mismatch',
+        );
+        assert.equal(
+          identity.organizationId,
+          expectedIdentity.organizationId,
+          'scrape_organization_identity_mismatch',
+        );
+        assert.equal(identity.isAdmin, selection.mode === 'admin', 'scrape_role_mismatch');
+      }
       const origin = new URL(page.url()).origin;
       await resourceAction(() => page.goto(`${origin}/intake`));
       assert.equal(await page.locator('#late p').count(), 0, 'lazy_content_must_start_absent');
@@ -905,7 +971,7 @@ try {
         },
         [
           ...(report.original_busy_failure ? [report.original_busy_failure] : []),
-          'Warm/full reload lifecycle not yet exercised.',
+          'Full extension reload and post-reload capture not yet exercised.',
         ],
       );
       if (DIAGNOSTIC_RATE !== null) {
@@ -1115,7 +1181,7 @@ try {
         warmLinkVerdict.status === 'failed' ? 'failed' : 'partial',
         { warm: warmLinkControls },
         [
-          'Repeat controls after full extension reload; member/admin modes remain unverified.',
+          `Repeat controls after full extension reload; ${otherRoleNote()}`,
           ...warmLinkVerdict.remaining,
         ],
       );
@@ -1161,7 +1227,7 @@ try {
           lazy_content_in_browser: true,
           lazy_content_in_capture: deep.resultText.includes(lazy),
         },
-        ['Deep failure retry mode and reload lifecycle remain unverified.'],
+        ['Deep failure retry mode and post-reload deep capture remain unverified.'],
       );
 
       report.stage = 'navigation_empty';
@@ -1206,7 +1272,7 @@ try {
       const t08 = report.cases.find((c) => c.id === 'EXT-F-1007-T08');
       t08.evidence.matching_content.images_empty = mediaEvidence.images_empty;
       t08.evidence.matching_content.video_empty = mediaEvidence.video_empty;
-      t08.remaining = ['Member/admin modes and full extension reload lifecycle remain unverified.'];
+      t08.remaining = [otherRoleNote(), 'Full extension reload lifecycle remains unverified.'];
       const t20 = report.cases.find((c) => c.id === 'EXT-F-1007-T20');
       t20.evidence.navigation_url = page.url();
       t20.evidence.previous_content_cleared = true;
@@ -1290,6 +1356,50 @@ try {
         report.reload_lifecycle.scrape_tab_boundary = await resourceAction(() =>
           waitForReplacementScrapeTab(replacement.panel),
         );
+        report.panel_viewports.push({
+          phase: 'reload',
+          ...(await selectScrapePanelViewport(replacement.panel, selection, evaluate)),
+        });
+        if (selection.mode !== 'guest') {
+          report.stage = 'reload_authentication';
+          await resourceAction(() => click(replacement.panel, 'title', 'Settings'));
+          const rendered = await resourceAction(() =>
+            verifyCurrentSettingsIdentity({
+              panel: replacement.panel,
+              mode: selection.mode,
+              email: expectedIdentity.email,
+              profileId: expectedIdentity.profileId,
+              organizationId: expectedIdentity.organizationId,
+            }),
+          );
+          assert.equal(
+            Object.values(rendered).every(Boolean),
+            true,
+            'scrape_reloaded_identity_unverified',
+          );
+          const stored = await panelIdentity(replacement.panel);
+          assert.equal(
+            stored.profileId,
+            expectedIdentity.profileId,
+            'scrape_reloaded_profile_identity_mismatch',
+          );
+          assert.equal(
+            stored.organizationId,
+            expectedIdentity.organizationId,
+            'scrape_reloaded_organization_mismatch',
+          );
+          report.reload_authentication = {
+            mode: selection.mode,
+            ...rendered,
+            profile_matches_warm: true,
+            organization_matches_warm: true,
+          };
+        } else {
+          const stored = await panelIdentity(replacement.panel);
+          assert.equal(stored.accessTokenPresent, false, 'scrape_reloaded_guest_token_present');
+          assert.equal(stored.profileId, null, 'scrape_reloaded_guest_profile_present');
+          report.reload_authentication = { mode: 'guest', guest_storage_empty: true };
+        }
         recordReloadMilestone(report, 'open_scrape_in_replacement_panel');
         await resourceAction(() => click(replacement.panel, 'title', 'Scrape'));
         recordReloadMilestone(report, 'observe_replacement_scrape');
@@ -1341,6 +1451,14 @@ try {
           recaptured.tabs.map((t) => t.label),
           expectedTabs,
         );
+        const t01 = report.cases.find((c) => c.id === 'EXT-F-1007-T01');
+        t01.evidence.full_extension_reload_and_post_reload_fast_capture = true;
+        t01.remaining = [
+          otherRoleNote(),
+          ...(selection.widthMode === 'normal'
+            ? []
+            : ['Normal-width verification remains unverified.']),
+        ];
         const postReloadPanes = { article: recaptured.resultText.includes(article) };
         for (const [label, pattern] of [
           ['Links', /Patient forms/],
@@ -1395,7 +1513,12 @@ try {
         report.post_reload_populated_panes = postReloadPanes;
         const t08 = report.cases.find((c) => c.id === 'EXT-F-1007-T08');
         t08.evidence.post_reload_populated_panes = postReloadPanes;
-        t08.remaining = ['Member/admin modes and normal-width verification remain unverified.'];
+        t08.remaining = [
+          otherRoleNote(),
+          ...(selection.widthMode === 'normal'
+            ? []
+            : ['Normal-width verification remains unverified.']),
+        ];
         for (const [id, evidence] of [
           ['EXT-F-1007-T10', reloadControls.images],
           [
@@ -1422,7 +1545,7 @@ try {
         t13.evidence.reload = reloadLinkControls;
         const linkVerdict = videoLinksVerdict(warmLinkControls.actions, reloadLinkControls.actions);
         t13.status = linkVerdict.status === 'passed' ? 'partial' : linkVerdict.status;
-        t13.remaining = ['Member/admin modes remain unverified.', ...linkVerdict.remaining];
+        t13.remaining = [otherRoleNote(), ...linkVerdict.remaining];
         if (linkVerdict.failures.length) t13.failure = linkVerdict.failures;
       } finally {
         await replacement.panel.detach();
@@ -1457,4 +1580,4 @@ try {
   process.exitCode = 1;
 }
 await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
-process.stdout.write(`${report.status.toUpperCase()} scrape_guest_native ${OUTPUT}\n`);
+process.stdout.write(`${report.status.toUpperCase()} scrape_${report.mode}_native ${OUTPUT}\n`);
