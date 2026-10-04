@@ -14,7 +14,7 @@
   "actual": "Report cannot locate the failing control or distinguish readiness/ambiguity; cleanup overwritesstage so it cannot identify originalfailure.",
   "severity": "S3: diagnosticloss delays reliabletesting; no productuserimpact demonstrated.",
   "priority": "P1: blocks currentProfile reloadacceptance diagnosis.",
-  "state": "retest-pass",
+  "state": "fixed",
   "owner": "profile_reload_target_repair",
   "evidence": [
     ".research/profile-member-retest189.json",
@@ -23,7 +23,8 @@
     ".research/profile-runner-final-peer.json",
     ".research/profile-member-retest189-next.json",
     ".research/profile-189-final-source-peer.json",
-    ".research/profile-receipt-final-privacy-peer.json"
+    ".research/profile-receipt-final-privacy-peer.json",
+    ".research/profile-report-boundary-escalation.json"
   ],
   "transition_history": [
     {
@@ -55,9 +56,27 @@
       "from": "fixed",
       "to": "retest-pass",
       "reason": "Actualnativefailure retained original extension_reload/open_profile_after_reload/account_menu, safe0/0counts andUIbooleans despitecleanupfinalstage. Rootverifiedraw/journalhashes. KnownT26dual-errorsecondarypath stillrequiresrepairbeforefullclosure."
+    },
+    {
+      "at": "2026-10-04T01:22:50.079102+00:00",
+      "from": "retest-pass",
+      "to": "retest-fail",
+      "reason": "Independent600e09fb synthetic actual observer report reproduced an unallowlisted backend code. Earlier native capture pass remains bounded; class-level report contract failed."
+    },
+    {
+      "at": "2026-10-04T01:22:50.079102+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Escalation owned final report and real outer teardown boundaries."
+    },
+    {
+      "at": "2026-10-04T01:22:50.079102+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "b83c2af0 bounds backend codes and preserves primary through reproduced filesystem teardown rejection;23 focused checks and3 mutations passed. Fresh independent peer pending."
     }
   ],
   "closure_requirement": "Meaningfulfailurecaptureguard and independentreview, then actualguardedfailure or equivalentverifiednativeobservation preservingoriginaloperation/stage withoutprivatecontent. UnderlyingProfile targetfailure handledseparately.",
-  "fix_commits": ["aa7df0d2", "c77982ec", "85a95c40", "5f417356"],
-  "known_remaining": "Peer600e09fb confirmed raw-message boundary fix but proved arbitrary synthetic backend response code survives into request diagnostics. Panel detach masking remains a source-level risk. Astra escalation owns one bounded class-level correction and real boundary guards, then fresh independent review; native gate held. No actual credential exposure established."
+  "fix_commits": ["aa7df0d2", "c77982ec", "85a95c40", "5f417356", "b83c2af0"],
+  "known_remaining": "Fresh source peer profile_escalated_boundary_peer is checking final b83c2af0 repair. One independent guarded member native run remains before closure. Direct panel detach transport rejection masking was refuted; actual outer filesystem teardown masking was reproduced and fixed. No actual credential exposure established."
 }
