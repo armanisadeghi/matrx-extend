@@ -5,14 +5,12 @@
   "surface": "Shared Source recognition in Scrape and chat page context",
   "auth_mode": "guest and authenticated member across multiple organizations",
   "reproduction": [
-    "With a valid session but no selected organization on this device, look up a URL that is saved in one of multiple RLS-visible organizations.",
-    "The prior lookup catches an organization-resolution error as null, conditionally omits organization_id from the docproc read, and may claim the other organization's Source as saved in the current workspace.",
-    "The Scrape recognition hook also watches only the tab URL, so a workspace switch on the same page can leave the prior workspace's saved claim visible.",
-    "The background saved-page broadcast carries no organization, so a late event from the prior workspace can overwrite a new workspace's recognition state.",
-    "Scrape's local Saved button and Source link can remain bound to A after switching to B, or be restored by an A Save that finishes late; an overlapping B retry must remain queued."
+    "Sign in with a matching Source visible through RLS in organization B; select organization A, then clear the device selection. Read recognition for the same URL in both states.",
+    "Expect the same accessible Source to be recognized without filtering by selected organization. Switch organizations while a lookup or background notification is pending; stale results must not replace current page recognition.",
+    "Separately save a new capture to the selected destination; switch destination while Save is pending. Local write confirmation must remain tied to its actual destination and not redirect a later save."
   ],
-  "expected": "Guest recognition returns none without a read. Authenticated recognition reads only the selected organization; missing or unreadable selection returns an honest unknown without a docproc read. Switching organization clears stale recognition, starts a scoped recheck, and ignores an older lookup or background broadcast that finishes late.",
-  "actual": "The shared query can read without an organization predicate, and the hook can retain a prior organization's claim after selection changes.",
+  "expected": "Guest recognition returns none without a read. Authenticated recognition reads all RLS-visible Sources regardless of device organization selection; lookup errors remain unknown, never unsaved. Writes carry their explicit selected destination; stale lookup and late Save outcomes must not overwrite newer page/write context.",
+  "actual": "Current query and four focused tests follow cross-organization read visibility. Prior selected-org-only read criteria were superseded by the Sept30 law and must not be restored. Multi-organization native recognition/Save and actual RLS behavior remain unverified.",
   "evidence": [
     "src/lib/supabase/queries.ts:620",
     "src/hooks/use-page-recognition.ts:26",
@@ -23,7 +21,8 @@
     "docs/stabilization/runs/source-org-green-002.json",
     "docs/stabilization/runs/source-org-local-green-001.json",
     "docs/stabilization/reports/d22-final-source-peer.json",
-    "docs/stabilization/runs/source-org-queue-red-001.json"
+    "docs/stabilization/runs/source-org-queue-red-001.json",
+    ".research/recognition-current-contract-test.json"
   ],
   "severity": "S2: wrong-workspace Saved claim may reveal another RLS-visible organization's Source identity and misstate capture status",
   "priority": "P1: close the organization boundary before claiming workspace-correct recognition",
@@ -75,5 +74,18 @@
   ],
   "fix_commits": ["deb577e8", "e36bf683", "8c0e8a19", "560efb66", "f6161e26", "9022e59a"],
   "ui_retest": "pending",
-  "closure_requirement": "Focused red/green shared-query, hook, and real Scrape Save UI guards; typecheck; independent source review; and authenticated multi-organization UI verification."
+  "closure_requirement": "Current-contract focused query/hook/Save tests, typecheck, independent source review, and real multi-organization UI/RLS acceptance. Do not treat a valid cross-organization read as a defect or a mocked query test as RLS proof.",
+  "historical_read_criteria": {
+    "superseded_by": "2026-09-30 active-organization read law",
+    "reproduction": [
+      "With a valid session but no selected organization on this device, look up a URL that is saved in one of multiple RLS-visible organizations.",
+      "The prior lookup catches an organization-resolution error as null, conditionally omits organization_id from the docproc read, and may claim the other organization's Source as saved in the current workspace.",
+      "The Scrape recognition hook also watches only the tab URL, so a workspace switch on the same page can leave the prior workspace's saved claim visible.",
+      "The background saved-page broadcast carries no organization, so a late event from the prior workspace can overwrite a new workspace's recognition state.",
+      "Scrape's local Saved button and Source link can remain bound to A after switching to B, or be restored by an A Save that finishes late; an overlapping B retry must remain queued."
+    ],
+    "expected": "Guest recognition returns none without a read. Authenticated recognition reads only the selected organization; missing or unreadable selection returns an honest unknown without a docproc read. Switching organization clears stale recognition, starts a scoped recheck, and ignores an older lookup or background broadcast that finishes late.",
+    "actual": "The shared query can read without an organization predicate, and the hook can retain a prior organization's claim after selection changes."
+  },
+  "criteria_reconciled_at": "2026-10-04T16:52:54.564782+00:00"
 }

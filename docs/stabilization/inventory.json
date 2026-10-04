@@ -17897,24 +17897,33 @@
             "EXT-F-1007-C27"
           ],
           "preconditions": [
-            "Open Scrape on a controlled page and make the prior-capture lookup fail without altering capture data."
+            "Open Scrape on a controlled page and make the prior-capture lookup fail without altering capture data.",
+            "Record the approved development artifact/source receipt and reload extension/panel before the case; repeat after full reload. For signed-in roles use an authorized multi-organization fixture with a known RLS-visible Source."
           ],
           "steps": [
             "Open the Scrape view while the lookup is unavailable.",
-            "Restore lookup service and allow recognition to refresh."
+            "Restore lookup service and allow recognition to refresh.",
+            "Signed-in: recognize the known Source in B while A is selected, then with no device organization selected; confirm read visibility is unchanged.",
+            "Guest: confirm no saved-Source lookup is sent; do not manufacture a lookup service failure where the guest short-circuit performs no query."
           ],
           "expected": [
-            "The view says it could not check whether the page was saved, never claims the page was not saved, and leaves Save available; after recovery it reports the known result."
+            "Signed-in lookup failure is shown as unknown, never unsaved; recovery displays the known accessible Source.",
+            "Recognition covers all RLS-visible organizations regardless of selected organization. Inaccessible rows stay hidden; this requires real RLS verification.",
+            "Guest returns no saved Source without a database lookup. Selected organization remains the explicit destination for a separate Save write; recognition does not redirect it."
           ],
           "dimensions": [
             "lookup-failure",
             "recovery",
-            "honest-state"
+            "honest-state",
+            "cross-organization-read",
+            "no-selected-organization",
+            "guest-no-read",
+            "full-reload"
           ],
           "verification_status": "unverified-after-source-change",
           "source_evidence": "c3a2477 changed lookup results to found/none/unknown and added the could-not-check state; runtime behavior remains unverified.",
           "remote_delta_acceptance": "Already covers failed prior-save lookup; retain and extend to ensure the new notice is suppressed while lookup is unknown.",
-          "source_reconciliation": "docs/stabilization/reports/remote-delta-latest-75cfb09-reconcile.json"
+          "source_reconciliation": ".research/recognition-current-contract-test.json"
         },
         {
           "id": "EXT-F-1007-T27",
