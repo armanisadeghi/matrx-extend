@@ -406,8 +406,8 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
       readContexts: () => sidePanelContexts(cdp, replacementWorker.targetId),
       panelUrl,
     });
-    // Keep the strict immediate verdict; later observations diagnose registration timing only.
-    if (contextBoundary.first.exact_expected_count === 0) {
+    // Preserve the first sample as evidence, then use the bounded exact-match verdict.
+    if (!contextBoundary.exact_expected_appeared) {
       const error = new Error('native_sidepanel_runtime_context_missing');
       error.contextBoundary = contextBoundary;
       error.lifecycleEvidence = retirementEvidence;

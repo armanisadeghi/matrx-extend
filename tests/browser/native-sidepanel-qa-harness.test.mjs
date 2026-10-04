@@ -221,11 +221,12 @@ console.log('PASS native startup diagnostic exposes only fixed owned-CDP failure
 // target lifecycle proof, and refusal when Chrome disables the extension.
 // Browser UI and CDP are external dependencies; their state follows UI actions.
 const { reloadOwnedExtension } = await import('./native-sidepanel-qa-harness.mjs');
-async function reloadCase({ initiallyEnabled, disabledAfter = false }) {
+async function reloadCase({ initiallyEnabled, disabledAfter = false, contextResults }) {
   let developerMode = initiallyEnabled;
   let reloaded = false;
   let opened = false;
   let toggles = 0;
+  let contextReads = 0;
   const events = new Map();
   const panelUrl = `chrome-extension://${extensionId}/sidepanel.html`;
   const oldWorker = {
@@ -279,9 +280,11 @@ async function reloadCase({ initiallyEnabled, disabledAfter = false }) {
         };
       if (method === 'Target.attachToTarget') return { sessionId: 'owned-session' };
       if (method === 'Runtime.evaluate')
-        return {
-          result: { value: [{ contextType: 'SIDE_PANEL', documentUrl: panelUrl, tabId: -1 }] },
-        };
+        return (
+          contextResults?.[Math.min(contextReads++, contextResults.length - 1)] ?? {
+            result: { value: [{ contextType: 'SIDE_PANEL', documentUrl: panelUrl, tabId: -1 }] },
+          }
+        );
       assert.ok(['Target.setDiscoverTargets', 'Target.detachFromTarget'].includes(method));
       return {};
     },
@@ -304,6 +307,7 @@ async function reloadCase({ initiallyEnabled, disabledAfter = false }) {
   assert.equal(result.old_targets_retired, true);
   assert.equal(result.worker_replaced, true);
   assert.equal(result.panel_replaced, true);
+  if (contextResults) assert.equal(result.context_boundary.attempts, contextResults.length);
   assert.equal(
     toggles,
     initiallyEnabled ? 0 : 1,
@@ -313,6 +317,44 @@ async function reloadCase({ initiallyEnabled, disabledAfter = false }) {
 }
 await reloadCase({ initiallyEnabled: false });
 await reloadCase({ initiallyEnabled: true });
+const wrongContextResult = {
+  result: {
+    value: [{ contextType: 'SIDE_PANEL', documentUrl: `${expectedPanelUrl}?foreign`, tabId: -1 }],
+  },
+};
+const exactContextResult = {
+  result: { value: [{ contextType: 'SIDE_PANEL', documentUrl: expectedPanelUrl, tabId: -1 }] },
+};
+const delayed = await reloadCase({
+  initiallyEnabled: true,
+  contextResults: [wrongContextResult, exactContextResult],
+});
+assert.equal(delayed.context_boundary.first.exact_expected_count, 0);
+assert.equal(delayed.context_boundary.last.exact_expected_count, 1);
+assert.equal(delayed.context_boundary.exact_expected_appeared, true);
+await assert.rejects(
+  reloadCase({ initiallyEnabled: true, contextResults: [wrongContextResult] }),
+  (error) =>
+    error.message === 'native_sidepanel_runtime_context_missing' &&
+    error.contextBoundary.first.exact_expected_count === 0 &&
+    error.contextBoundary.last.exact_expected_count === 0 &&
+    error.contextBoundary.exact_expected_appeared === false &&
+    error.lifecycleEvidence.old_worker_absent === true,
+);
+await assert.rejects(
+  reloadCase({ initiallyEnabled: true, contextResults: [{ result: { value: [] } }] }),
+  (error) =>
+    error.message === 'native_sidepanel_runtime_context_missing' &&
+    error.contextBoundary.first.side_panel_count === 0 &&
+    error.contextBoundary.exact_expected_appeared === false,
+);
+await assert.rejects(
+  reloadCase({ initiallyEnabled: true, contextResults: [{ exceptionDetails: {} }] }),
+  (error) =>
+    error.message === 'native_sidepanel_runtime_context_query_failed' &&
+    error.contextBoundary.query_failed === true &&
+    error.contextBoundary.first === null,
+);
 await assert.rejects(
   reloadCase({ initiallyEnabled: false, disabledAfter: true }),
   /native_extension_reload_disabled/,

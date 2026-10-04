@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0106 reload readiness fix",
+  "source_evidence": ".research/reload-context-boundary.json",
+  "finding": "The exact replacement SIDE_PANEL context appeared on the second query at 115 ms, within the existing 150-attempt, 100-ms readiness budget. The reload helper rejected the first missing sample even though its bounded observer later found the exact context.",
+  "change": "The reload helper retains first and last context samples as diagnostic evidence and accepts only when the bounded observer reports an exact URL, SIDE_PANEL type, and tabId -1 match. No readiness budget or identity check changed.",
+  "red": "node tests/browser/native-sidepanel-qa-harness.test.mjs exited 1 before the helper change: native_sidepanel_runtime_context_missing despite exact_expected_appeared=true on attempt 2, elapsed_ms=101.",
+  "green": "node tests/browser/native-sidepanel-qa-harness.test.mjs exited 0 after the helper change; delayed exact identity accepted, persistent wrong identity and absence rejected, runtime context query failure rejected, Chrome-disabled extension still rejected.",
+  "mutation": "plant.py safely restored the helper after replacing the bounded verdict with the old first-sample verdict; the same production-helper test exited 1 with native_sidepanel_runtime_context_missing despite exact_expected_appeared=true on attempt 2.",
+  "scope": "Source-only helper and deterministic production-helper guard. No browser run, build, release, Profile write, or inventory change.",
+  "open_limitations": "The original member failure exception remains unknown. Closure still needs an independent native/fullProfile run on the intended member environment."
+}
