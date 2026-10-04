@@ -26,7 +26,9 @@
     ".research/guest-402-native-acceptance.json",
     ".research/guest-returning-final-acceptance.json",
     ".research/guest-402-release-preparation.json",
-    "docs/stabilization/evidence/release205/store-pending-review.png"
+    "docs/stabilization/evidence/release205/store-pending-review.png",
+    ".research/guest-current-incident-audit.json",
+    ".research/guest205-current-live-check.json"
   ],
   "transition_history": [
     {
@@ -60,5 +62,11 @@
       "reason": "Independent exact 0.2.205 Store-payload native acceptance captured live HTTP 402 flat code and remedy without Retry, including panel reload and New chat. Fresh guest answers and real non-admin Chat passed. Actual Store publication and installation remain pending."
     }
   ],
-  "closure_requirement": "After 0.2.205 is published, verify the actual Store-installed fresh guest answer and returning exhausted-guest HTTP 402 remedy without Retry. Candidate proof is bounded; no whole-product health claim."
+  "closure_requirement": "After 0.2.205 is published, verify the actual Store-installed fresh guest answer and returning exhausted-guest HTTP 402 remedy without Retry. Candidate proof is bounded; no whole-product health claim.",
+  "current_server_recheck": {
+    "run_id": 37206303244,
+    "observed_at_utc": "2026-10-04T13:44:56Z",
+    "result": "Exact candidate205 Store payload with public-key adaptation passed fresh guest first answer and panel-reload follow-up against live backend. Root independently verified raw receipt and three valid resource journals.",
+    "limit": "No actual Store installation; request HTTP status/code absent from this receipt. No whole-product or new allowance retest claim."
+  }
 }
