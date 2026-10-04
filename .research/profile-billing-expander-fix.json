@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0110 Billing expander acceptance repair",
+  "observed_native_boundary": {
+    "run_id": "profile-admin-fields-189-06",
+    "artifact_source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "operation": "EXT-F-1004-T22:warm:run",
+    "phase": "reexpand",
+    "section": "Billing address",
+    "safe_code": "profile_unclassified_failure",
+    "reload_and_field_cases": "not reached"
+  },
+  "source_diagnosis": {
+    "product_section": "Billing address uses the shared Collapsible and exposes aria-expanded, aria-hidden, and inert states. Its inner card is conditional on billing_same_as_shipping; the section has a 200 ms grid-height transition.",
+    "driver_defect": "The Profile expander helper sampled one center point after scrollIntoView and sent a trusted mouse event at that point without rechecking movement. The shared pointer driver already waits for a stable, hit-tested point after animation. A section moving between sample and dispatch can miss the click and leave the expected expanded state false.",
+    "native_causality_limit": "The native report retained phase and section but not the underlying assertion or pointer trace. It cannot distinguish a missed click, a post-click state mismatch, or a product failure. Native rerun is required to establish whether this repair resolves the observed failure."
+  },
+  "repair": "Profile expander toggles now use the shared trusted click(panel, 'section', name) path. The existing post-click expanded/hidden/inert assertions remain.",
+  "guard": {
+    "command": "node --test tests/browser/profile-expander-pointer.test.mjs tests/browser/profile-expander-diagnostics.test.mjs",
+    "red_before_repair": "Billing reexpand test failed with billing_reexpand_did_not_change because the one-shot pointer dispatched at the stale point.",
+    "green_after_repair": "Five tests passed. The connected Billing guard drives the actual toggle source and shared pointer driver with a moving target, then observes a trusted click only at the stable position.",
+    "static_analysis": "pnpm exec biome check tests/browser/profile-identity-employment-cases.mjs tests/browser/profile-expander-pointer.test.mjs passed"
+  },
+  "existing_row_prerequisite": "The native admin setup had profile_row_existed_before=true. profile-native-acceptance.mjs creates ownedJournal only for an absent row created and owned by the run. With this existing row, T06 and T18 field-write cases are recorded unverified with reason preexisting_row_lacks_durable_conditional_full_field_restoration. This repair does not bypass that write authority requirement.",
+  "scope_limits": "Source-only repair and focused tests; no browser rerun, build, release, database or authentication mutation."
+}

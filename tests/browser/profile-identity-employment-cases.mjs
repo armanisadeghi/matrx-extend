@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { evaluate, waitFor } from './settings-panel-driver.mjs';
+import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const IDENTITY = [
   'First name',
@@ -177,23 +177,7 @@ async function sectionState(panel, name) {
 async function toggle(panel, name, expected) {
   const before = await sectionState(panel, name);
   assert.equal(before.section_count, 1, `${name}_section_missing`);
-  const point = await waitFor(
-    `${name}_toggle_hittable`,
-    () =>
-      evaluate(
-        panel,
-        `(() => {
-    const buttons=[...document.querySelectorAll('button[aria-expanded]')].filter(b=>b.textContent.trim()===${JSON.stringify(name)});
-    if(buttons.length!==1)return null;
-    const el=buttons[0];el.scrollIntoView({block:'center',behavior:'instant'});
-    const r=el.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2;
-    return el.contains(document.elementFromPoint(x,y))?{x,y}:null;
-  })()`,
-      ),
-    (p) => p?.x > 0,
-    10000,
-  );
-  await clickAt(panel, point);
+  await click(panel, 'section', name);
   const after = await waitFor(
     `${name}_toggle_${expected}`,
     () => sectionState(panel, name),
