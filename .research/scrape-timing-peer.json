@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "subject_commit": "3a4ce4bd",
+  "scope": "Independent source review of D115 supplemental owned-page CPU timing diagnostic",
+  "verdict_a_source_readiness": "repair_before_native",
+  "verdict_a_native_limit": "No native browser or hosted acceptance run in this peer lane; source and mocked unit tests cannot prove the side panel rendered busy during real extraction or close the original unthrottled D115 failure.",
+  "verdict_b_quality": "Core separation and target selection are sound, with one cleanup contamination blocker and one arbitrary input ceiling concern.",
+  "blocking_finding": {
+    "location": "tests/browser/scrape-guest-native-acceptance.mjs:259-263,453-460",
+    "problem": "A failed rate-1 restore or CDP detach is caught as a supplemental diagnostic error, then original result-tab, deep-capture, navigation, and reload checks continue. If the original fast busy sample passed, the final report can remain partial with exit code zero even though CPU throttling may still affect those later assertions. Preserve the original fast result, but stop or mark the remaining run unverified when cleanup is not confirmed.",
+    "evidence": "withOwnedPageCpuThrottle records cleanup.restore_error and cleanup.detach_error and throws; the caller consumes that error and does not gate subsequent steps on cleanup.rate_restored and cleanup.session_detached."
+  },
+  "confirmed": [
+    "Original fast capture runs before the optional diagnostic. Its missing busy observation remains original_busy_failure, T01 unverified, overall unverified, and exit code 1; supplemental success cannot promote it.",
+    "Diagnostic defaults off and uses a second real fast capture on the existing exact release artifact and receipt; result, observer, screenshot, target ID, explicit rate, and no-scroll observations are kept separately.",
+    "The CDP session attaches to the Playwright page and checks localhost /intake, current page URL, Target.getTargetInfo page type, URL, and target ID before sending the throttle command; panel and foreign targets are refused.",
+    "The helper attempts rate 1 restoration even if throttle application or extraction throws, then attempts detach in finally. The workflow passes the optional input into the browser step; hosted-guest-acceptance.mjs forwards it through childEnv."
+  ],
+  "quality_concern": "The <=20 rate ceiling is duplicated in the workflow and helper without a cited CDP constraint or cost basis. It is test-only input, but the explicit finite positive rate and chosen 4 already bound the requested run; the extra ceiling is an arbitrary policy and may diverge. Prefer one justified validation rule.",
+  "focused_verification": "node --test tests/browser/scrape-page-cpu-diagnostic.test.mjs: 4 passed, 0 failed. Reviewed syntax, workflow routing, and source; no native or heavy checks run.",
+  "next_gate": "Repair the cleanup failure path, add a focused cleanup-failure/partial-apply regression check, then dispatch one exact-artifact hosted guest-scrape run with explicit diagnostic rate. Report the unthrottled original verdict independently."
+}
