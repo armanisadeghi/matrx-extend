@@ -268,7 +268,7 @@ function redactedState(observed, expected) {
     back: observed.back,
   };
 }
-function observeProfileRequests(panel) {
+function observeProfileRequests(panel, expectedUserId = null) {
   const requests = new Map();
   const events = [];
   const route = (url) => {
@@ -283,15 +283,23 @@ function observeProfileRequests(panel) {
   };
   const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
     const name = route(request?.url);
-    if (name)
+    if (name) {
+      const ownerFilters = new URL(request.url).searchParams.getAll('user_id');
       requests.set(requestId, {
         route: name,
         method: request.method,
+        // Kept private to the observer; neither identity nor request URL enters the report.
+        owner_request_matches:
+          name === 'profile_row' &&
+          typeof expectedUserId === 'string' &&
+          ownerFilters.length === 1 &&
+          ownerFilters[0] === `eq.${expectedUserId}`,
         status: null,
         outcome: 'pending',
         error_code: null,
         row_present: null,
       });
+    }
   });
   const offResponse = panel.on('Network.responseReceived', ({ requestId, response }) => {
     const entry = requests.get(requestId);
@@ -311,20 +319,23 @@ function observeProfileRequests(panel) {
         const parsed = raw ? JSON.parse(raw) : null;
         if (entry.route === 'profile_row' && entry.method === 'GET' && entry.status === 200) {
           // maybeSingle unwraps a list inside supabase-js, after this wire observer.
-          // Only an empty list proves absence; malformed/ambiguous bodies stay unknown.
+          // Only this identity's filtered request can prove absence or presence.
           const candidate = Array.isArray(parsed)
             ? parsed.length === 1
               ? parsed[0]
               : null
             : parsed;
-          if (Array.isArray(parsed) && parsed.length === 0) entry.row_present = false;
+          if (entry.owner_request_matches && Array.isArray(parsed) && parsed.length === 0)
+            entry.row_present = false;
           else if (
+            entry.owner_request_matches &&
             candidate &&
             typeof candidate === 'object' &&
             typeof candidate.user_id === 'string' &&
             /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
               candidate.user_id,
-            )
+            ) &&
+            candidate.user_id.toLowerCase() === expectedUserId.toLowerCase()
           )
             entry.row_present = true;
         }
@@ -894,7 +905,7 @@ try {
       };
       report.stage = 'profile';
       await click(panel, 'title', 'Settings');
-      const initialRead = observeProfileRequests(panel);
+      const initialRead = observeProfileRequests(panel, identity.userId);
       await initialRead.start();
       await openProfile(panel, identity.email);
       let original = (await state(panel)).preferred ?? '';

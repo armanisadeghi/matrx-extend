@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0109 observer owner binding repair",
+  "source_review": ".research/profile-wire-envelope-peer.json",
+  "cause": "The raw-response observer classified a singleton with any valid user_id as present, even when it differed from the queried and signed-in owner.",
+  "repair": "The initial-read caller passes its verified identity to the observer. The observer classifies a 200 GET response only when its single user_id equality filter requests that identity; a singleton must also carry the same user_id. Owner IDs remain private to the observer and are omitted from snapshots and reports.",
+  "red": {
+    "command": "node --test tests/browser/profile-observer-row-envelope.test.mjs",
+    "before_repair": "16 passed, 2 failed: plain and base64 wrong-owner singleton cases returned true instead of null through the actual Supabase query and Network callback."
+  },
+  "green": {
+    "command": "node --test tests/browser/profile-observer-row-envelope.test.mjs tests/browser/profile-first-save-diagnostic.test.mjs tests/browser/profile-first-save-identity.test.mjs",
+    "result": "40 passed, 0 failed. The actual initial-read gate accepts matching present and absent responses and refuses wrong-owner, wrong-filter, null, malformed, and multiple-row responses. The existing pre-write owner-read refusal tests remain green."
+  },
+  "static_checks": [
+    "pnpm exec biome check tests/browser/profile-native-acceptance.mjs tests/browser/profile-observer-row-envelope.test.mjs: passed",
+    "node --check tests/browser/profile-native-acceptance.mjs: passed"
+  ],
+  "limits": [
+    "No native browser run, live database read, build, or release in this narrow lane.",
+    "The historical raw response body was unavailable, so these controlled wire responses establish guard behavior rather than historical row state."
+  ]
+}
