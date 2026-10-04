@@ -1,0 +1,34 @@
+{
+  "defect": "EXT-D-0120",
+  "source_receipt": "/tmp/scrape-37195986118/hosted-guest-37195986118-1/test-results/scrape-guest-native-16b8e50e-e9dc-4a45-a2a3-db8c8a19c21d.json",
+  "observed": {
+    "source_sha": "3536b5cb",
+    "stage": "extension_reload",
+    "reload_lifecycle": {
+      "old_targets_retired": true,
+      "worker_replaced": true,
+      "panel_replaced": true,
+      "exact_context_appeared": true,
+      "context_elapsed_ms": 24
+    },
+    "first_replacement_click": {
+      "target": "Scrape tab",
+      "failure_code": "pointer_target_not_unique",
+      "matched_target_count": 0,
+      "visible_match_count": 0
+    }
+  },
+  "boundary": "The reload helper returns when Chrome has a replacement panel target and its exact SidePanel execution context. The acceptance script immediately calls the strict pointer driver. Neither Chrome target discovery nor execution-context presence establishes that React has mounted the Scrape tab. The first pointer sample therefore refused zero matches.",
+  "causal_limit": "The failed native receipt has no replacement-panel DOM snapshot after the zero-match sample. It proves the harness clicked before the control was observed; it does not prove whether the control later rendered in that same run or whether the product had a persistent render defect.",
+  "repair": "Before the replacement-panel click, poll the actual panel DOM through the existing bounded waitFor primitive until exactly one Scrape tab is mounted and visible; preserve the pointer driver's unique target, stable hit, and trusted input checks. Record first/last readiness samples and attempts in the next native receipt.",
+  "local_evidence": {
+    "red": "node --test tests/browser/scrape-replacement-tab.test.mjs failed for immediate zero-match and duplicate-match reads before repair",
+    "green": "node --test tests/browser/scrape-replacement-tab.test.mjs tests/browser/scrape-reload-milestones.test.mjs",
+    "constant_return_mutation": "forcing-function-tests/plant.py replaced the helper with a constant ready result; the focused suite rejected it and plant.py restored identical source"
+  },
+  "next_native_verification": "Build an exact fresh artifact from the repaired source and run the existing Scrape guest native acceptance once. Require a healthy replacement lifecycle, a recorded scrape_tab_boundary with last.matched=1 and last.visible=1, successful strict trusted click, then replacement empty-state/T20 assertions and resource-health checks. If readiness times out, inspect its last DOM count as a product-render investigation; do not bypass the click guard.",
+  "remaining": [
+    "Native Chrome verification of this repair is pending the owner-run acceptance.",
+    "The earlier missing-destroyed-event native run 371927 is a separate unresolved reload-lifecycle failure."
+  ]
+}

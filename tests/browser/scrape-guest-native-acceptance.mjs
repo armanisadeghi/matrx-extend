@@ -11,6 +11,7 @@ import { armBusyExpression, readBusyExpression } from './scrape-busy-observer.mj
 import { scrapeLayoutFailure } from './scrape-layout-guard.mjs';
 import { diagnosticCpuRate, runSupplementalCpuDiagnostic } from './scrape-page-cpu-diagnostic.mjs';
 import { recordReloadMilestone } from './scrape-reload-milestones.mjs';
+import { waitForReplacementScrapeTab } from './scrape-replacement-tab.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
@@ -529,6 +530,9 @@ try {
       try {
         await requireResourceHealth();
         await resourceAction(() => page.goto(`${origin}/referrals`));
+        report.reload_lifecycle.scrape_tab_boundary = await resourceAction(() =>
+          waitForReplacementScrapeTab(replacement.panel),
+        );
         recordReloadMilestone(report, 'open_scrape_in_replacement_panel');
         await resourceAction(() => click(replacement.panel, 'title', 'Scrape'));
         recordReloadMilestone(report, 'observe_replacement_scrape');
