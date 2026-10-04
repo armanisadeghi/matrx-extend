@@ -1,12 +1,7 @@
 {
   "id": "EXT-D-0108",
   "feature_id": "EXT-F-1004",
-  "case_ids": [
-    "EXT-F-1004-T28",
-    "EXT-F-1004-T06",
-    "EXT-F-1004-T18",
-    "EXT-F-1004-T22"
-  ],
+  "case_ids": ["EXT-F-1004-T28", "EXT-F-1004-T06", "EXT-F-1004-T18", "EXT-F-1004-T22"],
   "surface": "Admin Profile native acceptance first-save fixture",
   "auth_mode": "admin",
   "title": "Profile acceptance rejects designated admin when original Profile row is absent",
