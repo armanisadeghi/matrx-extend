@@ -29,3 +29,59 @@ test('native sidepanel startup marks the canonical web and server origins withou
     { tool: 'native-sidepanel-qa-harness', origin: 'https://server.app.matrxserver.com' },
   ]);
 });
+
+test('native launch requests a blank initial page instead of implicit New Tab startup', async () => {
+  const source = await readFile(
+    new URL('./native-sidepanel-qa-harness.mjs', import.meta.url),
+    'utf8',
+  );
+  const start = source.indexOf('    child = ', source.indexOf("    onStage('browser_spawn');"));
+  const end = source.indexOf("    let chromeStderr = '';", start);
+  assert.ok(start >= 0 && end > start, 'native spawn block exists');
+  // Execute the production launch call; only the external process creation is replaced.
+  const launch = new Function(
+    'spawn',
+    'headed',
+    'chromeExecutable',
+    'profile',
+    'verifiedExtensionDir',
+    `let child; ${source.slice(start, end)} return child;`,
+  );
+  for (const headed of [true, false]) {
+    const profile = headed ? '/owned/headed' : '/owned/headless';
+    const calls = [];
+    const child = { pid: headed ? 31 : 32 };
+    assert.equal(
+      launch(
+        (...args) => {
+          calls.push(args);
+          return child;
+        },
+        headed,
+        '/owned/Chromium',
+        profile,
+        '/verified/extension',
+      ),
+      child,
+    );
+    assert.deepEqual(calls, [
+      [
+        '/owned/Chromium',
+        [
+          ...(!headed ? ['--headless=new'] : []),
+          '--enable-automation',
+          '--no-first-run',
+          '--no-default-browser-check',
+          '--use-mock-keychain',
+          '--remote-debugging-address=127.0.0.1',
+          '--remote-debugging-port=0',
+          `--user-data-dir=${profile}`,
+          '--disable-extensions-except=/verified/extension',
+          '--load-extension=/verified/extension',
+          'about:blank',
+        ],
+        { stdio: ['ignore', 'ignore', 'pipe'] },
+      ],
+    ]);
+  }
+});

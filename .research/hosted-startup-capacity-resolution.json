@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "scope": "EXT-F-0002 resource admission/lifecycle supporting evidence",
+  "status": "BOUNDED_STARTUP_EXPERIMENT_READY_FOR_PEER_NOT_CAPACITY_RESOLVED",
+  "finding": "Resource boundary correctly refused sampled CPU pressure. Latest snapshot is Chromium-dominated; prior refusal mixes Chromium and macOS/provisioner processes. No measurement defect demonstrated. The intervening failure exited before the first watch and is not sampled-healthy startup evidence.",
+  "causal_evidence": [
+    {
+      "run_id": "37205211642",
+      "journal": "docs/stabilization/evidence/scrape215/run37205211642/guest-resource.jsonl",
+      "sha256": "b3b06d23af414003a5d2db2a32898e1703d619d3455edbbf2d65ef4f66e9f5f6",
+      "admission_to_exit_seconds": 21.985,
+      "watch_count": 1,
+      "watch_samples": [
+        {
+          "code": "RESOURCE_WATCH_HEALTHY",
+          "at": "2026-10-04T13:25:36.123Z",
+          "cpu_busy_fraction": 0.11
+        }
+      ]
+    },
+    {
+      "run_id": "37208889373",
+      "journal": "docs/stabilization/evidence/scrape215/run37208889373/guest-resource.jsonl",
+      "sha256": "c33c1aee7fb8f048fb750d6880fd95ce4151edc8723ef08627e9465e68d70d23",
+      "admission_to_exit_seconds": 20.376,
+      "watch_count": 1,
+      "watch_samples": [
+        {
+          "code": "RESOURCE_WATCH_UNSAFE",
+          "at": "2026-10-04T14:27:00.581Z",
+          "cpu_busy_fraction": 1
+        }
+      ],
+      "process_snapshot": {
+        "chromium_cpu_percent_sum": 135.4,
+        "all_cpu_percent_sum": 356.7,
+        "interpretation": "ps percent CPU has a different time basis from the preceding iostat interval; sums are diagnostic, not causal interval accounting."
+      }
+    },
+    {
+      "run_id": "37209834721",
+      "journal": "docs/stabilization/evidence/scrape215/run37209834721/guest-resource.jsonl",
+      "sha256": "bf9433b63a6ef9dbe9b32fb4b29c95daef07baf670bf7f9e9561e19274533bd2",
+      "admission_to_exit_seconds": 14.921,
+      "watch_count": 0,
+      "watch_samples": []
+    },
+    {
+      "run_id": "37210977886",
+      "journal": "docs/stabilization/evidence/scrape215/run37210977886/hosted-guest-37210977886-1.jsonl",
+      "sha256": "1809cc3943175835f5111d18a3418e8f51929ce2c6ccddc547a904523a4ce7f3",
+      "admission_to_exit_seconds": 17.604,
+      "watch_count": 1,
+      "watch_samples": [
+        {
+          "code": "RESOURCE_WATCH_UNSAFE",
+          "at": "2026-10-04T15:00:17.890Z",
+          "cpu_busy_fraction": 0.77
+        }
+      ],
+      "process_snapshot": {
+        "chromium_cpu_percent_sum": 263.6,
+        "all_cpu_percent_sum": 310.3,
+        "interpretation": "ps percent CPU has a different time basis from the preceding iostat interval; sums are diagnostic, not causal interval accounting."
+      }
+    }
+  ],
+  "hypotheses": [
+    {
+      "cause": "Measurement parser falsely labels startup unsafe",
+      "prediction": "Second interval extraction or native unsafe-history refusal disagrees with captured input/contract",
+      "result": "Not supported; source and focused guards preserve second-row parsing and strict refusal. Raw iostat stdout was not retained, so original host reading cannot be independently recomputed."
+    },
+    {
+      "cause": "Chromium default New Tab creates avoidable startup work",
+      "prediction": "Explicit blank initial URL removes default-page work and a guarded experiment reaches acceptance with healthy watch evidence",
+      "result": "Source starts browser without a URL; Chromium startup defaults to New Tab. One explicit about:blank argument prepared; native causal result pending."
+    },
+    {
+      "cause": "Hosted background contention dominates",
+      "prediction": "Unsafe process snapshots show non-browser consumers",
+      "result": "Supported for part of prior run: provisioner30%, SafariLaunchAgen32.4%, fontd25.6%; latest run Chromium dominates. Exact sampled interval ownership not proven."
+    }
+  ],
+  "control_assessment": {
+    "unchanged": [
+      "resource thresholds",
+      "iostat sample cadence",
+      "unsafe history refusal",
+      "owned foreground process tree",
+      "watchdog stop policy",
+      "fresh admission",
+      "all previous Chromium launch flags"
+    ],
+    "preparation_split": "Rejected for a live-browser handoff: launchContract requires inherited ownership and forbids external daemon handoff; guard stops descendants on child exit. Resetting journal under the same live browser would discard unsafe history. Existing package/download phases are already separate and terminate their children.",
+    "larger_runner": "Repo API says owner.type=User, private=false; repository self-hosted runner count=0. GitHub documentation says larger runners require Team/Enterprise organizations. No available higher-capacity drop-in demonstrated.",
+    "default_page_source": "https://chromium.googlesource.com/chromium/src.git/+/refs/heads/main/chrome/browser/ui/startup/startup_browser_creator_impl.cc",
+    "larger_runner_source": "https://docs.github.com/en/actions/reference/runners/github-hosted-runners"
+  },
+  "changed_files": [
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/native-sidepanel-origin.test.mjs",
+    ".research/hosted-startup-capacity-resolution.json"
+  ],
+  "experiment": "Explicit about:blank only; removes unused default initial page without disabling browser services or changing extension artifact/acceptance assertions.",
+  "tests": {
+    "focused": "8/8 sampler, resource-boundary and source launch checks passed; updated launch check 2/2 passed.",
+    "red_green": "plant.py removes about:blank: named launch check fails. Restored source passes. Constant child/no spawn mutant also fails on child identity; plant restored identical bytes.",
+    "test_limit": "Executes actual source launch block with only OS spawn replaced. Proves forwarding/ownership options, not CPU reduction.",
+    "harness_suite": "node tests/browser/native-sidepanel-qa-harness.test.mjs passed, including native reload/lifecycle cases; no browser launched",
+    "syntax_and_format": "Native harness node --check, Biome format/check on exact changed paths and git diff --check passed"
+  },
+  "native_runs": 0,
+  "next_action": "Fresh independent peer reviews exact source change and tests, then root may authorize one hosted guest-scrape-development experiment on frozen CI run37193761291/artifact11299613935 with unchanged admission/watchdog. Require at least one healthy watch plus actual requested product assertions; preserve every failed journal. No retry if unsafe.",
+  "limitations": [
+    "Capacity is not resolved; blank startup is a controlled hypothesis, not a confirmed repair.",
+    "One successful run cannot establish reliable absence of intermittent host contention.",
+    "No build, release, deployment, local heavy job, or native browser launched in this lane."
+  ]
+}

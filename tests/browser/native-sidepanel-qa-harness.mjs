@@ -904,6 +904,8 @@ export async function runNativeSidepanelQa({
         `--user-data-dir=${profile}`,
         `--disable-extensions-except=${verifiedExtensionDir}`,
         `--load-extension=${verifiedExtensionDir}`,
+        // Avoid loading an unused New Tab page during owned-profile startup.
+        'about:blank',
       ],
       { stdio: ['ignore', 'ignore', 'pipe'] },
     );
