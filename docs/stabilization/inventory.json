@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T09:48:47.331380+00:00",
+  "updated_at": "2026-10-04T10:16:14.431080+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -49563,10 +49563,10 @@
       "name_collision": true,
       "dependency_class": "local",
       "wave": "A",
-      "inventory_status": "catalog-record-shadowed-by-canonical",
+      "inventory_status": "source-listed-procedure-needed",
       "missing_items": [],
       "readiness_gaps": [
-        "Catalog contains a legacy duplicate at index 57; source registry intentionally shadows it with canonical wait_for at index 155. Preserve ID as catalog-only record."
+        "Manual Tools uses the raw handler list and invokes the selected handler object; agent dispatch instead resolves the canonical name winner EXT-F-4156. Author and execute entry-path-specific procedures; native visibility and execution remain unverified."
       ],
       "applicability": {
         "guest": {
@@ -49574,12 +49574,12 @@
           "reason": "Tools UI requires sign-in; negative access case belongs to Tools UI feature"
         },
         "member": {
-          "applicable": false,
-          "reason": "Legacy wait_for catalog row is shadowed by canonical handler in last-write-wins registry lookup."
+          "applicable": true,
+          "reason": "Manual Tools lists raw handlers and invokes the selected object; canonical name shadowing only establishes agent-dispatch routing, not manual inapplicability."
         },
         "admin": {
-          "applicable": false,
-          "reason": "Legacy wait_for catalog row is shadowed by canonical handler in last-write-wins registry lookup."
+          "applicable": true,
+          "reason": "Manual Tools lists raw handlers and invokes the selected object; canonical name shadowing only establishes agent-dispatch routing, not manual inapplicability."
         }
       },
       "cases": [
@@ -49593,14 +49593,14 @@
             "member",
             "admin"
           ],
-          "design_status": "not-applicable",
+          "design_status": "needed",
           "preconditions": [
             "Resource permit and current build receipt",
             "Controlled owned target and no unauthorized external effects"
           ],
           "steps": [],
           "expected": [
-            "No independent legacy wait_for execution exists by name; lookup resolves EXT-F-4156 canonical shape."
+            "The selected manual handler runs its displayed input schema against the controlled target; separately verify canonical agent-dispatch routing under EXT-F-4156."
           ],
           "dimensions": [
             "valid-input",
@@ -59420,12 +59420,12 @@
         }
       ],
       "source_anchors": [
-        "types/tool-catalog.json",
-        "src/lib/tools/registry.ts",
-        "src/features/tools/ToolsView.tsx",
+        "src/lib/tools/server-catalog.ts:12",
+        "src/features/tools/ToolsView.tsx:75",
+        "src/features/tools/ToolsView.tsx:448",
         "src/config/sidepanel-visibility.ts:31"
       ],
-      "catalog_record_index": 129,
+      "catalog_record_index": null,
       "input_schema": {
         "type": "object",
         "properties": {
@@ -59828,9 +59828,10 @@
         "name": "records",
         "tier": "action",
         "category": "records",
-        "executor": "chrome-extension",
+        "executor": "server",
         "admin_only": false,
-        "definition_active": true
+        "definition_active": true,
+        "verification": "Current source catalog routes execution to server; other imported binding fields are historical and not reverified against the live DB."
       },
       "name_collision": false,
       "dependency_class": "cross-system",
@@ -59838,8 +59839,8 @@
       "inventory_status": "source-listed-pending-reconciliation",
       "missing_items": [],
       "readiness_gaps": [
-        "Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required",
-        "Confirm current catalog against imported source registry before source inventory signoff"
+        "Author concrete fixture-specific server procedures before this tool is executed; gated/negative permission cases required",
+        "Current source identifies a server capability, absent from the local generated executor catalog. Imported input schema and live DB binding need fresh reconciliation."
       ],
       "applicability": {
         "guest": {
