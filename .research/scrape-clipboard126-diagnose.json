@@ -1,0 +1,28 @@
+{
+  "status": "PRECISE_DISCRIMINATOR_REQUIRED",
+  "defect": "EXT-D-0126",
+  "scope": "Scrape video and link Copy in the owned native side panel",
+  "current_verdict": "Product Copy outcome remains unverified; the receipts prove trusted clicks and an opaque clipboard read failure, not a failed clipboard write.",
+  "evidence": [
+    "Native run 37222954472 records four trusted scrape-media-copy clicks (video and link, warm and reload), zero pointer failures, and four clipboard_url=null / copy_unavailable:panel_runtime_exception results. Run 37221586281 records the same pattern for two warm clicks.",
+    "tests/browser/scrape-native-media-actions.mjs calls evaluate(panel, 'navigator.clipboard.readText()') after each Copy click. It neither observes the CopyButton success/failure icon nor inspects clipboard read rejection details.",
+    "tests/browser/settings-panel-driver.mjs converts every Runtime.evaluate exceptionDetails result to the same panel_runtime_exception string. Consequently the receipt cannot distinguish NotAllowedError, focus/visibility denial, missing clipboard API, or an unrelated JavaScript exception.",
+    "src/features/scrape/ScrapeView.tsx renders both controls through CopyButton. src/components/CopyMenu.tsx changes the icon to emerald Check only when copyToClipboard returns true, or red X when it returns false. The native Scrape receipt does not capture either state.",
+    "EXT-D-0027 already established that a focused, visible extension panel can reject clipboard-read with NotAllowedError; tests/browser/clipboard-observation.mjs provides scoped Browser.setPermission for owned-origin readback and restores the prior permission. The reviewed Debug .90 native run observed Copy feedback, exact readback, and restoration. Scrape does not call that helper."
+  ],
+  "causal_boundary": "The first proven loss of diagnostic information is the Scrape harness's direct clipboard read through settings-panel-driver evaluate. The real product write result is upstream and was not observed.",
+  "one_run_discriminator": [
+    "For each trusted Copy click, sample the same button's emerald Check versus red X within its 1.2-second feedback window; classify product write feedback independently of clipboard readback.",
+    "Self-catch navigator.clipboard.readText rejection inside Runtime.evaluate and return only an allowlisted error name plus document.hasFocus() and visibilityState, never the clipboard content or raw exception in the receipt.",
+    "If feedback is Check and read rejects NotAllowedError while focused/visible, use the existing D27 withClipboardReadPermission only after the click, with an owned browser CDP session and prior-permission restoration. Compare the returned value with the fixture URL in memory and record only equality. A red X is a product failure regardless of read permission; no icon is an unresolved timing/observation failure."
+  ],
+  "source_change": "None: a browser/native run is excluded from this lane, so no real error class or product feedback is available to justify a behavioral patch. Reuse the existing D27 observer in the next owned run; do not add a second permission mechanism.",
+  "checks": [
+    "PASS node --test tests/browser/scrape-native-media-actions.test.mjs (11/11); these tests stub evaluate and therefore cannot discriminate actual read rejection or product feedback.",
+    "PASS node tests/browser/clipboard-observation.test.mjs; scoped grant/read/restore and origin guard remain green."
+  ],
+  "limitations": [
+    "No browser, native clipboard, build, release, database, or permission mutation was run in this lane.",
+    "The prior receipts do not record a CopyButton success/failure signal or the underlying Runtime.exceptionDetails; actual product success versus failure cannot be inferred."
+  ]
+}
