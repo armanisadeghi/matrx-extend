@@ -5,7 +5,18 @@
   "verdict_a": "SOURCE_ONLY_ACCEPTANCE; the native failure was an omitted Re-capture confirmation, as the receipt records no deep busy/result observation and the product handler explicitly defers on edited=true. The repair now observes the exact alert dialog, cancels, observes edits retained plus an idle deep control, repeats the request, confirms the scoped dialog, and only then checks the deep result/lazy content.",
   "verdict_b": "SOURCE_ONLY_ACCEPTANCE; controls and resourceAction-gated trusted clicks are reused; no ownership, resource, or broad prompt bypass was introduced. The UI test checks cancellation does not capture and exact deep mode after explicit confirmation. Driver test fails if the dialog is absent and its exact action sequence detects an omitted confirmation; reported scratch mutation deleting final confirmation failed at dialog-closed observation.",
   "findings": [],
-  "files": [".research/scrape-deep-capture125-diagnose.json", "src/features/scrape/ScrapeView.error-controls.test.tsx", "tests/browser/scrape-native-recapture.mjs", "tests/browser/scrape-native-recapture.test.mjs", "tests/browser/settings-panel-driver.mjs", "tests/browser/scrape-guest-native-acceptance.mjs"],
-  "evidence": [".research/scrape231-context-diagnostic-native.json", "docs/stabilization/evidence/scrape231/run37221586281/receipt.json.txt", "commit 0600d571"],
+  "files": [
+    ".research/scrape-deep-capture125-diagnose.json",
+    "src/features/scrape/ScrapeView.error-controls.test.tsx",
+    "tests/browser/scrape-native-recapture.mjs",
+    "tests/browser/scrape-native-recapture.test.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/browser/scrape-guest-native-acceptance.mjs"
+  ],
+  "evidence": [
+    ".research/scrape231-context-diagnostic-native.json",
+    "docs/stabilization/evidence/scrape231/run37221586281/receipt.json.txt",
+    "commit 0600d571"
+  ],
   "limits": "No native rerun or post-reload acceptance was performed; this accepts the source repair only and makes no product-health, clipboard, or full Scrape acceptance claim. The driver unit test controls DOM state transitions, so trusted-click/resource behavior still depends on the existing driver implementation and a fresh native run."
 }
