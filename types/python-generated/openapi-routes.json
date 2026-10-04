@@ -3196,6 +3196,14 @@
    "application/json"
   ]
  },
+ "/google-workspace/gmail/drafts/review": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/gmail/drafts/{approval_id}/save": {
+  "post": []
+ },
  "/google-workspace/gmail/send-reviewed": {
   "post": [
    "application/json"
