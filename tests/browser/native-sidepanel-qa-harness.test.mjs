@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import {
   isSettledGuestPanel,
+  observeSidePanelContext,
   requireExpectedExtension,
   requireOwnedCommandLine,
   requireSidePanelContext,
@@ -25,6 +26,7 @@ const productionBuildDir = resolve(
   '.output/chrome-mv3',
 );
 const extensionId = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
+const expectedPanelUrl = `chrome-extension://${extensionId}/sidepanel.html`;
 const receipt = {
   version: '0.2.44',
   treeSha256: 'a'.repeat(64),
@@ -163,6 +165,32 @@ requireSidePanelContext(
   ],
   `chrome-extension://${extensionId}/sidepanel.html`,
 );
+const wrongPanelContext = {
+  contextType: 'SIDE_PANEL',
+  documentUrl: `${expectedPanelUrl}?foreign`,
+  tabId: -1,
+};
+const exactPanelContext = { contextType: 'SIDE_PANEL', documentUrl: expectedPanelUrl, tabId: -1 };
+let contextReads = 0;
+const boundary = await observeSidePanelContext({
+  readContexts: async () => (++contextReads === 1 ? [wrongPanelContext] : [exactPanelContext]),
+  panelUrl: expectedPanelUrl,
+  attempts: 2,
+  waitBetween: async () => {},
+});
+assert.equal(boundary.first.side_panel_count, 1);
+assert.equal(boundary.first.exact_expected_count, 0);
+assert.equal(boundary.last.exact_expected_count, 1);
+assert.equal(boundary.exact_expected_appeared, true);
+assert.equal(boundary.attempts, 2);
+const absentBoundary = await observeSidePanelContext({
+  readContexts: async () => [wrongPanelContext],
+  panelUrl: expectedPanelUrl,
+  attempts: 2,
+  waitBetween: async () => {},
+});
+assert.equal(absentBoundary.exact_expected_appeared, false);
+assert.equal(absentBoundary.last.exact_expected_count, 0);
 const source = await readFile(
   new URL('./native-sidepanel-qa-harness.mjs', import.meta.url),
   'utf8',

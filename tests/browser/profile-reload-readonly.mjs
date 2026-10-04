@@ -5,7 +5,11 @@ import { resolve } from 'node:path';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { captureFailure, captureManagement } from './profile-reload-capture.mjs';
+import {
+  captureContextBoundary,
+  captureFailure,
+  captureManagement,
+} from './profile-reload-capture.mjs';
 
 const OUTPUT_DIR = process.env.PROFILE_OUTPUT_DIR;
 const RUN_ID = process.env.PROFILE_RUN_ID;
@@ -58,7 +62,10 @@ try {
     onStage: (stage) => {
       report.stage = stage;
     },
-    exercisePanel: async ({ panel, panelTarget, reloadExtension, transportFailureClass }) => {
+    exercisePanel: async ({ page, panel, panelTarget, reloadExtension, transportFailureClass }) => {
+      // One trusted, read-only input on the owned local page before extension reload.
+      await page.locator('#open-panel').click();
+      report.input_smoke = 'owned_open_panel_clicked';
       report.stage = 'extension_reload';
       const lifecycle = {
         reload_attempted: true,
@@ -79,6 +86,7 @@ try {
         lifecycle.old_targets_retired = result.old_targets_retired === true;
         lifecycle.worker_replaced = result.worker_replaced === true;
         lifecycle.panel_replaced = result.panel_replaced === true;
+        lifecycle.context_boundary = captureContextBoundary(result.context_boundary);
         await result.panel.detach();
       } catch (error) {
         Object.assign(lifecycle, captureFailure(error, transportFailureClass));

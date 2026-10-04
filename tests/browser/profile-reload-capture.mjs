@@ -38,6 +38,22 @@ function safeCount(value) {
   return Number.isSafeInteger(value) && value >= 0 ? value : null;
 }
 
+export function captureContextBoundary(value) {
+  if (!value || typeof value !== 'object') return null;
+  const snapshot = (item) => ({
+    side_panel_count: safeCount(item?.side_panel_count),
+    exact_expected_count: safeCount(item?.exact_expected_count),
+    elapsed_ms: safeCount(item?.elapsed_ms),
+  });
+  return {
+    first: snapshot(value.first),
+    last: snapshot(value.last),
+    attempts: safeCount(value.attempts),
+    exact_expected_appeared: value.exact_expected_appeared === true,
+    query_failed: value.query_failed === true,
+  };
+}
+
 export function captureManagement(value) {
   if (!value || typeof value !== 'object') return null;
   return {
@@ -71,5 +87,6 @@ export function captureFailure(error, readTransportClass) {
     failure_code: FAILURE_CODES.has(candidate) ? candidate : 'unclassified',
     transport_failure_class: transport,
     retirement_evidence: captureLifecycleEvidence(error?.lifecycleEvidence),
+    context_boundary: captureContextBoundary(error?.contextBoundary),
   };
 }

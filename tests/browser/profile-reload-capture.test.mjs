@@ -1,6 +1,45 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { captureFailure, captureManagement } from './profile-reload-capture.mjs';
+import {
+  captureContextBoundary,
+  captureFailure,
+  captureManagement,
+} from './profile-reload-capture.mjs';
+
+test('context boundary capture keeps only counts and elapsed time', () => {
+  const captured = captureContextBoundary({
+    first: {
+      side_panel_count: 1,
+      exact_expected_count: 0,
+      elapsed_ms: 0,
+      documentUrl: 'private URL',
+    },
+    last: {
+      side_panel_count: 1,
+      exact_expected_count: 1,
+      elapsed_ms: 123,
+      targetId: 'private target',
+    },
+    attempts: 2,
+    exact_expected_appeared: true,
+    stack: 'private stack',
+  });
+  assert.equal(captured.first.exact_expected_count, 0);
+  assert.equal(captured.last.exact_expected_count, 1);
+  assert.equal(captured.last.elapsed_ms, 123);
+  assert.doesNotMatch(JSON.stringify(captured), /private/);
+  const error = new Error('native_sidepanel_runtime_context_missing');
+  error.contextBoundary = {
+    first: { side_panel_count: 1, exact_expected_count: 0, elapsed_ms: 7 },
+    last: { side_panel_count: 1, exact_expected_count: 1, elapsed_ms: 115 },
+    attempts: 2,
+    exact_expected_appeared: true,
+  };
+  const failure = captureFailure(error, () => 'none');
+  assert.equal(failure.failure_code, 'native_sidepanel_runtime_context_missing');
+  assert.equal(failure.context_boundary.first.exact_expected_count, 0);
+  assert.equal(failure.context_boundary.last.exact_expected_count, 1);
+});
 
 test('reload failure retains the fixed lifecycle class without private data', () => {
   const error = new Error('native_extension_worker_retirement_unverified: private URL');

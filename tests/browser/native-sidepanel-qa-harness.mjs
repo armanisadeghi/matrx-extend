@@ -182,6 +182,49 @@ function requireSidePanelContext(contexts, panelUrl) {
   return context;
 }
 
+async function observeSidePanelContext({
+  readContexts,
+  panelUrl,
+  attempts = ATTEMPTS,
+  waitBetween = () => wait(WAIT_MS),
+}) {
+  const started = Date.now();
+  let first = null;
+  let last = null;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    let contexts;
+    try {
+      contexts = await readContexts();
+    } catch (error) {
+      error.contextBoundary = {
+        first,
+        last,
+        attempts: attempt,
+        exact_expected_appeared: false,
+        query_failed: true,
+      };
+      throw error;
+    }
+    const expected = contexts.filter(
+      (entry) =>
+        entry?.contextType === 'SIDE_PANEL' &&
+        entry?.documentUrl === panelUrl &&
+        entry?.tabId === -1,
+    );
+    const observation = {
+      side_panel_count: contexts.length,
+      exact_expected_count: expected.length,
+      elapsed_ms: Date.now() - started,
+    };
+    first ??= observation;
+    last = observation;
+    if (expected.length > 0)
+      return { first, last, attempts: attempt, exact_expected_appeared: true };
+    if (attempt < attempts) await waitBetween();
+  }
+  return { first, last, attempts, exact_expected_appeared: false };
+}
+
 function isSettledGuestPanel(state) {
   return (
     state?.ready === true &&
@@ -359,7 +402,17 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
       await wait(WAIT_MS);
     }
     if (!replacementPanel) throw new Error('native_extension_replacement_panel_unverified');
-    requireSidePanelContext(await sidePanelContexts(cdp, replacementWorker.targetId), panelUrl);
+    const contextBoundary = await observeSidePanelContext({
+      readContexts: () => sidePanelContexts(cdp, replacementWorker.targetId),
+      panelUrl,
+    });
+    // Keep the strict immediate verdict; later observations diagnose registration timing only.
+    if (contextBoundary.first.exact_expected_count === 0) {
+      const error = new Error('native_sidepanel_runtime_context_missing');
+      error.contextBoundary = contextBoundary;
+      error.lifecycleEvidence = retirementEvidence;
+      throw error;
+    }
     const managementAfter = await reloadManagementState(details, extensionId);
     requireReloadEnabled(managementAfter);
     return {
@@ -369,6 +422,7 @@ async function reloadOwnedExtension({ cdp, context, page, extensionId, oldPanelI
       worker_replaced: replacementWorker.targetId !== oldWorkerId,
       panel_replaced: replacementPanel.targetId !== oldPanelId,
       old_targets_retired: true,
+      context_boundary: contextBoundary,
       management_reload_clicked: true,
     };
   } finally {
@@ -820,6 +874,7 @@ export {
   requireExpectedExtension,
   requireOwnedCommandLine,
   requireSidePanelContext,
+  observeSidePanelContext,
   requireSpawnedProfileOwner,
   resolveExpectedRelease,
   verifyReleasedArtifact,
