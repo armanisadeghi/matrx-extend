@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0115",
+  "status": "oracle_source_repaired_native_busy_unverified",
+  "prior_rejections": [
+    ".research/scrape-busy-mutation-peer.json",
+    ".research/scrape-busy-context-final-peer.json"
+  ],
+  "decision": "Remove mutation replay as an acceptance verdict. Only a current DOM sample can satisfy the simultaneous owned visible disabled busy conjunction.",
+  "confirmed_cause": "Mutation records do not contain historical computed visibility. Final ownership and final visibility cannot validate an earlier inferred disabled/text overlap.",
+  "changes": {
+    "files": [
+      "tests/browser/scrape-busy-observer.mjs",
+      "tests/browser/scrape-busy-observer.test.mjs"
+    ],
+    "oracle": "One button identified by the requested capture title inside the unique active Scrape pane must currently be visible, disabled, and display the mode-specific busy label.",
+    "visibility": "Positive rectangle intersecting viewport; native checkVisibility when available; ancestor hidden/inert/aria-hidden/display/visibility/zero-opacity checks.",
+    "diagnostics": "Disabled mutation count remains diagnostic only. observedAtMs records performance.now at the actual positive sample; observationBasis explicitly identifies current_owned_visible_dom.",
+    "conservative_limit": "A busy transition beginning and ending before observation is unverified even if ordered DOM mutation records exist. Direct DOM observation establishes DOM visibility, not proof of a painted/composited frame.",
+    "product": "No production edits, delays, hooks, browser launch, build, or release."
+  },
+  "verification": {
+    "red": "The stylesheet-hidden reproduction and the two formerly accepted same-turn transitions failed against the prior observer with true !== false.",
+    "green": "node --test tests/browser/scrape-busy-observer.test.mjs: 13 passed, 0 failed.",
+    "coverage": "Positive replacement and tooltip cases; same-turn child-list/text-node, nonoverlap, foreign pane, inline hidden, stylesheet hidden, hidden/transparent ancestors, missing disabled, missing busy label negatives.",
+    "biome": "pnpm exec biome check --write on both observer files passed.",
+    "limit": "happy-dom exercises the observer decision boundary only. It is not native product acceptance."
+  },
+  "native_truth": {
+    "original_run": "37188132857 exact Store 0.2.205: article completed; four samples; zero disabled samples; no observed busy conjunction.",
+    "cause": "Unknown. No evidence yet distinguishes uncommitted busy UI from observer timing. The previous reconstruction theory is not accepted as a diagnosis.",
+    "source_lead": "Current src/hooks/use-scrape.ts sets loading true, awaits captureWithFallback, and clears loading in finally. This source ordering does not prove React committed or painted the disabled busy state."
+  },
+  "bounded_native_handoff": {
+    "owner": "Parent session; fresh independent source review first.",
+    "original_acceptance": "Keep the original unthrottled fixture, assertions and verdict unchanged. A missing observation remains unverified/failing and cannot be promoted by a supplemental test.",
+    "next_discriminator": "In a separate explicitly labeled diagnostic capture, use CDP Emulation.setCPUThrottlingRate on only the owned webpage target, with an explicit recorded finite rate such as 4, leaving the side panel unthrottled. Run the unchanged real extraction path, and restore rate 1 in finally. This is a proposed diagnostic condition, not implemented or exercised here.",
+    "why_different": "Constrained page CPU changes the real extraction execution time without injecting a sleep, intercepting the capture response, rewriting product state, or adding a product hook.",
+    "receipt": "Retain target identity, throttle rate, exact artifact identity, full busy observation, successful real article result, and fast-mode no-scroll evidence. Report this separately from original T01.",
+    "interpretation": "A positive live DOM sample proves busy only under the constrained CPU condition. A negative still leaves the cause unknown. Neither outcome proves the original small-page busy state or closes D115.",
+    "if_still_unobserved": "Stop repeated reruns. Capture a bounded native trace of click, actual panel DOM commits and capture completion on the same artifact to localize React/render timing before any product repair.",
+    "no_changes": "No throttling code or native driver changes made by this lane."
+  },
+  "remaining": [
+    "Fresh independent source peer review",
+    "Parent-owned native diagnostic and original acceptance",
+    "D115 product cause and guest inventory remain open"
+  ]
+}
