@@ -14,7 +14,7 @@
   "actual": "Stale-node observer blind spot is source-fixed and independently reviewed. Native busy-state retest remains pending; original hosted failure used the local development ZIP, and the next acceptance targets exact205 Store payload.",
   "severity": "S3: false-negative acceptance risk; no product busy-state failure established",
   "priority": "P1: restore reliable native acceptance before promoting capture cases",
-  "state": "retest-fail",
+  "state": "in-fix",
   "owner": "guest_scrape_native",
   "evidence": [
     ".research/guest-scrape-hosted-native.json",
@@ -23,7 +23,9 @@
     "tests/browser/scrape-busy-observer.mjs",
     "tests/browser/scrape-busy-observer.test.mjs",
     ".research/guest-scrape-busy-peer.json",
-    ".research/guest-scrape-context-native.json"
+    ".research/guest-scrape-context-native.json",
+    ".research/scrape-fast-busy-causal.json",
+    ".research/scrape-busy-mutation-peer.json"
   ],
   "transition_history": [
     {
@@ -55,7 +57,14 @@
       "from": "fixed",
       "to": "retest-fail",
       "reason": "ExactStore205 native37188132857 reached fast result but new observer still recorded no disabled Capturing sample. Original replacement blind spot fix alone does not satisfy native acceptance; causal investigation continues."
+    },
+    {
+      "at": "2026-10-04T08:29:13.852401+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Same-turn observer blind spot reproduced and candidate72c955fc implemented, but independent peer found hidden/foreign-pane false passes. Candidate rejected for native acceptance; bounded repair owns contemporaneous visibility and ownership."
     }
   ],
-  "closure_requirement": "Independent source review, causal RED/GREEN guard, and exact205 hosted native busy-state evidence without oracle weakening. Record any different runtime blocker separately; no full Scrape health claim."
+  "closure_requirement": "Independent source review, causal RED/GREEN guard, and exact205 hosted native busy-state evidence without oracle weakening. Record any different runtime blocker separately; no full Scrape health claim.",
+  "next_action": "Repair peer hidden/foreign-pane mutation false positives, then fresh independent review before native retest. Do not infer original hosted cause from deterministic observer reproduction."
 }
