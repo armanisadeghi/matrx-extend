@@ -1,0 +1,19 @@
+{
+  "scope": "Independent source peer for EXT-D-0111 existing Profile journal; exact commits a3a74bcd and 2847c3de",
+  "verdict_a_acceptance": {
+    "status": "PASS_SOURCE_GATE_NATIVE_UNVERIFIED",
+    "evidence": "The committed native caller reads the owner row before any UI write, persists a mode-0600 full-row baseline, routes the same journal through warm and reload Identity T06 and Employment T18, and invokes its restoration from the execution cleanup path. Profile Save sends only changed fields plus user_id and existing organization_id. The journal verifies version, identity, all nine tested values and structural equality of untouched values after each save. Final restore PATCH sets only the nine tested columns and filters owner, organization, created_at, version and current tested values; a one-row response and successor readback are required. Existing-row code has no delete call; the original new-row conditional delete remains in its separate owned branch.",
+    "adverse_cases": "Focused node --test run: 47 passed, including baseline persistence refusal before a write, concurrent version change, untouched-field mutation, ambiguous UI successor, conditional PATCH race, null Preferred, actual runner branch and cleanup branch, and original new-row journal. A direct failure-code probe confirmed sanitized generic output for missing codes.",
+    "limit": "This is a source gate. Native browser behavior and live database row preservation still require the guarded admin run."
+  },
+  "verdict_b_quality": {
+    "status": "PARTIAL",
+    "finding": "The failure-code boundary misses profile_existing_version_invalid and profile_restore_<tested_field>_mismatch, returning profile_unclassified_failure. The first is reachable when the owner read returns an invalid version before UI mutation; the second is the explicit final restoration mismatch assertion, although the preceding reconcile should normally catch it. Add fixed sanitized categories and a boundary test for these cases before calling diagnostics complete.",
+    "evidence": "node --input-type=module probe of safeProfileFailureCode returned profile_unclassified_failure for both named assertions; the same probe returned profile_existing_untouched_field_changed, profile_existing_concurrent_change and profile_restore_conditional_patch_missed for covered paths. The public report holds only bounded codes, counts and booleans; original row values remain in the 0600 private receipt."
+  },
+  "reviewed_shas": [
+    "a3a74bcdb1739d23e9094949ce88e400f31bd939",
+    "2847c3de2576ba124bacb74ad90d0f61e52e70ec"
+  ],
+  "source_edits": "None"
+}
