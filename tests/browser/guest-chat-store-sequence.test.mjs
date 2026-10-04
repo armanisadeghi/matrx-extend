@@ -14,6 +14,17 @@ const followupScreenshot = source.indexOf('        report.followup_screenshot = 
 const cleanup = source.indexOf('      } catch (error) {', followupScreenshot);
 const tail = source.slice(followupScreenshot, cleanup);
 
+test('guest acceptance requires both offscreen HTTP observations before transport proof', () => {
+  const firstProof = source.indexOf("requireGuestTransport(report.guest_ai_requests, 'opening')");
+  const secondProof = source.indexOf(
+    "requireGuestTransport(report.guest_ai_requests, 'post_reload_new_conversation')",
+  );
+  const proofClaim = source.indexOf('report.guest_ai_transport_proven = true');
+  assert.ok(firstProof > 0 && firstProof < openingVerdict);
+  assert.ok(secondProof > openingScreenshot && secondProof < followupVerdict);
+  assert.ok(proofClaim > secondProof && proofClaim < cleanup);
+});
+
 // Regressions caught: an owner-table GET aborts before either answer is checked,
 // or the final owner-table check silently allows a GET after both screenshots.
 test('guest owner-table verdict executes after both Chat verdicts and screenshots', async () => {

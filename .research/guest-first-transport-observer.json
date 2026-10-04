@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0134",
+  "scope": "Guest Chat native acceptance transport observation",
+  "confirmed_cause": "The prior acceptance script enabled Network only on the side panel CDP target. The extension sends STREAM_RUN from its service worker to a lazily created offscreen document, where streamFetch issues the AI POST. Chrome target Network events are scoped, so the panel observer recorded zero AI requests even when both answers completed.",
+  "repair": "Observe the exact extension offscreen target. If it already exists, attach and enable Network directly. If it does not, browser CDP auto-attach pauses new targets, enables Network on the offscreen target, and resumes it before the normal first request. All other paused targets are resumed. No offscreen document is created by the test. Each observation retains only attempt, timestamp, CDP request ID, HTTP status, and a syntax-checked structured error code; the response body is parsed in memory and discarded. Opening and follow-up both require a matching request with HTTP status before transport proof can be claimed.",
+  "red_proof": "A scratch-copy mutation disabling offscreen target classification caused the first-fetch regression test to fail. The working tree was not mutated.",
+  "green_proof": "node --test tests/browser/guest-chat-transport-observer.test.mjs tests/browser/guest-chat-store-sequence.test.mjs: 5 passed; pnpm exec biome check on the four edited browser files and this report: passed; git diff --check: passed.",
+  "limits": [
+    "No live native browser or hosted acceptance run was performed in this implementer lane; real HTTP status and response code remain unverified until the fresh artifact is exercised.",
+    "CDP request ID is a browser-local correlation handle, not a server request ID.",
+    "An HTTP error without a structured simple code leaves code null; the HTTP status is still recorded."
+  ]
+}

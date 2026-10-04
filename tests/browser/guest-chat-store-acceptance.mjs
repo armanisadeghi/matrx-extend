@@ -7,6 +7,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { classifyGuestTurn, createGuestStreamCollector } from './guest-chat-completion-oracle.mjs';
+import { requireGuestTransport, watchGuestAiRequests } from './guest-chat-transport-observer.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
@@ -75,6 +76,7 @@ const report = {
   failure_reason: null,
   stage_progress: [],
   guest_ai_requests: [],
+  guest_ai_transport_proven: false,
   context_rule_reads: [],
   grounding_diagnostics: {},
 };
@@ -230,40 +232,6 @@ async function waitForTerminalAnswer(panel, expected, probeToolBoundary = null) 
     await new Promise((resolveWait) => setTimeout(resolveWait, 100));
   }
   return { ...last, verdict: 'terminal_not_observed' };
-}
-
-async function watchGuestAiRequests(panel) {
-  await panel.send('Network.enable');
-  let armedLabel = null;
-  const requests = new Map();
-  const targetPath = '/v2/ai/mandates/extend.browser_chat';
-  const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
-    if (!armedLabel) return;
-    try {
-      const url = new URL(request?.url);
-      if (!url.pathname.endsWith(targetPath)) return;
-      requests.set(requestId, { attempt: armedLabel, path: targetPath, status: null });
-    } catch {
-      // Ignore unrelated or malformed requests without retaining their URL.
-    }
-  });
-  const offResponse = panel.on('Network.responseReceived', ({ requestId, response }) => {
-    const request = requests.get(requestId);
-    if (request) request.status = Number.isFinite(response?.status) ? response.status : null;
-  });
-  return {
-    arm(label) {
-      armedLabel = label;
-    },
-    snapshot() {
-      return [...requests.values()].map(({ attempt, path, status }) => ({ attempt, path, status }));
-    },
-    stop() {
-      armedLabel = null;
-      offRequest();
-      offResponse();
-    },
-  };
 }
 
 async function watchGuestContextRuleReads(panel) {
@@ -616,7 +584,15 @@ try {
       publicDemoUrl: 'https://www.aimatrx.com/matrx-extend-demo',
     }),
     ...(receipt.kind === 'local_dev_unpacked' && { localDevReceiptPath: RECEIPT }),
-    exercisePanel: async ({ page, panel, artifacts, attachWorker }) => {
+    exercisePanel: async ({
+      page,
+      panel,
+      panelTarget,
+      browserSession,
+      artifacts,
+      attachWorker,
+      attachOffscreen,
+    }) => {
       const contextReadWatch = await watchGuestContextRuleReads(panel);
       contextReadWatch.arm('observer_attached');
       markStage('fresh_guest');
@@ -671,7 +647,7 @@ try {
         report.context_rule_reads = contextReadWatch.snapshot();
 
         markStage('guest_question');
-        networkWatch = await watchGuestAiRequests(panel);
+        networkWatch = await watchGuestAiRequests({ browserSession, attachOffscreen, panelTarget });
         const fixtureSurvivedOpen = await readableFixturePresent(web, fixture);
         if (!fixtureSurvivedOpen) {
           await installPageFixture(web, fixture);
@@ -707,7 +683,9 @@ try {
         report.opening_turn_verdict = openingTurn.verdict;
         report.opening_turn_timeline = openingTurn.timeline;
         report.failure_observation = diagnosticState(answered, fixture);
+        await networkWatch.settle();
         report.guest_ai_requests = networkWatch.snapshot();
+        requireGuestTransport(report.guest_ai_requests, 'opening');
         report.context_rule_reads = contextReadWatch.snapshot();
         assert.ok(
           openingTurn.verdict === 'terminal_answer' &&
@@ -810,7 +788,9 @@ try {
         report.followup_turn_verdict = followupTurn.verdict;
         report.followup_turn_timeline = followupTurn.timeline;
         report.failure_observation = diagnosticState(followup, fixture);
+        await networkWatch.settle();
         report.guest_ai_requests = networkWatch.snapshot();
+        requireGuestTransport(report.guest_ai_requests, 'post_reload_new_conversation');
         report.context_rule_reads = contextReadWatch.snapshot();
         assert.ok(
           followupTurn.verdict === 'terminal_answer' &&
@@ -837,6 +817,7 @@ try {
           false,
           'guest panel, Values chip, opening send, and post-reload send must not issue an owner-table GET',
         );
+        report.guest_ai_transport_proven = true;
       } catch (error) {
         report.failure_stage = stage;
         const failure = safeFailure(error);
@@ -863,7 +844,7 @@ try {
       } finally {
         report.context_rule_reads = contextReadWatch?.snapshot() ?? [];
         contextReadWatch?.stop();
-        networkWatch?.stop();
+        await networkWatch?.stop();
         await web.close();
       }
     },
