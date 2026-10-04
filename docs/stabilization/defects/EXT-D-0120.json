@@ -12,7 +12,7 @@
   "actual": "Receipt contains only extension_reload and generic target error; no returned reload result or target counts. Product cause remains unknown; same run also contains unsafe CPU evidence. Latest healthy development native37192733619 stopped earlier at native_extension_worker_retirement_unverified: old worker/panel absent and replacement present/created, but no old-worker destroyed event. It did not reach replacement-panel pointer lookup, so original pointer counts remain unknown. Healthy native37195986118 confirms complete strict retirement/replacement lifecycle with zero timeline drops, then pointer_target_not_unique at open_scrape_in_replacement_panel: matched0/visible0; target rendering/selection cause not yet known.",
   "severity": "S2: acceptance reliability; no proven product failure",
   "priority": "P1: prerequisite for trusted native acceptance",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root",
   "evidence": [
     ".research/scrape-loading-fixed-native.json",
@@ -41,7 +41,8 @@
     ".research/startup-resource-attribution.json",
     ".research/startup-attribution-peer.json",
     ".research/startup-attribution-journal-fix.json",
-    ".research/startup-journal-final-peer.json"
+    ".research/startup-journal-final-peer.json",
+    ".research/startup-attributed-native.json"
   ],
   "transition_history": [
     {
@@ -85,17 +86,29 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Execution-retirement oracle repaired in babf71b7 +9f09009a; false-green TargetDestroyed bypass reproduced RED and removed. Fresh independent b69c34e4 passed both source verdicts with23 focused checks and actual harness. Guarded native retest pending."
+    },
+    {
+      "at": "2026-10-04T13:30:38.711263+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent native37205211642 on reviewed driver passed execution retirement, exact replacement context and rendered Scrape empty state under healthy journals. Root matched raw evidence."
+    },
+    {
+      "at": "2026-10-04T13:30:38.711263+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original zero-visible-target readiness repair had native0-to1 proof37199709918; corrected execution-retirement oracle has captured failed-sequence RED/GREEN, unsafe/refusal variants, independent source review and fresh nativepass37205211642. No unexplained product-lifecycle failure is claimed repaired; resource intermittency retained as environmental uncertainty."
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
-  "next_action": "Collect one guarded frozen215 guest native run with independently reviewed durable process attribution. If resources unsafe, preserve exact process evidence/refusal and diagnose without retry or thresholds changes. If healthy, verify old stopped/redundant and running replacement plus actual panel/downstream Scrape checks before closure.",
+  "next_action": "Continue inventoried Scrape coverage: native T10/T11/T12 media editing, repeated capture/data panes after reload, normal-width and member/admin modes. Keep one guarded heavy run; preserve new attribution if startup CPU refusal recurs. No blind retry or safety threshold changes.",
   "current_native_evidence": {
-    "run_id": "37203147962",
-    "status": "native-unverified_resource-refusal",
-    "driver_sha": "ea0ec41d72e7c596ac75ab1fa00ee766847d1e8d",
-    "artifact": "frozen development215 CI37193761291 artifact11299613935",
-    "verified": "Root matched receipt SHA c250c24bc937c23ab1c776cf772c6e078f7b4d0ca815b285cf92bfddcc5a23c3 and all three journal hashes. Receipt stage inputs refused NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample; guest identity unobserved, cases empty, reload lifecycle null. Single CPU busy1.0 sample at12:50:40.149UTC; guest child_failed exit1 with outer resourceInvalid=false. Package/browser valid.",
-    "limitations": "No verdict on oracle repair or product; no retry. All source workers and native collector terminal."
+    "run_id": "37205211642",
+    "status": "retest-pass",
+    "driver_sha": "14bbf2e6216b86fe11705622aac15ff5b402d411",
+    "artifact": "development215 source3536b5cb0bea2fb33383f2b239b8602fafb79351 CI37193761291 artifact11299613935",
+    "verified": "Root matched immutable receipt bce0f6a89b6204b09b9fa13bc438c6f5d39e222a18e68ff8eb00b4379a2d3f2b and three valid exit0 journals with zero unsafe samples. Chrome141.0.7390.37: exact oldversion0 mapped beforeclick, stopped/redundant13:25:40.062UTC; distinct version1 running/activated13:25:40.615UTC. Execution-retired true, sole replacement, exact context appeared across2checks, Scrape visible/clicked and empty capture-enabled state rendered. Guesttoken/profile absent.",
+    "limits": "Only this development guest run; no Store or whole-feature pass. This run also destroyed old debugger host; captured retained-host case is covered by causal source replay/forcing tests. Earlier CPU-spike cause remains unknown; no unsafe attribution event in healthy run."
   },
   "previous_passing_native_evidence": {
     "run_id": "37199709918",
@@ -127,6 +140,14 @@
     "ci": "37204825794 success; macOS real-wrapper integration2pass0skipped; hostedTypecheckpassed",
     "finding_fixed": "Canonical journal dropped new processes/unavailable fields; reproduced RED, validated sanitized durable contract now passes. Unsafe decisions, CPU sampler, thresholds and watchdog unchanged.",
     "limits": "ucomm names maytruncate, psCPUaverages do not identifyexactiostatintervalownership; no guaranteedownedgroupID for everyrow.",
-    "active_worker": "/root/startup_attributed_native"
+    "active_worker": null
+  },
+  "previous_resource_refusal": {
+    "run_id": "37203147962",
+    "status": "native-unverified_resource-refusal",
+    "driver_sha": "ea0ec41d72e7c596ac75ab1fa00ee766847d1e8d",
+    "artifact": "frozen development215 CI37193761291 artifact11299613935",
+    "verified": "Root matched receipt SHA c250c24bc937c23ab1c776cf772c6e078f7b4d0ca815b285cf92bfddcc5a23c3 and all three journal hashes. Receipt stage inputs refused NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample; guest identity unobserved, cases empty, reload lifecycle null. Single CPU busy1.0 sample at12:50:40.149UTC; guest child_failed exit1 with outer resourceInvalid=false. Package/browser valid.",
+    "limitations": "No verdict on oracle repair or product; no retry. All source workers and native collector terminal."
   }
 }

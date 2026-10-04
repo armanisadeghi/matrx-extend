@@ -1,12 +1,12 @@
 # Extension stabilization status
 
-Generated 2026-10-04 13:19 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T12:17:42.755864+00:00. 205 features · 762 cases · 1333 controls · 121 linked defect records.
+Generated 2026-10-04 13:30 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T13:30:38.711263+00:00. 205 features · 762 cases · 1333 controls · 121 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1212** — Pass: 80 · Partial: 70 · Fail: 2 · Unverified: 1059 · N/A: 1.
+Applicable case-by-role slots: **1212** — Pass: 81 · Partial: 69 · Fail: 2 · Unverified: 1059 · N/A: 1.
 Unverified splits into **122 explicitly marked unverified** and **937 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 128 cases without steps, 127 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
@@ -15,7 +15,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 
 | Tab or surface | Features | Guest cases | Member cases | Admin cases | All-role case slots | Active defects |
 | --- | ---: | --- | --- | --- | --- | ---: |
-| [Development installation](#development-installation) | 1 | 1 pass · 1 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 5, partial 2, fail 0, unverified 14, n/a 0 | 2 |
+| [Development installation](#development-installation) | 1 | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 6, partial 1, fail 0, unverified 14, n/a 0 | 1 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 1 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 8, partial 2, fail 1, unverified 16, n/a 0 | 6 |
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
@@ -66,16 +66,16 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Development build, reload and runtime identity (EXT-F-0001)
 
-**Role status:** guest: Partial · member: Unverified · admin: Partial. **Cases:** 7. **Controls:** 7.
+**Role status:** guest: Unverified · member: Unverified · admin: Partial. **Cases:** 7. **Controls:** 7.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0077, EXT-D-0120
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0077
 
-**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed), [EXT-D-0080](defects/EXT-D-0080.json) (closed), [EXT-D-0090](defects/EXT-D-0090.json) (closed), [EXT-D-0099](defects/EXT-D-0099.json) (closed), [EXT-D-0106](defects/EXT-D-0106.json) (closed), [EXT-D-0120](defects/EXT-D-0120.json) (fixed), [EXT-D-0121](defects/EXT-D-0121.json) (closed)
+**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed), [EXT-D-0080](defects/EXT-D-0080.json) (closed), [EXT-D-0090](defects/EXT-D-0090.json) (closed), [EXT-D-0099](defects/EXT-D-0099.json) (closed), [EXT-D-0106](defects/EXT-D-0106.json) (closed), [EXT-D-0120](defects/EXT-D-0120.json) (closed), [EXT-D-0121](defects/EXT-D-0121.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-0001-T01 Fresh development build and unpacked identity | Unverified | Unverified | Unverified | EXT-F-0001-C01 |
-| EXT-F-0001-T02 Extension reload and sidepanel recovery | Partial | Pass | Pass | EXT-F-0001-C02 |
+| EXT-F-0001-T02 Extension reload and sidepanel recovery | Pass | Pass | Pass | EXT-F-0001-C02 |
 | EXT-F-0001-T03 Content-script page reload | Unverified | Unverified | Unverified | EXT-F-0001-C03 |
 | EXT-F-0001-T04 Service-worker and offscreen restart | Unverified | Unverified | Unverified | EXT-F-0001-C04 |
 | EXT-F-0001-T05 Development identity auth redirect | Unverified | Unverified | Unverified | EXT-F-0001-C05 |
@@ -86,8 +86,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 - EXT-F-0001-T01 · guest: Unverified.
   Evidence / build / date recorded: baseline-build-001, docs/stabilization/runs/baseline-build-001.json
-- EXT-F-0001-T02 · guest: Partial. Frozen189 guest trusted pane transition and strict old-context retirement/exact replacement passed with zero runtime/manifest errors. Post-reload rendered content not sampled; full rendering case and current-main/Store-installation behavior remain unverified.
-  Evidence / build / date recorded: reload-readiness-peer-189-01, .research/reload-readiness-peer.json
+- EXT-F-0001-T02 · guest: Pass. Exact development215 genuine guest reload: authoritative old stopped/redundant proof, sole distinct running/activated replacement, exact SIDE_PANEL context appeared after2checks, trusted Scrape click and rendered empty/capture-enabled view. Three healthy exit0journals; root verified raw hashes. Management diagnostic counts not retained by this receipt; no claim of zero errors globally or Store/current-main acceptance.
+  Evidence / build / date recorded: 37205211642, Frozen development215/source3536b5cb/CI37193761291/artifact11299613935, 2026-10-04T13:30:38.711263+00:00, .research/startup-attributed-native.json
 - EXT-F-0001-T02 · member: Pass. Independent frozen189 member full extension reload retired old worker/panel, created replacements, restored signed-in account and rendered Profile controls; subsequent field/save/reopen cases passed. Original row absence restored; no Store installation claim.
   Evidence / build / date recorded: profile-fields-reload-fixed-189-08, Frozen development189/sourceb4b9f0c4/CI37164174445/artifact11288542496, 2026-10-04T03:52:44.728959+00:00, .research/profile-fields-reload-fixed-native.json
 - EXT-F-0001-T02 · admin: Pass. Final shipped0.2.56 full extension Reload,30s before opening actual sidepanel: admin/ADMIN restored; selected org visible about5s later. Original development30s-settle proof retained in permissions-auth-native-sol.
@@ -855,12 +855,12 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
 - EXT-F-1007-T06 · guest: Pass. pass_cancel_discarded_draft_and_recapture_cleanup
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
-- EXT-F-1007-T08 · guest: Partial. Healthy exact development215 guest: all6tabs selected, Article/Links/SEO/Schema matched, Images realSVG matchedURL/alt andloaded640x480, Video matchedURLrow. Actualrecapture of media-free referrals confirmed bothzero-count panes withAddcontrols. Rootmatchedreceipt+3journals; no native mediascreenshot, no video playbackclaim. FullreloadblockedbyD120 afterthesechecks; member/admin andnormalwidth unverified.
-  Evidence / build / date recorded: 37200570100, .research/scrape-media-native.json
+- EXT-F-1007-T08 · guest: Partial. Guest warm capture selected all6tabs with matching content; image loaded640x480, video URLrow matched, media-free recapture showed image/videoempty states. Globalreload and emptyScrape renderingpassed, but data-pane capture/assertions afterreload, normalwidth and othermodes remainunverified. No video playbackclaim.
+  Evidence / build / date recorded: 37205211642, Frozen development215/source3536b5cb/CI37193761291/artifact11299613935, 2026-10-04T13:30:38.711263+00:00, .research/startup-attributed-native.json
 - EXT-F-1007-T14 · guest: Partial. Healthy exactdevelopment215 observed restrictedchrome://settings norecoveryactions andDismiss; recoverableReload/Tryagain/deepretryunverified.
   Evidence / build / date recorded: 37195986118, .research/scrape-freshness-fixed-native.json
-- EXT-F-1007-T20 · guest: Pass. Exact development215 guest (token/profile absent), healthy journals: initial empty state, navigation clears prior content and saved indicator, strict full extension reload, replacement Scrape empty and capture enabled. Readiness first0/0 then1/1 across2checks. Root matched receipt+3journal hashes and exactdriver savedfalse assertions. Bounded guest case only; no Store/member/admin/whole-feature pass. Earlier intermittent D120 remains open.
-  Evidence / build / date recorded: 37199709918, .research/reload-lifetime-fresh-native.json
+- EXT-F-1007-T20 · guest: Pass. Exact development215 genuine guest initialempty, navigation clearing priorcapture, prere-loadempty, actual fullreload and replacementScrape empty/capture-enabled normalpage with expectedtitle. Root matched receipt and3healthyjournals.
+  Evidence / build / date recorded: 37205211642, Frozen development215/source3536b5cb/CI37193761291/artifact11299613935, 2026-10-04T13:30:38.711263+00:00, .research/startup-attributed-native.json
 
 **Other remaining work:** Source landing, refusal/retry, organization authorization, and server persistence require live member/admin evidence; guest Save must show sign-in remedy while retaining the device-local capture. Endpoint/RLS behavior is a runtime readiness gap, not a source-census blocker.; D59 document identity: candidate a021ae82 remains partial; guarded peer a702ba6c passes narrow capture tests/compile but finds mixed-document Diagnose bundle and refresh status race. Native guest/member/admin retest pending; reports/scrape-document-peer.json.
 

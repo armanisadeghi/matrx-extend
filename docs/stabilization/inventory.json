@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T12:17:42.755864+00:00",
+  "updated_at": "2026-10-04T13:30:38.711263+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -159,10 +159,12 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "reload-readiness-peer-189-01",
-              "evidence": ".research/reload-readiness-peer.json",
-              "detail": "Frozen189 guest trusted pane transition and strict old-context retirement/exact replacement passed with zero runtime/manifest errors. Post-reload rendered content not sampled; full rendering case and current-main/Store-installation behavior remain unverified."
+              "status": "pass",
+              "run_id": "37205211642",
+              "evidence": ".research/startup-attributed-native.json",
+              "detail": "Exact development215 genuine guest reload: authoritative old stopped/redundant proof, sole distinct running/activated replacement, exact SIDE_PANEL context appeared after2checks, trusted Scrape click and rendered empty/capture-enabled view. Three healthy exit0journals; root verified raw hashes. Management diagnostic counts not retained by this receipt; no claim of zero errors globally or Store/current-main acceptance.",
+              "build_variant": "Frozen development215/source3536b5cb/CI37193761291/artifact11299613935",
+              "verified_at": "2026-10-04T13:30:38.711263+00:00"
             },
             "member": {
               "status": "pass",
@@ -219,6 +221,13 @@
               "mode": "member",
               "status": "unverified",
               "detail": "No member-mode session evidence; the operational behavior is intended to be auth-independent."
+            },
+            {
+              "mode": "guest",
+              "status": "partial",
+              "run_id": "reload-readiness-peer-189-01",
+              "evidence": ".research/reload-readiness-peer.json",
+              "detail": "Frozen189 guest trusted pane transition and strict old-context retirement/exact replacement passed with zero runtime/manifest errors. Post-reload rendered content not sampled; full rendering case and current-main/Store-installation behavior remain unverified."
             }
           ],
           "defect_ids": [
@@ -17187,44 +17196,55 @@
           ]
         },
         {
-        "id": "EXT-F-1007-T08",
-        "title": "Scrape result tabs",
-        "modes": [
-          "guest",
-          "member",
-          "admin"
-        ],
-        "control_ids": [
-          "EXT-F-1007-C08"
-        ],
-        "preconditions": [
-          "Open Scrape on a controlled page with extension access and record auth/org state."
-        ],
-        "steps": [
-          "Select Article, Images, Video, Links, SEO and Schema."
-        ],
-        "expected": [
-          "Each selected tab renders its matching capture data and empty states without changing capture."
-        ],
-        "dimensions": [
-          "warm",
-          "reload"
-        ],
-        "results": {
-          "guest": {
-            "status": "partial",
-            "run_id": "37200570100",
-            "evidence": ".research/scrape-media-native.json",
-            "detail": "Healthy exact development215 guest: all6tabs selected, Article/Links/SEO/Schema matched, Images realSVG matchedURL/alt andloaded640x480, Video matchedURLrow. Actualrecapture of media-free referrals confirmed bothzero-count panes withAddcontrols. Rootmatchedreceipt+3journals; no native mediascreenshot, no video playbackclaim. FullreloadblockedbyD120 afterthesechecks; member/admin andnormalwidth unverified.",
-            "historical_result": {
+          "id": "EXT-F-1007-T08",
+          "title": "Scrape result tabs",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C08"
+          ],
+          "preconditions": [
+            "Open Scrape on a controlled page with extension access and record auth/org state."
+          ],
+          "steps": [
+            "Select Article, Images, Video, Links, SEO and Schema."
+          ],
+          "expected": [
+            "Each selected tab renders its matching capture data and empty states without changing capture."
+          ],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
+          "results": {
+            "guest": {
               "status": "partial",
-              "run_id": "37195986118",
-              "evidence": ".research/scrape-freshness-fixed-native.json",
-              "detail": "Healthy exact development215 selectedall6tabs and matchedArticle/Links/SEO/Schema. All9geometryboundaries at360px showdocumentwidth360/scrollLeft0, strip336px; rootdeepPNGconfirmsno leftclip. Images/video content or empty state and normalwidth stillunverified."
+              "run_id": "37205211642",
+              "evidence": ".research/startup-attributed-native.json",
+              "detail": "Guest warm capture selected all6tabs with matching content; image loaded640x480, video URLrow matched, media-free recapture showed image/videoempty states. Globalreload and emptyScrape renderingpassed, but data-pane capture/assertions afterreload, normalwidth and othermodes remainunverified. No video playbackclaim.",
+              "build_variant": "Frozen development215/source3536b5cb/CI37193761291/artifact11299613935",
+              "verified_at": "2026-10-04T13:30:38.711263+00:00"
             }
-          }
-        }
-      },
+          },
+          "previous_results": [
+            {
+              "mode": "guest",
+              "status": "partial",
+              "run_id": "37200570100",
+              "evidence": ".research/scrape-media-native.json",
+              "detail": "Healthy exact development215 guest: all6tabs selected, Article/Links/SEO/Schema matched, Images realSVG matchedURL/alt andloaded640x480, Video matchedURLrow. Actualrecapture of media-free referrals confirmed bothzero-count panes withAddcontrols. Rootmatchedreceipt+3journals; no native mediascreenshot, no video playbackclaim. FullreloadblockedbyD120 afterthesechecks; member/admin andnormalwidth unverified.",
+              "historical_result": {
+                "status": "partial",
+                "run_id": "37195986118",
+                "evidence": ".research/scrape-freshness-fixed-native.json",
+                "detail": "Healthy exact development215 selectedall6tabs and matchedArticle/Links/SEO/Schema. All9geometryboundaries at360px showdocumentwidth360/scrollLeft0, strip336px; rootdeepPNGconfirmsno leftclip. Images/video content or empty state and normalwidth stillunverified."
+              }
+            }
+          ]
+        },
         {
           "id": "EXT-F-1007-T09",
           "title": "Copy capture and section data",
@@ -17551,53 +17571,64 @@
           ]
         },
         {
-        "id": "EXT-F-1007-T20",
-        "title": "No current capture empty state",
-        "modes": [
-          "guest",
-          "member",
-          "admin"
-        ],
-        "control_ids": [
-          "EXT-F-1007-C20"
-        ],
-        "preconditions": [
-          "Open Scrape on a controlled page with extension access and record auth/org state."
-        ],
-        "steps": [
-          "Open Scrape before capturing, then navigate active tab to another URL."
-        ],
-        "expected": [
-          "Empty state invites capture; previous page’s content and Saved badge clear after navigation."
-        ],
-        "dimensions": [
-          "warm",
-          "reload"
-        ],
-        "results": {
-          "guest": {
-            "status": "pass",
-            "run_id": "37199709918",
-            "evidence": ".research/reload-lifetime-fresh-native.json",
-            "detail": "Exact development215 guest (token/profile absent), healthy journals: initial empty state, navigation clears prior content and saved indicator, strict full extension reload, replacement Scrape empty and capture enabled. Readiness first0/0 then1/1 across2checks. Root matched receipt+3journal hashes and exactdriver savedfalse assertions. Bounded guest case only; no Store/member/admin/whole-feature pass. Earlier intermittent D120 remains open.",
-            "historical_result": {
-              "status": "partial",
-              "run_id": "37195986118",
-              "evidence": ".research/scrape-freshness-fixed-native.json",
-              "detail": "Healthy exactdevelopment215 initialguestempty and navigationclearsoldcontent; fullreloadretiredoldworker/panel andcreatedreplacement. Replacement Scrapecontrolmatched0 so intended postreloadview/recovery remainsunverifiedD120.",
+          "id": "EXT-F-1007-T20",
+          "title": "No current capture empty state",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C20"
+          ],
+          "preconditions": [
+            "Open Scrape on a controlled page with extension access and record auth/org state."
+          ],
+          "steps": [
+            "Open Scrape before capturing, then navigate active tab to another URL."
+          ],
+          "expected": [
+            "Empty state invites capture; previous page’s content and Saved badge clear after navigation."
+          ],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "37205211642",
+              "evidence": ".research/startup-attributed-native.json",
+              "detail": "Exact development215 genuine guest initialempty, navigation clearing priorcapture, prere-loadempty, actual fullreload and replacementScrape empty/capture-enabled normalpage with expectedtitle. Root matched receipt and3healthyjournals.",
+              "build_variant": "Frozen development215/source3536b5cb/CI37193761291/artifact11299613935",
+              "verified_at": "2026-10-04T13:30:38.711263+00:00"
+            }
+          },
+          "previous_results": [
+            {
+              "mode": "guest",
+              "status": "pass",
+              "run_id": "37199709918",
+              "evidence": ".research/reload-lifetime-fresh-native.json",
+              "detail": "Exact development215 guest (token/profile absent), healthy journals: initial empty state, navigation clears prior content and saved indicator, strict full extension reload, replacement Scrape empty and capture enabled. Readiness first0/0 then1/1 across2checks. Root matched receipt+3journal hashes and exactdriver savedfalse assertions. Bounded guest case only; no Store/member/admin/whole-feature pass. Earlier intermittent D120 remains open.",
               "historical_result": {
                 "status": "partial",
-                "run_id": "37185080238",
-                "evidence": ".research/guest-scrape-hosted-native.json",
-                "detail": "Release205 local development ZIP: signed-out token/profile absence and initial Scrape empty state observed. Navigation/reload were not reached. Exact Store ZIP rerun37186201850 failed at browser startup before any UI case; no Store pass.",
-                "additional_evidence": [
-                  ".research/guest-scrape-store-native.json"
-                ]
+                "run_id": "37195986118",
+                "evidence": ".research/scrape-freshness-fixed-native.json",
+                "detail": "Healthy exactdevelopment215 initialguestempty and navigationclearsoldcontent; fullreloadretiredoldworker/panel andcreatedreplacement. Replacement Scrapecontrolmatched0 so intended postreloadview/recovery remainsunverifiedD120.",
+                "historical_result": {
+                  "status": "partial",
+                  "run_id": "37185080238",
+                  "evidence": ".research/guest-scrape-hosted-native.json",
+                  "detail": "Release205 local development ZIP: signed-out token/profile absence and initial Scrape empty state observed. Navigation/reload were not reached. Exact Store ZIP rerun37186201850 failed at browser startup before any UI case; no Store pass.",
+                  "additional_evidence": [
+                    ".research/guest-scrape-store-native.json"
+                  ]
+                }
               }
             }
-          }
-        }
-      },
+          ]
+        },
         {
           "id": "EXT-F-1007-T21",
           "title": "Save a capture as a Source and follow its success state",
