@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task": "scrape-transition-probe-peer",
+  "defect": "EXT-D-0123",
+  "reviewed_commit": "69e0184652efbc6621b06d8ea2d4bd91fcc5fc2f",
+  "verdicts": {
+    "A_causal_native_probe_readiness": "READY_FOR_ONE_GUARDED_DIAGNOSTIC_RUN",
+    "B_quality_resource_privacy_invariants": "PASS_SOURCE_REVIEW_NATIVE_UNVERIFIED"
+  },
+  "evidence": {
+    "chronology": "Each image Remove call appends one phase/kind/fixture-path entry before action, then records selected tab, fixture image paths and count before the trusted pointer call and again in finally after success or failure. The same wrapper covers video and link removals. A failed third removal remains tied to /intake.svg and its driverFailure; the prior two entries show their post-action panes and survivors.",
+    "pointer_and_remount": "The document capture listener records trusted pointerdown, pointerup, and click on tab or Remove controls with bounded coordinates, target category, and selected tab. A MutationObserver records selected-tab or first-tab connectivity changes; stop records first-tab and pane connectivity. The shared driver still resolves the exact href inside the selected pane and dispatches the same trusted mouse events. This can separate a tab activation from a remount or a pane change without either, but one run may still need follow-up to establish the underlying product cause.",
+    "test": "ScrapeView, design-system Tabs, and Zustand scrape store are real in the component test. It clicks medium, icon, and large Remove controls in sequence and asserts exact remaining URLs plus Images selection after every removal. External page/auth/clipboard boundaries are mocked. The authored probe report records that an image-count-key remount mutant failed this test and was restored; this reviewer did not repeat the source mutation.",
+    "resource_and_privacy": "The action remains wrapped in resourceAction and a pre-action requireResourceHealth remains; refusal still throws and the top-level report remains unverified. The probe starts only after health, does not reselect the pane, retry a pointer, or write production state. Receipt fields are limited to controlled fixture paths, fixed tab and control names, bounded event types/coordinates, and existing bounded driver diagnostics. This is source evidence, not a native resource journal or privacy audit of a live receipt."
+  },
+  "checks": {
+    "focused_component": "4 passed",
+    "pnpm_compile": "passed",
+    "node_check_native_driver": "passed",
+    "git_show_check_69e01846": "passed"
+  },
+  "limits": [
+    "No native/heavy/browser run, build, release, or production source edit in this review.",
+    "The event target records the Remove control category, not the clicked row's href; the operation path and shared exact-href selector provide the intended identity, while a later event after layout movement could require another trace.",
+    "When Images becomes inactive, imagePaths may be null because its content unmounts; the previous removal's survivors and the Images tab count still anchor the boundary."
+  ],
+  "next": "Nominate exactly one resource-guarded guest native diagnostic against the frozen 0.2.215 development artifact (source 3536b5cb0bea2fb33383f2b239b8602fafb79351, CI run 37193761291, artifact 11299613935). Inspect media_transitions in chronological order for the first pane change, pointer/tab events, connectivity, remaining image identities and driverFailure, then retain native product acceptance as unverified until the causal repair is exercised."
+}
