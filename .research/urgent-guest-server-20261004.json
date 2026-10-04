@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "status": "LIVE_GUEST_HTTP_402_CORRELATED",
+  "observed_at_utc": "2026-10-04T05:29:10.852638Z",
+  "server": {
+    "health_version_git_sha": "c0c941d9c856760b930eb0f2e7f0325f80973c13",
+    "built_at_utc": "2026-10-04T04:49:36Z",
+    "health_endpoint": "https://server.app.matrxserver.com/health/version"
+  },
+  "subject": "Store-installed 0.2.176, signed-out, persisted guest profile; same anonymous auth user across all three current requests and the prior 2026-10-03T21:22:57Z HTTP 403",
+  "current_live_sequence": [
+    {
+      "at_utc": "2026-10-04T05:26:58.214603Z",
+      "request_id": "93d028e8-c13b-47a9-b06e-b7f54de6ab8b",
+      "route": "POST /v2/ai/mandates/extend.browser_chat",
+      "auth_type": "fingerprint",
+      "http_status": 200,
+      "ui_result": "Answer completed"
+    },
+    {
+      "at_utc": "2026-10-04T05:27:18.618439Z",
+      "request_id": "6832ac1d-3e80-4b42-91af-260d78147d95",
+      "route": "POST /v2/ai/mandates/extend.browser_chat",
+      "auth_type": "fingerprint",
+      "http_status": 200,
+      "ui_result": "Same-conversation follow-up completed"
+    },
+    {
+      "at_utc": "2026-10-04T05:29:10.852638Z",
+      "request_id": "96172141-2df1-460f-ae90-65624ae3efdc",
+      "route": "POST /v2/ai/mandates/extend.browser_chat",
+      "auth_type": "fingerprint",
+      "http_status": 402,
+      "duration_ms": 575,
+      "ui_result": "Immediately showed generic chat service error and Retry after side-panel reopen/new chat"
+    }
+  ],
+  "billing_evidence": {
+    "first_two_turns": "Two platform.points usage_ledger entries, total 2248 points, at 05:27:01Z and 05:27:20Z for this same user",
+    "state_read_after_second_turn": "billing.user_usage_state: plan guest, state over, binding period week, weekly used 6668 of 5000; rolling 5h used 2248 of 2500",
+    "capability": "billing.capability platform.points enforced=true, updated_at 2026-10-04T03:18:30Z"
+  },
+  "deployed_code_boundary": {
+    "server": "UsageLimitReachedError in packages/matrx-ai/matrx_ai/providers/usage_gate.py sets http_status=402, maps plan_key guest to guest_ai_allowance_used, and exposes a flat error envelope; aidream/api/errors.py returns that envelope with the exception status. precheck_usage can refuse before a new request is stored when cached usage is over.",
+    "extension": "src/lib/api/stream.ts isGuestAllowanceUsed currently requires status === 403 and exact error code; a 402 follows generic HTTP error handling. The separate stream-event classifier accepts the code regardless of status.",
+    "classification": "The exact HTTP 402 is observed in ops.api_request_log. Its guest_ai_allowance_used body is inferred from deployed code plus the same user's over state; ops.api_request_log did not retain response bytes. No corresponding ops.system_error was found, consistent with an expected caller refusal."
+  },
+  "historical_boundary": "The earlier 2026-10-03 403s were before this 04:49Z deployed server and used the former per-request guest allowance; they are not evidence of a current 403 contract.",
+  "limitations": [
+    "No exact HTTP response body capture for the 05:29:10Z request.",
+    "The initial two 200s do not by themselves prove a cache defect; deployed policy admits uncached requests while warming usage state.",
+    "The UI's 'included' chip is context display, not an allowance counter.",
+    "No fresh guest identity was created in this read-only evidence lane."
+  ],
+  "source": "Read-only /health/version, Supabase MCP queries of ops.api_request_log, ops.system_error, billing.user_usage_state, billing.capability, billing.usage_ledger; UI observations supplied by sibling reproduction lane."
+}
