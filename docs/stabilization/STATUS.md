@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-04 01:51 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T01:51:02.098859+00:00. 205 features · 761 cases · 1333 controls · 103 linked defect records.
+Generated 2026-10-04 02:09 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T02:09:46.544160+00:00. 205 features · 761 cases · 1333 controls · 104 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1209** — Pass: 72 · Partial: 65 · Fail: 4 · Unverified: 1067 · N/A: 1.
-Unverified splits into **124 explicitly marked unverified** and **943 with no result record**.
+Applicable case-by-role slots: **1209** — Pass: 72 · Partial: 66 · Fail: 4 · Unverified: 1066 · N/A: 1.
+Unverified splits into **125 explicitly marked unverified** and **941 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 148 cases without steps, 147 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -21,7 +21,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 10 pass · 4 partial · 0 fail · 11 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 21 unverified · 0 deferred; 0/1 full | 14 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 26, partial 10, fail 0, unverified 55, n/a 1 | 0 |
-| [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 2 pass · 3 partial · 0 fail · 11 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 2, partial 6, fail 0, unverified 24, n/a 0 | 1 |
+| [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 2 pass · 4 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 2, partial 7, fail 0, unverified 23, n/a 0 | 2 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
 | [Scrape](#scrape) | 1 | 1 pass · 0 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 31 unverified · 0 deferred; 0/1 full | pass 1, partial 0, fail 0, unverified 87, n/a 0 | 2 |
@@ -112,9 +112,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: Unverified · member: Fail · admin: Partial. **Cases:** 10. **Controls:** 10.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0073, EXT-D-0079, EXT-D-0083, EXT-D-0103
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0073, EXT-D-0079, EXT-D-0083, EXT-D-0101
 
-**Linked defects:** [EXT-D-0025](defects/EXT-D-0025.json) (closed), [EXT-D-0051](defects/EXT-D-0051.json) (closed), [EXT-D-0056](defects/EXT-D-0056.json) (closed), [EXT-D-0060](defects/EXT-D-0060.json) (closed), [EXT-D-0072](defects/EXT-D-0072.json) (closed), [EXT-D-0073](defects/EXT-D-0073.json) (fixed), [EXT-D-0079](defects/EXT-D-0079.json) (in-fix), [EXT-D-0083](defects/EXT-D-0083.json) (fixed), [EXT-D-0098](defects/EXT-D-0098.json) (closed), [EXT-D-0101](defects/EXT-D-0101.json) (closed), [EXT-D-0102](defects/EXT-D-0102.json) (closed), [EXT-D-0103](defects/EXT-D-0103.json) (triaged)
+**Linked defects:** [EXT-D-0025](defects/EXT-D-0025.json) (closed), [EXT-D-0051](defects/EXT-D-0051.json) (closed), [EXT-D-0056](defects/EXT-D-0056.json) (closed), [EXT-D-0060](defects/EXT-D-0060.json) (closed), [EXT-D-0072](defects/EXT-D-0072.json) (closed), [EXT-D-0073](defects/EXT-D-0073.json) (fixed), [EXT-D-0079](defects/EXT-D-0079.json) (in-fix), [EXT-D-0083](defects/EXT-D-0083.json) (fixed), [EXT-D-0098](defects/EXT-D-0098.json) (closed), [EXT-D-0101](defects/EXT-D-0101.json) (fixed), [EXT-D-0102](defects/EXT-D-0102.json) (closed), [EXT-D-0103](defects/EXT-D-0103.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -560,9 +560,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: N/A · member: Partial · admin: Partial. **Cases:** 28. **Controls:** 17.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0095
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0095, EXT-D-0104
 
-**Linked defects:** [EXT-D-0094](defects/EXT-D-0094.json) (closed), [EXT-D-0095](defects/EXT-D-0095.json) (fixed)
+**Linked defects:** [EXT-D-0094](defects/EXT-D-0094.json) (closed), [EXT-D-0095](defects/EXT-D-0095.json) (fixed), [EXT-D-0104](defects/EXT-D-0104.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -586,7 +586,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1004-T18 admin: Employment | N/A | N/A | Unverified | EXT-F-1004-C09 |
 | EXT-F-1004-T19 member: Emergency contacts | N/A | Unverified | N/A | EXT-F-1004-C10 |
 | EXT-F-1004-T20 admin: Emergency contacts | N/A | N/A | Unverified | EXT-F-1004-C10 |
-| EXT-F-1004-T21 member: Profile section expanders | N/A | Unverified | N/A | EXT-F-1004-C11 |
+| EXT-F-1004-T21 member: Profile section expanders | N/A | Partial | N/A | EXT-F-1004-C11 |
 | EXT-F-1004-T22 admin: Profile section expanders | N/A | N/A | Unverified | EXT-F-1004-C11 |
 | EXT-F-1004-T23 guest: verify visibility denial | N/A | N/A | N/A | EXT-F-1004-C12 |
 | EXT-F-1004-T24 Email/date native input constraints | N/A | Unverified | Unverified | EXT-F-1004-C13 |
@@ -605,6 +605,10 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: profile-member-final-189-05, Development0.2.189, source b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced, CI37164174445/artifact11288542496, 2026-10-04T01:29:17.055381+00:00, ['.research/profile-member-final-189-native.json', 'docs/stabilization/resource-journals/profile-member-final-189-05.jsonl']
 - EXT-F-1004-T04 · admin: Partial.
   Evidence / build / date recorded: profile-independent-20261003-01, receipt-bound development artifact; CI 37150495327 / artifact 11283802431 / source ac49ac2f, 2026-10-03T20:16:36Z, .research/profile-independent-acceptance.json; docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl
+- EXT-F-1004-T05 · member: Unverified. Attempt failed in native test process before Identity receipt; product-vs-driver cause under D104 diagnosis. Original absence restored; no fieldpass inferred.
+  Evidence / build / date recorded: profile-fields-member-189-01, .research/profile-fields-member-native.json
+- EXT-F-1004-T21 · member: Partial.
+  Evidence / build / date recorded: profile-fields-member-189-01, Exactdevelopment189/sourceb4b9f0c4/CI37164174445/artifact11288542496, 2026-10-04T02:09:46.544160+00:00, .research/profile-fields-member-native.json
 - EXT-F-1004-T25 · member: Partial.
   Evidence / build / date recorded: profile-member-final-189-05, Development0.2.189, source b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced, CI37164174445/artifact11288542496, 2026-10-04T01:29:17.055381+00:00, ['.research/profile-member-final-189-native.json', 'docs/stabilization/resource-journals/profile-member-final-189-05.jsonl']
 - EXT-F-1004-T25 · admin: Partial.

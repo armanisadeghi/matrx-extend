@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T01:51:02.098859+00:00",
+  "updated_at": "2026-10-04T02:09:46.544160+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -10106,6 +10106,17 @@
             "peer_commit": "2c318798",
             "report": ".research/popup-profile-acceptance-peer.json",
             "scope": "Source-reviewed procedure only; no runtime acceptance."
+          },
+          "defect_ids": [
+            "EXT-D-0104"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "run_id": "profile-fields-member-189-01",
+              "evidence": ".research/profile-fields-member-native.json",
+              "detail": "Attempt failed in native test process before Identity receipt; product-vs-driver cause under D104 diagnosis. Original absence restored; no fieldpass inferred."
+            }
           }
         },
         {
@@ -11225,9 +11236,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
+              "observed_outcome": "Independentnative verified alleight section controls, draft retention and Discard restoration beforeIdentity failure.",
+              "evidence_refs": [
+                ".research/profile-fields-member-native.json",
+                "docs/stabilization/resource-journals/profile-fields-member-189-01.jsonl"
+              ],
+              "status": "pass",
               "readiness": "ready"
             },
             {
@@ -11250,6 +11264,21 @@
             "peer_commit": "2c318798",
             "report": ".research/popup-profile-acceptance-peer.json",
             "scope": "Source-reviewed procedure only; no runtime acceptance."
+          },
+          "results": {
+            "member": {
+              "status": "partial",
+              "run_id": "profile-fields-member-189-01",
+              "evidence": ".research/profile-fields-member-native.json",
+              "verified_substeps": [
+                "All eight sections opened/closed through controls; draft persisted across Identity toggles and Discard restored baseline."
+              ],
+              "remaining_criteria": [
+                "Full extension reload dimension remains unverified."
+              ],
+              "build_variant": "Exactdevelopment189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+              "verified_at": "2026-10-04T02:09:46.544160+00:00"
+            }
           }
         },
         {

@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0104",
+  "feature_id": "EXT-F-1004",
+  "case_ids": ["EXT-F-1004-T05"],
+  "surface": "Profile Identity native acceptance",
+  "auth_mode": "member",
+  "title": "Identity native acceptance fails before a saved-field receipt",
+  "reproduction": [
+    "Use exact CI development189/sourceb4b9f0c4/CI37164174445/artifact11288542496 and reviewed runner2318bbac with PROFILE_EXTENDED_CASES=1; launch recipe .research/profile-reload-hydration.json and evidence .research/profile-fields-member-native.json.",
+    "Sign in through existing first-party member workflow, verify zero admin assignments and device organization, and run the guarded Profile acceptance.",
+    "Warm base cases and all eight section expanders pass; the Identity case then exits at EXT-F-1004-T05:warm:run before producing its receipt."
+  ],
+  "expected": "All seven Identity fields and card can be exercised, saved/reopened, held across full reload, and restored with exact case evidence.",
+  "actual": "Native runner exits with profile_unclassified_failure at the Identity warm operation. Exact cause and product-versus-driver layer remain unknown. Original row absence was restored and authenticated-read verified; no resource exhaustion.",
+  "severity": "S2 testing blocked; product user impact not established.",
+  "priority": "P1 next Profile acceptance prerequisite",
+  "state": "in-fix",
+  "owner": "profile_identity_native_diagnosis",
+  "evidence": [
+    ".research/profile-fields-member-native.json",
+    "docs/stabilization/resource-journals/profile-fields-member-189-01.jsonl"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T02:09:46.544160+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Independent resourcevalid exactartifact run failed at Identity warmcase."
+    },
+    {
+      "at": "2026-10-04T02:09:46.544160+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Root matched raw/journal hashes and successfuloriginalabsencecleanup. Caseattributionworks but actualfield/phasecause unknown."
+    },
+    {
+      "at": "2026-10-04T02:09:46.544160+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded Soldiagnosis owns safephase/field observations and atmostonecausalnative run; no speculativeproductpatch."
+    }
+  ],
+  "closure_requirement": "Determine actual cause, reproduce exact failure with meaningful guard, independently review fix, and guarded native original-case plus surrounding acceptance with verified restoration."
+}

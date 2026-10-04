@@ -18,6 +18,8 @@ Fresh peer9675f002 accepted the field persistence/census repair and D103 startup
 
 Fresh final peer635283fb passed the diagnostic correction2318bbac and surrounding25focusedchecks. Rootgrants soleheavy run to `profile_fields_member_native` (Luna medium), run `profile-fields-member-189-01` with PROFILE_EXTENDED_CASES=1 on frozenb4/189. Uses unmodified correctedharness76d6832e, no ambientglobalworkaround. Identity/Employment must persist acrossactualreload beforeedits; strictoriginalabsence restoration and exactextendedcensus required. Tester has50calls/10minutes and oneattempt, no source/productrepair; rootroutesanyfailure.
 
+Independent native run `profile-fields-member-189-01` (55100df8) passed basewarmT01/T03/T25/T26 and newT21alleightexpanders, thenfailed T05:warm:run withsafeunclassifiedcode beforeIdentityreceipt. Originalrowabsence verifiedrestored; resourcevalid child_failed. Root matched rawSHA2a5156e1aea49118646a81edce12ce21610bbb4957f872d300fe02cdfb9e2ed0 and journalSHA46d692bb6d232c9168091f876e84e06e8f90806b57696d292a4042fd8eb2ef14. D103 closes foractualunmodifiedstartup; T21memberpartial, othernewfield/reloadcellsunverified. D104 records unknownlayerIdentityfailure; `profile_identity_native_diagnosis` owns60calls/10minute diagnosis and atmostoneguardedcausalnative run. No speculativeproductpatch or retry.
+
 Root owns tracking, review routing and synchronization. Preserve pending Store181; no new dashboard poll needed immediately after the previous 01:33UTC check.
 
 ## Previous checkpoint — independent member reload acceptance passed
