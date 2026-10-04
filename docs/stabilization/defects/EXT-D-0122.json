@@ -14,11 +14,13 @@
   "actual": "Healthy native run stops at summary assertion. Frozen source applies uppercase to toolbar while observer reads innerText; likely comparison defect, not confirmed product bug. Group membership remains unverified.",
   "severity": "S2: false-negative acceptance risk and missing actionable failure evidence; no confirmed product malfunction",
   "priority": "P1: blocks media control acceptance",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "/root/scrape_image_group_diagnosis",
   "evidence": [
     ".research/scrape-media-capacity-recheck.json",
-    "docs/stabilization/evidence/scrape215/run37209834721/receipt.json.txt"
+    "docs/stabilization/evidence/scrape215/run37209834721/receipt.json.txt",
+    ".research/scrape-image-group-diagnosis.json",
+    ".research/scrape-image-group-peer.json"
   ],
   "transition_history": [
     {
@@ -38,6 +40,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Fresh Sol owns driver-only repair and forcing regression. Native media actions remain unverified."
+    },
+    {
+      "at": "2026-10-04T14:53:47.796120+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Repair000fb2fc passed fresh peer29813626; exact rendered group identities and failure-pane diagnostics replace case-sensitive text oracle. Native retest pending."
     }
   ]
 }
