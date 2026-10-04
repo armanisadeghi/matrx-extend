@@ -13,7 +13,7 @@
   "severity": "S2: acceptance reliability; no proven product failure",
   "priority": "P1: prerequisite for trusted native acceptance",
   "state": "in-fix",
-  "owner": "/root/reload_retirement_escalation",
+  "owner": "/root",
   "evidence": [
     ".research/scrape-loading-fixed-native.json",
     ".research/scrape-reload-diagnosis.json",
@@ -25,7 +25,8 @@
     ".research/scrape-freshness-fixed-native.json",
     ".research/scrape-reload-pointer-diagnosis.json",
     ".research/scrape-replacement-ready-peer.json",
-    ".research/scrape-replacement-fixed-native.json"
+    ".research/scrape-replacement-fixed-native.json",
+    ".research/reload-retirement-escalation.json"
   ],
   "transition_history": [
     {
@@ -66,5 +67,5 @@
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
-  "next_action": "No blind rerun. Await /root/reload_retirement_escalation causal proof or exact next measurement; do not drop destruction-event requirement solely to pass. Replacement DOM readiness remains source-ready/native unverified."
+  "next_action": "Escalation9a4150ee returned HANDOFF, no causal repair. Delegate one Sol instrumentation-only unit from its next_measurement contract: attached boolean, independently observed target events/old-host existence, and correlated ServiceWorker version state, with sanitized errors and owned-session cleanup. Fresh review then one guarded215 run. Keep strict predicate; do not launch a blind retry or close intermittency on a passing retry."
 }
