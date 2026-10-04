@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0108 / EXT-F-1004 admin Profile native acceptance after first-save repair",
+  "run_id": "profile-admin-fields-189-03",
+  "source_checkout_commit": "db0d0779ced78b987284c292acd174c431b85180",
+  "status": "failed_before_first_save",
+  "scope": "One guarded run on frozen development 0.2.189; admin auth and device organization verified; original owner Profile row initially absent; no Profile mutation occurred.",
+  "artifact": {
+    "source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "ci_run_id": 37164174445,
+    "artifact_id": 11288542496,
+    "version": "0.2.189",
+    "tree_sha256": "494646f6dd65399e0e7eee65fd1d9bd00ef97d173c5ceb9674de276ca12dc23a"
+  },
+  "resource_guard": {
+    "decision": "admitted_then_valid_child_failed",
+    "resource_invalid": false,
+    "child_exit_code": 1,
+    "journal": "docs/stabilization/resource-journals/profile-admin-fields-189-03.jsonl",
+    "journal_sha256": "daf0b8a0283a35105a80a3f8ba37a19f5499a3f6bcd4958deb9f5cb1b0b7f27f"
+  },
+  "authentication_and_initial_read": {
+    "role": "designated_admin",
+    "first_party_identity_matches_extension": true,
+    "device_organization_present": true,
+    "selected_organization_verified": true,
+    "initial_profile_read": "HTTP 200, row absent",
+    "canonical_admin_check": "not separately reported by this runner path"
+  },
+  "failure": {
+    "stage": "profile",
+    "operation": "warm_profile",
+    "safe_code": "profile_unclassified_failure",
+    "detail_limit": "The sanitized runner report does not retain the underlying exception. No BROWSER_STARTUP_FAILURE or endpointDiagnostic was emitted, so the cause is unknown."
+  },
+  "acceptance": {
+    "EXT-F-1004-T06": { "warm": "not_reached", "extension_reload": "not_reached" },
+    "EXT-F-1004-T18": { "warm": "not_reached", "extension_reload": "not_reached" },
+    "EXT-F-1004-T22": { "warm": "not_reached", "extension_reload": "not_reached" },
+    "T02": "not_reached",
+    "T04": "not_reached",
+    "T25": "not_reached",
+    "T26": "unverified; applicable admin behavior is not implemented by this runner",
+    "T28": "first-save branch not reached; no bounded or full-case pass"
+  },
+  "restoration": {
+    "ui_field_mutations": 0,
+    "ui_field_restoration": "not applicable; no UI write began",
+    "owned_profile_receipt_created": false,
+    "initial_absent_row_preserved": true,
+    "separate_final_absence_readback": false,
+    "final_readback_status": "not performed; runner reported original_row_preserved because no write intent or owned row existed"
+  },
+  "cleanup": {
+    "single_use_magic_link_removed": true,
+    "private_ownership_receipt": "not created",
+    "resource_guard": "valid final decision; no unsafe hold reported"
+  },
+  "raw_report": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-admin-fields-189-03/evidence/profile-native-profile-admin-fields-189-03.json",
+    "sha256": "2590b2b53d248f10cfdec2b297aaf9133170aa26d6710d20884c66f324326a5c",
+    "permissions": "0600"
+  },
+  "source_review_reference": ".research/admin-first-save-peer.json",
+  "previous_blocked_run_reference": ".research/profile-admin-fields-second-native.json",
+  "limitations": [
+    "The required six T06/T18/T22 warm and reload cells, T02/T04/T25, and exact UI field restoration remain unverified.",
+    "The earlier run's unknown CDP refusal cause remains unknown; this run did not emit a startup endpoint diagnostic.",
+    "EXT-D-0108 cannot be closed from this run."
+  ]
+}
