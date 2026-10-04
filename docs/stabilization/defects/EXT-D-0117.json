@@ -3,7 +3,7 @@
   "feature_id": "EXT-F-0002",
   "case_ids": ["EXT-F-0002-T08"],
   "surface": "Hosted side-panel acceptance initialization",
-  "auth_mode": "guest intended; authentication state not reached",
+  "auth_mode": "all; new member-intended run failed before authentication",
   "title": "Exact Store acceptance cannot confirm side-panel runtime context after panel opening",
   "reproduction": [
     "Dispatch hosted-guest-acceptance.yml guest-scrape with release_run_id37180303468 at workflow head3c173006ebb6d5ee6ca767db84340234252580f4.",
@@ -22,7 +22,8 @@
     ".research/hosted-panel-context-peer.json",
     ".research/scrape231-observer-retest.json",
     ".research/panel-context117-bounded-diagnosis.json",
-    ".research/panel117-diagnostic-peer.json"
+    ".research/panel117-diagnostic-peer.json",
+    ".research/member-reopen-native-retest.json"
   ],
   "transition_history": [
     {
@@ -39,13 +40,13 @@
     }
   ],
   "closure_requirement": "Demonstrate cause, independently verify repair and actual owned Store panel initialization; surrounding ownership checks must still reject foreign contexts.",
-  "next_action": "Exactly one guarded ARM frozen231 run with reviewed db0477bd diagnostics; retain first URL-shape counts and follow-up exactness if setup fails. Source-only diagnosis does not establish native cause or close D117.",
+  "next_action": "root/panel_context_empty_diagnosis owns bounded lifecycle discriminator from actual emptyURL observation; no native retry until fresh independent review. D133 repaired reopening remains unexercised.",
   "latest_reproduction": {
-    "run_id": 37220067899,
-    "product_version": "0.2.231",
-    "source": "723433a7628b32fb610d3a7f36ca6b8dd5fd2b72",
+    "run_id": 37243043772,
+    "product_version": "0.2.244",
+    "source": "b81587021d689078ed428dafe3e15474a84c41e2",
     "runner": "macos-15 ARM64",
-    "boundary": "inputs/panel_context; contextCount=1 expectedExtensionCount=0 exactUrlCount=0; zero cases/media/reload",
-    "resource_verdict": "admitted, healthy watch, resourceInvalid=false, child_failed"
+    "boundary": "inputs/panel_context; one SIDE_PANEL/global context has empty documentUrl. Followup exact0 after107ms, query succeeds. No auth/viewport/cases.",
+    "resource_verdict": "Three original journals finalized; package/browser valid, guest child_failed/resourceInvalidfalse. No periodic watch because children <15s. Root checked all5hashes and raw receipts/journals."
   }
 }

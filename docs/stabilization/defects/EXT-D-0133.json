@@ -23,7 +23,8 @@
     ".research/scrape-focus-deadline-reverify.json",
     ".research/member-scrape-focus-native.json",
     ".research/member-panel-hidden-repair.json",
-    ".research/member-panel-reopen-peer.json"
+    ".research/member-panel-reopen-peer.json",
+    ".research/member-reopen-native-retest.json"
   ],
   "transition_history": [
     {
@@ -52,6 +53,18 @@
     }
   ],
   "diagnostic_commit": "427e75a4",
-  "next_action": "ONE changed-condition native member normal600 run37243043772 active at da271ee2, same frozen244. root/member_reopen_native_retest owns terminalevidence and consumedsecretcleanup; no acceptance promotion before rawproof.",
-  "fix_commits": ["44005fb4"]
+  "next_action": "Resolve D117 startup context observability, fresh review then one guarded changed-condition run; D133 remainsfixed notclosed and not retest-fail.",
+  "fix_commits": ["44005fb4"],
+  "hosted_ci": {
+    "run_id": 37242845397,
+    "head": "71ff4c194835327b833e3cb6192cc540bddfa494",
+    "conclusion": "success",
+    "verified": "Root read full success and actual checks job111554820121 log: native harness fresh trusted-open guard, full harness1pass0fail, guesttransport regression and resource safety pass. Native visibility pending."
+  },
+  "native_retest": {
+    "run_id": 37243043772,
+    "result": "not-exercised: initial D117 runtime context failure before auth/reopen; no D133 pass/fail conclusion",
+    "evidence_commit": "cfda5653",
+    "cleanup": "collector verified consumed secret and private link absent"
+  }
 }
