@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "task": "guest205-discovery-native",
+  "observed_at_utc": "2026-10-04T22:47:56.229915+00:00",
+  "scope": "One changed-condition hosted macos-15 ARM native signed-out guest Chat acceptance of frozen pending Store 0.2.205 ZIP, unpacked with public manifest key adaptation.",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 37240870438,
+    "run_attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37240870438",
+    "head_sha": "092755309931303bb3deb0f41a8ec96ef3ae7d39",
+    "runner_label": "macos-15",
+    "acceptance_case": "guest-chat",
+    "status": "completed",
+    "conclusion": "success",
+    "artifact_id": 11317797226,
+    "artifact_name": "hosted-guest-37240870438-1",
+    "artifact_digest": "sha256:a62ddc343aca963070d0468a0dab91d359738b77c0e70c26fbd90370e47e2904",
+    "attempts": 1
+  },
+  "changed_condition": {
+    "discovery_fix_commit": "321137996160934d267159e4654b3279d02045e6",
+    "fresh_peer_commit": "092755309931303bb3deb0f41a8ec96ef3ae7d39",
+    "peer_report": ".research/guest-discovery-fresh-peer.json",
+    "focused_observer_sequence_tests": "9 passed",
+    "owned_cdp_connector_test": "passed",
+    "previous_failed_run_id": 37239792825,
+    "previous_failure_code": "opening_guest_ai_transport_unobserved",
+    "previous_run_retained_unchanged": true
+  },
+  "frozen_product": {
+    "release_run_id": 37180303468,
+    "release_artifact_id": 11294843385,
+    "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "store_zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "manifest_version": "0.2.205",
+    "manifest_version_observed_from_zip": true,
+    "zip_digest_observed_from_download": true,
+    "loaded_tree_sha256": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+    "loaded_tree_unchanged": true,
+    "load_kind": "native_store_zip_candidate_key_adapted",
+    "actual_store_installation": false
+  },
+  "live_backend": {
+    "health_version_sha_before": "60081efa8181e700443cbfe53bcf3b984e2a2af0",
+    "health_version_sha_after": "60081efa8181e700443cbfe53bcf3b984e2a2af0"
+  },
+  "native_outcome": {
+    "receipt_status": "pass",
+    "fresh_signed_out_guest": true,
+    "chat_visible": true,
+    "opening_http_status": 200,
+    "opening_response_code": null,
+    "followup_http_status": 200,
+    "followup_response_code": null,
+    "opening_turn_verdict": "terminal_answer",
+    "followup_turn_verdict": "terminal_answer",
+    "opening_answer_contains_unpredictable_page_code": true,
+    "opening_answer_matches_ordered_page_stages": true,
+    "followup_after_panel_reload": true,
+    "followup_contains_unpredictable_page_code": true,
+    "followup_names_fixture_heading": true,
+    "no_login_paywall_or_error": true,
+    "guest_ai_transport_proven": true,
+    "owner_table_get_observations": 0,
+    "observer": {
+      "mode": "auto_attach",
+      "counters": {
+        "attached": 15,
+        "identity_changed": 2,
+        "network_enabled": 2,
+        "request_events": 97,
+        "post_events": 2,
+        "chat_path_events": 2,
+        "response_events": 97
+      },
+      "provisional_sessions": 1,
+      "confirmed_sessions": 1,
+      "buffered_requests": 2,
+      "observer_failure": null,
+      "target_inventory": [
+        {
+          "identity": "other",
+          "auto_attached_by_observer": true,
+          "type": "service_worker"
+        },
+        {
+          "identity": "other",
+          "auto_attached_by_observer": true,
+          "type": "page"
+        },
+        {
+          "identity": "offscreen",
+          "auto_attached_by_observer": true,
+          "type": "other_type"
+        },
+        {
+          "identity": "provisional",
+          "auto_attached_by_observer": true,
+          "type": "page"
+        },
+        {
+          "identity": "other",
+          "auto_attached_by_observer": true,
+          "type": "page"
+        }
+      ]
+    }
+  },
+  "resource_guard": {
+    "package_final": "valid",
+    "browser_final": "valid",
+    "guest_final": "valid",
+    "all_resource_invalid": false,
+    "guest_watch": "RESOURCE_WATCH_HEALTHY",
+    "unsafe_events_in_current_run": 0,
+    "all_three_raw_journals_preserved": true,
+    "older_37105304739_journals_excluded_from_current_run_evidence": true
+  },
+  "cleanup": {
+    "workflow_terminal": true,
+    "upload_artifact_step": "success",
+    "receipt_cleanup_failure_codes_present": false,
+    "observer_failure": null,
+    "observer_stop_and_web_close_awaited_by_source": true,
+    "independent_target_detach_telemetry": false,
+    "interpretation": "No cleanup failure was recorded; observer stop and owned browser close completed before pass receipt. A separate native detach event is not persisted."
+  },
+  "evidence_files": [
+    {
+      "path": "docs/stabilization/evidence/guest205-discovery/run37240870438/acceptance-receipt.json",
+      "sha256": "2c1c5872b5b2c44a9b1e2d492557346ea48125cc15c301b4d60abe7001786141",
+      "bytes": 10758
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-discovery/run37240870438/resource-journals/hosted-browser-37240870438-1.jsonl",
+      "sha256": "e59b1cbdf06474819ce54a8e5ecda5d17d1f9f4b25f52ae0a4e3f173d3213961",
+      "bytes": 993
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-discovery/run37240870438/resource-journals/hosted-guest-37240870438-1.jsonl",
+      "sha256": "021d44c4c0389c15a1c2db1c6ee79cbd826bcda59d69315d6681b09fed72aeab",
+      "bytes": 1396
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-discovery/run37240870438/resource-journals/hosted-package-37240870438-1.jsonl",
+      "sha256": "5af3b8424b31c4b3d7e6637cd6c4e9ac08c1c54ddcd6313454af8cd0c6ed5b3a",
+      "bytes": 987
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-discovery/run37240870438/screenshots/guest-chat-real-answer.png",
+      "sha256": "b1d9b014142897008e3c23e4c39a975d90ed79dda9d5ed9dbb82ef0ffda411e3",
+      "bytes": 21925
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-discovery/run37240870438/screenshots/guest-chat-real-followup-answer.png",
+      "sha256": "867d2a839d80042f9972973ef1cbaf2bf033bab6b24ac524a442e8ba168ad459",
+      "bytes": 27269
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-discovery/run37240870438/screenshots/native-side-panel.png",
+      "sha256": "d28682def0240edfa8c5d8c8a48145908f37bdc6cb05e198bab360792c69ae53",
+      "bytes": 25863
+    },
+    {
+      "path": "docs/stabilization/evidence/guest205-discovery/run37240870438/screenshots/normal-target-after-open.png",
+      "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+      "bytes": 25156
+    }
+  ],
+  "artifact_inventory": {
+    "downloaded_total_files": 11,
+    "current_run_raw_journals": 3,
+    "current_run_receipts": 1,
+    "current_run_screenshots": 4,
+    "older_journals_excluded": 3,
+    "archive_prefix": "matrx-extend/matrx-extend/"
+  },
+  "limits": [
+    "This is a bounded exact205 candidate native guest Chat pass, not actual Store-installed acceptance.",
+    "Both AI POST statuses are 200 with no structured error code; other traffic and broad backend health are outside this receipt.",
+    "Pending Store205 was not changed.",
+    "No whole Chat, guest allowance, or extension health claim follows from this run."
+  ]
+}
