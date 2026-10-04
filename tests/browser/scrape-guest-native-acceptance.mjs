@@ -9,6 +9,7 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { captureLifecycleEvidence } from './profile-reload-capture.mjs';
 import { armBusyExpression, readBusyExpression } from './scrape-busy-observer.mjs';
 import { scrapeLayoutFailure } from './scrape-layout-guard.mjs';
+import { assertMediaPane } from './scrape-media-assertions.mjs';
 import { diagnosticCpuRate, runSupplementalCpuDiagnostic } from './scrape-page-cpu-diagnostic.mjs';
 import { recordReloadMilestone } from './scrape-reload-milestones.mjs';
 import { waitForReplacementScrapeTab } from './scrape-replacement-tab.mjs';
@@ -28,6 +29,7 @@ const firstPage = `<!doctype html><html><head><title>${article}</title>
 <body><main><article><h1>${article}</h1>
 <p>New patients can review appointment timing, forms, and arrival instructions before visiting our clinic.</p>
 <img src="/intake.png" alt="New patient intake desk" width="640" height="480">
+<video src="/intake-walkthrough.mp4" preload="none"></video>
 <a href="/forms">Patient forms</a><a href="/appointments">Appointments</a>
 <div style="height:1000px"></div><section id="late"></section><div style="height:800px"></div>
 </article></main><script>
@@ -138,6 +140,14 @@ async function scrapeState(panel) {
       tabs:tabs.map(n=>({label:n.firstChild?.textContent?.trim(),selected:n.getAttribute('aria-selected')==='true'})),
       selected: selected[0]?.firstChild?.textContent?.trim()??null, visible,
       resultText:visible?content.innerText:null,
+      media: visible ? {
+        tabCount: selected[0]?.querySelector('span')?.textContent?.trim() ?? null,
+        imageItems: [...content.querySelectorAll('a')].filter(a=>a.querySelector('img'))
+          .map(a=>({href:a.href,alt:a.querySelector('img')?.getAttribute('alt')??null})),
+        videoItems: [...content.querySelectorAll('a')]
+          .filter(a=>a.parentElement?.querySelector('button[title="Remove video"]'))
+          .map(a=>({href:a.href,text:a.textContent?.trim()??''})),
+      } : null,
       error:buttons.some(n=>n.getAttribute('aria-label')==='Dismiss'),
       reload:buttons.some(n=>n.textContent.trim()==='Reload page'),
       retry:buttons.some(n=>n.textContent.trim()==='Try again'),
@@ -364,6 +374,7 @@ try {
         'scrape_result_tab_roster',
       );
       const viewed = {};
+      const mediaEvidence = {};
       for (const label of expectedTabs) {
         await requireResourceHealth();
         await resourceAction(() => click(panel, 'scrape-result-tab', label));
@@ -374,6 +385,20 @@ try {
         );
         await requireResourceHealth();
         viewed[label] = state.resultText.slice(0, 300);
+        if (label === 'Images' || label === 'Video') {
+          mediaEvidence[label.toLowerCase()] = assertMediaPane(state, {
+            label,
+            items:
+              label === 'Images'
+                ? [{ href: `${origin}/intake.png`, alt: 'New patient intake desk' }]
+                : [
+                    {
+                      href: `${origin}/intake-walkthrough.mp4`,
+                      text: `${origin}/intake-walkthrough.mp4`,
+                    },
+                  ],
+          });
+        }
         await assertScrapeLayout(panel, `after_${label}_tab`);
       }
       assert.match(viewed.Article, /Harbor Dental intake guide/);
@@ -387,14 +412,14 @@ try {
           tabs_selected: expectedTabs,
           matching_content: {
             article: viewed.Article.includes(article),
+            images: mediaEvidence.images,
+            video: mediaEvidence.video,
             links: viewed.Links.includes('Patient forms'),
             seo: /SEO|Title|Description/i.test(viewed.SEO),
             schema: viewed.Schema.includes('Dentist'),
           },
         },
-        [
-          'Image and video matching content or empty state and reload lifecycle need full observation.',
-        ],
+        ['Image and video empty states and reload lifecycle need full observation.'],
       );
 
       report.stage = 'deep_capture';
@@ -450,6 +475,38 @@ try {
       );
       await requireResourceHealth();
       assert.equal(cleared.saved, false, 'previous_page_saved_badge_retained');
+      report.stage = 'empty_media_capture';
+      await resourceAction(() =>
+        click(panel, 'title', 'Capture the page exactly as it is right now'),
+      );
+      await waitFor(
+        'scrape_referrals_result',
+        () => scrapeState(panel),
+        (s) =>
+          s?.title === 'Harbor Dental referral hours' &&
+          s.selected === 'Article' &&
+          s.visible &&
+          s.resultText?.includes('Referral coordinators answer weekday calls.'),
+        30000,
+      );
+      for (const label of ['Images', 'Video']) {
+        await requireResourceHealth();
+        await resourceAction(() => click(panel, 'scrape-result-tab', label));
+        const state = await waitFor(
+          `scrape_empty_${label}_tab`,
+          () => scrapeState(panel),
+          (s) => s?.selected === label && s.visible && typeof s.resultText === 'string',
+        );
+        await requireResourceHealth();
+        mediaEvidence[`${label.toLowerCase()}_empty`] = assertMediaPane(state, {
+          label,
+          items: [],
+        });
+      }
+      const t08 = report.cases.find((c) => c.id === 'EXT-F-1007-T08');
+      t08.evidence.matching_content.images_empty = mediaEvidence.images_empty;
+      t08.evidence.matching_content.video_empty = mediaEvidence.video_empty;
+      t08.remaining = ['Member/admin modes and full extension reload lifecycle remain unverified.'];
       const t20 = report.cases.find((c) => c.id === 'EXT-F-1007-T20');
       t20.evidence.navigation_url = page.url();
       t20.evidence.previous_content_cleared = true;

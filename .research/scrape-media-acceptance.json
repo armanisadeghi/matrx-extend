@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007-T08",
+  "status": "source_checked_native_unverified",
+  "change": "Guest native acceptance now checks active Images and Video panes against the owned intake fixture, then captures the media-free referral fixture and checks both empty panes. T08 remains partial pending member, admin, and reload observations.",
+  "evidence": {
+    "frozen_measurement": {
+      "run_id": 37199709918,
+      "head": "dfb848077bcd35324cc4a4fd600be243100a3ee0"
+    },
+    "focused_unit": "node --test tests/browser/scrape-media-assertions.test.mjs: 3 passed, 0 failed",
+    "negative_proof": "A constant-return replacement in a scratch copy failed the focused unit tests; the working tree helper was untouched.",
+    "source_checks": [
+      "node --check tests/browser/scrape-guest-native-acceptance.mjs",
+      "node --check tests/browser/scrape-media-assertions.mjs",
+      "pnpm exec biome check tests/browser/scrape-guest-native-acceptance.mjs tests/browser/scrape-media-assertions.mjs tests/browser/scrape-media-assertions.test.mjs",
+      "git diff --check"
+    ],
+    "native_run": null
+  },
+  "files": [
+    "tests/browser/scrape-guest-native-acceptance.mjs",
+    "tests/browser/scrape-media-assertions.mjs",
+    "tests/browser/scrape-media-assertions.test.mjs",
+    ".research/scrape-media-acceptance.json"
+  ],
+  "open_questions": [
+    "Run the changed driver on an exact artifact to observe the real panes and empty states.",
+    "T08 still requires member, admin, and full extension reload observations."
+  ]
+}
