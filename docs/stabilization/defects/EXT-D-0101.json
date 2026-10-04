@@ -1,0 +1,44 @@
+{
+  "id": "EXT-D-0101",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T08"],
+  "surface": "Profile native test failure diagnostics",
+  "auth_mode": "member reproduced; shared runner",
+  "title": "Profile native report discards pointer failure details and overwrites failed stage during restoration",
+  "reproduction": [
+    "Run the existing profile-native-acceptance procedure as the designated realmember on exactdevelopment189/sourceb4b9f0c4; see .research/profile-member-retest189.json and its priorrunprocedure.",
+    "After successfulwarmcases andstrictfullreload, a click fails with unique visible pointer target beforeanyreload-modecase isrecorded.",
+    "Inspect the emitted report: execution_failure_code retains onlygenericmessage; driverFailure metadata is discarded; stage has advanced torestore_original_absence even thoughrestorationverifiedtrue."
+  ],
+  "expected": "Persist allowlisted semanticoperation, failurestage, selector kind and safe driver counts/state before cleanup; never persist selectorvalues/accountemail orrawpagecontent. Restoration remains independentlytracked.",
+  "actual": "Report cannot locate the failing control or distinguish readiness/ambiguity; cleanup overwritesstage so it cannot identify originalfailure.",
+  "severity": "S3: diagnosticloss delays reliabletesting; no productuserimpact demonstrated.",
+  "priority": "P1: blocks currentProfile reloadacceptance diagnosis.",
+  "state": "in-fix",
+  "owner": "profile_reload_target_repair",
+  "evidence": [
+    ".research/profile-member-retest189.json",
+    "tests/browser/profile-native-acceptance.mjs: failure catch currently omits existing driverFailure metadata"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T00:36:56.704192+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Realresourcevalidrunfailed withgenericpointererror andmisleadingfinalstage."
+    },
+    {
+      "at": "2026-10-04T00:36:56.704192+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Rawreceipt andsourceconfirmdiscardeddriverFailure; originalcontrolfailure cause stillunknown."
+    },
+    {
+      "at": "2026-10-04T00:36:56.704192+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol owns boundedsemanticdiagnostics andactualcatch-path redgreen; no speculativecontrolfix."
+    }
+  ],
+  "closure_requirement": "Meaningfulfailurecaptureguard and independentreview, then actualguardedfailure or equivalentverifiednativeobservation preservingoriginaloperation/stage withoutprivatecontent. UnderlyingProfile targetfailure handledseparately."
+}

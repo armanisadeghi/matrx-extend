@@ -22,7 +22,8 @@
     "Product repair: ac49ac2f8fb9f9c3d538aef81149a1c4a6eb2418; CI run 37150495327 passed.",
     ".research/profile-independent-acceptance.json and docs/stabilization/resource-journals/profile-independent-20261003-01.jsonl: exact imported development artifact 11283802431; admin warm T25 owner-row read denial rendered a non-editable error state, then Retry succeeded and restored the original value. Sanitized receipt `.research/profile-independent-native-receipt.sanitized.json` SHA-256 `5296aba7355d270ac873e982df7fd3130102d092c86e9438cd941dad27d89d99`.",
     "Cross-identity runtime behavior and member identity remain unverified; root rechecked receipt and journal hashes at 2026-10-03T20:16:36Z.",
-    ".research/profile-member-bounded-owner-verification.json: warm nonadmin owner-read denial and Retry passed on exact9dfb5911; original empty profile restored by recovery05. Reload and mounted cross-identity remain unverified."
+    ".research/profile-member-bounded-owner-verification.json: warm nonadmin owner-read denial and Retry passed on exact9dfb5911; original empty profile restored by recovery05. Reload and mounted cross-identity remain unverified.",
+    ".research/profile-member-retest189.json"
   ],
   "transition_history": [
     {
@@ -50,7 +51,7 @@
       "reason": "Repair landed on source ac49ac2f; independent review accepts owner-lifetime isolation, failed-read non-editable state, and save refusal until successful owner read. CI 37150495327 passed."
     }
   ],
-  "current_work": "Admin and member warm owner-read denial/Retry verified on their recorded artifacts. Member original row absence restored after separate guarded recovery. Still fixed pending genuine reload, remaining error/reopen branches, and mounted cross-identity runtime proof; no closure.",
+  "current_work": "Admin andmemberwarm denial/Retry verifiedonrecordedartifacts, latestmember189/b4. Realextensionreload nowpasses, butsubsequentProfiletargetdriverfailure preventsreload-modecaseproof. D101diagnostics inprogress; mountedcrossidentity/errorbranches stillunverified. No D95closure.",
   "closure_requirement": "Keep fixed pending remaining retest. Independently verify member behavior, a failed identity transition with a second existing authorized test identity, required error branches, and reload dimensions on the exact artifact before closure.",
   "independent_source_review": {
     "commit": "b4e9dd44",

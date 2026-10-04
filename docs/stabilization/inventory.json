@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T00:35:54.125394+00:00",
+  "updated_at": "2026-10-04T00:36:56.704192+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -1024,7 +1024,8 @@
           ],
           "defect_ids": [
             "EXT-D-0073",
-            "EXT-D-0079"
+            "EXT-D-0079",
+            "EXT-D-0101"
           ],
           "results": {
             "admin": {
@@ -1115,7 +1116,8 @@
             "EXT-D-0025",
             "EXT-D-0051",
             "EXT-D-0056",
-            "EXT-D-0098"
+            "EXT-D-0098",
+            "EXT-D-0101"
           ],
           "run_ids": [],
           "retest_status": "partial: EXT-D-0025 and EXT-D-0051 passed; remaining infrastructure cases unverified"
