@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "task": "scrape-focus-final-peer-review",
+  "reviewed_commits": [
+    "eb856fea39c1eb2e8aff9b5b3efea658a8742a58",
+    "6b15105e7be052572d335ef941663bb5c775a2cc"
+  ],
+  "verdict_a": {
+    "status": "PASS_SOURCE_ONLY",
+    "diagnostic_sufficiency": "The owned worker now queries chrome.runtime.getContexts for SIDE_PANEL and reduces results to counts. exactContextCount distinguishes a missing exact global side-panel context from one still registered, alongside original target identity, visibility, and focus. Null fields and diagnostic_timed_out remain explicitly unmeasured; a native run is still required to establish the actual cause.",
+    "privacy": "PASS. The added receipt serializes only booleans, nulls, visibility/focus states, and counts. URLs and target IDs are compared in memory. The context classifier emits counts only, including counts for other extensions, and no raw context data. Existing authentication receipt fields are outside this added diagnostic."
+  },
+  "verdict_b": {
+    "status": "PARTIAL",
+    "quality_and_gates": "The five-second Promise.race bounds the diagnostic wait, returns partial evidence with diagnostic_timed_out=true, and the catch rethrows the original foreground failure. Existing acceptance, resource, and artifact gates are unchanged. Timer cleanup runs after the race. However, the diagnostic timeout is a new hardcoded operational limit rather than a resolved feature knob or reused configuration, contrary to the repository limits policy. Promise.race does not cancel outstanding probes; a stalled worker query may retain its attached CDP session until that send settles. Source review cannot prove the failed run exits promptly if such work remains pending.",
+    "required_follow_up": "Resolve the diagnostic deadline through the approved knob/configuration path and make probe cleanup bounded or cancellation-aware before treating quality as fully passed."
+  },
+  "prior_findings": {
+    "missing_side_panel_context_discriminator": "ADDRESSED_IN_SOURCE",
+    "unbounded_diagnostic_latency": "ADDRESSED_FOR_AWAITED_ERROR_PATH; outstanding probes remain uncancelled",
+    "native_cause_and_repair": "NOT_ADDRESSED; no native authenticated rerun in this review lane"
+  },
+  "evidence": {
+    "source": "Reviewed diagnostic helper and catch site in tests/browser/scrape-guest-native-acceptance.mjs, panelContextDiagnostic, sidePanelContexts, and inspectPanelContext wiring in tests/browser/native-sidepanel-qa-harness.mjs, and the repository limits policy.",
+    "runtime": "Not run by assignment."
+  }
+}
