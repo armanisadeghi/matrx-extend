@@ -20,7 +20,8 @@
     "src/features/showcase/tabs/ListPatternTab.tsx",
     "src/lib/data-pattern/list-picker.ts",
     "src/lib/background/bootstrap.ts",
-    "src/entrypoints/list-picker.content.ts"
+    "src/entrypoints/list-picker.content.ts",
+    ".research/showcase-picker-current-retest.json"
   ],
   "severity": "S2: a superseded picker may overwrite the current extraction definition or terminate the current pick",
   "priority": "P1: Showcase reliable detection and extraction lifecycle",
@@ -47,5 +48,5 @@
     }
   ],
   "closure_requirement": "Prove the delayed old-session boundary red before repair, then prove current-session detection and extraction plus old-session rejection green. Check identity through every SW relay, delayed cancellation, pending injection, and cross-context listener teardown. Run changed types and obtain independent installed-extension verification against real page data before closure.",
-  "verification_status": "Original focused19/19 green; combined D41+D42 compile passed at16:33:55Z. Helper-only focused rerun and independent UI still pending."
+  "verification_status": "Independent current source retest on c540f36a passed 23/23 checks across picker producer, relay and real consumer boundaries: same-page stale A ITEM_DETECTED/RESULT/EXIT rejected, current B result accepted and extraction succeeds; cancellation/reinjection sequencing passes. Evidence .research/showcase-picker-current-retest.json. Chrome transport remains mocked; exact installed-extension delayed delivery/cancellation/injection acceptance remains unverified. Keep in-fix; no whole-feature or current native pass."
 }
