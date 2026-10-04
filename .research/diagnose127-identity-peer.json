@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0127",
+  "reviewed_commit": "09e9c9b90e1184e1b758cee765af51de331d8878",
+  "scope": "Fresh zero-authorship source/component re-verification of picker identity-refusal repair; native browser acceptance is outside this lane.",
+  "addressed": [
+    {
+      "finding": "Identity refusal routed to generic capture retry",
+      "status": "ADDRESSED",
+      "evidence": "useScrape.launchDiagnose now writes diagnose.launchError for the captured tab when page identity is unavailable. ScrapeView renders DiagnoseLauncher during that unresolved interval; its Retry picker calls launchDiagnose, while CaptureErrorCard and captureActiveTab are not used."
+    },
+    {
+      "finding": "Refusal remedy vanished during temporary identity loss",
+      "status": "ADDRESSED",
+      "evidence": "The hook retains the error while the same tab has a null pageKey, and DiagnoseLauncher displays it using the tab ID. The real-hook component test checks the alert after identity loss and rerender."
+    },
+    {
+      "finding": "Old document or picker session could affect a new page",
+      "status": "ADDRESSED_AT_SOURCE_COMPONENT_LEVEL",
+      "evidence": "The hook clears the remedy on a different pageKey, rejects a stale Pick control, and checks session ID plus current page identity before applying late picker results or failures. Focused tests exercise these races."
+    }
+  ],
+  "verdict_a": {
+    "result": "PASS_SOURCE_COMPONENT_NATIVE_UNVERIFIED",
+    "evidence": [
+      "A Pick click during same-tab identity recovery shows a picker-specific alert and Retry picker, leaves the captured object in the store, and does not call scripting until identity is ready.",
+      "Retry picker launches the picker on the restored document, while the original injection-rejection path still exposes a picker-specific retry.",
+      "ScrapeView's actual rendering condition keeps DiagnoseLauncher visible for the captured tab during temporary identity loss; the view's generic capture retry remains wired only to CaptureErrorCard.",
+      "Different-document identity and stale-session tests leave no old result or remedy on the new page."
+    ],
+    "limitations": [
+      "No native Chrome sidepanel interaction, real navigation timing, or visual layout was checked in this lane.",
+      "The real-hook component test renders DiagnoseLauncher rather than the complete ScrapeView; full-view visibility is confirmed by source routing."
+    ]
+  },
+  "verdict_b": {
+    "result": "PASS_SCOPED_QUALITY",
+    "evidence": [
+      "The repair uses the existing active-tab identity, scrape store, DiagnoseLauncher, and picker session. It introduces no second picker or capture pathway.",
+      "The refusal is visible with an actionable retry, and the retry does not recapture or replace existing user content.",
+      "The new test reaches the real hook from a rendered Pick button and asserts capture preservation, no injection during refusal, visible recovery, successful retry, and stale-document rejection. The builder recorded assertion-red before the fix and an executed branch/constant mutation after it."
+    ],
+    "limitations": [
+      "I did not independently replay the builder's mutation; I inspected its recorded red/green and reran the focused tests."
+    ]
+  },
+  "checks": [
+    "pnpm exec vitest run src/features/scrape/DiagnoseControls.test.tsx src/features/scrape/ScrapeView.error-controls.test.tsx: 22 passed, 0 failed",
+    "pnpm exec vitest run tests/unit/active-tab-document-identity.test.tsx tests/unit/scrape-document-identity.test.tsx src/features/scrape/DiagnoseControls.test.tsx: 23 passed, 0 failed",
+    "pnpm exec biome check .research/diagnose127-identity-fix.json src/features/scrape/DiagnoseCard.tsx src/features/scrape/DiagnoseControls.test.tsx src/features/scrape/ScrapeView.tsx src/hooks/use-scrape.ts src/state/scrape.ts docs/feature-tests.md: passed, 6 applicable files checked",
+    "Reviewed exact repair commit, prior peer finding, full affected hook/store/launcher, and ScrapeView wiring."
+  ],
+  "overall": "The reported identity-refusal gap is closed at source/component level. Native acceptance remains a separate, unverified step."
+}
