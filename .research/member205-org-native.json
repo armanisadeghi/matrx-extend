@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0113 exact submitted 0.2.205 member native organization acceptance",
+  "status": "resource_refused_before_product_execution",
+  "native_claims": {
+    "real_member_chat": null,
+    "device_organization_persistence": null,
+    "identity_role_selected_organization": null
+  },
+  "artifact": {
+    "version": "0.2.205",
+    "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "release_run_id": 37180303468,
+    "github_artifact_id": 11294843385,
+    "store_zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "publisher_receipt_sha256": "c90752544003303f5ce0d240c1806ccd27a84cbba0a93b5a477c0d9d661518bb",
+    "adapted_tree_sha256": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f"
+  },
+  "source_diagnostic": {
+    "fixed_commit": "bef9a4de183882216a80a3d7f8b6b0c5c0fc9041",
+    "independent_review": "216c24c0",
+    "prior_member_receipt_remains_historical_false": true
+  },
+  "first_failure": {
+    "stage": "resource_guard_preflight",
+    "code": "RESOURCE_PREFLIGHT_REFUSED",
+    "reasons": [
+      "RESOURCE_DISK_LOW",
+      "RESOURCE_SWAP_GROWTH"
+    ],
+    "safety_free_gib": 3.29945755078125,
+    "available_memory_gib": 11.2,
+    "swap_used_mib": 4875.88,
+    "product_child_started": false
+  },
+  "resource_journal": "docs/stabilization/resource-journals/member205-org-native-01.jsonl",
+  "resource_journal_sha256": "265cafeafe16a1dff49d4f4dec93ef465e3c15442f26e8ad4cda6b3d823a79c6",
+  "receipt": null,
+  "cleanup": {
+    "single_use_link_removed": true,
+    "owned_profile_and_staging_removed": true,
+    "root_publisher_tab_untouched": true
+  }
+}
