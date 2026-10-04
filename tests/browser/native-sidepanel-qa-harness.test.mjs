@@ -199,7 +199,9 @@ assert.doesNotMatch(source, /9222/);
 assert.doesNotMatch(source, /Browser\.close\(/);
 console.log('PASS native sidepanel harness refuses foreign CDP/browser identities');
 
-const { safeStartupFailureCode } = await import('./native-sidepanel-qa-harness.mjs');
+const { safeStartupFailureCode, safeEndpointDiagnostic } = await import(
+  './native-sidepanel-qa-harness.mjs'
+);
 assert.equal(
   safeStartupFailureCode(new Error('owned_cdp_endpoint_timeout')),
   'owned_cdp_endpoint_timeout',
@@ -216,6 +218,36 @@ assert.equal(
 );
 assert.equal(safeStartupFailureCode({ message: 'owned_cdp_endpoint_timeout' }), 'unclassified');
 console.log('PASS native startup diagnostic exposes only fixed owned-CDP failure codes');
+const endpointError = new Error('owned_cdp_endpoint_refused');
+endpointError.endpointDiagnostic = {
+  boundary: 'record_validation',
+  reason: 'browser_path_missing',
+  shape: {
+    lineCount: 2,
+    hasTrailingNewline: true,
+    portTokenDigits: true,
+    browserPathShape: false,
+    rawEndpoint: 'private endpoint value',
+  },
+  rawError: 'private error value',
+};
+assert.deepEqual(safeEndpointDiagnostic(endpointError), {
+  boundary: 'record_validation',
+  reason: 'browser_path_missing',
+  shape: {
+    lineCount: 2,
+    hasTrailingNewline: true,
+    portTokenDigits: true,
+    browserPathShape: false,
+  },
+});
+endpointError.endpointDiagnostic.reason = 'private error value';
+assert.equal(safeEndpointDiagnostic(endpointError), null);
+endpointError.endpointDiagnostic.reason = 'record_shape';
+endpointError.endpointDiagnostic.shape.lineCount = 'private endpoint value';
+assert.equal(safeEndpointDiagnostic(endpointError), null);
+assert.equal(safeEndpointDiagnostic(new Error('owned_cdp_endpoint_timeout')), null);
+console.log('PASS native startup endpoint diagnostic emits only fixed branch and shape fields');
 
 // SUT: reloadOwnedExtension owns Developer mode setup, the native reload,
 // target lifecycle proof, and refusal when Chrome disables the extension.

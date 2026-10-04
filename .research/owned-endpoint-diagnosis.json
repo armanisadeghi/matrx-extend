@@ -1,0 +1,49 @@
+{
+  "issue": "EXT-D-0107",
+  "feature": "EXT-F-0002",
+  "status": "original_branch_unrecoverable",
+  "original_observation": {
+    "failure_code": "owned_cdp_endpoint_refused",
+    "elapsed_ms": 331,
+    "devtools_listening": true,
+    "authentication_started": false,
+    "profile_actions_started": false,
+    "receipt_has_endpoint_branch": false,
+    "receipt_has_endpoint_shape": false
+  },
+  "source_boundary": {
+    "error_code_preserved": "owned_cdp_endpoint_refused",
+    "ambiguous_original_branches": [
+      "endpoint_read_non_enoent",
+      "record_line_or_port_token_shape",
+      "port_range_or_browser_path_shape"
+    ],
+    "future_diagnostic": {
+      "boundary_values": ["read", "record_validation"],
+      "reason_values": [
+        "read_failed",
+        "record_shape",
+        "port_range",
+        "browser_path_missing",
+        "browser_path_shape"
+      ],
+      "shape_fields": ["lineCount", "hasTrailingNewline", "portTokenDigits", "browserPathShape"],
+      "raw_endpoint_or_error_details_included": false
+    }
+  },
+  "real_filesystem_guard": {
+    "unreadable_endpoint_path_reports_read_boundary": true,
+    "incomplete_record_reports_missing_browser_path": true,
+    "completed_record_advances_to_foreign_owner_rejection": true,
+    "out_of_range_port_rejected": true,
+    "foreign_browser_path_rejected": true
+  },
+  "verification": {
+    "owned_endpoint_diagnostic_tests": "4 passed",
+    "existing_owned_cdp_test": "passed",
+    "native_harness_source_test": "passed",
+    "native_browser_run": "not_run_in_diagnostic_lane"
+  },
+  "next_decisive_observation": "Run one resource-admitted native attempt with the updated harness. Its existing BROWSER_STARTUP_FAILURE report now includes a validated endpointDiagnostic when the owned endpoint refusal recurs. The first failure's fixed boundary and reason, with shape booleans/count, will distinguish read failure from record validation without emitting an endpoint, path, port, identifier, or private error detail.",
+  "causal_limit": "The retained run has no endpoint file bytes, read error class, or helper branch marker. DevTools listening and 331 ms do not distinguish an unreadable file, incomplete file, malformed file, or foreign endpoint. No timing or tolerance change is justified by this run."
+}

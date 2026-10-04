@@ -6,6 +6,16 @@ const { promisify } = require('node:util');
 const execFileAsync = promisify(execFile);
 const DEADLINE_MS = 5_000;
 
+function endpointRefusal(reason, shape = null) {
+  const error = new Error('owned_cdp_endpoint_refused');
+  error.endpointDiagnostic = Object.freeze({
+    boundary: reason === 'read_failed' ? 'read' : 'record_validation',
+    reason,
+    ...(shape && { shape: Object.freeze(shape) }),
+  });
+  return error;
+}
+
 async function prepareOwnedProfile(profileDir, fileSystem = fs) {
   const profile = path.resolve(profileDir);
   const stat = await fileSystem.lstat(profile);
@@ -45,15 +55,21 @@ async function connectOwnedCdp({
       raw = await fileSystem.readFile(path.join(profile, 'DevToolsActivePort'), 'utf8');
       break;
     } catch (error) {
-      if (error?.code !== 'ENOENT') throw new Error('owned_cdp_endpoint_refused');
+      if (error?.code !== 'ENOENT') throw endpointRefusal('read_failed');
     }
     await new Promise((resolve) => setTimeout(resolve, 25));
   }
   if (typeof raw !== 'string') throw new Error('owned_cdp_endpoint_timeout');
   const lines = raw.split(/\r?\n/);
   if (lines.length === 3 && lines[2] === '') lines.pop();
+  const shape = {
+    lineCount: lines.length,
+    hasTrailingNewline: /\r?\n$/.test(raw),
+    portTokenDigits: /^[0-9]+$/.test(lines[0] ?? ''),
+    browserPathShape: /^\/devtools\/browser\/[A-Za-z0-9-]+$/.test(lines[1] ?? ''),
+  };
   if (lines.length !== 2 || !/^[0-9]+$/.test(lines[0]))
-    throw new Error('owned_cdp_endpoint_refused');
+    throw endpointRefusal('record_shape', shape);
   const port = Number(lines[0]);
   if (
     !Number.isInteger(port) ||
@@ -61,7 +77,14 @@ async function connectOwnedCdp({
     port > 65535 ||
     !/^\/devtools\/browser\/[A-Za-z0-9-]+$/.test(lines[1])
   )
-    throw new Error('owned_cdp_endpoint_refused');
+    throw endpointRefusal(
+      port < 1 || port > 65535
+        ? 'port_range'
+        : !lines[1]
+          ? 'browser_path_missing'
+          : 'browser_path_shape',
+      shape,
+    );
   let lock;
   try {
     lock = await fileSystem.readlink(path.join(profile, 'SingletonLock'));

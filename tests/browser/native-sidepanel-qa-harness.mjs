@@ -629,6 +629,40 @@ function safeStartupFailureCode(error) {
   return SAFE_STARTUP_FAILURES.has(code) ? code : 'unclassified';
 }
 
+function safeEndpointDiagnostic(error) {
+  if (safeStartupFailureCode(error) !== 'owned_cdp_endpoint_refused') return null;
+  const diagnostic = error.endpointDiagnostic;
+  if (diagnostic?.boundary === 'read' && diagnostic.reason === 'read_failed')
+    return { boundary: 'read', reason: 'read_failed' };
+  if (diagnostic?.boundary !== 'record_validation') return null;
+  const reasons = new Set([
+    'record_shape',
+    'port_range',
+    'browser_path_missing',
+    'browser_path_shape',
+  ]);
+  const shape = diagnostic.shape;
+  if (
+    !reasons.has(diagnostic.reason) ||
+    !Number.isSafeInteger(shape?.lineCount) ||
+    shape.lineCount < 0 ||
+    typeof shape.hasTrailingNewline !== 'boolean' ||
+    typeof shape.portTokenDigits !== 'boolean' ||
+    typeof shape.browserPathShape !== 'boolean'
+  )
+    return null;
+  return {
+    boundary: 'record_validation',
+    reason: diagnostic.reason,
+    shape: {
+      lineCount: shape.lineCount,
+      hasTrailingNewline: shape.hasTrailingNewline,
+      portTokenDigits: shape.portTokenDigits,
+      browserPathShape: shape.browserPathShape,
+    },
+  };
+}
+
 export async function runNativeSidepanelQa({
   headed = false,
   extensionDir,
@@ -712,6 +746,7 @@ export async function runNativeSidepanelQa({
       cdp = await connectOwnedCdp({ preparedProfile, chromeExecutable });
       if (launchError) throw launchError;
     } catch (error) {
+      const endpointDiagnostic = safeEndpointDiagnostic(error);
       const startupDiagnostic = {
         failureCode: safeStartupFailureCode(error),
         elapsedMs: Math.max(0, Math.round(performance.now() - startupStartedAt)),
@@ -719,6 +754,7 @@ export async function runNativeSidepanelQa({
         signalCode: child.signalCode,
         launchFailed: Boolean(launchError),
         stderrFlags: browserDiagnosticFlags(chromeStderr),
+        ...(endpointDiagnostic && { endpointDiagnostic }),
       };
       // Guest result summaries truncate errors; preserve bounded startup evidence
       // in the runner log before forwarding the unchanged failure.
@@ -879,4 +915,5 @@ export {
   resolveExpectedRelease,
   verifyReleasedArtifact,
   safeStartupFailureCode,
+  safeEndpointDiagnostic,
 };
