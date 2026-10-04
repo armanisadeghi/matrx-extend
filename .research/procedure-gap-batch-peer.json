@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-procedure-review",
+  "task_id": "procedure-gap-batch-chrome-local-data",
+  "reviewed_patch_id": "chrome-local-read-and-restore-procedures-20261004",
+  "review_scope": "Independent source/UI reachability and fixture/precondition review. No test, browser, native, or build run was launched; no case execution is claimed.",
+  "case_reviews": [
+    {
+      "case_id": "EXT-F-4042-T01",
+      "verdict": "PASS",
+      "finding": "The manual Tools runner lists local registry handlers and calls handler.run directly. list_recent_history accepts minutes/max_results and returns count/items with URL, title, last_visit_ms, and visit_count; the source sorts descending by lastVisitTime. The proposed two controlled URL assertions are sound.",
+      "corrections": [],
+      "limits": [
+        "Requires the receipt-bound artifact to include the required history permission and the controlled visits to be present in its profile.",
+        "Does not cover dispatcher permission enforcement or agent reachability, as the proposal correctly disclaims."
+      ]
+    },
+    {
+      "case_id": "EXT-F-4043-T01",
+      "verdict": "PARTIAL",
+      "finding": "The list_downloads schema accepts query/state/limit, delegates query as a Chrome search term, orders by descending startTime, and returns count/downloads with the fields the procedure compares. The procedure correctly avoids asserting an exact count or exposing unrelated rows.",
+      "corrections": [
+        "No owned completed-download fixture is present or established by this review. Keep the case unverified until a disposable-profile fixture is actually available; do not describe the procedure as immediately executable.",
+        "The manifest currently declares downloads as a required permission, so phrase the preflight as confirmation in the loaded artifact rather than implying a runtime-grant path."
+      ]
+    },
+    {
+      "case_id": "EXT-F-4094-T01",
+      "verdict": "FAIL",
+      "finding": "The list_recently_closed result shape and max_results behavior match the expected count/entries and controlled tab assertions. The stated permission acquisition step is not executable through the named product Settings path.",
+      "corrections": [
+        "sessions is declared in wxt.config.ts optional_permissions and required by the handler, but it is absent from RuntimeOptionalPermission and OPTIONAL_PERMISSION_LABELS in src/lib/permissions/optional.ts. AdvancedAgentCapabilities builds its switches from declaredRuntimeOptionalPermissions(), so Settings → Advanced agent capabilities cannot grant sessions.",
+        "Replace 'Grant sessions permission through the extension's authorized Settings path' with a read-only preflight: confirm sessions is already granted in this exact test profile; if not, stop and leave unverified. Do not invent a Chrome UI or use an unimplemented request path. The currently proposed case cannot reach its positive assertion without that existing grant."
+      ]
+    },
+    {
+      "case_id": "EXT-F-4165-T01",
+      "verdict": "PASS",
+      "finding": "chrome_history validates action=recent/search and delegates to the corresponding handlers. The recent branch returns the same count/items shape; search passes query and limit as expected. ToolsView exposes local handlers and directly invokes their run function. The branch-specific assertions and fixture boundary are accurate.",
+      "corrections": [],
+      "limits": [
+        "The census has active exact-name definition/binding metadata and assistant/pilot surface-default inclusion, but that does not prove a particular live request advertises or successfully dispatches the tool. The procedure correctly limits its claim to manual Run."
+      ]
+    },
+    {
+      "case_id": "EXT-F-4166-T01",
+      "verdict": "FAIL",
+      "finding": "The list/restore branches, session_id field, returned ok/restored shape, and controlled-tab safety assertions agree with current handlers. As with 4094, the stated way to grant sessions cannot be performed in the product UI.",
+      "corrections": [
+        "Use the same existing-grant-only preflight as 4094 and halt if sessions is not already granted. This review did not verify that the disposable profile already has the grant, so the positive restore procedure is not presently executable as written.",
+        "Retain the procedure's explicit disposable-tab restriction; restore_recently_closed is an action and calls chrome.sessions.restore(session_id), so an arbitrary or omitted session ID would target the wrong state."
+      ]
+    }
+  ],
+  "source_and_procedure_quality": {
+    "verdict": "PARTIAL",
+    "strengths": [
+      "All five local tool names, argument schemas, branch routing, response fields, sort/count behavior, and manual-run bypass claims match the inspected source.",
+      "The procedures keep execution evidence separate from design, preserve member/admin result separation, use controlled data, require receipt-bound build/reload setup, and avoid claiming agent, Ask/Act, or dispatcher coverage."
+    ],
+    "gaps": [
+      "The sessions permission Settings instruction is factually impossible for the current UI and blocks both positive recently-closed procedures unless the permission is already granted.",
+      "The source inventory readiness gaps explicitly request gated/negative permission coverage. These proposals intentionally test only the manual path and do not clear that broader readiness gap; preserve that limitation in any applied inventory update.",
+      "The download fixture is not available/verified in this source-only review; its conditional stop is safe, but it prevents an immediate reproducible run.",
+      "No Chrome execution, current profile permission state, or artifact receipt was inspected, so no runtime outcome or fixture availability is verified."
+    ]
+  },
+  "recommendation": "Accept the source-backed manual-path procedures for EXT-F-4042 and EXT-F-4165. Accept EXT-F-4043 only as a conditional procedure with its fixture pending. Do not apply EXT-F-4094 or EXT-F-4166 unchanged: correct the sessions preflight to require an already-granted permission and leave unverified otherwise. None of these updates should change status cells or imply the inventory's negative/gated coverage requirement is complete.",
+  "source_evidence": [
+    "src/features/tools/ToolsView.tsx:1-12, 52-72, 121-145, 420-477",
+    "src/lib/tools/handlers/browser-data.ts:96-168, 173-204",
+    "src/lib/tools/handlers/optional-perms.ts:166-214",
+    "src/lib/tools/handlers/canonical-mergers.ts:407-453",
+    "src/lib/permissions/optional.ts:17-50, 98-125",
+    "src/features/settings/AdvancedAgentCapabilities.tsx:17-56",
+    "wxt.config.ts:84-112",
+    "docs/stabilization/PLAN.md:18-32, 99-107, 132"
+  ]
+}
