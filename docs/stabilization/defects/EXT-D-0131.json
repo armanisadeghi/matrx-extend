@@ -13,12 +13,13 @@
   "actual": "Diagnostic uses shared CDP send path whose timeout invalidates entire connection, so observation can create a false native failure.",
   "severity": "S2: diagnostic can invalidate browser control; not a proven product failure",
   "priority": "P1: fix before renderer baseline launch",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/startup_renderer_observation",
   "evidence": [
     ".research/renderer-observation-fresh-peer.json",
     ".research/startup-renderer-observation.json",
-    ".research/renderer131-fresh-reverify.json"
+    ".research/renderer131-fresh-reverify.json",
+    ".research/renderer-baseline-run.json"
   ],
   "transition_history": [
     {
@@ -44,8 +45,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Independent peer6999f407 verified actual separate ownedtransport positive control, optionaltimeout isolation, requiredtimeout fatal semantics, boundedcleanup. Native default-renderer diagnostic37233387364 pending."
+    },
+    {
+      "at": "2026-10-04T21:00:49.384435+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent actual transport timeout regression passed (6999f407); default native run37233387364 resolved backend over isolated observer and completed panel startup with current-run journals valid, no unsafe samples. Six evidence hashes verified by root."
+    },
+    {
+      "at": "2026-10-04T21:00:49.384435+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Harness defect original timeout reproduction and surrounding primary-control deadlines independently verified; actual native positive path complete. No product acceptance or reliable-capacity claim."
     }
   ],
-  "next_action": "Fresh independent actual transport refusal/positive control and persisted UNKNOWN verification before hosted baseline.",
+  "next_action": "None for this harness defect; resume guarded product acceptance with default renderer. Historical unsafe runs remain tracked separately.",
   "fix_commits": ["d7f41f37"]
 }
