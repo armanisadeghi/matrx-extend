@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "reviewed_commits": [
+    "e00b8e98fef83ae6975fb5f81460bbf3868ab86b",
+    "7bd6f047d5135c116d5b91ea450a5d9cc49c27f7",
+    "1eb38fff0af1b3cb3564c196442e71ae7791451b"
+  ],
+  "review_scope": "Independent source-only review of the two follow-up fixes against .research/guest-scrape-source-peer.json; no hosted or local browser run and no product edits.",
+  "verdict_a_spec_runtime_readiness": "source_ready_runtime_unverified",
+  "verdict_b_quality": "honest_partial_no_known_deterministic_blocker",
+  "original_findings": [
+    {
+      "code": "reload_from_restricted_page_cannot_reopen_panel",
+      "disposition": "addressed_in_source",
+      "evidence": "Before reloadExtension, the test navigates to the owned localhost root, verifies its title and empty Scrape state, and leaves #open-panel available for the harness's trusted click."
+    },
+    {
+      "code": "t20_reload_oracle_too_narrow",
+      "disposition": "addressed_in_source",
+      "evidence": "After reload, the test navigates to /referrals, selects Scrape by trusted input, and requires its title, empty state, enabled Capture, no prior article or lazy text, and no Saved badge before passing T20."
+    }
+  ],
+  "remaining_limits": [
+    "No hosted run was performed, so browser timing, extension lifecycle, and product behavior remain unverified.",
+    "T01, T02, and T08 remain partial for the explicitly recorded gaps; T14 stays partial or unverified according to whether a restricted-page error can actually be exercised.",
+    "The report remains partial unless every case passes, and an exception sets unverified with a nonzero exit code. The hosted wrapper accepts a zero exit code for this slice, so the CI result alone is not a full feature pass."
+  ],
+  "verification": {
+    "node_check": "passed",
+    "hosted_runtime": "not_run",
+    "product_behavior": "unverified",
+    "deterministic_source_blocker": "none_found"
+  }
+}
