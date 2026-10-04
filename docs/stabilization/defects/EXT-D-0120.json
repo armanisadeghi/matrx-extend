@@ -29,7 +29,8 @@
     ".research/reload-retirement-escalation.json",
     ".research/reload-lifetime-measurement.json",
     ".research/reload-lifetime-peer.json",
-    ".research/reload-lifetime-native.json"
+    ".research/reload-lifetime-native.json",
+    ".research/reload-lifetime-fresh-native.json"
   ],
   "transition_history": [
     {
@@ -70,5 +71,12 @@
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
-  "next_action": "Instrumentation9149625b independently source-reviewed c540f36a. Native37198730857 was refused at first Scrape resource boundary (CPU0.86/load12.44); no lifecycle predicate evaluated, no D120 verdict. Root matched exact receipt+3journals. All jobs terminal. One separately scoped fresh hosted comparison is already user-authorized after fresh resource/concurrency/provenance preflight; keep same frozen215 and unchanged thresholds. If a second consecutive environment failure occurs, stop repeated launches and route environment diagnosis per PLAN. Never close intermittency on a passing retry."
+  "next_action": "Continue meaningful Scrape coverage with current instrumentation retained; media T08 sourcecoverage is being repaired/reviewed before next guardednative run. Do not spend a run solely on an unexplained repeat. If strictretirementfails, classify actual independentobserver/hostprobe/correlatedversion evidence using escalation9a4150ee nativebranches. Priorresourcefailure37198730857 didnotrecur onhealthy37199709918; no thresholds changed. Keep D120 open until intermittentcause resolved.",
+  "current_native_evidence": {
+    "run_id": "37199709918",
+    "status": "partial_native_retest",
+    "artifact": "development215 source3536b5cb0bea2fb33383f2b239b8602fafb79351 CI37193761291 artifact11299613935",
+    "verified": "Chrome141.0.7390.37 measured; preclick version0 targetcorrelation, oldredundant/stopped anddestroyed observedbybothobservers; all5strict predicates true andreplacementcontext. RealScrape readinessfirst0/0 then1/1 in2checks, trustedclickandpostreloadempty passed. Rootmatchedreceipt+3healthyjournals.",
+    "unverified": "Prior missing-destroyed-event intermittency not causally explained; failureonlyoldhostprobes notrun. A passingattemptdoesnotcloseit."
+  }
 }
