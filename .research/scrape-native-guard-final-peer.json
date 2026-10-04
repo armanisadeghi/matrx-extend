@@ -1,0 +1,42 @@
+{
+  "reviewed_commit": "b89c725ceea9532e2537a1065200d13d91bdd882",
+  "status": "DONE_WITH_CONCERNS",
+  "finding_resolution": [
+    {
+      "prior_finding": "Ungated media field click and Input.insertText",
+      "decision": "ADDRESSED",
+      "evidence": "The driver calls enterMediaField for every image and video src/alt entry in the shared warm/reload exercise; the helper wraps click and Input.insertText in separate resourceAction calls. The harness binds resourceAction to runNativeResourceAction and awaitNativeResourceHealth."
+    },
+    {
+      "prior_finding": "Open/copy catches swallow resource refusal",
+      "decision": "ADDRESSED",
+      "evidence": "Both resourceAction calls precede their observation try/catch blocks; a refused health gate or failed click propagates to the driver's top-level catch with exit code 1."
+    },
+    {
+      "prior_finding": "Observed URL or clipboard mismatch labeled as limitation",
+      "decision": "NOT ADDRESSED",
+      "evidence": "Normal loaded mismatches become failures, but observeVideoLinks waits for domcontentloaded before reading opened.url(). A page with a wrong observable URL and a load-state timeout is labeled open_unavailable. Reproduced by a focused helper invocation: opened.url() returned /wrong.mp4, waitForLoadState threw timeout, and the result had failures:[] plus limitations:[open_unavailable:timeout]. Clipboard mismatch classification is corrected."
+    },
+    {
+      "prior_finding": "Pure assertion tests do not execute native driver action wiring",
+      "decision": "NOT ADDRESSED",
+      "evidence": "The new tests run the media helper and real runNativeResourceAction with synthetic dependencies. Static driver-to-helper and harness wiring was inspected, but no native browser run was authorized in this lane."
+    }
+  ],
+  "verdict_a_guestscope_readiness": {
+    "decision": "PARTIAL",
+    "evidence": "Warm and reload calls still share exerciseMediaControls, retain exact media identities and counts, and aggregate T12 observations into a failed/partial/passed receipt. Native guest outcomes remain unobserved. The open URL timeout case can conceal an observable product mismatch as partial, so this acceptance receipt is not yet trustworthy for T12."
+  },
+  "verdict_b_quality": {
+    "decision": "FAIL",
+    "evidence": "Resource gates and refusal propagation are sound; thresholds, skips, and warm/reload procedure were not weakened in the fix diff. The new helper's open observation order leaves a real mismatch-to-limitation path unguarded, and the focused tests do not cover that path."
+  },
+  "guarded_native_run_justified": false,
+  "verification": {
+    "focused": "node --test tests/browser/scrape-native-media-actions.test.mjs tests/browser/scrape-media-assertions.test.mjs tests/browser/owned-fixture-server.test.mjs: 13 passed, 0 failed, 0 skipped",
+    "compile": "pnpm compile: passed",
+    "native_or_heavy_run": "not run, per brief",
+    "manual_probe": "Observable wrong opened URL plus domcontentloaded timeout returned open_unavailable and no failure"
+  },
+  "shared_checkout": "Production files untouched; unrelated dirty workspace-sync incident report left untouched."
+}
