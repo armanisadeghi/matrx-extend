@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "issue": "EXT-D-0117",
+  "reviewed_commit": "81fb09a839e7d0bfb3b6f1d6d3e2980cc12a83f1",
+  "review_scope": "Independent source review of the panel-context diagnostic and focused source checks; no hosted or native browser run.",
+  "verdicts": {
+    "A_source_readiness": "PASS: The diagnostic is safe to collect on a controlled hosted guest run. Native behavior and Store acceptance remain unverified.",
+    "B_quality": "PASS: The counters distinguish an empty result from several mismatch classes without changing the pass criterion. They do not establish root cause on their own."
+  },
+  "evidence": {
+    "exact_match": "requireSidePanelContext still requires contextType SIDE_PANEL, the exact panel URL, and tabId -1. The new count runs only in its failure catch and rethrows the original error.",
+    "single_query": "The initial path still makes one sidePanelContexts call. Its Runtime.evaluate asks chrome.runtime.getContexts for SIDE_PANEL contexts and rejects non-array or exception results before the new diagnostic runs.",
+    "deadlines": "The change did not alter waitForPanelTarget, waitForSettledGuestPanel, retry counts, or wait intervals.",
+    "ownership_and_resources": "The change did not alter CDP/profile/extension ownership checks, the hosted resource guard, or the finally cleanup that detaches CDP and stops only the spawned child.",
+    "log_safety": "The new line contains only six integer counts; no URLs, context identifiers, arbitrary tab IDs, or exception text are serialized.",
+    "focused_checks": [
+      "node --check tests/browser/native-sidepanel-qa-harness.mjs: exit 0",
+      "node tests/browser/native-sidepanel-qa-harness.test.mjs: exit 0"
+    ]
+  },
+  "limits": [
+    "The focused test checks the counter helper with empty and mixed arrays, but does not execute the integrated stderr failure path in a native browser.",
+    "Counts may narrow a mismatch yet cannot prove timing, Chrome registration, or an extension defect; the next controlled hosted observation is required.",
+    "No runtime evidence was generated in this review, and no guest Scrape case was observed."
+  ]
+}
