@@ -203,7 +203,44 @@ function panelContextDiagnostic(contexts, panelUrl) {
         entry?.documentUrl === panelUrl &&
         entry?.tabId === -1,
     ).length,
+    missingDocumentUrlCount: contexts.filter((entry) => entry?.documentUrl == null).length,
+    emptyDocumentUrlCount: contexts.filter((entry) => entry?.documentUrl === '').length,
+    otherExtensionUrlCount: contexts.filter(
+      (entry) =>
+        typeof entry?.documentUrl === 'string' &&
+        entry.documentUrl.startsWith('chrome-extension://') &&
+        !entry.documentUrl.startsWith(extensionPrefix),
+    ).length,
+    nonExtensionUrlCount: contexts.filter(
+      (entry) =>
+        typeof entry?.documentUrl === 'string' &&
+        entry.documentUrl.length > 0 &&
+        !entry.documentUrl.startsWith('chrome-extension://'),
+    ).length,
   };
+}
+
+async function panelContextFailureDiagnostic({ contexts, panelUrl, readContexts, waitBetween }) {
+  const initial = panelContextDiagnostic(contexts, panelUrl);
+  let firstRead = true;
+  try {
+    const boundary = await observeSidePanelContext({
+      readContexts: () => {
+        if (firstRead) {
+          firstRead = false;
+          return contexts;
+        }
+        return readContexts();
+      },
+      panelUrl,
+      attempts: 2,
+      waitBetween,
+    });
+    return { ...initial, followUp: boundary.last, followUpQueryFailed: false };
+  } catch {
+    // This second read is diagnostic only; preserve the original exact-context failure.
+    return { ...initial, followUp: null, followUpQueryFailed: true };
+  }
 }
 
 async function observeSidePanelContext({
@@ -1018,7 +1055,7 @@ export async function runNativeSidepanelQa({
       requireSidePanelContext(contexts, panelUrl);
     } catch (error) {
       process.stderr.write(
-        `BROWSER_PANEL_CONTEXT_FAILURE ${JSON.stringify(panelContextDiagnostic(contexts, panelUrl))}\n`,
+        `BROWSER_PANEL_CONTEXT_FAILURE ${JSON.stringify(await panelContextFailureDiagnostic({ contexts, panelUrl, readContexts: () => sidePanelContexts(cdp, extensionWorker.targetId) }))}\n`,
       );
       throw error;
     }
@@ -1124,4 +1161,5 @@ export {
   safeEndpointDiagnostic,
   safeEndpointWaitDiagnostic,
   panelContextDiagnostic,
+  panelContextFailureDiagnostic,
 };

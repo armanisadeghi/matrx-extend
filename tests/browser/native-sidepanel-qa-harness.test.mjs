@@ -9,6 +9,7 @@ import {
   isSettledGuestPanel,
   observeSidePanelContext,
   panelContextDiagnostic,
+  panelContextFailureDiagnostic,
   requireExpectedExtension,
   requireOwnedCommandLine,
   requireSidePanelContext,
@@ -181,6 +182,10 @@ assert.deepEqual(panelContextDiagnostic([], expectedPanelUrl), {
   exactUrlCount: 0,
   globalTabCount: 0,
   exactContextCount: 0,
+  missingDocumentUrlCount: 0,
+  emptyDocumentUrlCount: 0,
+  otherExtensionUrlCount: 0,
+  nonExtensionUrlCount: 0,
 });
 assert.deepEqual(
   panelContextDiagnostic(
@@ -199,8 +204,66 @@ assert.deepEqual(
     exactUrlCount: 2,
     globalTabCount: 3,
     exactContextCount: 1,
+    missingDocumentUrlCount: 0,
+    emptyDocumentUrlCount: 0,
+    otherExtensionUrlCount: 1,
+    nonExtensionUrlCount: 0,
   },
 );
+// A SIDE_PANEL result can omit documentUrl or expose a different origin; neither
+// is evidence that the exact owned context exists. A later exact result identifies
+// a registration window without changing the immediate refusal.
+for (const [initial, expectedShape] of [
+  [
+    { contextType: 'SIDE_PANEL', tabId: -1 },
+    { missingDocumentUrlCount: 1, otherExtensionUrlCount: 0, nonExtensionUrlCount: 0 },
+  ],
+  [
+    { contextType: 'SIDE_PANEL', documentUrl: '', tabId: -1 },
+    { missingDocumentUrlCount: 0, emptyDocumentUrlCount: 1, otherExtensionUrlCount: 0 },
+  ],
+  [
+    {
+      contextType: 'SIDE_PANEL',
+      documentUrl: 'chrome-extension://foreign/sidepanel.html',
+      tabId: -1,
+    },
+    { missingDocumentUrlCount: 0, otherExtensionUrlCount: 1, nonExtensionUrlCount: 0 },
+  ],
+  [
+    { contextType: 'SIDE_PANEL', documentUrl: 'about:blank', tabId: -1 },
+    { missingDocumentUrlCount: 0, otherExtensionUrlCount: 0, nonExtensionUrlCount: 1 },
+  ],
+]) {
+  const diagnostic = await panelContextFailureDiagnostic({
+    contexts: [initial],
+    panelUrl: expectedPanelUrl,
+    readContexts: async () => [exactPanelContext],
+    waitBetween: async () => {},
+  });
+  assert.equal(diagnostic.contextCount, 1);
+  assert.equal(diagnostic.exactContextCount, 0);
+  assert.equal(diagnostic.followUp.exact_expected_count, 1);
+  assert.equal(diagnostic.followUpQueryFailed, false);
+  for (const [key, value] of Object.entries(expectedShape)) assert.equal(diagnostic[key], value);
+}
+const persistentMismatch = await panelContextFailureDiagnostic({
+  contexts: [wrongPanelContext],
+  panelUrl: expectedPanelUrl,
+  readContexts: async () => [wrongPanelContext],
+  waitBetween: async () => {},
+});
+assert.equal(persistentMismatch.followUp.exact_expected_count, 0);
+const queryFailure = await panelContextFailureDiagnostic({
+  contexts: [wrongPanelContext],
+  panelUrl: expectedPanelUrl,
+  readContexts: async () => {
+    throw new Error('private query detail');
+  },
+  waitBetween: async () => {},
+});
+assert.equal(queryFailure.followUp, null);
+assert.equal(queryFailure.followUpQueryFailed, true);
 let contextReads = 0;
 const boundary = await observeSidePanelContext({
   readContexts: async () => (++contextReads === 1 ? [wrongPanelContext] : [exactPanelContext]),
