@@ -12,7 +12,11 @@ import {
   selectOrImportNativeTarget,
   verifyImportedNativeEvidence,
 } from './current-test-artifact.mjs';
-import { hostedProfileRoute, requireHostedAcceptanceCredential } from './hosted-profile-route.mjs';
+import {
+  hostedProfileRoute,
+  requireHostedAcceptanceCredential,
+  stageProfileOrganizationConfig,
+} from './hosted-profile-route.mjs';
 import { hashReleaseTree } from './sync-unpacked-release.mjs';
 
 const repo = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -135,6 +139,7 @@ async function runProfile(prepared, acceptanceCase) {
   const route = hostedProfileRoute(acceptanceCase, prepared, outputDir, runId);
   const profileEnvPath = join(repo, '.env.production');
   const adminEnvPath = join(homedir(), 'code/aidream/.env');
+  const organizationConfigPath = join(outputDir, 'notes-private-config.json');
   const memberLinkPath = join(
     dirname(prepared.relocatedReceipt),
     'profile-member-link-private.json',
@@ -167,6 +172,8 @@ async function runProfile(prepared, acceptanceCase) {
       ...route.env,
     };
     if (acceptanceCase === 'profile-admin') {
+      await stageProfileOrganizationConfig(organizationConfigPath, process.env);
+      created.push(organizationConfigPath);
       const raw = process.env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON;
       assert.ok(raw, 'hosted_profile_admin_secret_required');
       const credentials = JSON.parse(raw);
@@ -199,6 +206,7 @@ async function runProfile(prepared, acceptanceCase) {
     }
     childEnv.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON = undefined;
     childEnv.MATRX_HOSTED_MEMBER_LINK_JSON = undefined;
+    childEnv.MATRX_HOSTED_PROFILE_ORGANIZATION_JSON = undefined;
     const result = await ownedProcess(process.execPath, [join(repo, route.driver)], {
       cwd: repo,
       env: childEnv,

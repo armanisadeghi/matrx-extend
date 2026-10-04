@@ -1,6 +1,6 @@
 {
   "task": "Hosted native Profile acceptance path for existing rows",
-  "status": "source_prepared_not_executed",
+  "status": "fail_closed_before_browser_or_data_write",
   "route": {
     "workflow": ".github/workflows/hosted-guest-acceptance.yml",
     "adapter": "scripts/hosted-guest-acceptance.mjs",
@@ -9,10 +9,12 @@
     "artifact": "exact successful CI main-push development artifact, verified by existing importer and Profile driver",
     "acceptance": "extended Profile census, pre-existing owner row, and verified restoration required for a passing hosted job"
   },
-  "private_inputs": "Existing named admin credential or member one-time-link secret is checked before browser setup, staged to exclusive mode-0600 files, removed from the child environment, and unlinked after execution. The tracked production Supabase config is checked against the workflow values without replacement. The Profile ownership receipt is removed only after a passing restoration verdict and is never uploaded.",
+  "private_inputs": "Existing named admin credential or member one-time-link secret is checked before browser setup, staged to exclusive mode-0600 files, removed from the child environment, and unlinked after execution. The admin approved-organization config has an explicit named secret and an exclusive mode-0600 fixture path. The tracked production Supabase config is checked against the workflow values without replacement. The Profile ownership receipt is removed only after a passing restoration verdict and is never uploaded.",
+  "safety_correction": "Both Profile cases now refuse in preflight, before resource admission or browser setup, even if authentication and approved organization inputs are present. Direct acceptance invocation has the same refusal. The local fsynced ownership receipt is not durable after a disposable hosted VM interruption. No existing private remote store or per-intent upload was found in the hosted path; uploading a plaintext receipt with ordinary job artifacts is prohibited.",
+  "remaining_prerequisite": "Provide a private durable recovery channel that acknowledges the exact original Profile row and every pending write intent before the native driver mutates data, and a recovery procedure that can reconcile interrupted writes with owner-verified conditional restoration. Then remove the preflight refusal only after a causal interruption test passes. D110/D111 admin existing-row extended cases, member coverage, and real hosted acceptance remain pending in full.",
   "checks": {
     "focused_test": "node --test scripts/hosted-profile-route.test.mjs",
-    "mutation": "Changing PROFILE_EXTENDED_CASES from 1 to 0 made the route test fail; original restored",
+    "mutation": "Removing the durable-recovery refusal made the preflight test fail because the adapter admitted Profile before resource checks; original restored",
     "syntax": "node --check scripts/hosted-guest-acceptance.mjs",
     "remote_native": "not run in this lane"
   }

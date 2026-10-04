@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 export function hostedProfileRoute(acceptanceCase, prepared, outputDir, runId) {
@@ -56,4 +57,30 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
   ) {
     assert.ok(env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON, 'hosted_admin_secret_required');
   }
+  if (acceptanceCase === 'profile-admin') profileOrganizationConfig(env);
+  // The native journal is private and fsynced, but its hosted VM is disposable.
+  // A write cannot start until each intent is durably recoverable elsewhere.
+  if (acceptanceCase === 'profile-admin' || acceptanceCase === 'profile-member')
+    throw new Error('hosted_profile_durable_recovery_unavailable');
+}
+
+export function profileOrganizationConfig(env) {
+  assert.ok(env.MATRX_HOSTED_PROFILE_ORGANIZATION_JSON, 'hosted_profile_org_secret_required');
+  let config;
+  try {
+    config = JSON.parse(env.MATRX_HOSTED_PROFILE_ORGANIZATION_JSON);
+  } catch {
+    throw new Error('hosted_profile_org_secret_invalid');
+  }
+  const name = config?.approved_organization_name;
+  assert.ok(
+    typeof name === 'string' && name.trim() && name === name.trim(),
+    'hosted_profile_org_name_invalid',
+  );
+  return { approved_organization_name: name };
+}
+
+export async function stageProfileOrganizationConfig(path, env) {
+  const config = profileOrganizationConfig(env);
+  await writeFile(path, `${JSON.stringify(config)}\n`, { flag: 'wx', mode: 0o600 });
 }

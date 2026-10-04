@@ -121,6 +121,7 @@ jobs:
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           MATRX_HOSTED_MEMBER_LINK_JSON: ${{ secrets.MATRX_REVIEWER_MAGIC_LINK_JSON }}
           MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: ${{ secrets.MATRX_PREPARE_ADMIN_CREDENTIALS_JSON }}
+          MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: ${{ secrets.MATRX_PROFILE_APPROVED_ORGANIZATION_JSON }}
         run: node scripts/hosted-guest-acceptance.mjs
 
       - name: Disable indexing on the disposable hosted VM
@@ -175,6 +176,7 @@ jobs:
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           MATRX_HOSTED_MEMBER_LINK_JSON: ${{ secrets.MATRX_REVIEWER_MAGIC_LINK_JSON }}
           MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: ${{ secrets.MATRX_PREPARE_ADMIN_CREDENTIALS_JSON }}
+          MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: ${{ secrets.MATRX_PROFILE_APPROVED_ORGANIZATION_JSON }}
           WXT_SUPABASE_URL: ${{ secrets.WXT_SUPABASE_URL }}
           WXT_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.WXT_SUPABASE_PUBLISHABLE_KEY }}
         run: |
