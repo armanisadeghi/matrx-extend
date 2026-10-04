@@ -136,3 +136,37 @@ it('retains the exact durable intent when verification persistence fails after a
   assert.equal(s.receipts.at(-1).expected_version, 2);
   assert.equal(s.receipts.at(-1).pending_write, null);
 });
+it('accepts only the intended non-Preferred fields after a lost UI response', async () => {
+  const s = setup();
+  const fields = { company_name: 'Harbor Studio', job_title: 'Design Lead' };
+  await assert.rejects(
+    s.journal.save(
+      owned.marker,
+      async () => {
+        assert.deepEqual(s.receipts.at(-1).pending_write.fields, fields);
+        s.write(owned.marker, fields);
+        throw new Error('ui_reopen_failed');
+      },
+      fields,
+    ),
+    /ui_reopen_failed/,
+  );
+  assert.equal((await s.journal.reconcile()).version, 2);
+});
+it('refuses deletion when another write takes the expected version without the intended fields', async () => {
+  const s = setup();
+  const fields = { company_name: 'Harbor Studio', job_title: 'Design Lead' };
+  await assert.rejects(
+    s.journal.save(
+      owned.marker,
+      async () => {
+        s.write(owned.marker, { company_name: 'Unrelated company', job_title: 'Design Lead' });
+      },
+      fields,
+    ),
+    /owned_write_company_name_unexpected_successor/,
+  );
+  await assert.rejects(s.journal.reconcile(), /owned_write_company_name_unexpected_successor/);
+  assert.equal(s.receipts.at(-1).expected_version, 1);
+  assert.deepEqual(s.receipts.at(-1).pending_write.fields, fields);
+});

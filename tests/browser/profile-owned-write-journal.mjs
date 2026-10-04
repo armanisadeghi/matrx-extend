@@ -25,6 +25,9 @@ export function createOwnedWriteJournal({ owned, persist, read, baseUrl }) {
       // A previous version could still have an in-flight UI write. Never delete
       // it or issue a second Save until this exact intent has been observed.
       validate(row, pending.preferred_name, pending.version);
+      for (const [field, expected] of Object.entries(pending.fields ?? {})) {
+        assert.equal(row[field], expected, `owned_write_${field}_unexpected_successor`);
+      }
       await persist({
         ...record(),
         expected_version: pending.version,
@@ -42,9 +45,13 @@ export function createOwnedWriteJournal({ owned, persist, read, baseUrl }) {
   }
   return {
     reconcile,
-    async save(value, action) {
+    async save(value, action, fields = {}) {
       await reconcile();
-      pending = { version: version + 1, preferred_name: value };
+      pending = {
+        version: version + 1,
+        preferred_name: value,
+        ...(Object.keys(fields).length > 0 && { fields }),
+      };
       await persist(record());
       let actionError;
       try {

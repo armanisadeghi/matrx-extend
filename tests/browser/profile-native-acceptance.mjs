@@ -11,6 +11,10 @@ import { signInAdminSettings } from './admin-settings-signin.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { assertFirstSaveOwnedRow, ownedDeleteUrl } from './profile-empty-row-restoration.mjs';
 import {
+  runProfileExpandersCase,
+  runProfileFieldCase,
+} from './profile-identity-employment-cases.mjs';
+import {
   recordProfileFinalFailure,
   runProfileExecutionBoundary,
   runProfilePointer,
@@ -32,6 +36,7 @@ const SOURCE_SHA = process.env.PROFILE_EXPECTED_SOURCE_SHA;
 const CI_RUN_ID = Number(process.env.PROFILE_EXPECTED_CI_RUN_ID);
 const ARTIFACT_ID = Number(process.env.PROFILE_EXPECTED_ARTIFACT_ID);
 const AUTH_MODE = process.env.PROFILE_AUTH_MODE ?? 'admin';
+const EXTENDED_CASES = process.env.PROFILE_EXTENDED_CASES === '1';
 const PRIVATE_OWNERSHIP_RECEIPT = process.env.PROFILE_PRIVATE_OWNERSHIP_RECEIPT;
 const report = {
   schema_version: 1,
@@ -131,7 +136,10 @@ async function profileOwnerRequest(panel, { key, organizationId }, requestUrl, m
 }
 async function readProfileOwnerRow(panel, config, userId) {
   const url = new URL('/rest/v1/user_form_profile', config.url);
-  url.searchParams.set('select', 'user_id,organization_id,preferred_name,created_at,version');
+  url.searchParams.set(
+    'select',
+    'user_id,organization_id,preferred_name,legal_first_name,legal_middle_name,legal_last_name,name_suffix,pronouns,date_of_birth,company_name,job_title,created_at,version',
+  );
   url.searchParams.set('user_id', `eq.${userId}`);
   const rows = await profileOwnerRequest(panel, config, url.href);
   assert.ok(rows.length <= 1, 'profile_owner_row_not_unique');
@@ -622,6 +630,45 @@ async function caseSaveDiscard(panel, original, email, mode, dimension, journal 
   });
 }
 
+async function runExtendedCases(panel, email, mode, dimension, ownedJournal) {
+  if (!EXTENDED_CASES) return;
+  report.cases.push(await runProfileExpandersCase({ panel, mode, dimension }));
+  for (const section of ['Identity', 'Employment']) {
+    if (!ownedJournal) {
+      report.cases.push({
+        id:
+          section === 'Identity'
+            ? mode === 'member'
+              ? 'EXT-F-1004-T05'
+              : 'EXT-F-1004-T06'
+            : mode === 'member'
+              ? 'EXT-F-1004-T17'
+              : 'EXT-F-1004-T18',
+        mode,
+        dimension,
+        branch: 'default',
+        status: 'unverified',
+        reason: 'preexisting_row_lacks_durable_conditional_full_field_restoration',
+      });
+      continue;
+    }
+    report.cases.push(
+      await runProfileFieldCase({
+        panel,
+        email,
+        mode,
+        dimension,
+        section,
+        ownedJournal,
+        openProfile,
+        back: (activePanel) =>
+          profilePointer(activePanel, 'title', 'Back', 'back_after_extended_case'),
+        save: (activePanel) => clickProfileHeader(activePanel, 'Save'),
+      }),
+    );
+  }
+}
+
 async function caseT25(panel, original, email, mode, dimension) {
   const id = 'EXT-F-1004-T25';
   const startedAt = new Date().toISOString();
@@ -910,6 +957,8 @@ try {
           }
           await caseBack(panel, original, identity.email, AUTH_MODE, 'warm');
           await caseSaveDiscard(panel, original, identity.email, AUTH_MODE, 'warm', ownedJournal);
+          executionOperation = 'extended_cases_warm';
+          await runExtendedCases(panel, identity.email, AUTH_MODE, 'warm', ownedJournal);
           await caseT25(panel, original, identity.email, AUTH_MODE, 'warm');
           if (AUTH_MODE === 'member' && ownedJournal) {
             executionOperation = 'case_save_failure_warm';
@@ -961,6 +1010,8 @@ try {
             'reload',
             ownedJournal,
           );
+          executionOperation = 'extended_cases_after_reload';
+          await runExtendedCases(reloaded.panel, identity.email, AUTH_MODE, 'reload', ownedJournal);
           executionOperation = 'case_owner_read_retry_after_reload';
           await caseT25(reloaded.panel, original, identity.email, AUTH_MODE, 'reload');
         },
@@ -1040,7 +1091,9 @@ try {
     artifacts: native.artifacts,
     verified: native.verified,
   };
-  report.status = 'passed';
+  report.status = report.cases.some((entry) => entry.status === 'unverified')
+    ? 'partial'
+    : 'passed';
   report.stage = 'complete';
 } catch (error) {
   if (nativeExecutionError && error !== nativeExecutionError) {

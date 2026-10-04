@@ -1,0 +1,367 @@
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+import { evaluate, waitFor } from './settings-panel-driver.mjs';
+
+const IDENTITY = [
+  'First name',
+  'Middle',
+  'Last name',
+  'Preferred',
+  'Suffix',
+  'Pronouns',
+  'Birthday',
+];
+const EMPLOYMENT = ['Company', 'Title'];
+const PROFILE_COLUMNS = {
+  'First name': 'legal_first_name',
+  Middle: 'legal_middle_name',
+  'Last name': 'legal_last_name',
+  Preferred: 'preferred_name',
+  Suffix: 'name_suffix',
+  Pronouns: 'pronouns',
+  Birthday: 'date_of_birth',
+  Company: 'company_name',
+  Title: 'job_title',
+};
+const SECTIONS = [
+  'Identity',
+  'Phones',
+  'Emails',
+  'Web',
+  'Shipping address',
+  'Billing address',
+  'Employment',
+  'Emergency contacts',
+];
+
+function sampleExpression(section, labels) {
+  return `(() => {
+    const name=${JSON.stringify(section)}, labels=${JSON.stringify(labels)};
+    const buttons=[...document.querySelectorAll('button[aria-expanded]')].filter(b=>b.textContent.trim()===name);
+    if(buttons.length!==1) return {section_count:buttons.length};
+    const button=buttons[0], content=document.getElementById(button.getAttribute('aria-controls'));
+    const values={};
+    for(const label of labels){
+      const matches=[...(content?.querySelectorAll('span')??[])].filter(s=>s.textContent.trim()===label);
+      const input=matches[0]?.parentElement?.querySelector('input');
+      values[label]=matches.length===1 && input ? input.value : null;
+    }
+    const root=document.querySelector('button[title="Back"]')?.parentElement?.parentElement;
+    const save=root?.querySelector('button[aria-label="Save profile"]');
+    return {section_count:1, expanded:button.getAttribute('aria-expanded'),
+      hidden:content?.getAttribute('aria-hidden'), inert:content?.hasAttribute('inert'),
+      values, dirty:(root?.innerText??'').includes('Unsaved changes'),
+      save_enabled:!!save && !save.disabled,
+      card_name:root?.querySelector('.truncate.text-base.font-semibold')?.textContent.trim()??null};
+  })()`;
+}
+
+async function sample(panel, section, labels = []) {
+  return evaluate(panel, sampleExpression(section, labels));
+}
+
+async function clickAt(panel, target) {
+  await panel.send('Input.dispatchMouseEvent', {
+    type: 'mousePressed',
+    ...target,
+    button: 'left',
+    clickCount: 1,
+  });
+  await panel.send('Input.dispatchMouseEvent', {
+    type: 'mouseReleased',
+    ...target,
+    button: 'left',
+    clickCount: 1,
+  });
+}
+
+async function inputPoint(panel, section, label) {
+  return waitFor(
+    `${section}_${label}_hittable`,
+    () =>
+      evaluate(
+        panel,
+        `(() => {
+    const button=[...document.querySelectorAll('button[aria-expanded]')].find(b=>b.textContent.trim()===${JSON.stringify(section)});
+    const content=button && document.getElementById(button.getAttribute('aria-controls'));
+    const labels=[...(content?.querySelectorAll('span')??[])].filter(s=>s.textContent.trim()===${JSON.stringify(label)});
+    const el=labels.length===1?labels[0].parentElement?.querySelector('input'):null;
+    if(!el || el.closest('[inert]')) return null;
+    el.scrollIntoView({block:'center',behavior:'instant'});
+    const r=el.getBoundingClientRect(), x=r.x+r.width/2, y=r.y+r.height/2;
+    return el.contains(document.elementFromPoint(x,y))?{x,y}:null;
+  })()`,
+      ),
+    (point) => point?.x > 0,
+    10000,
+  );
+}
+
+async function fill(panel, section, label, value) {
+  await clickAt(panel, await inputPoint(panel, section, label));
+  await panel.send('Input.dispatchKeyEvent', {
+    type: 'keyDown',
+    key: 'a',
+    code: 'KeyA',
+    modifiers: process.platform === 'darwin' ? 4 : 2,
+    windowsVirtualKeyCode: 65,
+    commands: ['selectAll'],
+  });
+  await panel.send('Input.dispatchKeyEvent', {
+    type: 'keyUp',
+    key: 'a',
+    code: 'KeyA',
+    modifiers: process.platform === 'darwin' ? 4 : 2,
+    windowsVirtualKeyCode: 65,
+  });
+  if (value) await panel.send('Input.insertText', { text: value });
+  else
+    await panel.send('Input.dispatchKeyEvent', {
+      type: 'keyDown',
+      key: 'Backspace',
+      code: 'Backspace',
+      windowsVirtualKeyCode: 8,
+    });
+  await waitFor(
+    `${section}_${label}_edited`,
+    () => sample(panel, section, [label]),
+    (s) => s?.values?.[label] === value,
+    10000,
+  );
+}
+
+async function clickHeader(panel, label) {
+  const point = await waitFor(
+    `${label}_hittable`,
+    () =>
+      evaluate(
+        panel,
+        `(() => {
+    const header=document.querySelector('button[title="Back"]')?.parentElement;
+    const buttons=[...(header?.querySelectorAll('button')??[])].filter(b=>b.textContent.trim()===${JSON.stringify(label)});
+    if(buttons.length!==1 || buttons[0].disabled)return null;
+    const el=buttons[0];el.scrollIntoView({block:'center',behavior:'instant'});
+    const r=el.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2;
+    return el.contains(document.elementFromPoint(x,y))?{x,y}:null;
+  })()`,
+      ),
+    (p) => p?.x > 0,
+    10000,
+  );
+  await clickAt(panel, point);
+}
+
+async function sectionState(panel, name) {
+  return sample(panel, name);
+}
+
+async function toggle(panel, name, expected) {
+  const before = await sectionState(panel, name);
+  assert.equal(before.section_count, 1, `${name}_section_missing`);
+  const point = await waitFor(
+    `${name}_toggle_hittable`,
+    () =>
+      evaluate(
+        panel,
+        `(() => {
+    const buttons=[...document.querySelectorAll('button[aria-expanded]')].filter(b=>b.textContent.trim()===${JSON.stringify(name)});
+    if(buttons.length!==1)return null;
+    const el=buttons[0];el.scrollIntoView({block:'center',behavior:'instant'});
+    const r=el.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2;
+    return el.contains(document.elementFromPoint(x,y))?{x,y}:null;
+  })()`,
+      ),
+    (p) => p?.x > 0,
+    10000,
+  );
+  await clickAt(panel, point);
+  const after = await waitFor(
+    `${name}_toggle_${expected}`,
+    () => sectionState(panel, name),
+    (s) =>
+      s?.expanded === String(expected) && s.hidden === String(!expected) && s.inert === !expected,
+    10000,
+  );
+  assert.notEqual(after.expanded, before.expanded, `${name}_toggle_no_change`);
+}
+
+async function ensureOpen(panel, section) {
+  const current = await sectionState(panel, section);
+  assert.equal(current.section_count, 1, `${section}_section_missing`);
+  if (current.expanded === 'false') await toggle(panel, section, true);
+}
+
+function equalFields(observed, expected, label) {
+  for (const [field, value] of Object.entries(expected))
+    assert.equal(observed.values?.[field], value, `${label}_${field}_mismatch`);
+}
+
+function persistedFields(values) {
+  return Object.fromEntries(
+    Object.entries(values).map(([label, value]) => [PROFILE_COLUMNS[label], value || null]),
+  );
+}
+
+export async function runProfileFieldCase({
+  panel,
+  email,
+  mode,
+  dimension,
+  section,
+  ownedJournal,
+  openProfile,
+  back,
+  save,
+}) {
+  assert.ok(ownedJournal, 'profile_field_write_requires_owned_row_journal');
+  const labels = section === 'Identity' ? IDENTITY : EMPLOYMENT;
+  const id =
+    section === 'Identity'
+      ? mode === 'member'
+        ? 'EXT-F-1004-T05'
+        : 'EXT-F-1004-T06'
+      : mode === 'member'
+        ? 'EXT-F-1004-T17'
+        : 'EXT-F-1004-T18';
+  await ensureOpen(panel, section);
+  const original = (await sample(panel, section, labels)).values;
+  for (const label of labels)
+    assert.equal(typeof original[label], 'string', `${section}_${label}_missing`);
+  const token = randomUUID().slice(0, 8);
+  const desired =
+    section === 'Identity'
+      ? {
+          'First name': `Marin${token}`,
+          Middle: `Ellis${token}`,
+          'Last name': `Vale${token}`,
+          Preferred: `Maren${token}`,
+          Suffix: `III${token}`,
+          Pronouns: `they/${token}`,
+          Birthday: '2001-04-12',
+        }
+      : { Company: `Harbor Studio ${token}`, Title: `Design Lead ${token}` };
+  for (const [label, value] of Object.entries(desired))
+    assert.notEqual(value, original[label], `${section}_${label}_not_distinct`);
+  const preferredBefore = (await sample(panel, 'Identity', ['Preferred'])).values?.Preferred;
+  let firstError;
+  try {
+    for (const [label, value] of Object.entries(desired)) await fill(panel, section, label, value);
+    const draft = await sample(panel, section, labels);
+    equalFields(draft, desired, `${section}_draft`);
+    assert.equal(draft.save_enabled, true, `${section}_save_disabled`);
+    await ownedJournal.save(
+      section === 'Identity' ? desired.Preferred : preferredBefore,
+      async () => {
+        await save(panel);
+        await waitFor(
+          `${section}_save_settled`,
+          () => sample(panel, section, labels),
+          (s) => !s?.save_enabled && Object.entries(desired).every(([k, v]) => s.values?.[k] === v),
+          30000,
+        );
+      },
+      persistedFields(desired),
+    );
+    await back(panel);
+    await openProfile(panel, email);
+    await ensureOpen(panel, section);
+    const reopened = await sample(panel, section, labels);
+    equalFields(reopened, desired, `${section}_reopened`);
+    if (section === 'Identity')
+      assert.equal(
+        reopened.card_name,
+        `${desired['First name']} ${desired['Last name']}`,
+        'identity_card_name_mismatch',
+      );
+  } catch (error) {
+    firstError = error;
+  }
+  let restoreError;
+  try {
+    await ensureOpen(panel, section);
+    const current = await sample(panel, section, labels);
+    for (const [label, value] of Object.entries(original))
+      if (current.values?.[label] !== value) await fill(panel, section, label, value);
+    const restoreDraft = await sample(panel, section, labels);
+    if (restoreDraft.save_enabled) {
+      await ownedJournal.save(
+        preferredBefore,
+        async () => {
+          await save(panel);
+          await waitFor(
+            `${section}_restore_settled`,
+            () => sample(panel, section, labels),
+            (s) =>
+              !s?.save_enabled && Object.entries(original).every(([k, v]) => s.values?.[k] === v),
+            30000,
+          );
+        },
+        persistedFields(original),
+      );
+    }
+    await back(panel);
+    await openProfile(panel, email);
+    await ensureOpen(panel, section);
+    equalFields(await sample(panel, section, labels), original, `${section}_restored`);
+    await ownedJournal.reconcile();
+  } catch (error) {
+    restoreError = error;
+  }
+  if (restoreError) throw restoreError;
+  if (firstError) throw firstError;
+  return {
+    id,
+    mode,
+    dimension,
+    branch: 'default',
+    status: 'passed',
+    observed: {
+      fields_checked: labels,
+      save_reopen_verified: true,
+      restoration_verified: true,
+      identity_card_checked: section === 'Identity',
+    },
+  };
+}
+
+export async function runProfileExpandersCase({ panel, mode, dimension }) {
+  const id = mode === 'member' ? 'EXT-F-1004-T21' : 'EXT-F-1004-T22';
+  await ensureOpen(panel, 'Identity');
+  const original = (await sample(panel, 'Identity', ['Preferred'])).values.Preferred;
+  const draft = `Marin ${randomUUID().slice(0, 8)}`;
+  assert.notEqual(draft, original);
+  let firstError;
+  try {
+    await fill(panel, 'Identity', 'Preferred', draft);
+    for (const name of SECTIONS) {
+      const current = await sectionState(panel, name);
+      assert.equal(current.section_count, 1, `${name}_section_missing`);
+      if (current.expanded === 'false') await toggle(panel, name, true);
+      await toggle(panel, name, false);
+      await toggle(panel, name, true);
+    }
+    const after = await sample(panel, 'Identity', ['Preferred']);
+    assert.equal(after.values.Preferred, draft, 'expander_draft_lost');
+    assert.equal(after.dirty, true, 'expander_unsaved_indicator_missing');
+    assert.equal(after.save_enabled, true, 'expander_save_disabled');
+  } catch (error) {
+    firstError = error;
+  }
+  await clickHeader(panel, 'Discard');
+  const discarded = await waitFor(
+    'expander_discard_restored',
+    () => sample(panel, 'Identity', ['Preferred']),
+    (s) => s?.values?.Preferred === original && !s.save_enabled,
+    10000,
+  );
+  assert.equal(discarded.values.Preferred, original);
+  if (firstError) throw firstError;
+  return {
+    id,
+    mode,
+    dimension,
+    branch: 'default',
+    status: 'passed',
+    observed: { sections_checked: SECTIONS, draft_survived: true, discard_restored: true },
+  };
+}
