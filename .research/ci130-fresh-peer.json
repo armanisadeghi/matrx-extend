@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0130",
+  "review_target": "dd742c4c",
+  "reviewed_at": "2026-10-04",
+  "verdict_a": {
+    "status": "FAIL",
+    "scope": "Original reproduction and integration outcome",
+    "evidence": [
+      "Original CI run 37231230338 failed in setHealthyHostMeasurements with missing unique host measurement cpuBusyFraction(output), before the marker failure assertions.",
+      "On a disposable copy of the current guard, the parent helper from dd742c4c^ fails with the original lookup assertion; the dd742c4c helper passes and replaces the unique cpuBusyFraction(cpuOutput) call.",
+      "The integration test is skipped locally because the system volume has 7.52 GiB free, below the unchanged 20 GiB policy. Its marker failure and retained lease path are therefore unverified locally.",
+      "Automatic CI run 37231587582 at 175850d7 failed its resource-guard-integration job. The previous lookup error is gone, but the test reaches line 142 with markerReady false (false !== true) after 61 ms, before marker write failure or retained lease assertions. This review did not dispatch or rerun CI."
+    ],
+    "remaining": "Diagnose the hosted guard's early exit with captured stderr and obtain a non-skipped hosted integration pass on repaired source. Current assertion reports only stdout, limiting the CI failure detail."
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "scope": "Repair quality and guard preservation",
+    "evidence": [
+      "The production guard, policy, and integration assertions have no diff from original failing CI head 8b452acd to reviewed HEAD 175850d7.",
+      "The scratch replacement still leaves sampleDiskSpace on the real path and changes only the unique CPU call among the controlled host measurements.",
+      "Focused node tests: 9 passed, 0 failed, 1 skipped; the lease ownership, disk refusal, CPU sampler, and ENOSPC state checks passed. The skipped test is not counted as safety integration success.",
+      "Biome check passed for the changed measurement helper, startup repair report, and peer formatter repair file."
+    ],
+    "limitations": "No live integration execution or whole-repository lint was run in this scoped review."
+  }
+}
