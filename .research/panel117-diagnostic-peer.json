@@ -17,14 +17,14 @@
     "limit": "No native run was performed in this lane. This verifies the diagnostic's ability to distinguish these cases when observed; it does not establish what Chrome returned on the failing run or prove the root cause."
   },
   "verdict_b": {
-    "status": "PARTIAL",
-    "finding": "Reuse is good: the diagnostic delegates to the existing observeSidePanelContext helper, avoids raw URLs and exception text, preserves the acceptance guard, and tests distinguish initial classification, exact later appearance, persistent mismatch, and query error. Existing foreign-context refusal coverage remains present. The follow-up is limited to two observer attempts, but neither readContexts nor waitBetween has a wall-clock deadline here; a stalled CDP request can hold the original failure path indefinitely. The followUpQueryFailed flag also reports any observer exception, not strictly a query failure.",
+    "status": "PASS_WITH_NATIVE_LIMIT",
+    "finding": "Reuse is good: the diagnostic delegates to the existing observeSidePanelContext helper, avoids raw URLs and exception text, preserves the acceptance guard, and tests distinguish initial classification, exact later appearance, persistent mismatch, and query error. Existing foreign-context refusal coverage remains present. The follow-up is limited to two observer attempts; each cdp.send uses the existing owned CDP transport timeout (default 5,000 ms), which rejects and marks the transport fatal on timeout, so the reviewed path does not wait indefinitely for a stalled CDP command.",
     "evidence": [
       "Focused node test passed",
       "Current diff contains only the requested harness diagnostic and focused tests",
-      "No test or source change made during review"
-    ],
-    "open_issue": "Consider applying an explicit deadline to the diagnostic-only follow-up, or document that bounded means bounded query count and relies on the CDP transport to settle."
+      "No test or source change made during review",
+      "tests/browser/vault-owned-cdp.cjs: DEADLINE_MS=5_000; connectOwnedCdp defaults timeoutMs to that value and send rejects/fails transport when its timer fires; tests/browser/native-sidepanel-qa-harness.mjs connects without overriding timeoutMs"
+    ]
   },
   "files_reviewed": [
     "tests/browser/native-sidepanel-qa-harness.mjs",
@@ -32,7 +32,6 @@
     ".research/panel-context117-bounded-diagnosis.json"
   ],
   "open_issues": [
-    "Native evidence is still required to identify the actual documentUrl shape and whether the exact context appears on the follow-up.",
-    "The diagnostic follow-up has no wall-clock timeout if a CDP query hangs."
+    "Native evidence is still required to identify the actual documentUrl shape and whether the exact context appears on the follow-up."
   ]
 }
