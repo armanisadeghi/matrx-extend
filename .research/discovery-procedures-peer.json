@@ -1,0 +1,268 @@
+{
+  "report_type": "independent_source_only_discovery_procedure_review",
+  "reviewed_commit": "d6a31f3f",
+  "reviewed_path": ".research/discovery-case-procedures.json",
+  "scope": "EXT-F-4001..EXT-F-4020 against inventory, discover handlers, Tools catalog, registry, dispatcher and generated catalog; no runtime execution, DB query, or pass claim",
+  "verdict_A_spec_coverage": {
+    "status": "PARTIAL",
+    "finding": "All 20 feature/control/case IDs have four named dimensions and concrete distinct valid/malformed/schema-invalid fixtures. However 19 procedures cannot reach the named row with their written Catalog steps, and three rows add a member mode absent from the existing inventory. Root failure predicate also names the wrong result field.",
+    "row_check": [
+      {
+        "feature_id": "EXT-F-4001",
+        "tool": "list_chrome_categories",
+        "inventory_modes": ["member", "admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": true,
+        "role_applicability_matches_inventory": true
+      },
+      {
+        "feature_id": "EXT-F-4002",
+        "tool": "list_core_tools",
+        "inventory_modes": ["member", "admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": true
+      },
+      {
+        "feature_id": "EXT-F-4003",
+        "tool": "list_reading_tools",
+        "inventory_modes": ["member", "admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": true
+      },
+      {
+        "feature_id": "EXT-F-4004",
+        "tool": "list_interaction_tools",
+        "inventory_modes": ["member", "admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": true
+      },
+      {
+        "feature_id": "EXT-F-4005",
+        "tool": "list_tabs_tools",
+        "inventory_modes": ["member", "admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": true
+      },
+      {
+        "feature_id": "EXT-F-4006",
+        "tool": "list_capture_tools",
+        "inventory_modes": ["member", "admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": true
+      },
+      {
+        "feature_id": "EXT-F-4007",
+        "tool": "list_chrome_tools",
+        "inventory_modes": ["admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": false
+      },
+      {
+        "feature_id": "EXT-F-4008",
+        "tool": "list_human_tools",
+        "inventory_modes": ["member", "admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": true
+      },
+      {
+        "feature_id": "EXT-F-4009",
+        "tool": "list_memory_tools",
+        "inventory_modes": ["member", "admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": true
+      },
+      {
+        "feature_id": "EXT-F-4010",
+        "tool": "list_ai_tools",
+        "inventory_modes": ["member", "admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": true
+      },
+      {
+        "feature_id": "EXT-F-4011",
+        "tool": "list_demos_tools",
+        "inventory_modes": ["member", "admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": true
+      },
+      {
+        "feature_id": "EXT-F-4012",
+        "tool": "list_guidance_tools",
+        "inventory_modes": ["member", "admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": true
+      },
+      {
+        "feature_id": "EXT-F-4013",
+        "tool": "list_devtools_tools",
+        "inventory_modes": ["admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": false
+      },
+      {
+        "feature_id": "EXT-F-4014",
+        "tool": "list_webmcp_tools",
+        "inventory_modes": ["admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": false
+      },
+      {
+        "feature_id": "EXT-F-4015",
+        "tool": "list_desktop_tools",
+        "inventory_modes": ["member", "admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": true
+      },
+      {
+        "feature_id": "EXT-F-4016",
+        "tool": "list_credentials_tools",
+        "inventory_modes": ["member", "admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": true
+      },
+      {
+        "feature_id": "EXT-F-4017",
+        "tool": "list_crm_tools",
+        "inventory_modes": ["member", "admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": true
+      },
+      {
+        "feature_id": "EXT-F-4018",
+        "tool": "list_education_tools",
+        "inventory_modes": ["member", "admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": true
+      },
+      {
+        "feature_id": "EXT-F-4019",
+        "tool": "list_productivity_tools",
+        "inventory_modes": ["member", "admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": true
+      },
+      {
+        "feature_id": "EXT-F-4020",
+        "tool": "list_records_tools",
+        "inventory_modes": ["member", "admin"],
+        "submitted_modes": ["member", "admin"],
+        "dimensions_per_submitted_mode": ["valid-input", "invalid-input", "permissions", "reload"],
+        "fixture_distinction": "{} valid; { invalid JSON; null valid JSON invalid NoArgs schema",
+        "initial_catalog_path_reproducible": false,
+        "role_applicability_matches_inventory": true
+      }
+    ]
+  },
+  "verdict_B_source_quality": {
+    "status": "IMPORTANT_GAPS",
+    "finding": "The source-backed schema and result predicates, manual runner bypass caveat, and runtime/DB unknowns are substantially honest. The default Catalog filter and role mismatch make the submitted procedures not directly executable as written. No runtime result can be inferred from this review."
+  },
+  "findings": [
+    {
+      "id": "P1",
+      "severity": "important",
+      "affected": "EXT-F-4002..EXT-F-4020, member/admin where applicable",
+      "defect": "Each step says search the exact tool name and open its row. Tools Catalog defaults to Agent surface (canonical), which excludes every category list tool. The row will show No tools match until the tester changes the surface filter.",
+      "repair": "Add an explicit select All handlers step before searching each list_<category>_tools row; include it in reload repetition.",
+      "source": [
+        "src/features/tools/ToolsView.tsx:125",
+        "src/features/tools/ToolsView.tsx:139-143",
+        "src/features/tools/ToolsView.tsx:198-211",
+        "src/lib/tools/categories.ts:461-558"
+      ]
+    },
+    {
+      "id": "P2",
+      "severity": "important",
+      "affected": ["EXT-F-4007", "EXT-F-4013", "EXT-F-4014"],
+      "defect": "Submitted member cells conflict with the existing inventory, which assigns each of these admin_only cases only to admin mode. Manual Tools runner bypass explains possible technical reachability but does not change recorded role applicability.",
+      "repair": "Keep only admin execution cells for these three case IDs, or explicitly reconcile the inventory and add a separate member negative-access case if that is the intended scope.",
+      "source": [
+        "docs/stabilization/inventory.json:36593",
+        "docs/stabilization/inventory.json:37246",
+        "docs/stabilization/inventory.json:37354",
+        "src/lib/tools/categories.ts:128-135",
+        "src/lib/tools/categories.ts:171-185",
+        "src/lib/tools/handlers/discover.ts:94-103",
+        "src/lib/tools/dispatch.ts:752-767"
+      ]
+    },
+    {
+      "id": "P3",
+      "severity": "minor",
+      "affected": "EXT-F-4001, both modes",
+      "defect": "Root valid-input failure predicate says count differs from tools.length, but this handler returns total_categories and categories; those fields are used correctly in its expected list. The contradictory failure test cannot be applied literally.",
+      "repair": "Use total_categories !== categories.length as the failure predicate.",
+      "source": ["src/lib/tools/handlers/discover.ts:86-90"]
+    }
+  ],
+  "accepted_source_predicates": [
+    "NoArgs is z.object({}).default({}); {} parses, { fails JSON parsing, null fails object validation.",
+    "All discovery handlers use read tier; category handlers carry admin_only for chrome, devtools and webmcp.",
+    "Manual Tools runner invokes local handler.run directly, so manual permission observation does not establish dispatcher authorization.",
+    "Category results have category/count/tools, local input_schema or server execution; description can be null. Root has total_categories/categories.",
+    "Admin root category index omits admin_only categories because ctxIsAdmin currently returns false; category list handler sets isAdmin true for admin_only category, regardless of actual user role."
+  ],
+  "remaining_unknowns": [
+    "Actual installed build identity, Tools navigation and role visibility, and post-reload behavior were not exercised.",
+    "Live DB descriptions/server metadata and browser-supported category contents were not queried.",
+    "Chat dispatcher permissions and admin denial were not exercised; manual Run cannot prove them.",
+    "No runtime pass, N/A, or retirement conclusion follows from source review."
+  ]
+}
