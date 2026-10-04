@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T00:03:43.632690+00:00",
+  "updated_at": "2026-10-04T00:25:20.572040+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -24431,12 +24431,21 @@
           ],
           "results": {
             "guest": {
+              "status": "partial",
+              "run_id": "d100-native-credential-01",
+              "detail": "D100originalreload/pointerfailure no longerreproduces inexactCIdevelopment189 b4b9f0c4; strictlifecycle andruntimeerrors0\u21920 verified. Warmchooser/fill, member/admin andotherdimensionsremainunverified.",
+              "evidence": ".research/d100-native-acceptance.json"
+            }
+          },
+          "previous_results": [
+            {
+              "mode": "guest",
               "status": "fail",
               "run_id": "reload-runtime-diag-01",
               "detail": "Fullreload invalidatesoldcredentiallistener; pointerinteractionthrows. Onlythisreloadbranch tested; chooser/UIfillandotherrolesremainunverified.",
               "evidence": ".research/reload-runtime-error-diagnosis.json"
             }
-          }
+          ]
         },
         {
           "id": "EXT-F-1014-T11",
@@ -24684,12 +24693,14 @@
       ],
       "cells": {
         "guest": {
-          "test_status": "fail",
+          "test_status": "partial",
           "defect_ids": [
             "EXT-D-0100"
           ],
-          "run_ids": [],
-          "retest_status": "not-run"
+          "run_ids": [
+            "d100-native-credential-01"
+          ],
+          "retest_status": "partial"
         },
         "member": {
           "test_status": "unverified",

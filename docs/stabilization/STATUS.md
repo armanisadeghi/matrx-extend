@@ -1,12 +1,12 @@
 # Extension stabilization status
 
-Generated 2026-10-04 00:11 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T00:03:43.632690+00:00. 205 features · 760 cases · 1332 controls · 100 linked defect records.
+Generated 2026-10-04 00:25 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T00:25:20.572040+00:00. 205 features · 760 cases · 1332 controls · 100 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1207** — Pass: 69 · Partial: 64 · Fail: 6 · Unverified: 1067 · N/A: 1.
+Applicable case-by-role slots: **1207** — Pass: 69 · Partial: 65 · Fail: 5 · Unverified: 1067 · N/A: 1.
 Unverified splits into **121 explicitly marked unverified** and **946 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 148 cases without steps, 147 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
@@ -31,7 +31,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
 | [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 28 partial · 0 fail · 29 unverified · 0 deferred; 0/1 full | pass 1, partial 28, fail 0, unverified 29, n/a 0 | 11 |
 | [Token broker](#token-broker) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 9, n/a 0 | 0 |
-| [Content-page overlays / context menus / commands](#content-page-overlays--context-menus--commands) | 1 | 0 pass · 0 partial · 1 fail · 18 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 1, unverified 56, n/a 0 | 1 |
+| [Content-page overlays / context menus / commands](#content-page-overlays--context-menus--commands) | 1 | 0 pass · 1 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 56, n/a 0 | 0 |
 | [Profile/auth/org picker](#profileauthorg-picker) | 1 | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
 | [Keyboard commands](#keyboard-commands) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | pass 0, partial 0, fail 0, unverified 0, n/a 0 | 0 |
 | [Tasks side-panel](#tasks-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 0 |
@@ -1160,11 +1160,11 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Use context menu, page overlays and extension commands (EXT-F-1014)
 
-**Role status:** guest: Fail · member: Unverified · admin: Unverified. **Cases:** 19. **Controls:** 19.
+**Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 19. **Controls:** 19.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0100
+**Next:** Finish the missing criteria and repeat the partial case in the extension.
 
-**Linked defects:** [EXT-D-0100](defects/EXT-D-0100.json) (fixed)
+**Linked defects:** [EXT-D-0100](defects/EXT-D-0100.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1177,7 +1177,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1014-T07 SPA navigation notification | Unverified | Unverified | Unverified | EXT-F-1014-C07 |
 | EXT-F-1014-T08 Page scroll subscription | Unverified | Unverified | Unverified | EXT-F-1014-C08 |
 | EXT-F-1014-T09 Credential save prompt buttons | Unverified | Unverified | Unverified | EXT-F-1014-C09 |
-| EXT-F-1014-T10 Inline saved-login suggestion chooser | Fail | Unverified | Unverified | EXT-F-1014-C10 |
+| EXT-F-1014-T10 Inline saved-login suggestion chooser | Partial | Unverified | Unverified | EXT-F-1014-C10 |
 | EXT-F-1014-T11 Inline suggestion keyboard navigation | Unverified | Unverified | Unverified | EXT-F-1014-C11 |
 | EXT-F-1014-T12 Highlighter text selector overlay | Unverified | Unverified | Unverified | EXT-F-1014-C12 |
 | EXT-F-1014-T13 Highlighter element hover/click | Unverified | Unverified | Unverified | EXT-F-1014-C13 |
@@ -1190,8 +1190,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Recorded case details and evidence:**
 
-- EXT-F-1014-T10 · guest: Fail. Fullreload invalidatesoldcredentiallistener; pointerinteractionthrows. Onlythisreloadbranch tested; chooser/UIfillandotherrolesremainunverified.
-  Evidence / build / date recorded: reload-runtime-diag-01, .research/reload-runtime-error-diagnosis.json
+- EXT-F-1014-T10 · guest: Partial. D100originalreload/pointerfailure no longerreproduces inexactCIdevelopment189 b4b9f0c4; strictlifecycle andruntimeerrors0→0 verified. Warmchooser/fill, member/admin andotherdimensionsremainunverified.
+  Evidence / build / date recorded: d100-native-credential-01, .research/d100-native-acceptance.json
 
 
 ## Profile/auth/org picker

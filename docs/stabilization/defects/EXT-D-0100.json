@@ -14,13 +14,15 @@
   "actual": "The sender dereferences an invalidated runtime synchronously; the later promise catch cannot handle the property-access TypeError.",
   "severity": "S2: stale content listener throws on user interaction after extension reload; credential/data loss not demonstrated.",
   "priority": "P1: real runtime defect exposed during acceptance.",
-  "state": "fixed",
+  "state": "closed",
   "owner": "credential_reload_fix",
   "evidence": [
     ".research/reload-final-peer.json",
     ".research/reload-runtime-error-diagnosis.json",
     "docs/stabilization/resource-journals/reload-runtime-diag-01.jsonl",
-    ".research/credential-reload-fix.json"
+    ".research/credential-reload-fix.json",
+    ".research/credential-reload-peer.json",
+    ".research/d100-native-acceptance.json"
   ],
   "transition_history": [
     {
@@ -46,6 +48,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source26005bd4 retires stalechooser andcapturesibling beforepasswordsnapshot. Builderactualpathredgreen,114focusedtests/typecheck/Biomepass; independentreview/nativeartifactretestpending."
+    },
+    {
+      "at": "2026-10-04T00:25:20.572040+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent sourcepeer766c99ce passed114tests and2mutationguards. Fresh guardednative d100-native-credential-01 onexactCIb4/sourcefix26005 passedoriginalreload/pageinteraction withruntimeerrors0\u21920 andstrictreplacement."
+    },
+    {
+      "at": "2026-10-04T00:25:20.572040+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Rootindependentlyread exactrawreport andresourcefinalverdict; rawSHA3756520cf1180f369601f9e2f60b03c93fc830c692af4e9fa04a7505233a0540,journalSHAe3fa278155c3bf7a26fe8137e3d9d94e534726ffcba970eaf1acd5dc7c1471a8. Originaldefectclosed; fullcredentialflows andlatermainchangesnotcertified."
     }
   ],
   "closure_requirement": "Meaningful actual-path failure guard red\u2192green, surrounding validmessaging and lifecyclecases, independent review, then exactnewartifact realreload/pageinteraction without thiserror. No blanketcredentialfeaturepass.",
