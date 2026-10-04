@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "task": "profile-fields-reload-fixed-native",
+  "defect_id": "EXT-D-0106",
+  "status": "native_member_extended_pass_restored",
+  "run_id": "profile-fields-reload-fixed-189-08",
+  "source": {
+    "commit": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "ci_run_id": 37164174445,
+    "artifact_id": 11288542496,
+    "version": "0.2.189",
+    "tree_sha256": "494646f6dd65399e0e7eee65fd1d9bd00ef97d173c5ceb9674de276ca12dc23a"
+  },
+  "runner": {
+    "path": "tests/browser/profile-native-acceptance.mjs",
+    "sha256": "e427b00309ada3ba9d2e4b87047d572016f65e0237fa7ef16eaded53eec7633b",
+    "extended_cases": true,
+    "resource_decision": "valid_exit_0"
+  },
+  "identity_and_scope": {
+    "first_party_identity_verified": true,
+    "extension_identity_matches": true,
+    "device_organization_matches_stored_identity": true,
+    "canonical_nonadmin_check": { "http_status": 200, "returned_rows": 0 }
+  },
+  "original_reproduction": {
+    "case_id": "EXT-F-1004-T01",
+    "dimension": "warm",
+    "status": "passed",
+    "actual_input_transition": true,
+    "discard_visible": true,
+    "back_to_chat": true,
+    "reopened_original_value": true
+  },
+  "extended_case_census": [
+    { "case_id": "EXT-F-1004-T05", "dimension": "warm", "status": "passed" },
+    { "case_id": "EXT-F-1004-T05", "dimension": "extension_reload", "status": "passed" },
+    { "case_id": "EXT-F-1004-T17", "dimension": "warm", "status": "passed" },
+    { "case_id": "EXT-F-1004-T17", "dimension": "extension_reload", "status": "passed" },
+    { "case_id": "EXT-F-1004-T21", "dimension": "warm", "status": "passed" },
+    { "case_id": "EXT-F-1004-T21", "dimension": "extension_reload", "status": "passed" }
+  ],
+  "additional_cases": [
+    "T03 discard and save/reopen passed warm and reload",
+    "T25 owner-read retry passed warm and reload",
+    "T26 write failure/retry passed; its bounded new-row branch verified original absence"
+  ],
+  "restoration": {
+    "first_save_created_row_for_verified_member_and_device_organization": true,
+    "runner_conditional_cleanup_verified": true,
+    "original_absence_verified": true,
+    "prior_run_189_07_row": "already recovered by root lane; untouched"
+  },
+  "reload_observation": {
+    "before": "guest account control shown while persisted identity, organization and access token matched",
+    "after_bounded_wait": "signed-in account control shown; persisted identity and organization still matched; no auth error"
+  },
+  "limitations": [
+    "Earlier profile-fields-clean-save-189-07 failure remains classified as profile_unclassified_failure; its discarded member error is unknown. This current run passed, so it did not capture that error.",
+    "The T28 first-save branch was bounded to row creation and restoration, not full T28 acceptance."
+  ],
+  "evidence": {
+    "raw_report_sha256": "90c2e27e2bc27424f4389303a024cbb58f37974b52e2c284b57b2d84bc8d971a",
+    "resource_journal": "docs/stabilization/resource-journals/profile-fields-reload-fixed-189-08.jsonl",
+    "resource_journal_sha256": "e20fe07c11f3b2505d12afaa148a986fdad2a8d6d09359cf89460ba537842471",
+    "raw_report_private_path": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-fields-reload-fixed-189-08/evidence/profile-native-profile-fields-reload-fixed-189-08.json",
+    "private_ownership_receipt_mode": "0600",
+    "single_use_magic_link_removed": true
+  }
+}
