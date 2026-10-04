@@ -1,0 +1,28 @@
+{
+  "scope": "Source-level tests for EXT-F-1007-T10/T11/T12. No product code changed.",
+  "evidence_level": "Focused Zustand store tests only; not native or browser evidence.",
+  "cases": {
+    "EXT-F-1007-T10": {
+      "status": "source-level pass for state mutation; UI/count behavior unverified",
+      "evidence": "The real useScrapeStore removes each of three distinct image URLs in sequence, retains non-target entries after each removal, and marks the capture edited."
+    },
+    "EXT-F-1007-T11": {
+      "status": "partial; Add image URL validation UI untested",
+      "evidence": "The real store appends a distinct image with the model defaults and leaves an existing URL unduplicated. Blank-src rejection, draft retention, valid form submission, and Cancel clearing are inline in ScrapeView/AddItemRow and were not exercised through a component test."
+    },
+    "EXT-F-1007-T12": {
+      "status": "partial; video row actions and blank-source form validation untested",
+      "evidence": "The real store removes only the selected video while retaining the other URL, appends a distinct video with defaults, and leaves a duplicate unchanged. Opening and copying the rendered link, and the Add video URL blank/valid form behavior, were not exercised through a component test."
+    }
+  },
+  "test": {
+    "file": "src/state/scrape.media-controls.test.ts",
+    "command": "pnpm exec vitest run src/state/scrape.media-controls.test.ts --maxWorkers=1",
+    "result": "4 tests passed, including duplicate controls."
+  },
+  "limitations": [
+    "No native browser run, extension build, or full test suite was performed.",
+    "T11/T12 UI behavior is owned by inline handlers in ScrapeView; extracting or exposing those handlers for direct testing would require product code changes, outside this lane.",
+    "Store-level green does not establish rendered image counts, form validation, clipboard behavior, or native interactions."
+  ]
+}
