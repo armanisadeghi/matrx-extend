@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-04 03:30 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T03:30:51.559394+00:00. 205 features · 761 cases · 1333 controls · 106 linked defect records.
+Generated 2026-10-04 03:43 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T03:30:51.559394+00:00. 205 features · 761 cases · 1333 controls · 106 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -70,7 +70,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0077, EXT-D-0090, EXT-D-0106
 
-**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed), [EXT-D-0080](defects/EXT-D-0080.json) (closed), [EXT-D-0090](defects/EXT-D-0090.json) (fixed), [EXT-D-0099](defects/EXT-D-0099.json) (closed), [EXT-D-0106](defects/EXT-D-0106.json) (triaged)
+**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed), [EXT-D-0080](defects/EXT-D-0080.json) (closed), [EXT-D-0090](defects/EXT-D-0090.json) (fixed), [EXT-D-0099](defects/EXT-D-0099.json) (closed), [EXT-D-0106](defects/EXT-D-0106.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -86,8 +86,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 - EXT-F-0001-T01 · guest: Unverified.
   Evidence / build / date recorded: baseline-build-001, docs/stabilization/runs/baseline-build-001.json
-- EXT-F-0001-T02 · guest: Partial. Independent frozen184 guest fullReload lifecycle passed including enabledDeveloperMode, strictoldtargetretirement, newworker/panel andnativecontext. Runtimeerrorcount1 stillunclassified; no cleanruntime or currentmainclaim.
-  Evidence / build / date recorded: reload-final-peer-20261003-01, .research/reload-final-peer.json
+- EXT-F-0001-T02 · guest: Partial. Frozen189 guest trusted pane transition and strict old-context retirement/exact replacement passed with zero runtime/manifest errors. Post-reload rendered content not sampled; full rendering case and current-main/Store-installation behavior remain unverified.
+  Evidence / build / date recorded: reload-readiness-peer-189-01, .research/reload-readiness-peer.json
 - EXT-F-0001-T02 · admin: Pass. Final shipped0.2.56 full extension Reload,30s before opening actual sidepanel: admin/ADMIN restored; selected org visible about5s later. Original development30s-settle proof retained in permissions-auth-native-sol.
   Evidence / build / date recorded: release-native-verification, docs/stabilization/runs/release-native-verification.json
 - EXT-F-0001-T06 · guest: Unverified. Implementation active after independent contract review; actual artifact/import/native evidence pending.

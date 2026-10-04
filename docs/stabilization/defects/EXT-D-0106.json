@@ -14,7 +14,7 @@
   "actual": "Warm Identity/Employment save/reopen succeeds; reload fails before dimension evidence. Exact inner cause not retained. Owned row was subsequently conditionally removed and root independently read zero rows.",
   "severity": "S2 test lifecycle and cleanup blocked; product impact not established",
   "priority": "P1 prerequisite for full Profile verification",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root",
   "evidence": [
     ".research/profile-fields-clean-save-native.json",
@@ -22,7 +22,9 @@
     ".research/profile-reload-failure-source.json",
     "docs/stabilization/resource-journals/profile-fields-clean-save-189-07.jsonl",
     ".research/reload106-causal-capture.json",
-    ".research/reload-context-boundary.json"
+    ".research/reload-context-boundary.json",
+    ".research/reload-readiness-fix.json",
+    ".research/reload-readiness-peer.json"
   ],
   "transition_history": [
     {
@@ -42,8 +44,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Guarded guest run proves exact runtime context appears108ms after first mismatch; original member exception remains unknown. Repair bounded exact-context readiness without loosening lifecycle checks."
+    },
+    {
+      "at": "2026-10-04T03:43:25.867470+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Harness readiness9eecf01c passes fresh source peer and independent guest lifecycle. Original member reload/full-field/automatic restoration remains pending; no closure."
     }
   ],
-  "next_action": "Implement existing-bound exact-context readiness, then fresh source/native peer and original member full-field reload/restoration acceptance.",
+  "next_action": "One independent guarded full member Profile run with extended cases on frozen189 and current reviewed harness; verify original reproduction, post-reload saved fields and automatic exact original-state restoration.",
   "closure_requirement": "Prove reload cause, fix and independently verify actual reload plus saved-field and automatic original-state restoration. Recovery SQL alone does not close it."
 }

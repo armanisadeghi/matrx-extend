@@ -136,80 +136,87 @@
           ]
         },
         {
-          "id": "EXT-F-0001-T02",
-          "title": "Extension reload and sidepanel recovery",
-          "modes": [
-            "guest",
-            "member",
-            "admin"
-          ],
-          "control_ids": [
-            "EXT-F-0001-C02"
-          ],
-          "preconditions": [
-            "Candidate unpacked extension is loaded and its identity/build receipt is recorded."
-          ],
-          "steps": "Reload the extension in Chrome, reopen the actual sidepanel, and confirm the initial view renders.",
-          "expected": [
-            "Chrome confirms extension reload and the actual sidepanel opens without the original startup render error."
-          ],
-          "dimensions": [
-            "warm",
-            "extension-reload"
-          ],
-          "results": {
-            "guest": {
-              "status": "partial",
-              "run_id": "reload-final-peer-20261003-01",
-              "detail": "Independent frozen184 guest fullReload lifecycle passed including enabledDeveloperMode, strictoldtargetretirement, newworker/panel andnativecontext. Runtimeerrorcount1 stillunclassified; no cleanruntime or currentmainclaim.",
-              "evidence": ".research/reload-final-peer.json"
-            },
-            "member": {
-              "status": "unverified",
-              "detail": "No member-mode session evidence; the operational behavior is intended to be auth-independent."
-            },
-            "admin": {
-              "status": "pass",
-              "run_id": "release-native-verification",
-              "evidence": "docs/stabilization/runs/release-native-verification.json",
-              "detail": "Final shipped0.2.56 full extension Reload,30s before opening actual sidepanel: admin/ADMIN restored; selected org visible about5s later. Original development30s-settle proof retained in permissions-auth-native-sol."
-            }
+        "id": "EXT-F-0001-T02",
+        "title": "Extension reload and sidepanel recovery",
+        "modes": [
+          "guest",
+          "member",
+          "admin"
+        ],
+        "control_ids": [
+          "EXT-F-0001-C02"
+        ],
+        "preconditions": [
+          "Candidate unpacked extension is loaded and its identity/build receipt is recorded."
+        ],
+        "steps": "Reload the extension in Chrome, reopen the actual sidepanel, and confirm the initial view renders.",
+        "expected": [
+          "Chrome confirms extension reload and the actual sidepanel opens without the original startup render error."
+        ],
+        "dimensions": [
+          "warm",
+          "extension-reload"
+        ],
+        "results": {
+          "guest": {
+            "status": "partial",
+            "run_id": "reload-readiness-peer-189-01",
+            "evidence": ".research/reload-readiness-peer.json",
+            "detail": "Frozen189 guest trusted pane transition and strict old-context retirement/exact replacement passed with zero runtime/manifest errors. Post-reload rendered content not sampled; full rendering case and current-main/Store-installation behavior remain unverified."
           },
-          "previous_results": [
-            {
-              "mode": "admin",
-              "status": "fail",
-              "run_id": "permission-native-retest",
-              "evidence": "docs/stabilization/runs/permission-native-retest.json",
-              "detail": "Freshdevelopment reload settledguest instead of restoring observedadminidentity; D7 diagnosis pending."
-            },
-            {
-              "mode": "admin",
-              "status": "pass",
-              "run_id": "permissions-auth-native-sol",
-              "evidence": "docs/stabilization/runs/permissions-auth-native-sol.json",
-              "detail": "Actualsidepanel0.2.54 adminidentity/ADMIN/sameorg survivesfullReload+30s andrecurringpermissionreloads; no newsignin."
-            },
-            {
-              "mode": "guest",
-              "status": "pass",
-              "run_id": "render-retest-001",
-              "detail": "Candidate identity was verified after reload and actual sidepanel opened twice; guest session only.",
-              "evidence": "docs/stabilization/runs/render-retest-001.json"
-            },
-            {
-              "mode": "guest",
-              "status": "fail",
-              "run_id": "reload-escalation-01",
-              "detail": "Current isolated development184 profile disables unpacked extension on full Reload because Developer mode is off. Builder repair passed once; independent final verification pending. Historical product passes preserved.",
-              "evidence": ".research/reload-lifecycle-escalation.json"
-            }
-          ],
-          "defect_ids": [
-            "EXT-D-0099",
-            "EXT-D-0106"
-          ]
+          "member": {
+            "status": "unverified",
+            "detail": "No member-mode session evidence; the operational behavior is intended to be auth-independent."
+          },
+          "admin": {
+            "status": "pass",
+            "run_id": "release-native-verification",
+            "evidence": "docs/stabilization/runs/release-native-verification.json",
+            "detail": "Final shipped0.2.56 full extension Reload,30s before opening actual sidepanel: admin/ADMIN restored; selected org visible about5s later. Original development30s-settle proof retained in permissions-auth-native-sol."
+          }
         },
+        "previous_results": [
+          {
+            "mode": "admin",
+            "status": "fail",
+            "run_id": "permission-native-retest",
+            "evidence": "docs/stabilization/runs/permission-native-retest.json",
+            "detail": "Freshdevelopment reload settledguest instead of restoring observedadminidentity; D7 diagnosis pending."
+          },
+          {
+            "mode": "admin",
+            "status": "pass",
+            "run_id": "permissions-auth-native-sol",
+            "evidence": "docs/stabilization/runs/permissions-auth-native-sol.json",
+            "detail": "Actualsidepanel0.2.54 adminidentity/ADMIN/sameorg survivesfullReload+30s andrecurringpermissionreloads; no newsignin."
+          },
+          {
+            "mode": "guest",
+            "status": "pass",
+            "run_id": "render-retest-001",
+            "detail": "Candidate identity was verified after reload and actual sidepanel opened twice; guest session only.",
+            "evidence": "docs/stabilization/runs/render-retest-001.json"
+          },
+          {
+            "mode": "guest",
+            "status": "fail",
+            "run_id": "reload-escalation-01",
+            "detail": "Current isolated development184 profile disables unpacked extension on full Reload because Developer mode is off. Builder repair passed once; independent final verification pending. Historical product passes preserved.",
+            "evidence": ".research/reload-lifecycle-escalation.json"
+          },
+          {
+            "mode": "guest",
+            "status": "partial",
+            "run_id": "reload-final-peer-20261003-01",
+            "detail": "Independent frozen184 guest fullReload lifecycle passed including enabledDeveloperMode, strictoldtargetretirement, newworker/panel andnativecontext. Runtimeerrorcount1 stillunclassified; no cleanruntime or currentmainclaim.",
+            "evidence": ".research/reload-final-peer.json"
+          }
+        ],
+        "defect_ids": [
+          "EXT-D-0099",
+          "EXT-D-0106"
+        ]
+      },
         {
           "id": "EXT-F-0001-T03",
           "title": "Content-script page reload",

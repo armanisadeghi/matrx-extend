@@ -9,7 +9,7 @@
   "verdict_a_native_acceptance": {
     "verdict": "PASS_GUEST_LIFECYCLE_ONLY",
     "evidence": "One guarded read-only frozen development 0.2.189 guest run reload-readiness-peer-189-01: valid resource exit 0; owned pane selected Chat then trusted CDP pointer click selected Scrape before reload; old worker and panel retired; new worker and panel observed; exact replacement SIDE_PANEL context appeared on first query at 1 ms; extension remained enabled with zero runtime and manifest errors.",
-    "limitation": "This native run did not exercise delayed second-query acceptance or sample rendered pane content after reload; its screenshots precede the callback. The prior frozen-189 boundary capture observed the exact replacement context at 115 ms after an initial wrong identity, but the old immediate verdict failed. Current main source fix is not in the frozen 189 extension. Original member full-fields, reload, and automatic-restoration acceptance remains open."
+    "limitation": "This native run did not exercise delayed second-query acceptance or sample rendered pane content after reload; its screenshots precede the callback. The prior frozen-189 boundary capture observed the exact replacement context at 115 ms after an initial wrong identity, but the old immediate verdict failed. The correction is in the current test harness used by this run; the frozen189 extension itself is unchanged. Original member full-fields, reload, and automatic-restoration acceptance remains open."
   },
   "verdict_b_source_quality": {
     "verdict": "PASS",
