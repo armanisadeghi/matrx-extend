@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import { withClipboardReadPermission } from './clipboard-observation.mjs';
+import { activeTabPanelExpression } from './settings-panel-driver.mjs';
 
 const diagnostic = (error) => String(error?.message ?? error).slice(0, 120);
 export async function enterMediaField({
@@ -25,11 +27,21 @@ async function observeOpenedAndCopiedLinks({
   resourceAction,
   click,
   evaluate,
+  browserSession,
+  panelUrl,
   kind,
   observeAction,
 }) {
   const run = observeAction ?? ((_kind, _target, action) => action());
-  const result = { opened_url: null, clipboard_url: null, limitations: [], failures: [] };
+  const result = {
+    opened_url: null,
+    copy_feedback: null,
+    clipboard_equal: null,
+    clipboard_read: null,
+    clipboard_observation: {},
+    limitations: [],
+    failures: [],
+  };
   const newTab = page
     .context()
     .waitForEvent('page', { timeout: 5000 })
@@ -60,18 +72,110 @@ async function observeOpenedAndCopiedLinks({
   } catch (error) {
     result.limitations.push(`open_unavailable:${diagnostic(error)}`);
   }
-  await run('scrape-media-copy', urls[1], () =>
-    resourceAction(() => click(panel, 'scrape-media-copy', urls[1])),
-  );
-  try {
-    result.clipboard_url = await evaluate(panel, 'navigator.clipboard.readText()');
-    assert.equal(typeof result.clipboard_url, 'string', `${kind}_clipboard_unavailable`);
-    if (result.clipboard_url !== urls[1])
-      result.failures.push(`${kind}_clipboard_url_mismatch:${result.clipboard_url.slice(0, 120)}`);
-  } catch (error) {
-    result.limitations.push(`copy_unavailable:${diagnostic(error)}`);
+  result.copy_feedback = await run('scrape-media-copy', urls[1], async () => {
+    await resourceAction(() => click(panel, 'scrape-media-copy', urls[1]));
+    return observeCopyFeedback(panel, urls[1], evaluate);
+  });
+  if (result.copy_feedback === 'failed') {
+    result.failures.push(`${kind}_copy_write_failed`);
+    return result;
   }
+  if (result.copy_feedback !== 'copied') {
+    result.limitations.push(`${kind}_copy_feedback_${result.copy_feedback}`);
+    return result;
+  }
+  const read = () => readClipboardEquality(panel, urls[1]);
+  let observed;
+  try {
+    observed = await read();
+    result.clipboard_read = observed;
+    if (observed.code === 'NotAllowedError' && observed.focused && observed.visible) {
+      observed = await withClipboardReadPermission({
+        browserSession,
+        panel,
+        panelUrl,
+        read,
+        evidence: result.clipboard_observation,
+      });
+      result.clipboard_read_after_grant = observed;
+    }
+  } catch {
+    result.limitations.push(`${kind}_clipboard_observation_unavailable`);
+    return result;
+  }
+  if (observed.ok === true) {
+    result.clipboard_equal = observed.same;
+    if (!observed.same) result.failures.push(`${kind}_clipboard_url_mismatch`);
+  } else result.limitations.push(`${kind}_clipboard_read_${observed.code}`);
   return result;
+}
+
+export async function observeCopyFeedback(panel, url, evaluate) {
+  const expression = `(() => {
+    const pane = ${activeTabPanelExpression('Scrape')};
+    const tab = pane?.querySelector('[role="tablist"] [role="tab"][aria-selected="true"]');
+    const content = tab ? document.getElementById(tab.getAttribute('aria-controls') ?? '') : null;
+    const matches = [...(content?.querySelectorAll('a') ?? [])]
+      .filter(a => a.href === ${JSON.stringify(url)})
+      .flatMap(a => [...(a.parentElement?.querySelectorAll('button[title^="Copy "]') ?? [])]);
+    if (matches.length !== 1) return 'unobserved';
+    if (matches[0].querySelector('svg.text-emerald-500')) return 'copied';
+    if (matches[0].querySelector('svg.text-red-500')) return 'failed';
+    return 'pending';
+  })()`;
+  const deadline = Date.now() + 1000;
+  do {
+    try {
+      const feedback = await evaluate(panel, expression);
+      if (feedback === 'copied' || feedback === 'failed' || feedback === 'unobserved')
+        return feedback;
+    } catch {
+      return 'unobserved';
+    }
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  } while (Date.now() < deadline);
+  return 'pending';
+}
+
+export async function readClipboardEquality(panel, expected) {
+  const response = await panel.send('Runtime.evaluate', {
+    expression: `(async () => {
+      const focused = document.hasFocus(), visible = document.visibilityState === 'visible';
+      try {
+        if (!navigator.clipboard?.readText) return {ok:false,code:'api_unavailable',focused,visible};
+        return {ok:true,same:(await navigator.clipboard.readText()) === ${JSON.stringify(expected)},focused,visible};
+      } catch (error) {
+        const names = ['NotAllowedError','SecurityError','NotFoundError','AbortError'];
+        return {ok:false,code:names.includes(error?.name) ? error.name : 'other_rejection',focused,visible};
+      }
+    })()`,
+    awaitPromise: true,
+    returnByValue: true,
+  });
+  const value = response.result?.value;
+  if (response.exceptionDetails || !value || typeof value !== 'object')
+    return { ok: false, code: 'runtime_exception', focused: false, visible: false };
+  if (value.ok === true && typeof value.same === 'boolean')
+    return {
+      ok: true,
+      same: value.same,
+      focused: value.focused === true,
+      visible: value.visible === true,
+    };
+  const codes = new Set([
+    'NotAllowedError',
+    'SecurityError',
+    'NotFoundError',
+    'AbortError',
+    'api_unavailable',
+    'other_rejection',
+  ]);
+  return {
+    ok: false,
+    code: codes.has(value.code) ? value.code : 'other_rejection',
+    focused: value.focused === true,
+    visible: value.visible === true,
+  };
 }
 
 export async function observeVideoLinks(dependencies) {

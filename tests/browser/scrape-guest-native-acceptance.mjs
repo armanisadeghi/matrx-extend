@@ -437,7 +437,15 @@ async function selectedLinks(panel, items, name) {
   return assertLinkPane(state, items, name);
 }
 
-async function exerciseLinkControls({ panel, page, origin, phase, resourceAction }) {
+async function exerciseLinkControls({
+  panel,
+  page,
+  origin,
+  phase,
+  resourceAction,
+  browserSession,
+  panelUrl,
+}) {
   const observeAction = (kind, target, action) =>
     observedMediaAction(panel, mediaIdentity(phase, kind, target), action);
   await mediaTransitionProbe(panel, { phase }, 'start');
@@ -455,6 +463,8 @@ async function exerciseLinkControls({ panel, page, origin, phase, resourceAction
     click,
     observeAction,
     evaluate,
+    browserSession,
+    panelUrl,
   });
   await observedMediaRemoval({
     panel,
@@ -536,6 +546,8 @@ async function exerciseMediaControls({
   phase,
   resourceAction,
   requireResourceHealth,
+  browserSession,
+  panelUrl,
 }) {
   const observeAction = (kind, target, action) =>
     observedMediaAction(panel, mediaIdentity(phase, kind, target), action);
@@ -667,6 +679,8 @@ async function exerciseMediaControls({
     click,
     observeAction,
     evaluate,
+    browserSession,
+    panelUrl,
   });
   await observedMediaRemoval({
     panel,
@@ -803,6 +817,8 @@ try {
     exercisePanel: async ({
       page,
       panel,
+      browserSession,
+      panelTarget,
       artifacts,
       reloadExtension,
       requireResourceHealth,
@@ -1048,6 +1064,8 @@ try {
           phase: 'warm',
           resourceAction,
           requireResourceHealth,
+          browserSession,
+          panelUrl: panelTarget.url,
         }),
       );
       report.media_controls = { warm: warmControls };
@@ -1080,7 +1098,15 @@ try {
 
       report.stage = 'warm_link_controls';
       const warmLinkControls = await captureMediaFailure(panel, artifacts, 'warm-links', () =>
-        exerciseLinkControls({ panel, page, origin, phase: 'warm', resourceAction }),
+        exerciseLinkControls({
+          panel,
+          page,
+          origin,
+          phase: 'warm',
+          resourceAction,
+          browserSession,
+          panelUrl: panelTarget.url,
+        }),
       );
       report.link_controls = { warm: warmLinkControls };
       const warmLinkVerdict = videoLinksVerdict(warmLinkControls.actions);
@@ -1342,6 +1368,8 @@ try {
               phase: 'reload',
               resourceAction,
               requireResourceHealth,
+              browserSession,
+              panelUrl: replacement.panelTarget?.url ?? panelTarget.url,
             }),
         );
         report.media_controls.reload = reloadControls;
@@ -1357,6 +1385,8 @@ try {
               origin,
               phase: 'reload',
               resourceAction,
+              browserSession,
+              panelUrl: replacement.panelTarget?.url ?? panelTarget.url,
             }),
         );
         report.link_controls.reload = reloadLinkControls;
