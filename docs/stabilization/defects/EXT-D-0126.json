@@ -14,8 +14,8 @@
   "actual": "Copy actions are attempted but generic panel runtime exception prevents clipboard readback; product copy failure versus observer permission/focus failure remains unestablished.",
   "severity": "S2: clipboard acceptance blocked; product impact pending diagnosis",
   "priority": "P1: remaining contained media acceptance",
-  "state": "fixed",
-  "owner": "root/clipboard126_native_run",
+  "state": "closed",
+  "owner": "root",
   "evidence": [
     ".research/scrape231-recapture-native.json",
     ".research/scrape231-context-diagnostic-native.json",
@@ -24,7 +24,8 @@
     ".research/clipboard126-discriminator.json",
     ".research/clipboard126-fresh-peer.json",
     ".research/clipboard126-review-fixes.json",
-    ".research/clipboard126-fix-reverify.json"
+    ".research/clipboard126-fix-reverify.json",
+    ".research/clipboard126-native.json"
   ],
   "transition_history": [
     {
@@ -50,7 +51,19 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source4acfe298 plus review corrections1e46e144 independently accepted98f68c28; native product outcome pending."
+    },
+    {
+      "at": "2026-10-04T18:48:35.669413+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent native37225191131 resolves generic read exception as focused/visible NotAllowedError; actual product copied, fixture equality true and permission restored all4warm/reloadobservations; surrounding controls pass."
+    },
+    {
+      "at": "2026-10-04T18:48:35.669413+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Harness-only observation repair integrated; root matched all9artifacthashes, checked raw4Copyresults/resourcejournals/reload lifecycle. No product Copy defect found in this bounded case."
     }
   ],
-  "next_action": "One guarded ARM native retest against frozen231 owned by clipboard126_native_run; no product clipboard pass yet."
+  "next_action": "None for original observation defect. Other role/width/error-recovery coverage remains in inventory; no whole-feature claim."
 }

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T18:18:28.980085+00:00",
+  "updated_at": "2026-10-04T18:49:15.756937+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -17496,20 +17496,26 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37222954472",
-              "evidence": ".research/scrape231-recapture-native.json",
-              "detail": "Exact development231 guest ARM: Open-return retains Video; exact removal/addition identities warm and after reload. Clipboard readback unavailable (D126), so partial.",
+              "status": "pass",
+              "run_id": "37225191131",
+              "evidence": ".research/clipboard126-native.json",
+              "detail": "Exact frozen development231 guest ARM, warm and full extension reload: Open, exact remove/add identities, blank rejection and valid forms; trusted Copy feedback copied, exact fixture equality true after scoped read grant, permission restored. T13 raw receipt partial is solely other auth modes, which remain separately unverified.",
               "historical_result": {
                 "status": "partial",
-                "run_id": "37221586281",
-                "evidence": ".research/scrape231-context-diagnostic-native.json",
-                "detail": "Exact development231 guest ARM: Video Open returned correctly; exact removal/addition survivors observed. Copy click occurred but readback unavailable (panel_runtime_exception); full reload remains.",
+                "run_id": "37222954472",
+                "evidence": ".research/scrape231-recapture-native.json",
+                "detail": "Exact development231 guest ARM: Open-return retains Video; exact removal/addition identities warm and after reload. Clipboard readback unavailable (D126), so partial.",
                 "historical_result": {
                   "status": "partial",
-                  "evidence": ".research/scrape231-arm-native.json",
-                  "run_id": "37218903375",
-                  "detail": "Healthy exact231 ARM returns to Video after Open; Copy receives trusted click. Remove intake leaves visually correct referral row/count1, but structured observer empty causes D124 assertion failure. Clipboard/full video forms/reload unverified."
+                  "run_id": "37221586281",
+                  "evidence": ".research/scrape231-context-diagnostic-native.json",
+                  "detail": "Exact development231 guest ARM: Video Open returned correctly; exact removal/addition survivors observed. Copy click occurred but readback unavailable (panel_runtime_exception); full reload remains.",
+                  "historical_result": {
+                    "status": "partial",
+                    "evidence": ".research/scrape231-arm-native.json",
+                    "run_id": "37218903375",
+                    "detail": "Healthy exact231 ARM returns to Video after Open; Copy receives trusted click. Remove intake leaves visually correct referral row/count1, but structured observer empty causes D124 assertion failure. Clipboard/full video forms/reload unverified."
+                  }
                 }
               }
             }
@@ -17566,15 +17572,21 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37222954472",
-              "evidence": ".research/scrape231-recapture-native.json",
-              "detail": "Exact development231 guest ARM: Open, selective removal, blank/valid Add and Cancel have exact rows/counts warm and after reload. Clipboard readback unavailable (D126), so partial.",
+              "status": "pass",
+              "run_id": "37225191131",
+              "evidence": ".research/clipboard126-native.json",
+              "detail": "Exact frozen development231 guest ARM, warm and full extension reload: Open, exact remove/add identities, blank rejection and valid forms; trusted Copy feedback copied, exact fixture equality true after scoped read grant, permission restored. T13 raw receipt partial is solely other auth modes, which remain separately unverified.",
               "historical_result": {
                 "status": "partial",
-                "run_id": "37221586281",
-                "evidence": ".research/scrape231-context-diagnostic-native.json",
-                "detail": "Exact development231 guest ARM: Link Open, selective Remove, blank/valid Add and Cancel reached expected identities/counts. Copy readback unavailable (panel_runtime_exception); full reload/member/admin remain."
+                "run_id": "37222954472",
+                "evidence": ".research/scrape231-recapture-native.json",
+                "detail": "Exact development231 guest ARM: Open, selective removal, blank/valid Add and Cancel have exact rows/counts warm and after reload. Clipboard readback unavailable (D126), so partial.",
+                "historical_result": {
+                  "status": "partial",
+                  "run_id": "37221586281",
+                  "evidence": ".research/scrape231-context-diagnostic-native.json",
+                  "detail": "Exact development231 guest ARM: Link Open, selective Remove, blank/valid Add and Cancel reached expected identities/counts. Copy readback unavailable (panel_runtime_exception); full reload/member/admin remain."
+                }
               }
             }
           }
@@ -18318,9 +18330,10 @@
             "37192733619",
             "37218903375",
             "37221586281",
-            "37222954472"
+            "37222954472",
+            "37225191131"
           ],
-          "retest_status": "partial: warm/full-reload media/link and deep confirmation verified on231; D119/D124/D125 closed, D123 native retest-pass awaiting Store. Clipboard D126, normal-width/auth/error recovery remain."
+          "retest_status": "partial: guest warm/full-reload media/link Copy now verified on231; D126 observer closed. Other Scrape controls, normal-width/member/admin and natural error recovery remain. Product fixes still await eligible Store release."
         },
         "member": {
           "test_status": "unverified",
@@ -18477,6 +18490,16 @@
             }
           ],
           "limits": "D22 remains open: prior ambiguous Save was not retried and saved/open Source is unverified. This run supports only read-only pointer geometry; no feature or case pass."
+        },
+        {
+          "run_id": "37225191131",
+          "mode": "guest",
+          "build": "0.2.231",
+          "status": "bounded-retest-pass",
+          "defect_id": "EXT-D-0126",
+          "evidence": ".research/clipboard126-native.json",
+          "proven": "Four real Copy feedback/equality observations, warm/reloaded Video and Links, each scoped permission restored; surrounding controls and full reload pass.",
+          "limits": "Frozen231, not latestmain or Store; broader receipt partial, member/admin unverified."
         }
       ]
     },
