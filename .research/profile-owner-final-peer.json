@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0109 independent final source re-review",
+  "reviewed_commit": "a99f101ae2ba6e1cba61ceac5f857c4023a5e88e",
+  "original_fix": "af3c463cb29648d5fcf77ca7e982ee1db5f853ca",
+  "prior_finding": "The raw observer accepted a syntactically valid singleton row belonging to another owner.",
+  "verdict_a_acceptance": {
+    "status": "SOURCE_ACCEPTED_NATIVE_UNVERIFIED",
+    "wrong_owner_finding": "addressed",
+    "evidence": "The actual initial caller passes identity.userId to observeProfileRequests. The observer permits classification only for one user_id query filter exactly equal to eq.<identity>, then requires a valid singleton user_id equal to that identity (case-insensitive). Empty raw lists classify absent only for that filtered request. The initial wait requires a non-null classification. The real fetchUserFormProfile chain uses .eq('user_id', userId).maybeSingle(); the installed Supabase client is exercised by the focused test, which sends a raw list to the observer before maybeSingle unwraps it for the app.",
+    "case_behavior": "Matching [] is absent and matching [owner row] or owner object is present. Empty lists for another queried owner, wrong-owner singletons, null, empty objects, missing or malformed user_id, and multiple rows stay unknown; the initial gate refuses unknown. Source rejects duplicate user_id query parameters via getAll length === 1, though the focused test does not exercise that variant.",
+    "native_limit": "No native browser or live database rerun; the historical raw response body is unavailable. Source acceptance does not prove original-row absence or successful native first save."
+  },
+  "verdict_b_quality": {
+    "status": "ACCEPTED_WITH_TEST_GAP",
+    "assessment": "The observer snapshots project only route, method, status, outcome, error_code, and row_present. The private expected owner and query comparison flag do not enter reports. Focused tests execute the extracted actual app query through the installed client and deliver the raw response through the actual Network callback; plain and base64 responses cover wrong query, wrong row, empty, malformed, and multiple rows. The test manually supplies expectedUserId to the extracted observer and does not execute the native caller itself; caller wiring is supported by source inspection. Duplicate-filter refusal is supported by source inspection but lacks a focused case.",
+    "concurrency_and_cleanup": "The pre-write readProfileOwnerRow still asserts absence and raises first_save_row_appeared_before_write before marker, receipt, fill, or Save if a row appears. With no pending marker, cleanup records mutation_not_attempted and final_readback_performed false. For a row actually created, cleanup verifies ownership, uses conditional owned-row deletion, and reads absence back; these sections were unchanged by the correction."
+  },
+  "verification": {
+    "command": "node --test tests/browser/profile-observer-row-envelope.test.mjs tests/browser/profile-first-save-diagnostic.test.mjs tests/browser/profile-first-save-identity.test.mjs",
+    "result": "40 passed, 0 failed",
+    "scope": "source and controlled wire responses only"
+  },
+  "evidence_paths": [
+    "src/lib/supabase/user-profile.ts:95-102",
+    "tests/browser/profile-native-acceptance.mjs:271-370",
+    "tests/browser/profile-native-acceptance.mjs:905-971",
+    "tests/browser/profile-native-acceptance.mjs:1136-1194",
+    "tests/browser/profile-observer-row-envelope.test.mjs:1-133"
+  ],
+  "limits": [
+    "No browser, live database, auth, build, or release run.",
+    "The cited cross-repo system-of-record path under /Users/armanisadeghi/code/common-docs/systems/clients/extension was absent in this workspace."
+  ]
+}
