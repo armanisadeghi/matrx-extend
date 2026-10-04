@@ -17688,6 +17688,14 @@
           "dimensions": [
             "warm",
             "reload"
+          ],
+          "supporting_evidence": [
+            {
+              "level": "real hook/component with Chrome injection rejection mocked; no native role verification",
+              "report": ".research/scrape-diagnose-controls-test.json",
+              "defect_id": "EXT-D-0127",
+              "result": "Picker injection rejection only resets/warns; no visible failure. Native Cancel remains unverified because Happy DOM retargeting differs from browser Shadow DOM."
+            }
           ]
         },
         {
@@ -18319,7 +18327,8 @@
             "EXT-D-0123",
             "EXT-D-0124",
             "EXT-D-0125",
-            "EXT-D-0126"
+            "EXT-D-0126",
+            "EXT-D-0127"
           ],
           "run_ids": [
             "guest-local-001",
@@ -18340,7 +18349,8 @@
           "defect_ids": [
             "EXT-D-0001",
             "EXT-D-0018",
-            "EXT-D-0059"
+            "EXT-D-0059",
+            "EXT-D-0127"
           ],
           "run_ids": [
             "incoming-sources-001"
@@ -18352,7 +18362,8 @@
           "defect_ids": [
             "EXT-D-0001",
             "EXT-D-0018",
-            "EXT-D-0059"
+            "EXT-D-0059",
+            "EXT-D-0127"
           ],
           "run_ids": [
             "incoming-sources-001",
