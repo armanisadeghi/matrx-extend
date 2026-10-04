@@ -80,7 +80,7 @@
     "bracket": {
       "iostat_started_at": "2026-10-04T20:02:59.757Z",
       "iostat_completed_at": "2026-10-04T20:03:00.840Z",
-      "bracket_duration_seconds": 1.083,
+      "iostat_command_duration_seconds": 1.083,
       "before_snapshot_completed_at": "2026-10-04T20:02:59.757Z",
       "after_snapshot_started_at": "2026-10-04T20:03:00.840Z",
       "ps_cpu_time_resolution_seconds": 0.01,
@@ -126,7 +126,7 @@
     "known_owned_activity": "Owned Chromium descendants accumulated 0.36 CPU-seconds and the owned Node process 0.03 CPU-seconds in the ps bracket; this is direct evidence that owned browser activity contributed during the bracket.",
     "provisioner": "The host provisioner category delta was zero in the bracket. A later single CPU-percent snapshot is not interval attribution.",
     "unassigned_host_activity": "Other host processes accumulated 1.69 CPU-seconds in the bracket. A post-bracket instantaneous process list showed two MTLCompilerServi processes at 83.7% and 48.3%; this cannot prove those processes generated the bracket's other-host delta or identify them as the runner provisioner.",
-    "aggregate_comparison": "The guard reported 0.87 busy on 3 CPUs. Multiplying by three gives roughly 2.61 CPU-seconds for a nominal one-second sample, compared with 2.08 CPU-seconds in the broader 1.083-second bracket's classified stable-process deltas. The nominal difference is about 0.53 CPU-seconds, but it is not a formal residual because the iostat accounting window and ps snapshots do not coincide exactly, ps is centisecond-quantized, and exited/new/reparented/reused processes have unassignable CPU time.",
+    "aggregate_comparison": "The guard reported 0.87 busy on 3 CPUs, or roughly 2.61 aggregate CPU-seconds for its nominal one-second accounting row. The 2.08 CPU-second category sum comes from process snapshots that bracket the iostat command (1.083 seconds) but do not expose exact snapshot start/end times or exactly match that internal CPU row. The apparent difference is therefore only an approximate comparison, not a formal residual; ps is centisecond-quantized and exited/new/reparented/reused processes have unassignable CPU time.",
     "timing": "The bracket begins and ends at the recorded iostat command boundaries, but iostat's one-second CPU row is an internal interval and the process snapshots enclose it rather than measuring precisely the same interval. Admission to unsafe watch was 16.211 seconds; panelReadyAt followed unsafe by 2.740 seconds. The native harness reached its exercise_panel stage, but the resource boundary refused retained unsafe history before the diagnostic completed its two-watch hold.",
     "unsafe_history": "RESOURCE_WATCH_UNSAFE remains unsafe despite final resourceInvalid=false; final decision child_failed describes the child exit, not resource health.",
     "positive_conclusion": "Owned Chromium and host-wide processes both had measurable CPU-time deltas while the guard sampled a high-CPU unsafe interval. This supports concurrent contribution, but does not establish which process class caused the threshold crossing, nor prove an environmental correction.",
@@ -140,6 +140,6 @@
     "hosted-browser-37230193583-1.jsonl": "1cfb2fa679a80f6ed7f68774d9793a4430e54564da7041bb138edf464db58c3e",
     "hosted-package-37230193583-1.jsonl": "03b2794cefa65227c6b754323e81c476f342ff381d3523ad28120d4ef6d95edc"
   },
-  "artifact_scope_note": "The uploaded archive also contains three stale resource journals with run ID 37105304739. They were retained verbatim as part of the permitted artifact download and excluded from this run's measurements; only journal records with hosted run ID 37230193583 and current attempt 1 are interpreted here.",
+  "artifact_scope_note": "The downloaded archive included three stale resource journals with run ID 37105304739. Those files were excluded from the committed evidence; only journal records with hosted run ID 37230193583 and current attempt 1 are interpreted here.",
   "controls_preserved": "No retry/relaunch/cancel, credentials, resource threshold or policy changes, browser setup outside the authorized hosted run, or product acceptance is performed or inferred."
 }
