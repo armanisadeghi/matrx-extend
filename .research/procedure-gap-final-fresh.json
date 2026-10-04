@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "artifact_type": "fresh-independent-procedure-review",
+  "task_id": "procedure-gap-batch-chrome-local-data",
+  "reviewed_proposal_commit": "d7674d91",
+  "review_scope": "Read current source and corrected proposed case text. No native UI, build, browser, fixture, or product test was run; no inventory case or acceptance cell was changed.",
+  "case_reviews": [
+    {
+      "case_id": "EXT-F-4042-T01",
+      "A_procedure_verdict": "PASS",
+      "B_quality_verdict": "PARTIAL",
+      "basis": "All handlers makes the internal delegate reachable; minutes/max_results, count/items, visit fields, and descending last_visit_ms match source. Controlled visits and role-specific warm/reload comparisons form an executable positive read when the loaded artifact and fixture pass preflight.",
+      "remaining": "No invalid-input or permission-denied assertion; no fixture cleanup step. Runtime result remains unverified."
+    },
+    {
+      "case_id": "EXT-F-4043-T01",
+      "A_procedure_verdict": "PARTIAL",
+      "B_quality_verdict": "PARTIAL",
+      "basis": "All handlers reaches the delegate, and query/state/limit plus count/downloads and newest-first assertions match source. The procedure explicitly stops before execution without an owned completed download.",
+      "remaining": "The owned download source and completed fixture do not yet exist in evidence, and cleanup of the downloaded file/profile is unspecified. No invalid-input or permission-denied assertion. Runtime result remains unverified."
+    },
+    {
+      "case_id": "EXT-F-4094-T01",
+      "A_procedure_verdict": "PASS",
+      "B_quality_verdict": "PARTIAL",
+      "basis": "All handlers reaches the delegate; max_results, ok/count/entries and tab session ID fields match source. The corrected preflight treats sessions as a required Chrome permission in the exact loaded artifact and install, with no Settings optional-grant step.",
+      "remaining": "Chrome session retention and the controlled closed-tab fixture still need native confirmation. No invalid-input or permission-denied assertion or explicit fixture cleanup. Runtime result remains unverified."
+    },
+    {
+      "case_id": "EXT-F-4165-T01",
+      "A_procedure_verdict": "PASS",
+      "B_quality_verdict": "PARTIAL",
+      "basis": "Agent surface includes chrome_history; recent and search inputs route through leaf schemas, and the fixture URL/title, recent order, and search-branch assertions match source. Both actions have warm/reload steps.",
+      "remaining": "The procedure does not test malformed input, denial, or agent/dispatcher reachability and does not define cleanup of controlled history. Runtime result remains unverified."
+    },
+    {
+      "case_id": "EXT-F-4166-T01",
+      "A_procedure_verdict": "PASS",
+      "B_quality_verdict": "PARTIAL",
+      "basis": "Agent surface includes chrome_recently_closed; list and restore route to the correct leaf handlers. The proposal uses the exact controlled tab session ID, observes the browser tab and inline ok/restored result, and recreates the fixture for reload. Loaded required sessions access is now a preflight, not an optional Settings grant.",
+      "remaining": "The resulting open fixture tab and session/profile state have no explicit cleanup step; no invalid-input or permission-denied assertion. Runtime result remains unverified."
+    }
+  ],
+  "cross_case_findings": {
+    "corrected_prior_errors": [
+      "ToolsView defaults to Agent surface and filters by CANONICAL_SURFACE. All handlers exposes the three internal delegates; the two canonical names remain on Agent surface. The corrected UI steps follow this source behavior.",
+      "wxt.config.ts declares sessions in required Chrome permissions and excludes it from optional_permissions. The corrected cases require a loaded-artifact/install preflight and no optional Settings grant. Handler required_optional_permissions metadata does not change the manifest declaration."
+    ],
+    "new_source_contradictions": [],
+    "coverage_limits": [
+      "These five cases exercise direct Tools manual Run, which bypasses dispatcher authorization; they cannot clear the inventory's gated/negative permission, live agent binding, or Ask/Act gaps.",
+      "The common setup inherits PLAN.md resource permit and receipt requirements, but execution still requires an actual admitted browser run and exact loaded build identity. No such run was observed.",
+      "The procedures identify synthetic/public data ownership and restrict evidence, but should specify disposal of created tabs, download files, and profile history after evidence capture before long-lived reuse."
+    ]
+  },
+  "integration_verdict": "Integrate the corrected positive manual procedures as unverified design text only, preserving existing status/result cells and unresolved gated/negative coverage. Keep EXT-F-4043-T01 conditional on an owned completed-download fixture. Add explicit fixture cleanup and separate negative/permission cases before claiming complete feature coverage.",
+  "source_evidence": [
+    "src/features/tools/ToolsView.tsx:121-152,198-212,390-477",
+    "src/lib/tools/categories.ts:461-560",
+    "src/lib/tools/handlers/browser-data.ts:96-204",
+    "src/lib/tools/handlers/optional-perms.ts:166-212",
+    "src/lib/tools/handlers/canonical-mergers.ts:395-453",
+    "src/lib/tools/types.ts:190-210",
+    "wxt.config.ts:66-136",
+    "docs/stabilization/PLAN.md:24-34",
+    "docs/stabilization/INVENTORY-CONTRACT.md:3-9"
+  ]
+}
