@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "reviewer": "independent record review; no Store dashboard, native browser, build, test, or product edit",
+  "reviewed": [
+    "/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHROME-WEB-STORE.md current check, 2026-10-04 05:57 UTC",
+    "docs/stabilization/COORDINATOR.md active checkpoint and extension defect/inventory tracking",
+    ".research/guest-402-native-acceptance.json",
+    ".research/guest-returning-final-acceptance.json",
+    ".research/guest-402-independent-review.json",
+    ".research/guest-402-release-preparation.json",
+    "docs/stabilization/evidence/release205/store-pending-review.png"
+  ],
+  "verdict_a_factual_status_and_evidence": {
+    "verdict": "PASS_WITH_TRACKING_CORRECTION",
+    "basis": [
+      "The screenshot visibly identifies the primary Matrx Extend item as Pending review with draft package 0.2.205 and published package 0.2.176. It shows no publication of 0.2.205.",
+      "The 05:57 UTC submission time, success confirmation, automatic publication and cancellation reason for 0.2.181 are root-observed facts recorded in guest-402-release-preparation.json; those details are not visible in the Package screenshot itself.",
+      "The current Store record's source SHA, hosted run, artifact ID and ZIP SHA-256 agree with the candidate acceptance and release-preparation reports. Its fresh and returning guest claims agree with the two separate native acceptance reports.",
+      "EXT-D-0112 remains retest-pass, EXT-D-0097 remains retest-pass and EXT-D-0096 remains fixed in defect tracking; the candidate is not represented as published or Store-installed."
+    ],
+    "correction_needed": "Generated docs/stabilization/STATUS.md and docs/stabilization/CHECKLIST.md, both stamped 06:06 UTC, still call 0.2.181 Pending review and list its old ZIP as the current release. Their current-artifact sections must be reconciled to the submitted 0.2.205 state; historical 0.2.181 evidence can remain explicitly historical."
+  },
+  "verdict_b_quality_and_claim_limits": {
+    "verdict": "PASS_WITH_TRACKING_CORRECTION",
+    "basis": [
+      "The Store record explicitly limits the native checks to an unpacked 0.2.205 payload with a manifest public-key adaptation, and reserves actual Store-installed acceptance until publication.",
+      "The member check is bounded to sign-in and a real Chat answer. The string-only activeOrganizationPresent diagnostic cannot establish saved organization persistence; the record correctly says so.",
+      "The record preserves D96's missing signed-in owner-table HTTP 200 and published-build checks, and disclaims whole-extension health. The independent source review was source-level evidence only; the later candidate native reports supply the separate runtime evidence.",
+      "The screenshot alone proves dashboard package state at capture, not ZIP hash, automatic publication, listing-field preservation, or the exact submission click. Those claims depend on the separately recorded operator observation and release receipt."
+    ],
+    "findings": [
+      "The generated current-status summaries contradict the canonical Store record after submission and could misdirect the next verifier to 0.2.181."
+    ]
+  },
+  "unverified": [
+    "No fresh dashboard refresh or Store publication check was performed in this review.",
+    "No browser, installed-extension or native acceptance run was performed in this review.",
+    "Actual Store-installed 0.2.205 guest acceptance, D96 member owner-table HTTP 200, and wider extension health remain open."
+  ]
+}
