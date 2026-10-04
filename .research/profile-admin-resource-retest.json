@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0109 / EXT-F-1004 independent native admin retest",
+  "run_id": "profile-admin-fields-189-06",
+  "status": "native_partial_failed",
+  "source": {
+    "sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "ci_run_id": 37164174445,
+    "artifact_id": 11288542496,
+    "version": "0.2.189",
+    "tree_sha256": "494646f6dd65399e0e7eee65fd1d9bd00ef97d173c5ceb9674de276ca12dc23a",
+    "receipt": "test-results/ci-artifacts/b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced/37164174445-1/local-dev-receipt.json"
+  },
+  "scope": {
+    "attempts": 1,
+    "auth_mode": "admin",
+    "extended_cases_enabled": true,
+    "runner_or_product_changed": false,
+    "build_or_release": false,
+    "database_or_auth_setup_mutation": "none",
+    "browser_launched": true,
+    "resource_admitted": true,
+    "resource_invalid": false,
+    "retry": false
+  },
+  "native": {
+    "admin_identity_and_selected_device_organization": "verified",
+    "profile_row_existed_before": true,
+    "original_preferred_value_was_empty": true,
+    "warm": {
+      "EXT-F-1004-T02": "passed",
+      "EXT-F-1004-T04_discard": "passed",
+      "EXT-F-1004-T04_save_and_restore": "passed",
+      "EXT-F-1004-T25": "passed",
+      "EXT-F-1004-T22": "failed during reexpand of Billing address"
+    },
+    "failure_code": "profile_unclassified_failure",
+    "failure_operation": "EXT-F-1004-T22:warm:run",
+    "failure_phase": "reexpand",
+    "field_restoration": "T02/T04 diagnostics verify the original empty preferred value after restoration/reopen; no real Profile row was deleted or first-save fixture created.",
+    "extension_reload": "not reached",
+    "reload_cells": "unverified",
+    "T06_identity_fields": "warm and extension_reload unverified; T22 failed before the Identity/Employment field cases",
+    "T18_employment_fields": "warm and extension_reload unverified; T22 failed before the Identity/Employment field cases",
+    "T22_expanders": "warm failed; extension_reload unverified",
+    "T26_admin": "unimplemented and unverified",
+    "T28_absent_admin_first_save": "unverified; existing row was preserved"
+  },
+  "resource_guard": {
+    "decision": "admitted",
+    "final_decision": "child_failed",
+    "exit_code": 1,
+    "journal": "docs/stabilization/resource-journals/profile-admin-fields-189-06.jsonl",
+    "journal_sha256": "f0be5267f2d6d9afad6db2b8298bc8549c8ef8a9c2a89b6ff323ff4194086eb9",
+    "samples": [
+      {
+        "at": "2026-10-04T05:01:17.699Z",
+        "code": "RESOURCE_ADMITTED",
+        "available_memory_gib": 12.32,
+        "one_minute_load": 2.12,
+        "swap_used_mib": 5041.25
+      },
+      {
+        "at": "2026-10-04T05:01:33.727Z",
+        "code": "RESOURCE_WATCH_HEALTHY",
+        "available_memory_gib": 12.32,
+        "one_minute_load": 1.88,
+        "swap_used_mib": 5025.25
+      },
+      {
+        "at": "2026-10-04T05:01:49.743Z",
+        "code": "RESOURCE_WATCH_HEALTHY",
+        "available_memory_gib": 12.32,
+        "one_minute_load": 2.17,
+        "swap_used_mib": 5017.25
+      }
+    ]
+  },
+  "evidence": {
+    "raw_report": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-admin-fields-189-06/evidence/profile-native-profile-admin-fields-189-06.json",
+    "raw_report_sha256": "f6a069e47bcb489aa1457ed5e6424528d7fc2c9ed46a2dda506f9e12735a2d67",
+    "raw_report_mode": "0600",
+    "launch_directories_mode": "0700"
+  },
+  "limits": [
+    "This is one partial native admin observation, not full Profile acceptance or an extension health claim.",
+    "No T06/T18/T22 six-cell warm/reload result was completed; reload did not run.",
+    "The failure occurred in the expander reexpand step for Billing address after earlier warm T02/T04/T25 passes.",
+    "No retry, source edit, build, release, first-save fixture, or existing-row deletion was performed."
+  ]
+}
