@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "reviewed_commits": ["1379d875", "3c8daad2"],
+  "verdict_a": {
+    "status": "ADDRESSED_WITH_LIMITS",
+    "finding": "The requested diagnostic guard is present for phase order, fixed privacy shape, and failure reporting. It checks nine expected phase labels, exact emitted fields and values, exception/protocol-missing measured=false behavior, and truncation after trusted-open refusal. It does not prove the visibility transition on a real native run.",
+    "evidence": [
+      "Focused suite passed: node --test tests/browser/panel-visibility-diagnostic.test.mjs (3 pass, 0 fail).",
+      "The first two phases are extracted from runNativeSidepanelQa; authenticated phases are extracted from the actual exercisePanel setup; reopen phases execute the actual activateOwnedSidePanel helper.",
+      "In-memory mutations removing each checkpoint, manufacturing measured=true, adding a private URL field, or replacing measurement with a constant hidden result are rejected by assertions."
+    ],
+    "limits": [
+      "Authentication, organization selection, browser/CDP transport, and native window behavior are doubled; test exercises source seams, not a real browser/native run.",
+      "The test report's prior native visibility failure and causal hypothesis remain unverified until the planned native run."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "finding": "The change adds bounded opt-in observation and a focused regression suite without relaxing acceptance gates.",
+    "evidence": [
+      "observePanelVisibility uses one Runtime.evaluate and emits only measured, visibility enum, booleans, and viewport dimensions; protocol errors and exceptions reduce to {measured:false}.",
+      "Observation checkpoints wrap existing initial capture, auth/org steps, trusted reopen, and target activation. Refused trusted open throws before post-open checkpoints and target activation.",
+      "The native acceptance assertion document.visibilityState === visible remains at tests/browser/scrape-guest-native-acceptance.mjs:995-997. Exact profile/org/name and role assertions remain at :1039-1055; native SIDE_PANEL context setup and resource checks are untouched by the diagnostic test addition."
+    ],
+    "concerns": [
+      "Path tests execute extracted source with simulated external interactions, so their strength is source correspondence and diagnostic-contract regression protection, not native-runtime evidence."
+    ]
+  },
+  "scope": "Only requested focused suite and source inspection. No browser/native workflow, build, release, or production source edits.",
+  "commit": "committed as a standalone exact-path report"
+}
