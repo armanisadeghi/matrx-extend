@@ -14,11 +14,13 @@
   "actual": "Native06 aborts Billing reexpand acceptance; product-vs-driver root cause under diagnosis.",
   "severity": "S2 acceptance blocked; product failure not established",
   "priority": "P1 contained Profile acceptance",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "profile_billing_expander_fix",
   "evidence": [
     ".research/profile-admin-resource-retest.json",
-    "docs/stabilization/resource-journals/profile-admin-fields-189-06.jsonl"
+    "docs/stabilization/resource-journals/profile-admin-fields-189-06.jsonl",
+    ".research/profile-billing-expander-fix.json",
+    ".research/profile-billing-contacts-peer.json"
   ],
   "transition_history": [
     {
@@ -38,7 +40,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol medium owns actual conditional UI/driver diagnosis and connected guard; no blind native retry."
+    },
+    {
+      "at": "2026-10-04T05:12:33.912641+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Bounded stable pointer repairf10a5c73 passed fresh sourcepeer87e683e1 and5tests; nativehistoricalcause unproven, originalscenario stillrequiresretest."
     }
   ],
-  "closure_requirement": "Confirmed cause red\u2192green, fresh independent source review and actual original Billing reexpand scenario plus neighboring sections passes; no blanket Profile acceptance claim."
+  "closure_requirement": "Confirmed cause red\u2192green, fresh independent source review and actual original Billing reexpand scenario plus neighboring sections passes; no blanket Profile acceptance claim.",
+  "next_action": "Wait for existingrowjournalD111 source review, then one combined native adminretest; do not claim original native cause known from source moving-target reproduction alone."
 }

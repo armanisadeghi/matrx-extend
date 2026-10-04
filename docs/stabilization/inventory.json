@@ -10280,13 +10280,15 @@
             "Run independently as existing known member; do not change role or account."
           ],
           "steps": [
-            "Expand Phones; record initial list. Add two synthetic numbers, edit first label/value/country code and SMS switch; make second primary; remove first..",
-            "Confirm list contents and primary star before saving. Click Save and wait for completion.",
-            "Reopen Profile and compare each item, labels, flags and primary designation; restore original list and save."
+            "Execute shared preflight as member; only an exact persisted [] and matching UI empty state permit mutation. Run Discard and Back assertions before the committed phase.",
+            "Use Add twice. Fill the two appended entries with distinct synthetic, non-routable test strings; edit first entry label, number, country code and SMS switch to the opposite of its observed initial/default state. Do not use a real person's number.",
+            "Set the second new entry primary. Verify exactly that entry has the active primary star and the first does not. Remove the first new entry; verify it is absent while the second remains primary.",
+            "Run shared full-list save, error, owner-scoped readback, Back/reopen and reload assertions for the surviving synthetic entry, including label/value/country_code/sms_capable/is_primary, then shared owned-fixture cleanup."
           ],
           "expected": [
-            "Add/edit/remove phone and choose primary; saved list and primary designation survive reload.",
-            "Add/edit/remove operations and the selected primary designation in Phones persist after reopening Profile; removed item remains absent."
+            "Add, edit each exposed phone field, set primary, and remove are reflected in draft.",
+            "Saved surviving entry and all exposed properties persist after Profile close/reopen and after extension reload in the reload dimension.",
+            "Removed synthetic entry remains absent; the empty owned fixture is restored to exact [] and verified by UI and raw owner-scoped readback."
           ],
           "dimensions": [
             "warm",
@@ -10297,7 +10299,7 @@
             "src/features/profile/ProfileView.tsx:300-430",
             "src/hooks/use-user-profile.ts:87-100"
           ],
-          "procedure_readiness": "ready",
+          "procedure_readiness": "source-reviewed; runtime fixture/readback/driver prerequisites pending",
           "procedure_gaps": [],
           "procedure_execution_matrix": [
             {
@@ -10311,7 +10313,7 @@
               "observed_outcome": null,
               "evidence_refs": [],
               "status": "unverified",
-              "readiness": "ready"
+              "readiness": "source-reviewed; runtime prerequisites pending"
             },
             {
               "mode": "member",
@@ -10324,16 +10326,83 @@
               "observed_outcome": null,
               "evidence_refs": [],
               "status": "unverified",
-              "readiness": "ready"
+              "readiness": "source-reviewed; runtime prerequisites pending"
             }
           ],
           "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
           "procedure_review": {
-            "proposal_commit": "22994d49",
-            "peer_commit": "2c318798",
-            "report": ".research/popup-profile-acceptance-peer.json",
-            "scope": "Source-reviewed procedure only; no runtime acceptance."
-          }
+            "proposal_commit": "c722d017",
+            "correction_commit": "39c88f6f",
+            "peer_commit": "87e683e1",
+            "report": ".research/profile-billing-contacts-peer.json",
+            "scope": "Source procedures only; full existing-data scope remains, allruntimeunverified. Engineering method review uses standingauthorization, not a new human permission gate."
+          },
+          "source_controls": [
+            {
+              "control": "section expander",
+              "source": "ProfileView.tsx Phones Collapsible"
+            },
+            {
+              "control": "Add",
+              "effect": "append {value:'', label:'Mobile'}",
+              "source": "PhonesEditor ListSection onAdd"
+            },
+            {
+              "control": "label input",
+              "effect": "updates label; blank maps to null",
+              "source": "PhonesEditor ListItemCard Input"
+            },
+            {
+              "control": "primary star",
+              "effect": "sets selected phone primary and all others false",
+              "source": "PhonesEditor setPrimary / PrimaryStar"
+            },
+            {
+              "control": "remove",
+              "effect": "removes selected indexed phone",
+              "source": "PhonesEditor remove / Trash2 button"
+            },
+            {
+              "control": "Number input",
+              "effect": "updates value",
+              "source": "PhonesEditor FormRow Number / TextField"
+            },
+            {
+              "control": "Country code input",
+              "effect": "updates country_code; blank maps to null",
+              "source": "PhonesEditor FormRow Country code / TextField"
+            },
+            {
+              "control": "SMS switch",
+              "effect": "updates sms_capable boolean",
+              "source": "PhonesEditor FormRow SMS / Switch"
+            },
+            {
+              "control": "header and bottom Save / Discard; header Back",
+              "effect": "persists draft, resets draft, or leaves Profile for Chat",
+              "source": "ProfileView header and bottom action bar"
+            }
+          ],
+          "shared_run_protocol": {
+            "identity": "Use the existing account for the case mode only (member or admin); record account email, role evidence, device organization, build channel, extension ID/version/Loaded from path. Do not change role or account.",
+            "lifecycle": [
+              "Run warm first without a just-completed extension reload; open Profile from the avatar dropdown.",
+              "For reload dimension, use chrome://extensions to reload the same extension, record completion, reopen the surface, recheck account/role/organization, and repeat the complete case independently. Panel reopen or page refresh is not extension reload."
+            ],
+            "organization": "Record the currently selected device organization for authenticated save. If the UI cannot establish the expected identity or organization, stop that execution as unverified; do not modify organization/account settings to force a pass.",
+            "preflight_and_fixture": "Before EACH role × lifecycle run, obtain an approved, owner-scoped, read-only exact JSON capture of the target persisted list and compare it with the expanded UI. A UI snapshot cannot see notes or distinguish absent, null, and false optional keys. Mutation is eligible only when that raw list is exactly [] and the UI shows its empty state, with an approved owner-scoped exact-list readback available after writes. Treat this as an empty owned fixture; only same-run synthetic entries may be removed. If the list contains any existing row, is unreadable, disagrees with the UI, or lacks an exact readback path, make no mutation and mark the product row unverified. A separately approved exact capture and restoration method would be required to test a nonempty list; this procedure supplies none. Never clear, delete, reorder, or change existing private rows to create a fixture.",
+            "discard_and_back": "Before the committed test, create one synthetic unsaved draft change, inspect it, click Discard, and assert the entire target draft list and raw persisted list still equal the empty baseline. Both header and bottom action bars contain Save and Discard; identify which instance was exercised. Click Back and assert the Chat surface is visible; reopen Profile, expand the target section, and confirm the empty list before starting the committed phase.",
+            "save_and_reopen": "After exercising controls, compare the COMPLETE ordered draft list with expected original [] plus the surviving synthetic entry, including all exposed values and flags. Click a named header or bottom Save and wait for saving to settle. While still in Profile, require no visible profile.error/save error and compare the complete displayed list, then obtain an independent approved owner-scoped raw readback of the entire persisted list. A disabled Save button alone proves nothing. Click Back and assert Chat is visible; reopen Profile and compare the complete list again. For reload dimension, additionally reload the extension, recheck identity/organization, reopen Profile, and compare the complete list and raw readback again. A rejected save or reproducible wrong list is fail; an unreadable/ambiguous write is unverified.",
+            "cleanup": "Only for an eligible empty owned fixture, remove the surviving same-run synthetic entry through the UI, Save, require no visible save error, and verify both full UI list and approved owner-scoped raw readback equal exact []. Reopen Profile and repeat the UI comparison; repeat after extension reload for reload rows. Never use a blanket clear, direct API/DB delete, or delete any pre-existing row. If a write is ambiguous, stop further mutation until an approved owner-scoped read-only reconciliation establishes exactly what was written; report cleanup_result unverified until empty restoration is proven. If cleanup is attempted and demonstrably fails, report cleanup_result failed. Do not claim cleanup from the UI alone.",
+            "failure_semantics": "Record product_result pass/fail/unverified and cleanup_result restored/failed/unverified separately for every role × lifecycle row. Reproducibly missing control, save error/rejection, failed Discard or Back assertion, or verified draft/persistence mismatch is product fail, even if cleanup later succeeds. Missing identity/organization, unavailable exact-state capture/readback, uncertain write, or an unexecuted dimension is unverified, never pass. Preserve any product failure alongside cleanup failure. Overall acceptance requires all eight product rows pass and all eight cleanup results restored; any failed row fails acceptance, otherwise any unverified row leaves acceptance unverified. Record safe phase/control identifiers and sanitized error category, never credentials or raw sensitive values."
+          },
+          "execution_prerequisites": [
+            "Existing member and admin identities on the intended device, verified organization, and same extension build for warm/reload; no account or organization changes to manufacture eligibility.",
+            "Approved owner-scoped read-only capture/readback of the exact persisted phones or emails JSON list, including hidden notes and optional-key presence; no raw sensitive values in the report.",
+            "For each independent role/lifecycle run, persisted list exactly [] and UI empty state; nonempty private lists remain untouched until a separately approved exact restoration method exists.",
+            "Focused native control driver and observations for list controls, both action bars, error display, full-list comparisons, Back to Chat, and reload. Current runner does not implement these."
+          ],
+          "validation_and_limits": "Source exposes ordinary text inputs and a boolean SMS switch; no phone-number format validator or country-code picker is present in this editor. Record browser input behavior only; do not infer server acceptance from source. Empty state text is 'No phones added'."
         },
         {
           "id": "EXT-F-1004-T08",
@@ -10352,13 +10421,15 @@
             "Run independently as existing known admin; do not change role or account."
           ],
           "steps": [
-            "Expand Phones; record initial list. Add two synthetic numbers, edit first label/value/country code and SMS switch; make second primary; remove first..",
-            "Confirm list contents and primary star before saving. Click Save and wait for completion.",
-            "Reopen Profile and compare each item, labels, flags and primary designation; restore original list and save."
+            "Execute shared preflight as member; only an exact persisted [] and matching UI empty state permit mutation. Run Discard and Back assertions before the committed phase.",
+            "Use Add twice. Fill the two appended entries with distinct synthetic, non-routable test strings; edit first entry label, number, country code and SMS switch to the opposite of its observed initial/default state. Do not use a real person's number.",
+            "Set the second new entry primary. Verify exactly that entry has the active primary star and the first does not. Remove the first new entry; verify it is absent while the second remains primary.",
+            "Run shared full-list save, error, owner-scoped readback, Back/reopen and reload assertions for the surviving synthetic entry, including label/value/country_code/sms_capable/is_primary, then shared owned-fixture cleanup."
           ],
           "expected": [
-            "Add/edit/remove phone and choose primary; saved list and primary designation survive reload.",
-            "Add/edit/remove operations and the selected primary designation in Phones persist after reopening Profile; removed item remains absent."
+            "Add, edit each exposed phone field, set primary, and remove are reflected in draft.",
+            "Saved surviving entry and all exposed properties persist after Profile close/reopen and after extension reload in the reload dimension.",
+            "Removed synthetic entry remains absent; the empty owned fixture is restored to exact [] and verified by UI and raw owner-scoped readback."
           ],
           "dimensions": [
             "warm",
@@ -10369,7 +10440,7 @@
             "src/features/profile/ProfileView.tsx:300-430",
             "src/hooks/use-user-profile.ts:87-100"
           ],
-          "procedure_readiness": "ready",
+          "procedure_readiness": "source-reviewed; runtime fixture/readback/driver prerequisites pending",
           "procedure_gaps": [],
           "procedure_execution_matrix": [
             {
@@ -10383,7 +10454,7 @@
               "observed_outcome": null,
               "evidence_refs": [],
               "status": "unverified",
-              "readiness": "ready"
+              "readiness": "source-reviewed; runtime prerequisites pending"
             },
             {
               "mode": "admin",
@@ -10396,16 +10467,83 @@
               "observed_outcome": null,
               "evidence_refs": [],
               "status": "unverified",
-              "readiness": "ready"
+              "readiness": "source-reviewed; runtime prerequisites pending"
             }
           ],
           "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
           "procedure_review": {
-            "proposal_commit": "22994d49",
-            "peer_commit": "2c318798",
-            "report": ".research/popup-profile-acceptance-peer.json",
-            "scope": "Source-reviewed procedure only; no runtime acceptance."
-          }
+            "proposal_commit": "c722d017",
+            "correction_commit": "39c88f6f",
+            "peer_commit": "87e683e1",
+            "report": ".research/profile-billing-contacts-peer.json",
+            "scope": "Source procedures only; full existing-data scope remains, allruntimeunverified. Engineering method review uses standingauthorization, not a new human permission gate."
+          },
+          "source_controls": [
+            {
+              "control": "section expander",
+              "source": "ProfileView.tsx Phones Collapsible"
+            },
+            {
+              "control": "Add",
+              "effect": "append {value:'', label:'Mobile'}",
+              "source": "PhonesEditor ListSection onAdd"
+            },
+            {
+              "control": "label input",
+              "effect": "updates label; blank maps to null",
+              "source": "PhonesEditor ListItemCard Input"
+            },
+            {
+              "control": "primary star",
+              "effect": "sets selected phone primary and all others false",
+              "source": "PhonesEditor setPrimary / PrimaryStar"
+            },
+            {
+              "control": "remove",
+              "effect": "removes selected indexed phone",
+              "source": "PhonesEditor remove / Trash2 button"
+            },
+            {
+              "control": "Number input",
+              "effect": "updates value",
+              "source": "PhonesEditor FormRow Number / TextField"
+            },
+            {
+              "control": "Country code input",
+              "effect": "updates country_code; blank maps to null",
+              "source": "PhonesEditor FormRow Country code / TextField"
+            },
+            {
+              "control": "SMS switch",
+              "effect": "updates sms_capable boolean",
+              "source": "PhonesEditor FormRow SMS / Switch"
+            },
+            {
+              "control": "header and bottom Save / Discard; header Back",
+              "effect": "persists draft, resets draft, or leaves Profile for Chat",
+              "source": "ProfileView header and bottom action bar"
+            }
+          ],
+          "shared_run_protocol": {
+            "identity": "Use the existing account for the case mode only (member or admin); record account email, role evidence, device organization, build channel, extension ID/version/Loaded from path. Do not change role or account.",
+            "lifecycle": [
+              "Run warm first without a just-completed extension reload; open Profile from the avatar dropdown.",
+              "For reload dimension, use chrome://extensions to reload the same extension, record completion, reopen the surface, recheck account/role/organization, and repeat the complete case independently. Panel reopen or page refresh is not extension reload."
+            ],
+            "organization": "Record the currently selected device organization for authenticated save. If the UI cannot establish the expected identity or organization, stop that execution as unverified; do not modify organization/account settings to force a pass.",
+            "preflight_and_fixture": "Before EACH role × lifecycle run, obtain an approved, owner-scoped, read-only exact JSON capture of the target persisted list and compare it with the expanded UI. A UI snapshot cannot see notes or distinguish absent, null, and false optional keys. Mutation is eligible only when that raw list is exactly [] and the UI shows its empty state, with an approved owner-scoped exact-list readback available after writes. Treat this as an empty owned fixture; only same-run synthetic entries may be removed. If the list contains any existing row, is unreadable, disagrees with the UI, or lacks an exact readback path, make no mutation and mark the product row unverified. A separately approved exact capture and restoration method would be required to test a nonempty list; this procedure supplies none. Never clear, delete, reorder, or change existing private rows to create a fixture.",
+            "discard_and_back": "Before the committed test, create one synthetic unsaved draft change, inspect it, click Discard, and assert the entire target draft list and raw persisted list still equal the empty baseline. Both header and bottom action bars contain Save and Discard; identify which instance was exercised. Click Back and assert the Chat surface is visible; reopen Profile, expand the target section, and confirm the empty list before starting the committed phase.",
+            "save_and_reopen": "After exercising controls, compare the COMPLETE ordered draft list with expected original [] plus the surviving synthetic entry, including all exposed values and flags. Click a named header or bottom Save and wait for saving to settle. While still in Profile, require no visible profile.error/save error and compare the complete displayed list, then obtain an independent approved owner-scoped raw readback of the entire persisted list. A disabled Save button alone proves nothing. Click Back and assert Chat is visible; reopen Profile and compare the complete list again. For reload dimension, additionally reload the extension, recheck identity/organization, reopen Profile, and compare the complete list and raw readback again. A rejected save or reproducible wrong list is fail; an unreadable/ambiguous write is unverified.",
+            "cleanup": "Only for an eligible empty owned fixture, remove the surviving same-run synthetic entry through the UI, Save, require no visible save error, and verify both full UI list and approved owner-scoped raw readback equal exact []. Reopen Profile and repeat the UI comparison; repeat after extension reload for reload rows. Never use a blanket clear, direct API/DB delete, or delete any pre-existing row. If a write is ambiguous, stop further mutation until an approved owner-scoped read-only reconciliation establishes exactly what was written; report cleanup_result unverified until empty restoration is proven. If cleanup is attempted and demonstrably fails, report cleanup_result failed. Do not claim cleanup from the UI alone.",
+            "failure_semantics": "Record product_result pass/fail/unverified and cleanup_result restored/failed/unverified separately for every role × lifecycle row. Reproducibly missing control, save error/rejection, failed Discard or Back assertion, or verified draft/persistence mismatch is product fail, even if cleanup later succeeds. Missing identity/organization, unavailable exact-state capture/readback, uncertain write, or an unexecuted dimension is unverified, never pass. Preserve any product failure alongside cleanup failure. Overall acceptance requires all eight product rows pass and all eight cleanup results restored; any failed row fails acceptance, otherwise any unverified row leaves acceptance unverified. Record safe phase/control identifiers and sanitized error category, never credentials or raw sensitive values."
+          },
+          "execution_prerequisites": [
+            "Existing member and admin identities on the intended device, verified organization, and same extension build for warm/reload; no account or organization changes to manufacture eligibility.",
+            "Approved owner-scoped read-only capture/readback of the exact persisted phones or emails JSON list, including hidden notes and optional-key presence; no raw sensitive values in the report.",
+            "For each independent role/lifecycle run, persisted list exactly [] and UI empty state; nonempty private lists remain untouched until a separately approved exact restoration method exists.",
+            "Focused native control driver and observations for list controls, both action bars, error display, full-list comparisons, Back to Chat, and reload. Current runner does not implement these."
+          ],
+          "validation_and_limits": "Same source-backed phone controls and limits as T07; no admin-specific control difference is evident in ProfileView source."
         },
         {
           "id": "EXT-F-1004-T09",
@@ -10424,13 +10562,15 @@
             "Run independently as existing known member; do not change role or account."
           ],
           "steps": [
-            "Expand Emails; record initial list. Add two synthetic addresses using reserved example.test addresses, edit a label/value, make second primary; remove first..",
-            "Confirm list contents and primary star before saving. Click Save and wait for completion.",
-            "Reopen Profile and compare each item, labels, flags and primary designation; restore original list and save."
+            "Execute shared preflight as member; only an exact persisted [] and matching UI empty state permit mutation. Run Discard and Back assertions before the committed phase.",
+            "Use Add twice. Enter distinct reserved example.test addresses (for example profile-run-<unique-token>-1@example.test and -2@example.test); edit the first label and address. Avoid real mailboxes.",
+            "Set the second new entry primary. Verify its star is active and the first is inactive. Remove the first; verify it is absent and second remains primary.",
+            "Run shared full-list save, error, owner-scoped readback, Back/reopen and reload assertions for the surviving synthetic entry, including label/value/is_primary, then shared owned-fixture cleanup."
           ],
           "expected": [
-            "Add/edit/remove email and choose primary; saved list survives reload.",
-            "Add/edit/remove operations and the selected primary designation in Emails persist after reopening Profile; removed item remains absent."
+            "Add, edit label/address, set primary, and remove are reflected in draft.",
+            "Saved surviving entry and exposed properties persist after Profile close/reopen and extension reload in reload dimension.",
+            "Removed synthetic entry remains absent; the empty owned fixture is restored to exact [] and verified by UI and raw owner-scoped readback."
           ],
           "dimensions": [
             "warm",
@@ -10441,7 +10581,7 @@
             "src/features/profile/ProfileView.tsx:300-430",
             "src/hooks/use-user-profile.ts:87-100"
           ],
-          "procedure_readiness": "ready",
+          "procedure_readiness": "source-reviewed; runtime fixture/readback/driver prerequisites pending",
           "procedure_gaps": [],
           "procedure_execution_matrix": [
             {
@@ -10455,7 +10595,7 @@
               "observed_outcome": null,
               "evidence_refs": [],
               "status": "unverified",
-              "readiness": "ready"
+              "readiness": "source-reviewed; runtime prerequisites pending"
             },
             {
               "mode": "member",
@@ -10468,16 +10608,73 @@
               "observed_outcome": null,
               "evidence_refs": [],
               "status": "unverified",
-              "readiness": "ready"
+              "readiness": "source-reviewed; runtime prerequisites pending"
             }
           ],
           "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
           "procedure_review": {
-            "proposal_commit": "22994d49",
-            "peer_commit": "2c318798",
-            "report": ".research/popup-profile-acceptance-peer.json",
-            "scope": "Source-reviewed procedure only; no runtime acceptance."
-          }
+            "proposal_commit": "c722d017",
+            "correction_commit": "39c88f6f",
+            "peer_commit": "87e683e1",
+            "report": ".research/profile-billing-contacts-peer.json",
+            "scope": "Source procedures only; full existing-data scope remains, allruntimeunverified. Engineering method review uses standingauthorization, not a new human permission gate."
+          },
+          "source_controls": [
+            {
+              "control": "section expander",
+              "source": "ProfileView.tsx Emails Collapsible"
+            },
+            {
+              "control": "Add",
+              "effect": "append {value:'', label:'Personal'}",
+              "source": "EmailsEditor ListSection onAdd"
+            },
+            {
+              "control": "label input",
+              "effect": "updates label; blank maps to null",
+              "source": "EmailsEditor ListItemCard Input"
+            },
+            {
+              "control": "primary star",
+              "effect": "sets selected email primary and all others false",
+              "source": "EmailsEditor setPrimary / PrimaryStar"
+            },
+            {
+              "control": "remove",
+              "effect": "removes selected indexed email",
+              "source": "EmailsEditor remove / Trash2 button"
+            },
+            {
+              "control": "Email input",
+              "effect": "updates value using input type=email",
+              "source": "EmailsEditor FormRow Email / TextField type=email"
+            },
+            {
+              "control": "header and bottom Save / Discard; header Back",
+              "effect": "persists draft, resets draft, or leaves Profile for Chat",
+              "source": "ProfileView header and bottom action bar"
+            }
+          ],
+          "shared_run_protocol": {
+            "identity": "Use the existing account for the case mode only (member or admin); record account email, role evidence, device organization, build channel, extension ID/version/Loaded from path. Do not change role or account.",
+            "lifecycle": [
+              "Run warm first without a just-completed extension reload; open Profile from the avatar dropdown.",
+              "For reload dimension, use chrome://extensions to reload the same extension, record completion, reopen the surface, recheck account/role/organization, and repeat the complete case independently. Panel reopen or page refresh is not extension reload."
+            ],
+            "organization": "Record the currently selected device organization for authenticated save. If the UI cannot establish the expected identity or organization, stop that execution as unverified; do not modify organization/account settings to force a pass.",
+            "preflight_and_fixture": "Before EACH role × lifecycle run, obtain an approved, owner-scoped, read-only exact JSON capture of the target persisted list and compare it with the expanded UI. A UI snapshot cannot see notes or distinguish absent, null, and false optional keys. Mutation is eligible only when that raw list is exactly [] and the UI shows its empty state, with an approved owner-scoped exact-list readback available after writes. Treat this as an empty owned fixture; only same-run synthetic entries may be removed. If the list contains any existing row, is unreadable, disagrees with the UI, or lacks an exact readback path, make no mutation and mark the product row unverified. A separately approved exact capture and restoration method would be required to test a nonempty list; this procedure supplies none. Never clear, delete, reorder, or change existing private rows to create a fixture.",
+            "discard_and_back": "Before the committed test, create one synthetic unsaved draft change, inspect it, click Discard, and assert the entire target draft list and raw persisted list still equal the empty baseline. Both header and bottom action bars contain Save and Discard; identify which instance was exercised. Click Back and assert the Chat surface is visible; reopen Profile, expand the target section, and confirm the empty list before starting the committed phase.",
+            "save_and_reopen": "After exercising controls, compare the COMPLETE ordered draft list with expected original [] plus the surviving synthetic entry, including all exposed values and flags. Click a named header or bottom Save and wait for saving to settle. While still in Profile, require no visible profile.error/save error and compare the complete displayed list, then obtain an independent approved owner-scoped raw readback of the entire persisted list. A disabled Save button alone proves nothing. Click Back and assert Chat is visible; reopen Profile and compare the complete list again. For reload dimension, additionally reload the extension, recheck identity/organization, reopen Profile, and compare the complete list and raw readback again. A rejected save or reproducible wrong list is fail; an unreadable/ambiguous write is unverified.",
+            "cleanup": "Only for an eligible empty owned fixture, remove the surviving same-run synthetic entry through the UI, Save, require no visible save error, and verify both full UI list and approved owner-scoped raw readback equal exact []. Reopen Profile and repeat the UI comparison; repeat after extension reload for reload rows. Never use a blanket clear, direct API/DB delete, or delete any pre-existing row. If a write is ambiguous, stop further mutation until an approved owner-scoped read-only reconciliation establishes exactly what was written; report cleanup_result unverified until empty restoration is proven. If cleanup is attempted and demonstrably fails, report cleanup_result failed. Do not claim cleanup from the UI alone.",
+            "failure_semantics": "Record product_result pass/fail/unverified and cleanup_result restored/failed/unverified separately for every role × lifecycle row. Reproducibly missing control, save error/rejection, failed Discard or Back assertion, or verified draft/persistence mismatch is product fail, even if cleanup later succeeds. Missing identity/organization, unavailable exact-state capture/readback, uncertain write, or an unexecuted dimension is unverified, never pass. Preserve any product failure alongside cleanup failure. Overall acceptance requires all eight product rows pass and all eight cleanup results restored; any failed row fails acceptance, otherwise any unverified row leaves acceptance unverified. Record safe phase/control identifiers and sanitized error category, never credentials or raw sensitive values."
+          },
+          "execution_prerequisites": [
+            "Existing member and admin identities on the intended device, verified organization, and same extension build for warm/reload; no account or organization changes to manufacture eligibility.",
+            "Approved owner-scoped read-only capture/readback of the exact persisted phones or emails JSON list, including hidden notes and optional-key presence; no raw sensitive values in the report.",
+            "For each independent role/lifecycle run, persisted list exactly [] and UI empty state; nonempty private lists remain untouched until a separately approved exact restoration method exists.",
+            "Focused native control driver and observations for list controls, both action bars, error display, full-list comparisons, Back to Chat, and reload. Current runner does not implement these."
+          ],
+          "validation_and_limits": "Source sets input type=email; native browser validity can be observed, but source alone does not establish whether Save is blocked or backend persistence rejects malformed values. This case uses valid example.test addresses. Empty state text is 'No additional emails'."
         },
         {
           "id": "EXT-F-1004-T10",
@@ -10496,13 +10693,15 @@
             "Run independently as existing known admin; do not change role or account."
           ],
           "steps": [
-            "Expand Emails; record initial list. Add two synthetic addresses using reserved example.test addresses, edit a label/value, make second primary; remove first..",
-            "Confirm list contents and primary star before saving. Click Save and wait for completion.",
-            "Reopen Profile and compare each item, labels, flags and primary designation; restore original list and save."
+            "Execute shared preflight as member; only an exact persisted [] and matching UI empty state permit mutation. Run Discard and Back assertions before the committed phase.",
+            "Use Add twice. Enter distinct reserved example.test addresses (for example profile-run-<unique-token>-1@example.test and -2@example.test); edit the first label and address. Avoid real mailboxes.",
+            "Set the second new entry primary. Verify its star is active and the first is inactive. Remove the first; verify it is absent and second remains primary.",
+            "Run shared full-list save, error, owner-scoped readback, Back/reopen and reload assertions for the surviving synthetic entry, including label/value/is_primary, then shared owned-fixture cleanup."
           ],
           "expected": [
-            "Add/edit/remove email and choose primary; saved list survives reload.",
-            "Add/edit/remove operations and the selected primary designation in Emails persist after reopening Profile; removed item remains absent."
+            "Add, edit label/address, set primary, and remove are reflected in draft.",
+            "Saved surviving entry and exposed properties persist after Profile close/reopen and extension reload in reload dimension.",
+            "Removed synthetic entry remains absent; the empty owned fixture is restored to exact [] and verified by UI and raw owner-scoped readback."
           ],
           "dimensions": [
             "warm",
@@ -10513,7 +10712,7 @@
             "src/features/profile/ProfileView.tsx:300-430",
             "src/hooks/use-user-profile.ts:87-100"
           ],
-          "procedure_readiness": "ready",
+          "procedure_readiness": "source-reviewed; runtime fixture/readback/driver prerequisites pending",
           "procedure_gaps": [],
           "procedure_execution_matrix": [
             {
@@ -10527,7 +10726,7 @@
               "observed_outcome": null,
               "evidence_refs": [],
               "status": "unverified",
-              "readiness": "ready"
+              "readiness": "source-reviewed; runtime prerequisites pending"
             },
             {
               "mode": "admin",
@@ -10540,16 +10739,73 @@
               "observed_outcome": null,
               "evidence_refs": [],
               "status": "unverified",
-              "readiness": "ready"
+              "readiness": "source-reviewed; runtime prerequisites pending"
             }
           ],
           "procedure_completion_rule": "Every required mode/lifecycle/branch needs independent observed outcome and evidence. An unavailable required branch remains unverified; never pass the whole case from only the supported subset. Keep broader case result unverified/partial until all original criteria and dimensions are proven.",
           "procedure_review": {
-            "proposal_commit": "22994d49",
-            "peer_commit": "2c318798",
-            "report": ".research/popup-profile-acceptance-peer.json",
-            "scope": "Source-reviewed procedure only; no runtime acceptance."
-          }
+            "proposal_commit": "c722d017",
+            "correction_commit": "39c88f6f",
+            "peer_commit": "87e683e1",
+            "report": ".research/profile-billing-contacts-peer.json",
+            "scope": "Source procedures only; full existing-data scope remains, allruntimeunverified. Engineering method review uses standingauthorization, not a new human permission gate."
+          },
+          "source_controls": [
+            {
+              "control": "section expander",
+              "source": "ProfileView.tsx Emails Collapsible"
+            },
+            {
+              "control": "Add",
+              "effect": "append {value:'', label:'Personal'}",
+              "source": "EmailsEditor ListSection onAdd"
+            },
+            {
+              "control": "label input",
+              "effect": "updates label; blank maps to null",
+              "source": "EmailsEditor ListItemCard Input"
+            },
+            {
+              "control": "primary star",
+              "effect": "sets selected email primary and all others false",
+              "source": "EmailsEditor setPrimary / PrimaryStar"
+            },
+            {
+              "control": "remove",
+              "effect": "removes selected indexed email",
+              "source": "EmailsEditor remove / Trash2 button"
+            },
+            {
+              "control": "Email input",
+              "effect": "updates value using input type=email",
+              "source": "EmailsEditor FormRow Email / TextField type=email"
+            },
+            {
+              "control": "header and bottom Save / Discard; header Back",
+              "effect": "persists draft, resets draft, or leaves Profile for Chat",
+              "source": "ProfileView header and bottom action bar"
+            }
+          ],
+          "shared_run_protocol": {
+            "identity": "Use the existing account for the case mode only (member or admin); record account email, role evidence, device organization, build channel, extension ID/version/Loaded from path. Do not change role or account.",
+            "lifecycle": [
+              "Run warm first without a just-completed extension reload; open Profile from the avatar dropdown.",
+              "For reload dimension, use chrome://extensions to reload the same extension, record completion, reopen the surface, recheck account/role/organization, and repeat the complete case independently. Panel reopen or page refresh is not extension reload."
+            ],
+            "organization": "Record the currently selected device organization for authenticated save. If the UI cannot establish the expected identity or organization, stop that execution as unverified; do not modify organization/account settings to force a pass.",
+            "preflight_and_fixture": "Before EACH role × lifecycle run, obtain an approved, owner-scoped, read-only exact JSON capture of the target persisted list and compare it with the expanded UI. A UI snapshot cannot see notes or distinguish absent, null, and false optional keys. Mutation is eligible only when that raw list is exactly [] and the UI shows its empty state, with an approved owner-scoped exact-list readback available after writes. Treat this as an empty owned fixture; only same-run synthetic entries may be removed. If the list contains any existing row, is unreadable, disagrees with the UI, or lacks an exact readback path, make no mutation and mark the product row unverified. A separately approved exact capture and restoration method would be required to test a nonempty list; this procedure supplies none. Never clear, delete, reorder, or change existing private rows to create a fixture.",
+            "discard_and_back": "Before the committed test, create one synthetic unsaved draft change, inspect it, click Discard, and assert the entire target draft list and raw persisted list still equal the empty baseline. Both header and bottom action bars contain Save and Discard; identify which instance was exercised. Click Back and assert the Chat surface is visible; reopen Profile, expand the target section, and confirm the empty list before starting the committed phase.",
+            "save_and_reopen": "After exercising controls, compare the COMPLETE ordered draft list with expected original [] plus the surviving synthetic entry, including all exposed values and flags. Click a named header or bottom Save and wait for saving to settle. While still in Profile, require no visible profile.error/save error and compare the complete displayed list, then obtain an independent approved owner-scoped raw readback of the entire persisted list. A disabled Save button alone proves nothing. Click Back and assert Chat is visible; reopen Profile and compare the complete list again. For reload dimension, additionally reload the extension, recheck identity/organization, reopen Profile, and compare the complete list and raw readback again. A rejected save or reproducible wrong list is fail; an unreadable/ambiguous write is unverified.",
+            "cleanup": "Only for an eligible empty owned fixture, remove the surviving same-run synthetic entry through the UI, Save, require no visible save error, and verify both full UI list and approved owner-scoped raw readback equal exact []. Reopen Profile and repeat the UI comparison; repeat after extension reload for reload rows. Never use a blanket clear, direct API/DB delete, or delete any pre-existing row. If a write is ambiguous, stop further mutation until an approved owner-scoped read-only reconciliation establishes exactly what was written; report cleanup_result unverified until empty restoration is proven. If cleanup is attempted and demonstrably fails, report cleanup_result failed. Do not claim cleanup from the UI alone.",
+            "failure_semantics": "Record product_result pass/fail/unverified and cleanup_result restored/failed/unverified separately for every role × lifecycle row. Reproducibly missing control, save error/rejection, failed Discard or Back assertion, or verified draft/persistence mismatch is product fail, even if cleanup later succeeds. Missing identity/organization, unavailable exact-state capture/readback, uncertain write, or an unexecuted dimension is unverified, never pass. Preserve any product failure alongside cleanup failure. Overall acceptance requires all eight product rows pass and all eight cleanup results restored; any failed row fails acceptance, otherwise any unverified row leaves acceptance unverified. Record safe phase/control identifiers and sanitized error category, never credentials or raw sensitive values."
+          },
+          "execution_prerequisites": [
+            "Existing member and admin identities on the intended device, verified organization, and same extension build for warm/reload; no account or organization changes to manufacture eligibility.",
+            "Approved owner-scoped read-only capture/readback of the exact persisted phones or emails JSON list, including hidden notes and optional-key presence; no raw sensitive values in the report.",
+            "For each independent role/lifecycle run, persisted list exactly [] and UI empty state; nonempty private lists remain untouched until a separately approved exact restoration method exists.",
+            "Focused native control driver and observations for list controls, both action bars, error display, full-list comparisons, Back to Chat, and reload. Current runner does not implement these."
+          ],
+          "validation_and_limits": "Same source-backed email controls and limits as T09; no admin-specific control difference is evident in ProfileView source."
         },
         {
           "id": "EXT-F-1004-T11",
