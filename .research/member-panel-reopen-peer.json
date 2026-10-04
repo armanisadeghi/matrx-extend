@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "task": "member-panel-reopen-peer",
+  "reviewed_commit": "44005fb4b65dde448ccb6b86acc67e70130db703",
+  "repository_state": {
+    "reviewed_head_at_completion": "71ff4c194835327b833e3cb6192cc540bddfa494",
+    "reviewed_commit_on_origin_main": true,
+    "ancestry_check": "git merge-base --is-ancestor 44005fb4 origin/main => pass",
+    "unrelated_existing_dirty_file_preserved": "docs/stabilization/reports/workspace-sync-guest-incident-20261003.json"
+  },
+  "verdict_a": {
+    "source_adequacy": "adequate",
+    "runtime_status": "pending_native_retest",
+    "details": [
+      "The change preserves the original exact panel target and adds a separate reopenPanel callback, leaving activatePanel as the existing CDP-only operation for callers whose owned root page may have navigated.",
+      "Authenticated Scrape invokes reopenPanel after member authentication and organization verification, inside resourceAction, before the pre-existing native document.visibilityState gate and before viewport measurement or cases.",
+      "The opener foregrounds the owned root page, clears stale result text, uses the existing real trusted #open-panel click and FRONTEND_RPC openPanel route, requires a fresh nonempty reply with ok=true and result.opened=true, then activates the original exact target.",
+      "This addresses the observed harness omission (activation can focus a hidden SIDE_PANEL without reopening it) without changing identity assertions, exact extension/SIDE_PANEL context checks, auth/storage checks, or resource health gates.",
+      "The prior run 37241717888 remains valid failure evidence: member/org passed, one exact target and context remained, panel was hidden despite focus, and zero cases ran. It does not test this repair."
+    ],
+    "changed_condition_native_run": "Run one fresh native authenticated Scrape acceptance with member mode and a verified organization against the repaired pushed head/artifact. Preserve exact artifact/extension identity and existing auth, organization, context, and resource gates. The changed boundary must now report visible and continue to viewport measurement and Scrape cases; if it fails, retain the new run report and diagnostic. No guest-only run establishes the changed member/OAuth condition."
+  },
+  "verdict_b": {
+    "quality": "source repair and lightweight guard are sound within their stated boundary; browser/runtime behavior remains unproven",
+    "sibling_callers": "The helper is exposed only as a new callback. Existing activatePanel behavior and non-Scrape native callers remain unchanged. Scrape uses the root owned page before its fixture navigation; member OAuth's web page is closed before return per the existing flow.",
+    "resource_and_lifecycle": "Reopen is charged through resourceAction and followed by the existing requireResourceHealth. Existing original target attachment and final detach/owned-child cleanup remain in place. The helper does not close or create a browser, profile, or extension target.",
+    "privacy": "The helper includes the RPC reply JSON in its thrown refusal error. This mirrors the existing initial-open path's error format and currently expected replies contain only open status/reason, so I found no new demonstrated disclosure; fixed-code refusal diagnostics would be safer if RPC payloads can carry arbitrary fields.",
+    "guard_limits": "The new node:test checks success/refusal/no-fresh-reply behavior and executes the actual authenticated Scrape setup prefix with external auth/browser dependencies doubled. Its visibility predicate is simulated; it cannot prove Chromium reopened the attached target, and the source-slice seam is deliberately narrower than full native integration.",
+    "no_findings": "No identity, authorization, exact-context, or resource gate was weakened in the reviewed diff."
+  },
+  "checks": [
+    "node --test tests/browser/native-sidepanel-qa-harness.test.mjs: pass",
+    "node --check tests/browser/native-sidepanel-qa-harness.mjs: pass",
+    "node --check tests/browser/scrape-guest-native-acceptance.mjs: pass",
+    "pnpm exec biome check tests/browser/native-sidepanel-qa-harness.mjs tests/browser/native-sidepanel-qa-harness.test.mjs tests/browser/scrape-guest-native-acceptance.mjs: pass"
+  ],
+  "limits": [
+    "No browser, workflow dispatch, release, product change, inventory mutation, or child agent used in this review.",
+    "CI and a changed-condition native member run were not run here.",
+    "The pre-existing unrelated dirty workspace report was left untouched."
+  ]
+}
