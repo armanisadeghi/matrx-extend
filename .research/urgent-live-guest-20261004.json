@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "status": "reproduced_installed_store_guest_failure",
+  "scope": "Actual Chrome Web Store installation in the existing signed-out Chrome profile against the live server; no source build, unpacked extension, account reset, or usage-policy change",
+  "artifact": {
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.176",
+    "source": "Chrome Extensions details displayed Chrome Web Store",
+    "auth": "The side panel displayed the guest banner throughout",
+    "published_dashboard_version": "0.2.176",
+    "pending_dashboard_version": "0.2.181"
+  },
+  "server": {
+    "health_git_sha_before_and_after": "c0c941d9c856760b930eb0f2e7f0325f80973c13",
+    "health_built_at": "2026-10-04T04:49:36Z"
+  },
+  "sequence_utc": [
+    {
+      "approx": "2026-10-04T05:26:50Z",
+      "action": "In previously used guest profile, open installed Store side panel on the public demo and send a simple arithmetic question",
+      "result": "Terminal correct answer; no UI error"
+    },
+    {
+      "approx": "2026-10-04T05:27:00Z",
+      "action": "Send a same-conversation follow-up",
+      "result": "Terminal answer recalling the preceding question; no UI error"
+    },
+    {
+      "approx": "2026-10-04T05:29:10Z",
+      "action": "After closing and reopening the panel in the same installed profile, send Hi in the new conversation",
+      "result": "Immediate terminal assistant text: Error: The chat service could not complete this request. Try again. Interruption notice: The response was interrupted by an error. Retry and Dismiss displayed.",
+      "first_failing_boundary": "The correlated live POST /v2/ai/mandates/extend.browser_chat returned HTTP 402 in 575 ms at 2026-10-04T05:29:10.852Z",
+      "request_id": "96172141-2df1-460f-ae90-65624ae3efdc"
+    }
+  ],
+  "server_correlation": {
+    "source": "Independent live error/usage investigation correlated the above request ID and timestamp",
+    "same_guest_usage": "Weekly points are over the allowance with enforcement enabled",
+    "deployed_refusal_code": "guest_ai_allowance_used",
+    "exact_http_response_body": "not retained in the audit log; no claim about its exact JSON shape",
+    "request_auth": "guest fingerprint, not a signed-in bearer"
+  },
+  "boundary_diagnosis": {
+    "confirmed": "The installed side panel turns a legitimate guest allowance refusal into a generic retryable chat failure at the client HTTP-error presentation boundary.",
+    "source_contract_gap": "src/lib/api/stream.ts isGuestAllowanceUsed recognizes only status 403 with a top-level error field equal to guest_ai_allowance_used, while the live refusal for the reproduced send was status 402. streamErrorMessage has no 402 case and uses generic copy; src/lib/chat/stream-error.ts suppresses Retry only when code is guest_ai_allowance_used.",
+    "qualification": "The 0.2.176 Store binary predates this source checkout. The source contract matches the observed generic message and Retry behavior, but exact response-body shape and binary-level branch execution were not captured."
+  },
+  "ranked_falsifiable_hypotheses": [
+    {
+      "rank": 1,
+      "cause": "Live allowance HTTP status moved to 402 while the installed client recognizes guest_ai_allowance_used only at 403",
+      "prediction": "A 402 response carrying error=guest_ai_allowance_used yields generic copy and Retry; accepting 402 at the shared classifier yields the free-tries remedy and no Retry",
+      "test": "Run the HTTP-error classifier against the captured 402 status with a representative refusal body, then verify actual Store candidate or newer client against an already-over guest identity",
+      "state": "Strongly supported by live status, UI behavior, and source; exact body still unobserved"
+    },
+    {
+      "rank": 2,
+      "cause": "The live 402 response body does not contain the field expected by the client",
+      "prediction": "Changing only accepted status leaves the classifier generic; a schema-aware classification test with the actual redacted body identifies the missing field",
+      "test": "Capture one private redacted 402 response shape or inspect the deployed server response constructor without exposing identity",
+      "state": "Open because audit logs do not retain response body"
+    },
+    {
+      "rank": 3,
+      "cause": "The failure is an unrelated network or session error",
+      "prediction": "The failed send would lack an allowance-gate 402 on the same request ID",
+      "test": "Correlate first failing request status, identity, and usage state",
+      "state": "Falsified for this reproduced failure by the correlated 402 and over-allowance guest state"
+    }
+  ],
+  "limits": [
+    "The reporter's exact initial message and profile were not available, so the observed 402 is a faithful installed-surface reproduction of the symptom, not proof of identical user identity.",
+    "The earlier two successful turns and the later 402 in the same profile suggest a time-dependent usage/cache boundary; no claim about the cache's internal cause is made here.",
+    "No repeated sends were made after the reproduced failure."
+  ],
+  "resource": {
+    "run_id": "urgent-live-guest-20261004-01",
+    "decision": "valid",
+    "journal": "docs/stabilization/resource-journals/urgent-live-guest-20261004-01.jsonl",
+    "journal_sha256": "c05e9c22466a0845a500801e97f71fb9e54975fe8e3c29102d767c88c726211c"
+  },
+  "cleanup": "Diagnostic tabs closed, side panel closed, installed extension restored Off, publisher dashboard tab preserved, browser guard stopped with valid decision; no guest data cleared"
+}
