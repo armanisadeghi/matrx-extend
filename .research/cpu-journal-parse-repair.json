@@ -1,0 +1,65 @@
+{
+  "defect": "EXT-D-0136",
+  "ci": {
+    "run": 37245082188,
+    "job": 111561549168
+  },
+  "scope": "CPU integration test startup synchronization; no production resource guard or native boundary changes",
+  "cause": "RESOURCE_ADMITTED is emitted before three startup truncate/writeFile updates of heavy/owner.json. Parsing that mutable file immediately on admission can observe empty JSON.",
+  "hypotheses": [
+    {
+      "cause": "startup owner rewrite race",
+      "prediction": "holding the real startup writer after truncation makes admission-time parsing fail with the CI SyntaxError",
+      "result": "confirmed"
+    },
+    {
+      "cause": "final journal partial append",
+      "prediction": "failure occurs in final jsonl parsing after child close",
+      "result": "ruled out: failing line154 is owner metadata parse before CPU phase changes"
+    },
+    {
+      "cause": "CPU confirmation or resource policy decision defect",
+      "prediction": "failure first occurs after CPU_BUSY or CPU_PENDING event",
+      "result": "ruled out: failing parse precedes CPU stimulus"
+    }
+  ],
+  "repair": "Wait for first real RESOURCE_WATCH_HEALTHY before parsing owner identity; watcher begins after all startup owner writes. No parse retry, refusal suppression, or fabricated owner token.",
+  "deterministic_regression": "Scratch guard holds real startup writer after empty truncation, announces TEST_OWNER_REWRITE_PAUSED on stdout, and resumes only when the test begins waiting for watch readiness. The parent verifies empty JSON then uses unchanged native boundary in recovered, confirmed, and pending-exit scenarios.",
+  "mutations": [
+    {
+      "mutation": "remove readiness watch wait",
+      "location": "isolated scratch copy; plant.py restores identical source",
+      "result": "RED: SyntaxError Unexpected end of JSON input; 1782ms"
+    },
+    {
+      "mutation": "replace parsed owner with constant-owner",
+      "location": "isolated scratch copy; plant.py restores identical source",
+      "result": "RED: NATIVE_RESOURCE_BOUNDARY_REFUSED:wrong_run; 2805ms"
+    }
+  ],
+  "verification": {
+    "command": "node --test scripts/test-stabilization-resource-cpu-integration.mjs tests/browser/native-resource-boundary.test.mjs tests/browser/resource-cpu-confirmation.test.mjs",
+    "initialResult": "5 tests passed; zero failed; ~19.5s",
+    "finalResult": "5 tests passed; zero failed; 19547ms, after paused-writer cleanup observes stop"
+  },
+  "sibling_census": [
+    {
+      "path": "scripts/test-stabilization-resource-disk-integration.mjs",
+      "result": "owner JSON read waits for RESOURCE_WATCH_UNSAFE, after startup writes; no admission-time owner parse"
+    },
+    {
+      "path": "scripts/test-stabilization-resource-safety-integration.mjs",
+      "result": "owner metadata only checked with stat; no admission-time owner parse"
+    }
+  ],
+  "limits": [
+    "No browser, build, release, workflow rerun, or production verification in this implementation lane.",
+    "Root owns defect tracker and independent review.",
+    "Writer pause is injected only into disposable copied guard code; production fail-closed behavior remains unchanged."
+  ],
+  "diagnostic_attempts": [
+    "Initial scratch mutant missed a transitive guard module; discarded ENOENT result.",
+    "Concurrent real-wrapper test triggered legacy-runner refusal; discarded unrelated result and serialized runs.",
+    "Initial paused-writer cleanup ignored SIGTERM and timed out; pause now observes real stop flag. The timeout was discarded; deterministic SyntaxError proof repeated successfully."
+  ]
+}

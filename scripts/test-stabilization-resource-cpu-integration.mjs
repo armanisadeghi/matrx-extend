@@ -22,13 +22,14 @@ const watchCodes = new Set([
   'RESOURCE_WATCH_UNSAFE',
 ]);
 
-async function fixture() {
+async function fixture({ pauseOwnerRewrite = false } = {}) {
   const scratch = await mkdtemp(join(tmpdir(), 'resource-cpu-wrapper-'));
   const scripts = join(scratch, 'scripts');
   const docs = join(scratch, 'docs/stabilization');
   const leaseRoot = join(scratch, 'lease');
   const cpuPhase = join(scratch, 'cpu-phase');
   const childPhase = join(scratch, 'child-phase');
+  const ownerRewriteRelease = join(scratch, 'owner-rewrite-release');
   await mkdir(scripts);
   await mkdir(docs, { recursive: true });
   await copyResourceGuardModules(join(source, 'scripts'), scripts);
@@ -42,6 +43,20 @@ async function fixture() {
     'Promise.resolve(0.1),',
     `readFile(${JSON.stringify(cpuPhase)}, 'utf8').then(Number),`,
   );
+  if (pauseOwnerRewrite) {
+    // Hold the real startup writer after truncation. The parent must wait for
+    // watch readiness rather than treating admission as completed child setup.
+    const startupWrite = 'owner.childPending = true;';
+    assert.equal(guardSource.split(startupWrite).length, 2);
+    guardSource = guardSource.replace(
+      startupWrite,
+      `${startupWrite}
+      await writeFile(join(lock, 'owner.json'), '');
+      console.log(JSON.stringify({ code: 'TEST_OWNER_REWRITE_PAUSED' }));
+      while (!stop && !existsSync(${JSON.stringify(ownerRewriteRelease)})) await sleep(5);
+    `,
+    );
+  }
   await writeFile(guardPath, guardSource);
   const safetyPath = join(scripts, 'stabilization-resource-safety.mjs');
   const safetySource = await readFile(safetyPath, 'utf8');
@@ -83,7 +98,7 @@ async function fixture() {
      }, 20);
     `,
   );
-  return { scratch, docs, leaseRoot, cpuPhase, childPhase, guardPath };
+  return { scratch, docs, leaseRoot, cpuPhase, childPhase, guardPath, ownerRewriteRelease };
 }
 
 function observe(child) {
@@ -126,8 +141,16 @@ function observe(child) {
   };
 }
 
-async function runScenario(kind) {
-  const item = await fixture();
+async function readWatchReadyOwner(stream, item) {
+  // Admission precedes truncate/writeFile updates to owner.json. A watch event
+  // is emitted only after child setup and all startup owner writes complete.
+  const ready = await stream.next((event) => watchCodes.has(event.code));
+  assert.equal(ready.code, 'RESOURCE_WATCH_HEALTHY');
+  return JSON.parse(await readFile(join(item.leaseRoot, 'heavy/owner.json'), 'utf8'));
+}
+
+async function runScenario(kind, { pauseOwnerRewrite = false } = {}) {
+  const item = await fixture({ pauseOwnerRewrite });
   const runId = `cpu-${kind}-${randomUUID()}`;
   const child = spawn(
     process.execPath,
@@ -151,7 +174,23 @@ async function runScenario(kind) {
   let finished = false;
   try {
     await stream.next((event) => event.code === 'RESOURCE_ADMITTED');
-    const owner = JSON.parse(await readFile(join(item.leaseRoot, 'heavy/owner.json'), 'utf8'));
+    if (pauseOwnerRewrite) {
+      await stream.next((event) => event.code === 'TEST_OWNER_REWRITE_PAUSED');
+      const incomplete = await readFile(join(item.leaseRoot, 'heavy/owner.json'), 'utf8');
+      assert.equal(incomplete, '');
+      assert.throws(() => JSON.parse(incomplete), /Unexpected end of JSON input/);
+    }
+    // Release the writer only when readiness starts waiting for a watch. If
+    // that wait is removed, the owner read deterministically sees empty JSON.
+    const readinessStream = pauseOwnerRewrite
+      ? {
+          async next(predicate) {
+            await writeFile(item.ownerRewriteRelease, 'release\n');
+            return stream.next(predicate);
+          },
+        }
+      : stream;
+    const owner = await readWatchReadyOwner(readinessStream, item);
     const env = {
       MATRX_RESOURCE_RUN_ID: runId,
       MATRX_RESOURCE_OWNER: owner.nonce,
@@ -229,5 +268,15 @@ test(
     await runScenario('recovered');
     await runScenario('confirmed');
     await runScenario('pending-exit');
+  },
+);
+
+test(
+  'CPU boundary waits for startup owner rewrite before reading identity',
+  { timeout: 30_000 },
+  async () => {
+    await runScenario('recovered', { pauseOwnerRewrite: true });
+    await runScenario('confirmed', { pauseOwnerRewrite: true });
+    await runScenario('pending-exit', { pauseOwnerRewrite: true });
   },
 );
