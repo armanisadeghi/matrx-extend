@@ -9,7 +9,11 @@ import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifac
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { signInAdminSettings } from './admin-settings-signin.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { assertFirstSaveOwnedRow, ownedDeleteUrl } from './profile-empty-row-restoration.mjs';
+import {
+  assertFirstSaveIdentity,
+  assertFirstSaveOwnedRow,
+  ownedDeleteUrl,
+} from './profile-empty-row-restoration.mjs';
 import { extendedCaseCensus } from './profile-extended-census.mjs';
 import {
   runProfileExpandersCase,
@@ -895,7 +899,13 @@ try {
         report,
         async () => {
           if (!initialRow.row_present) {
-            assert.equal(AUTH_MODE, 'member', 'first_save_requires_designated_member');
+            assertFirstSaveIdentity({
+              mode: AUTH_MODE,
+              identity,
+              stored,
+              selectedOrg,
+              memberAuthentication: report.member_authentication,
+            });
             ownerConfig = { ...(await profileApiConfig()), organizationId: stored.organizationId };
             assert.equal(
               await readProfileOwnerRow(panel, ownerConfig, identity.userId),
@@ -959,7 +969,8 @@ try {
               status: 'provisional_until_original_absence_restored',
               row_created_by_ui: true,
               organization_matches_device: true,
-              owner_matches_verified_member: true,
+              owner_matches_first_party_identity: true,
+              ...(AUTH_MODE === 'member' && { owner_matches_verified_member: true }),
               original_absence_restoration_pending: true,
               scope: 'bounded branch only; not full T28 acceptance',
             };

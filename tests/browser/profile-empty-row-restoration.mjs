@@ -2,6 +2,40 @@ import assert from 'node:assert/strict';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+export function assertFirstSaveIdentity({
+  mode,
+  identity,
+  stored,
+  selectedOrg,
+  memberAuthentication,
+}) {
+  assert.ok(mode === 'admin' || mode === 'member', 'first_save_mode_unverified');
+  assert.match(identity?.userId ?? '', UUID, 'first_save_first_party_identity_unverified');
+  assert.equal(stored?.profileId, identity.userId, 'first_save_identity_mismatch');
+  assert.equal(stored?.accessTokenPresent, true, 'first_save_token_missing');
+  assert.equal(stored?.isAdmin, mode === 'admin', 'first_save_role_mismatch');
+  assert.match(stored?.organizationId ?? '', UUID, 'first_save_device_organization_unverified');
+  if (mode === 'admin') {
+    assert.equal(identity.email, 'admin@admin.com', 'first_save_designated_admin_unverified');
+    assert.ok(
+      typeof selectedOrg === 'string' && selectedOrg && selectedOrg === stored.organizationName,
+      'first_save_organization_mismatch',
+    );
+  } else {
+    assert.equal(
+      memberAuthentication?.first_party_identity_verified,
+      true,
+      'first_save_member_unverified',
+    );
+    assert.equal(
+      memberAuthentication?.canonical_nonadmin_check?.returned_rows,
+      0,
+      'first_save_member_role_unverified',
+    );
+    assert.equal(selectedOrg, true, 'first_save_organization_mismatch');
+  }
+}
+
 export function assertFirstSaveOwnedRow(row, { userId, organizationId, marker }) {
   assert.ok(row && typeof row === 'object', 'first_save_row_missing');
   assert.match(userId, UUID, 'first_save_owner_invalid');

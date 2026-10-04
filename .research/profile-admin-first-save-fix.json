@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0108 / EXT-F-1004 Profile first-save admin gate",
+  "status": "source_verified_native_pending",
+  "cause": "The row-absent branch required member mode even after the designated admin completed first-party sign-in, extension identity and role checks, and device organization selection.",
+  "change": "The existing first-save journal and exact-owner restoration branch now admits the designated admin identity and the existing designated member after mode-specific identity, role, token, and device organization checks. Rejections use fixed report codes.",
+  "red": {
+    "command": "node --test tests/browser/profile-first-save-identity.test.mjs",
+    "result": "1 pass, 1 fail before the runner change",
+    "failure": "first_save_requires_designated_member for the verified admin"
+  },
+  "green": {
+    "command": "node --test tests/browser/profile-first-save-identity.test.mjs tests/browser/profile-empty-row-restoration.test.mjs tests/browser/profile-native-failure.test.mjs tests/browser/profile-report-boundary.test.mjs",
+    "result": "26 pass, 0 fail"
+  },
+  "adversarial": {
+    "admin_rejected": [
+      "wrong designated email",
+      "first-party and extension profile mismatch",
+      "role mismatch",
+      "missing extension token",
+      "selected and stored organization mismatch",
+      "missing device organization"
+    ],
+    "member_rejected": [
+      "missing first-party proof",
+      "canonical nonadmin check failure",
+      "unselected organization"
+    ],
+    "cleanup_guard": "Existing owner, organization, marker, creation time, and version-bound deletion tests passed."
+  },
+  "scope": "Source and unit boundary only. No browser run, database write, build, or release in this lane. Native rerun and independent review remain with the parent task."
+}

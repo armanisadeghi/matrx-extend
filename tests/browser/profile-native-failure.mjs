@@ -92,6 +92,16 @@ const PROFILE_FAILURE_CODES = new Set([
   'owned_write_unverified',
   'first_save_row_missing',
   'first_save_was_not_an_insert',
+  'first_save_mode_unverified',
+  'first_save_first_party_identity_unverified',
+  'first_save_identity_mismatch',
+  'first_save_token_missing',
+  'first_save_role_mismatch',
+  'first_save_device_organization_unverified',
+  'first_save_designated_admin_unverified',
+  'first_save_organization_mismatch',
+  'first_save_member_unverified',
+  'first_save_member_role_unverified',
   'profile_fault_enable_failed',
   'profile_fault_disable_failed',
   'profile_fault_interception_failed',
@@ -109,7 +119,7 @@ const PROFILE_FAILURE_CODES = new Set([
 export function safeProfileFailureCode(error) {
   const driverCode = error?.driverFailure?.code;
   if (POINTER_CODES.has(driverCode)) return driverCode;
-  const candidate = typeof error?.message === 'string' ? error.message.split(':', 1)[0] : '';
+  const candidate = typeof error?.message === 'string' ? error.message.split(/[:\n]/, 1)[0] : '';
   return PROFILE_FAILURE_CODES.has(candidate) ? candidate : 'profile_unclassified_failure';
 }
 
