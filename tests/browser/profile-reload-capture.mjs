@@ -28,6 +28,7 @@ const TRANSPORT_CLASSES = new Set([
 const MANAGEMENT_STATES = new Set(['ENABLED', 'DISABLED', 'TERMINATED', 'ABSENT']);
 const BOOL_KEYS = [
   'old_worker_destroyed_event',
+  'old_worker_execution_retired',
   'old_worker_absent',
   'old_panel_absent',
   'replacement_worker_present',
@@ -229,6 +230,8 @@ export function captureReloadLifetime(value) {
           )
           .filter(Boolean)
       : [],
+    pre_click_version_count: safeCount(value.pre_click_version_count),
+    version_events_dropped: safeCount(value.version_events_dropped),
     old_version_id: id(value.old_version_id),
     old_version_mapping:
       value.old_version_mapping === 'correlated' && id(value.old_version_id)

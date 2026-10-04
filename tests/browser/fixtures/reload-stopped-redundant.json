@@ -1,0 +1,120 @@
+{
+  "source_run": "37200570100",
+  "source_receipt_sha256": "ccac4c5e602e3054d5418b5a83c1d1627002451dd2c2b220b27ff63c600af17b",
+  "old_target_id": "13CCF66B639A035D8EA322ABDC27BDA0",
+  "replacement_target_id": "A3288E8A82F3D338CC4F24EC0C9E1C55",
+  "versions": [
+    {
+      "at": "2026-10-04T12:10:52.158Z",
+      "version_id": "0",
+      "registration_id": "0",
+      "target_id": "13CCF66B639A035D8EA322ABDC27BDA0",
+      "running_status": "running",
+      "status": "activated"
+    },
+    {
+      "at": "2026-10-04T12:10:52.528Z",
+      "version_id": "0",
+      "registration_id": "0",
+      "target_id": "13CCF66B639A035D8EA322ABDC27BDA0",
+      "running_status": "stopping",
+      "status": "activated"
+    },
+    {
+      "at": "2026-10-04T12:10:52.536Z",
+      "version_id": "0",
+      "registration_id": "0",
+      "target_id": "13CCF66B639A035D8EA322ABDC27BDA0",
+      "running_status": "stopping",
+      "status": "redundant"
+    },
+    {
+      "at": "2026-10-04T12:10:52.543Z",
+      "version_id": "0",
+      "registration_id": "0",
+      "target_id": "13CCF66B639A035D8EA322ABDC27BDA0",
+      "running_status": "stopping",
+      "status": "redundant"
+    },
+    {
+      "at": "2026-10-04T12:10:52.593Z",
+      "version_id": "1",
+      "registration_id": "1",
+      "target_id": null,
+      "running_status": "stopped",
+      "status": "new"
+    },
+    {
+      "at": "2026-10-04T12:10:52.601Z",
+      "version_id": "1",
+      "registration_id": "1",
+      "target_id": null,
+      "running_status": "stopped",
+      "status": "new"
+    },
+    {
+      "at": "2026-10-04T12:10:52.602Z",
+      "version_id": "1",
+      "registration_id": "1",
+      "target_id": null,
+      "running_status": "starting",
+      "status": "new"
+    },
+    {
+      "at": "2026-10-04T12:10:52.603Z",
+      "version_id": "1",
+      "registration_id": "1",
+      "target_id": "A3288E8A82F3D338CC4F24EC0C9E1C55",
+      "running_status": "starting",
+      "status": "new"
+    },
+    {
+      "at": "2026-10-04T12:10:52.638Z",
+      "version_id": "0",
+      "registration_id": "0",
+      "target_id": null,
+      "running_status": "stopped",
+      "status": "redundant"
+    },
+    {
+      "at": "2026-10-04T12:10:53.170Z",
+      "version_id": "1",
+      "registration_id": "1",
+      "target_id": "A3288E8A82F3D338CC4F24EC0C9E1C55",
+      "running_status": "starting",
+      "status": "installing"
+    },
+    {
+      "at": "2026-10-04T12:10:53.171Z",
+      "version_id": "1",
+      "registration_id": "1",
+      "target_id": "A3288E8A82F3D338CC4F24EC0C9E1C55",
+      "running_status": "running",
+      "status": "installing"
+    },
+    {
+      "at": "2026-10-04T12:10:53.278Z",
+      "version_id": "1",
+      "registration_id": "1",
+      "target_id": "A3288E8A82F3D338CC4F24EC0C9E1C55",
+      "running_status": "running",
+      "status": "installed"
+    },
+    {
+      "at": "2026-10-04T12:10:53.279Z",
+      "version_id": "1",
+      "registration_id": "1",
+      "target_id": "A3288E8A82F3D338CC4F24EC0C9E1C55",
+      "running_status": "running",
+      "status": "activating"
+    },
+    {
+      "at": "2026-10-04T12:10:53.285Z",
+      "version_id": "1",
+      "registration_id": "1",
+      "target_id": "A3288E8A82F3D338CC4F24EC0C9E1C55",
+      "running_status": "running",
+      "status": "activated"
+    }
+  ]
+}

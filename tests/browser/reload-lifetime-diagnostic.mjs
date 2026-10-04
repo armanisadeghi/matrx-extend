@@ -41,6 +41,8 @@ export async function startReloadLifetimeDiagnostic({ browser, context, page, ex
     old_version_id: null,
     old_version_mapping: 'unmeasured',
     version_observation: 'unavailable',
+    pre_click_version_count: null,
+    version_events_dropped: 0,
     old_host_probe: null,
     replacement_host_probe: null,
   };
@@ -119,6 +121,7 @@ export async function startReloadLifetimeDiagnostic({ browser, context, page, ex
           ...item,
           target_id: item.target_id ?? versions.get(versionId)?.target_id ?? null,
         });
+        if (evidence.versions.length >= MAX_EVENTS) evidence.version_events_dropped += 1;
         bounded(evidence.versions, item);
       }
     });
@@ -140,6 +143,7 @@ export async function startReloadLifetimeDiagnostic({ browser, context, page, ex
     evidence.availability = 'unavailable';
   }
   const correlateOld = (oldTargetId) => {
+    evidence.pre_click_version_count = evidence.versions.length;
     const matches = [...versions.values()].filter((value) => value.target_id === oldTargetId);
     if (matches.length === 1) {
       evidence.old_version_id = matches[0].version_id;
@@ -165,6 +169,8 @@ export async function startReloadLifetimeDiagnostic({ browser, context, page, ex
   return {
     evidence,
     correlateOld,
+    executionRetired: (oldTargetId, replacementTargetId) =>
+      reloadExecutionRetired(evidence, oldTargetId, replacementTargetId),
     async probe(oldTargetId, replacementTargetId) {
       evidence.old_host_probe = await probeOne(oldTargetId, 'worker');
       evidence.replacement_host_probe = await probeOne(replacementTargetId, 'worker');
@@ -176,4 +182,68 @@ export async function startReloadLifetimeDiagnostic({ browser, context, page, ex
       await browserSession?.detach().catch(() => {});
     },
   };
+}
+
+// Chrome 141 ServiceWorkerVersion::StartWorker rejects redundant versions;
+// DevToolsAgentHost destruction instead depends on debugger-object references.
+// Evaluate retained protocol evidence, not host attachment or target absence alone.
+export function reloadExecutionRetired(evidence, oldTargetId, replacementTargetId) {
+  const boundary = evidence.pre_click_version_count;
+  if (
+    evidence.availability !== 'ready' ||
+    evidence.old_version_mapping !== 'correlated' ||
+    evidence.version_events_dropped !== 0 ||
+    !Number.isInteger(boundary) ||
+    boundary < 1 ||
+    !safeId(oldTargetId) ||
+    !safeId(replacementTargetId) ||
+    oldTargetId === replacementTargetId
+  )
+    return false;
+  const before = evidence.versions.slice(0, boundary);
+  const after = evidence.versions.slice(boundary);
+  const mapped = before.filter((item) => item.target_id === oldTargetId);
+  const ids = new Set(mapped.map((item) => item.version_id));
+  if (ids.size !== 1 || !ids.has(evidence.old_version_id)) return false;
+  const initial = before.findLast((item) => item.version_id === evidence.old_version_id);
+  if (
+    !initial ||
+    initial.target_id !== oldTargetId ||
+    initial.running_status !== 'running' ||
+    initial.status !== 'activated'
+  )
+    return false;
+  // Conflicting identity must never be repaired by a later superficially good event.
+  const oldUpdates = after.filter((item) => item.version_id === initial.version_id);
+  if (
+    oldUpdates.some(
+      (item) =>
+        item.registration_id !== initial.registration_id ||
+        (item.target_id !== null && item.target_id !== oldTargetId),
+    )
+  )
+    return false;
+  const retired = oldUpdates.at(-1);
+  if (!retired || retired.running_status !== 'stopped' || retired.status !== 'redundant')
+    return false;
+  const replacementIds = new Set(
+    after.filter((item) => item.target_id === replacementTargetId).map((item) => item.version_id),
+  );
+  if (replacementIds.size !== 1 || replacementIds.has(initial.version_id)) return false;
+  const replacementId = [...replacementIds][0];
+  // Replacement identity must be first observed after the click boundary.
+  if (before.some((item) => item.version_id === replacementId)) return false;
+  const replacementUpdates = after.filter((item) => item.version_id === replacementId);
+  const replacement = replacementUpdates.at(-1);
+  return Boolean(
+    replacement &&
+      replacement.target_id === replacementTargetId &&
+      replacement.running_status === 'running' &&
+      replacement.status === 'activated' &&
+      replacementUpdates.every(
+        (item) =>
+          item.registration_id === replacement.registration_id &&
+          (item.target_id === null || item.target_id === replacementTargetId),
+      ),
+  );
 }

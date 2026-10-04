@@ -110,6 +110,7 @@ test('reload failure retains the fixed lifecycle class without private data', ()
   assert.equal(result.failure_code, 'native_extension_worker_retirement_unverified');
   assert.deepEqual(result.retirement_evidence, {
     old_worker_destroyed_event: false,
+    old_worker_execution_retired: null,
     old_worker_absent: true,
     old_panel_absent: true,
     replacement_worker_present: false,

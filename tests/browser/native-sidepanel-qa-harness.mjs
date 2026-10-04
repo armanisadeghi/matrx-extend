@@ -466,6 +466,7 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
       replacementWorkerId = replacementWorker?.targetId ?? null;
       retirementEvidence = {
         old_worker_destroyed_event: destroyedTargets.has(oldWorkerId),
+        old_worker_execution_retired: lifetime.executionRetired(oldWorkerId, replacementWorkerId),
         old_worker_absent: !ids.has(oldWorkerId),
         old_panel_absent: !ids.has(oldPanelId),
         replacement_worker_present: Boolean(replacementWorker),
@@ -477,7 +478,8 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
         ).length,
       };
       const accepted = Boolean(
-        destroyedTargets.has(oldWorkerId) &&
+        (destroyedTargets.has(oldWorkerId) || retirementEvidence.old_worker_execution_retired) &&
+          retirementEvidence.observed_worker_count === 1 &&
           !ids.has(oldWorkerId) &&
           !ids.has(oldPanelId) &&
           replacementWorker &&

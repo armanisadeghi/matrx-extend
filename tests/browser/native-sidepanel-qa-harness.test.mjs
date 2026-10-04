@@ -306,6 +306,8 @@ async function reloadCase({
   retireBeforeClick = false,
   clickFailure = false,
   skipDestroyed = false,
+  retainedHost = false,
+  multipleWorkers = false,
 }) {
   let developerMode = initiallyEnabled;
   let reloaded = false;
@@ -321,7 +323,7 @@ async function reloadCase({
     if (method === 'Target.getTargets') return { targetInfos: [oldWorker, oldPanel] };
     if (method === 'Target.getTargetInfo') {
       if (args.targetId === 'old-worker') {
-        if (skipDestroyed) throw new Error('No target with given id found');
+        if (skipDestroyed && !retainedHost) throw new Error('No target with given id found');
         return { targetInfo: oldWorker };
       }
       if (args.targetId === 'new-worker') return { targetInfo: worker };
@@ -387,7 +389,8 @@ async function reloadCase({
           events.get('Target.targetInfoChanged')({ targetInfo: oldWorker });
           if (!skipDestroyed)
             events.get('Target.targetDestroyed')({ targetId: oldWorker.targetId });
-          independent.emit('Target.targetDestroyed', { targetId: oldWorker.targetId });
+          if (!retainedHost)
+            independent.emit('Target.targetDestroyed', { targetId: oldWorker.targetId });
           pageSession.emit('ServiceWorker.workerVersionUpdated', {
             versions: [
               {
@@ -399,6 +402,27 @@ async function reloadCase({
               },
             ],
           });
+          if (retainedHost) {
+            pageSession.emit('ServiceWorker.workerVersionUpdated', {
+              versions: [
+                {
+                  versionId: 'version-old',
+                  registrationId: 'registration-1',
+                  scriptURL: oldWorker.url,
+                  runningStatus: 'stopped',
+                  status: 'redundant',
+                },
+                {
+                  versionId: 'version-new',
+                  registrationId: 'registration-2',
+                  scriptURL: worker.url,
+                  targetId: worker.targetId,
+                  runningStatus: 'running',
+                  status: 'activated',
+                },
+              ],
+            });
+          }
           events.get('Target.targetCreated')({ targetInfo: worker });
           if (clickFailure) throw new Error('native_reload_click_interrupted');
         },
@@ -412,7 +436,11 @@ async function reloadCase({
       if (method === 'Target.getTargets')
         return {
           targetInfos: reloaded
-            ? [worker, ...(opened ? [panel] : [])]
+            ? [
+                worker,
+                ...(multipleWorkers ? [{ ...worker, targetId: 'third-worker' }] : []),
+                ...(opened ? [panel] : []),
+              ]
             : retireBeforeClick && ++targetReads >= 2
               ? [oldPanel]
               : [oldWorker, oldPanel],
@@ -462,7 +490,8 @@ async function reloadCase({
   assert.ok(phases.indexOf('listeners_registered') < phases.indexOf('pre_click_snapshot'));
   assert.ok(phases.indexOf('pre_click_snapshot') < phases.indexOf('click_started'));
   assert.ok(phases.indexOf('click_started') < phases.indexOf('target_info_changed'));
-  assert.ok(phases.indexOf('target_destroyed') < phases.indexOf('target_created'));
+  if (!skipDestroyed)
+    assert.ok(phases.indexOf('target_destroyed') < phases.indexOf('target_created'));
   assert.ok(phases.indexOf('target_created') < phases.indexOf('click_resolved'));
   assert.ok(timeline.entries.every((entry) => /^\d{4}-/.test(entry.at)));
   assert.ok(
@@ -478,6 +507,35 @@ async function reloadCase({
 }
 await reloadCase({ initiallyEnabled: false });
 await reloadCase({ initiallyEnabled: true });
+const retainedResult = await reloadCase({
+  initiallyEnabled: true,
+  skipDestroyed: true,
+  retainedHost: true,
+});
+const retainedCapture = captureLifecycleEvidence(retainedResult.retirement_evidence);
+assert.equal(retainedCapture.old_worker_destroyed_event, false);
+assert.equal(retainedCapture.old_worker_execution_retired, true);
+assert.equal(retainedCapture.reload_lifetime.pre_click_version_count, 1);
+assert.equal(retainedCapture.reload_lifetime.version_events_dropped, 0);
+await assert.rejects(
+  reloadCase({
+    initiallyEnabled: true,
+    retainedHost: true,
+    skipDestroyed: true,
+    contextResults: [{ result: { value: [] } }],
+  }),
+  /native_sidepanel_runtime_context_missing/,
+);
+await assert.rejects(
+  reloadCase({
+    initiallyEnabled: true,
+    retainedHost: true,
+    skipDestroyed: true,
+    multipleWorkers: true,
+  }),
+  /native_extension_worker_retirement_unverified/,
+);
+
 await assert.rejects(reloadCase({ initiallyEnabled: true, skipDestroyed: true }), (error) => {
   const captured = captureLifecycleEvidence(error.lifecycleEvidence);
   return (
