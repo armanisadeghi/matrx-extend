@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "status": "SOURCE_READY_FOR_FRESH_PEER_REVIEW_NO_NATIVE_DISPATCH",
+  "change": "hosted-guest-acceptance.yml exposes exactly two standard macOS choices: default macos-15-intel and experimental macos-15 arm64. An invalid API input selects Intel then fails provenance validation before setup. The selected host must match RUNNER_ARCH and uname -m; HOSTED_RUNNER_PLATFORM logs the observed architecture.",
+  "experiment": "After fresh peer review, select macos-15 with guest-scrape-development and frozen CI run 37217066948/artifact 11308203507 for at most one guarded acceptance. Compare resource journal and actual Scrape receipt with Intel run 37217349220; a healthy watch alone is not product acceptance or proof of durable capacity.",
+  "retained": "One hosted-guest-side-panel concurrency group, artifact provenance, owned child, three readiness phases and fresh admissions, CPU/watch thresholds, 20 GiB disk and 4 GiB available-memory floors, unsafe-history refusal, and artifact upload are unchanged.",
+  "verification": "Ruby YAML parse confirmed Intel default, exactly two labels and original concurrency group; scripts/hosted-scrape-route.test.mjs passed 3/3; Biome checked this JSON and git diff --check passed. The source maps only exact macos-15 to arm64 and validates the observed architecture before setup.",
+  "limits": "ARM capacity is unverified. The arm64 runner may fail disk/memory admission or refuse startup CPU under the unchanged guard; no native run, build, release, or product edit occurred here."
+}

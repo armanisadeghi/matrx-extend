@@ -3,6 +3,14 @@ name: Hosted guest side-panel acceptance
 on:
   workflow_dispatch:
     inputs:
+      runner_label:
+        description: Standard macOS runner for the guarded acceptance
+        required: true
+        default: macos-15-intel
+        type: choice
+        options:
+          - macos-15-intel
+          - macos-15
       release_run_id:
         description: Successful Hosted release run whose exact validated artifact will be tested
         required: false
@@ -52,7 +60,7 @@ permissions:
 
 jobs:
   guest:
-    runs-on: macos-15-intel
+    runs-on: ${{ inputs.runner_label == 'macos-15' && 'macos-15' || 'macos-15-intel' }}
     timeout-minutes: 15
     concurrency:
       group: hosted-guest-side-panel
@@ -103,8 +111,16 @@ jobs:
           PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx }}
           ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
+          RUNNER_LABEL: ${{ inputs.runner_label }}
         run: |
           set -euo pipefail
+          [[ "$RUNNER_LABEL" == macos-15-intel || "$RUNNER_LABEL" == macos-15 ]] || exit 1
+          if [[ "$RUNNER_LABEL" == macos-15 ]]; then
+            [[ "$RUNNER_ARCH" == ARM64 && "$(uname -m)" == arm64 ]] || exit 1
+          else
+            [[ "$RUNNER_ARCH" == X64 && "$(uname -m)" == x86_64 ]] || exit 1
+          fi
+          printf 'HOSTED_RUNNER_PLATFORM label=%s runner_arch=%s machine=%s\n' "$RUNNER_LABEL" "$RUNNER_ARCH" "$(uname -m)"
           if [[ -n "$SCRAPE_DIAGNOSTIC_CPU_RATE" ]]; then
             [[ "$ACCEPTANCE_CASE" == guest-scrape || "$ACCEPTANCE_CASE" == guest-scrape-development ]] || exit 1
             node -e 'const n=Number(process.argv[1]); if (!Number.isFinite(n)||n<=1) process.exit(1)' "$SCRAPE_DIAGNOSTIC_CPU_RATE"
