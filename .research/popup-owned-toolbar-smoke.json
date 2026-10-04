@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "run_id": "popup-owned-toolbar-189-01",
+  "status": "toolbar_input_unverified",
+  "observed_at_utc": "2026-10-04T01:47:47Z",
+  "scope": ["EXT-F-1002-T01", "EXT-F-1002-T04"],
+  "candidate_artifact": {
+    "source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "ci_run_id": "37164174445",
+    "artifact_id": "11288542496",
+    "version": "0.2.189",
+    "tree_sha256": "494646f6dd65399e0e7eee65fd1d9bd00ef97d173c5ceb9674de276ca12dc23a",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "setup": {
+    "scratch_root": "/Volumes/Samsung2TB/code/.stabilization-scratch/popup-owned-toolbar-189-01",
+    "evidence_and_permit_profile_mode": "0700, stat verified before launch",
+    "harness": "tests/browser/native-sidepanel-qa-harness.mjs via a scratch-only headed driver",
+    "owned_cdp_profile_extension_and_guest_side_panel_verified": true,
+    "owned_browser_cleaned_up": true,
+    "resource_guard_admitted": true,
+    "resource_guard_released_valid": true
+  },
+  "native_toolbar_attempt": {
+    "input_sent": false,
+    "reason": "CUA getApp by display name and exact Chrome for Testing app path both selected the preexisting shared Nuxt documentation window. The owned browser window was not available as a distinct CUA target, so no toolbar click was safe.",
+    "shared_cft_input_sent": false,
+    "popup_target_observed": false,
+    "direct_popup_navigation_attempted": false
+  },
+  "outcomes": {
+    "EXT-F-1002-T01": {
+      "guest_warm": "unverified",
+      "guest_reload": "unverified"
+    },
+    "EXT-F-1002-T04": {
+      "guest_warm": "unverified",
+      "guest_reload": "unverified"
+    }
+  },
+  "evidence": {
+    "harness_result": "/Volumes/Samsung2TB/code/.stabilization-scratch/popup-owned-toolbar-189-01/evidence/harness-result.json",
+    "harness_result_sha256": "9ebdae87afc6ae90d6087719dfd541fc977d8a58fe3a45067021a394c977ecc3",
+    "toolbar_observation": "/Volumes/Samsung2TB/code/.stabilization-scratch/popup-owned-toolbar-189-01/evidence/toolbar-observation.json",
+    "toolbar_observation_sha256": "5806a0801ea069cabf002e8f6399baf1354c848989dd54016de3f804fd8445f5",
+    "side_panel_screenshot_sha256": "bb28a651bc12deb3e023ca252e4b0609c4f93ceaf3c2331aa76d211285240be4",
+    "resource_journal": "docs/stabilization/resource-journals/popup-owned-toolbar-189-01.jsonl",
+    "resource_journal_sha256": "972ed7d75491a5acb854303da0b4483c2362c2a439be240c501b1aa0c1bec460"
+  },
+  "side_effects": "No sign-in, database write, mic prompt, product edit, local build, release, or input to the preexisting CFT window."
+}
