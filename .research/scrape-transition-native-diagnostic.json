@@ -1,0 +1,352 @@
+{
+  "schema_version": 1,
+  "task": "scrape-transition-native-diagnostic",
+  "defect": "EXT-D-0123",
+  "verdict": "native_probe_captured_successful_image_removals_then_later_article_selection_origin_unverified",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 37214124282,
+    "job_id": 111471066979,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37214124282",
+    "head_sha": "222aaa2bb4fe0094e82bedc43034d7aac5e0ad98",
+    "conclusion": "failure",
+    "inputs": {
+      "acceptance_case": "guest-scrape-development",
+      "development_run_id": 37193761291,
+      "development_artifact_id": 11299613935
+    },
+    "uploaded_artifact": {
+      "id": 11307344487,
+      "name": "hosted-guest-37214124282-1",
+      "size_bytes": 112384
+    }
+  },
+  "frozen_product": {
+    "version": "0.2.215",
+    "source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+    "tree_sha256": "ab62d0755d03e8a7f2ca0cb99e0b5037f39e75d756b14a3e2d3ad6d8cc096d08",
+    "development_run_id": 37193761291,
+    "development_artifact_id": 11299613935,
+    "development_artifact_sha256": "9197f3df76ec1163b15069bd8d24846791855c07e5c58a02b680e552bc5ae3ce",
+    "artifact_import_verified": true,
+    "reviewed_driver_commit": "69e0184652efbc6621b06d8ea2d4bd91fcc5fc2f",
+    "driver_diff_from_reviewed_commit": "clean before dispatch"
+  },
+  "resource_outcome": {
+    "hosted_preflight": "passed",
+    "readiness_gates": "package, browser, acceptance readiness all passed",
+    "package": {
+      "decision": "valid",
+      "admitted": true,
+      "child_exit_code": 0
+    },
+    "browser": {
+      "decision": "valid",
+      "admitted": true,
+      "child_exit_code": 0
+    },
+    "acceptance": {
+      "decision": "child_failed",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 1
+    },
+    "healthy_watch_count": 1,
+    "unsafe_watch_count": 0,
+    "resource_policy_changed": false
+  },
+  "native_outcome": {
+    "overall_status": "unverified",
+    "stage": "warm_media_controls",
+    "failure": {
+      "stage": "warm_media_controls",
+      "code": "unique visible pointer target"
+    },
+    "driver_failure": {
+      "code": "pointer_target_not_unique",
+      "sampleStage": null,
+      "matchedTargetCount": 0,
+      "visibleMatchCount": 0,
+      "uniqueVisibleTarget": false,
+      "hitTarget": false,
+      "animating": false,
+      "stableSamples": 0,
+      "positionStable": false,
+      "targetHasArea": null,
+      "clippedTargetHasArea": null,
+      "selectedPointAvailable": null,
+      "centerHitCategory": null,
+      "targetDisabled": null,
+      "pointerEventsNone": null,
+      "clippingAncestorCount": null,
+      "testedPointCount": null,
+      "interiorHitKinds": null,
+      "targetRectangle": null,
+      "centerOccluder": null,
+      "firstInteriorOccluder": null
+    },
+    "cases": [
+      {
+        "id": "EXT-F-1007-T20",
+        "status": "partial",
+        "evidence": {
+          "initial_empty": true,
+          "initial_url": "http://localhost:49201/intake"
+        },
+        "remaining": ["Navigation and reload lifecycle remain to be exercised."]
+      },
+      {
+        "id": "EXT-F-1007-T01",
+        "status": "partial",
+        "evidence": {
+          "url": "http://localhost:49201/intake",
+          "busy_disabled": true,
+          "article_title": "Harbor Dental intake guide",
+          "lazy_content_absent": true,
+          "result_tabs": ["Article", "Images", "Video", "Links", "SEO", "Schema"]
+        },
+        "remaining": ["Warm/full reload lifecycle not yet exercised."]
+      },
+      {
+        "id": "EXT-F-1007-T08",
+        "status": "partial",
+        "evidence": {
+          "tabs_selected": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+          "matching_content": {
+            "article": true,
+            "images": {
+              "pane": "Images",
+              "state": "matching_content",
+              "count": 3,
+              "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+              "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+              "natural_sizes": [[640, 480], [96, 96], [32, 32]]
+            },
+            "video": {
+              "pane": "Video",
+              "state": "matching_content",
+              "count": 2,
+              "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+            },
+            "links": true,
+            "seo": true,
+            "schema": true
+          }
+        },
+        "remaining": ["Image and video empty states and reload lifecycle need full observation."]
+      }
+    ],
+    "media_transitions": [
+      {
+        "operation": {
+          "phase": "warm",
+          "kind": "image",
+          "path": "/appointment-card.svg"
+        },
+        "pre": {
+          "selected": "Images",
+          "imagePaths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+          "imageCount": "3",
+          "panePresent": true
+        },
+        "post": {
+          "selected": "Images",
+          "imagePaths": ["/intake.svg", "/clinic-icon.svg"],
+          "imageCount": "2",
+          "panePresent": true
+        },
+        "events": [
+          {
+            "ms": 5735,
+            "type": "pointerdown",
+            "trusted": true,
+            "x": 60,
+            "y": 245,
+            "target": "Remove image",
+            "selected": "Images"
+          },
+          {
+            "ms": 5741,
+            "type": "pointerup",
+            "trusted": true,
+            "x": 60,
+            "y": 245,
+            "target": "Remove image",
+            "selected": "Images"
+          },
+          {
+            "ms": 5741,
+            "type": "click",
+            "trusted": true,
+            "x": 60,
+            "y": 245,
+            "target": "Remove image",
+            "selected": "Images"
+          }
+        ],
+        "pointerFailure": null,
+        "tabsConnected": true,
+        "paneConnected": true
+      },
+      {
+        "operation": {
+          "phase": "warm",
+          "kind": "image",
+          "path": "/clinic-icon.svg"
+        },
+        "pre": {
+          "selected": "Images",
+          "imagePaths": ["/intake.svg", "/clinic-icon.svg"],
+          "imageCount": "2",
+          "panePresent": true
+        },
+        "post": {
+          "selected": "Images",
+          "imagePaths": ["/intake.svg"],
+          "imageCount": "1",
+          "panePresent": true
+        },
+        "events": [
+          {
+            "ms": 5952,
+            "type": "pointerdown",
+            "trusted": true,
+            "x": 41,
+            "y": 245,
+            "target": "Remove image",
+            "selected": "Images"
+          },
+          {
+            "ms": 5959,
+            "type": "pointerup",
+            "trusted": true,
+            "x": 41,
+            "y": 245,
+            "target": "Remove image",
+            "selected": "Images"
+          },
+          {
+            "ms": 5960,
+            "type": "click",
+            "trusted": true,
+            "x": 41,
+            "y": 245,
+            "target": "Remove image",
+            "selected": "Images"
+          }
+        ],
+        "pointerFailure": null,
+        "tabsConnected": true,
+        "paneConnected": true
+      },
+      {
+        "operation": {
+          "phase": "warm",
+          "kind": "image",
+          "path": "/intake.svg"
+        },
+        "pre": {
+          "selected": "Images",
+          "imagePaths": ["/intake.svg"],
+          "imageCount": "1",
+          "panePresent": true
+        },
+        "post": {
+          "selected": "Images",
+          "imagePaths": [],
+          "imageCount": null,
+          "panePresent": true
+        },
+        "events": [
+          {
+            "ms": 6328,
+            "type": "pointerdown",
+            "trusted": true,
+            "x": 100,
+            "y": 245,
+            "target": "Remove image",
+            "selected": "Images"
+          },
+          {
+            "ms": 6331,
+            "type": "pointerup",
+            "trusted": true,
+            "x": 100,
+            "y": 245,
+            "target": "Remove image",
+            "selected": "Images"
+          },
+          {
+            "ms": 6331,
+            "type": "click",
+            "trusted": true,
+            "x": 100,
+            "y": 245,
+            "target": "Remove image",
+            "selected": "Images"
+          }
+        ],
+        "pointerFailure": null,
+        "tabsConnected": true,
+        "paneConnected": true
+      }
+    ],
+    "observed_failure": {
+      "phase": "warm-media",
+      "code": "unique visible pointer target",
+      "selected": "Article",
+      "visible": true,
+      "resultText": "defuddle \u00b7 17 words \u00b7 1 min read\nEDITED\nHarbor Dental intake guide\n\nhttp://localhost:49201/intake \u00b7 17 words \u00b7 1 min read\n\nHarbor Dental new patient appointments\n\nNew patients can review appointment timing, forms, and arrival instructions before visiting our clinic.\n\nPatient forms Appointments",
+      "media": {
+        "tabCount": null,
+        "formOpen": false,
+        "imageToolbar": "edited",
+        "imageToolbarRendered": "EDITED",
+        "imageGroups": {
+          "large": [],
+          "medium": [],
+          "icon": []
+        },
+        "imageItems": [],
+        "videoItems": [],
+        "linkItems": [],
+        "linkToolbar": "edited"
+      },
+      "screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-mdBpDl/scrape-warm-media-failure.png"
+    },
+    "reload_milestones": [],
+    "scope": "Warm-control assertions did not complete, but the trace proves the three image removals completed successfully. No full reload milestone was reached."
+  },
+  "causal_readout": {
+    "observed": [
+      "All three recorded warm image removals succeeded. Their exact pre/post selected pane and image identities are in native_outcome.media_transitions.",
+      "Each removal recorded trusted pointerdown, pointerup, and click on the fixed Remove image target; pointerFailure was null. The tabs and selected pane were connected after each operation.",
+      "The later failure was a zero-match pointer_target_not_unique during warm_media_controls. The failure screenshot shows Article selected, Images count 1, and the edited marker; the identity of that remaining image is not captured in the screenshot.",
+      "No trusted tab-control event was recorded within the three removal traces. Those traces end after the third removal; they do not instrument every subsequent form or tab action."
+    ],
+    "inference": [
+      "The Article selection occurred after the last recorded removal post-state and before the final failure observation; the run does not timestamp its first occurrence.",
+      "All three removals, including /intake.svg, succeeded; therefore the earlier inference that the third image removal was the zero-target failure is disproved by this trace.",
+      "The screenshot\u2019s Images count 1 may reflect the later re-added followup image, so it does not identify the failed control. The run does not establish which later action encountered zero matches or what caused Article to become selected.",
+      "A product state reset, later pointer activation, or remount/state race remains unresolved; no causal repair is authorized by this diagnostic."
+    ]
+  },
+  "evidence_directory": "docs/stabilization/evidence/scrape215/run37214124282",
+  "files_sha256": {
+    "browser-resource.jsonl": "81050cbc042d0c22f6123ba8e5a76489d7e8baf3ffd604f63b52cefed0bef43a",
+    "guest-resource.jsonl": "5c0ca9714810470fd9c1386c6007267e496cd51028dd3eae0c3a7c4dc1d276d0",
+    "native-side-panel.png": "2cfda86f86cad54e4a73aa3480585a0e0ab5d74b20da4921a35999d22e3c462f",
+    "normal-target-after-open.png": "60d95c01c8bf5fa8f0807e1aed08d2adb43b4a5532190ae0eadd54c5e3aef79c",
+    "package-resource.jsonl": "9162ad6dc821de3a0ce5eeb5be9ffe7a0a901adeebdc1c1c34c13938e4c9fc4e",
+    "receipt.json.txt": "c9bdcfadbe530c8a3c11813c5b4f5113501c708d361672b7580e6000c7d66dee",
+    "scrape-fast-article.png": "22445172021c14b7fba1ba281365a82de308dbbf6cc4370b0721a19261f78a86",
+    "scrape-warm-media-failure.png": "662352aa16b4729289c7e0051533d362501c4c34dfb0475f764e3c8653383045"
+  },
+  "notes": [
+    "Exactly one guarded hosted native diagnostic was dispatched; no retry was made.",
+    "The active ordinary CI run was not a competing hosted native run.",
+    "The artifact also contained stale journals from unrelated run 37105304739; they were excluded. Only this run\u2019s three current journals and four screenshots were retained.",
+    "The receipt.json.txt file is a byte-for-byte copy of the uploaded native result JSON. No redundant ZIP was committed.",
+    "The new trace disproves the earlier inferred third-removal failure boundary: all three image removals succeeded. The first unexpected Article selection and exact later failing control remain unobserved."
+  ]
+}
