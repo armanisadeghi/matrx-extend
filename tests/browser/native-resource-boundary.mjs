@@ -23,7 +23,8 @@ export async function requireNativeResourceHealth({
   repo,
   env = process.env,
   leaseRoot = resourceLeaseRoot(),
-  now = Date.now(),
+  clock = Date.now,
+  readEvidence = readFile,
 } = {}) {
   const runId = env.MATRX_RESOURCE_RUN_ID;
   const stopFile = env.MATRX_RESOURCE_STOP_FILE;
@@ -35,11 +36,11 @@ export async function requireNativeResourceHealth({
   let policy;
   let journal;
   try {
-    owner = JSON.parse(await readFile(join(leaseRoot, 'heavy', 'owner.json'), 'utf8'));
+    owner = JSON.parse(await readEvidence(join(leaseRoot, 'heavy', 'owner.json'), 'utf8'));
     policy = JSON.parse(
-      await readFile(join(repo, 'docs/stabilization/resource-policy.json'), 'utf8'),
+      await readEvidence(join(repo, 'docs/stabilization/resource-policy.json'), 'utf8'),
     );
-    journal = await readFile(
+    journal = await readEvidence(
       join(repo, 'docs/stabilization/resource-journals', `${runId}.pending.jsonl`),
       'utf8',
     );
@@ -115,7 +116,7 @@ export async function requireNativeResourceHealth({
     !Number.isFinite(Date.parse(latest.at))
   )
     refuse('health_missing');
-  const ageMs = now - Date.parse(latest.at);
+  const ageMs = clock() - Date.parse(latest.at);
   if (ageMs < 0 || ageMs > maxAgeMs) refuse('stale_health');
   return { runId, event: latest.code, at: latest.at, ageMs };
 }

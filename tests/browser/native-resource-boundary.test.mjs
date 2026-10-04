@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -54,7 +54,8 @@ test('native Scrape resource boundary permits fresh own-run health and refuses u
     JSON.stringify({ watchIntervalSeconds: 15 }),
   );
   await writeFile(join(ownerDir, 'owner.json'), JSON.stringify({ runId, nonce, kind: 'run' }));
-  const check = (at = now) => requireNativeResourceHealth({ repo, leaseRoot, env, now: at });
+  const check = (at = now) =>
+    requireNativeResourceHealth({ repo, leaseRoot, env, clock: () => at });
 
   await writeEvents([admitted, healthy]);
   assert.deepEqual(await check(), {
@@ -110,6 +111,29 @@ test('native Scrape resource boundary permits fresh own-run health and refuses u
   assert.equal(reloadStarted, false, 'refused reload must not record a start');
   await writeEvents([admitted, healthy]);
   await assert.rejects(check(Date.parse('2026-10-04T09:14:36.000Z')), /stale_health/);
+  let delayedClock = now;
+  let delayedActionRan = false;
+  await assert.rejects(
+    runNativeResourceAction(
+      () =>
+        requireNativeResourceHealth({
+          repo,
+          leaseRoot,
+          env,
+          clock: () => delayedClock,
+          readEvidence: async (path, encoding) => {
+            const content = await readFile(path, encoding);
+            if (path === journalPath) delayedClock = Date.parse('2026-10-04T09:14:36.000Z');
+            return content;
+          },
+        }),
+      () => {
+        delayedActionRan = true;
+      },
+    ),
+    /stale_health/,
+  );
+  assert.equal(delayedActionRan, false, 'journal read delay must refuse the next action');
   await writeFile(
     join(ownerDir, 'owner.json'),
     JSON.stringify({ runId: 'other-run', nonce, kind: 'run' }),
