@@ -3133,6 +3133,11 @@
    "application/json"
   ]
  },
+ "/google-sync/drive/import": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/google-sync/records/{table}/{record_id}/archive": {
   "post": [
    "application/json"
