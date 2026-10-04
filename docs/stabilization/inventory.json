@@ -844,8 +844,18 @@
             }
           },
           "defect_ids": [
-            "EXT-D-0083"
-          , "EXT-D-0119"]
+            "EXT-D-0083",
+            "EXT-D-0119"
+          ],
+          "supporting_evidence": [
+            {
+              "level": "resource startup experiment; no native outcome",
+              "report": ".research/hosted-startup-capacity-resolution.json",
+              "commit": "ac4253da",
+              "result": "Explicit about:blank launch removes unused initial New Tab work. Refusal policies and ownership unchanged. Source checks pass; CPU reduction unproven.",
+              "limits": "Repeated startup refusals preserved. Run37209834721 has zero periodic watch samples. Requires independent peer then one guarded experiment; no mode result promotion."
+            }
+          ]
         },
         {
           "id": "EXT-F-0002-T04",
