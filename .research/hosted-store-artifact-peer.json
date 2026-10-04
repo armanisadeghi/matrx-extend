@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "issue": "EXT-D-0116",
+  "role": "fresh independent verifier",
+  "reviewed_commits": ["edaf85c3", "45947648"],
+  "cross_repo_correction": "common-docs bd7586ae3 was named in the review brief; that commit is not present in this checkout and was not independently diff-reviewed here.",
+  "verdict_a_readiness": {
+    "status": "PARTIAL_RUNTIME_PENDING",
+    "source_ready": true,
+    "evidence": [
+      "hosted-guest-acceptance.yml downloads the successful published release artifact and passes its directory and tag SHA to the wrapper; release.sh emits the ZIP names selected by the importer.",
+      "guest-chat, guest-scrape and member-chat release cases select receipt.storeZip; their wrapper and native harness receive the relocated receipt and the extracted runtime tree.",
+      "The actual 0.2.205 release artifact prepared successfully: Store ZIP SHA-256 6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26, original Store tree b9084adcc8990ec1eef784b64b70aeaf6232709f11fec790a23152cfb68d7d0d, key-adapted runtime tree de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f.",
+      "Native browser acceptance on the hosted runner has not run for this repaired path; source readiness is not a hosted runtime pass."
+    ],
+    "scope_note": "The corrected member and Scrape hosted 205 runs remain local-development ZIP observations. Earlier separately byte-verified direct Store ZIP native runs remain valid Store evidence; this review did not rerun them."
+  },
+  "verdict_b_quality": {
+    "status": "PASS",
+    "findings": [],
+    "evidence": [
+      "The selected ZIP and local key-source ZIP are checked against release-receipt hashes; an altered selected Store ZIP fails before extraction.",
+      "The only adaptation is manifest.key copied from the matching-version local ZIP; the importer records original Store and runtime tree hashes and verifies the original Store ZIP remains unchanged.",
+      "The native sidepanel harness checks the relocated runtime tree and original Store ZIP hash before browser execution.",
+      "Eleven focused artifact and route tests passed; the fixture wrong-Store-ZIP test rejects a corrupt Store ZIP despite a valid local ZIP."
+    ]
+  },
+  "limits": [
+    "No build, hosted workflow dispatch, or browser run was performed in this verifier lane."
+  ]
+}
