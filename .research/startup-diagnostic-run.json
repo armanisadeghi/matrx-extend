@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "task": "startup-diagnostic-run",
+  "status": "TERMINAL_UNSAFE_DIAGNOSTIC_NO_PRODUCT_ACCEPTANCE",
+  "run": {
+    "repository": "armanisadeghi/matrx-extend",
+    "run_id": 37230193583,
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37230193583",
+    "attempt": 1,
+    "head_sha": "d0e1e5606b1d55a5a53948bc82a3bcff5fcecbc4",
+    "workflow": "hosted-guest-acceptance.yml",
+    "runner": "macos-15-arm64 / macOS 15.7.9 / ARM64 / 3 logical CPUs",
+    "started_at": "2026-10-04T19:56:59Z",
+    "completed_at": "2026-10-04T20:03:20Z",
+    "conclusion": "failure",
+    "artifact": {
+      "id": 11313880616,
+      "name": "hosted-guest-37230193583-1",
+      "size_bytes": 55714,
+      "sha256": "305cb21c5460e06f77c645a4066e0528b78e3bd3c66d5736ff39a54f26a0c526",
+      "downloaded_to": "docs/stabilization/evidence/startup-interval/run37230193583/hosted-guest-37230193583-1"
+    }
+  },
+  "frozen_product_provenance": {
+    "development_run_id": 37226671959,
+    "development_artifact_id": 11312153381,
+    "development_source_sha": "18d6f48c3769e9e52c021e29a2b219adc602e98d",
+    "native_harness_stage": "exercise_panel",
+    "diagnostic_verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE",
+    "diagnostic_started_at": "2026-10-04T20:02:50.542Z",
+    "panel_ready_at": "2026-10-04T20:03:03.609Z",
+    "completed_at": null,
+    "failure_code": "NATIVE_RESOURCE_BOUNDARY_REFUSED"
+  },
+  "workflow_phases": {
+    "package_readiness": "success",
+    "pinned_browser_driver_permit_and_setup": "success",
+    "browser_readiness": "success",
+    "full_chromium_permit_and_setup": "success",
+    "acceptance_readiness": "success",
+    "ordinary_product_case": "skipped_by_diagnostic_route",
+    "startup_interval_diagnostic": "failure_on_retained_unsafe_resource_history",
+    "artifact_upload": "success"
+  },
+  "startup_resource_journal": {
+    "run_id": "hosted-startup-37230193583-1",
+    "path": "docs/stabilization/evidence/startup-interval/run37230193583/hosted-guest-37230193583-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-startup-37230193583-1.jsonl",
+    "sha256": "10cbe6b5c9ff14283f626daff5bdc38f35e1344550d5c69710886484bafa1d22",
+    "events": [
+      "RESOURCE_JOURNAL_OPENED at 2026-10-04T20:01:36.923Z",
+      "RESOURCE_ADMITTED at 2026-10-04T20:02:44.658Z",
+      "RESOURCE_WATCH_UNSAFE at 2026-10-04T20:03:00.869Z",
+      "RESOURCE_STARTUP_INTERVAL_BRACKET at 2026-10-04T20:03:00.871Z",
+      "RESOURCE_PROCESS_ATTRIBUTION at 2026-10-04T20:03:00.899Z",
+      "RESOURCE_JOB_EXIT (child exit 1) at 2026-10-04T20:03:04.126Z",
+      "RESOURCE_FINAL_DECISION (child_failed, resourceInvalid false) at 2026-10-04T20:03:04.287Z"
+    ],
+    "admission_sample": {
+      "cpu_busy_fraction": 0.14142857142857143,
+      "one_minute_load": 1.56,
+      "logical_cpus": 3,
+      "available_memory_gib": 5.81,
+      "system_free_gib": 43.45806121826172,
+      "swap_used_mib": 0
+    },
+    "first_unsafe_sample": {
+      "cpu_busy_fraction": 0.87,
+      "one_minute_load": 3.94,
+      "load_per_logical_cpu": 1.3133333333333332,
+      "logical_cpus": 3,
+      "available_memory_gib": 5.74,
+      "system_free_gib": 43.37657928466797,
+      "swap_used_mib": 0,
+      "reasons": [
+        "RESOURCE_CPU_BUSY",
+        "RESOURCE_CPU_HIGH_LOAD_BUSY"
+      ],
+      "seconds_after_admission": 16.211
+    },
+    "bracket": {
+      "iostat_started_at": "2026-10-04T20:02:59.757Z",
+      "iostat_completed_at": "2026-10-04T20:03:00.840Z",
+      "bracket_duration_seconds": 1.083,
+      "before_snapshot_completed_at": "2026-10-04T20:02:59.757Z",
+      "after_snapshot_started_at": "2026-10-04T20:03:00.840Z",
+      "ps_cpu_time_resolution_seconds": 0.01,
+      "owned_chromium_cpu_seconds_delta": 0.36,
+      "owned_other_cpu_seconds_delta": 0.03,
+      "host_provisioner_cpu_seconds_delta": 0,
+      "other_host_cpu_seconds_delta": 1.69,
+      "sum_of_observed_category_deltas_cpu_seconds": 2.08,
+      "owned_at_start_pids": [12669, 12803, 12889, 12896, 12934, 13056, 13058, 13098, 13103],
+      "owned_at_end_pids": [12669, 12803, 12889, 12896, 12934, 13056, 13058, 13098, 13188],
+      "exited_or_unmatched_pids": [13103, 13151, 13152, 13153, 13154, 13155, 13162],
+      "appeared_pids": [13188, 13212, 13214],
+      "other_host_process_count": 523
+    },
+    "post_interval_top_process_snapshot_at": "2026-10-04T20:03:00.899Z",
+    "post_interval_top_processes": [
+      { "executable": "MTLCompilerServi", "cpu_percent": 83.7 },
+      { "executable": "MTLCompilerServi", "cpu_percent": 48.3 },
+      { "executable": "Chromium Helper", "cpu_percent": 10.5 },
+      { "executable": "Chromium", "cpu_percent": 7.8 },
+      { "executable": "Runner.Listener", "cpu_percent": 7.6 }
+    ]
+  },
+  "stdout_bracket_event_evidence": {
+    "path": "docs/stabilization/evidence/startup-interval/run37230193583/startup-interval-bracket.stdout.json",
+    "sha256": "1703cc453e322c3bd721ca4c903e2cbfb07dcde6b4bbf928717965c1d090695b",
+    "source": "GitHub Actions job 111518062415 log for run 37230193583, step 'Measure owned Chromium startup during the existing guard interval'; exact RESOURCE_STARTUP_INTERVAL_BRACKET JSON payload extracted from the sanitized stdout line at 2026-10-04T20:03:00.8765370Z.",
+    "reason": "The uploaded raw resource journal retains the event code but omits its bracket payload; the stdout payload is preserved separately as primary measurement evidence."
+  },
+  "comparison_to_failed_native_run_37227042493": {
+    "same_runner_family": true,
+    "same_development_run_artifact_source": true,
+    "prior_first_unsafe_at": "2026-10-04T19:13:17.534Z",
+    "prior_admission_at": "2026-10-04T19:13:01.370Z",
+    "prior_seconds_after_admission": 16.164,
+    "prior_cpu_busy_fraction": 0.61,
+    "prior_one_minute_load": 8.61,
+    "prior_load_per_logical_cpu": 2.87,
+    "prior_native_outcome": "unsafe history rejected before member authentication, viewport assertion, or Scrape actions; receipt had zero cases and was unverified",
+    "interpretation": "This diagnostic reproduced an unsafe CPU watch about 16.2 seconds after admission during the native side-panel startup route. It offers bracket attribution for that diagnostic interval, but the sampled panelReadyAt callback occurred 2.740 seconds after the unsafe watch, so the boundary refused before its bounded post-ready hold. The diagnostic does not establish the cause of the prior run's separate interval or acceptance behavior."
+  },
+  "measurement_interpretation": {
+    "known_owned_activity": "Owned Chromium descendants accumulated 0.36 CPU-seconds and the owned Node process 0.03 CPU-seconds in the ps bracket; this is direct evidence that owned browser activity contributed during the bracket.",
+    "provisioner": "The host provisioner category delta was zero in the bracket. A later single CPU-percent snapshot is not interval attribution.",
+    "unassigned_host_activity": "Other host processes accumulated 1.69 CPU-seconds in the bracket. A post-bracket instantaneous process list showed two MTLCompilerServi processes at 83.7% and 48.3%; this cannot prove those processes generated the bracket's other-host delta or identify them as the runner provisioner.",
+    "aggregate_comparison": "The guard reported 0.87 busy on 3 CPUs. Multiplying by three gives roughly 2.61 CPU-seconds for a nominal one-second sample, compared with 2.08 CPU-seconds in the broader 1.083-second bracket's classified stable-process deltas. The nominal difference is about 0.53 CPU-seconds, but it is not a formal residual because the iostat accounting window and ps snapshots do not coincide exactly, ps is centisecond-quantized, and exited/new/reparented/reused processes have unassignable CPU time.",
+    "timing": "The bracket begins and ends at the recorded iostat command boundaries, but iostat's one-second CPU row is an internal interval and the process snapshots enclose it rather than measuring precisely the same interval. Admission to unsafe watch was 16.211 seconds; panelReadyAt followed unsafe by 2.740 seconds. The native harness reached its exercise_panel stage, but the resource boundary refused retained unsafe history before the diagnostic completed its two-watch hold.",
+    "unsafe_history": "RESOURCE_WATCH_UNSAFE remains unsafe despite final resourceInvalid=false; final decision child_failed describes the child exit, not resource health.",
+    "positive_conclusion": "Owned Chromium and host-wide processes both had measurable CPU-time deltas while the guard sampled a high-CPU unsafe interval. This supports concurrent contribution, but does not establish which process class caused the threshold crossing, nor prove an environmental correction.",
+    "product_acceptance": "None. No identity was authenticated and no Scrape action or product case ran. The run is diagnostic evidence only."
+  },
+  "artifact_file_sha256": {
+    "startup-interval-diagnostic.json": "ac7f15d303e90e71add4d7def6ce47b62ee10bd09e2a8442bb1e1445ebe21dcb",
+    "hosted-startup-37230193583-1.jsonl": "10cbe6b5c9ff14283f626daff5bdc38f35e1344550d5c69710886484bafa1d22",
+    "native-side-panel.png": "9b6a2a8f7271bb133a9ad3e83d6eb9187c87eccf4c707b421867a6c1f1b98be9",
+    "normal-target-after-open.png": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+    "hosted-browser-37230193583-1.jsonl": "1cfb2fa679a80f6ed7f68774d9793a4430e54564da7041bb138edf464db58c3e",
+    "hosted-package-37230193583-1.jsonl": "03b2794cefa65227c6b754323e81c476f342ff381d3523ad28120d4ef6d95edc"
+  },
+  "artifact_scope_note": "The uploaded archive also contains three stale resource journals with run ID 37105304739. They were retained verbatim as part of the permitted artifact download and excluded from this run's measurements; only journal records with hosted run ID 37230193583 and current attempt 1 are interpreted here.",
+  "controls_preserved": "No retry/relaunch/cancel, credentials, resource threshold or policy changes, browser setup outside the authorized hosted run, or product acceptance is performed or inferred."
+}

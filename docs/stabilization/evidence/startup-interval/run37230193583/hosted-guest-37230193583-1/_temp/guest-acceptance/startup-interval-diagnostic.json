@@ -1,0 +1,13 @@
+{
+  "schema": 2,
+  "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE",
+  "sourceSha": "18d6f48c3769e9e52c021e29a2b219adc602e98d",
+  "runId": 37226671959,
+  "artifactId": 11312153381,
+  "startedAt": "2026-10-04T20:02:50.542Z",
+  "lastNativeStage": "exercise_panel",
+  "panelReadyAt": "2026-10-04T20:03:03.609Z",
+  "completedAt": null,
+  "guardJournal": "docs/stabilization/resource-journals/hosted-startup-37230193583-1.jsonl",
+  "failureCode": "NATIVE_RESOURCE_BOUNDARY_REFUSED"
+}

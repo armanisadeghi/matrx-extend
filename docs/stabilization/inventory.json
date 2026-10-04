@@ -17391,7 +17391,7 @@
                   "evidence": [
                     ".research/scrape-transition-native-diagnostic.json"
                   ],
-                  "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3→2→1→empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
+                  "detail": "Warm native medium/icon/large removals verified with exact before/after identities, trusted pointer events, Images retained and count3\u21922\u21921\u2192empty. Later control sequence failed with Article selected; earlier third-removal inference refuted. Fullreload and otherroles unverified."
                 }
               }
             }
@@ -17798,7 +17798,7 @@
             "Open Scrape before capturing, then navigate active tab to another URL."
           ],
           "expected": [
-            "Empty state invites capture; previous page’s content and Saved badge clear after navigation."
+            "Empty state invites capture; previous page\u2019s content and Saved badge clear after navigation."
           ],
           "dimensions": [
             "warm",
@@ -18335,7 +18335,8 @@
             "EXT-D-0124",
             "EXT-D-0125",
             "EXT-D-0126",
-            "EXT-D-0127"
+            "EXT-D-0127",
+            "EXT-D-0129"
           ],
           "run_ids": [
             "guest-local-001",
@@ -18357,7 +18358,8 @@
             "EXT-D-0001",
             "EXT-D-0018",
             "EXT-D-0059",
-            "EXT-D-0127"
+            "EXT-D-0127",
+            "EXT-D-0129"
           ],
           "run_ids": [
             "incoming-sources-001",
@@ -18372,7 +18374,8 @@
             "EXT-D-0018",
             "EXT-D-0059",
             "EXT-D-0127",
-            "EXT-D-0128"
+            "EXT-D-0128",
+            "EXT-D-0129"
           ],
           "run_ids": [
             "incoming-sources-001",

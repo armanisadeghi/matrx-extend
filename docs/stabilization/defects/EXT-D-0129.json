@@ -1,0 +1,43 @@
+{
+  "id": "EXT-D-0129",
+  "feature_id": "EXT-F-1007",
+  "surface": "Native acceptance resource diagnostics",
+  "auth_mode": "all (auth-independent harness)",
+  "title": "Resource journal silently drops startup interval measurement",
+  "reproduction": [
+    "Run hosted startup diagnostic37230193583 atd0e1e560 with frozen development240.",
+    "Compare RESOURCE_STARTUP_INTERVAL_BRACKET stdout event to the same timestamp in hosted-startup-37230193583-1.jsonl.",
+    "Observe stdout contains bracket timestamps and CPU deltas; durable journal contains only schema/at/runId/code. Alternatively write the same event through openResourceJournal and read persisted JSON."
+  ],
+  "expected": "The durable sanitized journal retains the diagnostic measurement or explicitly rejects invalid measurement data; credentials, arguments and environment remain excluded.",
+  "actual": "JOURNAL_FIELDS omits bracket and silently drops the complete measurement. Console event retained enough evidence to recover this run.",
+  "severity": "S2: loss of diagnostic evidence; not a product failure",
+  "priority": "P1: repair before another diagnostic run",
+  "state": "in-fix",
+  "owner": "root/startup_interval_diagnostic",
+  "evidence": [
+    ".research/startup-diagnostic-run.json",
+    ".research/startup-interval-diagnostic.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T20:07:11.108794+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Observed durable event missing bracket in actual run."
+    },
+    {
+      "at": "2026-10-04T20:07:11.108794+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Confirmed writer field allowlist strips the field; stdout has original event."
+    },
+    {
+      "at": "2026-10-04T20:07:11.108794+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Assigned bounded serializer repair with actual writer/readback regression."
+    }
+  ],
+  "next_action": "Independent real-journal reproduction and neighboring sanitization checks before closure; native product acceptance remains unverified."
+}
