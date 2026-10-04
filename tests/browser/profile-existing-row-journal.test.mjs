@@ -5,7 +5,7 @@ import {
   PROFILE_TESTED_COLUMNS,
   createExistingProfileWriteJournal,
 } from './profile-existing-row-journal.mjs';
-import { safeProfileFailureCode } from './profile-native-failure.mjs';
+import { recordProfileFinalFailure, safeProfileFailureCode } from './profile-native-failure.mjs';
 
 const original = {
   user_id: 'db4a31ad-6b18-4d33-a296-593f1e7288c9',
@@ -101,6 +101,45 @@ test('existing Profile journal refuses concurrent changes and does not patch the
   s.write({ legal_first_name: 'Other writer' });
   await assert.rejects(journal.restore(), /profile_existing_concurrent_change/);
   assert.equal(s.patches.length, 0);
+});
+
+test('invalid owner version reaches the public report as a bounded code', async () => {
+  const report = { status: 'unverified' };
+  await assert.rejects(
+    createExistingProfileWriteJournal({
+      original: { ...original, version: '7' },
+      baseUrl: 'https://db.example.test',
+      read: async () => original,
+      persist: async () => assert.fail('invalid version must not persist a receipt'),
+      patch: async () => assert.fail('invalid version must not patch a row'),
+    }),
+    (error) => {
+      recordProfileFinalFailure(report, error);
+      return true;
+    },
+  );
+  assert.deepEqual(report, {
+    status: 'failed',
+    failure_code: 'profile_existing_version_invalid',
+  });
+});
+
+test('restoration mismatch classification omits the field and assertion payload', () => {
+  const report = {};
+  recordProfileFinalFailure(
+    report,
+    new assert.AssertionError({
+      message: 'profile_restore_legal_first_name_mismatch: private row value',
+    }),
+  );
+  assert.deepEqual(report, {
+    status: 'failed',
+    failure_code: 'profile_restore_tested_field_mismatch',
+  });
+  assert.equal(
+    safeProfileFailureCode(new Error('private row value')),
+    'profile_unclassified_failure',
+  );
 });
 
 test('existing Profile journal catches structural changes to untouched private fields', async () => {

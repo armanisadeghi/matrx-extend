@@ -134,8 +134,11 @@ export function safeProfileFailureCode(error) {
     return 'profile_existing_identity_changed';
   if (/^profile_existing_[a-z_]+_missing$/.test(candidate))
     return 'profile_existing_required_field_missing';
+  if (candidate === 'profile_existing_version_invalid') return candidate;
   if (candidate === 'profile_existing_concurrent_change') return candidate;
   if (candidate === 'profile_restore_conditional_patch_missed') return candidate;
+  if (/^profile_restore_[a-z_]+_mismatch$/.test(candidate))
+    return 'profile_restore_tested_field_mismatch';
   if (
     [
       'profile_restore_owner_changed',

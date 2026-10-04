@@ -1,0 +1,10 @@
+{
+  "finding": "The existing-row journal emitted profile_existing_version_invalid and the restore assertion emitted profile_restore_<field>_mismatch, but the public diagnostic mapper classified both as profile_unclassified_failure.",
+  "change": "The mapper now preserves the fixed version code and maps restore field mismatches to one bounded category. It does not serialize field names, values, or raw errors.",
+  "verification": {
+    "producer_to_report": "An invalid owner version from createExistingProfileWriteJournal reaches recordProfileFinalFailure with profile_existing_version_invalid; the journal does not persist or patch.",
+    "restore_boundary": "The restore assertion is preempted by reconcile in normal operation, so an AssertionError with its production message shape verifies only the report boundary and strips a synthetic private payload.",
+    "tests": "node --test tests/browser/profile-existing-row-journal.test.mjs tests/browser/profile-report-boundary.test.mjs: 22 passed",
+    "lint": "pnpm exec biome check on the failure mapper, existing-row test, and native acceptance runner: passed"
+  }
+}
