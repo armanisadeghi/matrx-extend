@@ -88,8 +88,14 @@
       "cpu_busy_fraction": 0.61,
       "interpretation": "Prior unsafe history remains recorded; it is not cleared by this run."
     },
-    "current_raw_journals_available": false,
-    "journal_limitation": "The uploaded workflow artifact omitted the runner's .pending.jsonl files. Exact structured RESOURCE_* JSON records emitted into GitHub Actions logs were preserved as log-extract JSONL; these are not the complete raw resource journals."
+    "current_raw_journals_available": true,
+    "journal_correction": {
+      "earlier_statement": "The uploaded artifact omitted the current-run resource journals.",
+      "corrected_finding": "False. All three finalized current-run JSONL journals are in workflow artifact 11315002823.",
+      "cause": "The artifact stores repository content below a doubled matrx-extend/matrx-extend prefix; the first file inventory stopped at the shallower assumed root and missed those entries.",
+      "collection": "Extracted only the exact hosted-package, hosted-browser, and hosted-guest 37234434600-1 journal paths. Excluded the three older 37105304739-1 journals.",
+      "log_extracts": "The previously committed log extracts are retained as a separate provenance record; they omit the opened-journal path field and are superseded for full journal evidence by the raw JSONL files."
+    }
   },
   "evidence_files": [
     {
@@ -102,14 +108,32 @@
       "records": 4
     },
     {
+      "path": "docs/stabilization/evidence/scrape-member/run37234434600/resource-journals/hosted-package-37234434600-1.jsonl",
+      "sha256": "a2fc7d08e6b4956e2d64bad6392f7fa7b8b4a08936ba7909e93f2e8eacc8d7e2",
+      "records": 4,
+      "source": "workflow artifact 11315002823"
+    },
+    {
       "path": "docs/stabilization/evidence/scrape-member/run37234434600/resource-journals/hosted-browser-37234434600-1.log-extract.jsonl",
       "sha256": "f74cf071cb3270231301e111e7bc8afa42babcc8ff4c1d21345be54e3e1ad0b9",
       "records": 4
     },
     {
+      "path": "docs/stabilization/evidence/scrape-member/run37234434600/resource-journals/hosted-browser-37234434600-1.jsonl",
+      "sha256": "0f01546d3cfc247c28704b14307a805fc827a3de28ad6fc311e970c833914eed",
+      "records": 4,
+      "source": "workflow artifact 11315002823"
+    },
+    {
       "path": "docs/stabilization/evidence/scrape-member/run37234434600/resource-journals/hosted-guest-37234434600-1.log-extract.jsonl",
       "sha256": "7ac1dc0e5d62d523bcedef46c23bc224cee1506eacd84a30cc66945854228a2c",
       "records": 7
+    },
+    {
+      "path": "docs/stabilization/evidence/scrape-member/run37234434600/resource-journals/hosted-guest-37234434600-1.jsonl",
+      "sha256": "218b13f23430ea4713821c7fe0a5826f59782d0c12044eba54f34c910bee8f58",
+      "records": 7,
+      "source": "workflow artifact 11315002823"
     },
     {
       "path": "docs/stabilization/evidence/scrape-member/run37234434600/screenshots/native-side-panel.png",
@@ -130,7 +154,7 @@
   "limits": [
     "No Scrape cases completed.",
     "600px panel viewport was requested but no viewport measurement was recorded.",
-    "Raw resource journals were not present in the uploaded artifact; retained log extracts are incomplete substitutes.",
+    "The first evidence collection missed the raw journals because it overlooked the doubled repository path prefix; the correction now preserves all three current-run journals.",
     "No product acceptance or member role verdict is claimed."
   ]
 }
