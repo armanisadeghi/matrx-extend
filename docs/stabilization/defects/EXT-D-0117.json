@@ -20,7 +20,9 @@
     ".research/guest-scrape-diagnostic-native.json",
     ".research/hosted-panel-context-diagnosis.json",
     ".research/hosted-panel-context-peer.json",
-    ".research/scrape231-observer-retest.json"
+    ".research/scrape231-observer-retest.json",
+    ".research/panel-context117-bounded-diagnosis.json",
+    ".research/panel117-diagnostic-peer.json"
   ],
   "transition_history": [
     {
@@ -37,7 +39,7 @@
     }
   ],
   "closure_requirement": "Demonstrate cause, independently verify repair and actual owned Store panel initialization; surrounding ownership checks must still reject foreign contexts.",
-  "next_action": "Bounded causal diagnosis owned by root/panel_context117_bounded_diagnosis; no blind redispatch or weakened context ownership checks.",
+  "next_action": "Exactly one guarded ARM frozen231 run with reviewed db0477bd diagnostics; retain first URL-shape counts and follow-up exactness if setup fails. Source-only diagnosis does not establish native cause or close D117.",
   "latest_reproduction": {
     "run_id": 37220067899,
     "product_version": "0.2.231",
