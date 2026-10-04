@@ -14,16 +14,27 @@
   "actual": "Panel initialization fails before product case execution; cause and product impact remain unknown.",
   "severity": "S2: acceptance blocked; product impact unestablished",
   "priority": "P1: restore trustworthy Store acceptance",
-  "state": "open",
+  "state": "triaged",
   "owner": "hosted_chrome_startup",
-  "evidence": [".research/guest-scrape-diagnostic-native.json"],
+  "evidence": [
+    ".research/guest-scrape-diagnostic-native.json",
+    ".research/hosted-panel-context-diagnosis.json",
+    ".research/hosted-panel-context-peer.json"
+  ],
   "transition_history": [
     {
       "at": "2026-10-04T08:04:16.972876+00:00",
       "from": null,
       "to": "open",
       "reason": "Exact hosted Store205 run retained runtime-context failure before cases."
+    },
+    {
+      "at": "2026-10-04T08:09:32.675965+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Failure isolated to missing exact runtime context after successful owned panel opening. Safe count diagnostics81fb09a8 independently reviewed480041bd; underlying cause remains unknown."
     }
   ],
-  "closure_requirement": "Demonstrate cause, independently verify repair and actual owned Store panel initialization; surrounding ownership checks must still reject foreign contexts."
+  "closure_requirement": "Demonstrate cause, independently verify repair and actual owned Store panel initialization; surrounding ownership checks must still reject foreign contexts.",
+  "next_action": "One guarded hosted exact Store205 run with reviewed count diagnostics; inspect actual mismatch before behavior changes. No startup or feature fix claimed."
 }
