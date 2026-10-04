@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "mode": "member",
+  "status": "unverified",
+  "artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.244",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
+    "run_id": 37233480033,
+    "artifact_id": 11315305224
+  },
+  "guest_account_observed": false,
+  "cases": [],
+  "stage": "organization_selection",
+  "native_stage": "exercise_panel",
+  "failure": {
+    "stage": "organization_selection",
+    "code": "NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample"
+  },
+  "original_busy_failure": null,
+  "cpu_diagnostic": null,
+  "horizontal_geometry": [],
+  "reload_milestones": [],
+  "reload_lifecycle": null,
+  "driver_failure": null,
+  "media_transitions": [],
+  "media_event_traces": [],
+  "authentication": null,
+  "panel_viewports": [],
+  "width_mode": "normal",
+  "auth_stage": "member_extension_signin"
+}

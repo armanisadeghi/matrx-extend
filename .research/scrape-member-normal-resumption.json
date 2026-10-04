@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "task": "scrape-member-normal-resumption",
+  "scope": "One hosted ARM native member Scrape attempt at normal emulated 600px; no product, inventory, Store, account, grant, or password changes.",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 37234434600,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37234434600",
+    "head_branch": "main",
+    "head_sha": "d4709a32e1c75e649f6f5f436c760fd294b84981",
+    "runner_label": "macos-15",
+    "terminal_status": "completed",
+    "conclusion": "failure",
+    "acceptance_case": "guest-scrape-development",
+    "scrape_auth_mode": "member",
+    "scrape_width_mode": "normal",
+    "requested_min_panel_width_px": 600,
+    "one_launch_no_retry": true,
+    "steps": {
+      "authentication_preflight": "success",
+      "provenance": "success",
+      "indexing": "success",
+      "package_readiness": "success",
+      "package_prepare": "success",
+      "browser_readiness": "success",
+      "browser_prepare": "success",
+      "acceptance_readiness": "success",
+      "native_acceptance": "failure",
+      "artifact_upload": "success"
+    }
+  },
+  "frozen_product": {
+    "kind": "ci_development_test",
+    "version": "0.2.240",
+    "source_sha": "b81587021d689078ed428dafe3e15474a84c41e2",
+    "tree_sha256": "3396bae6d24ddfc7e93422a12e2341983179d7b4be3eca94adaafc5316cc94e7",
+    "development_run_id": 37233480033,
+    "development_artifact_id": 11315305224,
+    "import_verified": true,
+    "import_claim": "exact_pushed_commit_only",
+    "workflow_head_sha_differs_from_artifact_source": true
+  },
+  "native_outcome": {
+    "status": "unverified",
+    "receipt_path": "docs/stabilization/evidence/scrape-member/run37234434600/acceptance-receipt.json",
+    "receipt_sha256": "610e10007189efb6fda65172229a1cc8f16f0e0524c497ab8bb553e0803e9a13",
+    "stage": "organization_selection",
+    "native_stage": "exercise_panel",
+    "failure_code": "NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample",
+    "cases_observed": 0,
+    "receipt_auth_stage": "member_extension_signin",
+    "receipt_authentication_object": null,
+    "member_auth_interpretation": "The runner source sets outer stage=organization_selection only after signInSettings() returns. The native receipt has that stage, so control flow suggests signInSettings() returned; its success result would include web identity, extension identity, canonical role check, and its first organization selection. This is source-control-flow inference only: receipt authentication is null and no role pass is claimed.",
+    "normal_width_observation": null,
+    "interpretation": "The resource guard refused while the outer required-organization selection was starting. No Scrape case ran and no panel viewport was recorded. The requested 600px width and Scrape behavior remain unverified."
+  },
+  "resource_history": {
+    "unsafe_sample": {
+      "at": "2026-10-04T21:08:40.513Z",
+      "code": "RESOURCE_WATCH_UNSAFE",
+      "reason": "RESOURCE_CPU_BUSY",
+      "one_minute_load": 1.29,
+      "logical_cpus": 3,
+      "cpu_busy_fraction": 0.88,
+      "available_memory_gib": 5.74,
+      "swap_used_mib": 0
+    },
+    "process_attribution": {
+      "at": "2026-10-04T21:08:40.614Z",
+      "notable_processes": [
+        { "executable": "Chromium Helper", "cpu_percent": 88.8 },
+        { "executable": "WeatherWidget", "cpu_percent": 60.2 },
+        { "executable": "provjobd44476608", "cpu_percent": 24.1 }
+      ],
+      "causality": "Attribution is observational and does not prove exact CPU causality."
+    },
+    "final_guest_decision": {
+      "at": "2026-10-04T21:08:49.473Z",
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "exit_code": 1
+    },
+    "historical_unsafe": {
+      "prior_run_id": 37227042493,
+      "at": "2026-10-04T19:13:17.534Z",
+      "reason": "RESOURCE_CPU_HIGH_LOAD_BUSY",
+      "one_minute_load": 8.61,
+      "cpu_busy_fraction": 0.61,
+      "interpretation": "Prior unsafe history remains recorded; it is not cleared by this run."
+    },
+    "current_raw_journals_available": false,
+    "journal_limitation": "The uploaded workflow artifact omitted the runner's .pending.jsonl files. Exact structured RESOURCE_* JSON records emitted into GitHub Actions logs were preserved as log-extract JSONL; these are not the complete raw resource journals."
+  },
+  "evidence_files": [
+    {
+      "path": "docs/stabilization/evidence/scrape-member/run37234434600/acceptance-receipt.json",
+      "sha256": "610e10007189efb6fda65172229a1cc8f16f0e0524c497ab8bb553e0803e9a13"
+    },
+    {
+      "path": "docs/stabilization/evidence/scrape-member/run37234434600/resource-journals/hosted-package-37234434600-1.log-extract.jsonl",
+      "sha256": "67a03c9160dc06bc4725203be734ec2d9e3355aa5e1db7f34cf9636da223a2d2",
+      "records": 4
+    },
+    {
+      "path": "docs/stabilization/evidence/scrape-member/run37234434600/resource-journals/hosted-browser-37234434600-1.log-extract.jsonl",
+      "sha256": "f74cf071cb3270231301e111e7bc8afa42babcc8ff4c1d21345be54e3e1ad0b9",
+      "records": 4
+    },
+    {
+      "path": "docs/stabilization/evidence/scrape-member/run37234434600/resource-journals/hosted-guest-37234434600-1.log-extract.jsonl",
+      "sha256": "7ac1dc0e5d62d523bcedef46c23bc224cee1506eacd84a30cc66945854228a2c",
+      "records": 7
+    },
+    {
+      "path": "docs/stabilization/evidence/scrape-member/run37234434600/screenshots/native-side-panel.png",
+      "sha256": "9b6a2a8f7271bb133a9ad3e83d6eb9187c87eccf4c707b421867a6c1f1b98be9"
+    },
+    {
+      "path": "docs/stabilization/evidence/scrape-member/run37234434600/screenshots/normal-target-after-open.png",
+      "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89"
+    }
+  ],
+  "credential_cleanup": {
+    "temporary_github_secret_deleted": true,
+    "secret_list_confirmed_absent": true,
+    "local_single_use_link_deleted": true,
+    "identity_file_unchanged": true,
+    "no_auth_urls_or_identity_values_recorded": true
+  },
+  "limits": [
+    "No Scrape cases completed.",
+    "600px panel viewport was requested but no viewport measurement was recorded.",
+    "Raw resource journals were not present in the uploaded artifact; retained log extracts are incomplete substitutes.",
+    "No product acceptance or member role verdict is claimed."
+  ]
+}
