@@ -14,11 +14,13 @@
   "actual": "Warm media/link mutations set edited=true. Product correctly opens Discard unsaved edits? and defers capture; native driver waits for deep result without confirmation. Sol actual-component causal reproduction verifies capture starts only on explicit confirmation. No product repair indicated.",
   "severity": "S2: acceptance blocked by driver omission; product unsaved-edit protection works in causal reproduction",
   "priority": "P1: blocks remaining contained Scrape lifecycle acceptance",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/scrape125_fix",
   "evidence": [
     "docs/stabilization/evidence/scrape231/run37221586281/receipt.json.txt",
-    ".research/scrape231-context-diagnostic-native.json"
+    ".research/scrape231-context-diagnostic-native.json",
+    ".research/scrape-deep-capture125-diagnose.json",
+    ".research/scrape125-fresh-peer.json"
   ],
   "transition_history": [
     {
@@ -38,7 +40,13 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol reproduced edited-state confirmation boundary on actual component; repairing native procedure, not disabling product protection."
+    },
+    {
+      "at": "2026-10-04T18:03:40.460511+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "0600d571 repairs native Cancel/preserve/request/explicit deep confirmation. Fresh peer099ec9de accepts source without product bypass; independent focused execution then exact231 native retest assigned separately."
     }
   ],
-  "next_action": "Bounded causal source/evidence diagnosis; no blind native retry. Clipboard observation limitation stays separate."
+  "next_action": "Independent focused tests then one guarded frozen231 ARM native original sequence and full reload; report .research/scrape231-recapture-native.json. No closure from source tests."
 }
