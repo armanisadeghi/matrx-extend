@@ -2997,6 +2997,11 @@
    "application/json"
   ]
  },
+ "/google-integrations/directory/people/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/google-integrations/disconnect": {
   "post": [
    "application/json"
@@ -3029,6 +3034,16 @@
  },
  "/google-integrations/internal/credential": {
   "get": []
+ },
+ "/google-integrations/meet/conferences/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-integrations/meet/transcripts/entries/preview": {
+  "post": [
+   "application/json"
+  ]
  },
  "/google-integrations/other-contacts/admission": {
   "get": []
