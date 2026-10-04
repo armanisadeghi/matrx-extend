@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
   copiedText: vi.fn(),
   tab: {
-    url: 'https://fieldnotes.example/garden/seed-starting',
+    url: 'https://fieldnotes.test/garden/seed-starting',
     title: 'Starting seeds indoors',
     id: 7,
     documentId: 'seed-page',
@@ -106,12 +106,12 @@ const capture: SoupResult = {
   audio: [],
   links: [
     {
-      href: 'https://fieldnotes.example/garden/seed-starting',
+      href: 'https://fieldnotes.test/garden/seed-starting',
       text: 'Seed starting guide',
       rel: null,
     },
     {
-      href: 'https://fieldnotes.example/garden/planting-calendar.pdf',
+      href: 'https://fieldnotes.test/garden/planting-calendar.pdf',
       text: '',
       rel: 'nofollow',
     },
@@ -165,15 +165,13 @@ describe('ScrapeView link controls', () => {
     await openLinks();
 
     const guide = screen.getByRole('link', { name: /Seed starting guide/ });
-    expect(guide.getAttribute('href')).toBe('https://fieldnotes.example/garden/seed-starting');
+    expect(guide.getAttribute('href')).toBe('https://fieldnotes.test/garden/seed-starting');
     expect(guide.getAttribute('target')).toBe('_blank');
     const copyButton = screen.getAllByTitle('Copy URL').at(0);
     if (!copyButton) throw new Error('Expected the guide copy button to exist');
     fireEvent.click(copyButton);
     await waitFor(() =>
-      expect(mocks.copiedText).toHaveBeenCalledWith(
-        'https://fieldnotes.example/garden/seed-starting',
-      ),
+      expect(mocks.copiedText).toHaveBeenCalledWith('https://fieldnotes.test/garden/seed-starting'),
     );
     expect(useScrapeStore.getState().current?.links).toHaveLength(2);
   });
@@ -188,7 +186,7 @@ describe('ScrapeView link controls', () => {
 
     expect(useScrapeStore.getState().current?.links).toEqual([
       {
-        href: 'https://fieldnotes.example/garden/planting-calendar.pdf',
+        href: 'https://fieldnotes.test/garden/planting-calendar.pdf',
         text: '',
         rel: 'nofollow',
       },
@@ -210,13 +208,13 @@ describe('ScrapeView link controls', () => {
     expect((href as HTMLInputElement).value).toBe('');
 
     fireEvent.change(href, {
-      target: { value: 'https://fieldnotes.example/garden/hardening-off' },
+      target: { value: 'https://fieldnotes.test/garden/hardening-off' },
     });
     fireEvent.change(text, { target: { value: 'Hardening off seedlings' } });
     fireEvent.click(screen.getByRole('button', { name: 'Add' }));
     await waitFor(() => expect(useScrapeStore.getState().current?.links).toHaveLength(3));
     expect(useScrapeStore.getState().current?.links.at(-1)).toEqual({
-      href: 'https://fieldnotes.example/garden/hardening-off',
+      href: 'https://fieldnotes.test/garden/hardening-off',
       text: 'Hardening off seedlings',
       rel: null,
     });
@@ -224,16 +222,16 @@ describe('ScrapeView link controls', () => {
 
     const secondDraft = screen.getByPlaceholderText('https://…');
     fireEvent.change(secondDraft, {
-      target: { value: 'https://fieldnotes.example/garden/discard-this' },
+      target: { value: 'https://fieldnotes.test/garden/discard-this' },
     });
     fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
     fireEvent.click(screen.getByRole('button', { name: 'Add link' }));
     expect((screen.getByPlaceholderText('https://…') as HTMLInputElement).value).toBe('');
     expect(useScrapeStore.getState().current?.links).toHaveLength(3);
     expect(useScrapeStore.getState().current?.links.map((link) => link.href)).toEqual([
-      'https://fieldnotes.example/garden/seed-starting',
-      'https://fieldnotes.example/garden/planting-calendar.pdf',
-      'https://fieldnotes.example/garden/hardening-off',
+      'https://fieldnotes.test/garden/seed-starting',
+      'https://fieldnotes.test/garden/planting-calendar.pdf',
+      'https://fieldnotes.test/garden/hardening-off',
     ]);
   });
 
@@ -242,13 +240,13 @@ describe('ScrapeView link controls', () => {
     await openLinks();
     fireEvent.click(screen.getByRole('button', { name: 'Add link' }));
     fireEvent.change(screen.getByPlaceholderText('https://…'), {
-      target: { value: 'https://fieldnotes.example/garden/watering' },
+      target: { value: 'https://fieldnotes.test/garden/watering' },
     });
     fireEvent.click(screen.getByRole('button', { name: 'Add' }));
 
     await waitFor(() => expect(useScrapeStore.getState().current?.links).toHaveLength(3));
     expect(useScrapeStore.getState().current?.links.at(-1)).toEqual({
-      href: 'https://fieldnotes.example/garden/watering',
+      href: 'https://fieldnotes.test/garden/watering',
       text: '',
       rel: null,
     });

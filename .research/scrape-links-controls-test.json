@@ -1,6 +1,6 @@
 {
   "scope": "Focused ScrapeView coverage for EXT-F-1007-T13 link open/copy/remove and href/text add forms. No product code changed.",
-  "evidence_level": "Actual ScrapeView, CopyButton, and Zustand scrape store mounted in Vitest; only clipboard API and unrelated page/backend dependencies are stubbed. Anchor attributes and copy-boundary delivery are supporting component evidence, not proof that a browser tab opened or the OS clipboard changed.",
+  "evidence_level": "Actual ScrapeView, CopyButton, and Zustand scrape store mounted in Vitest; only clipboard API and unrelated page/backend dependencies are stubbed. Garden-journal URLs use the reserved .test domain to stay realistic-looking and inert. Anchor attributes and copy-boundary delivery are supporting component evidence, not proof that a browser tab opened or the OS clipboard changed.",
   "cases": {
     "open_and_copy": {
       "status": "source/component pass with bounded open-link evidence",
@@ -24,7 +24,7 @@
       "pnpm exec vitest run src/features/scrape/ScrapeView.link-controls.test.tsx --maxWorkers=1 --reporter=dot",
       "python3 .claude/skills/forcing-function-tests/plant.py --file src/state/scrape.ts --old 'links: s.current.links.filter((l) => linkKey(l.href, l.text) !== key)' --new 'links: []' --expect red --must-mention 'planting-calendar.pdf' --timeout 30 -- pnpm exec vitest run src/features/scrape/ScrapeView.link-controls.test.tsx --maxWorkers=1 --reporter=dot",
       "pnpm compile",
-      "pnpm exec biome check src/features/scrape/ScrapeView.link-controls.test.tsx"
+      "pnpm exec biome check src/features/scrape/ScrapeView.link-controls.test.tsx .research/scrape-links-controls-test.json"
     ],
     "result": "4 focused tests passed; the realistic remove-all mutation failed at the exact survivor assertion and was restored byte-identically; compile and Biome passed."
   },
