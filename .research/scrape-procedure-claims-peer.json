@@ -1,0 +1,78 @@
+{
+  "reviewed_artifact": ".research/scrape-remaining-procedure-audit.json at 3b428423",
+  "review_type": "Independent bounded source-only procedure and evidence audit",
+  "source_head": "783282c8cc5a8a03e06c0c3417ce55fb041fa695",
+  "scope_limits": "No browser, native extension, test, build, release, database write, or fixture setup was run. Source paths establish possible behavior and refute deterministic setup claims; they do not establish live outcomes.",
+  "A_procedure_correctness_executability": {
+    "verdict": "REVISE_BEFORE_NATIVE_USE",
+    "refuted": [
+      {
+        "claim": "A stale ordinary HTTP(S) tab left open across extension reload will show a recoverable no-receiver card on Scroll & capture, and Try again will show the same failure until page reload.",
+        "finding": "That setup does not deterministically yield the asserted card. The capture path catches the initial no-receiver error, injects content-scripts/content.js, and retries. If injection succeeds, the capture succeeds. A no-content-script result requires the second send to fail after successful injection; an injection failure produces a different no-host-permission card. Deep capture also runs scrollToLoadLazy before this path, so the proposed first error and repeat-error oracle are unsupported.",
+        "evidence": [
+          "src/lib/scrape/capture-with-fallback.ts:104-140",
+          "src/hooks/use-scrape.ts:223-256",
+          "src/lib/scrape/capture-error.ts:121-145"
+        ],
+        "correction": "Retain T14 recoverable control behavior as a conditional observation pending a real reproducible failure that survives injection. A stale tab may be used to check automatic recovery, but it cannot be the guaranteed no-receiver card fixture. Do not count source/UI component tests or an injected CaptureError as natural browser evidence."
+      },
+      {
+        "claim": "For signed-in member/admin, clearing the device-selected organization and clicking Save naturally yields an immediate choose-workspace refusal and retained Unsaved card; choosing A then retries it.",
+        "finding": "The request waits for the organization picker and resumes with the chosen organization. It refuses only when the user has no memberships or fails to answer before the hold expires. The report supplies neither a supported signed-in UI action to clear the selection nor a bounded way to induce the refusal. Choosing A in the picker completes the original Save; it does not create a queued item that needs Retry.",
+        "evidence": [
+          "src/lib/api/routes/auth.ts:21-23",
+          "src/lib/org/active-org.ts:357-385",
+          "src/lib/sources/save-capture.ts:172-196",
+          "src/lib/sources/save-capture.ts:390-422",
+          "rg clearActiveOrganization( src: only its declaration at src/lib/org/active-org.ts:477"
+        ],
+        "correction": "Use an authorized, repeatable server refusal or outage for member/admin queue cases, with explicit setup and cleanup; or scope those refusal cells as blocked on a fixture. If testing no-selection behavior, assert picker/held request and the eventual branch actually observed, separately from Unsaved-queue recovery."
+      },
+      {
+        "claim": "T26 guest should be wholly N/A because it intentionally skips the saved-page lookup, contrary to the current inventory.",
+        "finding": "The guest lookup-failure branch is N/A, but the current T26 inventory already explicitly requires a guest no-request assertion. Marking the entire guest case N/A would discard a valid negative coverage cell. The source returns none before querying when there is no access token.",
+        "evidence": [
+          "docs/stabilization/inventory.json: EXT-F-1007-T26 steps and expected",
+          "src/lib/supabase/queries.ts:634-638"
+        ],
+        "correction": "Keep guest T26 as a no-lookup negative assertion; mark only guest lookup-failure/recovery and cross-organization read subdimensions N/A."
+      }
+    ],
+    "confirmed_with_limits": [
+      {
+        "claim": "Restricted URL cannot prove the Reload page/Try again controls.",
+        "finding": "Confirmed by classifier: restricted-url has no recovery actions, while the card always offers Dismiss.",
+        "evidence": [
+          "src/lib/scrape/capture-error.ts:89-106",
+          "src/features/scrape/ScrapeView.tsx:1035-1072"
+        ]
+      },
+      {
+        "claim": "A signed-out guest Save can queue a sign-in-required refusal; a successful landing removes a held URL only after confirmed landing.",
+        "finding": "Supported in source, subject to having nonempty article portions and working device storage. The guest must sign in before successful Retry, so any subsequent landing is under the signed-in role and selected organization.",
+        "evidence": [
+          "src/lib/sources/save-capture.ts:160-172",
+          "src/lib/sources/save-capture.ts:353-447"
+        ]
+      },
+      {
+        "claim": "Signed-in recognition spans RLS-visible organizations independent of the selected write organization.",
+        "finding": "Supported by the query shape. Live RLS visibility and response still require observed role-specific evidence.",
+        "evidence": [
+          "src/lib/supabase/queries.ts:634-674",
+          "src/hooks/use-page-recognition.ts:50-80"
+        ]
+      }
+    ],
+    "remaining_prerequisites": [
+      "T26/T27 lookup failure needs an authorized reproducible outage/response observable; an incidental outage is evidence only if it occurs, not an executable procedure.",
+      "T29 refusal and target/Library fixture identities remain unspecified; T30 controlled delayed landing response remains unspecified. These are test prerequisites, not product defect findings."
+    ]
+  },
+  "B_evidence_quality": {
+    "verdict": "SOURCE_REASONING_ONLY_NO_NATIVE_PASS",
+    "assessment": "The audited report accurately discloses that it ran no UI, browser, save, role, RLS, filing, or cleanup check. Its source references support several expected branches but cannot promote any remaining acceptance cell. The two natural-stimulus claims above are presented as executable despite being contradicted by the active production paths. The guest T26 applicability claim is stale relative to the inventory reviewed here. The proposed snapshots, source IDs, and role receipts are future evidence requirements, not collected evidence.",
+    "native_evidence_used": false,
+    "claim_boundary": "No product bug or runtime pass/fail is inferred from this review."
+  }
+}
