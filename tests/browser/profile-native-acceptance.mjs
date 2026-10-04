@@ -309,8 +309,25 @@ function observeProfileRequests(panel) {
       .then(({ body, base64Encoded }) => {
         const raw = base64Encoded ? Buffer.from(body, 'base64').toString('utf8') : body;
         const parsed = raw ? JSON.parse(raw) : null;
-        if (entry.route === 'profile_row' && entry.method === 'GET' && entry.status === 200)
-          entry.row_present = Boolean(parsed && typeof parsed === 'object' && parsed.user_id);
+        if (entry.route === 'profile_row' && entry.method === 'GET' && entry.status === 200) {
+          // maybeSingle unwraps a list inside supabase-js, after this wire observer.
+          // Only an empty list proves absence; malformed/ambiguous bodies stay unknown.
+          const candidate = Array.isArray(parsed)
+            ? parsed.length === 1
+              ? parsed[0]
+              : null
+            : parsed;
+          if (Array.isArray(parsed) && parsed.length === 0) entry.row_present = false;
+          else if (
+            candidate &&
+            typeof candidate === 'object' &&
+            typeof candidate.user_id === 'string' &&
+            /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+              candidate.user_id,
+            )
+          )
+            entry.row_present = true;
+        }
         const code = parsed?.code;
         entry.error_code = safeProfileBackendCode(code);
       })

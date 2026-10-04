@@ -56,5 +56,35 @@
     "tests/browser/profile-native-failure.mjs",
     "tests/browser/profile-first-save-diagnostic.test.mjs",
     ".research/admin-firstsave-escalation.json"
-  ]
+  ],
+  "observer_followup": {
+    "defect": "EXT-D-0109",
+    "status": "source_repaired_native_pending",
+    "causal_native_reference": ".research/profile-admin-causal-native.json",
+    "confirmed_defect": "observeProfileRequests inspected parsed.user_id on the raw body; a valid [row] from GET maybeSingle was always classified absent. Installed client and frozen native artifact both fetch lists and unwrap them only client-side.",
+    "source_evidence": {
+      "app": "src/lib/supabase/user-profile.ts fetchUserFormProfile usersDb().from(user_form_profile).select(*).eq(user_id).maybeSingle()",
+      "installed_version": "@supabase/supabase-js and postgrest-js 2.117.2",
+      "installed_implementation": "PostgrestTransformBuilder.ts maybeSingle sets isMaybeSingle without object Accept header; PostgrestBuilder.ts unwraps array length 1 and maps empty array to null.",
+      "frozen_artifact": "0.2.189 chunks/globals-D-mDsyNJ.js confirms same maybeSingle and Array.isArray cardinality handling."
+    },
+    "repair": "Observer recognizes empty list as absent and valid single-row list/object as present. Malformed, null, missing-owner or multi-row responses stay null/unknown and cannot satisfy initial read readiness. Pre-write absence assertion and ownership/deletion gates unchanged.",
+    "verification": {
+      "new_guard": "tests/browser/profile-observer-row-envelope.test.mjs executes actual app query chain through installed client with controlled fetch, delivering raw response to actual observer callback. Plain and base64 response variants.",
+      "red": "12 fail, 4 pass before fix: valid singleton misclassified false; malformed/ambiguous classified false.",
+      "green": "87 profile tests pass, 0 fail after fix.",
+      "gut_check": "Replacing observer classification with constant false fails singleton tests.",
+      "mutations": [
+        "empty list misclassified present: RED",
+        "multi-row accepted as singleton: RED"
+      ],
+      "race_guard": "Existing actual first-save caller guard still rejects non-null second owner read with first_save_row_appeared_before_write."
+    },
+    "limitations": [
+      "No native rerun, browser, DB read/write, build or release.",
+      "Historical raw initial response body was not retained, so this source defect is proven but a concurrent row appearance in native04 is not independently excluded.",
+      "A pre-existing owner row must not be deleted or treated as an owned fixture. Actual absent-admin first-save EXT-D-0108 remains unverified.",
+      "Fresh independent source review remains parent-owned."
+    ]
+  }
 }
