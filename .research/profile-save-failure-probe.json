@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "inventory_id": "EXT-F-1004-T26",
+  "status": "source_only_unintegrated_unrun",
+  "case_file": "tests/browser/profile-save-failure-case.mjs",
+  "scope": "One member warm Profile save failure and recovery branch in the owned native side panel.",
+  "runner_integration": {
+    "entrypoint": "runProfileSaveFailureCase",
+    "required_inputs": [
+      "panel from the existing runNativeSidepanelQa callback",
+      "origin from the runner's validated Supabase URL",
+      "email and original Preferred value from the runner's verified member identity and initial Profile read",
+      "journal from createOwnedWriteJournal for a first-save row owned by this run",
+      "state, fillPreferred, clickProfileHeader and openProfile from the existing Profile runner"
+    ],
+    "placement": "After member first-save ownership is established and before the extension reload. Append the returned case receipt to report.cases. Keep the runner's outer owned-row deletion and absence verification.",
+    "cleanup_interface": "The case disables its CDP Fetch interception, discards a failed unsaved draft, and uses journal.save plus reopen verification to restore the owned row's original Preferred value after any successful retry. The runner remains responsible for the exact conditional DELETE of a newly created row and verified restoration of original row absence. A failed journal reconciliation leaves the durable pending intent for the runner's cleanup and fails acceptance.",
+    "precondition": "Run only in the designated member case after a run-owned first-save row exists. A preexisting row has no owned-write journal and is deliberately refused."
+  },
+  "forcing_observations": [
+    "One request-stage intercepted POST to the exact Supabase user_form_profile route is failed before it reaches the server; unrelated requests continue.",
+    "The real Profile UI retains the synthetic Preferred draft, shows a nonempty failure, ends saving, and enables Save again.",
+    "With interception removed, the real Save persists the draft through the owned-write journal; reopening Profile reads the same value.",
+    "The original Preferred value is saved through the journal, reread after reopening, and the runner's outer cleanup deletes the row to restore its prior absence."
+  ],
+  "source_basis": [
+    ".research/popup-profile-procedures.json EXT-F-1004-T26",
+    "src/hooks/use-user-profile.ts save",
+    "src/lib/supabase/user-profile.ts upsertUserFormProfile",
+    "src/features/profile/ProfileView.tsx Preferred, error and Save controls",
+    "tests/browser/profile-native-acceptance.mjs",
+    "tests/browser/profile-owned-write-journal.mjs"
+  ],
+  "self_checks": {
+    "node_syntax": "passed_source_check",
+    "biome": "passed_targeted_check",
+    "native_ui": "not_run_by_this_lane",
+    "database_restoration": "not_run_by_this_lane"
+  },
+  "limits": [
+    "No native UI, backend write, local build or release was permitted in this lane. Runtime behavior and exact row-absence restoration remain unverified until the root integrates and executes the case.",
+    "This module relies on existing runner-private Profile UI helpers being passed as callbacks; the shared runner was not edited while another Profile run was active."
+  ]
+}
