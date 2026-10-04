@@ -34090,7 +34090,15 @@
               "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
               "acceptance": "Chat and Pilot stream listeners now turn decision_answers data events into readable render blocks; saved decision_answers parts are converted into text during message hydration."
             }
-          ]
+          ],
+          "results": {
+            "member": {
+              "status": "partial",
+              "run_id": "37182939504",
+              "evidence": ".research/hosted-member205-final.json",
+              "detail": "Exact205 hosted nonadmin sign-in, saved organization presence and one real composer answer pass. Queue, interrupt, Stop, voice, keyboard variations and reload dimensions remain unverified; this does not pass the full case."
+            }
+          }
         },
         {
           "id": "EXT-F-2013-T03",

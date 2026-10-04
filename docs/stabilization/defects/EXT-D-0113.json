@@ -11,10 +11,10 @@
     "The harness storedSessionShape predicate expects the matrx.org.active storage value to be a string; the current production value is an object with id and name."
   ],
   "expected": "The native acceptance probe recognizes the production device organization shape and reports an exact organization readback, so a false shape mismatch cannot be mistaken for a product failure or a verified persistence pass.",
-  "actual": "Source repair bef9a4de recognizes the production object-valued matrx.org.active selection by its nonblank id and records only presence booleans. The production-shape guard failed on the old string-only probe and passed after repair (3 tests); previous member native receipt remains historically false. Fresh native organization readback and persistence are unverified. No product organization defect is established.",
+  "actual": "Original false-negative storage-shape diagnostic no longer reproduces on hosted exact205 member acceptance. Successful first-party session, saved organization presence, canonical nonadmin check and real Chat answer are recorded; broader org lifecycle not certified.",
   "severity": "S3: acceptance evidence is ambiguous; no product failure established",
   "priority": "P1: repair the probe before relying on member organization acceptance",
-  "state": "fixed",
+  "state": "closed",
   "owner": "guest_402_driver_review",
   "evidence": [
     ".research/guest-402-native-acceptance.json",
@@ -23,7 +23,8 @@
     "tests/browser/reviewer-chat-storage-shape.test.mjs",
     ".research/member-org-diagnostic-peer.json",
     ".research/member205-org-native.json",
-    "docs/stabilization/resource-journals/member205-org-native-01.jsonl"
+    "docs/stabilization/resource-journals/member205-org-native-01.jsonl",
+    ".research/hosted-member205-final.json"
   ],
   "transition_history": [
     {
@@ -49,12 +50,27 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source repair bef9a4de changed the probe to read object.id. The production-shape guard was red on the old classifier and green after repair; 3 focused tests pass. Independent source/narrow-guard review 216c24c0 passed. Fresh native organization readback remains pending."
+    },
+    {
+      "at": "2026-10-04T06:42:41.177218+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent hosted run37182939504 reproduces original stored object shape and now reports presence truthfully; surrounding signed-in Chat passes. Root directly verified receipt/journal hashes and terminal run."
+    },
+    {
+      "at": "2026-10-04T06:42:41.177218+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Independent hosted run37182939504 reproduces original stored object shape and now reports presence truthfully; surrounding signed-in Chat passes. Root directly verified receipt/journal hashes and terminal run."
     }
   ],
   "closure_requirement": "Fresh guarded native member acceptance on exact submitted 0.2.205 must capture the corrected organization-present diagnostic and a real Chat answer without exposing organization identifiers. Preserve the previous false receipt as historical. Source red/green and independent review have passed; no product organization failure was established.",
   "native_retest": {
-    "state": "unverified",
-    "run_id": "member205-org-native-01",
-    "outcome": "Resource guard refused before product launch: internal disk low and swap growth. Source remains fixed; no native product failure or persistence pass."
+    "state": "pass",
+    "run_id": "37182939504",
+    "artifact_id": 11296210998,
+    "version": "0.2.205",
+    "scope": "Hosted exact-release payload, signed-in storage shape and completed nonadmin Chat; not Store installation, password login or full organization lifecycle.",
+    "root_verification": "Terminal successful workflow verified; raw receipt plus three resource-journal hashes matched; storage activeOrganizationPresent true, real completed answer and canonical HTTP200 zero-admin rows inspected; result screenshot viewed."
   }
 }

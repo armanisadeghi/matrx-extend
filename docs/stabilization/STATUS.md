@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-04 06:37 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T04:01:56.128811+00:00. 205 features · 762 cases · 1333 controls · 114 linked defect records.
+Generated 2026-10-04 06:42 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T04:01:56.128811+00:00. 205 features · 762 cases · 1333 controls · 114 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1210** — Pass: 76 · Partial: 65 · Fail: 5 · Unverified: 1063 · N/A: 1.
-Unverified splits into **124 explicitly marked unverified** and **939 with no result record**.
+Applicable case-by-role slots: **1210** — Pass: 76 · Partial: 66 · Fail: 5 · Unverified: 1062 · N/A: 1.
+Unverified splits into **124 explicitly marked unverified** and **938 with no result record**.
 Full feature-role pairs: **0/394**. Procedure gaps: 128 cases without steps, 127 without expected outcomes, 31 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -46,7 +46,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Capture side-panel](#capture-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Vault side-panel](#vault-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 0 |
 | [Tools/manual runner](#toolsmanual-runner) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 0 |
-| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 1 pass · 0 partial · 1 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 1, partial 0, fail 1, unverified 25, n/a 0 | 4 |
+| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 1 pass · 0 partial · 1 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 1, partial 1, fail 1, unverified 24, n/a 0 | 3 |
 | [Pilot (deferred wave D)](#pilot-deferred-wave-d) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 5, n/a 0 | 1 |
 | [Tools Smart tests](#tools-smart-tests) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Tools Recorder](#tools-recorder) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
@@ -1572,16 +1572,16 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Use assistant chat and conversation controls (EXT-F-2013)
 
-**Role status:** guest: Fail · member: Unverified · admin: Unverified. **Cases:** 12. **Controls:** 138.
+**Role status:** guest: Fail · member: Partial · admin: Unverified. **Cases:** 12. **Controls:** 138.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0074, EXT-D-0075, EXT-D-0096, EXT-D-0113
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0074, EXT-D-0075, EXT-D-0096
 
-**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (closed), [EXT-D-0096](defects/EXT-D-0096.json) (fixed), [EXT-D-0097](defects/EXT-D-0097.json) (retest-pass), [EXT-D-0112](defects/EXT-D-0112.json) (retest-pass), [EXT-D-0113](defects/EXT-D-0113.json) (fixed)
+**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (closed), [EXT-D-0096](defects/EXT-D-0096.json) (fixed), [EXT-D-0097](defects/EXT-D-0097.json) (retest-pass), [EXT-D-0112](defects/EXT-D-0112.json) (retest-pass), [EXT-D-0113](defects/EXT-D-0113.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-2013-T01 Chat conversation navigation and modes | Unverified | Unverified | Unverified | No control mapped |
-| EXT-F-2013-T02 Composer and active run controls | Unverified | Unverified | Unverified | No control mapped |
+| EXT-F-2013-T02 Composer and active run controls | Unverified | Partial | Unverified | No control mapped |
 | EXT-F-2013-T03 Chat attachments and exports | N/A | Unverified | Unverified | No control mapped |
 | EXT-F-2013-T04 Interactive agent cards and tool receipt | N/A | Unverified | Unverified | No control mapped |
 | EXT-F-2013-T05 Guest banner sign-in and sign-up actions | Unverified | N/A | N/A | EXT-F-2013-C132, EXT-F-2013-C133 |
@@ -1595,6 +1595,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Recorded case details and evidence:**
 
+- EXT-F-2013-T02 · member: Partial. Exact205 hosted nonadmin sign-in, saved organization presence and one real composer answer pass. Queue, interrupt, Stop, voice, keyboard variations and reload dimensions remain unverified; this does not pass the full case.
+  Evidence / build / date recorded: 37182939504, .research/hosted-member205-final.json
 - EXT-F-2013-T10 · guest: Pass. Exact release0.2.176 guest first/reload grounded answers, all resource phases valid, artifact unchanged after interaction. Hosted unpacked receipt-bound acceptance; not Google-installed lifecycle or exhaustive Chat. Original startup schema incident EXT-D-0088 closed with separate published130 functional and nonadmin surrounding evidence.
   Evidence / build / date recorded: 37106907229, .research/candidate176-guest-acceptance.json
 - EXT-F-2013-T12 · guest: Fail. Published Store-installed 0.2.176 failed with generic service error and Retry at 05:29:10 UTC October 4, correlated with live HTTP 402. Exact hosted-release 0.2.205 candidate passed four fresh guest answers, first 402 remedy/no Retry, and returning exhausted-guest panel reload/New chat with second distinct live 402 and same remedy. Candidate submitted Pending review at 05:57 UTC with automatic publication; actual Store-installed 0.2.205 acceptance remains open.
