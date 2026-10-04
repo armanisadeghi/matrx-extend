@@ -34,9 +34,18 @@
     "detail_limit": "The sanitized runner report does not retain the underlying exception. No BROWSER_STARTUP_FAILURE or endpointDiagnostic was emitted, so the cause is unknown."
   },
   "acceptance": {
-    "EXT-F-1004-T06": { "warm": "not_reached", "extension_reload": "not_reached" },
-    "EXT-F-1004-T18": { "warm": "not_reached", "extension_reload": "not_reached" },
-    "EXT-F-1004-T22": { "warm": "not_reached", "extension_reload": "not_reached" },
+    "EXT-F-1004-T06": {
+      "warm": "not_reached",
+      "extension_reload": "not_reached"
+    },
+    "EXT-F-1004-T18": {
+      "warm": "not_reached",
+      "extension_reload": "not_reached"
+    },
+    "EXT-F-1004-T22": {
+      "warm": "not_reached",
+      "extension_reload": "not_reached"
+    },
     "T02": "not_reached",
     "T04": "not_reached",
     "T25": "not_reached",
@@ -47,7 +56,7 @@
     "ui_field_mutations": 0,
     "ui_field_restoration": "not applicable; no UI write began",
     "owned_profile_receipt_created": false,
-    "initial_absent_row_preserved": true,
+    "initial_absent_row_preserved": null,
     "separate_final_absence_readback": false,
     "final_readback_status": "not performed; runner reported original_row_preserved because no write intent or owned row existed"
   },
@@ -67,5 +76,10 @@
     "The required six T06/T18/T22 warm and reload cells, T02/T04/T25, and exact UI field restoration remain unverified.",
     "The earlier run's unknown CDP refusal cause remains unknown; this run did not emit a startup endpoint diagnostic.",
     "EXT-D-0108 cannot be closed from this run."
-  ]
+  ],
+  "post_run_reassessment": {
+    "defect_id": "EXT-D-0109",
+    "evidence": ".research/profile-admin-causal-native.json",
+    "correction": "The initial UI observer inferred row absence from the raw response. Confirmed observer envelope mismatch means that inference does not establish persisted absence. No writes occurred; no final readback occurred. Do not infer original absence or absence restoration from this report."
+  }
 }

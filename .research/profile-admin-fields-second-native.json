@@ -33,12 +33,36 @@
   },
   "acceptance": {
     "extended_cells": [
-      { "id": "EXT-F-1004-T06", "dimension": "warm", "status": "missing" },
-      { "id": "EXT-F-1004-T06", "dimension": "extension_reload", "status": "missing" },
-      { "id": "EXT-F-1004-T18", "dimension": "warm", "status": "missing" },
-      { "id": "EXT-F-1004-T18", "dimension": "extension_reload", "status": "missing" },
-      { "id": "EXT-F-1004-T22", "dimension": "warm", "status": "missing" },
-      { "id": "EXT-F-1004-T22", "dimension": "extension_reload", "status": "missing" }
+      {
+        "id": "EXT-F-1004-T06",
+        "dimension": "warm",
+        "status": "missing"
+      },
+      {
+        "id": "EXT-F-1004-T06",
+        "dimension": "extension_reload",
+        "status": "missing"
+      },
+      {
+        "id": "EXT-F-1004-T18",
+        "dimension": "warm",
+        "status": "missing"
+      },
+      {
+        "id": "EXT-F-1004-T18",
+        "dimension": "extension_reload",
+        "status": "missing"
+      },
+      {
+        "id": "EXT-F-1004-T22",
+        "dimension": "warm",
+        "status": "missing"
+      },
+      {
+        "id": "EXT-F-1004-T22",
+        "dimension": "extension_reload",
+        "status": "missing"
+      }
     ],
     "surrounding_cases": {
       "T02": "not_reached",
@@ -58,5 +82,10 @@
     "resource_journal_sha256": "2e5f05633fe35e7bbb2b48d30262e8ce9d7ef9749c3cbe253eb1e7a76dfbe214",
     "private_ownership_receipt": "not created; no row was created"
   },
-  "scope": "One guarded admin run using the reviewed endpoint-diagnostic source. No source changes, member login, role change, build, release, or retry. No Profile values, credentials, or personal/row identifiers recorded."
+  "scope": "One guarded admin run using the reviewed endpoint-diagnostic source. No source changes, member login, role change, build, release, or retry. No Profile values, credentials, or personal/row identifiers recorded.",
+  "post_run_reassessment": {
+    "defect_id": "EXT-D-0109",
+    "evidence": ".research/profile-admin-causal-native.json",
+    "correction": "The initial UI observer inferred row absence from the raw response. Confirmed observer envelope mismatch means that inference does not establish persisted absence. No writes occurred; no final readback occurred. Do not infer original absence or absence restoration from this report."
+  }
 }
