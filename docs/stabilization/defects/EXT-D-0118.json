@@ -58,7 +58,7 @@
   "verification": {
     "status": "partial_native_retest",
     "run_id": "37195986118",
-    "verified": "All6tabsselected,10geometryboundaries at360px documentwidth360/scrollLeft0, resultstrip336px/title/capturerowcontained; rootinspecteddeepPNG. Fast/deepcapturestillworks.",
+    "verified": "All6tabsselected,9geometryboundaries at360px documentwidth360/scrollLeft0, resultstrip336px/title/capturerowcontained; rootinspecteddeepPNG. Fast/deepcapturestillworks.",
     "remaining": "Normal-width not exercised; post-reload Scrape navigation failsD120; Store205 predatesfix.",
     "screenshot": "docs/stabilization/evidence/scrape215/narrow-layout-fixed.png"
   }

@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-04 10:54 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T10:54:17.039570+00:00. 205 features · 762 cases · 1333 controls · 121 linked defect records.
+Generated 2026-10-04 11:05 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T10:54:17.039570+00:00. 205 features · 762 cases · 1333 controls · 121 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -70,7 +70,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0077, EXT-D-0120
 
-**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed), [EXT-D-0080](defects/EXT-D-0080.json) (closed), [EXT-D-0090](defects/EXT-D-0090.json) (closed), [EXT-D-0099](defects/EXT-D-0099.json) (closed), [EXT-D-0106](defects/EXT-D-0106.json) (closed), [EXT-D-0120](defects/EXT-D-0120.json) (fixed), [EXT-D-0121](defects/EXT-D-0121.json) (closed)
+**Linked defects:** [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0014](defects/EXT-D-0014.json) (closed), [EXT-D-0028](defects/EXT-D-0028.json) (closed), [EXT-D-0077](defects/EXT-D-0077.json) (fixed), [EXT-D-0080](defects/EXT-D-0080.json) (closed), [EXT-D-0090](defects/EXT-D-0090.json) (closed), [EXT-D-0099](defects/EXT-D-0099.json) (closed), [EXT-D-0106](defects/EXT-D-0106.json) (closed), [EXT-D-0120](defects/EXT-D-0120.json) (in-fix), [EXT-D-0121](defects/EXT-D-0121.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -855,7 +855,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
 - EXT-F-1007-T06 · guest: Pass. pass_cancel_discarded_draft_and_recapture_cleanup
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
-- EXT-F-1007-T08 · guest: Partial. Healthy exact development215 selectedall6tabs and matchedArticle/Links/SEO/Schema. All10geometryboundaries at360px showdocumentwidth360/scrollLeft0, strip336px; rootdeepPNGconfirmsno leftclip. Images/video content or empty state and normalwidth stillunverified.
+- EXT-F-1007-T08 · guest: Partial. Healthy exact development215 selectedall6tabs and matchedArticle/Links/SEO/Schema. All9geometryboundaries at360px showdocumentwidth360/scrollLeft0, strip336px; rootdeepPNGconfirmsno leftclip. Images/video content or empty state and normalwidth stillunverified.
   Evidence / build / date recorded: 37195986118, .research/scrape-freshness-fixed-native.json
 - EXT-F-1007-T14 · guest: Partial. Healthy exactdevelopment215 observed restrictedchrome://settings norecoveryactions andDismiss; recoverableReload/Tryagain/deepretryunverified.
   Evidence / build / date recorded: 37195986118, .research/scrape-freshness-fixed-native.json
