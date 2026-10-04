@@ -2,7 +2,8 @@
   "schema_version": 1,
   "scope": "EXT-F-1007 guest T01/T02/T08/T14/T20 hosted native acceptance preparation",
   "status": "runner_ready_native_unverified",
-  "implementation_sha": "e00b8e98",
+  "implementation_sha": "1eb38fff",
+  "prior_implementation_shas": ["e00b8e98", "7bd6f047"],
   "artifact_selection": {
     "mode": "published_release",
     "intended_version": "0.2.205",
