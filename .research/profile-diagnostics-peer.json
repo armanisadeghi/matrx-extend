@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "task": "profile-diagnostics-peer",
+  "reviewed_commit": "aa7df0d2",
+  "A_source_acceptance": "PASS for the scoped diagnostic path: named pointer errors retain the original report stage, reload operation, allowlisted exact call and driver counts before cleanup changes report.stage; UI sample records only booleans and counts.",
+  "A_native_acceptance": "UNVERIFIED: no browser, DB, build, or release run in this peer lane; reload Profile behavior is not promoted.",
+  "B_quality": "FAIL: all three tests exercise only profile-native-failure.mjs and never execute the acceptance runner catch that must invoke captureProfileExecutionFailure.",
+  "mutation": "In a disposable scratch copy, replaced the acceptance catch call with an inert async function; node --check passed and all three tests still passed. Original source bytes were unchanged.",
+  "red_first_claim": "Unproven by the committed diff; a test run before the newly imported helper existed would be an import error, not a defect-specific red assertion.",
+  "privacy": "The new structured failure object allowlists fixed call/code labels, integer counts, and UI booleans/counts; no account label, selector value, or raw DOM content is copied into that object. Existing generic error-code serialization was outside this mutation proof.",
+  "checks": "node --test tests/browser/profile-native-failure.test.mjs: 3 passed; scratch mutation: syntax 0, tests 3 passed, originals byte-identical.",
+  "next": "Add a guard at the acceptance catch seam that fails when capture is skipped; retain native reload verification as a separate gate."
+}
