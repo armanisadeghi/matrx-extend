@@ -18,7 +18,8 @@
   "owner": "unassigned_scrape_layout",
   "evidence": [
     ".research/guest-scrape-cpu-native.json",
-    "docs/stabilization/evidence/scrape205/tab-strip-left-clipping.png"
+    "docs/stabilization/evidence/scrape205/tab-strip-left-clipping.png",
+    ".research/scrape-clipping-diagnosis.json"
   ],
   "transition_history": [
     {
@@ -28,5 +29,6 @@
       "reason": "Root inspected retained native screenshot; causal/layout reproduction pending."
     }
   ],
-  "closure_requirement": "Independently reproduce and repair confirmed clipping class, then verify normal/narrow panel tab selection and deep capture without horizontal displacement."
+  "closure_requirement": "Independently reproduce and repair confirmed clipping class, then verify normal/narrow panel tab selection and deep capture without horizontal displacement.",
+  "next_action": "Record document/panel scrollLeft and scrollWidth/clientWidth, viewport dimensions and keyelement rectangles before/after each result-tab click on owned native panel. Independent retained-image comparison confirms whole-panel displacement, not screenshot cropping; exact scrolling ancestor remains unknown. Do not guess CSS fix."
 }
