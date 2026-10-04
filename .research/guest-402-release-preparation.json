@@ -44,5 +44,13 @@
     "verdict": "PASS",
     "evidence": ".research/guest-402-native-acceptance.json",
     "limit": "activeOrganizationPresent string-only probe returned false on current object-valued storage key; organization persistence remains unverified; not a product org defect."
+  },
+  "latest_dashboard_check": {
+    "observed_at_utc": "2026-10-04T06:58:36Z",
+    "method": "Authenticated primary Package page; native Chrome Reload then accessibility-state check",
+    "published_version": "0.2.176",
+    "pending_version": "0.2.205",
+    "status": "Pending review",
+    "action": "Preserve pending submission; continue contained acceptance."
   }
 }
