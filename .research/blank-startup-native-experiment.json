@@ -117,7 +117,7 @@
         "remaining": ["Image and video empty states and reload lifecycle need full observation."]
       }
     ],
-    "scope_limit": "T08 has only partial warm pane/content evidence. T08 full assertions, T10/T11/T12/T13 warm control assertions and all populated-pane reload assertions were not reached. No reload milestone exists. No feature pass or capacity improvement is established."
+    "scope_limit": "T08 has partial warm pane/content evidence. T10\u2013T13 control sequences did not complete; screenshot shows edits occurred before the zero-target failure, but exact action/cause requires diagnosis. No full reload milestone or populated-reload acceptance exists."
   },
   "evidence_directory": "docs/stabilization/evidence/scrape215/run37212405505",
   "files_sha256": {
@@ -135,5 +135,11 @@
     "The resource guard admitted the acceptance process, observed one healthy watch, and recorded child_failed with resourceInvalid=false; this was a product-driver failure after healthy startup sampling, not a resource refusal.",
     "One authorized attempt only; no retry was launched.",
     "A pre-existing modification to docs/stabilization/inventory.json was observed at task start and left untouched."
-  ]
+  ],
+  "root_verification": {
+    "hashes": "Independently matched raw receipt, all3resource journals and4screenshots to report digests.",
+    "runtime_sample": "One RESOURCE_WATCH_HEALTHY at15:23:01.267Z CPU0.02, zero unsafe; finalchild_failedexit1/resourceInvalidfalse. This is one healthy-sampled execution, not demonstrated elimination of intermittency.",
+    "screenshot": "Failure screenshot independently viewed: Article selected, EDITED marker, Images count1 vs initial3. Some edit actions occurred before failure, despite no completed control-case receipt; exact action/cause under diagnosis.",
+    "next_action": "scrape_media_pointer_diagnosis owns bounded cause analysis; do not relaunch unchanged or label product bug before distinguishing driver and product."
+  }
 }
