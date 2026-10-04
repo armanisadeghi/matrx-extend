@@ -143,11 +143,45 @@ describe('private lifecycle transport', () => {
         path: '/browser-manager/local/verify',
         body: {},
         expectedActor,
-        deadlineMs: Date.now() + 20,
+        deadlineMs: Date.now() + 250,
         schema,
       }),
     ).resolves.toEqual({ ok: false, error: 'deadline_exceeded' });
     expect(cancel).toHaveBeenCalledOnce();
+  });
+
+  it('cancels an unread body when the request ends before reading it', async () => {
+    const cancel = vi.fn();
+    const stream = new ReadableStream<Uint8Array>({ cancel });
+    let fetched = false;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        fetched = true;
+        return new Response(stream, noStore);
+      }),
+    );
+    // The identity re-check after the response sees a different session.
+    const original = state.token;
+    state.tokenReadHook = () => {
+      if (fetched) state.token = token('session-b');
+    };
+    try {
+      await expect(
+        privatePost({
+          path: '/browser-manager/local/verify',
+          body: {},
+          expectedActor,
+          deadlineMs: Date.now() + 1_000,
+          schema,
+        }),
+      ).resolves.toEqual({ ok: false, error: 'identity_changed' });
+      expect(fetched).toBe(true);
+      expect(cancel).toHaveBeenCalledOnce();
+    } finally {
+      state.tokenReadHook = null;
+      state.token = original;
+    }
   });
 
   it.each(['no-storehouse', 'x-no-store=1', 'no-store=1', 'custom="x,no-store,y"'])(
