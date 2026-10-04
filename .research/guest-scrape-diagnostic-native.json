@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "status": "unverified",
+  "changed": [],
+  "case": "guest-scrape",
+  "run": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_name": "Hosted guest side-panel acceptance",
+    "run_id": "37187228871",
+    "conclusion": "failure",
+    "actual_workflow_head_sha": "3c173006ebb6d5ee6ca767db84340234252580f4",
+    "approved_startup_diagnostics_commit": "cd5d0d9de93b67470e27c6f9cbbd0a16ffbe147e",
+    "release_run_id": "37180303468",
+    "release_artifact_id": "11294843385",
+    "release_artifact_name": "matrx-extend-v0.2.205",
+    "acceptance_artifact_id": "11297741680",
+    "acceptance_artifact_name": "hosted-guest-37187228871-1"
+  },
+  "artifact_provenance": {
+    "selection_implementation_commit": "edaf85c3fc7cfc07620ed6e033bb1898cb0fb08a",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "version": "0.2.205",
+    "source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "adapted_runtime_tree_sha256": "de51d518f53bfd4acb420b0ab9f4f7f06a46cdc5d9b8844f7170827869a5484f",
+    "expected_store_zip_sha256": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26",
+    "store_zip_hash_source": ".research/hosted-store-artifact-peer.json; the native receipt confirms candidate kind/source/runtime tree but does not itself retain the Store ZIP hash"
+  },
+  "case_observations": {
+    "native_setup": {
+      "status": "partial_before_cases",
+      "observed": "The harness connected to Chrome over CDP, navigated to the owned localhost intake page, clicked Open panel, received the successful open reply, and found the side-panel target. It then failed checking the side-panel runtime context.",
+      "receipt_stage": "inputs",
+      "native_stage": "panel_context",
+      "guest_account_observed": false
+    },
+    "EXT-F-1007-T01": { "status": "unverified", "observed": "Scrape UI/capture not reached." },
+    "EXT-F-1007-T02": { "status": "unverified", "observed": "Not reached." },
+    "EXT-F-1007-T08": { "status": "unverified", "observed": "Not reached." },
+    "EXT-F-1007-T14": { "status": "unverified", "observed": "Not reached." },
+    "EXT-F-1007-T20": {
+      "status": "unverified",
+      "observed": "Not reached; guest account was not observed."
+    }
+  },
+  "failure": {
+    "stage": "inputs / panel_context",
+    "code": "native_sidepanel_runtime_context_missing",
+    "classification": "Not a resource refusal, missing receipt, or CDP startup failure. The artifact includes a receipt and the harness progressed beyond CDP startup; required side-panel runtime context was missing.",
+    "startup_diagnostics": "No BROWSER_STARTUP_FAILURE event or D107 timeout metrics were emitted because CDP attachment and earlier browser steps completed.",
+    "next_diagnostic_action": "Inspect and preserve the existing bounded sidePanelContexts result at panel_context failure, then determine why the expected extension runtime context is absent before scheduling another native run."
+  },
+  "resource_journals": {
+    "hosted-package-37187228871-1": {
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "sha256": "20e7bd20e44681d754c15bb13a7aa8d1ac86415bde5261abe94a577d80e92d9f"
+    },
+    "hosted-browser-37187228871-1": {
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "sha256": "27fe1022ce0cc424600d3a1164cec86834b927e4bed095e0edb862c2cf976363"
+    },
+    "hosted-guest-37187228871-1": {
+      "decision": "child_failed",
+      "exit_code": 1,
+      "resource_invalid": false,
+      "sha256": "b9d8e238699dad009f19f7d347564a848b73726f896146aed0a1c880009b4796"
+    }
+  },
+  "evidence": {
+    "receipt": {
+      "file": "test-results/hosted-scrape-37187228871/test-results/scrape-guest-native-3042a540-c6b4-4d61-8d72-42f229511e93.json",
+      "sha256": "9a42da7d6c2bd83b062a315b45ea5cc80b40090b578bc7f39579c6b85e516779"
+    },
+    "screenshots": [],
+    "screenshot_note": "No screenshot was emitted because capture follows successful side-panel runtime context validation.",
+    "artifact_note": "Only the exact acceptance artifact was downloaded. It also contained older resource journals; only the three current run-ID journals above were used."
+  },
+  "open_questions": [
+    "Why was the expected side-panel runtime context absent after the trusted Open panel action succeeded and the panel target was found?",
+    "What sanitized sidePanelContexts evidence best distinguishes delayed registration from a missing runtime context?",
+    "All five native guest Scrape cases remain unverified; no feature pass or defect closure is claimed."
+  ]
+}
