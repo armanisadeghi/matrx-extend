@@ -11,15 +11,18 @@
     "After expander case, runExtendedCases emits unverified/preexisting_row_lacks_durable_conditional_full_field_restoration for Identity and Employment on this existing-row setup."
   ],
   "expected": "Authorized existing-row field tests preserve exact original fields and untouched data, use durable write intent/version checks, and verify restoration without granting row deletion authority.",
-  "actual": "Existing-row field cases are deliberately skipped; product behavior unverified. Source-defined prerequisite, not a product runtime defect.",
+  "actual": "Existing-row journal/restoration source repair and final diagnostic correction passed independent source review; 22 focused checks pass. Actual native field writes/reload/restoration remain unverified.",
   "severity": "S2 required coverage blocked; no product failure established",
   "priority": "P1 complete contained Profile acceptance",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "profile_existing_row_journal",
   "evidence": [
     ".research/profile-admin-resource-retest.json",
     ".research/profile-billing-expander-fix.json",
-    "tests/browser/profile-native-acceptance.mjs"
+    "tests/browser/profile-native-acceptance.mjs",
+    ".research/profile-existing-row-journal.json",
+    ".research/profile-journal-diagnostic-fix.json",
+    ".research/profile-journal-final-peer.json"
   ],
   "transition_history": [
     {
@@ -39,6 +42,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol medium owns existing-row journal/restoration and actual caller guards; no deletion or bypass to force tests."
+    },
+    {
+      "at": "2026-10-04T06:18:45.258261+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source repair through b02eac6f passed final independent peer15f47a75; no native UI/DB preservation claim."
     }
   ],
   "closure_requirement": "Connected existing-row lifecycle guard red\u2192green, peer review, actual admin field writes/reload/restoration pass with original owner/org/untouched fields preserved; no deletion of existing Profile."

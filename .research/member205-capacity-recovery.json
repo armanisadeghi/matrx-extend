@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0113 exact 0.2.205 member native capacity recovery",
+  "status": "canonical_cleanup_exhausted_guard_refused",
+  "scope": "Operational disk grooming only; no browser, build, release, system setting, or product edit",
+  "policy_sources": [
+    ".claude/skills/disk-groom/SKILL.md",
+    "/Users/armanisadeghi/code/common-docs/operations/disk-grooming.md",
+    "docs/stabilization/PLAN.md",
+    "docs/stabilization/resource-policy.json"
+  ],
+  "before": {
+    "observed_at_utc": "2026-10-04T06:15:46Z",
+    "system_data_available_rounded": "1.5 GiB",
+    "external_available_rounded": "1.6 TiB",
+    "swap_used_mib": 4835.88
+  },
+  "canonical_cleanup": {
+    "dry_run_command": "python3 /Users/armanisadeghi/code/common-docs/meta/scripts/disk-groom/groom.py daily",
+    "apply_command": "python3 /Users/armanisadeghi/code/common-docs/meta/scripts/disk-groom/groom.py daily --apply",
+    "result": "exit 0; no eligible .next caches, stale linked worktrees, over-cap package caches, idle primary build output, Rust targets, old smoke runs, or Xcode DeviceSupport directories; dev-caches reported freed=0B",
+    "protected": "Three temporary copies kept as young or live-process; primary checkouts untouched; Docker engine unavailable and therefore not pruned",
+    "maintenance": "uv cache prune, brew cleanup -s --prune=7, and xcrun simctl delete unavailable returned ok"
+  },
+  "fresh_guard_preflight": {
+    "command": "node scripts/stabilization-resource.mjs check --run-id member205-capacity-recovery-20261003 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch",
+    "exit_code": 2,
+    "decision": "refused",
+    "reason": "RESOURCE_DISK_LOW",
+    "system_and_safety_free_gib": 0.6557197570800781,
+    "repo_and_profile_free_gib": 1687.630184173584,
+    "available_memory_gib": 11.2,
+    "swap_used_mib": 4739.88,
+    "product_child_started": false,
+    "journal": "docs/stabilization/resource-journals/member205-capacity-recovery-20261003.jsonl",
+    "journal_sha256": "910d094f7ac245ead2e269f8f2851f20dfb3feb682f81aeaccc46fcf1faff50f"
+  },
+  "after": {
+    "system_data_available_kib": 686760,
+    "external_available_kib": 1769607772,
+    "swap_used_mib": 4739.88,
+    "command": "df -k /System/Volumes/Data /Volumes/Samsung2TB; sysctl vm.swapusage"
+  },
+  "recovery_limit": "Canonical groomer found zero eligible reclaimable bytes. Internal available capacity remained below the unchanged 20 GiB guard floor and fell during observation. Larger CloudKit, Chrome, Codex runtime, and macOS allocations were not deleted or relocated because the canonical register does not classify them as eligible and activity/user-state safety was not established."
+}
