@@ -7,6 +7,7 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import {
   isSettledGuestPanel,
   observeSidePanelContext,
+  panelContextDiagnostic,
   requireExpectedExtension,
   requireOwnedCommandLine,
   requireSidePanelContext,
@@ -171,6 +172,33 @@ const wrongPanelContext = {
   tabId: -1,
 };
 const exactPanelContext = { contextType: 'SIDE_PANEL', documentUrl: expectedPanelUrl, tabId: -1 };
+assert.deepEqual(panelContextDiagnostic([], expectedPanelUrl), {
+  contextCount: 0,
+  sidePanelCount: 0,
+  expectedExtensionCount: 0,
+  exactUrlCount: 0,
+  globalTabCount: 0,
+  exactContextCount: 0,
+});
+assert.deepEqual(
+  panelContextDiagnostic(
+    [
+      wrongPanelContext,
+      { contextType: 'SIDE_PANEL', documentUrl: expectedPanelUrl, tabId: 7 },
+      exactPanelContext,
+      { contextType: 'TAB', documentUrl: 'chrome-extension://foreign/private', tabId: -1 },
+    ],
+    expectedPanelUrl,
+  ),
+  {
+    contextCount: 4,
+    sidePanelCount: 3,
+    expectedExtensionCount: 3,
+    exactUrlCount: 2,
+    globalTabCount: 3,
+    exactContextCount: 1,
+  },
+);
 let contextReads = 0;
 const boundary = await observeSidePanelContext({
   readContexts: async () => (++contextReads === 1 ? [wrongPanelContext] : [exactPanelContext]),

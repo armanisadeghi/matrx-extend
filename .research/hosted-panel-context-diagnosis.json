@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "issue": "EXT-D-0117",
+  "status": "CAUSE_UNCONFIRMED_BOUNDARY_INSTRUMENTED",
+  "scope": "Exact Store 0.2.205 hosted guest Scrape run 37187228871; source-only diagnosis, no new browser run or product verdict.",
+  "evidence": {
+    "workflow_head_sha": "3c173006ebb6d5ee6ca767db84340234252580f4",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "release_run_id": 37180303468,
+    "acceptance_artifact": "hosted-guest-37187228871-1",
+    "receipt": "test-results/hosted-scrape-37187228871/test-results/scrape-guest-native-3042a540-c6b4-4d61-8d72-42f229511e93.json",
+    "receipt_failure": "native_sidepanel_runtime_context_missing at inputs / panel_context, zero case observations, guest account unobserved",
+    "resource": "Current-run package and browser journals ended valid; guest journal ended child_failed with resourceInvalid false.",
+    "source_identity": "Current harness matches workflow head 3c173006 on the inspected file before this change."
+  },
+  "initialization_boundary_census": [
+    "Owned Chrome CDP connection, command-line/profile ownership, extension worker discovery and Playwright attachment passed because execution reached panel_context.",
+    "The owned localhost page was created and navigated, the trusted Open panel click returned opened=true, and the exact panel target was found distinct from the normal page.",
+    "The worker Runtime.evaluate call returned an array from chrome.runtime.getContexts for SIDE_PANEL contexts; otherwise the code would have thrown native_sidepanel_runtime_context_query_failed rather than context_missing.",
+    "The single immediate context query returned no entry satisfying contextType SIDE_PANEL, exact panel documentUrl and tabId -1 together. Its array was discarded, so the retained run cannot distinguish an empty array, wrong extension/document URL, wrong tab ID, or registration timing.",
+    "Panel settle, screenshot, guest account, and Scrape cases were not reached."
+  ],
+  "causal_limit": "The exact retained failure proves only the missing triple match at one query. It does not prove a timing race, extension initialization defect, Chrome bug, or product Scrape failure. The previous D107 endpoint timeout did not recur, but this run does not prove D107 fixed.",
+  "source_change": {
+    "behavior": "When the initial exact context check fails, emit BROWSER_PANEL_CONTEXT_FAILURE with counts for all returned contexts, SIDE_PANEL type, expected extension, exact URL, global tab ID, and complete triple match.",
+    "privacy": "Only integer counts are logged. Raw document URLs, context IDs, tab IDs other than equality with -1, process details, and arbitrary exception text are not emitted.",
+    "invariants": "The exact required context match, single query, existing wait deadlines, ownership checks, resource guard, and cleanup are unchanged. No retry or acceptance bypass was added."
+  },
+  "verification": {
+    "focused": "node tests/browser/native-sidepanel-qa-harness.test.mjs completed exit 0; the new cases distinguish an empty context array from mixed expected-extension, exact-URL, global-tab and foreign contexts",
+    "syntax": "node --check tests/browser/native-sidepanel-qa-harness.mjs exited 0",
+    "format": "pnpm exec biome format --write completed on the changed source, test and report",
+    "native": "No browser launched in this lane"
+  },
+  "next_action": "One root-owned controlled hosted guest Scrape run can retain the BROWSER_PANEL_CONTEXT_FAILURE line. An empty count directs investigation to registration timing or panel lifecycle; a nonempty count identifies which exact-match field diverged. Establish cause from that observation before repairing behavior or claiming Store acceptance."
+}

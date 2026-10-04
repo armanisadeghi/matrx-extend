@@ -182,6 +182,27 @@ function requireSidePanelContext(contexts, panelUrl) {
   return context;
 }
 
+function panelContextDiagnostic(contexts, panelUrl) {
+  const panel = new URL(panelUrl);
+  const extensionPrefix = `${panel.protocol}//${panel.host}/`;
+  return {
+    contextCount: contexts.length,
+    sidePanelCount: contexts.filter((entry) => entry?.contextType === 'SIDE_PANEL').length,
+    expectedExtensionCount: contexts.filter(
+      (entry) =>
+        typeof entry?.documentUrl === 'string' && entry.documentUrl.startsWith(extensionPrefix),
+    ).length,
+    exactUrlCount: contexts.filter((entry) => entry?.documentUrl === panelUrl).length,
+    globalTabCount: contexts.filter((entry) => entry?.tabId === -1).length,
+    exactContextCount: contexts.filter(
+      (entry) =>
+        entry?.contextType === 'SIDE_PANEL' &&
+        entry?.documentUrl === panelUrl &&
+        entry?.tabId === -1,
+    ).length,
+  };
+}
+
 async function observeSidePanelContext({
   readContexts,
   panelUrl,
@@ -861,7 +882,15 @@ export async function runNativeSidepanelQa({
     if (panelTarget.targetId === normalTarget.targetId)
       throw new Error('native_sidepanel_target_not_distinct');
     onStage('panel_context');
-    requireSidePanelContext(await sidePanelContexts(cdp, extensionWorker.targetId), panelUrl);
+    const contexts = await sidePanelContexts(cdp, extensionWorker.targetId);
+    try {
+      requireSidePanelContext(contexts, panelUrl);
+    } catch (error) {
+      process.stderr.write(
+        `BROWSER_PANEL_CONTEXT_FAILURE ${JSON.stringify(panelContextDiagnostic(contexts, panelUrl))}\n`,
+      );
+      throw error;
+    }
     onStage('panel_settle');
     const readyPanel = await waitForSettledGuestPanel(cdp, panelTarget.targetId);
 
@@ -959,4 +988,5 @@ export {
   safeStartupFailureCode,
   safeEndpointDiagnostic,
   safeEndpointWaitDiagnostic,
+  panelContextDiagnostic,
 };
