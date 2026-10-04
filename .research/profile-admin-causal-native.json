@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0108 / EXT-F-1004 admin Profile first-save causal run",
+  "run_id": "profile-admin-fields-189-04",
+  "status": "failed_before_write_prewrite_row_appeared",
+  "source_checkout_commit": "cd86cc1550ecea9c9887ca79ee7717058eb04579",
+  "diagnostic_source_review": {
+    "reviewed_commit": "adeae263dc6e160d6497a2cc0e22ff36df0e85c4",
+    "independent_review": "peer0d91330c",
+    "verdict": "PASS_FOR_DIAGNOSTIC_SCOPE",
+    "scope_limit": "Review established diagnostic wiring only; it did not establish native first-save acceptance."
+  },
+  "scope": {
+    "run_count": 1,
+    "auth_mode": "admin",
+    "extended_cases_enabled": true,
+    "runner_changed": false,
+    "retry_performed": false,
+    "build_release_or_version_change": false,
+    "database_or_auth_mutation": "none by this run; no Profile UI write began"
+  },
+  "artifact": {
+    "source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "ci_run_id": 37164174445,
+    "artifact_id": 11288542496,
+    "version": "0.2.189",
+    "tree_sha256": "494646f6dd65399e0e7eee65fd1d9bd00ef97d173c5ceb9674de276ca12dc23a",
+    "receipt": "test-results/ci-artifacts/b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced/37164174445-1/local-dev-receipt.json"
+  },
+  "identity_and_initial_observation": {
+    "role": "admin",
+    "first_party_identity_matches_extension": true,
+    "device_organization_present": true,
+    "organization_selection_verified": true,
+    "initial_profile_ui_observation": "The UI request observer reported HTTP 200 and row_present=false; this is an observer result, not proof that the owner row was globally absent.",
+    "profile_row_existed_before": false,
+    "field_semantics": "Runner-observed UI response only; do not interpret as established database absence."
+  },
+  "failure": {
+    "stage": "profile",
+    "operation": "first_save_owner_read_before_write",
+    "cause_kind": "assertion",
+    "safe_code": "first_save_row_appeared_before_write",
+    "detail": "The initial Profile UI observer reported no row, while the separate owner pre-write read returned one row. The read helper only returns after an HTTP 200 response and permits at most one row; the non-null result failed the expected-absence assertion. The mismatch does not establish which observation reflects persisted database state.",
+    "owner_request_phase": "completed successfully; no owner-request failure phase",
+    "owner_request_status": "HTTP 200 established by the helper success path; raw report does not retain an explicit status field for this successful read",
+    "owner_request_row_count": 1,
+    "write_progress": "The first-save receipt is created only after the absent-row assertion. No private ownership receipt, fill, Save, write intent, or owned-row cleanup was reached."
+  },
+  "acceptance": {
+    "EXT-F-1004-T06": { "warm": "missing", "extension_reload": "missing" },
+    "EXT-F-1004-T18": { "warm": "missing", "extension_reload": "missing" },
+    "EXT-F-1004-T22": { "warm": "missing", "extension_reload": "missing" },
+    "T02": "not_reached",
+    "T04": "not_reached",
+    "T25": "not_reached",
+    "T26": "admin behavior not implemented in this runner; unverified",
+    "T28_first_save": "not_reached; no bounded or full-case pass"
+  },
+  "restoration": {
+    "ui_field_mutations": 0,
+    "runner_flags": {
+      "mutation_not_attempted": true,
+      "final_readback_performed": false,
+      "verified": false
+    },
+    "private_ownership_receipt": "not created",
+    "exact_original_state_restoration": "not claimed. The UI observer and separate pre-write owner read disagreed; no final readback was performed, so persisted state and the exact prior state are not independently verified.",
+    "recovery_need": "Before another first-save attempt, resolve why the UI observer reported no row while the owner pre-write read returned one. Any recovery must first make and preserve an explicit owner-row readback; this run created no owned fixture eligible for deletion."
+  },
+  "resource_guard": {
+    "decision": "child_failed",
+    "admitted": true,
+    "resource_invalid": false,
+    "child_exit_code": 1,
+    "admission_sample": {
+      "pressure_level": 1,
+      "available_memory_gib": 10.88,
+      "required_memory_gib": 4,
+      "one_minute_load": 1.96,
+      "logical_cpus": 10,
+      "cpu_busy_fraction": 0.1471428571428572,
+      "swap_used_mib": 3731.5,
+      "repo_free_gib": 1688.0690078735352,
+      "safety_free_gib": 25.659259796142578,
+      "cpu_busy_samples": [0.14, 0.13, 0.15, 0.15, 0.17, 0.15, 0.14]
+    },
+    "journal": "docs/stabilization/resource-journals/profile-admin-fields-189-04.jsonl",
+    "journal_sha256": "8699be4f4ebefc84b17d9497e8b86f07e15158ba76e5bedb900ec6f2a5cb40b6"
+  },
+  "evidence": {
+    "raw_report": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-admin-fields-189-04/evidence/profile-native-profile-admin-fields-189-04.json",
+    "raw_report_sha256": "0720cbe82172265115e82dec6040367b781261cbf547783259cc5140f87d0c30",
+    "raw_report_permissions": "0600",
+    "resource_journal": "docs/stabilization/resource-journals/profile-admin-fields-189-04.jsonl",
+    "resource_journal_sha256": "8699be4f4ebefc84b17d9497e8b86f07e15158ba76e5bedb900ec6f2a5cb40b6",
+    "private_ownership_receipt": "absent; no Profile mutation occurred",
+    "run_directory_permissions": "root, evidence, and permit-profile directories were each created mode 0700 and stat-verified in the launch shell"
+  },
+  "limitations": [
+    "This run identifies the precise pre-write assertion failure but does not establish the cause of the inconsistent reads or which observer reflects persisted state.",
+    "The second successful owner read's HTTP 200 status is established by the helper's success path, but its raw response status was not independently copied into the sanitized report.",
+    "No final owner-row readback was performed; do not infer restoration or current row state from mutation_not_attempted alone.",
+    "All six T06/T18 warm and reload cells and T02/T04/T25 remain unverified; T26 admin behavior remains unimplemented and unverified.",
+    "EXT-D-0108 and T28 remain open."
+  ]
+}
