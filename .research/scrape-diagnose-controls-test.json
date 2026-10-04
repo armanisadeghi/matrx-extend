@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "checked_at": "2026-10-04T18:59:17Z",
+  "scope": {
+    "feature_id": "EXT-F-1007",
+    "case_ids": ["EXT-F-1007-T15", "EXT-F-1007-T16", "EXT-F-1007-T17"],
+    "applicability": {
+      "guest": true,
+      "member": true,
+      "admin": true,
+      "source": "docs/stabilization/inventory.json: EXT-F-1007; current feature contract applies the Scrape surface to all three modes."
+    },
+    "role_boundary": "CaptureErrorCard exposes structured error JSON only when the current auth store isAdmin flag is true. This is the present UI condition, not independent proof of server role claims or an authorization boundary."
+  },
+  "artifacts": [
+    "src/features/scrape/DiagnoseControls.test.tsx",
+    ".research/scrape-diagnose-controls-test.json"
+  ],
+  "tests": {
+    "command": "pnpm exec vitest run src/features/scrape/DiagnoseControls.test.tsx src/features/scrape/ScrapeView.error-controls.test.tsx",
+    "result": "PASS",
+    "test_files_passed": 2,
+    "tests_passed": 16,
+    "coverage": [
+      "T15: existing real ScrapeView component test confirms structured capture error details render with auth store isAdmin=true and are absent with isAdmin=false.",
+      "T16: real DiagnoseLauncher and real shadow-DOM picker capture a selected DOM element, attach its Missing/Unwanted mode and session, apply a current-session result, cancel through Escape, and reject stale-page results.",
+      "T17: real DiagnoseCard, CopyMenu, and Zustand store render the selected mode, retain the note for AI copy, expose selector/HTML sections, produce distinct selector-only/leaf-HTML/AI formats, dismiss the result, and hide another page's result.",
+      "Capture failure in the picker logs and sends an exit; injection rejection resets picking. Both error boundaries are exercised with real owning logic and mocked external DOM/script or clipboard facilities."
+    ],
+    "mutation_proof": {
+      "method": "forcing-function-tests plant.py",
+      "mutation": "Replace payload-dependent Unwanted/Missing result normalization with constant Missing.",
+      "result": "EXPECTED RED: current-mode result test failed because actual mode was Missing while expected mode was Unwanted.",
+      "restore": "plant.py restored src/hooks/use-scrape.ts byte-identically."
+    },
+    "biome": "pnpm exec biome check src/features/scrape/DiagnoseControls.test.tsx passed after scoped format."
+  },
+  "findings": [
+    {
+      "area": "picker injection failure visibility",
+      "reproduction": "The focused test rejects chrome.scripting.executeScript during DiagnoseLauncher startup; the real useScrape catch resets picking and logs [matrx-extend] diagnose picker injection failed.",
+      "observed": "The scrape store error remains null and the Scrape UI has no visible explanation for why the picker did not start.",
+      "evidence": "src/hooks/use-scrape.ts:124-165; src/features/scrape/DiagnoseControls.test.tsx injection-rejection case.",
+      "classification": "Confirmed source/component behavior; Chrome script injection itself was mocked. Potential silent-failure UX issue for a later product-fix lane."
+    },
+    {
+      "area": "shadow Cancel button probe",
+      "reproduction": "An exploratory Happy DOM click on the shadow-root Cancel button reached the document capture handler with event.target=#cancel and emitted a picker result containing the Cancel button HTML; the explicit Escape path emitted picker exit and passed.",
+      "environment_evidence": "A standalone Happy DOM composed-click probe reported targetId=cancel and composedPath()[0].id=cancel. This runtime did not retarget the event to the shadow host.",
+      "source": "src/lib/scrape/diagnose-picker.ts:117-147 checks host.contains(event.target) before treating a click as a page pick.",
+      "classification": "Not classified as a product defect: the test runtime's Shadow DOM retargeting differs from the native-browser contract described in the task review. Native Chrome behavior remains unverified; no browser run was in scope."
+    }
+  ],
+  "limits": [
+    "Chrome scripting, runtime message delivery, and extension-origin permissions were mocked; native overlay behavior and Chrome lifecycle were not tested.",
+    "The T15 test toggles the client auth store boolean; it does not authenticate guest/member/admin accounts or prove server authorization.",
+    "Clipboard writes were mocked, while real CopyMenu option routing and DiagnoseCard content generation ran.",
+    "The controlled page DOM is an illustrative dental intake fixture, not a captured production page; it proves transformations and event routing only."
+  ],
+  "product_files_changed": false
+}
