@@ -4,7 +4,7 @@
 
 Previous turn classification: **progress** — verified current-server guest opening and reload replies while retaining overall D96 failure, independently reviewed diagnostic repairs, and pushed synchronized main. All prior workers are terminal. New ledger baseline copied from the last finalized remote snapshot before fetching.
 
-`profile_expander_causal_native` completed at2a4309e8: all warm expanders and exact Identity drafts passed, then Save failed. Escalation `profile_save_boundary_escalation` proved D105 in run189-06: disabled Save plus dirty=true satisfied the test's completion predicate, so the strict journal read the predecessor. Original absence restored; root matched both causal evidence hashes. Repair710d14bf requires clean draft and exact fields in both Save/restore; 31 focused guards and red mutations pass. No product code change. Fresh Sol low `profile_save_settled_peer` reviews source before a single independent native run. Heavy slot currently free.
+`profile_expander_causal_native` completed at2a4309e8: all warm expanders and exact Identity drafts passed, then Save failed. Escalation `profile_save_boundary_escalation` proved D105 in run189-06: disabled Save plus dirty=true satisfied the test's completion predicate, so the strict journal read the predecessor. Original absence restored; root matched both causal evidence hashes. Repair710d14bf requires clean draft and exact fields in both Save/restore; 31 focused guards and red mutations pass. No product code change. Fresh Sol low `profile_save_settled_peer` passed source at e6df8226 with49 focused checks. Luna `profile_fields_clean_save_native` owns the sole heavy slot for one independent extended run `profile-fields-clean-save-189-07`; exact Identity/Employment/expander warm/fullreload and original restoration required.
 
 - `profile_identity_employment_cases` (Sol medium, source only): executable Identity, Employment and section-expander cases T05/T06/T17/T18/T21/T22 across warm/reload, preserving strict private per-write ownership and original restoration. Owns new case modules and narrow runner integration; no native/DB/build/release. Fifteen-minute bound, fresh source review before native.
 - `popup_guest_native_census` (Luna medium) is terminal at b08421ef: valid scratch preflight only, no owned browser launched. CUA selected existing shared CFT; no input sent. All guest popup cases remain unverified.
@@ -32,7 +32,7 @@ Independent guest run `published176-guest-current-20261003-02` reached both actu
 
 Next: one resource-guarded Profile causal run with reviewed safe expander diagnostics, then fix the demonstrated cause and independently retest Identity/Employment/reload. D104 Birthday repair remains unverified because the latest run stopped earlier; D101 diagnostics fixed, no whole-Profile claim. Popup toolbar target ownership remains unresolved; do not send input to shared CFT windows. Builder's seven unguarded isolated date probes are excluded from acceptance.
 
-Root refreshed the authenticated Store dashboard at approximately 02:20 UTC October 4: pending 0.2.181, published 0.2.176, upload disabled. Preserve that pending submission. Root owns tracking, review routing and synchronization.
+Root refreshed the authenticated Store dashboard at approximately 03:06 UTC October 4: pending 0.2.181, published 0.2.176, upload disabled. Preserve that pending submission. Root owns tracking, review routing and synchronization.
 
 ## Previous checkpoint — independent member reload acceptance passed
 
