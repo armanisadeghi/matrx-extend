@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
+import { Window } from 'happy-dom';
 import { runNativeResourceAction } from './native-resource-boundary.mjs';
 import {
   enterMediaField,
@@ -286,16 +287,35 @@ test('denied read without a safe grant remains partial even after Check', async 
   );
 });
 
-test('failed permission restoration cannot certify the copied URL', async () => {
+test('failed permission restoration aborts before a later product action', async () => {
   const deps = controls({ readCode: 'NotAllowedError' });
+  let permission = 'prompt';
   deps.browserSession.send = async (_method, args) => {
     if (args.setting === 'prompt') throw new Error('private transport detail');
+    permission = args.setting;
   };
-  const result = await observeVideoLinks({ ...deps, urls: [openUrl, copyUrl] });
-  assert.equal(result.clipboard_equal, null);
-  assert.deepEqual(result.limitations, ['video_clipboard_observation_unavailable']);
-  assert.equal(result.clipboard_observation.clipboardObservationPermissionRestored, false);
-  assert.equal(JSON.stringify(result).includes('private transport detail'), false);
+  let laterProductAction = false;
+  await assert.rejects(
+    async () => {
+      await observeVideoLinks({ ...deps, urls: [openUrl, copyUrl] });
+      laterProductAction = true;
+    },
+    (error) => error.message === 'clipboard_observation_permission_restore_unconfirmed',
+  );
+  assert.equal(laterProductAction, false);
+  assert.equal(permission, 'granted');
+});
+
+test('Copy feedback observes hovered title in the exact active row', async () => {
+  const window = new Window();
+  window.document.body.innerHTML = `<button role="tab" title="Scrape" data-state="active" aria-controls="pane">Scrape</button>
+    <section id="pane" role="tabpanel" data-state="active"><div role="tablist"><button role="tab" aria-selected="true" aria-controls="video">Video</button></div>
+      <div id="video"><div><a href="${openUrl}">Other</a><button title="Copy other"><svg class="text-red-500"></svg></button></div>
+        <div><a href="${copyUrl}">Target</a><button data-matrx-title="Copy video URL"><svg class="text-emerald-500"></svg></button></div></div></section>`;
+  const feedback = await observeCopyFeedback(null, copyUrl, async (_panel, expression) =>
+    window.eval(expression),
+  );
+  assert.equal(feedback, 'copied');
 });
 
 test('Copy feedback reads the owned row icon rather than a sibling row', async () => {

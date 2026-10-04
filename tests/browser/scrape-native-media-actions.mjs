@@ -100,6 +100,8 @@ async function observeOpenedAndCopiedLinks({
       result.clipboard_read_after_grant = observed;
     }
   } catch {
+    if (result.clipboard_observation.clipboardObservationPermissionRestored === false)
+      throw new Error('clipboard_observation_permission_restore_unconfirmed');
     result.limitations.push(`${kind}_clipboard_observation_unavailable`);
     return result;
   }
@@ -117,7 +119,7 @@ export async function observeCopyFeedback(panel, url, evaluate) {
     const content = tab ? document.getElementById(tab.getAttribute('aria-controls') ?? '') : null;
     const matches = [...(content?.querySelectorAll('a') ?? [])]
       .filter(a => a.href === ${JSON.stringify(url)})
-      .flatMap(a => [...(a.parentElement?.querySelectorAll('button[title^="Copy "]') ?? [])]);
+      .flatMap(a => [...(a.parentElement?.querySelectorAll('button[title^="Copy "], button:not([title])[data-matrx-title^="Copy "]') ?? [])]);
     if (matches.length !== 1) return 'unobserved';
     if (matches[0].querySelector('svg.text-emerald-500')) return 'copied';
     if (matches[0].querySelector('svg.text-red-500')) return 'failed';

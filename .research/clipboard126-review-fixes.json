@@ -1,0 +1,21 @@
+{
+  "defect": "EXT-D-0126",
+  "status": "SOURCE_REVIEW_FINDINGS_FIXED_NATIVE_RETEST_PENDING",
+  "findings": {
+    "restoration_failure_continues_actions": "The link observer now throws a bounded abort when the scoped clipboard permission helper reports restoration unconfirmed. Its caller cannot proceed to later product controls.",
+    "hovered_copy_feedback_unobserved": "The exact row feedback selector accepts the existing Copy title while visible and its data-matrx-title transfer while hovered."
+  },
+  "red": [
+    "Focused media-action tests failed 2 of 18 before the implementation change: restoration failure resolved normally and the real hovered DOM returned unobserved."
+  ],
+  "green": [
+    "node --test tests/browser/scrape-native-media-actions.test.mjs: 18 of 18 passed; same focused tests preserve failed, pending, mismatched, denied, exact-row, and resource-gate outcomes.",
+    "node tests/browser/clipboard-observation.test.mjs: passed, with five unsafe mutations rejected.",
+    "pnpm compile: passed.",
+    "pnpm exec biome format --write on both changed source/test files: no fixes applied."
+  ],
+  "limits": [
+    "No native/browser or clipboard write run was performed in this lane. Parent owns fresh review and the guarded native retest.",
+    "No clipboard plaintext or raw transport error is included in thrown abort or recorded evidence."
+  ]
+}
