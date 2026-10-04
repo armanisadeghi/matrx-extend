@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0100",
+  "feature": "EXT-F-1014",
+  "test_rows": ["T10", "T11"],
+  "status": "confirmed_product_defect_fix_required",
+  "scope": "One resource-guarded guest-only native reload against the frozen imported artifact. No Profile or database mutations, no build or release. Temporary private diagnostic capture removed byte-for-byte from canonical harness before commit.",
+  "artifact": {
+    "source_sha": "9dfb5911cd7fef18f8c36b1cefd273096e866bbf",
+    "ci_run_id": 37159097093,
+    "artifact_id": 11286822448,
+    "version": "0.2.184",
+    "tree_sha256": "2e99c4093efb34e2981f76581cc0c1bc66cdea7888e8296e2d47629e5a1cccb4"
+  },
+  "runtime_classification": {
+    "known_static_error": "Uncaught TypeError: Cannot read properties of undefined (reading 'sendMessage')",
+    "severity": "ERROR",
+    "type": "RUNTIME",
+    "occurrences": 1,
+    "is_service_worker": false,
+    "context_origin_class": "owned localhost guest page",
+    "runtime_errors_before": 0,
+    "runtime_errors_after": 1,
+    "manifest_errors_after": 0,
+    "source": "content-scripts/content.js",
+    "classification": "orphaned content-script credential-suggestion focus listener accesses invalidated chrome.runtime synchronously after extension reload"
+  },
+  "lifecycle": {
+    "reload_attempted": true,
+    "before_panel_target_observed": true,
+    "reload_returned": true,
+    "old_targets_retired": true,
+    "worker_replaced": true,
+    "panel_replaced": true,
+    "failure_code": null,
+    "failure_stage": null,
+    "transport_failure_class": null,
+    "management_before": {
+      "state": "ENABLED",
+      "unsupported_developer_extension": false,
+      "runtime_error_count": 0,
+      "manifest_error_count": 0,
+      "developer_mode": true
+    },
+    "management_after": {
+      "state": "ENABLED",
+      "unsupported_developer_extension": false,
+      "runtime_error_count": 1,
+      "manifest_error_count": 0,
+      "developer_mode": true
+    }
+  },
+  "root_cause": {
+    "first_failing_boundary": "inline-suggestions.ts send() directly evaluates chrome.runtime.sendMessage after the runtime object has become undefined in the old content-script realm.",
+    "caller_chain": [
+      "trusted pointerdown on existing page after native extension reload",
+      "onPointerDown calls reportFocus(event) when document.hasFocus()",
+      "reportFocus calls send(CREDENTIAL_SUGGESTIONS_FOCUS_OWNER, ...)",
+      "send synchronously reads chrome.runtime.sendMessage; .then/.catch in reportFocus are never reached"
+    ],
+    "trigger_requires_credential_input": false,
+    "implication": "The native reload replacement lifecycle is verified, but a clean content-script runtime cannot be claimed. This is a separate product defect from D99 isolated-profile Developer mode setup."
+  },
+  "source_map_evidence": {
+    "bundle": "content-scripts/content.js",
+    "bundle_sha256": "d42ae6ffa54056fc6ddd44c28a4e0e3c7541f16942a5ae39337db47cd1b119e4",
+    "map_sha256": "72dd691191aee64ad98cd3ba1751c6cda6c2897872db918b0e05d36aecf31b0b",
+    "mapping_tool": "@jridgewell/trace-mapping 0.3.31; Chrome stack columnNumber converted from one-based to zero-based",
+    "frames": [
+      {
+        "bundle_line": 1,
+        "bundle_column": 40443,
+        "source": "src/lib/credentials/inline-suggestions.ts",
+        "source_line": 64,
+        "role": "send"
+      },
+      {
+        "bundle_line": 1,
+        "bundle_column": 40961,
+        "source": "src/lib/credentials/inline-suggestions.ts",
+        "source_line": 86,
+        "role": "reportFocus"
+      },
+      {
+        "bundle_line": 1,
+        "bundle_column": 44968,
+        "source": "src/lib/credentials/inline-suggestions.ts",
+        "source_line": 288,
+        "role": "onPointerDown"
+      }
+    ],
+    "embedded_source_sha256": "23228b76b82fd4a50977efb5abf0c7504fc09d46654d08326a62daf3f7626396",
+    "embedded_source_exactly_matches_frozen_git": true,
+    "current_source_exactly_matches_frozen_git": true
+  },
+  "reproduction": {
+    "run_id": "reload-runtime-diag-01",
+    "command": "node scripts/stabilization-resource.mjs run --run-id <unique-id> --profile-dir <precreated-external-0700-profile> -- node tests/browser/profile-reload-readonly.mjs",
+    "environment_reference": ".research/reload-lifecycle-repair.json reproduction.required_environment; new run id and external evidence directory",
+    "steps": [
+      "Launch frozen imported 0.2.184 in isolated owned Chrome; open native guest panel using the trusted localhost button.",
+      "Use native extension management reload with Developer mode enabled.",
+      "Return to the already-loaded localhost page and trusted-click Open panel.",
+      "Read Chrome developerPrivate runtimeErrors for the expected extension. The old content script pointerdown handler throws once, while the new worker and native panel are present."
+    ],
+    "report_external": "/Volumes/Samsung2TB/code/.stabilization-scratch/reload-runtime-diag-01/evidence/profile-reload-readonly-reload-runtime-diag-01.json",
+    "report_sha256": "32435e1f645b80e27c0f1c99e85f5952575b539f620455f75e271a0e0f54b79d",
+    "resource_journal": "docs/stabilization/resource-journals/reload-runtime-diag-01.jsonl",
+    "resource_journal_sha256": "81b3f8954467c3bc6281e02b107807fee935f870081084c4bb981b8929bc7087",
+    "resource_decision": "valid"
+  },
+  "private_capture": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/reload-runtime-diag-01/evidence/reload-runtime-private-1.json",
+    "mode": "0600",
+    "sha256": "0db762299c54387eb54f35a9ab66f7dec661ae8d2f9f178fe7ae0a6f41f02af3",
+    "policy": "Raw Chrome details remain external and uncommitted; only the known static error and relevant sanitized classifications are included here."
+  },
+  "next_fix_boundary": {
+    "owned_module": "src/lib/credentials/inline-suggestions.ts",
+    "sibling_patterns": [
+      "src/lib/content/bridge.ts safeSend already handles invalidated runtime access synchronously",
+      "src/lib/messaging/native.ts broadcast already protects runtime absent and synchronous throw"
+    ],
+    "required_guard": "Exercise the real mounted trusted pointerdown/focus dispatch after runtime invalidation; cover missing runtime and synchronous sendMessage throws, while keeping valid-context focus delivery working. Do not substitute a promise rejection for the synchronous defect.",
+    "verification": "Native extension reload followed by trusted click on the original page must keep strict lifecycle proof and show no new uncaught credential-suggestion runtime error."
+  },
+  "remaining": "Root will assign the product repair and independent verification. No fix or clean-runtime claim is made by this diagnosis."
+}
