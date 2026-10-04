@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0134",
+  "reviewed_commit": "954277cf6ce6f978d5e68c6797341c89987334ee",
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_a_acceptance": {
+    "result": "PARTIAL",
+    "reason": "The observer now reads the offscreen CDP session before the first send, retains HTTP status and a bounded structured error code, and refuses transport proof when either attempt has no status. Native first-send status/code and the reporter's first guest error remain unverified. A target whose attachedToTarget initial URL is empty and later becomes offscreen.html is resumed without Network.enable, so its first request is missed.",
+    "evidence": [
+      "tests/browser/guest-chat-store-acceptance.mjs arms opening before submitQuestion and requires both attempt statuses before transport proof",
+      "tests/browser/guest-chat-transport-observer.mjs:66-82 classifies only the initial attachedToTarget URL and has no targetInfoChanged listener",
+      "Inline EventEmitter reproduction: attachedToTarget URL empty, targetInfoChanged URL offscreen.html, then POST/402 events -> snapshot []; requireGuestTransport throws opening_guest_ai_transport_unobserved"
+    ]
+  },
+  "verdict_b_quality_privacy_cleanup": {
+    "result": "FAIL",
+    "quality": "Important: optional Network.getResponseBody rejection is caught locally, while vault-owned-cdp.cjs treats any CDP protocol error as a fatal shared-connection failure. Body unavailable/evicted on an HTTP error can poison later acceptance commands and bury the HTTP status. The test double resolves getResponseBody and does not cover this failure. The source-order sequence test is a change detector, not a behavioral proof.",
+    "privacy": "PASS for the new observer's persisted request fields: attempt, UTC time, browser-local CDP request ID, status, and syntax-restricted code only. Request URL, headers, body and response body are not retained by the observer. This does not assess pre-existing report diagnostics.",
+    "cleanup": "PARTIAL: stop resumes tracked paused targets, disables auto-attach, removes listeners and detaches existing session on the normal path. Existing-session detach failure is swallowed by attachTargetSession in the harness, so stop cannot truthfully detect that cleanup failure. No native cleanup run was performed."
+  },
+  "checks": {
+    "focused_tests": "node --test tests/browser/guest-chat-transport-observer.test.mjs tests/browser/guest-chat-store-sequence.test.mjs: 5/5 passed",
+    "adversarial_reproduction": "Inline empty-initial-URL CDP event sequence on the production observer: first POST 402 omitted; transport proof refused",
+    "native_browser": "UNVERIFIED by this reviewer, per lane scope"
+  },
+  "findings": [
+    {
+      "severity": "Important",
+      "title": "Classify an auto-attached target after its URL becomes the offscreen URL before resuming it",
+      "action": "Handle initial empty URL/targetInfoChanged or otherwise establish offscreen identity while paused; add an adversarial sequence test that fails on the current observer. Preserve resume of unrelated paused targets."
+    },
+    {
+      "severity": "Important",
+      "title": "Keep optional error-code extraction from poisoning the owned CDP connection",
+      "action": "Resolve error-body availability through an isolated/nonfatal CDP path or make the owned connector handle method-level protocol errors without marking the whole connection fatal, then test a rejected getResponseBody while retaining the observed HTTP status and subsequent send capability."
+    },
+    {
+      "severity": "Minor",
+      "title": "Report existing-target detach failure honestly",
+      "action": "Stop swallowing detach errors in the harness wrapper when the observer relies on them for cleanup verification."
+    }
+  ]
+}
