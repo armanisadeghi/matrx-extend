@@ -1,0 +1,56 @@
+{
+  "review_type": "fresh_independent_source_review",
+  "reviewed_fixture_commit": "f0a17542",
+  "scope": "EXT-F-4061..EXT-F-4069",
+  "A_fixture_and_procedure_faithfulness": {
+    "verdict": "markup_source_consistent_but_manual_execution_not_ready",
+    "confirmed": [
+      "All nine case selectors used by the inventory are present, with the intended initial values and visible JSON state. The keyboard, mouse, focus, blur, select, checkbox, radio, and submit event listeners match the source-level handler behavior.",
+      "The submit listener calls preventDefault; the page also declares CSP form-action 'none'. The form contains the expected payload and submit button. Negative selectors are absent.",
+      "The recorded HTML SHA-256 matches tests/browser/fixtures/form-controls.html. The exact route returns the page and an unknown route returns 404 in the unit test."
+    ],
+    "blocking_gaps": [
+      {
+        "finding": "No persistent or documented fixture-server entry point exposes /form-controls for manual native execution. The only ownedPages registration for that path is inside form-control-owned-fixture.test.mjs; its server listens on an ephemeral port and closes when the test ends. The fixture report's route claim establishes test-time serving only. Supply a controlled runner/URL and record its actual URL and hash before any manual result cell is promoted.",
+        "evidence": [
+          "tests/browser/form-control-owned-fixture.test.mjs:72-91",
+          "tests/browser/owned-fixture-server.mjs:2-30",
+          ".research/form-control-owned-fixture.json:4-7"
+        ]
+      },
+      {
+        "finding": "Every inventory case still has a fixture-availability precondition saying no checked-in owned fixture exists and instructs the runner to provision one. This conflicts with the committed HTML and can cause a runner to stage a different page. Update the nine procedures to identify the exact committed fixture, serving command/URL, and checksum; retain the native verification gate.",
+        "evidence": [
+          "docs/stabilization/inventory.json: EXT-F-4061-T01..EXT-F-4069-T01 preconditions",
+          ".research/form-control-procedures.json: fixture_gap and peer_fixture_limit",
+          "tests/browser/fixtures/form-controls.html"
+        ]
+      }
+    ],
+    "native_limit": "No native extension/browser run occurred. Event order, actual browser defaults, extension permissions, member/admin execution, and the absence of a network request are unverified."
+  },
+  "B_quality_and_test_validity": {
+    "verdict": "static_smoke_check_only",
+    "findings": [
+      {
+        "finding": "The selector/event test reads the authored inventory and authored HTML, then checks IDs and event-name strings. It does not execute the fixture script or assert event-driven state changes. For example, deleting the listener registration while leaving the event-name array would keep the source checks green. A passing test therefore cannot validate the observable counters or defaults in a real DOM.",
+        "evidence": [
+          "tests/browser/form-control-owned-fixture.test.mjs:22-70",
+          "tests/browser/fixtures/form-controls.html:23-60"
+        ]
+      },
+      {
+        "finding": "The HTTP test checks that served bytes hash to the same in-memory page value it passed to the server; this proves transport of those bytes, but does not independently validate the recorded SHA-256 or native route availability.",
+        "evidence": [
+          "tests/browser/form-control-owned-fixture.test.mjs:72-91",
+          ".research/form-control-owned-fixture.json:6"
+        ]
+      }
+    ],
+    "low_impact_checks": [
+      "node --test tests/browser/form-control-owned-fixture.test.mjs: 2 passed",
+      "shasum -a 256 tests/browser/fixtures/form-controls.html: 685ce7a0286f9fd6330ed692db81e5c099a766cbe8aef61bb72a33e87b7d072a"
+    ],
+    "status_preservation": "Source checks only; no inventory result cell or native acceptance coverage should be promoted."
+  }
+}
