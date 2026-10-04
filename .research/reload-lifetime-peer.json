@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "case": "EXT-D-0120 reload lifetime instrumentation independent review",
+  "status": "DONE_WITH_CONCERNS",
+  "reviewed_commit": "9149625b06b53008e300e6a520def84f2d08e2d2",
+  "verdict_a": {
+    "result": "PARTIAL",
+    "native_behavior": "UNVERIFIED",
+    "findings": [
+      "The existing acceptance predicate is preserved: old Target.targetDestroyed, old worker absent, old panel absent, replacement worker present, and replacement-created event are all still required. Context and management checks remain after retirement.",
+      "The observer records initial/live sanitized target identity and attached state, browser version, page-session service-worker version/registration events, pre-click targetId correlation, and independent host probes only when strict retirement fails.",
+      "The failing branch remains a failure even when independent destruction, replacement, stopped version, and target-absent evidence exist. No diagnostic classification promotes it to pass.",
+      "No native Chromium lifecycle was observed, so this review cannot establish whether the new signals are visible or discriminating in the owned profile."
+    ]
+  },
+  "verdict_b": {
+    "result": "PASS_WITH_CONCERNS",
+    "findings": [
+      "Probe rejection and timeout are reduced to fixed outcomes; raw protocol errors, URLs, and titles are not serialized. The independent observer does not attach workers or modify the owned CDP transport.",
+      "Cleanup removes this unit's listeners, disables the page ServiceWorker domain, and detaches only the diagnostic sessions it created.",
+      "Evidence is bounded and sanitized on the success and failure capture paths; pre-click target matching is required, and missing correlation stays unmeasured.",
+      "No source-level defect found that justifies changing acceptance or delaying one guarded native measurement."
+    ]
+  },
+  "checks": {
+    "passed": [
+      "node --test tests/browser/reload-lifetime-diagnostic.test.mjs tests/browser/profile-reload-capture.test.mjs — 6 passed",
+      "node tests/browser/native-sidepanel-qa-harness.test.mjs — exit 0; native reload gate case passed",
+      "Inspected the exact diff and retirement loop in commit 9149625b"
+    ],
+    "not_run": [
+      "Native browser run, build, release, version bump, and broader verification were outside this review lane."
+    ],
+    "cannot_verify": [
+      "The cross-repo extension system-of-record path named by repository instructions was unavailable at both /Users/armanisadeghi/code/common-docs/systems/clients/extension and /Volumes/Samsung2TB/code/common-docs/systems/clients/extension. The supplied .research/reload-retirement-escalation.json was available and used as the binding measurement contract.",
+      "Native event visibility, actual browser revision, and causal explanation remain unverified until the single guarded native comparison."
+    ]
+  }
+}
