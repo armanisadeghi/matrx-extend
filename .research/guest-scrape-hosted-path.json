@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "scope": "EXT-F-1007 guest T01/T02/T08/T14/T20 hosted native acceptance preparation",
+  "status": "runner_ready_native_unverified",
+  "implementation_sha": "e00b8e98",
+  "artifact_selection": {
+    "mode": "published_release",
+    "intended_version": "0.2.205",
+    "hosted_input": "release_run_id=37180303468",
+    "acceptance_case": "guest-scrape",
+    "provenance": "The existing hosted wrapper checks the successful release run, selected tag/source SHA, release receipt, package ZIP hashes, manifest version/key, and extracted tree hash before native Chrome."
+  },
+  "runner": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "driver": "tests/browser/scrape-guest-native-acceptance.mjs",
+    "fixture": "Owned local HTTP intake page with text inserted only after real browser scroll",
+    "input": "Native Chrome profile with trusted pointer clicks through the existing driver",
+    "outputs": [
+      "test-results/scrape-guest-native-*.json",
+      "test-results/native-sidepanel-qa-*/*.png"
+    ],
+    "executed": false
+  },
+  "source_checks": {
+    "syntax": "passed",
+    "biome_changed_files": "passed",
+    "diff_check": "passed",
+    "native_harness_focused_tests": "3 passed",
+    "browser_acceptance": "not_run_by_this_lane"
+  },
+  "case_boundaries": {
+    "EXT-F-1007-T01": "Fast capture must omit the lazy checklist; pre-armed read-only observer records busy button. Warm/reload breadth remains explicit.",
+    "EXT-F-1007-T02": "Deep capture must cause page scroll and include the checklist. Deep failure retry mode remains explicit.",
+    "EXT-F-1007-T08": "All six result tabs are selected; Article, Links, SEO, Schema content asserted. Image/video and reload breadth remain explicit.",
+    "EXT-F-1007-T14": "Restricted URL and Dismiss are attempted; recoverable Reload page and Try again remain explicit.",
+    "EXT-F-1007-T20": "Fresh guest empty state, page-navigation clearance, and extension reload empty state are asserted."
+  },
+  "review_notes": [
+    "A case remains partial or unverified when its full inventory criteria are not exercised.",
+    "A failed stage writes the report with original stage and preserves earlier case evidence; exit status is nonzero.",
+    "The hosted VM is the only intended browser execution location. No local heavy/browser run occurred.",
+    "No product source, inventory status, Profile, release, deployment, or credentials were changed."
+  ]
+}
