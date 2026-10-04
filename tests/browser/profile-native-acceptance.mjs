@@ -27,6 +27,7 @@ import {
   safeProfileFailureCode,
 } from './profile-native-failure.mjs';
 import { createOwnedWriteJournal } from './profile-owned-write-journal.mjs';
+import { createExistingProfileWriteJournal } from './profile-existing-row-journal.mjs';
 import { observeReloadAccountReady } from './profile-reload-account.mjs';
 import { runProfileSaveFailureCase } from './profile-save-failure-case.mjs';
 import { panelIdentity } from './settings-native-auth-driver.mjs';
@@ -113,7 +114,13 @@ async function persistPrivateOwnership(record, create = false) {
     'private_ownership_receipt_not_private',
   );
 }
-async function profileOwnerRequest(panel, { key, organizationId }, requestUrl, method = 'GET') {
+async function profileOwnerRequest(
+  panel,
+  { key, organizationId },
+  requestUrl,
+  method = 'GET',
+  body = null,
+) {
   let result;
   try {
     result = await evaluate(
@@ -127,13 +134,15 @@ async function profileOwnerRequest(panel, { key, organizationId }, requestUrl, m
       phase = 'fetch';
       const response = await fetch(${JSON.stringify(requestUrl)}, {
         method: ${JSON.stringify(method)},
+        ...( ${JSON.stringify(body)} === null ? {} : { body: JSON.stringify(${JSON.stringify(body)}) } ),
         headers: {
           apikey: ${JSON.stringify(key)},
           Authorization: 'Bearer ' + token,
           'X-Organization-Id': ${JSON.stringify(organizationId)},
           'Accept-Profile': 'users',
           'Content-Profile': 'users',
-          ...( ${JSON.stringify(method)} === 'DELETE' ? { Prefer: 'return=representation' } : {} ),
+          ...( ${JSON.stringify(body)} === null ? {} : { 'Content-Type': 'application/json' } ),
+          ...( ${JSON.stringify(method)} === 'DELETE' || ${JSON.stringify(method)} === 'PATCH' ? { Prefer: 'return=representation' } : {} ),
         },
       });
       if (!response.ok) return { ok: false, status: response.status, rows: [], failure_phase: 'http_status' };
@@ -934,6 +943,7 @@ try {
       report.original_preferred_present = Boolean(original);
       let owned = null;
       let ownedJournal = null;
+      let existingJournal = null;
       let ownerConfig = null;
       let pendingMarker = null;
       let cleanupPanel = panel;
@@ -1031,10 +1041,39 @@ try {
               original_absence_restoration_pending: true,
               scope: 'bounded branch only; not full T28 acceptance',
             };
+          } else {
+            executionOperation = 'existing_profile_owner_read_before_write';
+            ownerConfig = { ...(await profileApiConfig()), organizationId: stored.organizationId };
+            const existing = await readProfileOwnerRow(panel, ownerConfig, identity.userId);
+            assert.ok(existing, 'existing_profile_row_disappeared');
+            assert.equal(
+              existing.preferred_name ?? '',
+              original,
+              'existing_profile_ui_owner_mismatch',
+            );
+            let baselineWritten = false;
+            existingJournal = await createExistingProfileWriteJournal({
+              original: existing,
+              baseUrl: ownerConfig.url,
+              read: () => readProfileOwnerRow(cleanupPanel, ownerConfig, identity.userId),
+              persist: async (record) => {
+                await persistPrivateOwnership({ run_id: RUN_ID, ...record }, !baselineWritten);
+                baselineWritten = true;
+              },
+              patch: (url, fields) =>
+                profileOwnerRequest(cleanupPanel, ownerConfig, url, 'PATCH', fields),
+            });
           }
           executionOperation = 'warm_profile';
           await caseBack(panel, original, identity.email, AUTH_MODE, 'warm');
-          await caseSaveDiscard(panel, original, identity.email, AUTH_MODE, 'warm', ownedJournal);
+          await caseSaveDiscard(
+            panel,
+            original,
+            identity.email,
+            AUTH_MODE,
+            'warm',
+            ownedJournal ?? existingJournal,
+          );
           await caseT25(panel, original, identity.email, AUTH_MODE, 'warm');
           if (AUTH_MODE === 'member' && ownedJournal) {
             executionOperation = 'case_save_failure_warm';
@@ -1059,7 +1098,7 @@ try {
             identity.email,
             AUTH_MODE,
             'warm',
-            ownedJournal,
+            ownedJournal ?? existingJournal,
             heldFieldCases,
             (operation) => {
               executionOperation = operation;
@@ -1107,7 +1146,7 @@ try {
             identity.email,
             AUTH_MODE,
             'reload',
-            ownedJournal,
+            ownedJournal ?? existingJournal,
           );
           executionOperation = 'extended_cases_after_reload';
           await runExtendedCases(
@@ -1115,7 +1154,7 @@ try {
             identity.email,
             AUTH_MODE,
             'extension_reload',
-            ownedJournal,
+            ownedJournal ?? existingJournal,
             [],
             (operation) => {
               executionOperation = operation;
@@ -1135,7 +1174,7 @@ try {
       nativeExecutionError = executionError;
       let cleanupError = null;
       try {
-        if (reloadAttempted && !reloadedPanel && (owned || pendingMarker)) {
+        if (reloadAttempted && !reloadedPanel && (owned || pendingMarker || existingJournal)) {
           reacquiredPanel = await acquireLivePanel();
           cleanupPanel = reacquiredPanel;
           report.cleanup_panel_reacquired_after_reload_failure = true;
@@ -1176,6 +1215,14 @@ try {
             saveFailureReceipt.original_absence_verified = true;
             saveFailureReceipt.status = 'passed';
           }
+        } else if (existingJournal) {
+          report.stage = 'restore_original_fields';
+          await existingJournal.restore();
+          report.restoration = {
+            verified: true,
+            original_tested_fields_restored: true,
+            original_row_preserved: true,
+          };
         } else if (!pendingMarker && !initialRow.row_present) {
           report.restoration = {
             verified: false,

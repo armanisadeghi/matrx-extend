@@ -1,72 +1,43 @@
 import assert from 'node:assert/strict';
 import { ownedDeleteUrl } from './profile-empty-row-restoration.mjs';
+import { createVersionedProfileWriteJournal } from './profile-versioned-write-journal.mjs';
 
-// The receipt is persisted BEFORE a UI save. Only its exact single successor may
-// advance ownership; a transport failure never licenses adopting the current row.
+// A new row's marker and insert version alone establish conditional delete authority.
 export function createOwnedWriteJournal({ owned, persist, read, baseUrl }) {
-  let version = 1;
-  let preferred = owned.marker;
-  let pending = null;
-  const record = () => ({
-    user_id: owned.userId,
-    organization_id: owned.organizationId,
-    marker: owned.marker,
-    created_at: owned.createdAt,
-    expected_version: version,
-    current_preferred_name: preferred,
-    pending_write: pending,
-    state: pending ? 'owned_write_intent' : 'owned_write_verified',
-  });
-  const validate = (row, value, expectedVersion) =>
-    ownedDeleteUrl(baseUrl, { ...owned, marker: value }, row, expectedVersion);
-  async function reconcile() {
-    const row = await read();
-    if (pending) {
-      // A previous version could still have an in-flight UI write. Never delete
-      // it or issue a second Save until this exact intent has been observed.
-      validate(row, pending.preferred_name, pending.version);
-      for (const [field, expected] of Object.entries(pending.fields ?? {})) {
+  return createVersionedProfileWriteJournal({
+    initialVersion: 1,
+    initialFields: { preferred_name: owned.marker },
+    read,
+    persist,
+    validate(row, fields, version) {
+      ownedDeleteUrl(baseUrl, { ...owned, marker: fields.preferred_name }, row, version);
+      for (const [field, expected] of Object.entries(fields))
         assert.equal(row[field], expected, `owned_write_${field}_unexpected_successor`);
-      }
-      await persist({
-        ...record(),
-        expected_version: pending.version,
-        current_preferred_name: pending.preferred_name,
-        pending_write: null,
-        state: 'owned_write_verified',
-      });
-      version = pending.version;
-      preferred = pending.preferred_name;
-      pending = null;
-    } else {
-      validate(row, preferred, version);
-    }
-    return { owned: { ...owned, marker: preferred }, version };
-  }
-  return {
-    reconcile,
-    async save(value, action, fields = {}) {
-      await reconcile();
-      pending = {
-        version: version + 1,
-        preferred_name: value,
-        ...(Object.keys(fields).length > 0 && { fields }),
-      };
-      await persist(record());
-      let actionError;
-      try {
-        await action();
-      } catch (error) {
-        actionError = error;
-      }
-      try {
-        await reconcile();
-      } catch (error) {
-        // The durable pending intent remains useful if the transport recovers.
-        if (!actionError) throw error;
-      }
-      if (actionError) throw actionError;
-      assert.equal(pending, null, 'owned_write_unverified');
     },
-  };
+    record({ version, fields, pending }) {
+      return {
+        user_id: owned.userId,
+        organization_id: owned.organizationId,
+        marker: owned.marker,
+        created_at: owned.createdAt,
+        expected_version: version,
+        current_preferred_name: fields.preferred_name,
+        pending_write: pending
+          ? {
+              version: pending.version,
+              preferred_name: pending.fields.preferred_name,
+              ...(Object.keys(pending.fields).length > 1 && {
+                fields: Object.fromEntries(
+                  Object.entries(pending.fields).filter(([key]) => key !== 'preferred_name'),
+                ),
+              }),
+            }
+          : null,
+        state: pending ? 'owned_write_intent' : 'owned_write_verified',
+      };
+    },
+    result({ version, fields }) {
+      return { owned: { ...owned, marker: fields.preferred_name }, version };
+    },
+  });
 }
