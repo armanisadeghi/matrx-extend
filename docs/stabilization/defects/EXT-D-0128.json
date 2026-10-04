@@ -1,0 +1,34 @@
+{
+  "id": "EXT-D-0128",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T01", "EXT-F-1007-T08"],
+  "surface": "Scrape authenticated native acceptance",
+  "auth_mode": "admin",
+  "title": "Admin acceptance allows missing selected organization",
+  "reproduction": [
+    "Use source bb8fdc8b Settings identity matcher with valid admin identity fields, organizationId=null and organizationSelected=false.",
+    "Observe currentSettingsIdentityMatches returns true; admin auth flow takes stored organization without selecting/verifying one."
+  ],
+  "expected": "Authenticated Scrape acceptance explicitly verifies the approved device-selected organization before warm controls and after reload; no first-membership/account-default fallback.",
+  "actual": "Fresh peer10746f95 independently reproduces null organization acceptance. Member route already selects and verifies an organization.",
+  "severity": "S2: acceptance can claim organization context without evidence; not a product organization failure",
+  "priority": "P1: gate admin Scrape testing",
+  "state": "triaged",
+  "owner": "root",
+  "evidence": [".research/scrape-role-width-peer.json"],
+  "transition_history": [
+    {
+      "at": "2026-10-04T19:05:26.838924+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Fresh independent source reviewer reproduced null admin organization accepted."
+    },
+    {
+      "at": "2026-10-04T19:05:26.838924+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Explicit Scrape brief requires selected organization; existing Settings callers may permit no selection, so repair must preserve their contract."
+    }
+  ],
+  "next_action": "Bounded Scrape-specific selection/verification correction and fresh review; member-only source route remains ready."
+}
