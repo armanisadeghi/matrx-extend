@@ -14,14 +14,15 @@
   "actual": "Warm Identity/Employment save/reopen succeeds; reload fails before dimension evidence. Exact inner cause not retained. Owned row was subsequently conditionally removed and root independently read zero rows.",
   "severity": "S2 test lifecycle and cleanup blocked; product impact not established",
   "priority": "P1 prerequisite for full Profile verification",
-  "state": "triaged",
+  "state": "in-fix",
   "owner": "root",
   "evidence": [
     ".research/profile-fields-clean-save-native.json",
     ".research/profile-owned-row-recovery-189-07.json",
     ".research/profile-reload-failure-source.json",
     "docs/stabilization/resource-journals/profile-fields-clean-save-189-07.jsonl",
-    ".research/reload106-causal-capture.json"
+    ".research/reload106-causal-capture.json",
+    ".research/reload-context-boundary.json"
   ],
   "transition_history": [
     {
@@ -35,8 +36,14 @@
       "from": "open",
       "to": "triaged",
       "reason": "Fresh source/evidence diagnosis confirms missing lifecycle cause; previous184 worker-retirement failure is not proof for189. Ownedrow recovered under exact state and independently read absent."
+    },
+    {
+      "at": "2026-10-04T03:34:44.095266+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Guarded guest run proves exact runtime context appears108ms after first mismatch; original member exception remains unknown. Repair bounded exact-context readiness without loosening lifecycle checks."
     }
   ],
-  "next_action": "Fresh single guarded guest observation distinguishes immediate missing SIDE_PANEL context from later registration within the existing readiness bound. Original member failure remains unidentified; no speculative timing fix.",
+  "next_action": "Implement existing-bound exact-context readiness, then fresh source/native peer and original member full-field reload/restoration acceptance.",
   "closure_requirement": "Prove reload cause, fix and independently verify actual reload plus saved-field and automatic original-state restoration. Recovery SQL alone does not close it."
 }
