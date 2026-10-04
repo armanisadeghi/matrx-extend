@@ -17695,6 +17695,13 @@
               "report": ".research/scrape-diagnose-controls-test.json",
               "defect_id": "EXT-D-0127",
               "result": "Picker injection rejection only resets/warns; no visible failure. Native Cancel remains unverified because Happy DOM retargeting differs from browser Shadow DOM."
+            },
+            {
+              "level": "source/component; Chrome injection and identity transitions controlled, not native role proof",
+              "report": ".research/diagnose127-identity-fix.json",
+              "independent_review": ".research/diagnose127-identity-peer.json",
+              "defect_id": "EXT-D-0127",
+              "result": "Visible picker-specific refusal/retry for injection and identity paths; retainedcapture and stalesession guards; focused22 + identityrace23 tests independently pass. Native timing/layout/repro remain unverified."
             }
           ]
         },
@@ -18353,7 +18360,8 @@
             "EXT-D-0127"
           ],
           "run_ids": [
-            "incoming-sources-001"
+            "incoming-sources-001",
+            "37227042493"
           ],
           "retest_status": "not-run"
         },
@@ -18512,6 +18520,15 @@
           "evidence": ".research/clipboard126-native.json",
           "proven": "Four real Copy feedback/equality observations, warm/reloaded Video and Links, each scoped permission restored; surrounding controls and full reload pass.",
           "limits": "Frozen231, not latestmain or Store; broader receipt partial, member/admin unverified."
+        },
+        {
+          "run_id": "37227042493",
+          "mode": "member",
+          "build": "0.2.240",
+          "status": "unverified-environment-refusal",
+          "evidence": ".research/scrape-member-normal-native.json",
+          "proven": "Initial native guard refused unsafe CPU/load before member sign-in, width observation or any Scrape case. Root matched6hashes and inspected rawzero-cases receipt and resource attribution.",
+          "limits": "No product/mode/width result. All6artifactfiles retained, temporaryauth material removed. No retry."
         }
       ]
     },

@@ -13,9 +13,13 @@
   "actual": "Fresh peer10746f95 independently reproduces null organization acceptance. Member route already selects and verifies an organization.",
   "severity": "S2: acceptance can claim organization context without evidence; not a product organization failure",
   "priority": "P1: gate admin Scrape testing",
-  "state": "triaged",
+  "state": "fixed",
   "owner": "root",
-  "evidence": [".research/scrape-role-width-peer.json"],
+  "evidence": [
+    ".research/scrape-role-width-peer.json",
+    ".research/scrape-admin128-org-fix.json",
+    ".research/scrape-admin128-peer.json"
+  ],
   "transition_history": [
     {
       "at": "2026-10-04T19:05:26.838924+00:00",
@@ -28,7 +32,20 @@
       "from": "open",
       "to": "triaged",
       "reason": "Explicit Scrape brief requires selected organization; existing Settings callers may permit no selection, so repair must preserve their contract."
+    },
+    {
+      "at": "2026-10-04T19:23:42.735524+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded repair completed in 593ff3b7; transition reconciled by root."
+    },
+    {
+      "at": "2026-10-04T19:23:42.735524+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent source/component review accepted repair; native acceptance remains unverified."
     }
   ],
-  "next_action": "Bounded Scrape-specific selection/verification correction and fresh review; member-only source route remains ready."
+  "next_action": "Guarded native original-reproduction and surrounding-case acceptance; no closure or Store-shipped claim.",
+  "fix_commits": ["593ff3b7"]
 }

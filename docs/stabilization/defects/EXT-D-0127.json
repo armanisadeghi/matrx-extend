@@ -14,12 +14,16 @@
   "actual": "use-scrape launchDiagnose catch resets session/picking and only console.warns; real-hook test confirms no visible error state. Native Chrome reproduction is not yet established.",
   "severity": "S2: failed user action silently does nothing",
   "priority": "P1: contained diagnostic controls",
-  "state": "in-fix",
-  "owner": "root/diagnose_launch127_fix",
+  "state": "fixed",
+  "owner": "root",
   "evidence": [
     ".research/scrape-diagnose-controls-test.json",
     "src/hooks/use-scrape.ts:160",
-    "src/features/scrape/DiagnoseControls.test.tsx"
+    "src/features/scrape/DiagnoseControls.test.tsx",
+    ".research/diagnose-launch127-fix.json",
+    ".research/diagnose127-peer.json",
+    ".research/diagnose127-identity-fix.json",
+    ".research/diagnose127-identity-peer.json"
   ],
   "transition_history": [
     {
@@ -39,7 +43,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Confirmed source boundary; delegated visibleerror/retry and stale-session safety correction with causal tests."
+    },
+    {
+      "at": "2026-10-04T19:23:42.735524+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent source/component review accepted repair; native acceptance remains unverified."
     }
   ],
-  "next_action": "Implement visible bounded launch failure/retry and session-safe cleanup; causal RED/GREEN, fresh independent review, then native acceptance."
+  "next_action": "Guarded native original-reproduction and surrounding-case acceptance; no closure or Store-shipped claim.",
+  "fix_commits": ["df7feccc", "09e9c9b9"]
 }
