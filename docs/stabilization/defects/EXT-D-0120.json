@@ -36,7 +36,12 @@
     ".research/reload-execution-peer.json",
     ".research/reload-execution-fix.json",
     ".research/reload-execution-final-peer.json",
-    ".research/reload-execution-native.json"
+    ".research/reload-execution-native.json",
+    ".research/startup-resource-diagnosis.json",
+    ".research/startup-resource-attribution.json",
+    ".research/startup-attribution-peer.json",
+    ".research/startup-attribution-journal-fix.json",
+    ".research/startup-journal-final-peer.json"
   ],
   "transition_history": [
     {
@@ -83,7 +88,7 @@
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
-  "next_action": "Investigate repeated browser-startup CPU refusal in37203147962 and37198730857 against healthy37199709918 before another launch. Determine whether startup readiness can be measured within existing policy budget before the first UI action while preserving unsafe/stale refusal and watchdog cancellation. Keep thresholds unchanged; no blind retry. After independently reviewed correction or evidenced environment recovery, run one guarded exact-artifact native retest of the source-fixed execution-retirement oracle.",
+  "next_action": "Collect one guarded frozen215 guest native run with independently reviewed durable process attribution. If resources unsafe, preserve exact process evidence/refusal and diagnose without retry or thresholds changes. If healthy, verify old stopped/redundant and running replacement plus actual panel/downstream Scrape checks before closure.",
   "current_native_evidence": {
     "run_id": "37203147962",
     "status": "native-unverified_resource-refusal",
@@ -115,5 +120,13 @@
     "verified": "Rootmatchedreceipt ccac4c5e602e3054d5418b5a83c1d1627002451dd2c2b220b27ff63c600af17b and3healthyjournals. Chrome141.0.7390.37; oldversion0 correlated beforeclick to13CCF66B639A035D8EA322ABDC27BDA0. Version0 stopping/redundant at12:10:52.543UTC thenexplicitstopped/redundant at12:10:52.638UTC withtargetIdomitted; preclickversionidentityretained. IndependentgetTargetInfo oldhostpresent attached=false atfailure; neitherobserver sawoldworkerdestruction, oldworker/panelabsent, replacementcreated/present soleliveworker andversion1running/activated. Managementenabledzeroerrors, timeline0drops.",
     "native_branch": "Old execution stopped + debugger host exists is now established. Exact retaining owner and causal repair are NOT established; attached=false does not identify Playwright as owner.",
     "limitations": "Strictgatefailed before replacementcontext/mediareload. No threshold/predicate changes; no wholeproductpass. Reportcorrectiond62e8480 retains exactstopped event after omittedtargetId; originalreport had selected earlierstoppingevent."
+  },
+  "resource_diagnostic": {
+    "source": ["e2a7cb96", "93c92804"],
+    "peer": "946f8312",
+    "ci": "37204825794 success; macOS real-wrapper integration2pass0skipped; hostedTypecheckpassed",
+    "finding_fixed": "Canonical journal dropped new processes/unavailable fields; reproduced RED, validated sanitized durable contract now passes. Unsafe decisions, CPU sampler, thresholds and watchdog unchanged.",
+    "limits": "ucomm names maytruncate, psCPUaverages do not identifyexactiostatintervalownership; no guaranteedownedgroupID for everyrow.",
+    "active_worker": "/root/startup_attributed_native"
   }
 }
