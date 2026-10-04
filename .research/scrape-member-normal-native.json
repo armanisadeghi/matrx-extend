@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "task": "scrape-member-normal-native",
+  "scope": "One guarded hosted ARM member Scrape run with normal emulated width. No product source, inventory, release, database, or account changes.",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 37227042493,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37227042493",
+    "head_branch": "main",
+    "head_sha": "df7feccc73ea7203f0dbc61e659d5e38b3bb84de",
+    "runner_label": "macos-15",
+    "terminal_status": "completed",
+    "conclusion": "failure",
+    "acceptance_case": "guest-scrape-development",
+    "scrape_auth_mode": "member",
+    "scrape_width_mode": "normal",
+    "requested_min_panel_width_px": 600,
+    "one_launch_no_retry": true,
+    "steps": {
+      "provenance": "success",
+      "authentication_preflight": "success",
+      "indexing": "success",
+      "package_readiness": "success",
+      "package_prepare": "success",
+      "browser_readiness": "success",
+      "browser_prepare": "success",
+      "acceptance_readiness": "success",
+      "native_acceptance": "failure",
+      "artifact_upload": "success"
+    }
+  },
+  "frozen_product": {
+    "kind": "ci_development_test",
+    "version": "0.2.240",
+    "source_sha": "18d6f48c3769e9e52c021e29a2b219adc602e98d",
+    "tree_sha256": "5ba1b8ad51398be9e33e6ca85e2b43986d37886b3b9bba221c57662cd4bd50d7",
+    "development_run_id": 37226671959,
+    "development_artifact_id": 11312153381,
+    "import_verified": true,
+    "driver_commit": "bb8fdc8b204dd47cd14ed5704256a4fd7e9ff6e7"
+  },
+  "native_outcome": {
+    "status": "unverified",
+    "receipt_path": "docs/stabilization/evidence/scrape-member/run37227042493/test-results/scrape-guest-native-406fca09-e1e5-4632-b032-ad9cc84d3dc1.json",
+    "receipt_sha256": "0b9971ce8cfeabd3f609fa685459c5ad7e14ff26ad69bf43804f224b029df57e",
+    "stage": "inputs",
+    "native_stage": "exercise_panel",
+    "failure_code": "NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample",
+    "cases_observed": 0,
+    "member_authentication_reached": false,
+    "scrape_reached": false,
+    "normal_width_observation": null,
+    "interpretation": "The live resource guard observed RESOURCE_CPU_HIGH_LOAD_BUSY and refused before the member sign-in or Scrape driver ran. This run establishes no member-role or 600 px width result."
+  },
+  "resource_journals": [
+    {
+      "run_id": "hosted-package-37227042493-1",
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "path": "docs/stabilization/evidence/scrape-member/run37227042493/docs/stabilization/resource-journals/hosted-package-37227042493-1.jsonl",
+      "sha256": "39c6a736011e7c20d2884bb59c56847eba4441cd6785d1c255886067f32d0063"
+    },
+    {
+      "run_id": "hosted-browser-37227042493-1",
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "path": "docs/stabilization/evidence/scrape-member/run37227042493/docs/stabilization/resource-journals/hosted-browser-37227042493-1.jsonl",
+      "sha256": "3cb84d59083ac00014cc2203a927cac0c3acc120de0416479c317268a0703509"
+    },
+    {
+      "run_id": "hosted-guest-37227042493-1",
+      "decision": "child_failed",
+      "resource_invalid": false,
+      "exit_code": 1,
+      "unsafe_sample": {
+        "code": "RESOURCE_WATCH_UNSAFE",
+        "reason": "RESOURCE_CPU_HIGH_LOAD_BUSY",
+        "at": "2026-10-04T19:13:17.534Z",
+        "one_minute_load": 8.61,
+        "logical_cpus": 3,
+        "cpu_busy_fraction": 0.61,
+        "available_memory_gib": 5.88,
+        "swap_used_mib": 0
+      },
+      "path": "docs/stabilization/evidence/scrape-member/run37227042493/docs/stabilization/resource-journals/hosted-guest-37227042493-1.jsonl",
+      "sha256": "f307edda9f6d7d0142c07e07725e38a525eab3a20367323d3632e00eca342965"
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "docs/stabilization/evidence/scrape-member/run37227042493/test-results/native-sidepanel-qa-9VhQ1a/native-side-panel.png",
+      "sha256": "9b6a2a8f7271bb133a9ad3e83d6eb9187c87eccf4c707b421867a6c1f1b98be9",
+      "limitation": "Shows the extension panel as guest before member sign-in; not member evidence."
+    },
+    {
+      "path": "docs/stabilization/evidence/scrape-member/run37227042493/test-results/native-sidepanel-qa-9VhQ1a/normal-target-after-open.png",
+      "sha256": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89",
+      "limitation": "Shows the fixture page after requesting panel open; no width assertion was recorded."
+    }
+  ],
+  "credential_cleanup": {
+    "temporary_github_secret_deleted": true,
+    "local_single_use_link_deleted": true,
+    "local_reviewer_identity_file_deleted": true,
+    "no_auth_urls_or_identity_values_recorded": true
+  },
+  "health_promotion": false
+}
