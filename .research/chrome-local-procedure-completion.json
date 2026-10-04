@@ -13,15 +13,16 @@
       "tests/browser/fixtures/chrome-local-download.html",
       "tests/browser/fixtures/chrome-local-download.txt"
     ],
-    "purpose": "Owned synthetic deterministic download source. In the disposable profile, open the HTML fixture and click its download link; verify completed filename before the case. No file contents contain user data.",
-    "execution_state": "Source fixture created; browser download not run, so completed-download fixture remains runtime-unverified.",
-    "cleanup": "Retire/delete the dedicated disposable browser profile only after member/admin runs and sanitized evidence capture. That disposes fixture history/download/session records and the downloaded copy."
+    "purpose": "Owned synthetic deterministic download source. For each role independently, open the HTML fixture in that role's dedicated disposable Chrome profile, click its download link, and verify the completed filename before that role's case. No file contents contain user data.",
+    "execution_state": "Source fixture created; neither role profile, browser fixture, nor download was run. Completed-download and cleanup outcomes remain runtime-unverified.",
+    "cleanup": "For each role, record the exact downloaded file path if the owned fixture is downloaded. After that role's sanitized evidence capture, close Chrome, remove only that known owned downloaded file by its recorded path, verify it is absent, then retire/delete that role's dedicated disposable profile. If the path or absence cannot be confirmed, report downloaded-file cleanup unverified; profile deletion alone does not prove file deletion. No cleanup was executed in this source-only proposal."
   },
   "coverage_boundary": {
     "invalid_inputs": "Each proposed case now includes one schema-invalid argument set and expected pre-execution validation rejection, based on current Zod schemas.",
     "permission_negative": "Explicitly not applicable/unreachable via manual Catalog Run, which bypasses dispatcher auth. Do not use an invented toggle or permission removal. A separate dispatcher/agent denial procedure is still required.",
     "required_sessions": "Manifest-required Chrome permission. Loaded-artifact preflight only; no Settings optional grant. Missing permission/API is a stop or runtime unavailable response, not proof of authorization denial.",
-    "status": "All proposed text remains design only; no runtime pass claimed."
+    "status": "All proposed text remains design only; no runtime pass claimed.",
+    "manual_catalog": "Catalog Run invokes the local handler directly with permissionMode=act. Even if both roles later produce Catalog results, these are direct handler observations only. Account authorization, dispatcher Ask/Act denial, live agent advertisement and binding require separate routes and evidence; all remain unverified here."
   },
   "case_updates": {
     "EXT-F-4042-T01": {
@@ -31,7 +32,7 @@
       "modes": ["member", "admin"],
       "design_status": "complete-procedure-proposal-runtime-unverified",
       "preconditions": [
-        "Complete shared receipt-bound build/profile/reload setup.",
+        "For this role, complete the shared receipt-bound setup in its own dedicated disposable Chrome profile and prepare this role's fixtures; repeat independently in a different profile for the other role.",
         "Complete shared history fixture preparation in the disposable profile; the two fixture visits must be within the selected lookback window.",
         "Select All handlers in the Tools Catalog surface selector so the internal list_recent_history delegate is visible. The manual runner directly invokes this handler; this procedure does not establish dispatcher permission behavior."
       ],
@@ -41,7 +42,7 @@
         "Run the same arguments once more and confirm the fixture entries remain present and ordered newest first by last_visit_ms.",
         "With the same Tools row selected, run {\"minutes\":0,\"max_results\":50}; expect argument validation rejection before execution because minutes must be a positive integer (maximum 43,200). Do not interpret an empty result as the negative assertion.",
         "After the required extension/panel/target-tab reload, rerun the same arguments and compare only the controlled fixture entries.",
-        "After capturing only the controlled fixture assertion, finish both role runs, close Chrome, and retire/delete the dedicated disposable profile. This removes its synthetic history, download record and file, closed-session entries, and restored fixture tab; do not reuse it. Preserve only sanitized build/run receipt and the specific assertion result."
+        "After this role's sanitized fixture assertion, close Chrome for this role; remove only its recorded owned downloaded file if one was created and verify absence, then retire/delete this role's disposable profile. If file path or absence cannot be confirmed, report downloaded-file cleanup unverified. Repeat the complete setup, fixture, run, and cleanup lifecycle independently for the other role. Preserve only sanitized build/run receipt and the specific assertion result."
       ],
       "expected": [
         "The result has a count and items array; controlled pages visited within 60 minutes appear with their URL/title and visit metadata, subject to Chrome history API results.",
@@ -69,12 +70,14 @@
       ],
       "uncertainty": [
         "No history query was executed. A dedicated disposable profile and matching Chrome history permission are prerequisites, not confirmed available fixtures.",
-        "Manual Run skips dispatcher permission checks; this is not evidence about registered tool binding or agent-call reachability."
+        "Manual Run skips dispatcher permission checks; this is not evidence about registered tool binding or agent-call reachability.",
+        "Neither role-specific disposable profile lifecycle nor downloaded-file cleanup was executed; deleting a profile does not prove a downloaded file outside it was removed."
       ],
       "procedure_gaps": [
         "Direct Tools manual Run invokes the local handler without dispatcher authorization, so an authorization-denial / Ask-Act negative case is unreachable through this route. Separate dispatcher/agent coverage remains open.",
         "Chrome sessions is a required manifest permission and these handlers only feature-detect API availability; there is no supported permission toggle in this procedure. Missing sessions in the exact loaded artifact is a preflight stop, not a permission-denial result.",
-        "This is source-derived procedure text only; all role results remain runtime-unverified until separately executed and reviewed."
+        "This is source-derived procedure text only; all role results remain runtime-unverified until separately executed and reviewed.",
+        "Member and admin Catalog runs use separate disposable profiles and owned fixtures. Catalog observations do not establish account authorization, dispatcher Ask/Act denial, or live agent binding; those routes require separate unverified coverage."
       ],
       "permissions_and_reachability": {
         "manual_permission_denial": "Not applicable / unreachable: ToolsView manual Run calls handler directly and bypasses dispatcher permission enforcement; no supported user action in this case can produce the dispatcher denial branch. Keep dispatcher/Ask-Act negative coverage as a separate unresolved case.",
@@ -93,7 +96,7 @@
       "modes": ["member", "admin"],
       "design_status": "complete-procedure-proposal-runtime-unverified",
       "preconditions": [
-        "Complete shared receipt-bound build/profile/reload setup.",
+        "For this role, complete the shared receipt-bound setup in its own dedicated disposable Chrome profile and prepare this role's fixtures; repeat independently in a different profile for the other role.",
         "Open committed owned fixture page tests/browser/fixtures/chrome-local-download.html in the dedicated disposable profile, click its Download synthetic fixture link, confirm completed filename matrx-owned-chrome-download-fixture.txt in Chrome Downloads, and record only that filename. This fixture source exists; completion remains unverified until a browser run.",
         "Confirm the loaded Chrome artifact has the required downloads API permission, and select All handlers in Tools Catalog so the internal list_downloads delegate is visible."
       ],
@@ -103,7 +106,7 @@
         "Run with the same filename query and limit but omit state to confirm query matching still finds the fixture; compare by its synthetic filename only.",
         "With the same Tools row selected, run {\"query\":\"matrx-owned-chrome-download-fixture.txt\",\"state\":\"paused\",\"limit\":10}; expect argument validation rejection before execution because state is limited to in_progress, interrupted, or complete.",
         "After the required extension/panel reload, rerun the state-filtered query and confirm the same controlled record remains discoverable.",
-        "After capturing only the controlled fixture assertion, finish both role runs, close Chrome, and retire/delete the dedicated disposable profile. This removes its synthetic history, download record and file, closed-session entries, and restored fixture tab; do not reuse it. Preserve only sanitized build/run receipt and the specific assertion result."
+        "After this role's sanitized fixture assertion, close Chrome for this role; remove only its recorded owned downloaded file if one was created and verify absence, then retire/delete this role's disposable profile. If file path or absence cannot be confirmed, report downloaded-file cleanup unverified. Repeat the complete setup, fixture, run, and cleanup lifecycle independently for the other role. Preserve only sanitized build/run receipt and the specific assertion result."
       ],
       "expected": [
         "The response has count and downloads; the controlled fixture appears in the complete-state query with state complete, a matching filename, and coherent bytes_received/total_bytes.",
@@ -132,12 +135,14 @@
       ],
       "uncertainty": [
         "The owned source fixture is committed at tests/browser/fixtures/chrome-local-download.html and chrome-local-download.txt, but no download was performed here; completed-download state and filename still require browser confirmation.",
-        "Manual Run skips dispatcher authorization. This procedure does not assess dispatcher enforcement, live binding, or account-level data exposure."
+        "Manual Run skips dispatcher authorization. This procedure does not assess dispatcher enforcement, live binding, or account-level data exposure.",
+        "Neither role-specific disposable profile lifecycle nor downloaded-file cleanup was executed; deleting a profile does not prove a downloaded file outside it was removed."
       ],
       "procedure_gaps": [
         "Direct Tools manual Run invokes the local handler without dispatcher authorization, so an authorization-denial / Ask-Act negative case is unreachable through this route. Separate dispatcher/agent coverage remains open.",
         "Chrome sessions is a required manifest permission and these handlers only feature-detect API availability; there is no supported permission toggle in this procedure. Missing sessions in the exact loaded artifact is a preflight stop, not a permission-denial result.",
-        "This is source-derived procedure text only; all role results remain runtime-unverified until separately executed and reviewed."
+        "This is source-derived procedure text only; all role results remain runtime-unverified until separately executed and reviewed.",
+        "Member and admin Catalog runs use separate disposable profiles and owned fixtures. Catalog observations do not establish account authorization, dispatcher Ask/Act denial, or live agent binding; those routes require separate unverified coverage."
       ],
       "permissions_and_reachability": {
         "manual_permission_denial": "Not applicable / unreachable: ToolsView manual Run calls handler directly and bypasses dispatcher permission enforcement; no supported user action in this case can produce the dispatcher denial branch. Keep dispatcher/Ask-Act negative coverage as a separate unresolved case.",
@@ -156,7 +161,7 @@
       "modes": ["member", "admin"],
       "design_status": "complete-procedure-proposal-runtime-unverified",
       "preconditions": [
-        "Complete shared receipt-bound build/profile/reload setup and recently-closed fixture preparation.",
+        "For this role, complete the shared receipt-bound setup in its own dedicated disposable Chrome profile and prepare this role's fixtures; repeat independently in a different profile for the other role.",
         "Confirm sessions is present among required permissions in the loaded Chrome artifact and granted in this disposable profile before running. Select All handlers in Tools Catalog so the internal list_recently_closed delegate is visible. Missing permission is a prerequisite gap, not a product result.",
         "Only the dedicated test tab is closed; do not close or restore personal tabs/windows."
       ],
@@ -166,7 +171,7 @@
         "Run a second time without changing browser state; confirm the controlled closed-tab entry remains listed and is within the requested maximum.",
         "Run {\"max_results\":0}; expect argument validation rejection before execution because max_results must be a positive integer up to 25. This does not test missing sessions permission.",
         "After extension/panel reload, run again and compare the controlled row. Do not restore it in this case; restoration is covered by EXT-F-4166-T01.",
-        "After capturing only the controlled fixture assertion, finish both role runs, close Chrome, and retire/delete the dedicated disposable profile. This removes its synthetic history, download record and file, closed-session entries, and restored fixture tab; do not reuse it. Preserve only sanitized build/run receipt and the specific assertion result."
+        "After this role's sanitized fixture assertion, close Chrome for this role; remove only its recorded owned downloaded file if one was created and verify absence, then retire/delete this role's disposable profile. If file path or absence cannot be confirmed, report downloaded-file cleanup unverified. Repeat the complete setup, fixture, run, and cleanup lifecycle independently for the other role. Preserve only sanitized build/run receipt and the specific assertion result."
       ],
       "expected": [
         "The result reports ok=true, count, and entries; the controlled recently closed tab appears with the recorded URL/title when Chrome retains the session.",
@@ -194,12 +199,14 @@
       ],
       "uncertainty": [
         "Chrome's retained session entry and the loaded artifact's required sessions permission are runtime prerequisites and were not inspected or exercised.",
-        "Manual Run bypasses the dispatcher gate described in dispatch.ts; only the direct handler path is covered."
+        "Manual Run bypasses the dispatcher gate described in dispatch.ts; only the direct handler path is covered.",
+        "Neither role-specific disposable profile lifecycle nor downloaded-file cleanup was executed; deleting a profile does not prove a downloaded file outside it was removed."
       ],
       "procedure_gaps": [
         "Direct Tools manual Run invokes the local handler without dispatcher authorization, so an authorization-denial / Ask-Act negative case is unreachable through this route. Separate dispatcher/agent coverage remains open.",
         "Chrome sessions is a required manifest permission and these handlers only feature-detect API availability; there is no supported permission toggle in this procedure. Missing sessions in the exact loaded artifact is a preflight stop, not a permission-denial result.",
-        "This is source-derived procedure text only; all role results remain runtime-unverified until separately executed and reviewed."
+        "This is source-derived procedure text only; all role results remain runtime-unverified until separately executed and reviewed.",
+        "Member and admin Catalog runs use separate disposable profiles and owned fixtures. Catalog observations do not establish account authorization, dispatcher Ask/Act denial, or live agent binding; those routes require separate unverified coverage."
       ],
       "permissions_and_reachability": {
         "manual_permission_denial": "Not applicable / unreachable: ToolsView manual Run calls handler directly and bypasses dispatcher permission enforcement; no supported user action in this case can produce the dispatcher denial branch. Keep dispatcher/Ask-Act negative coverage as a separate unresolved case.",
@@ -218,7 +225,7 @@
       "modes": ["member", "admin"],
       "design_status": "complete-procedure-proposal-runtime-unverified",
       "preconditions": [
-        "Complete shared receipt-bound build/profile/reload setup and controlled history fixture preparation.",
+        "For this role, complete the shared receipt-bound setup in its own dedicated disposable Chrome profile and prepare this role's fixtures; repeat independently in a different profile for the other role.",
         "Keep the Tools Catalog surface selector at Agent surface for canonical chrome_history. Its schema must load from the current handler source; if it does not, stop and preserve the schema error as an unresolved prerequisite."
       ],
       "steps": [
@@ -227,7 +234,7 @@
         "Check the search output for the controlled fixture URL/title and compare it with the recent result. Do not infer search support from recent-only success.",
         "Run {\"action\":\"other\"}; expect argument validation rejection before execution because action is required and limited to search or recent. No history handler should run for this input.",
         "After extension/panel/target-tab reload, repeat both action values and compare only the known fixture rows.",
-        "After capturing only the controlled fixture assertion, finish both role runs, close Chrome, and retire/delete the dedicated disposable profile. This removes its synthetic history, download record and file, closed-session entries, and restored fixture tab; do not reuse it. Preserve only sanitized build/run receipt and the specific assertion result."
+        "After this role's sanitized fixture assertion, close Chrome for this role; remove only its recorded owned downloaded file if one was created and verify absence, then retire/delete this role's disposable profile. If file path or absence cannot be confirmed, report downloaded-file cleanup unverified. Repeat the complete setup, fixture, run, and cleanup lifecycle independently for the other role. Preserve only sanitized build/run receipt and the specific assertion result."
       ],
       "expected": [
         "The recent action delegates to the recent-history handler and returns the controlled entries visited in the configured window, ordered newest first where timestamps are present.",
@@ -255,12 +262,14 @@
       ],
       "uncertainty": [
         "No browser calls were executed. The local Catalog includes chrome_history on its Agent surface by source, but a live agent request's advertisement and dispatch are not established by that fact or the inventory's binding census.",
-        "Manual Tools Run invokes the local handler without dispatcher authorization; the procedure does not resolve binding or Ask/Act behavior."
+        "Manual Tools Run invokes the local handler without dispatcher authorization; the procedure does not resolve binding or Ask/Act behavior.",
+        "Neither role-specific disposable profile lifecycle nor downloaded-file cleanup was executed; deleting a profile does not prove a downloaded file outside it was removed."
       ],
       "procedure_gaps": [
         "Direct Tools manual Run invokes the local handler without dispatcher authorization, so an authorization-denial / Ask-Act negative case is unreachable through this route. Separate dispatcher/agent coverage remains open.",
         "Chrome sessions is a required manifest permission and these handlers only feature-detect API availability; there is no supported permission toggle in this procedure. Missing sessions in the exact loaded artifact is a preflight stop, not a permission-denial result.",
-        "This is source-derived procedure text only; all role results remain runtime-unverified until separately executed and reviewed."
+        "This is source-derived procedure text only; all role results remain runtime-unverified until separately executed and reviewed.",
+        "Member and admin Catalog runs use separate disposable profiles and owned fixtures. Catalog observations do not establish account authorization, dispatcher Ask/Act denial, or live agent binding; those routes require separate unverified coverage."
       ],
       "permissions_and_reachability": {
         "manual_permission_denial": "Not applicable / unreachable: ToolsView manual Run calls handler directly and bypasses dispatcher permission enforcement; no supported user action in this case can produce the dispatcher denial branch. Keep dispatcher/Ask-Act negative coverage as a separate unresolved case.",
@@ -279,7 +288,7 @@
       "modes": ["member", "admin"],
       "design_status": "complete-procedure-proposal-runtime-unverified",
       "preconditions": [
-        "Complete shared receipt-bound build/profile/reload setup and recently-closed fixture preparation.",
+        "For this role, complete the shared receipt-bound setup in its own dedicated disposable Chrome profile and prepare this role's fixtures; repeat independently in a different profile for the other role.",
         "Confirm sessions is present among required permissions in the loaded Chrome artifact and granted in this disposable profile. Keep Tools Catalog at Agent surface for canonical chrome_recently_closed; confirm the exact disposable fixture tab before running.",
         "Restore affects only the deliberately closed disposable test tab; do not use an unknown session ID or restore a real user tab."
       ],
@@ -290,7 +299,7 @@
         "Run action=list again and verify the restored fixture is no longer offered as the same recently-closed entry. Record the result without retaining unrelated session rows.",
         "Run {\"action\":\"other\"}; expect argument validation rejection before execution because action is required and limited to list or restore. No session restore should run for this input.",
         "Repeat from a newly created and closed disposable fixture tab after the required extension/panel reload; do not reuse an already-restored session.",
-        "After capturing only the controlled fixture assertion, finish both role runs, close Chrome, and retire/delete the dedicated disposable profile. This removes its synthetic history, download record and file, closed-session entries, and restored fixture tab; do not reuse it. Preserve only sanitized build/run receipt and the specific assertion result."
+        "After this role's sanitized fixture assertion, close Chrome for this role; remove only its recorded owned downloaded file if one was created and verify absence, then retire/delete this role's disposable profile. If file path or absence cannot be confirmed, report downloaded-file cleanup unverified. Repeat the complete setup, fixture, run, and cleanup lifecycle independently for the other role. Preserve only sanitized build/run receipt and the specific assertion result."
       ],
       "expected": [
         "The list action returns the controlled closed tab with its session ID, URL, and title when Chrome retains the session.",
@@ -319,12 +328,14 @@
       ],
       "uncertainty": [
         "This action mutates the disposable browser session by reopening a tab; the controlled test profile and fixture must be confirmed before execution.",
-        "No loaded-artifact session permission, UI execution, tool binding, or restored-tab outcome was verified in this source-only lane."
+        "No loaded-artifact session permission, UI execution, tool binding, or restored-tab outcome was verified in this source-only lane.",
+        "Neither role-specific disposable profile lifecycle nor downloaded-file cleanup was executed; deleting a profile does not prove a downloaded file outside it was removed."
       ],
       "procedure_gaps": [
         "Direct Tools manual Run invokes the local handler without dispatcher authorization, so an authorization-denial / Ask-Act negative case is unreachable through this route. Separate dispatcher/agent coverage remains open.",
         "Chrome sessions is a required manifest permission and these handlers only feature-detect API availability; there is no supported permission toggle in this procedure. Missing sessions in the exact loaded artifact is a preflight stop, not a permission-denial result.",
-        "This is source-derived procedure text only; all role results remain runtime-unverified until separately executed and reviewed."
+        "This is source-derived procedure text only; all role results remain runtime-unverified until separately executed and reviewed.",
+        "Member and admin Catalog runs use separate disposable profiles and owned fixtures. Catalog observations do not establish account authorization, dispatcher Ask/Act denial, or live agent binding; those routes require separate unverified coverage."
       ],
       "permissions_and_reachability": {
         "manual_permission_denial": "Not applicable / unreachable: ToolsView manual Run calls handler directly and bypasses dispatcher permission enforcement; no supported user action in this case can produce the dispatcher denial branch. Keep dispatcher/Ask-Act negative coverage as a separate unresolved case.",
@@ -336,5 +347,11 @@
         ]
       }
     }
+  },
+  "shared_role_lifecycle": {
+    "setup": "Use separate dedicated disposable Chrome profiles for member and admin. In each profile independently load the exact receipt-bound extension build, sign in as that role, prepare only that profile's controlled history and recently-closed fixtures, and perform the synthetic download in that profile before its download case. Record fixture URLs, tab session ID, downloaded filename and exact owned file path locally for that role; do not reuse a profile, fixture result, session ID, or download record across roles.",
+    "execution": "Run each proposed Catalog case separately as member and admin, including warm, malformed-schema and required reload steps against that role's own fixtures. Label evidence by role and loaded build receipt. Catalog output only proves direct local handler behavior when observed; it does not prove account authorization, dispatcher Ask/Act denial, or live advertised agent binding.",
+    "cleanup": "After each role's cases and sanitized evidence capture, close that role's Chrome profile. Remove and verify absence of only its recorded owned downloaded file, then retire/delete that role's disposable profile. Record either verified cleanup or explicitly unverified downloaded-file cleanup. Do not infer that deleting a profile removes a file Chrome saved elsewhere.",
+    "execution_state": "Procedure design only; neither role setup, execution, nor cleanup was observed."
   }
 }
