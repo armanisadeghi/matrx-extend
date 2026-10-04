@@ -88,6 +88,7 @@ export function ScrapeView() {
   const recognition = usePageRecognition();
   const tab = useActiveTab();
   const capturedPageKey = useScrapeStore((s) => s.pageKey);
+  const diagnoseLaunchError = useScrapeStore((s) => s.diagnose.launchError);
   // The original changes only when a new capture replaces this one. Keep pane
   // choice across temporary active-tab identity loss, but reset on re-capture.
   const originalCapture = useScrapeStore((s) => s.original);
@@ -411,7 +412,11 @@ export function ScrapeView() {
             onDismiss={clearError}
           />
         )}
-        {current && (
+        {(current ||
+          (captured &&
+            !tab.pageKey &&
+            diagnoseLaunchError?.pageKey === capturedPageKey &&
+            diagnoseLaunchError.tabId === tab.id)) && (
           <div className="mt-2 flex items-center justify-between gap-2">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
               Diagnose

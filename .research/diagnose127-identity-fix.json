@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0127",
+  "scope": "Picker launch while active page identity is temporarily unavailable",
+  "cause": "The Pick handler sent identity refusal to the capture error state, whose Try again action recaptures the page. The picker error was also cleared when identity temporarily became null and its UI was hidden with the current capture.",
+  "red": {
+    "command": "pnpm exec vitest run src/features/scrape/DiagnoseControls.test.tsx -t 'routes a Pick click during identity recovery'",
+    "result": "Assertion failed: the real hook placed a generic capture error with capture retry actions into the store after the rendered Pick button was clicked."
+  },
+  "repair": "Route same-tab identity refusal through the page-bound picker error and retry control; retain the remedy while identity is unresolved, clear it on a different document, and decline a stale Pick click after a new document has become current.",
+  "green": {
+    "command": "pnpm exec vitest run src/features/scrape/DiagnoseControls.test.tsx src/features/scrape/ScrapeView.error-controls.test.tsx",
+    "result": "Focused hook and UI routing checks passed for picker refusal, retry, capture preservation, injection rejection, cancel, and stale session handling."
+  },
+  "mutation": "The forcing-function plant changed the same-tab picker refusal branch to if (false); the real-hook UI test failed on the missing Retry picker button. A constant early return from launchDiagnose also failed the same test. Both plants restored the hook byte-identically.",
+  "limits": [
+    "Chrome scripting and identity snapshots were controlled in the component test; native browser timing and visual layout were not verified in this lane.",
+    "The separate release and native acceptance belong to the parent task."
+  ]
+}

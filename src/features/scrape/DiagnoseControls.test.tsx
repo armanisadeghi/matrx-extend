@@ -6,11 +6,11 @@ const bridge = vi.hoisted(() => ({
   listeners: new Map<string, (payload: never) => unknown>(),
   page: {
     id: 41,
-    documentId: 'intake-document-a',
+    documentId: 'intake-document-a' as string | null,
     pageKey: 'intake-page-a' as string | null,
     url: 'https://harbor-dental.test/intake',
     title: 'New patient intake',
-    identityStatus: 'ready' as const,
+    identityStatus: 'ready' as 'ready' | 'resolving',
     identityError: null as string | null,
   },
   executeScript: vi.fn(),
@@ -24,7 +24,7 @@ vi.mock('@/lib/messaging/native', () => ({
   },
 }));
 vi.mock('@/hooks/use-active-tab', () => ({
-  useActiveTab: () => bridge.page,
+  useActiveTab: () => ({ ...bridge.page }),
   getActiveTabIdentitySnapshot: () => bridge.page,
   isCurrentPageIdentity: (pageKey: string | null) =>
     pageKey !== null && pageKey === bridge.page.pageKey,
@@ -67,7 +67,11 @@ const pickerResult = (sessionId: string, mode: 'missing' | 'unwanted') => ({
 
 beforeEach(() => {
   bridge.listeners.clear();
+  bridge.page.id = 41;
   bridge.page.pageKey = 'intake-page-a';
+  bridge.page.documentId = 'intake-document-a';
+  bridge.page.identityStatus = 'ready';
+  bridge.page.identityError = null;
   bridge.executeScript.mockReset().mockResolvedValue([]);
   bridge.copied = [];
   useScrapeStore.getState().setCurrent(null);
@@ -125,6 +129,7 @@ describe('Scrape diagnose picker', () => {
     const hook = renderHook(() => useScrape());
     useScrapeStore.getState().setDiagnoseLaunchError({
       pageKey: 'intake-page-a',
+      tabId: 41,
       message: 'Previous picker failure',
     });
     await act(async () => hook.result.current.launchDiagnose());
@@ -186,6 +191,86 @@ describe('Scrape diagnose picker', () => {
     hook.unmount();
   });
 
+  it('routes a Pick click during identity recovery to picker retry and preserves the capture', async () => {
+    const captured = { article: { title: 'New patient intake' } } as never;
+    useScrapeStore.getState().setCurrent(captured, bridge.page.pageKey);
+    const hook = renderHook(() => useScrape());
+    const launcher = render(
+      <DiagnoseLauncher onLaunch={() => void hook.result.current.launchDiagnose()} />,
+    );
+
+    // The control was rendered for this capture before the page identity was withheld.
+    bridge.page.pageKey = null;
+    bridge.page.documentId = null;
+    bridge.page.identityStatus = 'resolving';
+    bridge.page.identityError = 'Page navigation is still settling. Retry in a moment.';
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Pick on page' }));
+
+    expect(bridge.executeScript).not.toHaveBeenCalled();
+    expect(useScrapeStore.getState().error).toBeNull();
+    expect(useScrapeStore.getState().current).toBe(captured);
+    expect(screen.getByRole('alert').textContent).toContain('finish loading');
+    expect(screen.getByRole('button', { name: 'Retry picker' })).toBeTruthy();
+    hook.rerender();
+    launcher.rerender(
+      <DiagnoseLauncher onLaunch={() => void hook.result.current.launchDiagnose()} />,
+    );
+    expect(screen.getByRole('button', { name: 'Retry picker' })).toBeTruthy();
+
+    bridge.page.pageKey = 'intake-page-a';
+    bridge.page.documentId = 'intake-document-a';
+    bridge.page.identityStatus = 'ready';
+    bridge.page.identityError = null;
+    hook.rerender();
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Retry picker' }));
+    await vi.waitFor(() => expect(useScrapeStore.getState().diagnose.picking).toBe(true));
+    expect(bridge.executeScript).toHaveBeenCalledTimes(2);
+    expect(useScrapeStore.getState().current).toBe(captured);
+    hook.unmount();
+  });
+
+  it('drops the identity-refusal remedy when a different document becomes current', async () => {
+    useScrapeStore
+      .getState()
+      .setCurrent({ article: { title: 'New patient intake' } } as never, bridge.page.pageKey);
+    const hook = renderHook(() => useScrape());
+    const launcher = render(
+      <DiagnoseLauncher onLaunch={() => void hook.result.current.launchDiagnose()} />,
+    );
+    bridge.page.pageKey = null;
+    bridge.page.documentId = null;
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Pick on page' }));
+    expect(screen.getByRole('button', { name: 'Retry picker' })).toBeTruthy();
+
+    bridge.page.pageKey = 'intake-page-b';
+    bridge.page.documentId = 'intake-document-b';
+    hook.rerender();
+    launcher.rerender(
+      <DiagnoseLauncher onLaunch={() => void hook.result.current.launchDiagnose()} />,
+    );
+    expect(screen.queryByRole('alert')).toBeNull();
+    expect(useScrapeStore.getState().diagnose.launchError).toBeNull();
+    expect(useScrapeStore.getState().diagnose.lastResult).toBeNull();
+    expect(bridge.executeScript).not.toHaveBeenCalled();
+    hook.unmount();
+  });
+
+  it('does not launch on a new document through a stale Pick control', async () => {
+    useScrapeStore
+      .getState()
+      .setCurrent({ article: { title: 'New patient intake' } } as never, bridge.page.pageKey);
+    const hook = renderHook(() => useScrape());
+    render(<DiagnoseLauncher onLaunch={() => void hook.result.current.launchDiagnose()} />);
+    bridge.page.pageKey = 'intake-page-b';
+    bridge.page.documentId = 'intake-document-b';
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Pick on page' }));
+    expect(bridge.executeScript).not.toHaveBeenCalled();
+    expect(useScrapeStore.getState().diagnose.picking).toBe(false);
+    expect(useScrapeStore.getState().diagnose.lastResult).toBeNull();
+    expect(useScrapeStore.getState().error).toBeNull();
+    hook.unmount();
+  });
+
   it('ignores an old launch failure after a newer picker starts', async () => {
     let rejectOld: ((error: Error) => void) | undefined;
     bridge.executeScript.mockImplementationOnce(
@@ -225,6 +310,7 @@ describe('Scrape diagnose picker', () => {
     useScrapeStore.getState().setCurrent(captured, bridge.page.pageKey);
     useScrapeStore.getState().setDiagnoseLaunchError({
       pageKey: 'intake-page-a',
+      tabId: 41,
       message: 'Picker could not start.',
     });
     render(<DiagnoseLauncher onLaunch={vi.fn()} />);

@@ -121,20 +121,26 @@ export function useScrape() {
       pickerSessionRef.current = null;
       setDiagnosePicking(false);
     }
-    setDiagnoseLaunchError(null);
-  }, [tab.pageKey, setDiagnosePicking, setDiagnoseLaunchError, setLoading]);
+    const launchError = useScrapeStore.getState().diagnose.launchError;
+    if (
+      launchError &&
+      (tab.pageKey ? tab.pageKey !== launchError.pageKey : tab.id !== launchError.tabId)
+    )
+      setDiagnoseLaunchError(null);
+  }, [tab.id, tab.pageKey, setDiagnosePicking, setDiagnoseLaunchError, setLoading]);
 
   const launchDiagnose = useCallback(async () => {
     const page = getActiveTabIdentitySnapshot();
+    const capturedPageKey = useScrapeStore.getState().pageKey;
     setDiagnoseLaunchError(null);
+    if (capturedPageKey && page.pageKey && page.pageKey !== capturedPageKey) return;
     if (!page.id || !page.documentId || !page.pageKey) {
-      setError(
-        buildCaptureError({
-          err: new Error(page.identityError ?? 'Page identity is unavailable. Retry.'),
-          url: page.url,
+      if (capturedPageKey && page.id === tab.id)
+        setDiagnoseLaunchError({
+          pageKey: capturedPageKey,
           tabId: page.id,
-        }),
-      );
+          message: 'Picker needs this page to finish loading. Retry picker in a moment.',
+        });
       return;
     }
     const sessionId = crypto.randomUUID();
@@ -173,13 +179,14 @@ export function useScrape() {
       setDiagnosePicking(false);
       setDiagnoseLaunchError({
         pageKey: page.pageKey,
+        tabId: page.id,
         message: classifyTabUrl(page.url).blocked
           ? 'Chrome blocks the picker here. Open a regular website.'
           : 'Picker could not start. Refresh this page, then try again.',
       });
       console.warn('[matrx-extend] diagnose picker injection failed', err);
     }
-  }, [diagnoseMode, setDiagnosePicking, setDiagnoseLaunchError, setError]);
+  }, [diagnoseMode, tab.id, setDiagnosePicking, setDiagnoseLaunchError]);
 
   const captureActiveTab = useCallback(
     async ({ mode = 'fast' }: CaptureOptions = {}) => {

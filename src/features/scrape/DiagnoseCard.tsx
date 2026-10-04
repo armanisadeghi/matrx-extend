@@ -215,22 +215,24 @@ export function DiagnoseLauncher({ onLaunch }: { onLaunch: () => void }) {
           {picking ? 'Picking…' : 'Pick on page'}
         </Button>
       </div>
-      {launchError?.pageKey === tab.pageKey && (
-        <div
-          role="alert"
-          className="mt-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-2 text-xs text-amber-700 dark:text-amber-300"
-        >
-          <p>{launchError.message}</p>
-          <div className="mt-1 flex gap-3">
-            <button type="button" className="font-medium underline" onClick={onLaunch}>
-              Retry picker
-            </button>
-            <button type="button" className="underline" onClick={() => clearLaunchError(null)}>
-              Dismiss
-            </button>
+      {launchError &&
+        (launchError.pageKey === tab.pageKey ||
+          (tab.pageKey === null && launchError.tabId === tab.id)) && (
+          <div
+            role="alert"
+            className="mt-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-2 text-xs text-amber-700 dark:text-amber-300"
+          >
+            <p>{launchError.message}</p>
+            <div className="mt-1 flex gap-3">
+              <button type="button" className="font-medium underline" onClick={onLaunch}>
+                Retry picker
+              </button>
+              <button type="button" className="underline" onClick={() => clearLaunchError(null)}>
+                Dismiss
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 }

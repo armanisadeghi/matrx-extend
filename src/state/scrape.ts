@@ -40,7 +40,7 @@ interface ScrapeState {
   diagnose: {
     mode: DiagnoseMode;
     picking: boolean;
-    launchError: { pageKey: string; message: string } | null;
+    launchError: { pageKey: string; tabId: number | null; message: string } | null;
     lastResult: DiagnoseResult | null;
     draftNote: string;
   };
@@ -50,7 +50,9 @@ interface ScrapeState {
   setAlreadyCaptured: (s: string | null) => void;
   setDiagnoseMode: (mode: DiagnoseMode) => void;
   setDiagnosePicking: (picking: boolean) => void;
-  setDiagnoseLaunchError: (error: { pageKey: string; message: string } | null) => void;
+  setDiagnoseLaunchError: (
+    error: { pageKey: string; tabId: number | null; message: string } | null,
+  ) => void;
   setDiagnoseResult: (result: DiagnoseResult | null) => void;
   setDiagnoseDraftNote: (note: string) => void;
   clearDiagnose: () => void;

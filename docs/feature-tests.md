@@ -968,6 +968,11 @@ Every entry follows this shape:
     page during an earlier launch must not let its late failure close or error
     a picker started on the new document. Restricted URLs explain that Chrome
     blocks the picker and direct the person to a regular website.
+  - **Identity still resolving:** Click **Pick on page** as the current page
+    reloads. The remedy says to retry the picker after the page loads, and
+    **Retry picker** launches only that picker when identity returns. The
+    capture stays intact. Navigating to a different document removes the old
+    remedy; its late picker messages cannot add a result to the new page.
 
 ### Scrape — `protectMicroData` pre-pass (PyPI date recovery)
 - **What it does:** Before Readability runs, strips Readability's
