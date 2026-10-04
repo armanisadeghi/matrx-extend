@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "task": "profile-save-boundary-escalation",
+  "status": "driver_cause_proven_fixed_native_reverification_pending",
+  "run_id": "profile-save-boundary-189-06",
+  "artifact": {
+    "version": "0.2.189",
+    "source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "ci_run_id": 37164174445,
+    "artifact_id": 11288542496
+  },
+  "cause": "Both Identity/Employment save and restore predicates accepted disabled Save while the draft was still dirty. Disabled means in flight as well as complete. The action returned and strict journal read the predecessor before the write completed.",
+  "causal_observation": {
+    "phase": "journal_after_action",
+    "saveState": {
+      "save_enabled": false,
+      "dirty": true,
+      "fields": {
+        "First name": true,
+        "Middle": true,
+        "Last name": true,
+        "Preferred": true,
+        "Suffix": true,
+        "Pronouns": true,
+        "Birthday": true
+      }
+    },
+    "source": [
+      "profile-empty-row-restoration.mjs:29:10",
+      "profile-owned-write-journal.mjs:21:5",
+      "profile-owned-write-journal.mjs:27:7",
+      "profile-owned-write-journal.mjs:63:9",
+      "profile-identity-employment-cases.mjs:280:5",
+      "profile-native-acceptance.mjs:661:23",
+      "profile-native-acceptance.mjs:988:11",
+      "profile-native-failure.mjs:193:5",
+      "profile-native-acceptance.mjs:894:30"
+    ]
+  },
+  "first_failing_boundary": "ownedDeleteUrl preferred-name assertion at profile-empty-row-restoration.mjs:29, called by post-action journal reconciliation",
+  "ruled_out": [
+    "Save click reachability: action reached settled predicate and post-action reconciliation.",
+    "Draft mismatch: all seven Identity fields matched at the first failure.",
+    "Persistent write rejection: final strict reconciliation accepted exact successor version 6 and original absence was restored."
+  ],
+  "fix": "Require save_enabled === false AND dirty === false AND exact desired/restoration fields. Retain precise allowlisted save subphases. No product or journal ownership changes.",
+  "tests": {
+    "red": "Both actual save/restore callbacks triggered premature journal reads before fix.",
+    "green": "31 focused cases passed, including actual save/restore callbacks with real owned journal.",
+    "mutation": "Scratch-only predicate weakening and constant-true predicate each failed both tests; tracked source was never weakened.",
+    "sibling_census": "Both field Save/restore paths fixed; base save waits already require clean drafts. Discard has no asynchronous persistence."
+  },
+  "native": {
+    "post_fix_run": false,
+    "run_limit": "One causal run only; independent native verification belongs to root.",
+    "resource_invalid": false,
+    "runner_exit_code": 1,
+    "decision": "child_failed",
+    "restoration": {
+      "verified": true,
+      "original_absence_restored": true
+    },
+    "magic_link_removed": true,
+    "temporary_diagnostics_removed": true
+  },
+  "evidence": {
+    "raw_report": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-save-boundary-189-06/evidence/profile-native-profile-save-boundary-189-06.json",
+    "raw_report_sha256": "1fe8abc6bf690b6526a76500e6ba62e553868d32011c9818307ca6db89e508f5",
+    "resource_journal": "docs/stabilization/resource-journals/profile-save-boundary-189-06.jsonl",
+    "resource_journal_sha256": "fe93d4005a523bbee708ed9837ef28498ada8f9b79b926db1689ea0381c4a2d1"
+  },
+  "gaps": [
+    "Fresh independent source review and native run against corrected driver remain.",
+    "Identity/Employment reload and date restoration are not yet verified end to end."
+  ]
+}

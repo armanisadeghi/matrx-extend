@@ -26,7 +26,16 @@ const PROFILE_RESTORATION_STAGES = new Set([
   'verify_restored_reopen',
   'discard_local_draft',
 ]);
-const PROFILE_FIELD_PHASES = new Set(['fill', 'draft_assert', 'save', 'reopen']);
+const PROFILE_FIELD_PHASES = new Set([
+  'fill',
+  'draft_assert',
+  'save',
+  'journal_before_action',
+  'save_click',
+  'save_settled',
+  'journal_after_action',
+  'reopen',
+]);
 const PROFILE_FIELD_NAMES = new Set([
   'First name',
   'Middle',

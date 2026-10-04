@@ -276,17 +276,23 @@ export async function runProfileFieldCase({
     const draft = await sample(panel, section, labels);
     equalFields(draft, desired, `${section}_draft`);
     assert.equal(draft.save_enabled, true, `${section}_save_disabled`);
-    phase = 'save';
+    phase = 'journal_before_action';
     await ownedJournal.save(
       section === 'Identity' ? desired.Preferred : preferredBefore,
       async () => {
+        phase = 'save_click';
         await save(panel);
+        phase = 'save_settled';
         await waitFor(
           `${section}_save_settled`,
           () => sample(panel, section, labels),
-          (s) => !s?.save_enabled && Object.entries(desired).every(([k, v]) => s.values?.[k] === v),
+          (s) =>
+            s?.save_enabled === false &&
+            s.dirty === false &&
+            Object.entries(desired).every(([k, v]) => s.values?.[k] === v),
           30000,
         );
+        phase = 'journal_after_action';
       },
       persistedFields(desired),
     );
@@ -333,7 +339,9 @@ export async function runProfileFieldCase({
             `${section}_restore_settled`,
             () => sample(activePanel, section, labels),
             (s) =>
-              !s?.save_enabled && Object.entries(original).every(([k, v]) => s.values?.[k] === v),
+              s?.save_enabled === false &&
+              s.dirty === false &&
+              Object.entries(original).every(([k, v]) => s.values?.[k] === v),
             30000,
           );
         },
