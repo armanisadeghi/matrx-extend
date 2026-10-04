@@ -17,8 +17,17 @@ export async function observeVideoLinks({ page, panel, urls, resourceAction, cli
     const opened = await newTab;
     if (opened instanceof Error) throw opened;
     try {
-      await opened.waitForLoadState('domcontentloaded', { timeout: 5000 });
-      result.opened_url = opened.url();
+      try {
+        await opened.waitForLoadState('domcontentloaded', { timeout: 5000 });
+      } catch (error) {
+        result.limitations.push(`open_load_unavailable:${diagnostic(error)}`);
+      }
+      const openedUrl = opened.url();
+      assert.ok(
+        typeof openedUrl === 'string' && openedUrl.length > 0 && openedUrl !== 'about:blank',
+        'video_open_url_unavailable',
+      );
+      result.opened_url = openedUrl;
       if (result.opened_url !== urls[0])
         result.failures.push(`video_open_url_mismatch:${result.opened_url.slice(0, 120)}`);
     } finally {

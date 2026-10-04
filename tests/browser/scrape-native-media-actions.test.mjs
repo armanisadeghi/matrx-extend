@@ -10,7 +10,7 @@ import {
 const openUrl = 'http://127.0.0.1:4021/intake-walkthrough.mp4';
 const copyUrl = 'http://127.0.0.1:4021/referral-walkthrough.mp4';
 
-function controls({ openedUrl = openUrl, copiedUrl = copyUrl, failGateAt = 0 } = {}) {
+function controls({ openedUrl = openUrl, copiedUrl = copyUrl, failGateAt = 0, loadError } = {}) {
   const actions = [];
   let gateCalls = 0;
   const panel = { send: async (method, args) => actions.push(['send', method, args]) };
@@ -23,7 +23,9 @@ function controls({ openedUrl = openUrl, copiedUrl = copyUrl, failGateAt = 0 } =
       actions.push(['gate', gateCalls]);
     }, action);
   const opened = {
-    waitForLoadState: async () => undefined,
+    waitForLoadState: async () => {
+      if (loadError) throw loadError;
+    },
     url: () => openedUrl,
     close: async () => undefined,
   };
@@ -126,4 +128,34 @@ test('observed failure keeps the T12 verdict failed even with an unavailable obs
     },
   );
   assert.equal(videoLinksVerdict({ failures: [], limitations: [] }).status, 'passed');
+});
+
+test('known wrong opened URL fails even when document loading times out', async () => {
+  const deps = controls({ openedUrl: copyUrl, loadError: new Error('load_timeout') });
+  const result = await observeVideoLinks({ ...deps, urls: [openUrl, copyUrl] });
+  assert.equal(videoLinksVerdict(result).status, 'failed');
+  assert.deepEqual(result.failures, [`video_open_url_mismatch:${copyUrl}`]);
+  assert.equal(result.opened_url, copyUrl);
+});
+
+test('correct opened URL remains observable when document loading times out', async () => {
+  const deps = controls({ loadError: new Error('load_timeout') });
+  const result = await observeVideoLinks({ ...deps, urls: [openUrl, copyUrl] });
+  assert.equal(result.opened_url, openUrl);
+  assert.deepEqual(result.failures, []);
+  assert.deepEqual(result.limitations, ['open_load_unavailable:load_timeout']);
+  assert.equal(videoLinksVerdict(result).status, 'partial');
+});
+
+test('unavailable opened URL stays partial when document loading times out', async () => {
+  for (const openedUrl of [null, '', 'about:blank']) {
+    const deps = controls({ openedUrl, loadError: new Error('load_timeout') });
+    const result = await observeVideoLinks({ ...deps, urls: [openUrl, copyUrl] });
+    assert.equal(videoLinksVerdict(result).status, 'partial');
+    assert.deepEqual(result.failures, []);
+    assert.deepEqual(result.limitations, [
+      'open_load_unavailable:load_timeout',
+      'open_unavailable:video_open_url_unavailable',
+    ]);
+  }
 });

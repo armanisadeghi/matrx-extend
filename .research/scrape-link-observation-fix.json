@@ -1,0 +1,27 @@
+{
+  "status": "READY_FOR_INDEPENDENT_REVIEW",
+  "scope": "Test driver helper only; no production edits or native browser run.",
+  "reviewed_prior_commits": [
+    "b89c725ceea9532e2537a1065200d13d91bdd882",
+    "570c482972324bf2852153d4664d6d3a45ba4eab"
+  ],
+  "cause": "A rejected domcontentloaded wait skipped opened.url(), turning an observable mismatch into an unavailable observation.",
+  "repair": "Record the load limitation independently, then read and validate the opened URL. A known mismatch remains a failure; null, empty, or initial about:blank remains unavailable. Preserve resource gates and refusal propagation unchanged.",
+  "causal_test": {
+    "command": "node --test tests/browser/scrape-native-media-actions.test.mjs",
+    "before": "6 passed, 3 failed. Known wrong URL plus load timeout returned partial; assertion expected failed.",
+    "after": "9 passed, 0 failed. Known wrong URL plus timeout fails; correct URL plus timeout remains observable and partial; unavailable URL plus timeout stays partial."
+  },
+  "verification": {
+    "focused_command": "node --test tests/browser/scrape-native-media-actions.test.mjs tests/browser/scrape-media-assertions.test.mjs tests/browser/owned-fixture-server.test.mjs",
+    "focused": "16 passed, 0 failed, 0 skipped",
+    "compile": "pnpm compile passed",
+    "format": "pnpm exec biome format --write on all three changed files",
+    "gut_check": "Executed constant return matching the wrong-URL case using plant.py: RED on correct URL and unavailable URL cases; byte-identical restore confirmed.",
+    "default_return_mutation": "Executed empty/default return using plant.py: RED on wrong-URL case; byte-identical restore confirmed."
+  },
+  "limits": [
+    "Controlled browser dependency doubles exercise the real observation helper and verdict; they are not native UI acceptance proof.",
+    "Fresh independent peer check and guarded native browser run remain with the root agent."
+  ]
+}
