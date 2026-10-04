@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "inventory_id": "EXT-F-1004-T26",
+  "reviewed_commits": ["228704a9", "1fab60d5"],
+  "verdict_a_acceptance": {
+    "status": "unverified",
+    "basis": "The standalone member/warm failure-and-retry case is still not imported by the native runner and has no native execution or row-absence receipt. Its provisional receipt explicitly leaves original_absence_verified false. Inventory member/reload and admin warm/reload branches are outside this module."
+  },
+  "verdict_b_quality": {
+    "status": "pass_source_only",
+    "prior_findings": {
+      "request_scope": "addressed: origin, exact route, POST, users Content-Profile, journal-verified user_id and organization_id, and synthetic preferred_name all match before the first request is failed. Later matching requests and foreign requests are continued; extra target attempts fail the case.",
+      "disable_failure": "addressed: stop switches to pass-through before disabling and retains the requestPaused listener when Fetch.disable rejects, so later paused requests still receive continueRequest. A later stop may retry disabling; the case reports failure.",
+      "restoration_receipt": "addressed: the case distinguishes local draft discard, owned-row value restoration, and original row absence. Success stays provisional until the outer runner's conditional deletion and absence check."
+    },
+    "new_blocking_findings": [],
+    "residual_risks": [
+      "No automated guard exercises the CDP interceptor against real request metadata, disable rejection, or foreign profile traffic; source inspection alone cannot prove those runtime paths.",
+      "On an ambiguous write or repeated disable failure, cleanup depends on the runner's durable journal and live CDP session; native restoration is unverified."
+    ]
+  },
+  "checks": {
+    "node_syntax": "passed",
+    "targeted_biome": "passed: case and probe",
+    "runner_reference_search": "no import or call found outside the standalone case",
+    "native_ui": "not_run_review_scope",
+    "database": "not_written_review_scope"
+  },
+  "source_basis": [
+    "tests/browser/profile-save-failure-case.mjs",
+    "tests/browser/profile-owned-write-journal.mjs",
+    "tests/browser/profile-native-acceptance.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "src/lib/supabase/user-profile.ts",
+    ".research/profile-save-failure-probe.json",
+    ".research/profile-save-failure-peer.json",
+    ".research/popup-profile-procedures.json"
+  ]
+}
