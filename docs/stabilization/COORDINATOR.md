@@ -1,6 +1,16 @@
 # Matrx Extend stabilization: resume here
 
-## Active checkpoint — 0.2.181 submitted for Store review
+## Active checkpoint — independent member reload acceptance passed
+
+Independent Luna run `profile-member-final-189-05` passed on frozen development 0.2.189 / source `b4b9f0c4` / CI37164174445 / artifact11288542496 using reviewed runner `b83c2af0`. Member Back and Save/Discard pass both warm and strict full extension reload; denied owner-read/Retry passes both, and failed-write/draft-retention/Retry passes warm. First-party identity, canonical HTTP200/zero admin rows, and device organization match were verified. Original Profile-row absence was restored and authenticated-read verified. Evidence `.research/profile-member-final-189-native.json`, commit `ce5d1c56`; root directly matched raw SHA `7011bf997e26f1266a05ea2f3483b3326e3069e1caf87b79e6afb5aca4c05b9e` and resource-journal SHA `f5b6cb79e33e1eca8218c2236157bd050afe93e5957116daa27014480dc27d91`. Resource admission valid, no invalidation, exit0; used link removed, private receipt0600. No heavy job remains.
+
+D98, D101 and D102 are closed for their original reproduced test-runner defects. D101 source gate passed independent peer `e813fb48`, 23 focused checks and full lint; adverse actual report/cleanup guards supplement prior native failed-operation capture. Member T01/T03 are exact-artifact passes. T25/T26/T28 remain partial; D95 remains fixed awaiting mounted cross-identity, reopen recovery, admin reload and other unobserved branches. Individual Profile fields and validation remain untested. Do not claim full Profile or extension health.
+
+Next: extend contained Profile acceptance to remaining field groups and validation, plus remaining admin/reload/error dimensions, preserving exact owned-state restoration. Then continue Popup and other non-Chat/Pilot surfaces. Keep the inventory matrix authoritative. No local build/release commands; use CI artifacts and current machine restrictions. One guarded heavy run at a time; two failed attempts or budget expiry triggers decomposition/escalation. This turn made verified progress; the unbudgeted stabilization goal remains active.
+
+Store: authenticated dashboard refreshed approximately01:05UTC October4 still showed pending0.2.181 and published0.2.176, upload disabled. Preserve pending submission; verify actual installed181 after approval before closing guest D97. No overall health or published-fix claim. All current child lanes are terminal. Root owns final synchronization ledger and next continuation.
+
+## Current turn history — 0.2.181 submitted for Store review
 
 Root reproduced an immediate failure on actual Chrome Web Store-installed 0.2.176 at approximately 21:22:57 UTC October 3: a fourth guest message in the same profile displayed “You don't have access to this chat. Sign in and try again.” Three earlier messages completed. No guest state was cleared. Backend was 59f1e995 before and after; the manual resource lease ended valid. Original extension OFF state was restored and the diagnostic tab closed. Evidence: `.research/urgent-installed-guest-fourth-20261003.json` (8c260f54). This matches the reported class of failure; the user's exact error has not been supplied.
 
