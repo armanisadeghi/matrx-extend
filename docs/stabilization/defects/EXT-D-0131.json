@@ -1,0 +1,43 @@
+{
+  "id": "EXT-D-0131",
+  "feature_id": "EXT-F-1007",
+  "surface": "Native startup renderer diagnostic",
+  "auth_mode": "all (auth-independent harness)",
+  "title": "Optional GPU observation timeout poisons primary browser transport",
+  "reproduction": [
+    "At5e067a16 use actual owned CDP transport with controlled endpoint replying to normal commands but withholding SystemInfo.getInfo.",
+    "Issue GPU query at bounded deadline, then issue Target.getTargets on same connection.",
+    "Observe timeout sets fatal=true/failureClass=command_timeout and the normal command rejects."
+  ],
+  "expected": "Optional diagnostic failure is persisted UNKNOWN without changing primary native-control transport behavior; normal control deadlines remain enforced.",
+  "actual": "Diagnostic uses shared CDP send path whose timeout invalidates entire connection, so observation can create a false native failure.",
+  "severity": "S2: diagnostic can invalidate browser control; not a proven product failure",
+  "priority": "P1: fix before renderer baseline launch",
+  "state": "in-fix",
+  "owner": "root/startup_renderer_observation",
+  "evidence": [
+    ".research/renderer-observation-fresh-peer.json",
+    ".research/startup-renderer-observation.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T20:40:57.575748+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Fresh reviewer discovered shared transport fatal timeout."
+    },
+    {
+      "at": "2026-10-04T20:40:57.575748+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Actual transport controlled endpoint probe confirms next normal command fails."
+    },
+    {
+      "at": "2026-10-04T20:40:57.575748+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Assigned isolation repair preserving ordinary deadline behavior, no new startup wait."
+    }
+  ],
+  "next_action": "Fresh independent actual transport refusal/positive control and persisted UNKNOWN verification before hosted baseline."
+}
