@@ -1,6 +1,6 @@
 # Matrx Extend stabilization — operating plan
 
-Status: pre-execution plan, 2026-09-25. No product tests, installation changes, or fixes have been performed by this campaign. Owner: the primary Codex chat; lane: `extend-stabilization`.
+Status: active, incomplete stabilization campaign. This operating plan was established on 2026-09-25. Current execution and release evidence live in `COORDINATOR.md`; authoritative case coverage lives in `inventory.json` and its generated views. Owner: the primary Codex chat; lane: `extend-stabilization`.
 
 ## Mandate and scope
 
