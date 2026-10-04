@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "case": "Scrape 0.2.215 hosted native startup refusal 37208889373",
+  "status": "RESOURCE_REFUSAL_PRODUCT_UNVERIFIED",
+  "finding": "The first guest resource watch found genuine host CPU pressure about 16 seconds after a healthy admission. The native action boundary refused the own-run unsafe history at inputs, before any Scrape product assertion. This is a resource-limited acceptance attempt, not evidence that the extension failed its media behavior.",
+  "confidence": {
+    "resource_boundary_operated_as_designed": "high",
+    "startup_load_included_owned_chromium_descendants": "moderate",
+    "precise_cause_or_cpu_share_of_the_one_second_spike": "undetermined"
+  },
+  "run": {
+    "workflow_run_id": 37208889373,
+    "guard_run_id": "hosted-guest-37208889373-1",
+    "frozen_development_artifact": {
+      "version": "0.2.215",
+      "source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+      "development_run_id": 37193761291,
+      "artifact_id": 11299613935
+    },
+    "package_and_browser_readiness": "valid exit 0 in their own journals",
+    "guest_admission": {
+      "at": "2026-10-04T14:26:44.373Z",
+      "cpu_busy_fraction": 0.044285714285714296,
+      "one_minute_load": 1.37,
+      "reasons": []
+    },
+    "first_guest_watch": {
+      "at": "2026-10-04T14:27:00.581Z",
+      "seconds_after_admission": 16.208,
+      "cpu_busy_fraction": 1,
+      "one_minute_load": 1.8,
+      "reasons": ["RESOURCE_CPU_BUSY"]
+    },
+    "process_snapshot_at": "2026-10-04T14:27:00.681Z",
+    "native_receipt": "status unverified; inputs NATIVE_RESOURCE_BOUNDARY_REFUSED:unsafe_sample; no guest account observed and no product cases recorded",
+    "guard_final_decision": "child_failed exit 1, resourceInvalid false: the native boundary refused after the first unsafe sample, before the guard's two-consecutive-unsafe stop criterion"
+  },
+  "attribution": {
+    "likely_owned_lineage": "node pid 14505 -> Chromium pid 14507 -> several Chromium Helper children (including pids 14564, 14630, 14598 and 14690); the journal does not include a durable owned group ID, so lineage ownership is inferred from the active child tree rather than proven by the lease",
+    "concurrent_other_processes": "SafariLaunchAgen pid 14570, provjobd23211560 pid 933, fontd pid 478, duetexpertd pid 1945, and others also had nonzero ps CPU averages",
+    "measurement_limit": "The guard's iostat value measures one one-second system interval. The ps snapshot followed 100 ms later, and ps %CPU is a decaying process average. Its truncated ucomm names and averages cannot allocate that interval's CPU exactly or identify a single culprit. The evidence supports mixed startup/resource pressure, not an exact Chromium-versus-OS split."
+  },
+  "comparison": "Earlier frozen-artifact native 37205211642 had a healthy guest journal and passed the strict reload predicate; earlier 37198730857 and 37203147962 were likewise refused on startup CPU pressure. This confirms intermittency of the resource gate, not the outcome of this run's unexecuted media assertions.",
+  "next_safe_action": "Record this attempt as resource-refused and continue the already-planned Scrape coverage only at its next authorized guarded acceptance after the existing readiness gate admits it. Preserve the exact artifact, first-unsafe-history refusal, CPU thresholds, watch and stop policy, and same-run attribution; do not automatically retry this refusal or claim product acceptance from it.",
+  "evidence": [
+    "docs/stabilization/evidence/scrape215/run37208889373/guest-resource.jsonl",
+    "docs/stabilization/evidence/scrape215/run37208889373/browser-resource.jsonl",
+    "docs/stabilization/evidence/scrape215/run37208889373/package-resource.jsonl",
+    "docs/stabilization/evidence/scrape215/run37208889373/receipt.json.txt",
+    ".research/startup-resource-diagnosis.json",
+    ".research/startup-attributed-native.json",
+    ".research/startup-journal-final-peer.json",
+    "scripts/stabilization-resource-safety.mjs",
+    "scripts/stabilization-resource.mjs",
+    "tests/browser/native-resource-boundary.mjs"
+  ],
+  "scope": "Read-only diagnosis of the completed run; no browser, native acceptance, build, policy change, source repair, or retry was made."
+}
