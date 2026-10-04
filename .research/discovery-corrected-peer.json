@@ -1,0 +1,54 @@
+{
+  "report_type": "discovery_corrected_procedure_peer_verification",
+  "status": "DONE_SOURCE_ONLY",
+  "reviewed_path": ".research/discovery-case-procedures.json",
+  "corrected_commit": "920a6976",
+  "source_authority": [
+    "docs/stabilization/inventory.json",
+    "src/features/tools/ToolsView.tsx",
+    "src/lib/tools/categories.ts",
+    "src/lib/tools/handlers/discover.ts",
+    "src/lib/tools/dispatch.ts"
+  ],
+  "addressed_findings": [
+    {
+      "id": "P1",
+      "status": "ADDRESSED",
+      "evidence": "For EXT-F-4002..EXT-F-4020, every mode and dimension explicitly selects All handlers before searching; reload procedures repeat the filter after reopening Catalog. ToolsView defaults surface to canonical, while category list handlers are outside CANONICAL_SURFACE. EXT-F-4001 is list_chrome_categories, which is canonical and reachable at the default filter."
+    },
+    {
+      "id": "P2",
+      "status": "ADDRESSED",
+      "evidence": "The current inventory assigns admin-only EXT-F-4007, EXT-F-4013 and EXT-F-4014 to admin mode only; corrected rows contain only admin cells. Manual-run bypass is documented separately and does not imply member applicability."
+    },
+    {
+      "id": "P3",
+      "status": "ADDRESSED",
+      "evidence": "Both root modes compare total_categories with categories.length, matching the discover handler return shape. Category procedures compare result.count with result.tools.length."
+    }
+  ],
+  "coverage_verdict_A": {
+    "status": "PARTIAL",
+    "evidence": "All 20 inventory rows have four dimensions, and all mode cells retain distinct {} / malformed JSON / JSON null fixtures. Submitted modes match inventory modes, including admin-only rows. Root and category predicates match source result fields. P1-P3 are addressed.",
+    "finding": "For every valid-input reload cell, expected behavior accepts the valid structural result OR a visible error; the failure predicate only catches regression without a surfaced error. Thus the positive reload check can pass when the tool errors instead of returning its required result. Treat any error in this positive valid-input probe as a discrepancy/failure; a separately scoped service-error case may accept surfaced errors."
+  },
+  "quality_verdict_B": {
+    "status": "IMPORTANT_GAP",
+    "evidence": "Procedure coverage is source-backed and the P1-P3 repairs are sound. The valid-input reload oracle has a false-pass path because visible errors are accepted. This is present across all 20 rows and all applicable modes."
+  },
+  "new_findings": [
+    {
+      "id": "Q1",
+      "status": "NOT ADDRESSED",
+      "severity": "important",
+      "affected": "All valid-input reload dimensions in EXT-F-4001..EXT-F-4020, all applicable modes",
+      "source_evidence": ".research/discovery-case-procedures.json valid-input reload expected strings permit '(or a visible error)'; the corresponding failure predicates do not reject a surfaced error. The source handlers return structured objects on successful execution; surfaced errors are not that expected positive result.",
+      "repair": "Require the valid structural result after reload. Count any surfaced error or missing result as a failed positive probe; keep recovery/error expectations in a separate error case if needed."
+    }
+  ],
+  "runtime_state": "All runtime cells remain unverified. No browser, build, DB query, dispatcher execution, or live pass claim was made.",
+  "remaining_unknowns": [
+    "Installed build identity, actual Catalog navigation/role visibility, and reload behavior remain unverified.",
+    "Live DB descriptions/server metadata, dispatcher permission behavior, and browser-supported category contents remain unverified."
+  ]
+}
