@@ -287,30 +287,55 @@ try {
 
       report.stage = 'restricted_error';
       await page.goto('chrome://settings/');
-      await click(panel, 'title', 'Capture the page exactly as it is right now');
-      const blocked = await waitFor(
-        'scrape_restricted_error',
+      const restricted = await waitFor(
+        'scrape_restricted_ready',
         () => scrapeState(panel),
-        (s) => s?.error && !s.reload && !s.retry,
+        (s) => s?.ready && s.fast.length === 1,
       );
-      report.error_screenshot = await screenshot(panel, artifacts, 'scrape-restricted-error.png');
-      assert.equal(blocked.empty, true);
-      await click(panel, 'scrape-dismiss', 'Dismiss');
-      await waitFor(
-        'scrape_error_dismissed',
-        () => scrapeState(panel),
-        (s) => s?.ready && !s.error,
-      );
-      mark(
-        'EXT-F-1007-T14',
-        'partial',
-        { restricted_url: page.url(), no_recovery_actions: true, dismissed: true },
-        [
-          'Recoverable Reload page and Try again, including deep retry mode, need a natural browser failure.',
-        ],
-      );
+      if (restricted.fast[0].disabled) {
+        mark(
+          'EXT-F-1007-T14',
+          'unverified',
+          { restricted_url: page.url(), capture_disabled: true, error_observed: restricted.error },
+          [
+            'Capture was disabled on the restricted page, so no error or recovery control was exercised.',
+          ],
+        );
+      } else {
+        await click(panel, 'title', 'Capture the page exactly as it is right now');
+        const blocked = await waitFor(
+          'scrape_restricted_error',
+          () => scrapeState(panel),
+          (s) => s?.error && !s.reload && !s.retry,
+        );
+        report.error_screenshot = await screenshot(panel, artifacts, 'scrape-restricted-error.png');
+        assert.equal(blocked.empty, true);
+        await click(panel, 'scrape-dismiss', 'Dismiss');
+        await waitFor(
+          'scrape_error_dismissed',
+          () => scrapeState(panel),
+          (s) => s?.ready && !s.error,
+        );
+        mark(
+          'EXT-F-1007-T14',
+          'partial',
+          { restricted_url: page.url(), no_recovery_actions: true, dismissed: true },
+          [
+            'Recoverable Reload page and Try again, including deep retry mode, need a natural browser failure.',
+          ],
+        );
+      }
 
       report.stage = 'extension_reload';
+      await page.goto(`${origin}/`);
+      const beforeReload = await waitFor(
+        'scrape_owned_page_empty_before_reload',
+        () => scrapeState(panel),
+        (s) => s?.ready && s.empty && !s.saved && !s.resultText?.includes(lazy),
+      );
+      assert.equal(beforeReload.title, 'Research brief: product discovery');
+      t20.evidence.reload_origin_url = page.url();
+      t20.evidence.previous_content_cleared_before_reload = true;
       const replacement = await reloadExtension();
       try {
         const after = await waitFor(
