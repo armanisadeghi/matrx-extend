@@ -1,0 +1,43 @@
+{
+  "id": "EXT-D-0122",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T08", "EXT-F-1007-T10"],
+  "surface": "Native Scrape media acceptance assertion and failure evidence",
+  "auth_mode": "guest",
+  "title": "Image-group native assertion stops before controls without preserving the failing pane",
+  "reproduction": [
+    "Use frozen development215 source3536b5cb and reviewed driver2145f33b with hosted guest-scrape-development. Run37209834721 passed all resource safety checks and captured3expectedimages with640x480,96x96,32x32natural sizes and2videos.",
+    "At warm_media_controls, driver selects Images then requires resultText.includes the exact lowercase string 1 image \u00b7 1 small \u00b7 1 icon. It fails warm_image_size_groups_missing before any T10/T11/T12 action.",
+    "Inspect uploaded screenshots: they show initial sidepanel and Article, but no failing Images pane, so actual group membership/text cannot be recovered from this run."
+  ],
+  "expected": "Validate actual image identities in all three rendered size groups independent of CSS text capitalization; preserve sanitized failing pane state and screenshot so a product mismatch can be distinguished from a driver mismatch.",
+  "actual": "Healthy native run stops at summary assertion. Frozen source applies uppercase to toolbar while observer reads innerText; likely comparison defect, not confirmed product bug. Group membership remains unverified.",
+  "severity": "S2: false-negative acceptance risk and missing actionable failure evidence; no confirmed product malfunction",
+  "priority": "P1: blocks media control acceptance",
+  "state": "in-fix",
+  "owner": "/root/scrape_image_group_diagnosis",
+  "evidence": [
+    ".research/scrape-media-capacity-recheck.json",
+    "docs/stabilization/evidence/scrape215/run37209834721/receipt.json.txt"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T14:46:55.329302+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Root verified healthy resource journals and native assertion failure with missing failing-pane screenshot."
+    },
+    {
+      "at": "2026-10-04T14:46:55.329302+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Frozen source/observer comparison identifies case-sensitive rendered text as likely cause; require actual group identity checks and diagnostic capture."
+    },
+    {
+      "at": "2026-10-04T14:46:55.329302+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Fresh Sol owns driver-only repair and forcing regression. Native media actions remain unverified."
+    }
+  ]
+}
