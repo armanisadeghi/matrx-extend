@@ -40,6 +40,7 @@ interface ScrapeState {
   diagnose: {
     mode: DiagnoseMode;
     picking: boolean;
+    launchError: { pageKey: string; message: string } | null;
     lastResult: DiagnoseResult | null;
     draftNote: string;
   };
@@ -49,6 +50,7 @@ interface ScrapeState {
   setAlreadyCaptured: (s: string | null) => void;
   setDiagnoseMode: (mode: DiagnoseMode) => void;
   setDiagnosePicking: (picking: boolean) => void;
+  setDiagnoseLaunchError: (error: { pageKey: string; message: string } | null) => void;
   setDiagnoseResult: (result: DiagnoseResult | null) => void;
   setDiagnoseDraftNote: (note: string) => void;
   clearDiagnose: () => void;
@@ -81,6 +83,7 @@ export const useScrapeStore = create<ScrapeState>((set) => ({
   diagnose: {
     mode: 'missing',
     picking: false,
+    launchError: null,
     lastResult: null,
     draftNote: '',
   },
@@ -101,14 +104,22 @@ export const useScrapeStore = create<ScrapeState>((set) => ({
 
   setDiagnoseMode: (mode) => set((s) => ({ diagnose: { ...s.diagnose, mode } })),
   setDiagnosePicking: (picking) => set((s) => ({ diagnose: { ...s.diagnose, picking } })),
+  setDiagnoseLaunchError: (launchError) =>
+    set((s) => ({ diagnose: { ...s.diagnose, launchError } })),
   setDiagnoseResult: (lastResult) =>
     set((s) => ({
-      diagnose: { ...s.diagnose, lastResult, picking: false },
+      diagnose: { ...s.diagnose, lastResult, picking: false, launchError: null },
     })),
   setDiagnoseDraftNote: (draftNote) => set((s) => ({ diagnose: { ...s.diagnose, draftNote } })),
   clearDiagnose: () =>
     set((s) => ({
-      diagnose: { ...s.diagnose, lastResult: null, draftNote: '', picking: false },
+      diagnose: {
+        ...s.diagnose,
+        lastResult: null,
+        draftNote: '',
+        picking: false,
+        launchError: null,
+      },
     })),
 
   editArticleMarkdown: (markdown) =>

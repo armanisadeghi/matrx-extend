@@ -62,6 +62,7 @@ export function useScrape() {
     markUnsaved,
   } = useScrapeStore();
   const setDiagnosePicking = useScrapeStore((s) => s.setDiagnosePicking);
+  const setDiagnoseLaunchError = useScrapeStore((s) => s.setDiagnoseLaunchError);
   const setDiagnoseResult = useScrapeStore((s) => s.setDiagnoseResult);
   const diagnoseMode = useScrapeStore((s) => s.diagnose.mode);
   /** Which mode is currently running. Null when idle. */
@@ -101,6 +102,7 @@ export function useScrape() {
         if (payload.sessionId !== pickerSessionRef.current?.sessionId) return { ack: true };
         pickerSessionRef.current = null;
         setDiagnosePicking(false);
+        setDiagnoseLaunchError(null);
         return { ack: true };
       },
     );
@@ -108,7 +110,7 @@ export function useScrape() {
       offResult();
       offExit();
     };
-  }, [setDiagnoseResult, setDiagnosePicking]);
+  }, [setDiagnoseResult, setDiagnosePicking, setDiagnoseLaunchError]);
 
   useEffect(() => {
     captureSequenceRef.current += 1;
@@ -119,10 +121,12 @@ export function useScrape() {
       pickerSessionRef.current = null;
       setDiagnosePicking(false);
     }
-  }, [tab.pageKey, setDiagnosePicking]);
+    setDiagnoseLaunchError(null);
+  }, [tab.pageKey, setDiagnosePicking, setDiagnoseLaunchError, setLoading]);
 
   const launchDiagnose = useCallback(async () => {
     const page = getActiveTabIdentitySnapshot();
+    setDiagnoseLaunchError(null);
     if (!page.id || !page.documentId || !page.pageKey) {
       setError(
         buildCaptureError({
@@ -148,9 +152,14 @@ export function useScrape() {
         },
         args: [diagnoseMode, sessionId],
       });
-      if (!isCurrentPageIdentity(page.pageKey)) {
-        pickerSessionRef.current = null;
-        setDiagnosePicking(false);
+      if (
+        pickerSessionRef.current?.sessionId !== sessionId ||
+        !isCurrentPageIdentity(page.pageKey)
+      ) {
+        if (pickerSessionRef.current?.sessionId === sessionId) {
+          pickerSessionRef.current = null;
+          setDiagnosePicking(false);
+        }
         return;
       }
       await chrome.scripting.executeScript({
@@ -158,11 +167,19 @@ export function useScrape() {
         files: ['content-scripts/diagnose-picker.js'],
       });
     } catch (err) {
+      if (pickerSessionRef.current?.sessionId !== sessionId || !isCurrentPageIdentity(page.pageKey))
+        return;
       pickerSessionRef.current = null;
       setDiagnosePicking(false);
+      setDiagnoseLaunchError({
+        pageKey: page.pageKey,
+        message: classifyTabUrl(page.url).blocked
+          ? 'Chrome blocks the picker here. Open a regular website.'
+          : 'Picker could not start. Refresh this page, then try again.',
+      });
       console.warn('[matrx-extend] diagnose picker injection failed', err);
     }
-  }, [diagnoseMode, setDiagnosePicking, setError]);
+  }, [diagnoseMode, setDiagnosePicking, setDiagnoseLaunchError, setError]);
 
   const captureActiveTab = useCallback(
     async ({ mode = 'fast' }: CaptureOptions = {}) => {

@@ -961,8 +961,13 @@ Every entry follows this shape:
   - Pick the same element twice: card overwrites without prompting.
   - Repeating list page (PyPI projects): the bundle includes one
     sibling example and reports `siblingCount`.
-  - **Restricted URLs** (chrome://, web store): the picker injection
-    will fail silently; recovery is to navigate to a real page.
+  - **Picker launch refused:** On a page where Chrome rejects script injection,
+    **Pick on page** shows a short failure message with **Retry picker** and
+    **Dismiss**. The existing capture stays visible. Retry after restoring page
+    access starts the picker; Dismiss removes only the message. Reloading the
+    page during an earlier launch must not let its late failure close or error
+    a picker started on the new document. Restricted URLs explain that Chrome
+    blocks the picker and direct the person to a regular website.
 
 ### Scrape — `protectMicroData` pre-pass (PyPI date recovery)
 - **What it does:** Before Readability runs, strips Readability's

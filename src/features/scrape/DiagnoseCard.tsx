@@ -168,48 +168,69 @@ export function DiagnoseCard() {
 }
 
 export function DiagnoseLauncher({ onLaunch }: { onLaunch: () => void }) {
+  const tab = useActiveTab();
   const setMode = useScrapeStore((s) => s.setDiagnoseMode);
+  const clearLaunchError = useScrapeStore((s) => s.setDiagnoseLaunchError);
   const mode = useScrapeStore((s) => s.diagnose.mode);
   const picking = useScrapeStore((s) => s.diagnose.picking);
+  const launchError = useScrapeStore((s) => s.diagnose.launchError);
 
   return (
-    <div className="flex items-center gap-1 rounded-lg border bg-card p-1">
-      <button
-        type="button"
-        onClick={() => setMode('missing')}
-        className={cn(
-          'rounded-md px-2 py-1 text-[11px] font-medium transition-colors',
-          mode === 'missing'
-            ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
-            : 'text-muted-foreground hover:bg-accent hover:text-foreground',
-        )}
-        title="Pick an element that should be in the scrape but isn't"
-      >
-        Missing
-      </button>
-      <button
-        type="button"
-        onClick={() => setMode('unwanted')}
-        className={cn(
-          'rounded-md px-2 py-1 text-[11px] font-medium transition-colors',
-          mode === 'unwanted'
-            ? 'bg-red-500/15 text-red-700 dark:text-red-300'
-            : 'text-muted-foreground hover:bg-accent hover:text-foreground',
-        )}
-        title="Pick an element that's in the scrape but shouldn't be"
-      >
-        Unwanted
-      </button>
-      <Button
-        size="sm"
-        variant="secondary"
-        disabled={picking}
-        onClick={onLaunch}
-        className="h-7 gap-1 rounded-md px-2 text-[11px]"
-      >
-        <Crosshair className="size-3" />
-        {picking ? 'Picking…' : 'Pick on page'}
-      </Button>
+    <div className="min-w-0">
+      <div className="flex items-center gap-1 rounded-lg border bg-card p-1">
+        <button
+          type="button"
+          onClick={() => setMode('missing')}
+          className={cn(
+            'rounded-md px-2 py-1 text-[11px] font-medium transition-colors',
+            mode === 'missing'
+              ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+              : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+          )}
+          title="Pick an element that should be in the scrape but isn't"
+        >
+          Missing
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode('unwanted')}
+          className={cn(
+            'rounded-md px-2 py-1 text-[11px] font-medium transition-colors',
+            mode === 'unwanted'
+              ? 'bg-red-500/15 text-red-700 dark:text-red-300'
+              : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+          )}
+          title="Pick an element that's in the scrape but shouldn't be"
+        >
+          Unwanted
+        </button>
+        <Button
+          size="sm"
+          variant="secondary"
+          disabled={picking}
+          onClick={onLaunch}
+          className="h-7 gap-1 rounded-md px-2 text-[11px]"
+        >
+          <Crosshair className="size-3" />
+          {picking ? 'Picking…' : 'Pick on page'}
+        </Button>
+      </div>
+      {launchError?.pageKey === tab.pageKey && (
+        <div
+          role="alert"
+          className="mt-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-2 text-xs text-amber-700 dark:text-amber-300"
+        >
+          <p>{launchError.message}</p>
+          <div className="mt-1 flex gap-3">
+            <button type="button" className="font-medium underline" onClick={onLaunch}>
+              Retry picker
+            </button>
+            <button type="button" className="underline" onClick={() => clearLaunchError(null)}>
+              Dismiss
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
