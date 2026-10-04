@@ -1,0 +1,22 @@
+{
+  "report_type": "discovery_procedure_peer_correction",
+  "status": "DONE_SOURCE_ONLY",
+  "corrected_path": ".research/discovery-case-procedures.json",
+  "peer_findings": {
+    "P1": "EXT-F-4002..EXT-F-4020 now explicitly select All handlers before searching in each applicable valid-input, invalid-input, permissions and reload procedure, including post-reload repetition.",
+    "P2": "EXT-F-4007, EXT-F-4013 and EXT-F-4014 retain admin execution cells only. Member negative access remains assigned to the owning Tools UI visibility case; manual-run bypass does not establish member applicability.",
+    "P3": "EXT-F-4001 valid-input failure predicates in both modes now compare total_categories with categories.length."
+  },
+  "validation": {
+    "command": "python3 /tmp/validate_discovery_procedures.py",
+    "result": "PASS: 20 rows, 148 mode/dimension cells; inventory modes and source-backed Catalog/root predicates verified",
+    "sources": [
+      "docs/stabilization/inventory.json",
+      "src/features/tools/ToolsView.tsx",
+      "src/lib/tools/handlers/discover.ts",
+      "src/lib/tools/categories.ts"
+    ],
+    "format": "pnpm exec biome format --write .research/discovery-case-procedures.json"
+  },
+  "limits": "Source and inventory checks only. No browser runtime, DB query, dispatcher execution, build, release, or live pass claim."
+}
