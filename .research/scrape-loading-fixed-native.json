@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "status": "unverified",
+  "changed": [],
+  "route": "guest-scrape-development",
+  "run": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_name": "Hosted guest side-panel acceptance",
+    "run_id": "37191118595",
+    "conclusion": "failure",
+    "actual_workflow_head_sha": "6cf774023864bafc7a39d06ca5ad0a0958f82532",
+    "product_fix_commit": "12300b97d146f5f796e0f1421bfe5b3cf6204442",
+    "product_fix_source_sha": "494cdf6c66ee80a2daab97f8ef138aaa9cc01335",
+    "release_run_id": null,
+    "development_run_id": "37190768893",
+    "development_artifact_id": "11298687631",
+    "acceptance_artifact_id": "11299226654",
+    "acceptance_artifact_name": "hosted-guest-37191118595-1",
+    "scrape_diagnostic_cpu_rate": null
+  },
+  "artifact_provenance": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.213",
+    "source_sha": "494cdf6c66ee80a2daab97f8ef138aaa9cc01335",
+    "source_tree_sha256": "e06d33285f213c9fbbf17cc0f125e6351779962d892450387be3fb51229aab60",
+    "fix_is_ancestor_of_artifact_source": true,
+    "store_205_used": false
+  },
+  "case_observations": {
+    "EXT-F-1007-T20": {
+      "status": "partial",
+      "observed": "Guest account observed with no access token/profile stored. Fresh Scrape empty state true at http://localhost:49200/intake; navigation to /referrals cleared prior content; reloading origin showed prior content cleared before reload.",
+      "remaining": "Full extension reload lifecycle remains unverified."
+    },
+    "EXT-F-1007-T01": {
+      "status": "partial",
+      "observed": "Fast capture showed disabled Capturing\u2026: 5 samples, 1 matching button, 1 disabled sample, 2 disabled mutation records, observed at 2176.2 ms. Article title Harbor Dental intake guide was visible, lazy content absent, and Article/Images/Video/Links/SEO/Schema tabs were present.",
+      "screenshot": "test-results/hosted-scrape-37191118595/test-results/native-sidepanel-qa-WT7zG7/scrape-fast-article.png",
+      "remaining": "Warm/full reload lifecycle remains unverified."
+    },
+    "EXT-F-1007-T08": {
+      "status": "partial",
+      "observed": "All six tabs selected; Article, Links, SEO, and Schema matching-content checks were true.",
+      "remaining": "Image/video matching content or empty state and reload lifecycle remain unverified."
+    },
+    "EXT-F-1007-T02": {
+      "status": "partial",
+      "observed": "Deep capture showed disabled Scrolling\u2026: 11 samples, 7 disabled samples, 2 disabled mutation records, observed at 7050.7 ms. Lazy content appeared in browser and capture.",
+      "screenshot": "test-results/hosted-scrape-37191118595/test-results/native-sidepanel-qa-WT7zG7/scrape-deep-article.png",
+      "remaining": "Deep failure retry mode and reload lifecycle remain unverified."
+    },
+    "EXT-F-1007-T14": {
+      "status": "partial",
+      "observed": "Restricted chrome://settings/ produced no recovery actions; Dismiss was attempted.",
+      "remaining": "Recoverable Reload page and Try again, including deep retry mode, remain unverified."
+    }
+  },
+  "terminal_failure": {
+    "stage": "extension_reload",
+    "code": "unique visible pointer target",
+    "receipt_failure": "The extension-reload interaction could not find its unique visible pointer target; no successful full extension reload is recorded.",
+    "resource_watch": {
+      "timeline_utc": [
+        {
+          "at": "2026-10-04T09:14:06.168Z",
+          "event": "RESOURCE_ADMITTED",
+          "cpu_busy_fraction": 0.015714285714285715
+        },
+        {
+          "at": "2026-10-04T09:14:22.237Z",
+          "event": "RESOURCE_WATCH_UNSAFE",
+          "reason": "RESOURCE_CPU_BUSY",
+          "cpu_busy_fraction": 0.86
+        },
+        {
+          "at": "2026-10-04T09:14:32.478Z",
+          "event": "RESOURCE_JOB_EXIT",
+          "child_exit_code": 1
+        },
+        {
+          "at": "2026-10-04T09:14:32.598Z",
+          "event": "RESOURCE_FINAL_DECISION",
+          "decision": "child_failed",
+          "resource_invalid": false
+        }
+      ],
+      "unsafe_was_terminal_refusal": false,
+      "unsafe_recovery_status": "No subsequent healthy sample is present; sustained-stop threshold was not reached, so watchdog did not terminate or invalidate the job. This is not evidence of recovery.",
+      "case_time_correlation": "Receipt observedAtMs uses browser performance clock without a wall-clock anchor; cannot establish whether unsafe CPU overlapped T01/T02 observations.",
+      "resource_invalid": false,
+      "final_decision": "child_failed"
+    },
+    "interpretation": "Receipt records extension_reload unique-visible-pointer-target failure. Resource journal records one unsafe CPU sample 10.241 s before child exit; it neither refused admission nor terminated/invalidated the run. Since there is no later healthy sample and browser observation times cannot be mapped to UTC, possible resource overlap remains unresolved. Keep fast/deep native observations provisional; no clean retest or feature-wide pass is claimed."
+  },
+  "resource_journals": {
+    "hosted-package-37191118595-1": {
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "sha256": "2036119947f45fca71c801b8f8b7785cd7570c7fcc06387a9fcabf60707745d2"
+    },
+    "hosted-browser-37191118595-1": {
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "sha256": "14b1e76553b7819ecbf6adc1156bb23e35cfb53459ff3ad3c089d235eb84df2f"
+    },
+    "hosted-guest-37191118595-1": {
+      "decision": "child_failed",
+      "exit_code": 1,
+      "resource_invalid": false,
+      "sha256": "3c6822f4789b05aac3e5f0f50a26c13f1009cb21edf6a3158e4784d85da05a12"
+    }
+  },
+  "evidence": {
+    "receipt": {
+      "file": "test-results/hosted-scrape-37191118595/test-results/scrape-guest-native-c944072d-017b-468f-9f81-1a0d10234f65.json",
+      "sha256": "1257262907b79ffec063c61010401945d535e6d8981036d4500de0a28d8b25d9"
+    },
+    "screenshots": [
+      {
+        "file": "test-results/hosted-scrape-37191118595/test-results/native-sidepanel-qa-WT7zG7/native-side-panel.png",
+        "sha256": "2cfda86f86cad54e4a73aa3480585a0e0ab5d74b20da4921a35999d22e3c462f"
+      },
+      {
+        "file": "test-results/hosted-scrape-37191118595/test-results/native-sidepanel-qa-WT7zG7/normal-target-after-open.png",
+        "sha256": "60d95c01c8bf5fa8f0807e1aed08d2adb43b4a5532190ae0eadd54c5e3aef79c"
+      },
+      {
+        "file": "test-results/hosted-scrape-37191118595/test-results/native-sidepanel-qa-WT7zG7/scrape-fast-article.png",
+        "sha256": "21fe2e44f72d8eb84dc43535eef6758a17ddadf41ea6b7c172a42ddd22a15330"
+      },
+      {
+        "file": "test-results/hosted-scrape-37191118595/test-results/native-sidepanel-qa-WT7zG7/scrape-deep-article.png",
+        "sha256": "2b60db057add4a11145f7a84e449eda6dd95de9e3ad5f468dc2f6998ee7075e1"
+      },
+      {
+        "file": "test-results/hosted-scrape-37191118595/test-results/native-sidepanel-qa-WT7zG7/scrape-restricted-error.png",
+        "sha256": "21736471c54f156145c5b88a17afa86010de7d352bfc16a8662905d927bf0c81"
+      }
+    ],
+    "artifact_note": "Exact development acceptance artifact 11299226654 downloaded; only current run-ID journals were used. Artifact kind is ci_development_test, not the Store 0.2.205 payload."
+  },
+  "open_questions": [
+    "Why did the extension_reload action fail to find its unique visible pointer target after the case assertions ran?",
+    "Could the unsafe CPU interval have overlapped the browser observations? Journal/browser clocks cannot correlate; no later healthy resource sample establishes recovery.",
+    "Image/video matching, reload lifecycle, retry/recovery states, and full end-to-end acceptance remain unverified."
+  ]
+}
