@@ -1,0 +1,35 @@
+{
+  "reviewed_commits": [
+    "aaf60fc3c719faa141f3af843e609759ceaa926b",
+    "6ae0a7479a9ae6987f862cc620ec57e077f9175c"
+  ],
+  "finding": {
+    "prior_finding": "Date.now rollback could extend the 15-second native health wait; the first implementation also depended on wall-clock progress.",
+    "status": "ADDRESSED",
+    "evidence": [
+      "The current waiter establishes and checks its deadline with monotonicClock, defaulting to performance.now; strict evidence freshness remains based on the injected wall clock.",
+      "It refuses when monotonic elapsed time is beyond the deadline before and after the strict health probe, so a late refresh cannot release an action.",
+      "The harness wires awaitNativeResourceHealth into both requireResourceHealth and resourceAction; runNativeResourceAction awaits the gate before invoking the action.",
+      "node --test tests/browser/native-resource-boundary.test.mjs passes on HEAD, covering own-run fresh health and refusal for stale expiry, wall rollback, post-deadline refresh, unsafe evidence, wrong run, stop, and missing evidence.",
+      "A temporary copy with monotonicClock() replaced by clock() fails the rollback case at the explicit wall_clock_extended_wait sentinel; source tree was not changed by the mutation."
+    ],
+    "remaining_issue": "The mutation proof demonstrates over-budget looping but the regression assertion reports the harness sentinel rather than matching stale_health. The production implementation and normal test pass; this is a proof-quality limitation, not an observed source defect."
+  },
+  "verdict_a": {
+    "source_behavior": "PASS",
+    "native_status": "UNKNOWN",
+    "evidence": "The boundary and real native driver wiring were inspected. No hosted/native UI run was performed; source readiness does not establish actual guest acceptance."
+  },
+  "verdict_b": {
+    "quality": "PASS_WITH_CONCERN",
+    "forcing_negative": "The repaired suite passes; a temporary wall-clock mutant fails on the named over-budget sentinel. Existing test does not produce the ideal stale_health assertion under the mutant.",
+    "concern": "The single large boundary test combines multiple refusal conditions, and the negative rollback proof's assertion is indirect. No edits were made under this reviewer lane."
+  },
+  "checks": {
+    "command": "node --test tests/browser/native-resource-boundary.test.mjs",
+    "result": "PASS: 1 test, 1 pass, 0 fail",
+    "driver_wiring": "PASS: tests/browser/native-sidepanel-qa-harness.mjs supplies the waiter to requireResourceHealth and resourceAction.",
+    "native_ui": "NOT RUN"
+  },
+  "working_tree": "Existing unrelated modification docs/stabilization/reports/workspace-sync-guest-incident-20261003.json preserved."
+}
