@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "status": "unverified",
+  "changed": [],
+  "run": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_name": "Hosted guest side-panel acceptance",
+    "run_id": "37192733619",
+    "conclusion": "failure",
+    "actual_workflow_head_sha": "09bd809625064a7b6f12d70a690503ac7421adfa",
+    "route": "guest-scrape-development",
+    "release_run_id": null,
+    "development_run_id": "37190768893",
+    "development_artifact_id": "11298687631",
+    "acceptance_artifact_id": "11300215725",
+    "acceptance_artifact_name": "hosted-guest-37192733619-1",
+    "acceptance_artifact_sha256": "d6dbdc7f02b629772fe5b5f30b281f2461a240c0c5dfb688e41356d5306a9a24",
+    "scrape_diagnostic_cpu_rate": null
+  },
+  "artifact_provenance": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.213",
+    "source_sha": "494cdf6c66ee80a2daab97f8ef138aaa9cc01335",
+    "source_tree_sha256": "e06d33285f213c9fbbf17cc0f125e6351779962d892450387be3fb51229aab60",
+    "product_fix_commit": "12300b97d146f5f796e0f1421bfe5b3cf6204442",
+    "fix_is_ancestor_of_artifact_source": true,
+    "store_205_used": false
+  },
+  "case_observations": {
+    "EXT-F-1007-T20": {
+      "status": "partial",
+      "observed": "Guest account had no access token or profile stored. Initial empty state was true at localhost:49199/intake. Navigation to /referrals cleared prior content; the origin reload cleared prior content before reload.",
+      "remaining": "Full extension reload lifecycle remains unverified."
+    },
+    "EXT-F-1007-T01": {
+      "status": "partial",
+      "observed": "Fast capture receipt showed busy_disabled=true and Capturing… from current owned visible DOM: 5 samples, 1 matching button, 1 disabled sample, 2 disabled mutation records; observation at 2078.7 ms. Article title Harbor Dental intake guide and all six result tabs were present; lazy content was absent before deep capture.",
+      "screenshot": "test-results/native-sidepanel-qa-ki0m4a/scrape-fast-article.png",
+      "screenshot_sha256": "dbe7ea979e76118f8d6165256f006b346a3b91545c52ea1f620c1ea7a89d3c2a",
+      "remaining": "Busy state was sampled during the action, not asserted for the entire operation; reload lifecycle is unverified."
+    },
+    "EXT-F-1007-T08": {
+      "status": "partial",
+      "observed": "Article, Images, Video, Links, SEO, and Schema tabs were selected. Matching content was true for Article, Links, SEO, and Schema.",
+      "remaining": "Image/video matching content or empty state and reload lifecycle remain unverified."
+    },
+    "EXT-F-1007-T02": {
+      "status": "partial",
+      "observed": "Deep capture receipt showed Scrolling… and busy_disabled=true: 11 samples, 1 matching button, 7 disabled samples, 2 disabled mutation records; observation at 6846 ms. Lazy content appeared in the browser and capture.",
+      "screenshot": "test-results/native-sidepanel-qa-ki0m4a/scrape-deep-article.png",
+      "screenshot_sha256": "f1990582c297b7cff14e6573d8f0d50d8724bd36feff206bd9fc71ec026dceb0",
+      "remaining": "Busy state was sampled during the action, not asserted for its full duration; deep retry mode and reload lifecycle remain unverified."
+    },
+    "EXT-F-1007-T14": {
+      "status": "partial",
+      "observed": "chrome://settings/ produced no recovery actions; Dismiss was attempted.",
+      "screenshot": "test-results/native-sidepanel-qa-ki0m4a/scrape-restricted-error.png",
+      "screenshot_sha256": "c0b25721f3650d0b2d1c10147f1d0a0c3ae481116ce44d1b100d89a340d63bb8",
+      "remaining": "Recoverable Reload page and Try again, including deep retry mode, remain unverified."
+    }
+  },
+  "D118_geometry": {
+    "status": "observed_drift",
+    "evidence": "At 360 px viewport, document/body/Scrape pane scrollWidth was 391 px; resultTabs right edge was 390.77 px. Selecting Links/SEO/Schema moved document left to -31 px (scrollLeft 31); the deep-capture screenshot remains shifted left and clips the left edge of the panel content. The fast screenshot clips the Schema tab on the right.",
+    "measurements": "Receipt contains geometry at after_fast_capture, after each of six result tabs, after_return_to_Article, and after_deep_capture. No geometry fix or product pass is claimed.",
+    "screenshots": [
+      "test-results/native-sidepanel-qa-ki0m4a/scrape-fast-article.png",
+      "test-results/native-sidepanel-qa-ki0m4a/scrape-deep-article.png"
+    ]
+  },
+  "D120_reload": {
+    "status": "failed_unresolved",
+    "failure_stage": "extension_reload",
+    "failure_code": "native_extension_worker_retirement_unverified",
+    "milestones": [{ "name": "reload_extension", "at": "2026-10-04T09:43:44.790Z" }],
+    "lifecycle_observation": {
+      "old_worker_destroyed_event": false,
+      "old_worker_absent": true,
+      "old_panel_absent": true,
+      "replacement_worker_present": true,
+      "replacement_worker_created_event": true,
+      "observed_worker_count": 1,
+      "management_state": "ENABLED",
+      "runtime_error_count": 0,
+      "manifest_error_count": 0
+    },
+    "pointer_target_counts": "Not present: receipt driver_failure is null and no matchedTargetCount/visibleMatchCount fields were uploaded. Do not infer a pointer-target count from the worker-retirement failure code.",
+    "timeline_limit": "Only reload_extension start is in reload_milestones; subsequent reload phases were not reached/recorded. The available wall-clock anchor ties the failure to current-run resource samples."
+  },
+  "resource_journals": {
+    "hosted-package-37192733619-1": {
+      "decision": "valid",
+      "admitted_at": "2026-10-04T09:39:29.083Z",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "sha256": "b8d99eb897754242dbd7409d7ea979a626db5806a24ee125f6a7bd87f584dbc0"
+    },
+    "hosted-browser-37192733619-1": {
+      "decision": "valid",
+      "admitted_at": "2026-10-04T09:41:25.216Z",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "sha256": "07f184219b85236001b94c6270725867c81174da1338e07bf26eceb19684a4b1"
+    },
+    "hosted-guest-37192733619-1": {
+      "decision": "child_failed",
+      "admitted_at": "2026-10-04T09:43:21.331Z",
+      "healthy_samples_at": ["2026-10-04T09:43:37.398Z", "2026-10-04T09:43:53.441Z"],
+      "exit_at": "2026-10-04T09:44:01.983Z",
+      "resource_invalid": false,
+      "unsafe_event": false,
+      "sha256": "99474d6de8b39b533167337494baa72c08dd9994dc81c84f73ed748c592034df"
+    }
+  },
+  "evidence": {
+    "receipt": {
+      "file": "test-results/scrape-guest-native-cee18b6c-a7bf-4e05-950f-f6860a5a13b4.json",
+      "sha256": "a4281e2bb563fc5b3ce1c15bd8f945f18ce5d4f7b723739dea1a0d449cffd2fa"
+    },
+    "resource_scope": "Only journals whose run ID is 37192733619 were inspected for this result; unrelated older journal files also included in the workflow artifact were excluded.",
+    "terminal_interpretation": "Fast/deep busy observations and lazy-content evidence were recorded before a reload failure. Resource admission and both watchdog samples were healthy; the last healthy sample was 8.542 s before child exit, with no unsafe event and resource_invalid=false. The failure is not a product pass: T01/T02 remain partial, D118 geometry drift is observed, and D120 reload is unresolved."
+  },
+  "limits": [
+    "This is development artifact evidence, not exact Store 0.2.205 acceptance.",
+    "No product code was changed; no CPU diagnostic, local browser, build, or release was run.",
+    "Image/video matching, full reload completion, recovery actions, and end-to-end acceptance remain unverified."
+  ]
+}
