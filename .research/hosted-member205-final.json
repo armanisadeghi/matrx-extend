@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "scope": "Existing nonadmin reviewer, frozen 0.2.205 hosted member Chat and signed-in storage-shape acceptance",
+  "hosted_acceptance": {
+    "run_id": 37182939504,
+    "conclusion": "success",
+    "workflow_source_sha": "63cc60a24394a4d840c25b922e9c83c338af67bf",
+    "release_run_id": 37180303468,
+    "release_source_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "version": "0.2.205",
+    "release_artifact_id": 11294843385,
+    "release_artifact_digest": "sha256:946c9615e203fcb278c8336f81aef4f0b420eef2873c4f24d4bff786238834fc"
+  },
+  "observed": {
+    "existing_user_magic_link": true,
+    "web_and_extension_signed_in": true,
+    "storage_access_token_profile_active_organization_present": true,
+    "canonical_extension_admin_get_http_status": 200,
+    "canonical_extension_admin_rows": 0,
+    "organization_selected": true,
+    "real_chat_reply_completed": true,
+    "real_chat_reply_count": 1
+  },
+  "evidence": {
+    "artifact_id": 11296210998,
+    "receipt_sha256": "c1e1686e51fdb87782f44e04bf65fc083b09b925416c4c1efb6e6f5effe0f534",
+    "package_resource_journal_sha256": "c48574c0d34b910625c1f3bc70dfc1cc1ac969dfab56ce2b83e2bd98c82cd1b2",
+    "browser_resource_journal_sha256": "a3e86c48f670350cf4564eb75271bc8860a2e64f9c14c3c3ffb6f8182a68b73c",
+    "acceptance_resource_journal_sha256": "3798ca3f5f2a3c500fdeea959a77c2add9a52a4cd9f07d244b039fe5e6024888",
+    "resource_final_decisions": ["valid", "valid", "valid"]
+  },
+  "cleanup": {
+    "temporary_github_secret_deleted": true,
+    "local_ephemeral_link_file_deleted": true
+  },
+  "limits": [
+    "An existing-user magic-link session proves signed-in member behavior, not reviewer password-form readiness.",
+    "This hosted run exercised the frozen 0.2.205 release artifact, not a published Chrome Web Store installation."
+  ]
+}
