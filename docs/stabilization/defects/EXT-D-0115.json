@@ -37,7 +37,8 @@
     ".research/scrape-busy-state-trace.json",
     ".research/scrape-loading-product-peer.json",
     ".research/scrape-development-route.json",
-    ".research/scrape-development-route-peer.json"
+    ".research/scrape-development-route-peer.json",
+    ".research/scrape-loading-fixed-native.json"
   ],
   "transition_history": [
     {
@@ -84,6 +85,6 @@
     }
   ],
   "closure_requirement": "Independent source review, causal RED/GREEN guard, and original fast/deep native busy reproduction plus surrounding cases on an exact artifact containing12300b97. ImmutableStore205 remains a demonstrated failing pre-fix build; never relabel it passing. Development acceptance is explicitly bounded and futureStorepackage/retest must carry the fix.",
-  "next_action": "After source review of explicitdevelopmentroute61bb57f5, use successful automaticCI artifact containing12300b97 for normal-speed guest Scrape native retest. No CPUdiagnostic needed to prove fix; originalfixture and surroundingcases stay intact. PendingStore205unchanged; futureeligibleStorepackage mustinclude fix.",
+  "next_action": "Native37191118595 on fixed development artifact observed fast/deep busy, but subsequent unsafeCPU sample and reload target failure prevent clean acceptance. Resolve reload driver and resource chronology, independently review, then repeat one guarded normal-speed run. Keep fixed; do not promote retest-pass from contaminated or incompletely timestamped evidence.",
   "root_cause": "src/state/scrape.ts setError(null) unconditionally set loading:false, overwriting captureActiveTab startup. Prior observer blind spots were separately repaired and do not explain the actual product state reset."
 }

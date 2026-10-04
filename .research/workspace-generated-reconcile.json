@@ -1,0 +1,17 @@
+{
+  "checked_at": "2026-10-04T02:16:10-07:00",
+  "repository": "ai-matrx",
+  "result": "committed_and_pushed",
+  "commit": "d2eed504dab8a755e7fda3625cf187f98fc651c9",
+  "paths": [
+    "packages/chat/src/host/db-types.ts",
+    "types/database.types.ts",
+    "scripts/schema-check/current-schema.json"
+  ],
+  "verification": [
+    "All three modification times remained unchanged beyond 20 minutes.",
+    "The generated type files each added the same offering_rules_compiled_map RPC.",
+    "The schema snapshot changed only generated_at and parsed as JSON.",
+    "git diff --check passed; local main equals origin/main after push."
+  ]
+}
