@@ -66,14 +66,14 @@
       "pushed_to_main": "2026-10-04T01:09:33-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
-      "dirty_paths": ["M docs/stabilization/reports/workspace-sync-guest-incident-20261003.json"],
+      "dirty_paths": [],
       "stashes": [],
       "other_branches": ["main"],
       "unmerged_remote_branches": [],
       "worktrees": [
         "worktree /Volumes/Samsung2TB/code/matrx-extend\nHEAD e676fe248472ff9b8c47bdd0a77f5886778fc07a\nbranch refs/heads/main"
       ],
-      "exception": "Active edits: M docs/stabilization/reports/workspace-sync-guest-incident-20261003.json"
+      "exception": "None: f2801253 pushed the only outstanding ledger file; post-push status clean and ahead/behind 0/0. This annotation follows in an exact ledger-only commit."
     },
     {
       "repo": "matrx-local",
