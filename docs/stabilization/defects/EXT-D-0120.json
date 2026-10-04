@@ -1,7 +1,9 @@
 {
   "id": "EXT-D-0120",
   "feature_id": "EXT-F-0001",
-  "case_ids": ["EXT-F-0001-T02"],
+  "case_ids": [
+    "EXT-F-0001-T02"
+  ],
   "surface": "Native extension reload acceptance",
   "auth_mode": "guest",
   "title": "Scrape reload acceptance loses unique visible target and omits diagnostic metadata",
@@ -26,7 +28,8 @@
     ".research/scrape-reload-pointer-diagnosis.json",
     ".research/scrape-replacement-ready-peer.json",
     ".research/scrape-replacement-fixed-native.json",
-    ".research/reload-retirement-escalation.json"
+    ".research/reload-retirement-escalation.json",
+    ".research/reload-lifetime-measurement.json"
   ],
   "transition_history": [
     {
@@ -67,5 +70,5 @@
     }
   ],
   "closure_requirement": "Causal forcing check and independent source review, followed by guarded native evidence on an exact artifact. No acceptance from unsafe or unanchored observations.",
-  "next_action": "Escalation9a4150ee returned HANDOFF, no causal repair. Delegate one Sol instrumentation-only unit from its next_measurement contract: attached boolean, independently observed target events/old-host existence, and correlated ServiceWorker version state, with sanitized errors and owned-session cleanup. Fresh review then one guarded215 run. Keep strict predicate; do not launch a blind retry or close intermittency on a passing retry."
+  "next_action": "Instrumentation9149625b is committed/pushed; fresh independent source review is active. If source-ready, run exactly one guarded native comparison on frozen215 artifact11299613935. Preserve strict predicate; correlate actual browser version, attached state, independent events, host probes and pre-click worker version identity. No blind retry or passing-retry closure."
 }
