@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "purpose": "Single guarded hosted guest Scrape development acceptance attempt; evidence only.",
+  "run": {
+    "workflow_run_id": 37194883685,
+    "job_id": 111414577898,
+    "artifact_id": 11301260071,
+    "artifact_name": "hosted-guest-37194883685-1",
+    "terminal_conclusion": "failure",
+    "head_sha": "844af90f09e92635533323412ad5c12fcf3da0c2",
+    "target_development_run_id": 37193761291,
+    "target_development_artifact_id": 11299613935,
+    "receipt": "/tmp/scrape-37194883685/test-results/scrape-guest-native-1fe87605-c359-4c0e-a3a8-e1c02ccf3356.json",
+    "receipt_provenance": {
+      "kind": "ci_development_test",
+      "channel": "development",
+      "version": "0.2.215",
+      "source_sha": "3536b5cb0bea2fb33383f2b239b8602fafb79351",
+      "tree_sha256": "ab62d0755d03e8a7f2ca0cb99e0b5037f39e75d756b14a3e2d3ad6d8cc096d08",
+      "run_id": 37193761291,
+      "artifact_id": 11299613935
+    }
+  },
+  "verdict": {
+    "overall": "UNVERIFIED_ENVIRONMENT_REFUSAL",
+    "geometry": "UNDETERMINED_NO_UI_CASES",
+    "six_visible_selectable_controls": "UNDETERMINED",
+    "no_overflow_or_shift_at_360px": "UNDETERMINED",
+    "real_fast_and_deep_content": "UNDETERMINED",
+    "reload_timeline": "UNDETERMINED_NOT_REACHED",
+    "failure": {
+      "stage": "inputs",
+      "code": "NATIVE_RESOURCE_BOUNDARY_REFUSED:stale_health",
+      "guest_account_observed": false,
+      "case_count": 0,
+      "horizontal_geometry_count": 0,
+      "reload_lifecycle": null
+    },
+    "interpretation": "The guarded child refused before Scrape UI exercise. This is neither a product pass nor a product failure. No second launch was made."
+  },
+  "resource_journal_assessment": {
+    "package": {
+      "journal": "hosted-package-37194883685-1.jsonl",
+      "admitted": true,
+      "reasons": [],
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "journal": "hosted-browser-37194883685-1.jsonl",
+      "admitted": true,
+      "reasons": [],
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "journal": "hosted-guest-37194883685-1.jsonl",
+      "admitted": true,
+      "reasons": [],
+      "watch_healthy_at": "2026-10-04T10:23:35.978Z",
+      "watch_sample": {
+        "pressure_level": 1,
+        "available_memory_gib": 12.6,
+        "required_memory_gib": 4,
+        "one_minute_load": 1.83,
+        "logical_cpus": 4,
+        "cpu_busy_fraction": 0.71,
+        "swap_used_mib": 0
+      },
+      "child_exit_code": 1,
+      "resource_invalid": false,
+      "decision": "child_failed"
+    },
+    "assessment": "Resource journals show successful admission and valid package/browser jobs. Guest child failed after a healthy-watch sample; receipt independently identifies stale_health at its guarded inputs boundary. Journal admission does not establish UI acceptance."
+  },
+  "artifact_contents": {
+    "native_screenshots_present": [
+      "test-results/native-sidepanel-qa-hB2IxR/native-side-panel.png",
+      "test-results/native-sidepanel-qa-hB2IxR/normal-target-after-open.png"
+    ],
+    "screenshots_are_acceptance_evidence": false,
+    "reason": "Receipt contains no cases or geometry measurements; screenshots alone cannot establish the requested control selection, 360px geometry, content, or reload assertions."
+  },
+  "source_context": {
+    "retention_repair": "ca1fa506",
+    "independent_source_review": "992a556b",
+    "layout_guard": "bc6694f8",
+    "event_instrumentation": "0eedda92",
+    "native_source_proof": false
+  },
+  "limitations": [
+    "Only one authorized hosted run was launched; it terminated before UI exercise.",
+    "Normal-width acceptance and Chrome Web Store release acceptance remain unverified.",
+    "No native product pass is claimed."
+  ]
+}
