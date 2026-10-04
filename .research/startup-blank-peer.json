@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "ac4253dab1c420b0cecd66a7a2acd90a06d5d877",
+  "reviewer_role": "fresh independent source reviewer",
+  "verdicts": {
+    "A_experiment_readiness": {
+      "verdict": "PASS_BOUNDED_EXPERIMENT_READY",
+      "basis": "The production Chromium spawn now receives one explicit about:blank initial URL, avoiding implicit New Tab startup work. The experiment preserves the same owned browser, profile, extension, and acceptance path.",
+      "boundary": "This is a plausible controlled hypothesis only. Source and tests cannot establish CPU reduction or capacity improvement."
+    },
+    "B_change_quality_and_resource_safety": {
+      "verdict": "PASS_SOURCE_CHANGE_AND_RESOURCE_GUARDS_RETAINED",
+      "basis": "Diff review found only the about:blank spawn argument and explanatory comment in the harness, plus a focused launch test and evidence JSON. Existing launch flags, owned child identity and cleanup, watchdog policy, thresholds, cadence, fresh admission, and unsafe-history refusal are unchanged.",
+      "focused_check": "node --test tests/browser/native-sidepanel-origin.test.mjs — 2/2 passed. The new test executes the actual spawn block with only spawn substituted, verifies exact headed/headless arguments including all prior flags and about:blank, and confirms the exact returned child identity. It does not launch Chromium or prove CPU behavior.",
+      "product_or_native_pass": false
+    }
+  },
+  "journal_review": {
+    "verdict": "TIMELINE_CREDIBLE",
+    "observations": [
+      "37205211642: admission at 13:25:20.063Z, healthy watch at 13:25:36.123Z, exit at 13:25:42.048Z.",
+      "37208889373: admission at 14:26:44.373Z, unsafe watch at 14:27:00.581Z, process attribution 100 ms later, exit at 14:27:04.749Z. The attribution shows multiple busy processes; percentages are diagnostic and not interval accounting.",
+      "37209834721: admission at 14:41:34.528Z and exit at 14:41:49.449Z, before any watch; it is not sampled-healthy startup evidence.",
+      "37210977886: admission at 15:00:01.807Z, unsafe watch at 15:00:17.890Z, process attribution 113 ms later, exit at 15:00:19.411Z. Chromium dominates that process snapshot; ps percentages remain diagnostic, not causal interval accounting."
+    ],
+    "verified_sha256": {
+      "37205211642": "b3b06d23af414003a5d2db2a32898e1703d619d3455edbbf2d65ef4f66e9f5f6",
+      "37208889373": "c33c1aee7fb8f048fb750d6880fd95ce4151edc8723ef08627e9465e68d70d23",
+      "37209834721": "bf9433b63a6ef9dbe9b32fb4b29c95daef07baf670bf7f9e9561e19274533bd2",
+      "37210977886": "1809cc3943175835f5111d18a3418e8f51929ce2c6ccddc547a904523a4ce7f3"
+    }
+  },
+  "recommended_next_step": {
+    "action": "One guarded frozen215 hosted guest-scrape-development run, using the reviewed current driver.",
+    "driver_ancestry_verified": {
+      "scrape_t13_source": "9515804d7b30c96fc7d9f81e437c881a059c6e49",
+      "scrape_t13_peer": "b78b94f160de49740a1e80c6e4b4b2a029edacbd",
+      "image_groups_source": "000fb2fcd942fd44d0573f0dc1ee14ca110b95c6",
+      "image_groups_peer": "298136264d579403e5e38bfaa2cfbab2a563b74c"
+    },
+    "frozen_inputs": {
+      "run_id": "37193761291",
+      "artifact_id": "11299613935"
+    },
+    "conditions": "Keep admission, watchdog, and all other controls unchanged. Require at least one healthy resource watch and the requested guest product assertions. Preserve every failed journal; do not retry if unsafe.",
+    "capacity_claim": "No capacity improvement is established by this review or by a single future successful run."
+  },
+  "review_scope": "Source and existing journals only. No browser/native run, build, release, broad harness suite, or product acceptance was performed."
+}
