@@ -14,7 +14,7 @@
   "actual": "Report cannot locate the failing control or distinguish readiness/ambiguity; cleanup overwritesstage so it cannot identify originalfailure.",
   "severity": "S3: diagnosticloss delays reliabletesting; no productuserimpact demonstrated.",
   "priority": "P1: blocks currentProfile reloadacceptance diagnosis.",
-  "state": "fixed",
+  "state": "closed",
   "owner": "profile_reload_target_repair",
   "evidence": [
     ".research/profile-member-retest189.json",
@@ -24,7 +24,9 @@
     ".research/profile-member-retest189-next.json",
     ".research/profile-189-final-source-peer.json",
     ".research/profile-receipt-final-privacy-peer.json",
-    ".research/profile-report-boundary-escalation.json"
+    ".research/profile-report-boundary-escalation.json",
+    ".research/profile-member-final-189-native.json",
+    ".research/profile-escalated-boundary-peer.json"
   ],
   "transition_history": [
     {
@@ -74,9 +76,29 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "b83c2af0 bounds backend codes and preserves primary through reproduced filesystem teardown rejection;23 focused checks and3 mutations passed. Fresh independent peer pending."
+    },
+    {
+      "at": "2026-10-04T01:29:17.055381+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent guarded final member run passed on b4/189 with original absence restored. Root matched raw and journal hashes; source peer e813fb48 accepted the final contracts."
+    },
+    {
+      "at": "2026-10-04T01:29:17.055381+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original reproduced defect and affected surrounding cases verified. D101 also has prior real failed-operation capture and actual boundary negative guards; D102 exact original hydration race independently passed. No full feature or other-role claim."
     }
   ],
   "closure_requirement": "Meaningfulfailurecaptureguard and independentreview, then actualguardedfailure or equivalentverifiednativeobservation preservingoriginaloperation/stage withoutprivatecontent. UnderlyingProfile targetfailure handledseparately.",
   "fix_commits": ["aa7df0d2", "c77982ec", "85a95c40", "5f417356", "b83c2af0"],
-  "known_remaining": "Fresh source peer profile_escalated_boundary_peer is checking final b83c2af0 repair. One independent guarded member native run remains before closure. Direct panel detach transport rejection masking was refuted; actual outer filesystem teardown masking was reproduced and fixed. No actual credential exposure established."
+  "known_remaining": "No remaining reproduced failure in this defect scope. Preflight/output filesystem failures and broader native fixture branches remain separate unverified coverage; primary/final report privacy guards and actual adverse cleanup boundaries passed independent source review.",
+  "closure_evidence": {
+    "run_id": "profile-member-final-189-05",
+    "raw_sha256": "7011bf997e26f1266a05ea2f3483b3326e3069e1caf87b79e6afb5aca4c05b9e",
+    "journal_sha256": "f5b6cb79e33e1eca8218c2236157bd050afe93e5957116daa27014480dc27d91",
+    "resource": "admitted, resourceInvalid=false, exit0 valid",
+    "restoration": "authenticated original absence verified",
+    "scope": "Original reproduced test-runner defect only; no full Profile or extension certification."
+  }
 }
