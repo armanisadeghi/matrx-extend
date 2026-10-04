@@ -1,12 +1,48 @@
 {
   "schema_version": 1,
   "task": "profile-reload-hydration",
-  "status": "source_guarded_native_pending",
+  "defect_id": "EXT-D-0102",
+  "source_commit": "b7f63d0c",
+  "status": "native_diagnosis_passed_reload_cases_passed",
   "source_run": "profile-member-retest-189-02",
   "observed_failure": "After strict reload, saved identity and organization were present, but the first account-menu click saw zero matches and the Chat tab was active.",
   "source_boundary": "The reload harness returned after panel/runtime context existed; panelIdentity read storage, while UserMenu renders the signed-in title only after useAuth restores and verifies the session.",
   "diagnostic": "The runner records content-free signed-in/guest account counts, stored identity matches, token presence, active Chat and visible auth alert before and after a bounded wait for the exact signed-in menu.",
   "guard": "Two focused tests pass; a safe mutation requiring zero signed-in account buttons failed the ready-path assertion and was restored byte-identically.",
   "runtime_limit": "The wait uses the existing 30-second Profile readiness bound; no product change, sleep, selector fallback or timeout increase.",
-  "claim": "Hydration delay versus persistent guest/session failure remains unresolved until the next guarded native member run."
+  "native_run": {
+    "id": "profile-member-reload-hydration-189-04",
+    "artifact": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced / CI 37164174445 / artifact 11288542496 / development 0.2.189",
+    "resource_decision": "valid_exit_0",
+    "member_identity": "Fresh first-party sign-in matched extension identity and selected organization; canonical admin check returned HTTP 200 with zero rows.",
+    "before": "Document complete; saved identity, organization and token matched; guest Account button 1, signed-in account button 0, no visible auth alert.",
+    "after": "Same saved identity and organization; guest Account button 0, signed-in account button 1; status ready_after_wait.",
+    "cases": "Warm T01/T03/T25/T26 and reload T01/T03/T25 passed; bounded first-save row was conditionally deleted and original absence verified.",
+    "raw_report_sha256": "ed559db302f7841187cf8af36d99deee3486a5e763a36f62e9c5544123d341d1",
+    "raw_report_path": "/Volumes/Samsung2TB/code/.stabilization-scratch/profile-member-reload-hydration-189-04/evidence/profile-native-profile-member-reload-hydration-189-04.json",
+    "journal_sha256": "8c16da226e57590c8e15f8b25e72ba204f42e7886973d4b57a13c5cc4ef80947"
+  },
+  "setup_refusal": "Run -03 was refused before admission and browser launch because permit-profile did not exist; it is not product evidence.",
+  "launch_environment": {
+    "PROFILE_DEV_BUILD_RECEIPT": "/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced/37164174445-1/local-dev-receipt.json",
+    "PROFILE_EXPECTED_SOURCE_SHA": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "PROFILE_EXPECTED_CI_RUN_ID": "37164174445",
+    "PROFILE_EXPECTED_ARTIFACT_ID": "11288542496",
+    "PROFILE_AUTH_MODE": "member",
+    "PROFILE_RUN_ID": "<RUN_ID>",
+    "PROFILE_OUTPUT_DIR": "/Volumes/Samsung2TB/code/.stabilization-scratch/<RUN_ID>/evidence",
+    "PROFILE_PRIVATE_OWNERSHIP_RECEIPT": "/Volumes/Samsung2TB/code/.stabilization-scratch/<RUN_ID>/evidence/owned-profile-private.json",
+    "MATRX_REVIEWER_MAGIC_LINK_FILE": "/Volumes/Samsung2TB/code/.stabilization-scratch/<RUN_ID>/reviewer-magic-link-private.json",
+    "MATRX_PLAYWRIGHT_MODULE": "/Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs",
+    "MATRX_CHROME_PATH": "/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing",
+    "PLAYWRIGHT_BROWSERS_PATH": "/Users/armanisadeghi/Library/Caches/ms-playwright",
+    "TMPDIR": "/Volumes/Samsung2TB/code/.stabilization-scratch"
+  },
+  "fresh_link_preparation": "MATRX_REVIEWER_IDENTITY_FILE=/Volumes/Samsung2TB/code/matrx-extend/test-results/reviewer-account-recovery-private.json MATRX_ADMIN_ENV_FILE=/Volumes/Samsung2TB/code/aidream/.env MATRX_REVIEWER_MAGIC_LINK_FILE=<fresh private link path> node tests/browser/prepare-reviewer-magic-link.mjs; remove the single-use file after the run.",
+  "repro_preflight_commands": [
+    "mkdir -m 700 -p /Volumes/Samsung2TB/code/.stabilization-scratch/<RUN_ID>/evidence /Volumes/Samsung2TB/code/.stabilization-scratch/<RUN_ID>/permit-profile",
+    "stat -f '%Sp %N' /Volumes/Samsung2TB/code/.stabilization-scratch/<RUN_ID>/evidence /Volumes/Samsung2TB/code/.stabilization-scratch/<RUN_ID>/permit-profile",
+    "node scripts/stabilization-resource.mjs run --run-id <RUN_ID> --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch/<RUN_ID>/permit-profile -- node tests/browser/profile-native-acceptance.mjs"
+  ],
+  "claim": "The prior zero-target reload failure was an authenticated UI hydration gap in this frozen artifact; a persistent session loss was not observed. T26 still retains its separately tracked primary-plus-restoration-error limitation."
 }
