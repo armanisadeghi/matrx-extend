@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "task": "profile-expander-diagnostics",
+  "source_failure": ".research/profile-d104-independent-native.json",
+  "observed_gap": "The T21 warm case failed before a case receipt. The previous runner saved neither the failing expander phase and section nor the original error when discard also failed.",
+  "change": "The expander case now attaches fixed phase and section labels to its original error, retains that error if discard also fails, and records a separate fixed discard restoration stage. The existing report boundary allows only enumerated labels and never serializes error messages or field values.",
+  "red_proof": "node --test tests/browser/profile-expander-diagnostics.test.mjs: three assertion failures on the pre-fix source; two missing expander diagnostics and one original error replaced by discard error.",
+  "green_proof": "node --test tests/browser/profile-expander-diagnostics.test.mjs tests/browser/profile-native-failure.test.mjs: all focused tests passed.",
+  "scope_limit": "Source-only verification. No browser run or claim about the cause of profile-fields-member-189-04. Fresh native evidence remains open."
+}

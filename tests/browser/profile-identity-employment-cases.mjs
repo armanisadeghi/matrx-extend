@@ -406,36 +406,72 @@ export function throwFieldCaseFailure(firstError, restoreError) {
 
 export async function runProfileExpandersCase({ panel, mode, dimension }) {
   const id = mode === 'member' ? 'EXT-F-1004-T21' : 'EXT-F-1004-T22';
-  await ensureOpen(panel, 'Identity');
-  const original = (await sample(panel, 'Identity', ['Preferred'])).values.Preferred;
+  let phase = 'ensure_open';
+  let section = 'Identity';
+  let original;
+  let originalReady = false;
   const draft = `Marin ${randomUUID().slice(0, 8)}`;
-  assert.notEqual(draft, original);
   let firstError;
   try {
+    await ensureOpen(panel, 'Identity');
+    phase = 'sample_original';
+    original = (await sample(panel, 'Identity', ['Preferred'])).values.Preferred;
+    originalReady = true;
+    assert.notEqual(draft, original);
+    phase = 'fill';
     await fill(panel, 'Identity', 'Preferred', draft);
     for (const name of SECTIONS) {
+      section = name;
+      phase = 'sample_section';
       const current = await sectionState(panel, name);
       assert.equal(current.section_count, 1, `${name}_section_missing`);
-      if (current.expanded === 'false') await toggle(panel, name, true);
+      if (current.expanded === 'false') {
+        phase = 'expand';
+        await toggle(panel, name, true);
+      }
+      phase = 'collapse';
       await toggle(panel, name, false);
+      phase = 'reexpand';
       await toggle(panel, name, true);
     }
+    phase = 'draft_assert';
+    section = null;
     const after = await sample(panel, 'Identity', ['Preferred']);
     assert.equal(after.values.Preferred, draft, 'expander_draft_lost');
     assert.equal(after.dirty, true, 'expander_unsaved_indicator_missing');
     assert.equal(after.save_enabled, true, 'expander_save_disabled');
   } catch (error) {
+    error.profileExpanderFailure = { phase, section };
     firstError = error;
   }
-  await clickHeader(panel, 'Discard');
-  const discarded = await waitFor(
-    'expander_discard_restored',
-    () => sample(panel, 'Identity', ['Preferred']),
-    (s) => s?.values?.Preferred === original && !s.save_enabled,
-    10000,
-  );
-  assert.equal(discarded.values.Preferred, original);
+  let restoreError;
+  if (originalReady) {
+    try {
+      phase = 'discard';
+      section = 'Identity';
+      await clickHeader(panel, 'Discard');
+      phase = 'discard_assert';
+      const discarded = await waitFor(
+        'expander_discard_restored',
+        () => sample(panel, 'Identity', ['Preferred']),
+        (s) => s?.values?.Preferred === original && !s.save_enabled,
+        10000,
+      );
+      assert.equal(discarded.values.Preferred, original);
+    } catch (error) {
+      error.profileExpanderFailure = { phase, section };
+      restoreError = error;
+    }
+  }
+  if (firstError && restoreError) {
+    firstError.profileRestorationError = restoreError;
+    firstError.profileRestorationFailure = {
+      code: 'profile_case_restoration_failed',
+      stage: 'discard_local_draft',
+    };
+  }
   if (firstError) throw firstError;
+  if (restoreError) throw restoreError;
   return {
     id,
     mode,

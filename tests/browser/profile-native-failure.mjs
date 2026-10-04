@@ -38,6 +38,28 @@ const PROFILE_FIELD_NAMES = new Set([
   'Company',
   'Title',
 ]);
+const PROFILE_EXPANDER_PHASES = new Set([
+  'ensure_open',
+  'sample_original',
+  'fill',
+  'sample_section',
+  'expand',
+  'collapse',
+  'reexpand',
+  'draft_assert',
+  'discard',
+  'discard_assert',
+]);
+const PROFILE_EXPANDER_SECTIONS = new Set([
+  'Identity',
+  'Phones',
+  'Emails',
+  'Web',
+  'Shipping address',
+  'Billing address',
+  'Employment',
+  'Emergency contacts',
+]);
 const PROFILE_FAILURE_CODES = new Set([
   ...POINTER_CODES,
   'profile_original_row_absent_mutation_refused',
@@ -106,6 +128,13 @@ export async function captureProfileExecutionFailure(report, error, { operation,
   const driver = error?.driverFailure;
   const restoration = error?.profileRestorationFailure;
   const field = error?.profileFieldFailure;
+  const expander = error?.profileExpanderFailure;
+  if (expander) {
+    failure.expander = {
+      phase: PROFILE_EXPANDER_PHASES.has(expander.phase) ? expander.phase : 'unknown',
+      section: PROFILE_EXPANDER_SECTIONS.has(expander.section) ? expander.section : null,
+    };
+  }
   if (field) {
     failure.field = {
       phase: PROFILE_FIELD_PHASES.has(field.phase) ? field.phase : 'unknown',
