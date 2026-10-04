@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "task": "capacity-next-route",
+  "status": "NO_JUSTIFIED_NATIVE_LAUNCH_ON_CURRENT_EVIDENCE",
+  "reviewed_at_utc": "2026-10-04",
+  "current_truth": {
+    "member_normal": "Unverified. Hosted ARM run 37234434600 imported exact development artifact 11315305224 from run 37233480033, requested member at 600px normal width, then refused an unsafe CPU sample at organization_selection before any Scrape case or viewport measurement. Receipt authentication is null; source control flow suggests signInSettings returned but does not establish a member role verdict.",
+    "admin_and_remaining_cases": "Admin selected-organization, D127 original and sibling, reload, and surrounding requested native acceptance remain open; the healthy startup diagnostic exercised none of them.",
+    "local_capacity": "Read-only df -k on 2026-10-04 reported 6,963,028 KiB available on /, about 6.64 GiB, below the unchanged 20 GiB internal-disk guard floor. The external Samsung2TB volume had ample space but is not the guarded internal startup volume. No local launch or cleanup is justified by this measurement.",
+    "available_hosted_routes": "The existing workflow offers macos-15-intel and macos-15 ARM64 in one guarded concurrency group. No already configured third, higher-capacity route was identified."
+  },
+  "runner_evidence": [
+    {
+      "route": "macos-15-intel",
+      "runs": [37101561850, 37217349220],
+      "scope": "Run 37101561850 guarded Store guest preparation and stopped on two consecutive high-CPU watches before native browser or Chat. Run 37217349220 guarded development guest Scrape admitted at CPU 0.143, then first watch at CPU 0.91 and native inputs refused unsafe_sample before cases. These are different artifacts/cases from member normal; they show the default Intel route is no established capacity remedy.",
+      "sources": [
+        ".research/guest-host-capacity.json",
+        ".research/scrape-pane-retention-native.json",
+        ".research/native-capacity-next-step.json"
+      ]
+    },
+    {
+      "route": "macos-15 ARM64",
+      "runs": [37233387364, 37234434600],
+      "scope": "Run 37233387364 was a default GraphiteDawnMetal startup diagnostic with healthy current-run journals, no authentication or product case, and a different frozen artifact. Run 37234434600 was the requested member normal attempt and refused CPU busy 0.88 during organization selection, with zero cases. A healthy diagnostic does not establish acceptance capacity.",
+      "sources": [
+        ".research/renderer-baseline-run.json",
+        ".research/scrape-member-normal-resumption.json"
+      ]
+    }
+  ],
+  "causal_boundary": {
+    "established": "The member run's native boundary correctly refused its current-run RESOURCE_WATCH_UNSAFE sample at CPU busy fraction 0.88. Prior unsafe events remain historical and were not cleared.",
+    "unresolved": "The nearby Chromium Helper, WeatherWidget, and provisioner process percentages are snapshots with different accounting windows. They do not assign the unsafe interval to a process or prove host noise, renderer work, or a member-flow regression. Raw current-run resource journals were absent from the uploaded artifact; log extracts are incomplete.",
+    "renderer_treatment": "The prior Graphite-off experiment required an unsafe diagnostic baseline with material compiler CPU. Baseline 37233387364 was healthy, so that condition was not met. A renderer switch would be a new hypothesis, not an acceptance route.",
+    "repeat_classification": "Another member/normal run on either unchanged standard runner would sample a fresh VM, but no correction or controlled change makes it an evidence-backed attempt. A lucky admission alone would not establish reliable capacity."
+  },
+  "next_executable_action": {
+    "kind": "READ_ONLY_SOURCE_AND_INVENTORY_WORK",
+    "action": "Use docs/stabilization/inventory.json and .research/scrape-remaining-procedure-audit.json to enumerate each still-open member/admin, D127, reload, and surrounding acceptance cell; map it to the exact current workflow case, frozen artifact eligibility, required role/organization/owned fixture, expected receipt assertion, and cleanup ownership. Record missing fixture or assertion prerequisites for the acceptance owner without dispatching a browser, creating accounts, changing grants, or promoting any cell. This prepares actual product acceptance rather than another capacity instrument.",
+    "why_now": "This work is independent of native CPU capacity and can expose cells whose fixture or procedure is not executable even after a host becomes safe. The prior procedure audit already identifies missing two-organization, filing, and controlled-refusal fixtures."
+  },
+  "native_launch_gate": {
+    "unmet_external_condition": "A verified change in execution capacity or a confirmed correction to the workload causing unsafe samples on an already authorized route, with the unchanged resource policy. None is established today. A new paid runner, manual release, account change, lower floor, service termination, or unchanged retry is outside this route.",
+    "evidence_needed_before_launch": "Identify the specific changed condition and its read-only proof; confirm the exact eligible artifact and required member/admin fixture/role/organization inputs; then use the existing guarded workflow with fresh package, browser, and acceptance admissions, full current-run raw journals, and no inherited unsafe-history reset.",
+    "acceptance_evidence_needed": "Actual native receipt must report verified identity/role, selected organization, observed 600px width where required, requested case assertions, reload behavior, and a clean current-run resource history. Diagnostic success or control-flow inference cannot promote product cells."
+  },
+  "scope": "Read-only diagnosis and this report only. No browser, test/build, workflow dispatch, release, product, inventory, credential, account, process, resource-policy, or disk-state change."
+}
