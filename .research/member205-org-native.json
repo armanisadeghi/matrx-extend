@@ -24,10 +24,7 @@
   "first_failure": {
     "stage": "resource_guard_preflight",
     "code": "RESOURCE_PREFLIGHT_REFUSED",
-    "reasons": [
-      "RESOURCE_DISK_LOW",
-      "RESOURCE_SWAP_GROWTH"
-    ],
+    "reasons": ["RESOURCE_DISK_LOW", "RESOURCE_SWAP_GROWTH"],
     "safety_free_gib": 3.29945755078125,
     "available_memory_gib": 11.2,
     "swap_used_mib": 4875.88,

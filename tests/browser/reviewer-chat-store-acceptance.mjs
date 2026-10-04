@@ -15,8 +15,8 @@ import {
   supabaseOrigin,
 } from './member-native-auth-proof.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 import { storageShapeExpression } from './reviewer-chat-storage-shape.mjs';
+import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const OUTPUT = join(REPO, 'test-results', `reviewer-chat-store-${randomUUID()}.json`);
