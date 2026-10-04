@@ -13,7 +13,7 @@
   "actual": "Prior acceptance recorded no request status or error code. UI answer evidence remains valid only for its bounded claim.",
   "severity": "S2: missing failure evidence can conceal transport regressions",
   "priority": "P1: diagnose urgent signed-out Chat incident",
-  "state": "retest-fail",
+  "state": "fixed",
   "owner": "root/guest_first_transport_observer",
   "evidence": [
     ".research/guest205-current-live-check.json",
@@ -22,7 +22,9 @@
     ".research/guest-first-transport-observer.json",
     ".research/guest-transport-fresh-peer.json",
     ".research/guest-transport-correction-peer.json",
-    ".research/guest205-first-transport-native.json"
+    ".research/guest205-first-transport-native.json",
+    ".research/guest-transport-native-diagnosis.json",
+    ".research/guest-discovery-fresh-peer.json"
   ],
   "transition_history": [
     {
@@ -54,8 +56,20 @@
       "from": "fixed",
       "to": "retest-fail",
       "reason": "Native37239792825 exact205 completed grounded firstanswer but requests[]; opening_guest_ai_transport_unobserved. Rootcheckedrawreceipt, allthreehealthy/nonunsafejournals and screenshot. Followupnotrun."
+    },
+    {
+      "at": "2026-10-04T22:40:24.829585+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Escalation confirmed missing discovery dependency against Chromium source; prior receipt cannot prove unique native cause."
+    },
+    {
+      "at": "2026-10-04T22:40:24.829585+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "32113799 enables discovery before lazyautoattach and adds safe diagnostic counters; fresh09275530 verifies9tests/redmutants/connector. FullCI37240635247 succeeds. Changedconditionnativepending."
     }
   ],
-  "fix_commits": ["954277cf", "a0f6cd50"],
-  "next_action": "Escalated to root/guest_transport_native_diagnosis (Astra): actual frozen205 route and CDP observation semantics; no new native run until proven source change independently reviewed."
+  "fix_commits": ["954277cf", "a0f6cd50", "32113799"],
+  "next_action": "ONE changed-condition exact205 guest native37240870438, root/guest205_first_transport_native owns terminal result/cleanup/evidence. No unchanged retry or Store replacement."
 }
