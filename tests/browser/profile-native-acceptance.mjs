@@ -10,7 +10,12 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import { signInAdminSettings } from './admin-settings-signin.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { assertFirstSaveOwnedRow, ownedDeleteUrl } from './profile-empty-row-restoration.mjs';
-import { runProfileExecutionBoundary, runProfilePointer } from './profile-native-failure.mjs';
+import {
+  recordProfileFinalFailure,
+  runProfileExecutionBoundary,
+  runProfilePointer,
+  safeProfileFailureCode,
+} from './profile-native-failure.mjs';
 import { createOwnedWriteJournal } from './profile-owned-write-journal.mjs';
 import { observeReloadAccountReady } from './profile-reload-account.mjs';
 import { runProfileSaveFailureCase } from './profile-save-failure-case.mjs';
@@ -538,9 +543,7 @@ async function caseSaveDiscard(panel, original, email, mode, dimension, journal 
     await observe('saved_after_reopen', savedValue);
   } catch (error) {
     firstError = error;
-    diagnostic.first_failure = String(error?.message ?? 'unknown')
-      .split(':', 1)[0]
-      .slice(0, 100);
+    diagnostic.first_failure = safeProfileFailureCode(error);
     await observe('first_failure', savedValue).catch(() => {});
   } finally {
     try {
@@ -572,9 +575,7 @@ async function caseSaveDiscard(panel, original, email, mode, dimension, journal 
       diagnostic.original_value_restored = true;
     } catch (error) {
       cleanupError = error;
-      diagnostic.cleanup_failure = String(error?.message ?? 'unknown')
-        .split(':', 1)[0]
-        .slice(0, 100);
+      diagnostic.cleanup_failure = safeProfileFailureCode(error);
       await observe('cleanup_failure', original).catch(() => {});
     } finally {
       diagnostic.requests = network.snapshot();
@@ -1014,9 +1015,7 @@ try {
           verified: false,
           original_absence_restored: false,
           owned_row_may_remain: Boolean(owned || pendingMarker),
-          failure_code: String(error?.message ?? 'unknown')
-            .split(':', 1)[0]
-            .slice(0, 100),
+          failure_code: safeProfileFailureCode(error),
         };
         if (report.first_save) report.first_save.status = 'cleanup_unverified';
         report.cleanup_failure_code = report.restoration.failure_code;
@@ -1038,11 +1037,7 @@ try {
   report.status = 'passed';
   report.stage = 'complete';
 } catch (error) {
-  const code = String(error?.message ?? 'unknown')
-    .split(':', 1)[0]
-    .slice(0, 100);
-  report.status = code === 'profile_original_row_absent_mutation_refused' ? 'unverified' : 'failed';
-  report.failure_code = code;
+  recordProfileFinalFailure(report, error);
 } finally {
   report.finished_at = new Date().toISOString();
   await mkdir(OUTPUT_DIR ?? join(REPO, 'test-results'), { recursive: true, mode: 0o700 });

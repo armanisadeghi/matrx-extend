@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "task": "profile-failure-privacy-repair",
+  "defect_id": "EXT-D-0101",
+  "status": "source_repaired_native_held_for_fresh_peer",
+  "trigger": "Fresh peer 20f5286b proved Error('private@example.com') serialized unchanged into execution_failure_code; the top-level failure_code and save/cleanup diagnostics used the same raw-message pattern.",
+  "change": "Every Profile report failure field now uses one fixed allowlist of known codes, with profile_unclassified_failure for all other messages. The original Error object stays in memory for cleanup and rethrow; pointer call, stage, counts and restoration metadata remain structured.",
+  "census": [
+    "execution_failure_code",
+    "top-level failure_code",
+    "save_discard_diagnostics.first_failure",
+    "save_discard_diagnostics.cleanup_failure",
+    "restoration.failure_code and mirrored cleanup_failure_code"
+  ],
+  "forcing_guard": "Actual execution boundary and final-report handler reject no-colon email, tokenlike text, URL with query and colon text. Separate safe mutations restoring raw message serialization in either path made the tests fail; both files restored byte-identically.",
+  "scope": "Test runner diagnostics only; no product, browser, database, build or release change.",
+  "next_gate": "Fresh independent source review, then root-controlled native acceptance."
+}

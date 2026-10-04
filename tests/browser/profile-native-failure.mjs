@@ -26,6 +26,55 @@ const PROFILE_RESTORATION_STAGES = new Set([
   'verify_restored_reopen',
   'discard_local_draft',
 ]);
+const PROFILE_FAILURE_CODES = new Set([
+  ...POINTER_CODES,
+  'profile_original_row_absent_mutation_refused',
+  'profile_initial_load_failed',
+  'profile_owner_get_failed',
+  'profile_owner_get_status',
+  'profile_owner_delete_failed',
+  'profile_owner_delete_status',
+  'profile_owner_row_not_unique',
+  'owned_profile_cleanup_row_missing',
+  'owned_profile_conditional_delete_missed',
+  'owned_profile_deleted_wrong_owner',
+  'owned_profile_absence_not_restored',
+  'owned_delete_concurrent_change',
+  'owned_delete_marker_changed',
+  'owned_delete_organization_changed',
+  'owned_delete_owner_changed',
+  'owned_delete_row_missing',
+  'owned_delete_row_replaced',
+  'owned_delete_version_invalid',
+  'owned_write_unverified',
+  'first_save_row_missing',
+  'first_save_was_not_an_insert',
+  'profile_fault_enable_failed',
+  'profile_fault_disable_failed',
+  'profile_fault_interception_failed',
+  'profile_fault_multiple_upserts',
+  'profile_fault_not_exercised_exactly_once',
+  'profile_case_restoration_failed',
+  'profile_reload_authenticated_menu_ready_not_observed',
+  'reload_profile_identity_changed',
+  'reload_profile_role_changed',
+  'reload_organization_changed',
+  'profile_save_failure_receipt_not_provisional',
+  'profile_original_restored_not_observed',
+]);
+
+export function safeProfileFailureCode(error) {
+  const driverCode = error?.driverFailure?.code;
+  if (POINTER_CODES.has(driverCode)) return driverCode;
+  const candidate = typeof error?.message === 'string' ? error.message.split(':', 1)[0] : '';
+  return PROFILE_FAILURE_CODES.has(candidate) ? candidate : 'profile_unclassified_failure';
+}
+
+export function recordProfileFinalFailure(report, error) {
+  const code = safeProfileFailureCode(error);
+  report.status = code === 'profile_original_row_absent_mutation_refused' ? 'unverified' : 'failed';
+  report.failure_code = code;
+}
 
 export async function runProfilePointer(click, panel, kind, label, call) {
   try {
@@ -94,9 +143,7 @@ export async function runProfileExecutionBoundary(report, execute, { getOperatio
     await execute();
     return null;
   } catch (error) {
-    report.execution_failure_code = String(error?.message ?? 'unknown')
-      .split(':', 1)[0]
-      .slice(0, 100);
+    report.execution_failure_code = safeProfileFailureCode(error);
     await captureProfileExecutionFailure(report, error, {
       operation: getOperation(),
       readUiState,

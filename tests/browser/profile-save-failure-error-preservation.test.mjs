@@ -137,7 +137,7 @@ test('actual case and runner boundary retain primary plus safe restoration diagn
     code: 'profile_case_restoration_failed',
     stage: 'journal_reconcile',
   });
-  assert.equal(report.execution_failure_code, 'profile_primary_failure');
+  assert.equal(report.execution_failure_code, 'profile_unclassified_failure');
   assert.equal(JSON.stringify(report).includes('private@example.com'), false);
 });
 

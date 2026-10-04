@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import {
   captureProfileExecutionFailure,
+  recordProfileFinalFailure,
   runProfileExecutionBoundary,
   runProfilePointer,
 } from './profile-native-failure.mjs';
@@ -38,6 +39,7 @@ test('execution boundary captures the thrown pointer before restoration changes 
   );
   report.stage = 'restore_original_absence';
   assert.equal(returned, error);
+  assert.equal(report.execution_failure_code, 'pointer_target_not_unique');
   assert.deepEqual(report.execution_failure, {
     stage: 'extension_reload',
     operation: 'open_profile_after_reload',
@@ -57,6 +59,36 @@ test('execution boundary captures the thrown pointer before restoration changes 
   });
   assert.equal(JSON.stringify(report).includes('private@example.com'), false);
 });
+
+for (const privateMessage of [
+  'private@example.com',
+  'eyJhbGciOiJIUzI1NiJ9.secret.signature',
+  'https://example.test/profile?token=secret-value',
+  'private@example.com: more private text',
+]) {
+  test(`execution and final receipt omit an untrusted error message ${privateMessage.includes(':') ? 'with colon' : 'without colon'} ${privateMessage.length}`, async () => {
+    const report = { stage: 'extension_reload' };
+    const primary = new Error(privateMessage);
+    const returned = await runProfileExecutionBoundary(
+      report,
+      async () => {
+        throw primary;
+      },
+      {
+        getOperation: () => 'open_profile_after_reload',
+        readUiState: async () => {
+          throw new Error('should not sample');
+        },
+      },
+    );
+    recordProfileFinalFailure(report, returned);
+    assert.equal(returned, primary);
+    assert.equal(report.execution_failure_code, 'profile_unclassified_failure');
+    assert.equal(report.failure_code, 'profile_unclassified_failure');
+    assert.equal(report.status, 'failed');
+    assert.equal(JSON.stringify(report).includes(privateMessage), false);
+  });
+}
 
 test('successful execution leaves no failure evidence', async () => {
   const report = { stage: 'profile' };
