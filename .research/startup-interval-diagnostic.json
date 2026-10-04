@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "status": "IMPLEMENTED_UNLAUNCHED_DIAGNOSTIC_ONLY",
+  "purpose": "Observe owned Chromium and host activity around the resource guard's actual one-second iostat watch sample after owned browser startup. This is not product acceptance or an admission override.",
+  "route": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "concurrency_group": "hosted-guest-side-panel",
+    "runner": "macos-15 ARM64 (existing configured hosted TEST runner)",
+    "input_contract": {
+      "runner_label": "macos-15",
+      "acceptance_case": "startup-resource-diagnostic",
+      "development_run_id": "37226671959",
+      "development_artifact_id": "11312153381",
+      "release_run_id": "empty",
+      "published_store_crx": false,
+      "scrape_auth_mode": "guest",
+      "scrape_width_mode": "narrow"
+    },
+    "dispatch_example": "gh workflow run hosted-guest-acceptance.yml --ref main -f runner_label=macos-15 -f acceptance_case=startup-resource-diagnostic -f development_run_id=37226671959 -f development_artifact_id=11312153381",
+    "dispatch_owner": "campaign root after independent review; this implementation lane did not dispatch",
+    "credentials": "No member or admin secret is read or staged. The existing GitHub token is used solely by the exact CI artifact importer.",
+    "steps": "Existing package and browser preparation each retain fresh resource admission and readiness. Startup phase imports and verifies the exact CI development artifact, starts owned Chromium with the extension, waits for two watchdog periods, and closes the exact child. The diagnostic opt-in is set only on this phase."
+  },
+  "evidence_contract": {
+    "resource_journal": "Uploaded docs/stabilization/resource-journals/hosted-startup-<run>-<attempt>.jsonl; retain all RESOURCE_ADMITTED, RESOURCE_WATCH_*, RESOURCE_STARTUP_INTERVAL_BRACKET, stop/final events.",
+    "startup_report": "Uploaded startup-interval-diagnostic.json; verdict is DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE, with exact CI run/artifact/source, startup and endpoint times, and journal name.",
+    "guard_sampling": "The guard still uses iostat -c 2 -w 1 -n 0 and its second one-second CPU row. A diagnostic-only ps CPU-time snapshot completes just before that command and starts just after it. Each bracket records four UTC timestamps, owned process lineage from the guarded child PID, centisecond CPU-time deltas for stable processes, host provisioner category, and missing/new PID sets.",
+    "causal_limit": "The process snapshots enclose but do not coincide exactly with iostat's one-second accounting interval. Newly spawned, exited, reparented, or PID-reused processes have unassignable CPU time. A healthy or unsafe diagnostic event cannot certify member/normal or admin acceptance and cannot by itself prove a specific startup correction. Compare the bracket intervals with the aggregate guard sample and report the residual/uncertainty explicitly.",
+    "unsafe_history": "Any unsafe journal event remains unsafe even if the final child exit says resourceInvalid=false. The normal native action boundary and all guard floors, permit, watchdog, and stop policy remain unchanged."
+  },
+  "verification": {
+    "red": "node --test scripts/test-startup-interval-attribution.mjs failed both cases when the parser rejected actual Darwin ps fractional time.",
+    "green": "node --test scripts/test-startup-interval-attribution.mjs passed both cases after fractional parsing; full local ps snapshot parsed 688/688 rows without reading process arguments or environment.",
+    "hosted_run": "Not launched by this lane. The local machine is below the 20 GiB system disk floor; no local browser/build/release run was attempted."
+  }
+}

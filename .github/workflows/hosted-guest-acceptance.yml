@@ -49,6 +49,7 @@ on:
           - prepare-stale-results
           - profile-admin
           - profile-member
+          - startup-resource-diagnostic
       scrape_diagnostic_cpu_rate:
         description: Optional owned intake-page CPU diagnostic rate for guest-scrape or guest-scrape-development (for example 4)
         required: false
@@ -145,6 +146,9 @@ jobs:
             [[ "$RUNNER_ARCH" == X64 && "$(uname -m)" == x86_64 ]] || exit 1
           fi
           printf 'HOSTED_RUNNER_PLATFORM label=%s runner_arch=%s machine=%s\n' "$RUNNER_LABEL" "$RUNNER_ARCH" "$(uname -m)"
+          if [[ "$ACCEPTANCE_CASE" == startup-resource-diagnostic ]]; then
+            [[ "$RUNNER_LABEL" == macos-15 ]] || { echo 'Startup diagnostic requires the configured ARM runner.' >&2; exit 1; }
+          fi
           if [[ -n "$SCRAPE_DIAGNOSTIC_CPU_RATE" ]]; then
             [[ "$ACCEPTANCE_CASE" == guest-scrape || "$ACCEPTANCE_CASE" == guest-scrape-development ]] || exit 1
             node -e 'const n=Number(process.argv[1]); if (!Number.isFinite(n)||n<=1) process.exit(1)' "$SCRAPE_DIAGNOSTIC_CPU_RATE"
@@ -163,7 +167,7 @@ jobs:
           if [[ "$ACCEPTANCE_CASE" == guest-scrape-development ]]; then
             [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
-          if [[ "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == desktop-settings-guest || "$ACCEPTANCE_CASE" == desktop-settings-member || "$ACCEPTANCE_CASE" == desktop-settings-admin || "$ACCEPTANCE_CASE" == audit-key-admin || "$ACCEPTANCE_CASE" == profile-admin || "$ACCEPTANCE_CASE" == profile-member ]]; then
+          if [[ "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == desktop-settings-guest || "$ACCEPTANCE_CASE" == desktop-settings-member || "$ACCEPTANCE_CASE" == desktop-settings-admin || "$ACCEPTANCE_CASE" == audit-key-admin || "$ACCEPTANCE_CASE" == profile-admin || "$ACCEPTANCE_CASE" == profile-member || "$ACCEPTANCE_CASE" == startup-resource-diagnostic ]]; then
             [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
           if [[ "$ACCEPTANCE_CASE" == prepare-stale-results ]]; then
@@ -178,6 +182,7 @@ jobs:
           fi
 
       - name: Require selected authentication before browser setup
+        if: inputs.acceptance_case != 'startup-resource-diagnostic'
         env:
           MATRX_HOSTED_PHASE: preflight
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
@@ -230,6 +235,7 @@ jobs:
         run: node scripts/hosted-resource-readiness.mjs
 
       - name: Exercise the selected Chrome side-panel case
+        if: inputs.acceptance_case != 'startup-resource-diagnostic'
         shell: bash
         env:
           MATRX_PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser-runtime/node_modules/playwright-core/index.mjs
@@ -255,6 +261,20 @@ jobs:
           mkdir -p "$RUNNER_TEMP/guest-resource-profile"
           node scripts/stabilization-resource.mjs run --run-id "hosted-guest-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
 
+      - name: Measure owned Chromium startup during the existing guard interval
+        if: inputs.acceptance_case == 'startup-resource-diagnostic' && inputs.runner_label == 'macos-15'
+        env:
+          MATRX_HOSTED_PHASE: startup-diagnostic
+          MATRX_STARTUP_INTERVAL_DIAGNOSTIC: '1'
+          MATRX_HOSTED_ACCEPTANCE_CASE: startup-resource-diagnostic
+          MATRX_HOSTED_BROWSER_RUNTIME_DIR: ${{ runner.temp }}/browser-runtime
+          PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/playwright-browsers
+          MATRX_HOSTED_GUEST_OUTPUT_DIR: ${{ runner.temp }}/guest-acceptance
+          MATRX_HOSTED_DEV_RUN_ID: ${{ inputs.development_run_id }}
+          MATRX_HOSTED_DEV_ARTIFACT_ID: ${{ inputs.development_artifact_id }}
+        run: |
+          node scripts/stabilization-resource.mjs run --run-id "hosted-startup-${{ github.run_id }}-${{ github.run_attempt }}" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs
+
       - name: Upload browser result and native-panel screenshots
         if: always()
         uses: actions/upload-artifact@v4
@@ -273,3 +293,4 @@ jobs:
             test-results/prepare-stale-result-native-*.json
             test-results/profile-native-hosted-profile-*.json
             test-results/native-sidepanel-qa-*/*.png
+            ${{ runner.temp }}/guest-acceptance/startup-interval-diagnostic.json

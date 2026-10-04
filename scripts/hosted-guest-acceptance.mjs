@@ -20,6 +20,7 @@ import {
 } from './hosted-profile-route.mjs';
 import { prepareHostedReleaseArtifact } from './hosted-release-artifact.mjs';
 import { requireHostedScrapeRoute } from './hosted-scrape-route.mjs';
+import { runHostedStartupIntervalDiagnostic } from './hosted-startup-interval-diagnostic.mjs';
 import { hashReleaseTree } from './sync-unpacked-release.mjs';
 
 const repo = resolve(fileURLToPath(new URL('..', import.meta.url)));
@@ -478,7 +479,7 @@ async function run(prepared, artifactMode) {
 // Setup has no product verdict, and acceptance never installs dependencies.
 const phase = process.env.MATRX_HOSTED_PHASE ?? 'acceptance';
 assert.ok(
-  ['preflight', 'package', 'browser', 'acceptance'].includes(phase),
+  ['preflight', 'package', 'browser', 'acceptance', 'startup-diagnostic'].includes(phase),
   'invalid hosted phase',
 );
 // Hosted Profile has no durable recovery outside this disposable runner.
@@ -566,4 +567,16 @@ const prepared = releaseMode
   : developmentMode
     ? await prepareDevelopment(devRunId, devArtifactId)
     : await preparePublishedStoreCrx(outputDir);
+if (phase === 'startup-diagnostic') {
+  assert.equal(developmentMode, true, 'startup_diagnostic_development_only');
+  assert.equal(process.env.MATRX_HOSTED_ACCEPTANCE_CASE, 'startup-resource-diagnostic');
+  await runHostedStartupIntervalDiagnostic({
+    executable: chromium.executablePath(),
+    extensionDir: prepared.extensionDir,
+    sourceSha: prepared.sourceSha,
+    runId: prepared.runId,
+    artifactId: prepared.artifactId,
+  });
+  process.exit(0);
+}
 await run(prepared, releaseMode ? 'release' : developmentMode ? 'development' : 'published-crx');

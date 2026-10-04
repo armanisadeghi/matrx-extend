@@ -32,6 +32,7 @@ import {
   writeSafetyState,
 } from './stabilization-resource-safety.mjs';
 import { resourceVerdict } from './stabilization-resource-verdict.mjs';
+import { parseProcessTimes, processTimeBracket } from './startup-interval-attribution.mjs';
 
 const run = promisify(execFile);
 const repo = resolve(import.meta.dirname, '..');
@@ -51,6 +52,7 @@ let safetyStateBroken = false;
 let admitted = false;
 let childFinished = false;
 let operatorStopped = false;
+let startupBracket;
 const flags = new Map();
 let command = [];
 for (let i = 0; i < raw.length; i++) {
@@ -263,8 +265,57 @@ function validateCommand() {
     throw new Error('RESOURCE_COMMAND_NOT_ALLOWED:see docs/stabilization/resource-policy.json');
 }
 
-async function sample(profileDir) {
+async function sample(profileDir, attributionRootPid) {
   if (platform() !== 'darwin') throw new Error('RESOURCE_UNSUPPORTED_PLATFORM');
+  const cpuOutput = async (cmd, args) => {
+    if (!attributionRootPid) return output(cmd, args);
+    const readProcesses = async () => ({
+      at: new Date().toISOString(),
+      processes: parseProcessTimes(
+        await output('/bin/ps', ['-A', '-o', 'pid=,ppid=,time=,ucomm=']),
+      ),
+      completedAt: new Date().toISOString(),
+    });
+    let before;
+    let after;
+    try {
+      before = await readProcesses();
+    } catch {
+      /* The guard sample still runs. */
+    }
+    const iostatStartedAt = new Date().toISOString();
+    const raw = await output(cmd, args);
+    const iostatCompletedAt = new Date().toISOString();
+    try {
+      after = await readProcesses();
+    } catch {
+      /* Evidence reports unavailable. */
+    }
+    let detail;
+    try {
+      detail =
+        before && after
+          ? processTimeBracket(before.processes, after.processes, attributionRootPid)
+          : {
+              unavailable: true,
+              limitation:
+                'A process snapshot failed; no process attribution is available for this guard sample.',
+            };
+    } catch {
+      detail = {
+        unavailable: true,
+        limitation: 'Process bracket calculation failed; guard sampling is unchanged.',
+      };
+    }
+    startupBracket = {
+      iostatStartedAt,
+      iostatCompletedAt,
+      beforeCompletedAt: before?.completedAt ?? null,
+      afterStartedAt: after?.at ?? null,
+      ...detail,
+    };
+    return raw;
+  };
   const [memory, pressure, total, cpus, load, swap, disk, cpuBusy] = await Promise.all([
     output('/usr/bin/memory_pressure', ['-Q']),
     sysctl('kern.memorystatus_vm_pressure_level'),
@@ -273,7 +324,7 @@ async function sample(profileDir) {
     sysctl('vm.loadavg'),
     sysctl('vm.swapusage'),
     sampleDiskSpace({ repo, profileDir, leaseRoot: root }),
-    cpuBusyFraction(output),
+    cpuBusyFraction(cpuOutput),
   ]);
   const freePercent = number(
     memory.match(/System-wide memory free percentage:\s*([\d.]+)%/)?.[1],
@@ -676,8 +727,12 @@ async function main() {
       }
       let current;
       let bad;
+      startupBracket = undefined;
       try {
-        current = await sample(profileDir);
+        current = await sample(
+          profileDir,
+          process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC === '1' ? groupId : undefined,
+        );
         bad = reasons(current, previous);
       } catch (error) {
         bad = [`RESOURCE_MEASUREMENT_FAILED:${error.message}`];
@@ -702,6 +757,11 @@ async function main() {
         reasons: bad,
         sample: current,
       });
+      if (process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC === '1')
+        emit('RESOURCE_STARTUP_INTERVAL_BRACKET', {
+          runId,
+          bracket: startupBracket ?? { unavailable: true },
+        });
       if (
         bad.length &&
         unsafe === 1 &&
