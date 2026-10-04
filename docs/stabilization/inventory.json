@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T15:06:04.877305+00:00",
+  "updated_at": "2026-10-04T15:33:32.918684+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -17326,8 +17326,21 @@
             }
           ],
           "defect_ids": [
-            "EXT-D-0122"
-          ]
+            "EXT-D-0122",
+            "EXT-D-0123"
+          ],
+          "results": {
+            "guest": {
+              "status": "partial",
+              "build": "development0.2.215/source3536b5cb",
+              "run_id": "37212405505",
+              "evidence": [
+                ".research/blank-startup-native-experiment.json",
+                ".research/scrape-media-pointer-diagnosis.json"
+              ],
+              "detail": "Warm native medium/icon removals and exact survivor/group checks were traversed; final screenshot confirms count3\u21921. Third removal failed after unexpected switch to Article. Cause unresolved; remaining large removal, reload and other roles unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1007-T11",

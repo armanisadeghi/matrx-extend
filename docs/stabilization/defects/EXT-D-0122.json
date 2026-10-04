@@ -14,13 +14,15 @@
   "actual": "Healthy native run stops at summary assertion. Frozen source applies uppercase to toolbar while observer reads innerText; likely comparison defect, not confirmed product bug. Group membership remains unverified.",
   "severity": "S2: false-negative acceptance risk and missing actionable failure evidence; no confirmed product malfunction",
   "priority": "P1: blocks media control acceptance",
-  "state": "fixed",
+  "state": "closed",
   "owner": "/root/scrape_image_group_diagnosis",
   "evidence": [
     ".research/scrape-media-capacity-recheck.json",
     "docs/stabilization/evidence/scrape215/run37209834721/receipt.json.txt",
     ".research/scrape-image-group-diagnosis.json",
-    ".research/scrape-image-group-peer.json"
+    ".research/scrape-image-group-peer.json",
+    ".research/blank-startup-native-experiment.json",
+    ".research/scrape-media-pointer-diagnosis.json"
   ],
   "transition_history": [
     {
@@ -46,6 +48,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Repair000fb2fc passed fresh peer29813626; exact rendered group identities and failure-pane diagnostics replace case-sensitive text oracle. Native retest pending."
+    },
+    {
+      "at": "2026-10-04T15:33:32.918684+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent run37212405505 passed initial image-group oracle and both medium/icon removal identity/group assertions before a separate zero-target failure; source helper forcing checks and fresh review already pass. Failure capture successfully retained selectedpane and screenshot, independently viewed by root. Original case-sensitive group-summary/missing-pane defect no longer reproduces."
+    },
+    {
+      "at": "2026-10-04T15:33:32.918684+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Closure limited to original test oracle and actionable failure capture. New unexplained pane transition is EXT-D-0123; full media/link and reload acceptance remain incomplete."
     }
   ],
   "retest_attempts": [

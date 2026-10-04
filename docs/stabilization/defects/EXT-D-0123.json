@@ -1,0 +1,40 @@
+{
+  "id": "EXT-D-0123",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T10", "EXT-F-1007-T12", "EXT-F-1007-T13"],
+  "surface": "Scrape media editing / native pointer acceptance",
+  "auth_mode": "guest",
+  "title": "Images pane changes to Article between sequential removals; next control cannot be targeted",
+  "reproduction": [
+    "Use frozen development215 CI37193761291 artifact11299613935 source3536b5cb with driver30fe6781; hosted guest-scrape-development run37212405505 has one healthy CPUwatch0.02, no unsafe samples.",
+    "Capture owned intake fixture with640x480 intake.svg,96x96 appointment-card.svg,32x32 clinic-icon.svg. Select Images. Remove medium then icon; driver verifies exact survivors/group counts after each.",
+    "Next request removes intake.svg. Driver reports pointer_target_not_unique with0matches. Failure screenshot shows Article selected, EDITED and Images count1. No full reload occurred."
+  ],
+  "expected": "Removing images preserves the selected Images pane and targets the remaining image; exact surviving identities and counts remain verifiable.",
+  "actual": "After two removals, selected-pane selector finds no target; Article is selected. The transition origin is not captured, so product reset versus pointer/mount race remains unresolved.",
+  "severity": "S2: media acceptance is blocked; user-facing pane-reset defect not yet proven",
+  "priority": "P1: identify transition before further media acceptance",
+  "state": "triaged",
+  "owner": "/root/scrape_media_transition_probe",
+  "evidence": [
+    ".research/blank-startup-native-experiment.json",
+    ".research/scrape-media-pointer-diagnosis.json",
+    "docs/stabilization/evidence/scrape215/run37212405505/receipt.json.txt",
+    "docs/stabilization/evidence/scrape215/run37212405505/scrape-warm-media-failure.png"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-04T15:33:32.918684+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Rawreceipt and failure screenshot show unexpected selected pane at remaining-image action."
+    },
+    {
+      "at": "2026-10-04T15:33:32.918684+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Independent frozen-source diagnosis identifies third removal boundary; causal pane-switch origin unresolved. Minimal pre/post/event probe delegated, not a speculative product patch."
+    }
+  ],
+  "next_action": "Observe actionidentity/pre-post selectedpane/imageidentities and bounded tab/pointer events without automatically reselecting Images. Real component sequential-removal test distinguishes local state behavior from native pointer/mount behavior."
+}
