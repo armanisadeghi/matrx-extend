@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-04 16:06 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T15:33:32.918684+00:00. 205 features · 762 cases · 1333 controls · 123 linked defect records.
+Generated 2026-10-04 16:33 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-04T16:32:56.071159+00:00. 205 features · 762 cases · 1333 controls · 123 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -8,7 +8,7 @@ A feature is fully verified for a role only when every applicable case explicitl
 
 Applicable case-by-role slots: **1213** — Pass: 81 · Partial: 70 · Fail: 2 · Unverified: 1059 · N/A: 1.
 Unverified splits into **123 explicitly marked unverified** and **936 with no result record**.
-Full feature-role pairs: **0/396**. Procedure gaps: 128 cases without steps, 127 without expected outcomes, 31 without control links.
+Full feature-role pairs: **0/396**. Procedure gaps: 128 cases without steps, 127 without expected outcomes, 28 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
 ## Tab and surface overview
@@ -811,7 +811,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0123
 
-**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0115](defects/EXT-D-0115.json) (retest-pass), [EXT-D-0118](defects/EXT-D-0118.json) (fixed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0123](defects/EXT-D-0123.json) (triaged)
+**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0115](defects/EXT-D-0115.json) (retest-pass), [EXT-D-0118](defects/EXT-D-0118.json) (fixed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0123](defects/EXT-D-0123.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1688,18 +1688,16 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 4. **Controls:** 22.
 
-**Next:** Add cases for 22 uncovered control(s), then verify them in the extension.
+**Next:** Run the remaining role cases in the extension and attach a result.
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-2017-T01 Generate password options | N/A | Unverified | Unverified | No control mapped |
-| EXT-F-2017-T02 Generate passphrase options | N/A | Unverified | Unverified | No control mapped |
-| EXT-F-2017-T03 Use generated candidate on page | N/A | Unverified | Unverified | No control mapped |
+| EXT-F-2017-T01 Generate password options | N/A | Unverified | Unverified | EXT-F-2017-C01, EXT-F-2017-C02, EXT-F-2017-C03, EXT-F-2017-C05, EXT-F-2017-C06, EXT-F-2017-C07, EXT-F-2017-C08, EXT-F-2017-C09, EXT-F-2017-C10, EXT-F-2017-C15, EXT-F-2017-C16, EXT-F-2017-C17, EXT-F-2017-C18, EXT-F-2017-C19, EXT-F-2017-C20 |
+| EXT-F-2017-T02 Generate passphrase options | N/A | Unverified | Unverified | EXT-F-2017-C04, EXT-F-2017-C11, EXT-F-2017-C12, EXT-F-2017-C13, EXT-F-2017-C14, EXT-F-2017-C15, EXT-F-2017-C16, EXT-F-2017-C17, EXT-F-2017-C18, EXT-F-2017-C19, EXT-F-2017-C20 |
+| EXT-F-2017-T03 Use generated candidate on page | N/A | Unverified | Unverified | EXT-F-2017-C21, EXT-F-2017-C22 |
 | EXT-F-2017-T04 Guest cannot open Vault password generator | N/A | N/A | N/A | No control mapped |
 
-**Controls without a mapped case:** EXT-F-2017-C01 Expand generator; EXT-F-2017-C02 Collapse generator; EXT-F-2017-C03 Choose password mode; EXT-F-2017-C04 Choose passphrase mode; EXT-F-2017-C05 Set password length; EXT-F-2017-C06 Toggle lowercase; EXT-F-2017-C07 Toggle uppercase; EXT-F-2017-C08 Toggle digits; EXT-F-2017-C09 Toggle symbols; EXT-F-2017-C10 Toggle exclude ambiguous; EXT-F-2017-C11 Set passphrase word count; EXT-F-2017-C12 Choose passphrase separator; EXT-F-2017-C13 Toggle capitalize; EXT-F-2017-C14 Toggle append digit; EXT-F-2017-C15 Generate value; EXT-F-2017-C16 Regenerate value; EXT-F-2017-C17 Clear generated value; EXT-F-2017-C18 Reveal generated value; EXT-F-2017-C19 Hide generated value; EXT-F-2017-C20 Copy generated value; EXT-F-2017-C21 Choose target password field; EXT-F-2017-C22 Use generated value
-
-**Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.
+**Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.; 21 component checks and independent typecheck establish bounded option/offer routing only; native role, clipboard, field-fill/no-submit, stale-target and reload outcomes remain unverified.
 
 
 ## Tools / registered executor
