@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0129",
+  "reviewed_fix": "694d4e6a6c2c97acb40c3795f5ed2835d4b93a6e",
+  "verdict": "PASS_FOR_DURABLE_JOURNAL_SERIALIZER_ONLY",
+  "A_original_reproduction_and_persistence": {
+    "historical_evidence": "Run 37230193583 stdout has the complete RESOURCE_STARTUP_INTERVAL_BRACKET with nine observed processes; the matching timestamp in the original hosted-startup journal has no bracket key.",
+    "parent_writer_reproduction": "Imported the actual openResourceJournal from 694d4e6a^, wrote the captured stdout event, published and read its JSONL. The bracket was silently absent.",
+    "current_writer_readback": "Wrote that same captured event through openResourceJournal at 694d4e6a, surrounded by JOURNAL_OPENED and FINAL_DECISION, published and read the JSONL. The complete bracket, including all four timestamps, PID sets, category totals, nine observed process deltas, count and limitation, matched the captured payload exactly. Event order and final child_failed decision were retained. Temporary journal files were removed."
+  },
+  "B_quality_and_secret_safety": {
+    "nested_field_stripping": "Injected argument, environment and command fields at the event, bracket, category-totals and observed-process levels; none appeared in the published JSONL.",
+    "malformed_refusals": "Actual writer rejected a missing bracket, negative CPU time, fractional PID, invalid timestamp, path executable, control character in executable, unknown limitation, and bracket on another event code. Rejected writes left no partial lines.",
+    "unavailable_marker": "An unavailable bracket was persisted as only {\"unavailable\":true}; a raw error secret was excluded.",
+    "neighboring_behavior": "JOURNAL_OPENED and FINAL_DECISION readback retained their order and decision; scoped node tests for guard-field filtering, startup bracket, malformed bracket and process attribution passed 4/4."
+  },
+  "limits": "No new hosted or native diagnostic was run. The original run's immutable journal still lacks its bracket; stdout is retained separately. This verifies filesystem serialization only and does not change native product acceptance or resource guard admission."
+}
