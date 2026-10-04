@@ -1,0 +1,7 @@
+{
+  "scope": "EXT-D-0124 independent review of 3d96bc71 after merge 8ba2f065",
+  "A_source_native_pending": "PASS source: scrapeState serializes observeScrapeRows into the selected, visible native Scrape pane; the helper is self-contained and reads title or data-matrx-title. Native 231ARM retest remains pending in the root lane.",
+  "B_quality": "PASS: the rendered ScrapeView test uses the same serialized function, requires exact two video URLs, the one surviving URL and count 1 after removal, link identity with moved tooltip, image identities, and empty wrong-kind results. Native assertMediaPane and assertLinkPane still require exact identities, tab counts, and selected visible pane; no product source changed in the fix.",
+  "checks": "pnpm exec vitest run src/features/scrape/ScrapeView.media-controls.test.tsx: 6/6; node --test tests/browser/scrape-media-assertions.test.mjs: 8/8; pnpm compile: pass; pnpm exec biome check on four changed source/test files: pass.",
+  "limit": "Source and local test review only; no native/browser execution in this peer lane."
+}
