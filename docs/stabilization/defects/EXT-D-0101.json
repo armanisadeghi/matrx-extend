@@ -14,13 +14,14 @@
   "actual": "Report cannot locate the failing control or distinguish readiness/ambiguity; cleanup overwritesstage so it cannot identify originalfailure.",
   "severity": "S3: diagnosticloss delays reliabletesting; no productuserimpact demonstrated.",
   "priority": "P1: blocks currentProfile reloadacceptance diagnosis.",
-  "state": "fixed",
+  "state": "retest-pass",
   "owner": "profile_reload_target_repair",
   "evidence": [
     ".research/profile-member-retest189.json",
     "tests/browser/profile-native-acceptance.mjs: failure catch currently omits existing driverFailure metadata",
     ".research/profile-diagnostics-peer.json",
-    ".research/profile-runner-final-peer.json"
+    ".research/profile-runner-final-peer.json",
+    ".research/profile-member-retest189-next.json"
   ],
   "transition_history": [
     {
@@ -46,6 +47,12 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Actualexecutionboundary nowpreservesfailuremetadata beforefinally. Firstguard rejectedby89253af9; correctionc77982ec verifiedbyfreshpeer9579bb78 with17tests andbehavioralno-capturemutation. Nativefailurecapturestillpending."
+    },
+    {
+      "at": "2026-10-04T00:54:21.007514+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Actualnativefailure retained original extension_reload/open_profile_after_reload/account_menu, safe0/0counts andUIbooleans despitecleanupfinalstage. Rootverifiedraw/journalhashes. KnownT26dual-errorsecondarypath stillrequiresrepairbeforefullclosure."
     }
   ],
   "closure_requirement": "Meaningfulfailurecaptureguard and independentreview, then actualguardedfailure or equivalentverifiednativeobservation preservingoriginaloperation/stage withoutprivatecontent. UnderlyingProfile targetfailure handledseparately.",

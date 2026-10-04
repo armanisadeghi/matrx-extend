@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-04T00:36:56.704192+00:00",
+  "updated_at": "2026-10-04T00:54:21.007514+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "528ea0b0fec200cc1e7a1f2685a80201ccf7ed4b",
@@ -11913,9 +11913,9 @@
             "src/features/profile/ProfileView.tsx:58-85",
             "src/features/profile/ProfileView.tsx:226-240"
           ],
-          "procedure_readiness": "requires_fixture",
+          "procedure_readiness": "partial",
           "procedure_gaps": [
-            "The source does not define a built-in failure control; a controlled backend/network fault fixture is required."
+            "Warm-member run-created-row fixture verified. Reload/member and admin fixture execution remain unverified."
           ],
           "procedure_execution_matrix": [
             {
@@ -11926,10 +11926,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "requires_fixture"
+              "observed_outcome": "Real failed-write/draft-retention/retry path passed with original state restored.",
+              "evidence_refs": [
+                ".research/profile-member-retest189-next.json"
+              ],
+              "status": "pass",
+              "readiness": "ready"
             },
             {
               "mode": "member",
@@ -11939,10 +11941,12 @@
                 "warm",
                 "reload"
               ],
-              "observed_outcome": null,
-              "evidence_refs": [],
-              "status": "unverified",
-              "readiness": "requires_fixture"
+              "observed_outcome": "Real failed-write/draft-retention/retry path passed with original state restored.",
+              "evidence_refs": [
+                ".research/profile-member-retest189-next.json"
+              ],
+              "status": "pass",
+              "readiness": "ready"
             },
             {
               "mode": "member",
@@ -12030,7 +12034,25 @@
             "report": ".research/popup-profile-acceptance-peer.json",
             "scope": "Source-reviewed procedure only; no runtime acceptance."
           },
-          "required_fixture": "A controlled disposable profile-upsert failure fixture must reject the write and then restore service. No source-exposed fault control exists; after restoring service, retry with the existing Save control."
+          "required_fixture": "A controlled disposable profile-upsert failure fixture must reject the write and then restore service. No source-exposed fault control exists; after restoring service, retry with the existing Save control.",
+          "results": {
+            "member": {
+              "status": "partial",
+              "run_id": "profile-member-retest-189-02",
+              "build_variant": "receipt-bound development189/sourceb4b9f0c4/CI37164174445/artifact11288542496",
+              "verified_at": "2026-10-04T00:54:21.007514+00:00",
+              "evidence": ".research/profile-member-retest189-next.json",
+              "verified_substeps": [
+                "One exact test-owned Profile write failed; UI retained editable dirty draft and actionable error.",
+                "Retry persisted after reopen and original owned-row value was restored.",
+                "Outer conditional delete and authenticated read verified original row absence."
+              ],
+              "remaining_criteria": [
+                "Member reload dimension and all admin dimensions unverified.",
+                "No full Profile or later-main build claim."
+              ]
+            }
+          }
         },
         {
           "id": "EXT-F-1004-T27",
