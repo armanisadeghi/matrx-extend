@@ -1,0 +1,10 @@
+{
+  "scope": "Returning guest allowance acceptance driver only",
+  "source": "tests/browser/guest-allowance-native-acceptance.mjs",
+  "change": "After the first real 402, reload the owned panel, verify guest identity, click New chat with trusted pointer input, and send Hi.",
+  "forcing_evidence": "Pass requires a distinct second live mandate POST returning HTTP 402 with guest_ai_allowance_used, safe remedy copy, and no Retry.",
+  "screenshot": "Crop to the assistant remedy message only; no conversation history or profile details.",
+  "checks": ["node --check", "biome check"],
+  "live_native_run": "Reserved for the independent verification seat; not run by this driver author.",
+  "policy_or_product_change": false
+}

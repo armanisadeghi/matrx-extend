@@ -57,6 +57,7 @@ const report = {
   send_observations: [],
   exhausted_turn: null,
   live_allowance_http: null,
+  returning_guest: null,
   owner_table_gets_after_observer_attachment: [],
   failure_stage: null,
 };
@@ -329,7 +330,7 @@ try {
     ...harnessOptions,
     ...(runtimeExtensionId && { expectedExtensionId: runtimeExtensionId }),
     onStage,
-    exercisePanel: async ({ panel, attachOffscreen }) => {
+    exercisePanel: async ({ panel, attachOffscreen, artifacts }) => {
       stage = 'guest_ready';
       const state = () =>
         evaluate(
@@ -349,14 +350,16 @@ try {
       })()`,
         );
       await waitFor('guest_chat_ready', state, (s) => s?.guest && s.composer, 30_000);
-      report.guest_identity = await evaluate(
-        panel,
-        `(async () => {
+      const guestIdentity = () =>
+        evaluate(
+          panel,
+          `(async () => {
         const values = await chrome.storage.local.get(['matrx.auth.accessToken', 'matrx.user.profile']);
         return { banner_present: document.body.innerText.includes("You're using Matrx as a guest."),
           access_token_absent: !values['matrx.auth.accessToken'], profile_absent: !values['matrx.user.profile'] };
       })()`,
-      );
+        );
+      report.guest_identity = await guestIdentity();
       assert.ok(
         Object.values(report.guest_identity).every((value) => value === true),
         'explicit signed-out guest identity',
@@ -384,6 +387,7 @@ try {
       let stopOffscreen = [];
       const chatRequests = new Set();
       const chatStatuses = new Map();
+      const allowanceResponses = new Map();
       const observeOffscreen = async () => {
         if (offscreen) return;
         offscreen = await attachOffscreen();
@@ -408,7 +412,7 @@ try {
                 const parsed = JSON.parse(
                   base64Encoded ? Buffer.from(body, 'base64').toString('utf8') : body,
                 );
-                report.live_allowance_http = {
+                const summary = {
                   status: 402,
                   exact_guest_allowance_code: parsed.error === 'guest_ai_allowance_used',
                   flat_error_field: typeof parsed.error === 'string',
@@ -416,9 +420,13 @@ try {
                     error: 'guest_ai_allowance_used',
                   }),
                 };
+                allowanceResponses.set(requestId, summary);
+                report.live_allowance_http ??= summary;
               })
               .catch(() => {
-                report.live_allowance_http = { status: 402, body: 'unavailable' };
+                const summary = { status: 402, body: 'unavailable' };
+                allowanceResponses.set(requestId, summary);
+                report.live_allowance_http ??= summary;
               });
           }),
         ];
@@ -503,6 +511,80 @@ try {
           (body) => body?.status === 402 && body.exact_guest_allowance_code === true,
           10_000,
         );
+        const firstAllowanceRequests = new Set(allowanceResponses.keys());
+        assert.equal(firstAllowanceRequests.size, 1, 'first allowance turn has one observed 402');
+
+        stage = 'returning_guest_reload';
+        await panel.send('Page.enable');
+        await panel.send('Page.reload', { ignoreCache: false });
+        await waitFor('returning_guest_ready', state, (s) => s?.guest && s.composer, 30_000);
+        const identityAfterReload = await guestIdentity();
+        assert.ok(
+          Object.values(identityAfterReload).every((value) => value === true),
+          'same profile remains a signed-out guest after panel reload',
+        );
+        await click(panel, 'title', 'New chat');
+        await waitFor(
+          'returning_guest_new_chat_empty',
+          state,
+          (s) => s?.guest && s.composer && s.replyCount === 0 && !s.streaming,
+          10_000,
+        );
+        stage = 'returning_guest_send';
+        const focused = await evaluate(
+          panel,
+          `(() => { const t = document.querySelector('button[role="tab"][title="Chat"]'); const p = document.getElementById(t?.getAttribute('aria-controls') ?? ''); const x = p?.querySelector('textarea'); x?.focus(); return document.activeElement === x; })()`,
+        );
+        assert.equal(focused, true, 'returning guest composer focused');
+        await panel.send('Input.insertText', { text: 'Hi' });
+        await waitFor('returning_guest_send_ready', state, (s) => s?.sendReady, 10_000);
+        const requestsBeforeSecondSend = new Set(chatRequests);
+        await click(panel, 'active-chat-send', 'Send');
+        const returningReply = await waitFor(
+          'returning_guest_terminal',
+          state,
+          (s) => s?.replyCount === 1 && !s.streaming,
+          120_000,
+        );
+        assert.ok(
+          returningReply.latest.includes(SAFE_COPY),
+          'returning guest sees free-account remedy',
+        );
+        assert.equal(returningReply.retryVisible, false, 'returning guest has no Retry action');
+        const secondWire = await waitFor(
+          'returning_guest_second_live_402',
+          () => [...allowanceResponses].filter(([id]) => !requestsBeforeSecondSend.has(id)),
+          (entries) => entries.length === 1 && entries[0][1].exact_guest_allowance_code === true,
+          10_000,
+        );
+        assert.ok(
+          !firstAllowanceRequests.has(secondWire[0][0]),
+          'second 402 is a distinct request',
+        );
+        const remedyClip = await evaluate(
+          panel,
+          `(() => { const t = document.querySelector('button[role="tab"][title="Chat"]'); const p = document.getElementById(t?.getAttribute('aria-controls') ?? ''); const b = [...(p?.querySelectorAll('button[title="Copy reply"]') ?? [])].at(-1); const r = b?.closest('div.group.space-y-2')?.getBoundingClientRect(); return r && { x: Math.max(0, r.x), y: Math.max(0, r.y), width: Math.min(innerWidth, r.right) - Math.max(0, r.x), height: Math.min(innerHeight, r.bottom) - Math.max(0, r.y), scale: 1 }; })()`,
+        );
+        assert.ok(
+          remedyClip?.width > 0 && remedyClip.height > 0,
+          'remedy screenshot crop is visible',
+        );
+        const screenshot = join(artifacts, 'returning-guest-allowance-remedy.png');
+        const { data } = await panel.send('Page.captureScreenshot', {
+          format: 'png',
+          clip: remedyClip,
+        });
+        await writeFile(screenshot, Buffer.from(data, 'base64'), { mode: 0o600 });
+        report.returning_guest = {
+          panel_reloaded: true,
+          signed_out_guest_after_reload: true,
+          trusted_new_chat_clicked: true,
+          second_distinct_live_402: true,
+          second_exact_guest_allowance_code: true,
+          safe_allowance_copy_present: true,
+          retry_absent: true,
+          cropped_remedy_screenshot: screenshot,
+        };
         report.owner_table_gets_after_observer_attachment = [...reads.values()].filter(
           (r) => r.method === 'GET',
         );
