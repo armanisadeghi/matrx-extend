@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "run_id": "popup-guest-native-189-01",
+  "status": "setup_unverified",
+  "created_at_utc": "2026-10-04T01:44:00Z",
+  "inventory_source": "docs/stabilization/inventory.json EXT-F-1002-T01/T04, exact guest mode and warm/reload dimensions",
+  "scope": ["EXT-F-1002-T01", "EXT-F-1002-T04"],
+  "actions": [
+    "Read the exact inventory procedures and popup profile procedure records.",
+    "Read .research/profile-reload-hydration.json and verified the frozen development receipt, version and artifact tree identity.",
+    "Read the candidate manifest: action.default_popup is popup.html; options_ui page is options.html.",
+    "Called CUA getApp with the Chrome for Testing app path. It bound to an already-running persistent CFT window on the Nuxt installation documentation page. Read the initial accessibility state; sent no input and changed no tabs, profiles, extension settings, or permissions.",
+    "Precreated the external evidence and permit-profile directories mode 0700 and stat-verified both.",
+    "Ran the existing resource guard in check mode against the isolated scratch profile directory. It admitted the preflight and wrote a complete valid journal; no browser was launched."
+  ],
+  "candidate_artifact": {
+    "loaded": false,
+    "source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "ci_run_id": "37164174445",
+    "artifact_id": "11288542496",
+    "version": "0.2.189",
+    "tree_sha256": "494646f6dd65399e0e7eee65fd1d9bd00ef97d173c5ceb9674de276ca12dc23a",
+    "receipt_path": "test-results/ci-artifacts/b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced/37164174445-1/local-dev-receipt.json",
+    "receipt_sha256": "59508f1709b214b329ee2b59456322177e7a1d5862680e685872e6122a5b4ecb",
+    "manifest_action_default_popup": "popup.html",
+    "manifest_sha256": "db2ce418f61955f47f99ff5f820bc8562d774ba2971f9bdd58d92c3f55307171"
+  },
+  "outcomes": {
+    "EXT-F-1002-T01": {
+      "mode": "guest",
+      "warm": { "status": "unverified", "reason": "No toolbar action was clicked." },
+      "reload": {
+        "status": "unverified",
+        "reason": "No extension reload or post-reload toolbar action was performed."
+      }
+    },
+    "EXT-F-1002-T04": {
+      "mode": "guest",
+      "warm": { "status": "unverified", "reason": "No toolbar action was clicked." },
+      "reload": {
+        "status": "unverified",
+        "reason": "No extension reload or post-reload toolbar action was performed."
+      }
+    },
+    "EXT-F-1002-T13": {
+      "status": "unverified",
+      "attempted": false,
+      "reason": "Options entrypoint was outside the completed setup attempt."
+    }
+  },
+  "test_driver_limit": "This lane's CUA app binding attached to a pre-existing shared persistent CFT session, so I stopped before input. I did not establish an isolated CFT window with the reusable native-sidepanel-qa-harness exercise callback. Root identified that harness route for a narrowly routed follow-up. This is setup/driver unverified, not a product failure.",
+  "resource_preflight": {
+    "mode": "check",
+    "decision": "valid",
+    "browser_run": false,
+    "journal_path": "docs/stabilization/resource-journals/popup-guest-native-189-01-preflight.jsonl",
+    "journal_sha256": "472884ef769dc1495239dbfd5c047f862c63895bc881430682bc8bc74f29cdf3",
+    "sample": {
+      "pressure_level": 1,
+      "available_memory_gib": 12.48,
+      "required_memory_gib": 4,
+      "one_minute_load": 1.11,
+      "logical_cpus": 10,
+      "cpu_busy_fraction": 0.11,
+      "swap_used_mib": 4131.5,
+      "repo_free_gib": 1688.3289527893066,
+      "profile_free_gib": 1688.3289527893066,
+      "safety_free_gib": 27.31133270263672
+    }
+  },
+  "safe_evidence": {
+    "path": "/Volumes/Samsung2TB/code/.stabilization-scratch/popup-guest-native-189-01/evidence/driver-limit.json",
+    "sha256": "cfec55b9299af32d9af0cf097edd9cbc2deda37da39db85ad073ac9b2f60a11e"
+  },
+  "side_effects": "No sign-in, account/profile/database write, mic prompt, browser permission change, or mutation of the shared CFT session."
+}
