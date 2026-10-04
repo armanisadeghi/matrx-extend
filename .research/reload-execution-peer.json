@@ -1,0 +1,46 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "reviewed_commit": "babf71b7e73787ce56a9ac8b2fa75fb86e5d261b",
+  "reviewed_report": ".research/reload-causal-escalation.json",
+  "verdict_a_behavior_scope": {
+    "result": "PARTIAL",
+    "passed": [
+      "The new ServiceWorker branch accepts the real 37200570100 stopped/redundant old-version sequence with a distinct running/activated replacement, without claiming the retained debugger host was destroyed.",
+      "The new branch refuses the focused stopping, restartable, ambiguous identity, dropped-event and missing-evidence fixtures. Exact management, one-worker, old-panel absence, replacement creation, side-panel context and downstream resource checks remain in the harness."
+    ],
+    "blocking_gap": "The overall acceptance predicate still passes via old TargetDestroyed when execution evidence is false or absent. Thus it cannot guarantee that old execution stopped or that the replacement version is running/activated in every accepted run."
+  },
+  "verdict_b_doctrine_quality": {
+    "result": "FAIL",
+    "reason": "A passing harness path contradicts the forcing-function requirement that an unsafe or unmeasured old-worker execution state fail. The focused tests are green while this path remains open. The new branch is narrow and evidence-preserving, but the composite oracle is not safe."
+  },
+  "findings": [
+    {
+      "severity": "blocking",
+      "kind": "false_green",
+      "location": "tests/browser/native-sidepanel-qa-harness.mjs:481",
+      "reproduction": "node tests/browser/native-sidepanel-qa-harness.test.mjs passes its first two default reloadCase calls. In that very test, tests/browser/native-sidepanel-qa-harness.test.mjs:389-405 emits TargetDestroyed and a post-click old version with runningStatus=stopped/status=activated; it emits no replacement ServiceWorker.workerVersionUpdated unless retainedHost=true. reloadExecutionRetired therefore returns false, yet the OR accepts the run and the test asserts old_targets_retired=true.",
+      "implication": "A destroyed debugger target plus a one-worker target snapshot can produce an accepted result while the correlated old version remains restartable and the replacement version is unproved. If the ServiceWorker protocol is unavailable, truncated or ambiguous, the same OR can bypass the new refusal logic.",
+      "required_fix": "Make every accepted path prove authoritative old execution retirement and replacement execution, or provide and test an independently authoritative alternative for those exact facts. Add a harness-level refusal for destroyed target plus stopped/activated old version and absent replacement version, and for unavailable/ambiguous ServiceWorker evidence if no alternative exists."
+    }
+  ],
+  "evidence": {
+    "captured_native_receipt": "docs/stabilization/evidence/scrape215/run37200570100/receipt.json.txt",
+    "receipt_sha256_verified": "ccac4c5e602e3054d5418b5a83c1d1627002451dd2c2b220b27ff63c600af17b",
+    "fixture": "tests/browser/fixtures/reload-stopped-redundant.json",
+    "chromium_source": [
+      "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/content/browser/service_worker/service_worker_version.cc#L507-L530",
+      "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/content/browser/devtools/service_worker_devtools_agent_host.cc#L285-L306",
+      "https://raw.githubusercontent.com/chromium/chromium/141.0.7390.37/content/browser/devtools/protocol/target_handler.cc#L1300-L1310"
+    ],
+    "focused_checks": [
+      "node --test tests/browser/reload-execution-retirement.test.mjs tests/browser/reload-lifetime-diagnostic.test.mjs tests/browser/profile-reload-capture.test.mjs: 23 passed",
+      "node tests/browser/native-sidepanel-qa-harness.test.mjs: passed, including the unsafe default destroyed-target fixture described above"
+    ]
+  },
+  "cannot_verify": [
+    "No native Chrome run, release, build or whole-product acceptance was performed under the Mac resource limit.",
+    "The exact debugger-host retaining owner remains unknown; no owner is inferred from attached=false.",
+    "The next native exact-artifact run must wait until the false-green path is repaired and independently rechecked."
+  ]
+}
