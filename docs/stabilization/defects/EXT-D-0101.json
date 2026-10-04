@@ -14,8 +14,8 @@
   "actual": "Report cannot locate the failing control or distinguish readiness/ambiguity; cleanup overwritesstage so it cannot identify originalfailure.",
   "severity": "S3: diagnosticloss delays reliabletesting; no productuserimpact demonstrated.",
   "priority": "P1: blocks currentProfile reloadacceptance diagnosis.",
-  "state": "fixed",
-  "owner": "profile_fields_reload_fix",
+  "state": "in-fix",
+  "owner": "profile_expander_diagnostics",
   "evidence": [
     ".research/profile-member-retest189.json",
     "tests/browser/profile-native-acceptance.mjs: failure catch currently omits existing driverFailure metadata",
@@ -28,7 +28,8 @@
     ".research/profile-member-final-189-native.json",
     ".research/profile-escalated-boundary-peer.json",
     ".research/profile-fields-final-source-peer.json",
-    ".research/profile-fields-diagnostic-final-peer.json"
+    ".research/profile-fields-diagnostic-final-peer.json",
+    ".research/profile-d104-independent-native.json"
   ],
   "transition_history": [
     {
@@ -114,6 +115,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "2318bbac records per-case/dimension phase, freshpeer635283fb verifies realfailureboundary with25focusedchecks. Independentextendednativepending."
+    },
+    {
+      "at": "2026-10-04T02:34:39.130986+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "New extended T21 expander path preserves case ID but loses internal phase and original error; independent native04 cannot identify failing step."
+    },
+    {
+      "at": "2026-10-04T02:34:39.130986+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Fresh Sol source-only lane repairs safe expander phase/section evidence and primary/restoration preservation. No product root cause established."
     }
   ],
   "closure_requirement": "Meaningfulfailurecaptureguard and independentreview, then actualguardedfailure or equivalentverifiednativeobservation preservingoriginaloperation/stage withoutprivatecontent. UnderlyingProfile targetfailure handledseparately.",
