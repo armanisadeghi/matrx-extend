@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "task": "d100-native-acceptance",
+  "status": "pass_for_bounded_reload_lifecycle",
+  "recorded_at_utc": "2026-10-04T00:23:02Z",
+  "run_id": "d100-native-credential-01",
+  "scope": "Guest sidepanel lifecycle only; no Profile navigation, save, or database request.",
+  "artifact": {
+    "source_sha": "b4b9f0c4efd4e79d9910a7e8dc589f312fe8bced",
+    "fix_commit": "26005bd42fb85109e9f24af64d736f2b0359d186",
+    "ci_run_id": 37164174445,
+    "ci_conclusion": "success",
+    "artifact_id": 11288542496,
+    "version": "0.2.189",
+    "tree_sha256": "494646f6dd65399e0e7eee65fd1d9bd00ef97d173c5ceb9674de276ca12dc23a",
+    "receipt_sha256": "59508f1709b214b329ee2b59456322177e7a1d5862680e685872e6122a5b4ecb",
+    "runtime_claim": "Verified imported source b4b9f0c4 (package version 0.2.189); fix 26005bd is included. This does not claim metadata-only source 0.2.190/current main was built or tested."
+  },
+  "resource": {
+    "admitted": true,
+    "resource_invalid": false,
+    "exit_code": 0,
+    "decision": "valid",
+    "profile_directory_mode": "0700",
+    "journal_path": "docs/stabilization/resource-journals/d100-native-credential-01.jsonl",
+    "journal_sha256": "e3fa278155c3bf7a26fe8137e3d9d94e534726ffcba970eaf1acd5dc7c1471a8"
+  },
+  "result": {
+    "status": "reload_observed",
+    "native_verified": true,
+    "sidepanel_target_observed": true,
+    "reload_attempted": true,
+    "reload_returned": true,
+    "old_targets_retired": true,
+    "worker_replaced": true,
+    "panel_replaced": true,
+    "trusted_original_page_click": "confirmed by existing harness reload path; replacement was verified as SIDE_PANEL context",
+    "enabled_state_before": "ENABLED",
+    "enabled_state_after": "ENABLED",
+    "runtime_error_count_before": 0,
+    "runtime_error_count_after": 0,
+    "manifest_error_count_before": 0,
+    "manifest_error_count_after": 0,
+    "failure_code": null
+  },
+  "evidence": {
+    "raw_report_external_path": "/Volumes/Samsung2TB/code/.stabilization-scratch/d100-native-credential-01/evidence/profile-reload-readonly-d100-native-credential-01.json",
+    "raw_report_sha256": "3756520cf1180f369601f9e2f60b03c93fc830c692af4e9fa04a7505233a0540",
+    "screenshots_external_only": true
+  },
+  "limitations": [
+    "This is a read-only guest extension-reload lifecycle acceptance; member Profile save/reopen flows and persistence are not covered.",
+    "Artifact source is b4b9f0c4, descended from the D100 fix with no intervening runtime-file changes; later docs/package metadata changes are outside this runtime claim."
+  ]
+}
