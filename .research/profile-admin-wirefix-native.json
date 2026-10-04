@@ -64,7 +64,7 @@
     "T26_admin": "unverified; admin behavior remains unimplemented in this runner",
     "T28_first_save": "unverified; absent-admin branch was not exercised"
   },
-  "recovery_need": "Wait for a safe resource window, then arrange a newly authorized guarded native run; this run must not be retried or bypassed.",
+  "recovery_need": "At the next safe resource preflight, proceed with the next guarded run under standing authorization; this lane did not retry or bypass the guard.",
   "limits": [
     "This is resource-guard evidence only and contains no native Profile, database, or authentication observation.",
     "No conclusion about existing Profile row state, first-save behavior, Profile acceptance, or Store health is supported."
