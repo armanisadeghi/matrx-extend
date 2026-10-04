@@ -16,6 +16,7 @@ import {
 } from './member-native-auth-proof.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
+import { storageShapeExpression } from './reviewer-chat-storage-shape.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const OUTPUT = join(REPO, 'test-results', `reviewer-chat-store-${randomUUID()}.json`);
@@ -189,16 +190,7 @@ async function accountObservation(panel, expectedEmail) {
 }
 
 async function storedSessionShape(panel) {
-  return evaluate(
-    panel,
-    `(() => chrome.storage.local.get([
-      'matrx.auth.accessToken', 'matrx.user.profile', 'matrx.org.active',
-    ]).then((stored) => ({
-      accessTokenPresent: typeof stored['matrx.auth.accessToken'] === 'string',
-      profilePresent: Boolean(stored['matrx.user.profile']?.id),
-      activeOrganizationPresent: typeof stored['matrx.org.active'] === 'string',
-    })))()`,
-  );
+  return evaluate(panel, storageShapeExpression());
 }
 
 async function selectReviewerOrganization(panel) {
@@ -446,6 +438,7 @@ try {
             30_000,
           );
         }
+        const storageShape = await storedSessionShape(panel);
         report.account = {
           reviewer_fingerprint: hash(email),
           web_signed_in: true,
@@ -455,8 +448,13 @@ try {
           sign_out_visible: account.signOutVisible,
           default_organization_selected: account.organizationSelected,
           organization_picker_available: account.organizationPickerAvailable,
-          storage_shape: await storedSessionShape(panel),
+          storage_shape: storageShape,
         };
+        assert.equal(
+          storageShape.activeOrganizationPresent,
+          true,
+          'selected organization must persist as a valid object',
+        );
 
         stage = 'open_chat';
         await click(panel, 'title', 'Chat');

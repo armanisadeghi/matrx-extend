@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "scope": "reviewer Chat Store native receipt diagnostic only",
+  "status": "SOURCE_REPAIRED_NATIVE_PENDING",
+  "cause": "storedSessionShape classified matrx.org.active as present only when it was a string. The canonical active-org writer persists an object with id and name, and the resolver reads its id, so a valid selected organization was falsely reported absent.",
+  "contract": {
+    "writer": "src/lib/org/active-org.ts persistSelection stores { id, name }",
+    "reader": "src/lib/org/active-org.ts readStoredSelection requires a nonempty string id",
+    "siblings": "Other browser drivers, including settings-native-auth-driver.mjs, read matrx.org.active.id. No sibling source change was needed in this narrow lane."
+  },
+  "red_green": {
+    "red": "node --test tests/browser/reviewer-chat-storage-shape.test.mjs failed: persisted object selection false !== true against the original string-only classifier",
+    "green": "The same command passed 3 tests after repair; in-memory constant-true, constant-false, and string-only mutants were rejected by the guard.",
+    "additional_checks": "Biome formatted the three changed source/test files; node --check on the browser driver and git diff --check passed."
+  },
+  "change": "The diagnostic now summarizes an object with a nonblank string id. The browser storage expression uses the same tested function, records only booleans, and refuses a PASS if the selected organization is not persisted in that shape.",
+  "privacy": "The receipt contains only presence booleans; no organization id/name, token, or profile value is serialized by this diagnostic.",
+  "limitation": "No browser or published Store artifact was exercised in this source-only lane. The previous member receipt remains historically false and must not be relabeled; root owns a fresh native run and independent review."
+}
