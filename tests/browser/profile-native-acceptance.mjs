@@ -12,6 +12,7 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { assertFirstSaveOwnedRow, ownedDeleteUrl } from './profile-empty-row-restoration.mjs';
 import { runProfileExecutionBoundary, runProfilePointer } from './profile-native-failure.mjs';
 import { createOwnedWriteJournal } from './profile-owned-write-journal.mjs';
+import { observeReloadAccountReady } from './profile-reload-account.mjs';
 import { runProfileSaveFailureCase } from './profile-save-failure-case.mjs';
 import { panelIdentity } from './settings-native-auth-driver.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
@@ -334,6 +335,34 @@ async function reloadPointerState(panel, email) {
         profile_button_count: buttons.filter(b => b.textContent.trim() === 'Profile').length,
         back_button_count: buttons.filter(b => b.title === 'Back').length,
         menu_count: [...document.querySelectorAll('[role="menu"]')].filter(visible).length,
+      };
+    })()`,
+    );
+  } catch {
+    return { sample_unavailable: true };
+  }
+}
+async function reloadAuthUi(panel, identity, organizationId) {
+  try {
+    return await evaluate(
+      panel,
+      `(async () => {
+      const visible = el => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
+        return r.width > 0 && r.height > 0 && s.display !== 'none' &&
+          s.visibility !== 'hidden' && !el.closest('[inert]'); };
+      const buttons = [...document.querySelectorAll('button[title]')].filter(visible);
+      const stored = await chrome.storage.local.get([
+        'matrx.auth.accessToken', 'matrx.user.profile', 'matrx.org.active',
+      ]);
+      return {
+        document_complete: document.readyState === 'complete',
+        signed_in_account_count: buttons.filter(b => b.title === ${JSON.stringify(identity.email)}).length,
+        guest_account_count: buttons.filter(b => b.title === 'Account').length,
+        active_chat_tab: Boolean(document.querySelector('button[role="tab"][title="Chat"][data-state="active"]')),
+        auth_error_visible: [...document.querySelectorAll('[role="alert"]')].some(visible),
+        persisted_identity_matches: stored['matrx.user.profile']?.id === ${JSON.stringify(identity.userId)},
+        persisted_organization_matches: stored['matrx.org.active']?.id === ${JSON.stringify(organizationId)},
+        access_token_present: typeof stored['matrx.auth.accessToken'] === 'string',
       };
     })()`,
     );
@@ -912,6 +941,10 @@ try {
           assert.equal(after.profileId, identity.userId, 'reload_profile_identity_changed');
           assert.equal(after.isAdmin, AUTH_MODE === 'admin', 'reload_profile_role_changed');
           assert.equal(after.organizationId, stored.organizationId, 'reload_organization_changed');
+          executionOperation = 'account_hydration_after_reload';
+          await observeReloadAccountReady(report, () =>
+            reloadAuthUi(reloaded.panel, identity, stored.organizationId),
+          );
           executionOperation = 'open_profile_after_reload';
           await openProfile(reloaded.panel, identity.email);
           executionOperation = 'case_back_after_reload';

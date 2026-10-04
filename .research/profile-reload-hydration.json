@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "task": "profile-reload-hydration",
+  "status": "source_guarded_native_pending",
+  "source_run": "profile-member-retest-189-02",
+  "observed_failure": "After strict reload, saved identity and organization were present, but the first account-menu click saw zero matches and the Chat tab was active.",
+  "source_boundary": "The reload harness returned after panel/runtime context existed; panelIdentity read storage, while UserMenu renders the signed-in title only after useAuth restores and verifies the session.",
+  "diagnostic": "The runner records content-free signed-in/guest account counts, stored identity matches, token presence, active Chat and visible auth alert before and after a bounded wait for the exact signed-in menu.",
+  "guard": "Two focused tests pass; a safe mutation requiring zero signed-in account buttons failed the ready-path assertion and was restored byte-identically.",
+  "runtime_limit": "The wait uses the existing 30-second Profile readiness bound; no product change, sleep, selector fallback or timeout increase.",
+  "claim": "Hydration delay versus persistent guest/session failure remains unresolved until the next guarded native member run."
+}
