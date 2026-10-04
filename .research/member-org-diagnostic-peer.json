@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "bef9a4de183882216a80a3d7f8b6b0c5c0fc9041",
+  "scope": "Independent source review of member Chat Store organization storage diagnostic",
+  "behavior_verdict": "PASS_SOURCE_ONLY",
+  "behavior_evidence": [
+    "src/lib/org/active-org.ts persistSelection writes { id, name } under matrx.org.active; readStoredSelection accepts a stored object with a nonempty string id.",
+    "The diagnostic accepts a persisted object with a nonblank string id and rejects absent, primitive, empty, whitespace-only, and nonstring ids.",
+    "The acceptance driver records only storage-presence booleans from this diagnostic and asserts activeOrganizationPresent before proceeding to Chat or marking the receipt pass."
+  ],
+  "guard_verdict": "PASS_NARROW",
+  "guard_evidence": [
+    "node --test tests/browser/reviewer-chat-storage-shape.test.mjs passed all three tests.",
+    "The guard uses a valid persisted object and malformed variants, evaluates the generated browser expression, and rejects in-memory constant-true, constant-false, and string-only classifier mutations."
+  ],
+  "limits": [
+    "This is a source and narrow-guard review; no native browser, member login, published Store artifact, or fresh acceptance receipt was exercised.",
+    "Storage shape alone does not prove live membership; the product resolver validates membership separately."
+  ],
+  "product_policy_change": false,
+  "sensitive_values_in_diagnostic_receipt": false
+}
